@@ -1,4 +1,4 @@
-# visStatistic
+# visStatistics
 
  Visualization of the statistical hypothesis test between two groups of categorical or numerical data.
 
@@ -17,9 +17,9 @@ To test assumptions of normality of residuals: `shapiro.test, ks.test`
 2.  Load the devtools package.
 `library(devtools)`
 3. Install the package from the github- repository
-`install_github("shhschilling/visStatistic")`
+`install_github("shhschilling/visStatistics")`
 4. Load the package 
-`library(visStatistic)`
+`library(visStatistics)`
 5. Help on the function usage
 `?visstat`
 
