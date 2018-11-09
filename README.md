@@ -8,8 +8,8 @@
  `visstat` returns the corresponding test statistics as text.
   Implemented tests: `lm, t.test, wilcox.test, aov, kruskal.test, fisher.test,chisqu.test`.
 
-  To test assumptions of normality of distributions: `shapiro.test, ks.test`
-
+To test assumptions of normality of residuals: `shapiro.test, ks.test`
+ To Test assumption of homoscedacity of distributions: `bartlett.test`
 
 ## Installation
 1. First, you need to install the devtools package. You can do this from CRAN. Invoke R and then type
@@ -27,7 +27,7 @@
 ### Trees data set
 `visstat(trees,"Girth","Height")` #without saving of plot
 
-`visstat(trees,"Girth","Height",graphicsoutput="png)`# saving of the plot as"png"-file
+`visstat(trees,"Girth","Height",graphicsoutput="png)`# saving the plot as"png"-file
 
 ###  Iris data set
 `visstat(iris,"Petal.Width", "Species")`
