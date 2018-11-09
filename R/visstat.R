@@ -37,6 +37,13 @@
 #' titanic_train$Survived=as.factor(titanic_train$Survived)
 #' titanic_train$Pclass=as.factor(titanic_train$Pclass)
 #' visstat(titanic_train,"Survived","Pclass")
+#' @export
+
+#' @import multcompView 
+#' @import vcd
+#' @import Cairo
+#' 
+
 
 # Function body------
 visstat = function(dataframe,
