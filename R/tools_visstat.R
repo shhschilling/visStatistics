@@ -3,7 +3,7 @@
 #Feedback highly welcome: sabineschilling@gmx.ch
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
-#' Visualization of the statistical hypothesis test between two groups of data.
+#' Visualization of the statistical hypothesis test between two groups of categorical or numerical data.
 #'
 #' \code{visstat} \strong{vis}ualizes the \strong{stat}istical hypothesis testing between two groups of data, where \code{varsample} is the dependent variable (or response) and \code{varfactor} is the independent variable (feature).
 #' The statistical hypothesis test with the highest statistical power and fulfilling the assumptions of the corresponding  is performed and visualized.
