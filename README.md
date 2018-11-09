@@ -26,10 +26,12 @@
 ## Examples 
 ### Trees data set
 `visstat(trees,"Girth","Height")` #without saving of plot
+
 `visstat(trees,"Girth","Height",graphicsoutput="png)`# saving of the plot as"png"-file
 
 ###  Iris data set
 `visstat(iris,"Petal.Width", "Species")`
+
 `visstat(iris,"Petal.Width", "Petal.Length")`
 
 ###  InsectSprays  data set 
@@ -38,7 +40,11 @@
 ###  Titanic data set 
 
 `install.packages("titanic")`
+
 `library(titanic)`
+
 `titanic_train$Survived=as.factor(titanic_train$Survived)`
+
 `titanic_train$Pclass=as.factor(titanic_train$Pclass)`
+
 `visstat(titanic_train,"Survived","Pclass")`
