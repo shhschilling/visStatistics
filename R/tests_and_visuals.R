@@ -1,26 +1,16 @@
-#MIT License-----
+# MIT License-----
 #Copyright (c) 2018 Sabine Schilling
 # Feedback highly welcome: schilling.sabine@gmail.com
 #
 # Libraries -----
-library(multcompView)
 #library(multcompView)
 #Parameters to be changed for plotting -----
 cexsize = 1
 par(lwd = 1)
-#Define color scheme-----
-browserLightGreen="#B8E0B8" #matched part group0
-browserLightBlue="#B3D1EF"#matched part group1
-browserLightTurquois="#B3E1EF"#light turquois
-browserDarkGreen="#5CB85C" #dark green
-colortuple=c(browserLightGreen,browserLightBlue)
-colortuple2=c(browserDarkGreen,browserLightTurquois)
-#from package RColorBrewer Set 3
-ColorPalette= c("#8DD3C7" ,"#FFFFB3" ,"#BEBADA" ,"#FB8072", "#80B1D3",
-                "#FDB462", "#B3DE69", "#FCCDE5", "#D9D9D9", "#BC80BD" ,"#CCEBC5" ,"#FFED6F")
+
 
 # Plotting functions----
-#have to be sourced from helper_graphics.R
+
 # Testing for Normality and Visualization ----
 
 test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {

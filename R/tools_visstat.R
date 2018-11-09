@@ -1,7 +1,8 @@
-#MIT License
+#MIT License----
 #Copyright (c) 2018 Sabine Schilling
 #Feedback highly welcome: sabineschilling@gmx.ch
-if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+
+# Header visstat -----
 
 #' Visualization of the statistical hypothesis test between two groups of categorical or numerical data.
 #'
@@ -37,7 +38,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' titanic_train$Pclass=as.factor(titanic_train$Pclass)
 #' visstat(titanic_train,"Survived","Pclass")
 
-
+# Function body------
 visstat = function(dataframe,
                                    varsample,
                                    varfactor,
@@ -58,11 +59,7 @@ visstat = function(dataframe,
   # graphicsoutput can be "png", "jpeg", "jpg", "tiff", "bmp"
 
 
-  if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
-  library(Cairo)
-  library(multcompView)
-  library(vcd)
-
+  
   cexsize = 1
 
 
