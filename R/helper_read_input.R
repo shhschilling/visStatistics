@@ -32,6 +32,19 @@ read_input_file = function(input_file)
 }
 
 # get_groups_inputfile of type json (server) or data.frame ---------------------
+
+#' Selects columns defined by characters varsample and varfactor from dataframe
+#'
+#'Selects columns defined by characters \code{varsample} and \code{varfactor} from \code{dataframe}, return selected columsn with their names
+#' @param dataframe \code{data.frame} or \code{list} containing at least two columns with column headings of data type \code{character}. Data must be column wise ordered.
+#' @param varsample column name of dependent variable in dataframe, dataype \code{character}
+#' @param varfactor column name of independent variable in dataframe, dataype \code{character}
+
+#'
+#' @return selected columns, \code{varsample}, \code{varfactor}
+#' @examples
+#'
+#' @export
 get_samples_fact_inputfile = function(dataframe, varsample, varfactor)
 {
   # json input------
@@ -98,6 +111,7 @@ get_samples_fact_inputfile = function(dataframe, varsample, varfactor)
   return(mylist)
 }
 
+#' @export
 findmatches = function(samples, matchedsamples)
 {
   if (is.null(dim(samples))) {

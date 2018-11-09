@@ -1721,10 +1721,9 @@ vis_regression = function(x,
 
   sig_diffs_nongauss <- function(samples, fact)
   {
-    # function to produce a table similar to that produced for TukeyHSD
+    # function to produce a table similar to that produced for TukeyHSD,
     # but for non-normally distributed data
-
-    # calculate p values for each data classification
+    # calculate p values for each data classification based on pairwise.wilcox.test
 
     ufactor = levels(fact)
     pwt = pairwise.wilcox.test(samples, fact)

@@ -37,15 +37,12 @@
 #' titanic_train$Survived=as.factor(titanic_train$Survived)
 #' titanic_train$Pclass=as.factor(titanic_train$Pclass)
 #' visstat(titanic_train,"Survived","Pclass")
-#' @export
 
 #' @import multcompView 
 #' @import vcd
 #' @import Cairo
 #' 
-
-
-# Function body------
+#' @export
 visstat = function(dataframe,
                                    varsample,
                                    varfactor,
@@ -286,7 +283,7 @@ visstat = function(dataframe,
         vis_sample_fact=c(vis_chi,vis_mosaic_res)
       }
     }
-    #C: both types numeric-----
+    #C) both types numeric-----
 
     #Both samples and fact of type integer or numeric
     #Regression
@@ -333,6 +330,10 @@ visstat = function(dataframe,
                                     factorname = varfactor)
         saveGraphCairo(paste("anova_", name_of_sample, "_", name_of_factor, sep = ""),
                        type = graphicsoutput)
+        
+        
+        
+        
         #if p -values of both Shapiro-Wilk and Kruskall-Wallis-Test are smaller than 0.05, Kruskall-Wallis-Test
       } else{
         openGraphCairo(type = graphicsoutput)
@@ -344,10 +345,15 @@ visstat = function(dataframe,
           factorname = varfactor,
           cex = 1,
           notch = F
+          
+          
         )
 
         saveGraphCairo(paste("kruskal_", name_of_sample, "_", name_of_factor, sep = ""),
                        type = graphicsoutput)
+        
+        
+        
       }
 
     }
@@ -357,4 +363,3 @@ visstat = function(dataframe,
 
 
   
-
