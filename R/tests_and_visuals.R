@@ -2,8 +2,7 @@
 #Copyright (c) 2018 Sabine Schilling
 # Feedback highly welcome: schilling.sabine@gmail.com
 #
-# Libraries -----
-#library(multcompView)
+
 #Parameters to be changed for plotting -----
 cexsize = 1
 par(lwd = 1)
@@ -47,11 +46,7 @@ test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
 
   par(new = TRUE) #the next high-level plotting command does not clean the frame before drawing
   #as if it were on a new device.
-  #estimated density
-  # plot(density(x),col="blue",xlab= character(),ylab= character(),
-  #      axes<-FALSE,main= character(),lwd<-2,
-  #      xlim<-c(mean(x)-5*sd(x),mean(x)+5*sd(x)))
-
+ 
   lines(density(x), col = "blue")
 
 
@@ -1512,11 +1507,11 @@ vis_regression = function(x,
 
   #helper function odds ratio
   #calculation of odds ratio
-  oddsratio = function(a, b, c, d, alpha, zerocorrect) {
-    attr(oddsratio, "help") <-
-      "oddsratio calculates odds ratio OR=(a/b)/(c/d) and corresponding upper and lower confidence intervalls\n INPUT: a = group 1 positive, c = group 2 positive, b=group 1 non positive, d = group 2 non positive, 1-alpha: confidence level, default alpha=0.05"
+  odds_ratio = function(a, b, c, d, alpha, zerocorrect) {
+    attr(odds_ratio, "help") <-
+      "odds_ratio calculates odds ratio OR=(a/b)/(c/d) and corresponding upper and lower confidence intervalls\n INPUT: a = group 1 positive, c = group 2 positive, b=group 1 non positive, d = group 2 non positive, 1-alpha: confidence level, default alpha=0.05"
 
-    # "oddsratio calculates odds ratio OR=(a/b)/(c/d) and corresponding upper and lower confidence intervalls\n
+    # "odds_ratio calculates odds ratio OR=(a/b)/(c/d) and corresponding upper and lower confidence intervalls\n
     # INPUT: a=number of positives in  group 1, c=group 2 positive, b=group 1 non positive, d =group 2 non positive,default alpha=0.05, OR=(a/b)/(c/d)"\n
     # a,b,c,d can be vectors, elementwise calculation
     #
@@ -1574,7 +1569,7 @@ vis_regression = function(x,
 
     output = rbind(OR, lowconf, upconf, SE)
 
-    return(list=("oddsratio_statistics"=output))
+    return(list=("odds_ratio_statistics"=output))
     print(output)
   }
 
