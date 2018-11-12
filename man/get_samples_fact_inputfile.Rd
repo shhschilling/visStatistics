@@ -17,7 +17,7 @@ get_samples_fact_inputfile(dataframe, varsample, varfactor)
 selected columns, \code{varsample}, \code{varfactor}
 }
 \description{
-Selects columns defined by characters \col{varsample} and \col{varfactor} from \col{dataframe}, return selected columsn with their names
+Selects columns defined by characters \code{varsample} and \code{varfactor} from \code{dataframe}, return selected columsn with their names
 }
 \examples{
 

@@ -853,6 +853,33 @@ two_sample_WilcoxonTest = function(samples,
 
 
 ## Visualize  ANOVA assumptions----
+
+###  Header vis_anova_asumptions -----
+
+#' Testing ANOVA assumptions
+#'
+#' \code{vis_anova_assumptions} checks for normality of the standardised residuals of the anova both graphically by qq-plots as well as performing 
+#'    the Shapiro-Wilk-test  and the Kolmogoov-Smirnov-Test.
+#'    \code{aov} further requires the homoscedacity of each factor level in \code{fact}, which is tested by the function Bartlett test. .
+#' 
+#' @param samples vector containing dependent variable, datatype numeric
+#' @param fact vector containing independent variable, datatype factor
+#' @param conf.level confidence level, 0.95=default
+#' @param samplename name of sample used in graphical output, dataype character , ""=default
+#' @param factorname name of sample used in graphical output, dataype character, ""=default
+#' @param cex number indicating the amount by which plotting text and symbols should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
+#'
+#' @return my_list: list containing the test statistics of the anova 
+#' \code{aov(samples~fact)},\code{bartlett.test(samples~fact)} and the tests of normality of the standardized residuals of aov, \code{ks_test} and \code{shapiro_test}
+#' @examples
+#'ToothGrowth$dose=as.factor(ToothGrowth$dose)
+#'vis_anova_assumptions(ToothGrowth$len, ToothGrowth$dose)
+#'
+#'vis_anova_assumptions(ToothGrowth$len, ToothGrowth$supp)
+#'vis_anova_assumptions(iris$Petal.Width,iris$Species)
+
+#' @export vis_anova_assumptions
+
 vis_anova_assumptions = function(samples,
                               fact,
                               conf.level = 0.95,

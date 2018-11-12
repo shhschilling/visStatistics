@@ -1,4 +1,12 @@
 #Helper function in visstat----
+#' Reads in csv  or json files and transform it to data.frame format
+#'
+#' @param input_file of type .csv or .json
+#'
+#' @return dataframe 
+#' @examples
+#'
+#' @export
 read_input_file = function(input_file)
 {
   #reads in files of type csv or json

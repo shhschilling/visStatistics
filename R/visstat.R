@@ -7,16 +7,17 @@
 #' Visualization of the statistical hypothesis test between two groups of categorical or numerical data.
 #'
 #' \code{visstat} \strong{vis}ualizes the \strong{stat}istical hypothesis testing between two groups of data, where \code{varsample} is the dependent variable (or response) and \code{varfactor} is the independent variable (feature).
-#' The statistical hypothesis test with the highest statistical power and fulfilling the assumptions of the corresponding  is performed and visualized.
+#' The statistical hypothesis test with the highest statistical power and fulfilling the assumptions of the corresponding tests is performed and visualized.
 #' A graph displaying the raw data accordingly to the chosen test as well as the test statistics is generated. Furthermore
 #' \code{visstat} returns the corresponding test statistics as text.
 #'  Implemented tests: \code{lm, t.test, wilcox.test, aov, kruskal.test, fisher.test,chisqu.test}.
-#'
-#'  To test assumptions of normality of distributions: \code{shapiro.test, ks.test}
-#'
-#'  Test assumption of homoscedacity of distributions: \code{bartlett.test}
-#'
-#'  Display count data: \code{mosaic}
+#'  s
+#'  \code{visstat} calls the function\code{vis_anova_assumptions} to test the underlying assumptions of \code{aov} and \code{oneway.test}:
+#'   
+#'  If the p-values of the standardized residuals of both \code{shapiro.test} or \code{ks.test} are smaller  than 1-\code{conf.level}, \code{kruskal.test} is performed.
+#'  otherwise the \code{oneway.test} and \code{aov} are performed.
+
+
 #'
 #' @param dataframe \code{data.frame} or \code{list} containing at least two columns with column headings of data type \code{character}. Data must be column wise ordered.
 #' @param varsample column name of dependent variable in dataframe, dataype \code{character}
@@ -42,7 +43,7 @@
 #' @import vcd
 #' @import Cairo
 #' 
-#' @export
+#' @export visstat
 visstat = function(dataframe,
                                    varsample,
                                    varfactor,
