@@ -1,18 +1,18 @@
 #Helper function in visstat----
-#' Selects columns defined by characters varsample and varfactor from dataframe
+#' Generate name of dependent variable(varsample) and name of dependetn variable from dataframe
 #'
 #'Selects columns defined by characters \code{varsample} and \code{varfactor} from \code{dataframe}, return selected columsn with their names
 #' @param dataframe \code{data.frame} or \code{list} containing at least two columns with column headings of data type \code{character}. Data must be column wise ordered.
-#' @param varsample column name of dependent variable in dataframe, datatype \code{character}
-#' @param varfactor column name of independent variable in dataframe, datatype \code{character}
+#' @param sample column of dependent variable in dataframe, 
+#' @param varfactor column name of independent variable in dataframe, dataype \code{character}
 
 #'
-#' @return selected columns, \code{sample}, \code{factor}, \code{name_of_sample} (character string equaling varsample), \code{name_of_factor} (character string equaling varsample)
+#' @return selected columns, \code{sample}, \code{factor}, \code{name_of_sample}  \code{name_of_factor} (character string equaling varsample)
 #' @examples
-#' get_samples_fact_inputfile(trees,"Girth","Height")
+#' get_varsamples_varfact_inputfile(trees,trees$Girth",trees$Height")
  
-#' @export
-get_samples_fact_inputfile = function(dataframe, varsample, varfactor)
+
+get_varsamples_varfact_inputfile = function(dataframe, sample,factor)
 {
   # json input------
   
