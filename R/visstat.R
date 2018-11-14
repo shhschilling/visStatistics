@@ -31,12 +31,6 @@
 #' visstat(iris,"Petal.Width", "Species")
 #' visstat(InsectSprays,"count","spray")
 #' visstat(ToothGrowth,"len", "supp")
-#'
-#' install.packages("titanic")
-#' library(titanic)
-#' titanic_train$Survived=as.factor(titanic_train$Survived)
-#' titanic_train$Pclass=as.factor(titanic_train$Pclass)
-#' visstat(titanic_train,"Survived","Pclass")
 
 #' @import multcompView 
 #' @import vcd
