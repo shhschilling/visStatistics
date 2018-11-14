@@ -1,9 +1,7 @@
-
-##for the first installation
 library(Cairo)
 dummy_name="dummy_plot"
-#dummy_name_with_filetype=paste(dummy_name,".",graphicsoutput,sep="")
-## Open Cairo output-------
+
+## openGraphCairo function-------
 openGraphCairo = function(file =dummy_name ,type=NULL ,width = 8,
                           height = 8 / sqrt(2) ,
                           mag = 1.0 ,
@@ -29,7 +27,7 @@ openGraphCairo = function(file =dummy_name ,type=NULL ,width = 8,
 }
 
 
-## Save Cairo output-------
+## saveGraphCairo function-------
 saveGraphCairo = function(file, type=NULL,oldPlotName =NULL) {
   #close file first
   if(is.null(type))

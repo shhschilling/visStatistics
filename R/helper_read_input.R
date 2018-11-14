@@ -1,43 +1,48 @@
 #Helper function in visstat----
-#' Reads in csv  or json files and transform it to data.frame format
-#'
-#' @param input_file of type .csv or .json
-#'
-#' @return dataframe 
-#' @examples
-#'
-#' @export
-read_input_file = function(input_file)
-{
-  #reads in files of type csv or json
-  #automatically distinguises type of csv file
-  filetye = sub('.*\\.', '', inputfile)#sub(pattern, replacement,file), replaces everything before . with empty string
-  if (filetype == "csv")
-  {
-    L <- readLines(input_file, n = 1)
-    if (grepl(";", L))
-    {
-      dataframe = read.csv2(input_file,
-                            dec = ".",
-                            sep = ";",
-                            header = TRUE) #sep=";" is the defualt of read.csv2
-    } else {
-      dataframe = read.csv(input_file,
-                           dec = ".",
-                           sep = ",",
-                           header = TRUE)
-      return(dataframe)
-    }
-  } else if (filetype == "json") {
-    dataframe <- fromJSON(file(input_file)) #this is a list
-    return(dataframe)
-    
-  } else
-  {
-    stop("code can only input files of type 'csv' or 'json'.")
-  }
-  
-}
+#' #' Reads in csv  or json files and  converts it into a R  data.frame
+#' #'
+#' #'For file of json-type function fromJSON from the jsonlite package is called, for files of type csv  functions read.csv resp. read.cs2 from the utils package  are called.
+#' #' @param input_file data file of type csv or json with explicit file ending ".cvs" or ".json"
+#' #'
+#' #' @return data.frame or list generated from input_file
+#' #' @examples
+#' #' # Stringify some data
+#' #' jsoncars <- toJSON(mtcars, pretty=TRUE)
+#' #' 
+#' #' 
+#' #' @import jsonlite utils
+#' #' @export read_input_file
+#' read_input_file = function(input_file)
+#' {
+#'   #reads in files of type csv or json
+#'   #automatically distinguises type of csv file
+#'   filetye = sub('.*\\.', '', input_file)#sub(pattern, replacement,file), replaces everything before . with empty string
+#'   if (filetype == "csv")
+#'   {
+#'     L <- readLines(input_file, n = 1)
+#'     if (grepl(";", L))
+#'     {
+#'       dataframe = read.csv2(input_file,
+#'                             dec = ".",
+#'                             sep = ";",
+#'                             header = TRUE) #sep=";" is the defualt of read.csv2
+#'     } else {
+#'       dataframe = read.csv(input_file,
+#'                            dec = ".",
+#'                            sep = ",",
+#'                            header = TRUE)
+#'       return(dataframe)
+#'     }
+#'   } else if (filetype == "json") {
+#'     dataframe <- fromJSON(file(input_file)) #this is a list
+#'     return(dataframe)
+#'     
+#'   } else
+#'   {
+#'     stop("code can only input files of type 'csv' or 'json'.")
+#'   }
+#'   
+#' }
 
 # get_groups_inputfile of type json (server) or data.frame ---------------------
 
@@ -119,7 +124,6 @@ get_samples_fact_inputfile = function(dataframe, varsample, varfactor)
   return(mylist)
 }
 
-#' @export
 findmatches = function(samples, matchedsamples)
 {
   if (is.null(dim(samples))) {
