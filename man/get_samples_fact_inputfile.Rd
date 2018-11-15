@@ -9,12 +9,12 @@ get_samples_fact_inputfile(dataframe, varsample, varfactor)
 \arguments{
 \item{dataframe}{\code{data.frame} or \code{list} containing at least two columns with column headings of data type \code{character}. Data must be column wise ordered.}
 
-\item{varsample}{column name of dependent variable in dataframe, dataype \code{character}}
+\item{varsample}{column name of dependent variable in dataframe, datatype \code{character}}
 
-\item{varfactor}{column name of independent variable in dataframe, dataype \code{character}}
+\item{varfactor}{column name of independent variable in dataframe, datatype \code{character}}
 }
 \value{
-selected columns, \code{varsample}, \code{varfactor}, \code{name_of_sample} (character string equaling varsample), \code{name_of_factor} (character string equaling varsample)
+selected columns, \code{sample}, \code{factor}, \code{name_of_sample} (character string equaling varsample), \code{name_of_factor} (character string equaling varsample)
 }
 \description{
 Selects columns defined by characters \code{varsample} and \code{varfactor} from \code{dataframe}, return selected columsn with their names
