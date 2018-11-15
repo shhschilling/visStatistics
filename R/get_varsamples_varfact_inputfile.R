@@ -1,33 +1,34 @@
 #Helper function in visstat----
-#' Generate name of dependent variable(varsample) and name of dependetn variable from dataframe
+#' Generate name of dependent variable(varsample) and name of dependent variable from dataframe
 #'
-#'Selects columns defined by characters \code{varsample} and \code{varfactor} from \code{dataframe}, return selected columsn with their names
+#'Selects columns defined by characters \code{samples} and \code{fact} from \code{dataframe}, return selected columsn with their names
 #' @param dataframe \code{data.frame} or \code{list} containing at least two columns with column headings of data type \code{character}. Data must be column wise ordered.
-#' @param sample column of dependent variable in dataframe, 
-#' @param varfactor column name of independent variable in dataframe, dataype \code{character}
+#' @param samples column of selected dependent variable in dataframe
+#' @param fact column of selected independent variable in dataframe 
 
 #'
-#' @return selected columns, \code{sample}, \code{factor}, \code{name_of_sample}  \code{name_of_factor} (character string equaling varsample)
+#' @return selected columns, \code{samples}, \code{fact}, \code{name_of_sample}  \code{name_of_factor} (character string equaling varsample)
 #' @examples
 #' get_varsamples_varfact_inputfile(trees,trees$Girth",trees$Height")
  
 
-get_varsamples_varfact_inputfile = function(dataframe, sample,factor)
+get_varsamples_varfact_inputfile = function(dataframe, samples,fact)
 {
   # json input------
   
   if (is.null(dim(dataframe)))
     #FALSE for csv
+    
+    #Code only relevant for ANEUX
   {
     fulldata = dataframe
     data = dataframe$data
     data = as.data.frame(data)
     
-    if ("matching" %in% names(dataframe) & varfactor == "match")
+    if ("matching" %in% names(dataframe) & fact == "match")
     {
       matched_selected_group0 = which(data$group0 == 1 & data$match == 1)
-      matched_selected_group1 = which(data$group1 == 1 &
-                                        data$match == 1)
+      matched_selected_group1 = which(data$group1 == 1 & data$match == 1)
       fact = c(rep(fulldata$group0name, length(matched_selected_group0)),
                rep(fulldata$group1name, length(matched_selected_group1)))
       fact = as.factor(fact)
@@ -48,10 +49,9 @@ get_varsamples_varfact_inputfile = function(dataframe, sample,factor)
       # json file with no matching criterion
     } else if ("matching" %in% names(dataframe) & varfactor != "match")
     {
-      samples = data[, varsample]
-      fact = data[, varfactor]
-      name_of_sample = varsample
-      name_of_factor = varfactor
+      
+      name_of_sample =bla
+      name_of_factor = bla2
       matchingCriteria = ""
     } else{
       stop("code runs only on json files generated from AneuX")
@@ -59,10 +59,8 @@ get_varsamples_varfact_inputfile = function(dataframe, sample,factor)
     # csv input------
   } else{
     #Select samples and fact from data.frame dataframe-----
-    samples = dataframe[, varsample]
-    fact = dataframe[, varfactor]
-    name_of_sample = varsample
-    name_of_factor = varfactor
+    name_of_sample = ...
+    name_of_factor = ...
     matchingCriteria = ""
   }
   
