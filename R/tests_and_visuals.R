@@ -107,7 +107,7 @@ one_sample_tTest = function(x, alpha, eff_mean, alternative = "two.sided") {
     col = "grey50",
     xlab = ""
   )
-  axis(side = 1, at = 1, label = "Sample 1")
+  axis(side = 1, at = 1, labels = "Sample 1")
 
   points(mean(x),
          col = 2,
@@ -241,7 +241,7 @@ two_sample_tTest = function(samples,fact,
   axis(side = 2)
   axis(side = 1,
        at = c(1, 2),
-       label = levels)
+       labels = levels)
   box()
 
   points(1,
@@ -361,7 +361,7 @@ one_sample_WilcoxonTest = function(x,
     col = "grey50",
     xlab = ""
   )
-  axis(side = 1, at = 1, label = "Sample 1")
+  axis(side = 1, at = 1, labels = "Sample 1")
 
   boxplot(x,
           notch = no,
@@ -573,7 +573,7 @@ two_sample_WilcoxonTest = function(samples,
     axis(side = 2)
     axis(side = 1,
          at = c(1, 2),
-         label = levels)
+         labels = levels)
     box()
 
     lines(
@@ -933,31 +933,7 @@ vis_anova_assumptions = function(samples,
 }
 
 
-  #2wayANOVA-----
-  vis_2wayANOVA_clusters = function(samples, factor_1, factor_2) {
-    n_classes = length(unique(fact))
-
-    s = tapply(samples, list(factor_1, factor_2), sd)
-    m = tapply(samples, list(factor_1, factor_2), mean)
-
-    samples_per_class = c()
-    for (i in 1:n_classes) {
-      samples_per_class[i] = sum(fact == unique(fact)[i])
-    }
-
-    an = aov(samples ~ factor_1 * factor_2)
-    a = summary(an)
-
-    maximum = max(samples)
-
-    minimum = min(samples)
-
-    spread = maximum - minimum
-
-    mi = minimum - 0.3 * spread
-    ma = maximum + 0.3 * spread
-
-  }
+  
 
   ###### Visualize Kruskal_Wallis ###############################
   ## performs Kruskal Wallis and post-hoc Wilcoxon:
@@ -1089,7 +1065,7 @@ vis_anova_assumptions = function(samples,
 
     lower=0.1
     upper=0.4
-    margins=calc_min_max_of_y_axis(samples,lower,upper)
+    margins=calc_min_max_of_y_axis(y,lower,upper)
     mi=margins[[1]]
     ma=margins[[2]]
 
