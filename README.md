@@ -10,7 +10,7 @@
 `visstat` tests the fulfillment of the underlying assumptiosn of `aov` and `oneway.test` by calling the internal function `vis_anova_assumptions`.
 
 
-## Installation from Github
+## Installation from GITHUB
 1. Firstly, you need to install the devtools package. You can do this from CRAN. Invoke R and then type
 `install.packages("devtools")`
 2.  Load the devtools package.
