@@ -1181,9 +1181,7 @@ vis_anova_assumptions = function(samples,
 
   ###### Visualize Regression ###############################
 
-#must become two functions
-#one: assumptions regression
-#one regression itself
+
 vis_regression_assumptions = function(x,
                        y,
                        conf.level = 0.95) {
