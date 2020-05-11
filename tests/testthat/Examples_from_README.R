@@ -17,4 +17,12 @@ titanic_train$Pclass=as.factor(titanic_train$Pclass)
 visstat(titanic_train,"Survived","Pclass")
 
 
-#HairEyeColorc data set---- 
+#mtcars data set t---- 
+#example welch two sample t.test
+
+mtcars$am=as.factor(mtcars$am)
+visstat(mtcars,"mpg","am")
+
+
+
+
