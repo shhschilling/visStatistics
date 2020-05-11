@@ -1,6 +1,6 @@
 # MIT License-----
-#Copyright (c) 2018 Sabine Schilling
-# Feedback highly welcome: schilling.sabine@gmail.com
+#Copyright (c) 2020 Sabine Schilling
+# Feedback highly welcome: sabineschilling@gmx.ch
 #
 
 #Parameters to be changed for plotting -----
@@ -223,7 +223,7 @@ two_sample_tTest = function(samples,fact,
             ylab = samplename,
             ylim=c(mi,ma),
             varwidth=T,
-            col=colortuple
+            col=colorscheme(1)
   )
 
   stripchart(
@@ -232,7 +232,7 @@ two_sample_tTest = function(samples,fact,
     xlim = c(0, 3),
     ylim = c(mi, ma),
     #col = c("grey70", "grey80"),
-    col=colortuple2,
+    col=colorscheme(2),
     axes = FALSE,
     method = "jitter",
     add = TRUE
@@ -439,8 +439,8 @@ two_sample_WilcoxonTest = function(samples,
     alpha=1-conf.level
 
     if (missing(notchf)) notchf=F
-
-
+    #Define color palette
+    colortuple2=colorscheme(2)
     # Create to numeric vectors
     twosamples=create_two_samples_vector(samples,fact)
     x=twosamples$sample1and2
@@ -472,7 +472,7 @@ two_sample_WilcoxonTest = function(samples,
       xlim = c(0, 3),
       #ylim = c(mi, ma),
       method="jitter",
-      col = colortuple2,
+      col=colorscheme(2),
       ylim=c(0,ma),
       ylab=samplename,
       xlab=factorname
@@ -482,7 +482,7 @@ two_sample_WilcoxonTest = function(samples,
       samples ~ fact,
       notch = notchf,
       varwidth=T,
-      col=colortuple,
+      col=colorscheme(1),
       ylim=c(0,ma),
       add=T
     )
@@ -622,7 +622,8 @@ two_sample_WilcoxonTest = function(samples,
   # vis_chi_squared_test: implemented in vis_samples_fact -----
   vis_chi_squared_test = function(samples,
                                   fact, samplename, factorname) {
-
+    colortuple=colorscheme(1)
+    ColorPalette=colorscheme(3)
     if(missing(samplename)) samplename= character()
     if(missing(factorname)) factorname= character()
 

@@ -4,8 +4,14 @@
 \alias{vis_anova_assumptions}
 \title{Testing ANOVA assumptions}
 \usage{
-vis_anova_assumptions(samples, fact, conf.level = 0.95,
-  samplename = "", factorname = "", cex = 1)
+vis_anova_assumptions(
+  samples,
+  fact,
+  conf.level = 0.95,
+  samplename = "",
+  factorname = "",
+  cex = 1
+)
 }
 \arguments{
 \item{samples}{vector containing dependent variable, datatype numeric}

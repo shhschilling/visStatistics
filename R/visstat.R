@@ -30,10 +30,18 @@
 #' visstat(iris,"Petal.Width", "Species")
 #' visstat(InsectSprays,"count","spray")
 #' visstat(ToothGrowth,"len", "supp")
-
-#' @import multcompView 
+#' visstat(mtcars,"mpg","am")
+#' 
+#' 
 #' @import vcd
 #' @import Cairo
+#' @import graphics
+#' @import grDevices
+#' @import grid
+#' @import multcompView 
+#' @import stats
+#' @import utils
+#' @import vcd
 #' 
 #' @export visstat
 visstat = function(dataframe,
