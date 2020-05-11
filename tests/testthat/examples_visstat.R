@@ -4,7 +4,7 @@
 visstat(trees,"Girth","Height") #without saving of plot
 
 #Iris data set----
-#linear Regression
+#Kruskal-Wallis test
 visstat(iris,"Petal.Width", "Species")
 
 #linear Regression
@@ -29,5 +29,17 @@ mtcars$am=as.factor(mtcars$am)
 visstat(mtcars,"mpg","am")
 
 
+# Convert from data frame of counts to data frame of cases.
+# `countcol` is the name of the column containing the counts
+countsToCases <- function(x, countcol = "Freq") {
+  # Get the row indices to pull from x
+  idx <- rep.int(seq_len(nrow(x)), x[[countcol]])
+  
+  # Drop count column
+  x[[countcol]] <- NULL
+  
+  # Get the rows from x
+  x[idx, ]
+}
 
-
+matrix1 <- HairEyeColor[,,2]

@@ -30,6 +30,8 @@
 #' visstat(iris,"Petal.Width", "Species")
 #' visstat(InsectSprays,"count","spray")
 #' visstat(ToothGrowth,"len", "supp")
+#' 
+#' mtcars$am=as.factor(mtcars$am) #transform to categorical data of type "factor"
 #' visstat(mtcars,"mpg","am")
 #' 
 #' 
