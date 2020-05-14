@@ -1,13 +1,12 @@
 #Helper function in visstat----
-#' Selects columns defined by characters varsample and varfactor from dataframe
+#' Selects columns defined by characters varsample and varfactor from data.frame
 #'
-#'Selects columns defined by characters \code{varsample} and \code{varfactor} from \code{dataframe}, return selected columsn with their names
+#'Selects columns defined by characters \code{varsample} and \code{varfactor} from \code{dataframe}, returns selected columns with their names.
 #' @param dataframe \code{data.frame} or \code{list} containing at least two columns with column headings of data type \code{character}. Data must be column wise ordered.
 #' @param varsample column name of dependent variable in dataframe, datatype \code{character}
 #' @param varfactor column name of independent variable in dataframe, datatype \code{character}
-
-#'
 #' @return selected columns, \code{sample}, \code{factor}, \code{name_of_sample} (character string equaling varsample), \code{name_of_factor} (character string equaling varsample)
+#'
 #' @examples
 #' get_samples_fact_inputfile(trees,"Girth","Height")
  

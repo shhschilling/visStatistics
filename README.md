@@ -10,8 +10,10 @@
 `vissta()t` tests the fulfillment of the underlying assumptiosn of `aov` and `oneway.test` by calling the internal function `vis_anova_assumptions`.
 
 
+
+
 ## Installation from GitHub
-1. First, you need to install the devtools package. You can do this from CRAN. Invoke R and then type
+1. Firstly, you need to install the devtools package. You can do this from CRAN. Invoke R and then type
 `install.packages("devtools")`
 2.  Load the devtools package.
 `library(devtools)`
@@ -23,27 +25,32 @@
 `?visstat`
 
 ## Examples 
-### Trees data set
+### Trees data set: linear Regression
 `visstat(trees,"Girth","Height")` #without saving of plot
-
 `visstat(trees,"Girth","Height",graphicsoutput="png")`# saving the plot as"png"-file
 
-###  Iris data set
+###  Iris data set: Kruskal-Wallis test
 `visstat(iris,"Petal.Width", "Species")`
 
-`visstat(iris,"Petal.Width", "Petal.Length")`
 
-###  InsectSprays  data set 
+###  InsectSprays  data set: ANOVA
 `visstat(InsectSprays,"count","spray")`
 
-###  Titanic data set 
+### InsectSprays data set: Welch two sample t.test
+`InsectSpraysAB <- InsectSprays[ which(InsectSprays$spray == 'A'| InsectSprays$spray == 'B'), ] #select only sprays 'A und 'B'
+`InsectSpraysAB$spray = factor(InsectSpraysAB$spray)
+`visstat(InsectSpraysAB,"count","spray")
+`rm(InsectSpraysAB)
+
+
+###  Titanic data set:  
 
 `install.packages("titanic")`
-
 `library(titanic)`
-
 `titanic_train$Survived=as.factor(titanic_train$Survived)`
-
 `titanic_train$Pclass=as.factor(titanic_train$Pclass)`
-
 `visstat(titanic_train,"Survived","Pclass")`
+
+#### HairEyeColor data set ----
+`HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]));
+`visstat(HairEyeColorMale,"Hair","Eye")

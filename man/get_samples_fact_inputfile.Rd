@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_samples_fact_inputfile.R
 \name{get_samples_fact_inputfile}
 \alias{get_samples_fact_inputfile}
-\title{Selects columns defined by characters varsample and varfactor from dataframe}
+\title{Selects columns defined by characters varsample and varfactor from data.frame}
 \usage{
 get_samples_fact_inputfile(dataframe, varsample, varfactor)
 }
@@ -17,7 +17,7 @@ get_samples_fact_inputfile(dataframe, varsample, varfactor)
 selected columns, \code{sample}, \code{factor}, \code{name_of_sample} (character string equaling varsample), \code{name_of_factor} (character string equaling varsample)
 }
 \description{
-Selects columns defined by characters \code{varsample} and \code{varfactor} from \code{dataframe}, return selected columsn with their names
+Selects columns defined by characters \code{varsample} and \code{varfactor} from \code{dataframe}, returns selected columns with their names.
 }
 \examples{
 get_samples_fact_inputfile(trees,"Girth","Height")

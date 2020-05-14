@@ -1,15 +1,16 @@
 #MIT License----
-#Copyright (c) 2018 Sabine Schilling
+#Copyright (c) 2020 Sabine Schilling
 #Feedback highly welcome: sabineschilling@gmx.ch
 
 # Header visstat -----
 
-#' Visualization of the statistical hypothesis test between two or more groups of categorical or numerical data.
+#' Visualization of statistical hypothesis testing based on decision tree
 #'
-#' \code{visstat()} \strong{vis}ualizes the \strong{stat}istical hypothesis testing between two or more groups of data, where the parameter \code{varsample} is the dependent variable (or response) and the paramter \code{varfactor} is the independent variable with two or more features.
-#' The statistical hypothesis test with the highest statistical power and fulfilling the assumptions of the corresponding tests is performed and visualized.
-#' A graph displaying the raw data accordingly to the chosen test as well as the test statistics is generated. Furthermore
-#' \code{visstat()} returns the corresponding test statistics as text.
+#' \code{visstat()} \strong{vis}ualizes the \strong{stat}istical hypothesis testing between the dependent variable (or response)
+#'  \code{varsample} and the independent variable  \code{varfactor}. \code{varfactor} can have more than two features. 
+#'  \code{visstat()} runs a decision tree selecting the statistical hypothesis test with the highest statistical power 
+#'  fulfilling the assumptions of the underlying test. For each test 
+#' #' \code{visstat()} returns an appropriate graph displaying the data with the main test statistics in the title and a text file with the complete test statistics.
 #' Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()}, \code{aov()}, \code{kruskal.test()}, \code{fisher.test()},\code{chisqu.test()}. If \code{varfactor} contains more than two features,
 #' \code{visstat()} tests the underlying assumptions of \code{aov()} and \code{oneway.test()}: 
 #'  If the p-values of the standardized residuals of both \code{shapiro.test()} or \code{ks.test()} are smaller  than 1-\code{conf.level}, \code{kruskal.test()} is performed.
@@ -17,24 +18,24 @@
 
 
 #'
-#' @param dataframe \code{data.frame} or \code{list} containing at least two columns with column headings of data type \code{character}. Data must be column wise ordered.
+#' @param dataframe \code{data.frame} or \code{list} containing at least two columns with names of data type \code{character}. Data must be column wise ordered.
 #' @param varsample column name of dependent variable in dataframe, dataype \code{character}
 #' @param varfactor column name of independent variable in dataframe, dataype \code{character}
 #' @param conf.level confidence level of the interval.
 #' @param numbers	a logical indicating whether to show numbers in mosaic count plots
 #' @param minpercent number indicating minimalfraction of total count data of a category to be displayed	in the mosaic count plots
-#' @param graphicsoutput output format of plot. Allowed are the \code{character} strings "png","pdf","svg". Note that the graphics windows will be closed.
+#' @param graphicsoutput output format of plot. Allowed are the \code{character} strings "png","pdf","svg". Default "NULL" provides not output
 #'
 #' @return Statistics of test with highest statistical power meeting assumptions.
 #' @examples
 #' visstat(iris,"Petal.Width", "Species")
 #' visstat(InsectSprays,"count","spray")
 #' visstat(ToothGrowth,"len", "supp")
-#' 
 #' mtcars$am=as.factor(mtcars$am) #transform to categorical data of type "factor"
 #' visstat(mtcars,"mpg","am")
-#' 
-#' 
+# 'visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye")
+
+
 #' @import vcd
 #' @import Cairo
 #' @import graphics
@@ -64,14 +65,26 @@ visstat = function(dataframe,
   #numbers: Boolean deciding if in mosaic plots counts of each category should be shown
   # minpercent=0.05 #minimal fraction of total count which has to be in each category of count data in order to be displayed in mosaic plot
   # graphicsoutput can be "png", "jpeg", "jpg", "tiff", "bmp"
-
+  
+  
+  
+  
+  
+  
+  #Store default graphics output 
+  oldpar <- par(no.readonly = TRUE)	#default graphical parameter vales 
+  on.exit(par(oldpar))              #restore old parameter values on exit
 
   
-  cexsize = 1
+ 
+  
 
 
   #Set default values---------------------------
   alpha = 1 - conf.level
+  oldpar <- par(no.readonly = TRUE)	#default graphical parameter vales 
+  on.exit(par(oldpar))              #restore old parameter values on exit
+
   ##Get input variables---------------------------------
   input = get_samples_fact_inputfile(dataframe, varsample, varfactor)
   #out of function get_groups_inputfile
@@ -147,7 +160,7 @@ visstat = function(dataframe,
                                            conf.level=conf.level,
                                            alternative = 'two.sided',var.equal=F,paired=F,
                                            samplename=varsample,factorname=matchingCriteria)
-        saveGraphCairo(
+        saveGraphVisstat(
           paste("ttest_", name_of_sample, "_", name_of_factor, sep = ""))
       }
       #2. If assumptions of t-test are not me: Wilcoxon, else t-test
@@ -184,7 +197,7 @@ visstat = function(dataframe,
           notchf = T,
           samplename=varsample,factorname=matchingCriteria
         )
-        saveGraphCairo(
+        saveGraphVisstat(
           paste(
             "wilcoxon-test_",
             name_of_sample,
@@ -199,7 +212,7 @@ visstat = function(dataframe,
                                            conf.level=conf.level,
                                            alternative = 'two.sided',var.equal=F,paired=F,
                                            samplename=varsample,factorname=matchingCriteria)
-        saveGraphCairo(
+        saveGraphVisstat(
           paste("ttest_", name_of_sample, "_", name_of_factor, sep = "")
         )
       }
@@ -223,7 +236,7 @@ visstat = function(dataframe,
         #Chi^2 Test-----
         openGraphCairo(type = graphicsoutput)
         vis_chi = vis_chi_squared_test(samples, fact, name_of_sample, "groups")
-        saveGraphCairo(paste(
+        saveGraphVisstat(paste(
           "chi_squared_",
           name_of_sample,
           "_",
@@ -250,7 +263,7 @@ visstat = function(dataframe,
           numbers = numberflag
         )
 
-        saveGraphCairo(paste(
+        saveGraphVisstat(paste(
           "mosaic_complete_",
           name_of_sample,
           "_",
@@ -272,7 +285,7 @@ visstat = function(dataframe,
             minperc = minpercent,
             numbers = T
           )
-          saveGraphCairo(
+          saveGraphVisstat(
             paste(
               "mosaic_reduced_",
               name_of_sample,
@@ -301,7 +314,7 @@ visstat = function(dataframe,
                                        samples,
                                        name_of_factor = name_of_factor,
                                        name_of_sample = name_of_sample)
-      saveGraphCairo(paste("regression_", name_of_sample, "_", name_of_factor, sep = ""),
+      saveGraphVisstat(paste("regression_", name_of_sample, "_", name_of_factor, sep = ""),
                      type = graphicsoutput)
     }
 
@@ -331,7 +344,7 @@ visstat = function(dataframe,
                                     fact,
                                     samplename = varsample,
                                     factorname = varfactor)
-        saveGraphCairo(paste("anova_", name_of_sample, "_", name_of_factor, sep = ""),
+        saveGraphVisstat(paste("anova_", name_of_sample, "_", name_of_factor, sep = ""),
                        type = graphicsoutput)
         
         
@@ -352,7 +365,7 @@ visstat = function(dataframe,
           
         )
 
-        saveGraphCairo(paste("kruskal_", name_of_sample, "_", name_of_factor, sep = ""),
+        saveGraphVisstat(paste("kruskal_", name_of_sample, "_", name_of_factor, sep = ""),
                        type = graphicsoutput)
         
         
@@ -361,7 +374,11 @@ visstat = function(dataframe,
 
     }
   
-  deleteRplotspdf()
+  #Cleaning up----
+   deleteRplotspdf()
+   if (!interactive()) unlink("Rplots.pdf")
+   par(oldpar)
+   
     return(vis_sample_fact)
   }
   #End of vis_sample_fact function -------

@@ -27,11 +27,11 @@ vis_anova_assumptions(
 \item{cex}{number indicating the amount by which plotting text and symbols should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
 }
 \value{
-my_list: list containing the test statistics of the anova 
+my_list: list containing the test statistics of the anova
 \code{aov(samples~fact)},\code{bartlett.test(samples~fact)} and the tests of normality of the standardized residuals of aov, \code{ks_test} and \code{shapiro_test}
 }
 \description{
-\code{vis_anova_assumptions} checks for normality of the standardised residuals of the anova both graphically by qq-plots as well as performing 
+\code{vis_anova_assumptions} checks for normality of the standardised residuals of the anova both graphically by qq-plots as well as performing
    the Shapiro-Wilk-test  and the Kolmogoov-Smirnov-Test.
    \code{aov} further requires the homoscedacity of each factor level in \code{fact}, which is tested by the function Bartlett test. .
 }
