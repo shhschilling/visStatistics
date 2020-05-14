@@ -33,7 +33,7 @@ visstat(InsectSprays,"count","spray")
 #Iris data set----
 #Kruskal-Wallis test
 visstat(iris,"Petal.Width", "Species")
-visstat(iris,"Petal.Width", "Species",graphicsoutput = "png")
+visstat(iris,"Petal.Width", "Species")
 
 #Chick weight data set----
 #Kruskal-Wallis test

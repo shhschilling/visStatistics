@@ -1991,8 +1991,9 @@ saveGraphVisstat = function(file = NULL,
     file3 = gsub("_{2,}", "_", file2)
     newFileName = paste0(file3, ".", type)
     file.copy(oldPlotName, newFileName, overwrite = T)
-    
-    file.remove(oldPlotName)
+    #delete old file
+    if (file.exists(oldPlotName)) {
+    file.remove(oldPlotName)}
     
     
   }

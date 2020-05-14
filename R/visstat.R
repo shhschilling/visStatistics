@@ -29,10 +29,14 @@
 #' @return Statistics of test with highest statistical power meeting assumptions.
 #' @examples
 #' visstat(iris,"Petal.Width", "Species")
-#' visstat(InsectSprays,"count","spray")
+#' 
+#' visstat(InsectSprays,"count","spray",graphicsoutput="png")
+#' 
 #' visstat(ToothGrowth,"len", "supp")
+#' 
 #' mtcars$am=as.factor(mtcars$am) #transform to categorical data of type "factor"
 #' visstat(mtcars,"mpg","am")
+#' 
 # 'visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye")
 
 
@@ -365,9 +369,9 @@ visstat = function(dataframe,
     }
   
   #Cleaning up----
-   deleteRplotspdf()
-   if (!interactive()) unlink("Rplots.pdf")
-   par(oldpar)
+  deleteRplotspdf()
+  # if (!interactive()) unlink("Rplots.pdf")
+  # par(oldpar)
    
     return(vis_sample_fact)
   }

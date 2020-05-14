@@ -35,55 +35,34 @@
 #' 
 #' @export openGraphCairo
 
-  openGraphCairo =  function(width = 640,
-           height = 480 , file=NULL, type=NULL,pointsize=12,
-           bg = "transparent", canvas = "white", units = "px",
+  openGraphCairo =  function(width = 8,
+           height = 8/sqrt(2) , file = NULL, type = NULL,pointsize = 12,
+           bg = "transparent", canvas = "white", units = "cm",
            dpi=150, mag=1) 
   {
   if (is.null(type))
   {return()}
   else{
-  if(is.null(file)) {
-    file="visstat_plot"}
+  if (is.null(file)) {
+    file = "visstat_plot"}
 
+Cairofilename = paste(file, ".", type, sep = "")
 
-
-  picture_type=type
-  Cairo(paste(file, ".", type, sep = ""),
-        type = picture_type,
+if (type == "png") {
+CairoPNG(filename = Cairofilename)  
+  
+}
+else{
+Cairo(Cairofilename,
+        type = type,
         width = width * mag,
         height = height * mag,
         units = units,
-        dpi =dpi,
+        dpi = dpi,
         pointsize = pointsize)
-  }
+}  
+
+  }   
 }
-
-
-## saveGraphCairo function-------
-#' 
-#' Saving graphical output
-#' 
-#' \code{saveGraphCairo()} prematurely ends the function call and returns null, if no output \code{type}  is provided.
-#' Otherwise it saves the graphical output initialized by \code{openGraphCairo()} to \code{file}.
-
-#'
-#' @param file of the file to be created or connection to write to without .\code{type} extension 
-#' @param type see \code{Cairo()}
-#' @param oldPlotName plot name  without file extension generated opening the graphics device with \code{Cairo()}
-#'
-#' @return 
-#' @examples
-#' #returning NULL
-#' saveGraphCairo()
-#' 
-#' 
-#' @import Cairo
-
-
-#' @export saveGraphCairo
-
-
-
 
 
