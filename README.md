@@ -27,6 +27,7 @@
 ## Examples 
 ### Trees data set: linear Regression
 `visstat(trees,"Girth","Height")` #without saving of plot
+
 `visstat(trees,"Girth","Height",graphicsoutput="png")`# saving the plot as"png"-file
 
 ###  Iris data set: Kruskal-Wallis test
@@ -38,19 +39,27 @@
 
 ### InsectSprays data set: Welch two sample t.test
 `InsectSpraysAB <- InsectSprays[ which(InsectSprays$spray == 'A'| InsectSprays$spray == 'B'), ] #select only sprays 'A und 'B'
+
 `InsectSpraysAB$spray = factor(InsectSpraysAB$spray)
+
 `visstat(InsectSpraysAB,"count","spray")
+
 `rm(InsectSpraysAB)
 
 
 ###  Titanic data set:  
 
 `install.packages("titanic")`
+
 `library(titanic)`
+
 `titanic_train$Survived=as.factor(titanic_train$Survived)`
+
 `titanic_train$Pclass=as.factor(titanic_train$Pclass)`
+
 `visstat(titanic_train,"Survived","Pclass")`
 
 #### HairEyeColor data set ----
 `HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]));
+
 `visstat(HairEyeColorMale,"Hair","Eye")
