@@ -37,8 +37,11 @@ visstat(iris,"Petal.Width", "Species",graphicsoutput = "png")
 
 #Chick weight data set----
 #Kruskal-Wallis test
-
 visstat(ChickWeight,"weight", "Diet")
+
+#ToothGrowth data set----
+#Wilcoxon rank sum test
+visstat(ToothGrowth,"len", "supp")
 
 
 
@@ -56,3 +59,4 @@ visstat(titanic_train,"Survived","Pclass")
 #HairEyeColor data set ----
 HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]));
 visstat(HairEyeColorMale,"Hair","Eye")
+rm(HairEyeColorMale)

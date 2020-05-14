@@ -44,22 +44,12 @@
 
 `visstat(InsectSpraysAB,"count","spray")`
 
-`rm(InsectSpraysAB)`
+### ToothGrowth data set: Wilcoxon rank sum test with coninuity correction
+`visstat(ToothGrowth,"len", "supp")`
 
-
-###  Titanic data set:  
-
-`install.packages("titanic")`
-
-`library(titanic)`
-
-`titanic_train$Survived=as.factor(titanic_train$Survived)`
-
-`titanic_train$Pclass=as.factor(titanic_train$Pclass)`
-
-`visstat(titanic_train,"Survived","Pclass")`
-
-#### HairEyeColor data set ----
+#### HairEyeColor data set: Pearson's Chi-squared test
 `HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]))`
 
 `visstat(HairEyeColorMale,"Hair","Eye")`
+
+
