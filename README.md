@@ -38,13 +38,13 @@
 `visstat(InsectSprays,"count","spray")`
 
 ### InsectSprays data set: Welch two sample t.test
-`InsectSpraysAB <- InsectSprays[ which(InsectSprays$spray == 'A'| InsectSprays$spray == 'B'), ] #select only sprays 'A und 'B'
+`InsectSpraysAB <- InsectSprays[ which(InsectSprays$spray == 'A'| InsectSprays$spray == 'B'), ] #select only sprays 'A und 'B'`
 
-`InsectSpraysAB$spray = factor(InsectSpraysAB$spray)
+`InsectSpraysAB$spray = factor(InsectSpraysAB$spray)`
 
-`visstat(InsectSpraysAB,"count","spray")
+`visstat(InsectSpraysAB,"count","spray")`
 
-`rm(InsectSpraysAB)
+`rm(InsectSpraysAB)`
 
 
 ###  Titanic data set:  
@@ -60,6 +60,6 @@
 `visstat(titanic_train,"Survived","Pclass")`
 
 #### HairEyeColor data set ----
-`HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]));
+`HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]))`
 
-`visstat(HairEyeColorMale,"Hair","Eye")
+`visstat(HairEyeColorMale,"Hair","Eye")`
