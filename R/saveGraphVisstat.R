@@ -8,7 +8,7 @@
 #' @param file name of file to be created or connection to write to without file extension ".\code{type}". Default file name "visstat". 
 #' @param type see \code{Cairo()}
 #' @param oldplotName old file name including .type extension to be overwritten 
-#' @return NULL, if no \code{type} or \code{file} is provided
+#' @return NULL, if no \code{type} or \code{file} is provided, TRUE if graph is created
 #' @examples
 #' # return NULL
 #' saveGraphVisstat()

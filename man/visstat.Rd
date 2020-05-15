@@ -15,7 +15,7 @@ visstat(
 )
 }
 \arguments{
-\item{dataframe}{\code{data.frame} or \code{list} containing at least two columns with column headings of data type \code{character}. Data must be column wise ordered.}
+\item{dataframe}{\code{data.frame} containing at least two columns with names of data type \code{character}. Data must be column wise ordered.}
 
 \item{varsample}{column name of dependent variable in dataframe, dataype \code{character}}
 
@@ -45,8 +45,12 @@ otherwise the \code{oneway.test()} and \code{aov()} are performed.
 }
 \examples{
 visstat(iris,"Petal.Width", "Species")
-visstat(InsectSprays,"count","spray")
+
+visstat(InsectSprays,"count","spray",graphicsoutput="png")
+
 visstat(ToothGrowth,"len", "supp")
+
 mtcars$am=as.factor(mtcars$am) #transform to categorical data of type "factor"
 visstat(mtcars,"mpg","am")
+
 }

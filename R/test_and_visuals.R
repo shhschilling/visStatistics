@@ -7,9 +7,6 @@
 # Testing for Normality and Visualization ----
 
 test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
-  
-  oldpar <- par(no.readonly = TRUE)	#default graphical parameter vales 
-  on.exit(par(oldpar))              #restore old parameter values on exit
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
   #Remove NA from x
   x <- x[!is.na(x)]
@@ -78,10 +75,98 @@ test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
   )
   mylist = list("Kolmogorov-Smirnoff" = KS, "Shapiro" = SH)
   return(mylist)
-  
 }
 
 
+# One-Sample t-Test ----
+
+one_sample_tTest = function(x, alpha, eff_mean, alternative = "two.sided") {
+  if (missing(alpha))
+  {
+    alpha = 0.05
+  }
+  
+  if (missing(eff_mean))
+  {
+    eff_mean = 0
+  }
+  
+  
+  
+  par(oma = c(0, 0, 3, 0))
+  stripchart(
+    x,
+    vertical = TRUE,
+    xlim = c(0, 2.5),
+    col = "grey50",
+    xlab = ""
+  )
+  axis(side = 1,
+       at = 1,
+       labels = "Sample 1")
+  
+  points(mean(x),
+         col = 2,
+         pch = 1,
+         lwd = 3)
+  
+  correction = qt(1 - alpha / 2, length(x) - 1) * sd(x) / sqrt(length(x)) # corrected from alpha to alpha/2
+  
+  arrows(
+    1,
+    mean(x) + correction,
+    1,
+    mean(x) - correction,
+    angle = 90,
+    code = 3,
+    col = 2,
+    lty = 1,
+    lwd = 2,
+    length = 0.1
+  )
+  
+  lines(
+    x = c(0.7, 1.3),
+    y = c(eff_mean, eff_mean),
+    col = "blue",
+    lwd = 3
+  )
+  
+  legend(
+    "topright",
+    inset = 0.05,
+    c(
+      paste("reference =", eff_mean),
+      paste("sample mean=", signif(mean(x), 2))
+    ),
+    col = c("blue", "red"),
+    lwd = c(3, 2)
+  )
+  
+  t = t.test(x,
+             mu = eff_mean,
+             alternative = alternative,
+             na.action = na.omit)
+  p_value = t$p.value
+  p_value = signif(p_value, 3)
+  
+  mtext(
+    paste(
+      "One Sample t-Test (sample",
+      alternative,
+      "): P = ",
+      p_value,
+      "\n Confidence Level = ",
+      1 - alpha
+    ),
+    outer = TRUE
+  )
+  
+  # assumptions...
+  
+  test_norm_vis(x)
+  
+}
 
 ###### Two-Sample t-Test ###############################
 
@@ -95,8 +180,6 @@ two_sample_tTest = function(samples,
                             samplename = "",
                             factorname = "")
 {
-  oldpar <- par(no.readonly = TRUE)	
-  on.exit(par(oldpar))
   alternative <- match.arg(alternative)
   
   if (!missing(mu) && (length(mu) != 1 || is.na(mu)))
@@ -263,12 +346,87 @@ two_sample_tTest = function(samples,
       "test_normal_sample1" = p1,
       "test_normal_sample2" = p2
     )
- 
   return(my_list)
 }
 
 
-
+###### One-Sample Wilcoxon-Test / Vorzeichentest ###############################
+one_sample_WilcoxonTest = function(x,
+                                   alpha,
+                                   eff_med,
+                                   alternative = "two.sided",
+                                   no = F) {
+  if (missing(alpha))
+  {
+    alpha = 0.05
+  }
+  if (missing(eff_med))
+  {
+    eff_med = 0
+  }
+  oldpar <- par(no.readonly = TRUE)	# code line i
+  on.exit(par(oldpar))
+  
+  par(oma = c(0, 0, 3, 0), mfrow = c(1, 1))
+  
+  stripchart(
+    x,
+    vertical = TRUE,
+    xlim = c(0, 2.5),
+    col = "grey50",
+    xlab = ""
+  )
+  axis(side = 1,
+       at = 1,
+       labels = "Sample 1")
+  
+  boxplot(x,
+          notch = no,
+          #border = "red",
+          add = TRUE)
+  
+  lines(
+    x = c(0.7, 1.3),
+    y = c(eff_med, eff_med),
+    col = "blue",
+    lwd = 3
+  )
+  means = mean(x) #berechnet den Mittelwert jeder Faktorstufe
+  
+  lines(
+    x = c(0.7, 1.3),
+    y = c(means, means),
+    col = "darkgreen",
+    lwd = 3
+  )
+  legend(
+    "bottomright",
+    c(
+      paste("reference median=", signif(eff_med, 2)),
+      paste("sample median=", signif(median(x), 2)),
+      paste("sample mean=", signif(means, 2))
+    ),
+    col = c("blue", "red", "darkgreen"),
+    lwd = c(3, 2),
+    bty = "n",
+    cex = 0.5
+  )
+  
+  t = wilcox.test(x, mu = eff_med, alternative = alternative)
+  p_value = t$p.value
+  p_value = signif(p_value, 3)
+  
+  mtext(paste(
+    t$method,
+    "(sample:",
+    alternative,
+    eff_med,
+    "): p-value = ",
+    p_value
+  ),
+  #      "\n Confidence Level of notches appr. 0.95"),
+  outer = TRUE)
+}
 
 # Two-Sample Wilcoxon-Test  ###############################
 #One function with flags for greater, less, two sided and notch
@@ -280,9 +438,6 @@ two_sample_WilcoxonTest = function(samples,
                                    samplename = "",
                                    factorname = "",
                                    cex = 1) {
-  
-  oldpar <- par(no.readonly = TRUE)	#default graphical parameter vales 
-  on.exit(par(oldpar))
   alternative <- match.arg(alternative)
   #Error handling -----
   if (!((length(conf.level) == 1L) && is.finite(conf.level) &&
@@ -327,7 +482,7 @@ two_sample_WilcoxonTest = function(samples,
             )))))
   
   b <- boxplot(samples ~ fact, plot = 0) #holds  the counts
-                #restore old parameter values on exit
+  
   par(oma = c(0, 0, 3, 0)) #links unten,...
   
   
@@ -394,7 +549,6 @@ two_sample_WilcoxonTest = function(samples,
       "statsWilcoxon" = t,
       "statsBoxplot" = b
     )
-  
   return(my_list)
   
   
@@ -409,8 +563,6 @@ two_sample_FTest = function(samples,
   # if (missing(conf.int)) conf.int = 0.95
   #  if (missing(alternative)) alternative = "two.sided"
   
-  oldpar <- par(no.readonly = TRUE)	#default graphical parameter vales 
-  on.exit(par(oldpar))
   alpha = 1 - confint
   levels = unique(sort(fact))
   
@@ -489,7 +641,6 @@ two_sample_FTest = function(samples,
     ),
     outer = TRUE
   )
-  
 }
 
 
@@ -503,8 +654,6 @@ vis_chi_squared_test = function(samples,
                                 samplename,
                                 factorname,
                                 cex = 1) {
-  oldpar <- par(no.readonly = TRUE)	#default graphical parameter vales 
-  on.exit(par(oldpar))
   colortuple = colorscheme(1)
   ColorPalette = colorscheme(3)
   if (missing(samplename))
@@ -534,10 +683,10 @@ vis_chi_squared_test = function(samples,
     {
       col_vec_browser = c(colortuple, head(ColorPalette, n = nrow(counts) - 2))
     } else{
-      col_vec_browser = c(colortuple, rainbow(nrow(counts) - 2, s = 0.4,alpha =1))
+      col_vec_browser = c(colortuple, rainbow(nrow(counts) - 2, s = 0.4,alpha=1))
     }
-   # x_val = seq(-0.5, ncol(counts) + 0.5, 1)
-  #  y_val = c(0, norm_counts[1, ], 0)
+    # x_val = seq(-0.5, ncol(counts) + 0.5, 1)
+    #  y_val = c(0, norm_counts[1, ], 0)
     
     
     
@@ -777,7 +926,7 @@ vis_anova_assumptions = function(samples,
                                  samplename = "",
                                  factorname = "",
                                  cex = 1) {
- # alpha = 1 - conf.level
+  # alpha = 1 - conf.level
   #remove rows with NAs in samples
   samples3 = na.omit(samples)
   fact <- subset(fact,!is.na(samples))
@@ -1077,7 +1226,7 @@ vis_regression_assumptions = function(x,
                                       y,
                                       conf.level = 0.95) {
   alpha = 1 - conf.level
- # P = alpha
+  # P = alpha
   
   #remove all NAs from both vectors
   xna <- x[!is.na(y) & !is.na(x)]
@@ -1154,11 +1303,7 @@ vis_regression = function(x,
                           name_of_factor = character(),
                           name_of_sample = character())
 {
- 
-  oldpar <- par(no.readonly = TRUE)	#default graphical parameter values 
-  on.exit(par(oldpar))
-  
-   alpha = 1 - conf.level
+  alpha = 1 - conf.level
   P = alpha
   #remove all NAs from both vectors
   xna <- x[!is.na(y) & !is.na(x)]
@@ -1283,113 +1428,112 @@ vis_regression = function(x,
     "shapiro_test_residuals" = SH,
     "ks_test_residuals" = KS
   )
-  
   return(mylist)
 }
 
 
 #Mosaic plots-----
-  vis_mosaic = function(samples,
-                        fact,
-                        name_of_sample = character(),name_of_factor= character(),
-                        factorname,
-                        minperc = 0.05,
-                        numbers = TRUE)
+vis_mosaic = function(samples,
+                      fact,
+                      name_of_sample = character(),name_of_factor= character(),
+                      factorname,
+                      minperc = 0.05,
+                      numbers = TRUE)
+{
+  if (missing(minperc))
   {
-    if (missing(minperc))
-    {
-      #minperc is the minimum percehntage a column has to contribute to be displayed
-      minperc = 0.05
-    }
-    if (missing(numbers))
-    {
-      #numbers are shown in rectangle of category
-      numbers = TRUE
-    }
-
-    counts = makeTable(samples, fact,name_of_sample, name_of_factor)
-    check_assumptions =check_assumptions_count_data(samples, fact)
-    if (check_assumptions ==FALSE)
-    {
-      return(counts)
-    }
-
-    else{
-
-      ##Mosaic plot
-      ##The height  of the box is the same for all boxes in the same row and
-      #is equal to the total count in that row.
-      #
-      #The width of the box is the proportion of individuals in the row which fall into that cell.
-      # #Full mosaic plot with all data only if unique number of samples and fact below threshold
-      maxfactors = max(length(unique(samples)), length(unique(fact)))
-      threshold = 6
-
-      if (length(unique(samples)) < threshold &
-          length(unique(fact)) < threshold)
-      {
-        res = mosaic(
-          counts,
-          #labeling = labeling_border(rot_labels = c(0, 0, 0, 90)),
-          # rot_labels = c(0, 90, 0, 0),
-          # gp_labels = gpar(fontsize = 1),
-          shade = TRUE,
-          legend = TRUE,  #shows pearsons residual
-          pop = F
-          #,main = titletext
-        )
-
-        tab <-
-          as.table(ifelse(counts < 0.005 * sum(counts), NA, counts))
-        #puts numbers on count
-        if (numbers == TRUE) {
-          labeling_cells(text = tab, margin = 0)(counts)
-        }
-      } else{
-        #
-        ##Elimintate rows and columns distributing less than minperc total number of counts
-        rowSum = rowSums(counts)
-        colSum = colSums(counts)
-        total = sum(counts)
-
-
-        countscolumn_row_reduced = as.table(counts[which(rowSum > minperc * total),
-                                                   which(colSum > minperc * total)])
-
-        #check dimensions after reduction: must be a contingency table
-        test = dim(as.table(countscolumn_row_reduced))
-        if (is.na(test[2]))
-        {
-          countsreduced = counts
-        }
-        else{
-          countsreduced = countscolumn_row_reduced
-        }
-        res = mosaic(
-          countsreduced,
-          shade = TRUE,
-          legend = TRUE,
-          cex.axis = 50 / maxfactors,
-          labeling_args = list(gp_labels = (gpar(
-            fontsize = 70 / maxfactors
-          ))),
-          # main = titletext,
-          pop = F
-        )
-        if (numbers == TRUE) {
-          labeling_cells(text = countsreduced, margin = 0)(countsreduced)
-        }
-
-      }
-      my_list <-
-        list(
-          "mosaic_stats" =res
-          # "fisher_chi_stats"=fisherChi
-        )
-
-      return(my_list)
-    }
+    #minperc is the minimum percehntage a column has to contribute to be displayed
+    minperc = 0.05
   }
+  if (missing(numbers))
+  {
+    #numbers are shown in rectangle of category
+    numbers = TRUE
+  }
+  
+  counts = makeTable(samples, fact,name_of_sample, name_of_factor)
+  check_assumptions =check_assumptions_count_data(samples, fact)
+  if (check_assumptions ==FALSE)
+  {
+    return(counts)
+  }
+  
+  else{
+    
+    ##Mosaic plot
+    ##The height  of the box is the same for all boxes in the same row and
+    #is equal to the total count in that row.
+    #
+    #The width of the box is the proportion of individuals in the row which fall into that cell.
+    # #Full mosaic plot with all data only if unique number of samples and fact below threshold
+    maxfactors = max(length(unique(samples)), length(unique(fact)))
+    threshold = 6
+    
+    if (length(unique(samples)) < threshold &
+        length(unique(fact)) < threshold)
+    {
+      res = mosaic(
+        counts,
+        #labeling = labeling_border(rot_labels = c(0, 0, 0, 90)),
+        # rot_labels = c(0, 90, 0, 0),
+        # gp_labels = gpar(fontsize = 1),
+        shade = TRUE,
+        legend = TRUE,  #shows pearsons residual
+        pop = F
+        #,main = titletext
+      )
+      
+      tab <-
+        as.table(ifelse(counts < 0.005 * sum(counts), NA, counts))
+      #puts numbers on count
+      if (numbers == TRUE) {
+        labeling_cells(text = tab, margin = 0)(counts)
+      }
+    } else{
+      #
+      ##Elimintate rows and columns distributing less than minperc total number of counts
+      rowSum = rowSums(counts)
+      colSum = colSums(counts)
+      total = sum(counts)
+      
+      
+      countscolumn_row_reduced = as.table(counts[which(rowSum > minperc * total),
+                                                 which(colSum > minperc * total)])
+      
+      #check dimensions after reduction: must be a contingency table
+      test = dim(as.table(countscolumn_row_reduced))
+      if (is.na(test[2]))
+      {
+        countsreduced = counts
+      }
+      else{
+        countsreduced = countscolumn_row_reduced
+      }
+      res = mosaic(
+        countsreduced,
+        shade = TRUE,
+        legend = TRUE,
+        cex.axis = 50 / maxfactors,
+        labeling_args = list(gp_labels = (gpar(
+          fontsize = 70 / maxfactors
+        ))),
+        # main = titletext,
+        pop = F
+      )
+      if (numbers == TRUE) {
+        labeling_cells(text = countsreduced, margin = 0)(countsreduced)
+      }
+      
+    }
+    my_list <-
+      list(
+        "mosaic_stats" =res
+        # "fisher_chi_stats"=fisherChi
+      )
+    
+    return(my_list)
+  }
+}
 
 
 
@@ -1815,20 +1959,5 @@ colorscheme = function(colorcode = NULL)
   
   
 }
-
-#Remove spurious empty Rplots.pdf----
-deleteRplotspdf = function()
-{
-  if (file.exists("Rplots.pdf"))
-  {
-    file.remove("Rplots.pdf")
-  }
-  
-}
-# Plot saving -----
-
-
-
-
 
 

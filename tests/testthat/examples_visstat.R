@@ -3,8 +3,6 @@ rm(list = ls(all.names = TRUE))
 rm(list = ls())
 
 
-source(detach_package)
-detach_package(visStatistics)
 
 unloadNamespace("visStatistics")
 
@@ -12,19 +10,21 @@ unloadNamespace("visStatistics")
 library(visStatistics)
 ##Examples------ 
 #Trees data set----
-#linear Regression
-visstat(trees,"Girth","Height") #without saving of plot
-visstat(trees,"Girth","Height",graphicsoutput = "png")
-#mtcars data set ---- 
+#linear Regression- running
+#visstat(trees,"Girth","Height") #without saving of plot
+#visstat(trees,"Girth","Height",graphicsoutput = "png") #checked 
+
 #example welch two sample t.test
 mtcars$am = as.factor(mtcars$am)
 visstat(mtcars,"mpg","am")
-visstat(mtcars,"mpg","am",graphicsoutput = "png") #not producing any output
+
+
+
+visstat(mtcars,"mpg","am",graphicsoutput = "png") #not producing png
 
 #InsectSprays  data set----
 #ANOVA
-visstat(InsectSprays,"count","spray",graphicsoutput = "png")
-
+visstat(InsectSprays,"count","spray") #not showing output on screen
 #example Welch two sample t.test
 # select sprays A and B
 InsectSpraysAB <- InsectSprays[ which(InsectSprays$spray == 'A'
@@ -83,3 +83,20 @@ vector1=rnorm(100)
 vector2=rnorm(100)*2
 longvector=c(vector1,vector2)
 matrix(longvector,nrow=100,ncol=2)
+
+#Cleaning up----
+# Remove all created plots 
+# 
+pngplots=dir(getwd(),pattern=".png")
+file.remove(pngplots)
+
+graphicsoutput="png"
+openGraphCairo(type = graphicsoutput)
+        vis_sample_fact = vis_anova(InsectSprays$count,
+                                    InsectSprays$spray,
+                                    samplename = "spray",
+                                    factorname = "factor")
+        saveGraphVisstat(paste("anova."),
+                       type = graphicsoutput)
+
+

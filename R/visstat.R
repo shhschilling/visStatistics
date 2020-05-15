@@ -81,6 +81,7 @@ visstat = function(dataframe,
   #store default graphical parameters------
  
   #reset_par()# resets graphical values to defaulg graphical parameter values
+  
   oldpar <- par(no.readonly = TRUE)	#default graphical parameter values 
   on.exit(par(oldpar))
 
