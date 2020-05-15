@@ -7,7 +7,8 @@
 #
 #' @param file name of file to be created or connection to write to without file extension ".\code{type}". Default file name "visstat". 
 #' @param type see \code{Cairo()}
-#' @param oldplotName old file name including .type extension to be overwritten 
+#' @param oldPlotName old file name including .type extension to be overwritten 
+#' 
 #' @return NULL, if no \code{type} or \code{file} is provided, TRUE if graph is created
 #' @examples
 #' # return NULL
@@ -17,7 +18,7 @@
 #'openGraphCairo(type="png",mag =2.54) #mag is conversion factor cm to inch
 #'plot(rnorm(4000),rnorm(4000),col ="#ff000018",pch=19,cex=2) # semi-transparent red
 #'saveGraphVisstat(file="random",type ="png")
-#'if (!interactive()) file.remove("random.png"
+#'if (!interactive()) file.remove("random.png")
 
 #' 
 #' @export saveGraphVisstat

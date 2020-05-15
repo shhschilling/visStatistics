@@ -11,7 +11,7 @@ saveGraphVisstat(file = NULL, type = NULL, oldPlotName = NULL)
 
 \item{type}{see \code{Cairo()}}
 
-\item{oldplotName}{old file name including .type extension to be overwritten}
+\item{oldPlotName}{old file name including .type extension to be overwritten}
 }
 \value{
 NULL, if no \code{type} or \code{file} is provided, TRUE if graph is created
@@ -30,6 +30,6 @@ saveGraphVisstat()
 openGraphCairo(type="png",mag =2.54) #mag is conversion factor cm to inch
 plot(rnorm(4000),rnorm(4000),col ="#ff000018",pch=19,cex=2) # semi-transparent red
 saveGraphVisstat(file="random",type ="png")
-if (!interactive()) file.remove("random.png"
+if (!interactive()) file.remove("random.png")
 
 }

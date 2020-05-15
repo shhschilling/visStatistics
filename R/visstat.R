@@ -79,12 +79,9 @@ visstat = function(dataframe,
   
   
   #store default graphical parameters------
- 
-  #reset_par()# resets graphical values to defaulg graphical parameter values
   
-  oldpar <- par(no.readonly = TRUE)	#default graphical parameter values 
+  oldpar =par(no.readonly = TRUE)
   on.exit(par(oldpar))
-
   #Set default values---------------------------
   alpha = 1 - conf.level
   
@@ -216,8 +213,8 @@ visstat = function(dataframe,
                                            alternative = 'two.sided',var.equal=F,paired=F,
                                            samplename=varsample,factorname=matchingCriteria)
         saveGraphVisstat(
-          paste("ttest_", name_of_sample, "_", name_of_factor, sep = "",type = graphicsoutput)
-        )
+          paste("ttest_", name_of_sample, "_", name_of_factor, sep = ""),type = graphicsoutput)
+        
       }
       return(vis_sample_fact)
     }
@@ -379,7 +376,7 @@ visstat = function(dataframe,
   
   
   #setting back to default parameters-----
-  par(oldpar)
+  #par(oldpar)
   
   
    
