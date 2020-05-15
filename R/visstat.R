@@ -18,7 +18,7 @@
 
 
 #'
-#' @param dataframe \code{data.frame} or \code{list} containing at least two columns with names of data type \code{character}. Data must be column wise ordered.
+#' @param dataframe \code{data.frame} containing at least two columns with names of data type \code{character}. Data must be column wise ordered.
 #' @param varsample column name of dependent variable in dataframe, dataype \code{character}
 #' @param varfactor column name of independent variable in dataframe, dataype \code{character}
 #' @param conf.level confidence level of the interval.
@@ -71,14 +71,22 @@ visstat = function(dataframe,
   # graphicsoutput can be "png", "jpeg", "jpg", "tiff", "bmp"
   
   
+  stopifnot(is.data.frame(dataframe) )
+  stopifnot(varsample %in% names(dataframe))
+  stopifnot(varfactor %in% names(dataframe))
   
-
+  
+  
+  
+  #store default graphical parameters------
+ 
+  #reset_par()# resets graphical values to defaulg graphical parameter values
+  oldpar <- par(no.readonly = TRUE)	#default graphical parameter values 
+  on.exit(par(oldpar))
 
   #Set default values---------------------------
   alpha = 1 - conf.level
-  oldpar <- par(no.readonly = TRUE)	#default graphical parameter vales 
-  on.exit(par(oldpar))              #restore old parameter values on exit
-
+  
   ##Get input variables---------------------------------
   input = get_samples_fact_inputfile(dataframe, varsample, varfactor)
   #out of function get_groups_inputfile
@@ -148,16 +156,16 @@ visstat = function(dataframe,
       if
       (length(twosamples$sample1) > 100 &length(twosamples$sample2)>100)
       {
-        openGraphCairo()
+        openGraphCairo(type = graphicsoutput)
         vis_sample_fact = two_sample_tTest(samples,
                                            fact,
                                            conf.level=conf.level,
                                            alternative = 'two.sided',var.equal=F,paired=F,
                                            samplename=varsample,factorname=matchingCriteria)
         saveGraphVisstat(
-          paste("ttest_", name_of_sample, "_", name_of_factor, sep = ""))
+          paste("ttest_", name_of_sample, "_", name_of_factor, sep = ""),type = graphicsoutput)
       }
-      #2. If assumptions of t-test are not me: Wilcoxon, else t-test
+      #2. If assumptions of t-test are not met: Wilcoxon, else t-test
       else
         if
       (
@@ -182,7 +190,7 @@ visstat = function(dataframe,
         {
         #case 1: Wilcoxon-Test:
         #normal distribution not given for n<limit
-        openGraphCairo()
+        openGraphCairo(type = graphicsoutput)
         vis_sample_fact = two_sample_WilcoxonTest(
           samples,
           fact,
@@ -198,16 +206,16 @@ visstat = function(dataframe,
             "_",
             name_of_factor,
             sep = ""
-          ))
+          ),type = graphicsoutput)
       } else{
-        openGraphCairo()
+        openGraphCairo(type = graphicsoutput)
         vis_sample_fact = two_sample_tTest(samples,
                                            fact,
                                            conf.level=conf.level,
                                            alternative = 'two.sided',var.equal=F,paired=F,
                                            samplename=varsample,factorname=matchingCriteria)
         saveGraphVisstat(
-          paste("ttest_", name_of_sample, "_", name_of_factor, sep = "")
+          paste("ttest_", name_of_sample, "_", name_of_factor, sep = "",type = graphicsoutput)
         )
       }
       return(vis_sample_fact)
@@ -368,10 +376,11 @@ visstat = function(dataframe,
 
     }
   
-  #Cleaning up----
-  deleteRplotspdf()
-  # if (!interactive()) unlink("Rplots.pdf")
-  # par(oldpar)
+  
+  #setting back to default parameters-----
+  par(oldpar)
+  
+  
    
     return(vis_sample_fact)
   }

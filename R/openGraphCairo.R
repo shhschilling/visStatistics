@@ -35,10 +35,13 @@
 #' 
 #' @export openGraphCairo
 
-  openGraphCairo =  function(width = 8,
-           height = 8/sqrt(2) , file = NULL, type = NULL,pointsize = 12,
-           bg = "transparent", canvas = "white", units = "cm",
+  openGraphCairo =  function(width = 640,
+           height = 480 , file = NULL, type = NULL, pointsize = 12,
+           bg = "transparent", canvas = "white", units = "px",
            dpi=150, mag=1) 
+   
+    
+     
   {
   if (is.null(type))
   {return()}

@@ -7,6 +7,9 @@
 # Testing for Normality and Visualization ----
 
 test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
+  
+  oldpar <- par(no.readonly = TRUE)	#default graphical parameter vales 
+  on.exit(par(oldpar))              #restore old parameter values on exit
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
   #Remove NA from x
   x <- x[!is.na(x)]
@@ -75,6 +78,7 @@ test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
   )
   mylist = list("Kolmogorov-Smirnoff" = KS, "Shapiro" = SH)
   return(mylist)
+  par(oldpar)
 }
 
 
@@ -90,8 +94,9 @@ one_sample_tTest = function(x, alpha, eff_mean, alternative = "two.sided") {
   {
     eff_mean = 0
   }
-  
-  
+  dev.off()
+  oldpar <- par(no.readonly = TRUE)	# code line i
+  on.exit(par(oldpar))
   
   par(oma = c(0, 0, 3, 0))
   stripchart(
@@ -165,7 +170,7 @@ one_sample_tTest = function(x, alpha, eff_mean, alternative = "two.sided") {
   # assumptions...
   
   test_norm_vis(x)
-  
+  par(oldpar)
 }
 
 ###### Two-Sample t-Test ###############################
@@ -180,6 +185,8 @@ two_sample_tTest = function(samples,
                             samplename = "",
                             factorname = "")
 {
+  oldpar <- par(no.readonly = TRUE)	
+  on.exit(par(oldpar))
   alternative <- match.arg(alternative)
   
   if (!missing(mu) && (length(mu) != 1 || is.na(mu)))
@@ -346,6 +353,7 @@ two_sample_tTest = function(samples,
       "test_normal_sample1" = p1,
       "test_normal_sample2" = p2
     )
+  par(oldpar)
   return(my_list)
 }
 
@@ -366,7 +374,6 @@ one_sample_WilcoxonTest = function(x,
   }
   oldpar <- par(no.readonly = TRUE)	# code line i
   on.exit(par(oldpar))
-  
   par(oma = c(0, 0, 3, 0), mfrow = c(1, 1))
   
   stripchart(
@@ -438,6 +445,9 @@ two_sample_WilcoxonTest = function(samples,
                                    samplename = "",
                                    factorname = "",
                                    cex = 1) {
+  dev.off()
+  oldpar <- par(no.readonly = TRUE)	#default graphical parameter vales 
+  on.exit(par(oldpar))
   alternative <- match.arg(alternative)
   #Error handling -----
   if (!((length(conf.level) == 1L) && is.finite(conf.level) &&
@@ -482,7 +492,7 @@ two_sample_WilcoxonTest = function(samples,
             )))))
   
   b <- boxplot(samples ~ fact, plot = 0) #holds  the counts
-  
+                #restore old parameter values on exit
   par(oma = c(0, 0, 3, 0)) #links unten,...
   
   
@@ -549,6 +559,7 @@ two_sample_WilcoxonTest = function(samples,
       "statsWilcoxon" = t,
       "statsBoxplot" = b
     )
+  par(oldpar)
   return(my_list)
   
   
@@ -562,7 +573,9 @@ two_sample_FTest = function(samples,
                             alternative = "two.sided") {
   # if (missing(conf.int)) conf.int = 0.95
   #  if (missing(alternative)) alternative = "two.sided"
-  
+  dev.off()
+  oldpar <- par(no.readonly = TRUE)	#default graphical parameter vales 
+  on.exit(par(oldpar))
   alpha = 1 - confint
   levels = unique(sort(fact))
   
@@ -641,6 +654,7 @@ two_sample_FTest = function(samples,
     ),
     outer = TRUE
   )
+  par(oldpar)
 }
 
 
@@ -654,6 +668,8 @@ vis_chi_squared_test = function(samples,
                                 samplename,
                                 factorname,
                                 cex = 1) {
+  oldpar <- par(no.readonly = TRUE)	#default graphical parameter vales 
+  on.exit(par(oldpar))
   colortuple = colorscheme(1)
   ColorPalette = colorscheme(3)
   if (missing(samplename))
@@ -683,7 +699,7 @@ vis_chi_squared_test = function(samples,
     {
       col_vec_browser = c(colortuple, head(ColorPalette, n = nrow(counts) - 2))
     } else{
-      col_vec_browser = c(colortuple, rainbow(nrow(counts) - 2, s = 0.4,alpha=1))
+      col_vec_browser = c(colortuple, rainbow(nrow(counts) - 2, s = 0.4,alpha =1))
     }
    # x_val = seq(-0.5, ncol(counts) + 0.5, 1)
   #  y_val = c(0, norm_counts[1, ], 0)
@@ -752,7 +768,7 @@ vis_chi_squared_test = function(samples,
       lwd = 2,
       cex = legendsize
     )
-    
+    par(oldpar)
     return(fisher_chi)
   }
 }
@@ -1303,7 +1319,11 @@ vis_regression = function(x,
                           name_of_factor = character(),
                           name_of_sample = character())
 {
-  alpha = 1 - conf.level
+ 
+  oldpar <- par(no.readonly = TRUE)	#default graphical parameter values 
+  on.exit(par(oldpar))
+  
+   alpha = 1 - conf.level
   P = alpha
   #remove all NAs from both vectors
   xna <- x[!is.na(y) & !is.na(x)]
@@ -1428,6 +1448,7 @@ vis_regression = function(x,
     "shapiro_test_residuals" = SH,
     "ks_test_residuals" = KS
   )
+  par(oldpar) #restore to default parameters
   return(mylist)
 }
 
@@ -1970,32 +1991,9 @@ deleteRplotspdf = function()
   
 }
 # Plot saving -----
-saveGraphVisstat = function(file = NULL,
-                            type = NULL,
-                            oldPlotName = NULL) {
-  #close file first
-  if (is.null(type))
-  {
-    return()
-  }
-  else{
-    if (is.null(oldPlotName)) {
-      dummy_name = "visstat_plot"
-      oldPlotName = paste(dummy_name, ".", type, sep = "")
-    }
-    
-    #dev.off()
-    while (!is.null(dev.list()))
-      dev.off()
-    file2 = gsub("[^[:alnum:]]", "_", file)
-    file3 = gsub("_{2,}", "_", file2)
-    newFileName = paste0(file3, ".", type)
-    file.copy(oldPlotName, newFileName, overwrite = T)
-    #delete old file
-    if (file.exists(oldPlotName)) {
-    file.remove(oldPlotName)}
-    
-    
-  }
-  
-}
+
+
+
+
+
+
