@@ -7,8 +7,8 @@
 # Testing for Normality and Visualization ----
 
 test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
-  
-  
+  oldpar = par(no.readonly = TRUE)
+  on.exit(par(oldpar))
   
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
   #Remove NA from x
@@ -17,6 +17,7 @@ test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
   
   
   norm_dens = function(z) {
+    
     dnorm(z, mean(x), sd(x))
   }
   
@@ -77,6 +78,7 @@ test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
     outer = TRUE
   )
   mylist = list("Kolmogorov-Smirnoff" = KS, "Shapiro" = SH)
+  par(oldpar)
   return(mylist)
 }
 
@@ -95,7 +97,8 @@ two_sample_tTest = function(samples,
                             samplename = "",
                             factorname = "")
 {
-  
+  oldpar = par(no.readonly = TRUE)
+  on.exit(par(oldpar))
   alternative <- match.arg(alternative)
   
   if (!missing(mu) && (length(mu) != 1 || is.na(mu)))
@@ -262,7 +265,9 @@ two_sample_tTest = function(samples,
       "test_normal_sample1" = p1,
       "test_normal_sample2" = p2
     )
+  par(oldpar)
   return(my_list)
+  
 }
 
 
@@ -292,8 +297,8 @@ two_sample_WilcoxonTest = function(samples,
   }
   
   #Store default graphical parameter
-  
-  
+  oldpar = par(no.readonly = TRUE)
+  on.exit(par(oldpar))
   alpha = 1 - conf.level
   
   #Define color palette
@@ -386,6 +391,7 @@ two_sample_WilcoxonTest = function(samples,
       "statsWilcoxon" = t,
       "statsBoxplot" = b
     )
+  par(oldpar)
   return(my_list)
   
   
@@ -541,9 +547,10 @@ vis_chi_squared_test = function(samples,
     } else{
       labelsize = cex
     }
-    #check if Cochran requirements for chi2 are met, if not: only fisher exact test allowed
     
-    fisher_chi = fisher_chi(counts)
+    
+    fisher_chi = fisher_chi(counts) #checks if Cochran requirements for chi2 are met, if not: only fisher exact test allowed
+    
     titletext = paste(fisher_chi$method,
                       ": p-value =",
                       signif(fisher_chi$p.value, 3),
@@ -1473,7 +1480,10 @@ makeTable = function(samples, fact, samplename, factorname)
 
 fisher_chi = function(counts)
 {
-  #Cochran requirements for chi2 not given: fisher test
+  #if Cochran requirements for chi2 not given: fisher test is performed
+  # if more than 20% of cells have count smaller 5
+  #
+  #
   if (any(counts == 0) #at least one cell with zero enry
       |
       sum(counts < 5) / length(counts) > 0.2# more than 20% of cells have count smaller 5

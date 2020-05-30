@@ -34,23 +34,29 @@ Statistics of test with highest statistical power meeting assumptions.
 }
 \description{
 \code{visstat()} \strong{vis}ualizes the \strong{stat}istical hypothesis testing between the dependent variable (or response)
- \code{varsample} and the independent variable  \code{varfactor}. \code{varfactor} can have more than two features. 
- \code{visstat()} runs a decision tree selecting the statistical hypothesis test with the highest statistical power 
+\code{varsample} and the independent variable  \code{varfactor}. \code{varfactor} can have more than two features. 
+\code{visstat()} runs a decision tree selecting the statistical hypothesis test with the highest statistical power 
  fulfilling the assumptions of the underlying test. For each test 
 #' \code{visstat()} returns an appropriate graph displaying the data with the main test statistics in the title and a text file with the complete test statistics.
 Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()}, \code{aov()}, \code{kruskal.test()}, \code{fisher.test()},\code{chisqu.test()}. If \code{varfactor} contains more than two features,
 \code{visstat()} tests the underlying assumptions of \code{aov()} and \code{oneway.test()}: 
- If the p-values of the standardized residuals of both \code{shapiro.test()} or \code{ks.test()} are smaller  than 1-\code{conf.level}, \code{kruskal.test()} is performed.
+For the comparison of averages, the following algorithm is implemented: 
+If the p-values of the standardized residuals of both \code{shapiro.test()} or \code{ks.test()} are smaller  than 1-\code{conf.level}, \code{kruskal.test()} is performed.
 otherwise the \code{oneway.test()} and \code{aov()} are performed.
+For the test of independence of count data,  the following algorithm is implemented: 
+If more than 20 percent  of cells have count smaller 5 (Cochran's rule), \code{fisher.test()} is performed, otherwise \code{chisqu.test()}. 
+In both cases case an additional mosaic plot showing Pearson's residuals is generated.
 }
 \examples{
-visstat(iris,"Petal.Width", "Species")
+visstat(iris,"Petal.Width", "Species") #Kruskal-Wallis rank sum test
 
-visstat(InsectSprays,"count","spray",graphicsoutput="png")
+visstat(InsectSprays,"count","spray")  #ANOVA and One-way analysis of means
+visstat(InsectSprays,"count","spray",graphicsoutput="png") # example "png" output
+file.remove("anova_count_spray.png") #remove figure
 
-visstat(ToothGrowth,"len", "supp")
+visstat(ToothGrowth,"len", "supp") # Wilcoxon rank sum test
 
 mtcars$am=as.factor(mtcars$am) #transform to categorical data of type "factor"
-visstat(mtcars,"mpg","am")
+visstat(mtcars,"mpg","am") # Welch Two Sample t-test
 
 }

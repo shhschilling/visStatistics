@@ -4,14 +4,21 @@ Title: Visualization of the Most Powerful Statistical Hypothesis Test
 Version: 0.1.0
 Authors@R: c(
     person("Sabine", "Schilling", email = "sabineschilling@gmx.ch", role = c("cre","aut","cph")),
-    person("Peter", "Kauf", email = "peter.kauf@zhaw.ch", role = "aut"))
+    person("Peter", "Kauf", email = "peter.kauf@zhaw.ch", role = "ctb"))
 Maintainer: Sabine Schilling <sabineschilling@gmx.ch>
 Description: Visualization of the most powerful statistical hypothesis.
     The function vistat() visualizes the statistical hypothesis testing between the dependent variable (response) varsample and the independent variable (feature) varfactor. 
-    The statistical hypothesis test (including the corresponding post-hoc analysis) with the highest statistical power fulfilling
-    the assumptions of the corresponding test is performed. 
+    The statistical hypothesis test (including the eventual corresponding post-hoc analysis) with the highest statistical power fulfilling
+    the assumptions of the corresponding test is performed based on a decition tree
     A graph displaying the raw data accordingly to the chosen test as well as the test statistics is generated and returned.
     Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(),chisqu.test().
+    Implemented tests for check of normal distribution of standardized residuals: shapiro.test() and ks.test().
+    For the comparison of averages, the following algorithm is implemented: 
+    If the p-values of the standardized residuals of both shapiro.test() or ks.test() are smaller  than 1-conf.level, kruskal.test() resp. wilcox.test() are performed.
+    otherwise the oneway.test() and aov() resp. t.test() are performed. 
+    For the twst of independence of count data,  the following algorithm is implemented: 
+    If more than 20 percent of cells have count smaller 5 (Cochran's rule), fisher.test() is performed, otherwise chisqu.test(). 
+    In both cases case an additional mosaic plot showing Pearson's residuals is generated. 
 Imports: Cairo, multcompView, vcd, stats, grDevices, graphics,
         utils,grid
 License: MIT + file LICENSE

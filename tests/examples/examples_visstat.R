@@ -4,12 +4,11 @@
 ##Examples------ 
 #Trees data set----
 #linear Regression- running
-visstat(trees,"Girth","Height") #without saving of plot
-visstat(trees,"Girth","Height",graphicsoutput = "png") #checked 
+visstat(trees,"Girth","Height") #linear regression without saving of plot
+visstat(trees,"Girth","Height",graphicsoutput = "png") 
 
 #example welch two sample t.test
 mtcars$am = as.factor(mtcars$am)
-
 visstat(mtcars,"mpg","am")
 
 test_norm(trees$Girth)
@@ -42,11 +41,11 @@ visstat(iris,"Petal.Width", "Species")
 
 #Chick weight data set----
 #Kruskal-Wallis test
-visstat(ChickWeight,"weight", "Diet")
+visstat(ChickWeight,"weight", "Diet") 
 
 #ToothGrowth data set----
 #Wilcoxon rank sum test
-visstat(ToothGrowth,"len", "supp")
+visstat(ToothGrowth,"len", "supp") 
 
 
 
@@ -61,11 +60,19 @@ visstat(titanic_train,"Survived","Pclass")
 
 
 
-#HairEyeColor data set ----
+#HairEyeColor data set: Pearsons Chi squared, mosaic plot with Pearson's residuals
 HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]));
 visstat(HairEyeColorMale,"Hair","Eye") #can not find mosaic function
 
-rm(HairEyeColorMale)
+HairEyeColorMaleFisher=HairEyeColor[,,1]
+#replace cells to smaller values to enforce Cochran's rule
+HairEyeColorMaleFisher[HairEyeColorMaleFisher<10]=2
+HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher));
+visstat(HairEyeColorMaleFisher,"Hair","Eye")
+
+
+
+
 
 
 pngplots=dir(getwd(),pattern=".png")
