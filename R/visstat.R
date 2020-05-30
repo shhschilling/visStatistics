@@ -6,20 +6,28 @@
 
 #' Visualization of statistical hypothesis testing based on decision tree
 #'
-#' \code{visstat()} \strong{vis}ualizes the \strong{stat}istical hypothesis testing between the dependent variable (or response)
+#' \code{visstat()} \strong{vis}ualizes the \strong{stat}istical hypothesis testing between 
+#' the dependent variable (or response)
 #' \code{varsample} and the independent variable  \code{varfactor}. \code{varfactor} can have more than two features. 
 #' \code{visstat()} runs a decision tree selecting the statistical hypothesis test with the highest statistical power 
 #'  fulfilling the assumptions of the underlying test. For each test 
-#' #' \code{visstat()} returns an appropriate graph displaying the data with the main test statistics in the title and a text file with the complete test statistics.
-#' Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()}, \code{aov()}, \code{kruskal.test()}, \code{fisher.test()},\code{chisqu.test()}. If \code{varfactor} contains more than two features,
-#' \code{visstat()} tests the underlying assumptions of \code{aov()} and \code{oneway.test()}: 
-#' For the comparison of averages, the following algorithm is implemented: 
-#' If the p-values of the standardized residuals of both \code{shapiro.test()} or \code{ks.test()} are smaller  than 1-\code{conf.level}, \code{kruskal.test()} is performed.
-#' otherwise the \code{oneway.test()} and \code{aov()} are performed.
+#'  \code{visstat()} returns an appropriate graph displaying the data with the main test statistics 
+#' in the title and a text file with the complete test statistics including eventual post-hoc analysis. 
+#' Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()}, 
+#' \code{aov()}, \code{kruskal.test()}, \code{fisher.test()},\code{chisqu.test()}. 
+#' Implemented tests for check of normal distribution of standardized residuals: \code{shapiro.test()} and \code{ks.test()}.
+#' Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}
+#' 
+#' Algorithm: 
+#'  For the comparison of averages, the following algorithm is implemented: 
+#'  If the p-values of the standardized residuals of both \code{shapiro.test()} or \code{ks.test()} are smaller 
+#' than 1-conf.level, \code{kruskal.test()} resp. \code{wilcox.test()} are performed, otherwise the \code{oneway.test()}
+#' and \code{aov()} resp. \code{t.test()} are performed and displayed.
 #' For the test of independence of count data,  the following algorithm is implemented: 
-#' If more than 20 percent  of cells have count smaller 5 (Cochran's rule), \code{fisher.test()} is performed, otherwise \code{chisqu.test()}. 
-#' In both cases case an additional mosaic plot showing Pearson's residuals is generated. 
-#'
+#'  If more than 20 percent of cells have count smaller 5 (Cochran's rule), fisher.test() is performed and displayed, otherwise chisqu.test(). 
+#'In both cases case an additional mosaic plot showing Pearson's residuals is generated. 
+
+
 #' @param dataframe \code{data.frame} containing at least two columns with names of data type \code{character}. Data must be column wise ordered.
 #' @param varsample column name of dependent variable in dataframe, dataype \code{character}
 #' @param varfactor column name of independent variable in dataframe, dataype \code{character}
