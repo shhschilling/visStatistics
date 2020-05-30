@@ -33,7 +33,7 @@
 #' visstat(iris,"Petal.Width", "Species") #Kruskal-Wallis rank sum test
 #' 
 #' visstat(InsectSprays,"count","spray")  #ANOVA and One-way analysis of means
-#' visstat(InsectSprays,"count","spray",graphicsoutput="png") # example "png" output
+#' visstat(InsectSprays,"count","spray",graphicsoutput="png") # example  with "png" output
 #' file.remove("anova_count_spray.png") #remove figure
 #' 
 #' visstat(ToothGrowth,"len", "supp") # Wilcoxon rank sum test
@@ -42,8 +42,15 @@
 #' visstat(mtcars,"mpg","am") # Welch Two Sample t-test
 #' 
 # 'visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye") # Pearson's Chi-squared test
-# '
-# 'visstat(trees,"Girth","Height") 
+# 
+#' HairEyeColorMaleFisher=HairEyeColor[,,1]
+#' HairEyeColorMaleFisher[HairEyeColorMaleFisher<10]=4 #create example enforcing Cochran's rule
+#' HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher))
+#' visstat(HairEyeColorMaleFisher,"Hair","Eye") # Fisher test
+#' remove(HairEyeColorMaleFisher)
+# 
+# 'visstat(trees,"Girth","Height") #linear regression
+# 
 
 
 #' @import vcd

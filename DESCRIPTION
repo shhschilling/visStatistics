@@ -15,9 +15,9 @@ Description: Visualization of the most powerful statistical hypothesis.
     Implemented tests for check of normal distribution of standardized residuals: shapiro.test() and ks.test().
     For the comparison of averages, the following algorithm is implemented: 
     If the p-values of the standardized residuals of both shapiro.test() or ks.test() are smaller  than 1-conf.level, kruskal.test() resp. wilcox.test() are performed.
-    otherwise the oneway.test() and aov() resp. t.test() are performed. 
-    For the twst of independence of count data,  the following algorithm is implemented: 
-    If more than 20 percent of cells have count smaller 5 (Cochran's rule), fisher.test() is performed, otherwise chisqu.test(). 
+    otherwise the oneway.test() and aov() resp. t.test() are performed and displayed.
+    For the test of independence of count data,  the following algorithm is implemented: 
+    If more than 20 percent of cells have count smaller 5 (Cochran's rule), fisher.test() is performed and displayed, otherwise chisqu.test(). 
     In both cases case an additional mosaic plot showing Pearson's residuals is generated. 
 Imports: Cairo, multcompView, vcd, stats, grDevices, graphics,
         utils,grid

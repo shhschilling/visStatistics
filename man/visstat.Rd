@@ -51,7 +51,7 @@ In both cases case an additional mosaic plot showing Pearson's residuals is gene
 visstat(iris,"Petal.Width", "Species") #Kruskal-Wallis rank sum test
 
 visstat(InsectSprays,"count","spray")  #ANOVA and One-way analysis of means
-visstat(InsectSprays,"count","spray",graphicsoutput="png") # example "png" output
+visstat(InsectSprays,"count","spray",graphicsoutput="png") # example  with "png" output
 file.remove("anova_count_spray.png") #remove figure
 
 visstat(ToothGrowth,"len", "supp") # Wilcoxon rank sum test
@@ -59,4 +59,9 @@ visstat(ToothGrowth,"len", "supp") # Wilcoxon rank sum test
 mtcars$am=as.factor(mtcars$am) #transform to categorical data of type "factor"
 visstat(mtcars,"mpg","am") # Welch Two Sample t-test
 
+HairEyeColorMaleFisher=HairEyeColor[,,1]
+HairEyeColorMaleFisher[HairEyeColorMaleFisher<10]=4 #create example enforcing Cochran's rule
+HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher))
+visstat(HairEyeColorMaleFisher,"Hair","Eye") # Fisher test
+remove(HairEyeColorMaleFisher)
 }

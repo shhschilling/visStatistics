@@ -66,7 +66,7 @@ visstat(HairEyeColorMale,"Hair","Eye") #can not find mosaic function
 
 HairEyeColorMaleFisher=HairEyeColor[,,1]
 #replace cells to smaller values to enforce Cochran's rule
-HairEyeColorMaleFisher[HairEyeColorMaleFisher<10]=2
+HairEyeColorMaleFisher[HairEyeColorMaleFisher<10]=4
 HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher));
 visstat(HairEyeColorMaleFisher,"Hair","Eye")
 
