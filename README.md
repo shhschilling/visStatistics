@@ -5,9 +5,9 @@
  The function `visstat()` **vis**ualizes the **stat**istical hypothesis testing between two groups of data, where `varsample` is the dependent variable (or response) and `varfactor` is the independent variable (feature).
  The statistical hypothesis test with the highest statistical power and fulfilling the assumptions of the corresponding test is performed and visualized.
  A graph displaying the raw data accordingly to the chosen test as well as the test statistics is generated. Furthermore
- `visstat` returns the corresponding test statistics as text.
+ `visstat()` returns the corresponding test statistics as text.
   Implemented tests: `lm(), t.test(), wilcox.test(), aov(), oneway.test(),kruskal.test(), fisher.test(),chisqu.test()`.
-`vissta()t` tests the fulfillment of the underlying assumptiosn of `aov` and `oneway.test` by calling the internal function `vis_anova_assumptions`.
+`visstat()` tests the fulfillment of the underlying assumptiosn of `aov` and `oneway.test` by calling the internal function `vis_anova_assumptions`.
 
 
 
@@ -34,7 +34,7 @@
 `visstat(iris,"Petal.Width", "Species")`
 
 
-###  InsectSprays  data set: ANOVA
+###  InsectSprays data set: ANOVA
 `visstat(InsectSprays,"count","spray")`
 
 ### InsectSprays data set: Welch two sample t.test

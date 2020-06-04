@@ -62,8 +62,7 @@ visstat(titanic_train,"Survived","Pclass")
 
 #HairEyeColor data set: Pearsons Chi squared, mosaic plot with Pearson's residuals
 HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]));
-visstat(HairEyeColorMale,"Hair","Eye") #can not find mosaic function
-
+visstat(HairEyeColorMale,"Hair","Eye") 
 HairEyeColorMaleFisher=HairEyeColor[,,1]
 #replace cells to smaller values to enforce Cochran's rule
 HairEyeColorMaleFisher[HairEyeColorMaleFisher<10]=4
@@ -78,7 +77,7 @@ blackBrownHazelGreen=HairEyeColorMaleFisher[1:2,3:4]
 fishertest=blackBrownHazelGreen
 blackBrownHazelGreen= counts_to_cases(as.data.frame(blackBrownHazelGreen));
 visstat(blackBrownHazelGreen,"Hair","Eye")
-fisher.test(fishertest)
+
 pngplots=dir(getwd(),pattern=".png")
 file.remove(pngplots)
 

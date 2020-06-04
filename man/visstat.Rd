@@ -48,7 +48,7 @@ Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilco
 }
 \details{
 For the comparison of averages, the following algorithm is implemented: 
- If the p-values of the standardized residuals of both \code{shapiro.test()} or \code{ks.test()} are smaller 
+ If the p-values of the standardized residuals of  \code{shapiro.test()} or \code{ks.test()} are smaller 
 than 1-conf.level, \code{kruskal.test()} resp. \code{wilcox.test()} are performed, otherwise the \code{oneway.test()}
 and \code{aov()} resp. \code{t.test()} are performed and displayed.
 Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed
