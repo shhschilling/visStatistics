@@ -71,10 +71,14 @@ HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher));
 visstat(HairEyeColorMaleFisher,"Hair","Eye")
 
 
-
-
-
-
+#2x2 contingency tables....
+HairEyeColorMaleFisher=HairEyeColor[,,1]
+#slicing out a 2 x2 contingency table 
+blackBrownHazelGreen=HairEyeColorMaleFisher[1:2,3:4]
+fishertest=blackBrownHazelGreen
+blackBrownHazelGreen= counts_to_cases(as.data.frame(blackBrownHazelGreen));
+visstat(blackBrownHazelGreen,"Hair","Eye")
+fisher.test(fishertest)
 pngplots=dir(getwd(),pattern=".png")
 file.remove(pngplots)
 

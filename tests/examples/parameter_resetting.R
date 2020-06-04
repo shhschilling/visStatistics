@@ -1,8 +1,7 @@
 
-
-if (length(dev.list())>0) dev.off() #closes all graphical devices 
+if (length(dev.list())>0) dev.off() #closes all graphical devices
 oldpar =par(no.readonly = TRUE)
-visstat(InsectSprays,"count","spray") 
+visstat(InsectSprays,"count","spray")
 on.exit(par(oldpar))
 par("new")
 test_norm(trees$Girth)

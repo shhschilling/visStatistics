@@ -18,48 +18,56 @@
 #' Implemented tests for check of normal distribution of standardized residuals: \code{shapiro.test()} and \code{ks.test()}.
 #' Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}
 #' 
-#' Algorithm: 
 #'  For the comparison of averages, the following algorithm is implemented: 
 #'  If the p-values of the standardized residuals of both \code{shapiro.test()} or \code{ks.test()} are smaller 
 #' than 1-conf.level, \code{kruskal.test()} resp. \code{wilcox.test()} are performed, otherwise the \code{oneway.test()}
 #' and \code{aov()} resp. \code{t.test()} are performed and displayed.
-#' For the test of independence of count data,  the following algorithm is implemented: 
-#'  If more than 20 percent of cells have count smaller 5 (Cochran's rule), fisher.test() is performed and displayed, otherwise chisqu.test(). 
-#'In both cases case an additional mosaic plot showing Pearson's residuals is generated. 
+#' Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed
+#'  (Lumley et al. (2002) <doi:10.1146/annurev.publheath.23.100901.140546>).
+#' For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented: 
+#' If more than 20 percent of all cells have a count smaller than 5, is performed and displayed, otherwise \code{chisqu.test()}. 
+#' In both cases case an additional mosaic plot showing Pearson's residuals is generated. 
 
 
-#' @param dataframe \code{data.frame} containing at least two columns with names of data type \code{character}. Data must be column wise ordered.
-#' @param varsample column name of dependent variable in dataframe, dataype \code{character}
-#' @param varfactor column name of independent variable in dataframe, dataype \code{character}
+#' @param dataframe \code{data.frame} containing at least two columns. Data must be column wise ordered.
+#'  Contingency tables can be transformed to column wise structure with helper function \code{counts_to_cases(as.data.frame())}. 
+#' @param varsample column name of dependent variable in \code{dataframe}, datatype \code{character}.
+#' @param varfactor column name of independent variable in \code{dataframe}, datatype \code{character}.
 #' @param conf.level confidence level of the interval.
-#' @param numbers	a logical indicating whether to show numbers in mosaic count plots
-#' @param minpercent number indicating minimalfraction of total count data of a category to be displayed	in the mosaic count plots
-#' @param graphicsoutput output format of plot. Allowed are the \code{character} strings "png","pdf","svg". Default "NULL" provides not output
+#' @param numbers	a logical indicating whether to show numbers in mosaic count plots.
+#' @param minpercent number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed	in the mosaic count plots.
+#' @param graphicsoutput output format of plot. Allowed are the \code{character} strings "png","pdf","svg". Default "NULL" provides no graphical output.
 #'
 #' @return Statistics of test with highest statistical power meeting assumptions.
 #' @examples
-#' visstat(iris,"Petal.Width", "Species") #Kruskal-Wallis rank sum test
+#' ## Kruskal-Wallis rank sum test
+#' visstat(iris,"Petal.Width", "Species") 
 #' 
-#' visstat(InsectSprays,"count","spray")  #ANOVA and One-way analysis of means
+#' ## ANOVA and One-way analysis of means
+#' visstat(InsectSprays,"count","spray")  
 #' visstat(InsectSprays,"count","spray",graphicsoutput="png") # example  with "png" output
-#' file.remove("anova_count_spray.png") #remove figure
+#' file.remove("anova_count_spray.png") # remove figure
 #' 
-#' visstat(ToothGrowth,"len", "supp") # Wilcoxon rank sum test
+#' ## Wilcoxon rank sum test
+#' visstat(ToothGrowth,"len", "supp")
 #' 
-#' mtcars$am=as.factor(mtcars$am) #transform to categorical data of type "factor"
+#' ## Welch Two Sample t-test
+#' mtcars$am=as.factor(mtcars$am) # transform to categorical data of type "factor"
 #' visstat(mtcars,"mpg","am") # Welch Two Sample t-test
 #' 
-# 'visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye") # Pearson's Chi-squared test
-# 
+#' ## Pearson's Chi-squared test
+#' visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye")
+#'
+#' ## Fisher test: Example transforming contingency table to \code{data.frame}
 #' HairEyeColorMaleFisher=HairEyeColor[,,1]
 #' HairEyeColorMaleFisher[HairEyeColorMaleFisher<10]=4 #create example enforcing Cochran's rule
-#' HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher))
+#' #transform contingency table to \code{data.frame}
+#' HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher)) 
 #' visstat(HairEyeColorMaleFisher,"Hair","Eye") # Fisher test
 #' remove(HairEyeColorMaleFisher)
-# 
-# 'visstat(trees,"Girth","Height") #linear regression
-# 
-
+#'
+#' ## Linear regression
+#' visstat(trees,"Girth","Height") 
 
 #' @import vcd
 #' @import Cairo
