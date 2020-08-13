@@ -1,11 +1,11 @@
 
 
 
-##Examples------ 
+##Examples------
 #Trees data set----
 #linear Regression- running
 visstat(trees,"Girth","Height") #linear regression without saving of plot
-visstat(trees,"Girth","Height",graphicsoutput = "png") 
+visstat(trees,"Girth","Height",graphicsoutput = "png")
 
 #example welch two sample t.test
 mtcars$am = as.factor(mtcars$am)
@@ -17,7 +17,7 @@ test_norm(trees$Girth)
 
 #InsectSprays  data set----
 #ANOVA
-visstat(InsectSprays,"count","spray") 
+visstat(InsectSprays,"count","spray")
 
 #example Welch two sample t.test
 # select sprays A and B
@@ -41,28 +41,28 @@ visstat(iris,"Petal.Width", "Species")
 
 #Chick weight data set----
 #Kruskal-Wallis test
-visstat(ChickWeight,"weight", "Diet") 
+visstat(ChickWeight,"weight", "Diet")
 
 #ToothGrowth data set----
 #Wilcoxon rank sum test
-visstat(ToothGrowth,"len", "supp") 
+visstat(ToothGrowth,"len", "supp")
 
 
 
-#Titanic data set---- 
+#Titanic data set----
 #install.packages("titanic")
 #example categorical data,
-library(titanic) 
-titanic_train$Survived = as.factor(titanic_train$Survived) 
-titanic_train$Pclass = as.factor(titanic_train$Pclass) 
+library(titanic)
+titanic_train$Survived = as.factor(titanic_train$Survived)
+titanic_train$Pclass = as.factor(titanic_train$Pclass)
 #Pearsons Chi squared, mosaic plot with Pearson's residuals
-visstat(titanic_train,"Survived","Pclass") 
+visstat(titanic_train,"Survived","Pclass")
 
 
 
 #HairEyeColor data set: Pearsons Chi squared, mosaic plot with Pearson's residuals
 HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]));
-visstat(HairEyeColorMale,"Hair","Eye") 
+visstat(HairEyeColorMale,"Hair","Eye")
 HairEyeColorMaleFisher=HairEyeColor[,,1]
 #replace cells to smaller values to enforce Cochran's rule
 HairEyeColorMaleFisher[HairEyeColorMaleFisher<10]=4
@@ -72,12 +72,14 @@ visstat(HairEyeColorMaleFisher,"Hair","Eye")
 
 #2x2 contingency tables....
 HairEyeColorMaleFisher=HairEyeColor[,,1]
-#slicing out a 2 x2 contingency table 
+#slicing out a 2 x2 contingency table
 blackBrownHazelGreen=HairEyeColorMaleFisher[1:2,3:4]
 fishertest=blackBrownHazelGreen
 blackBrownHazelGreen= counts_to_cases(as.data.frame(blackBrownHazelGreen));
 visstat(blackBrownHazelGreen,"Hair","Eye")
 
+
+#Delete all plots
 pngplots=dir(getwd(),pattern=".png")
 file.remove(pngplots)
 
