@@ -1,19 +1,22 @@
 
 ##Examples------
-#Trees data set----
-#linear Regression
-visstat(trees,"Girth","Height") 
-#linear regression saving both statistics and generated plot
-#
-#save statistics to "linear_regression_trees" and graph to regression_Girth_Height.png
-# in working directory
-# If graphicsoutput variable is set, plots are stored in the working directory with a name following the pattern
-#"statisticalTestName_varsample_varfactor.graphicsoutput"
-linear_regression_trees = visstat(trees,"Girth","Height",graphicsoutput = "png") 
-#remove file
-file.remove("regression_Girth_Height.png")
+library(visStatistics)
 
-#example Welch two sample t.test
+# linear regression: trees data set:----
+visstat(trees,"Girth","Height") 
+
+
+# If graphicsoutput parameter is set, all plots are stored in the working directory 
+# following the naming convention
+#"statisticalTestName_varsample_varfactor.graphicsoutput" 
+linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "png") ; 
+if (!interactive()) file.remove("regression_Girth_Height.png")
+
+
+#display stats of linear regression
+linear_regression_trees
+
+#Welch two sample t.test: mtcars data set ----
 mtcars$am = as.factor(mtcars$am)
 welch_cars=visstat(mtcars,"mpg","am")
 welch_cars
@@ -21,41 +24,36 @@ welch_cars
 
 
 
-#InsectSprays  data set----
+#ANOVA: InsectSprays  data set----
 #ANOVA
-visstat(InsectSprays,"count","spray")
+anova_insects=visstat(InsectSprays,"count","spray")
 
-#example Welch two sample t.test
+#Welch two sample t.test: InsectSprays 
 # select sprays A and B
 InsectSpraysAB <- InsectSprays[ which(InsectSprays$spray == 'A'
 | InsectSprays$spray == 'B'), ]
 InsectSpraysAB$spray = factor(InsectSpraysAB$spray)
-
-#welcht-t-Test
+#Welcht-t-Test
 visstat(InsectSpraysAB,"count","spray")
 
 
 
-#ANOVA
-visstat(InsectSprays,"count","spray")
 
 
-#Iris data set----
-#Kruskal-Wallis test
+#Kruskal-Wallis test: iris----
 visstat(iris,"Petal.Width", "Species")
 
 
-#Chick weight data set----
-#Kruskal-Wallis test
+#Kruskal-Wallis test: ChickWeight ----
 visstat(ChickWeight,"weight", "Diet")
 
-#ToothGrowth data set----
-#Wilcoxon rank sum test
+
+#Wilcoxon rank sum test: TootGrowth ----
 visstat(ToothGrowth,"len", "supp")
 
 
 
-#Titanic data set----
+#Chi squqred, mosaic plots with Titanic data set----
 #install.packages("titanic")
 #example categorical data,
 library(titanic)
@@ -65,7 +63,7 @@ titanic_train$Pclass = as.factor(titanic_train$Pclass)
 visstat(titanic_train,"Survived","Pclass")
 
 
-
+#Chi squqred, mosaic plots with HairEyeColor----
 #HairEyeColor data set: Pearsons Chi squared, mosaic plot with Pearson's residuals
 HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]));
 visstat(HairEyeColorMale,"Hair","Eye")

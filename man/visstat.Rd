@@ -28,8 +28,7 @@ Contingency tables can be transformed to column wise structure with helper funct
 
 \item{minpercent}{number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed    in the mosaic count plots.}
 
-\item{graphicsoutput}{output format of generated plots. Allowed are the \code{character} strings "png","pdf","svg". 
-Plots are stored in the working directory with a name following the pattern "statisticalTestName_varsample_varfactor.graphicsoutput"}
+\item{graphicsoutput}{output format of generated plot following the naming convention "statisticalTestName_varsample_varfactor.graphicsoutput"}
 }
 \value{
 Statistics of test with highest statistical power meeting assumptions.
@@ -85,4 +84,11 @@ remove(HairEyeColorMaleFisher)
 
 ## Linear regression
 visstat(trees,"Girth","Height") 
+
+## Linear regression saving graphical output to current working directory 
+if parameter graphicsoutput is set 
+linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "png") ; 
+if (!interactive()) file.remove("regression_Girth_Height.png")
+Diplay stats of linear regression
+linear_regression
 }

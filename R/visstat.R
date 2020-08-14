@@ -36,8 +36,7 @@
 #' @param conf.level confidence level of the interval.
 #' @param numbers	a logical indicating whether to show numbers in mosaic count plots. 
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed	in the mosaic count plots.
-#' @param graphicsoutput output format of generated plots. Allowed are the \code{character} strings "png","pdf","svg". 
-#' Plots are stored in the working directory with a name following the pattern "statisticalTestName_varsample_varfactor.graphicsoutput"
+#' @param graphicsoutput output format of generated plot following the naming convention "statisticalTestName_varsample_varfactor.graphicsoutput"
 #'
 #' @return Statistics of test with highest statistical power meeting assumptions.
 #' @examples
@@ -68,13 +67,20 @@
 #'
 #' ## Linear regression
 #' visstat(trees,"Girth","Height") 
+#' 
+#' ## Linear regression saving graphical output to current working directory 
+#' if parameter graphicsoutput is set 
+#' linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "png") ; 
+#' if (!interactive()) file.remove("regression_Girth_Height.png")
+#' Diplay stats of linear regression
+#' linear_regression
 
 #' @import vcd
 #' @import Cairo
 #' @import graphics
 #' @import grDevices
 #' @import grid
-#' @import multcompView 
+#' @import multcompView
 #' @import stats
 #' @import utils
 #' @import vcd

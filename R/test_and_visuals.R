@@ -513,7 +513,7 @@ vis_chi_squared_test = function(samples,
 
   if (check_assumptions_chi == FALSE) {
     fisher_chi = counts
-    return(ifisher_chi)
+    return(fisher_chi)
   } else{
     row_sum = rowSums(counts)
     col_sum = colSums(counts)
@@ -1276,6 +1276,8 @@ vis_regression = function(x,
   )
 
   my_list = list(
+    "independent variable x"=name_of_factor,
+    "dependent variable y"=name_of_sample,
     "summary_regression" = resreg,
     "shapiro_test_residuals" = SH,
     "ks_test_residuals" = KS

@@ -39,7 +39,7 @@ saveGraphVisstat = function(file=NULL, type=NULL, oldPlotName = NULL) {
     oldPlotName = paste(dummy_name,".",type,sep = "")
   }
   
-  #dev.off()
+  
   while (!is.null(dev.list()))  dev.off()
   file2 = gsub("[^[:alnum:]]", "_", file)
   file3 = gsub("_{2,}", "_", file2)
