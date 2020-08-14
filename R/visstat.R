@@ -11,8 +11,8 @@
 #' \code{varsample} and the independent variable  \code{varfactor}. \code{varfactor} can have more than two features. 
 #' \code{visstat()} runs a decision tree selecting the statistical hypothesis test with the highest statistical power 
 #'  fulfilling the assumptions of the underlying test. For each test 
-#'  \code{visstat()} returns an appropriate graph displaying the data with the main test statistics 
-#' in the title and a text file with the complete test statistics including eventual post-hoc analysis. 
+#'  \code{visstat()} returns a graph displaying the data with the main test statistics 
+#' in the title and a list with the complete test statistics including eventual post-hoc analysis. 
 #' Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()}, 
 #' \code{aov()}, \code{kruskal.test()}, \code{fisher.test()},\code{chisqu.test()}. 
 #' Implemented tests for check of normal distribution of standardized residuals: \code{shapiro.test()} and \code{ks.test()}.
@@ -36,7 +36,8 @@
 #' @param conf.level confidence level of the interval.
 #' @param numbers	a logical indicating whether to show numbers in mosaic count plots. 
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed	in the mosaic count plots.
-#' @param graphicsoutput output format of generated plots. Allowed are the \code{character} strings "png","pdf","svg".
+#' @param graphicsoutput output format of generated plots. Allowed are the \code{character} strings "png","pdf","svg". 
+#' Plots are stored in the working directory with a name following the pattern "statisticalTestName_varsample_varfactor.graphicsoutput"
 #'
 #' @return Statistics of test with highest statistical power meeting assumptions.
 #' @examples
@@ -212,7 +213,7 @@ visstat = function(dataframe,
         |
         (if (exists("p2"))
         {
-          ( p2$p.value< alpha)
+          ( p2$p.value < alpha)
         }else{
           FALSE
         }
@@ -225,10 +226,10 @@ visstat = function(dataframe,
         vis_sample_fact = two_sample_WilcoxonTest(
           samples,
           fact,
-          alternative ="two.sided",
-          conf.level=conf.level,
+          alternative = "two.sided",
+          conf.level= conf.level,
           notchf = T,
-          samplename=varsample,factorname=matchingCriteria
+          samplename =varsample,factorname =matchingCriteria
         )
         saveGraphVisstat(
           paste(
@@ -242,14 +243,14 @@ visstat = function(dataframe,
         openGraphCairo(type = graphicsoutput)
         vis_sample_fact = two_sample_tTest(samples,
                                            fact,
-                                           conf.level=conf.level,
-                                           alternative = 'two.sided',var.equal=F,paired=F,
-                                           samplename=varsample,factorname=matchingCriteria)
+                                           conf.level = conf.level,
+                                           alternative = 'two.sided',var.equal = F,paired = F,
+                                           samplename =varsample,factorname =matchingCriteria)
         saveGraphVisstat(
           paste("ttest_", name_of_sample, "_", name_of_factor, sep = ""),type = graphicsoutput)
         
       }
-      return(vis_sample_fact)
+      return(invisible(vis_sample_fact))
     }
   }
 
@@ -329,7 +330,7 @@ visstat = function(dataframe,
             type = graphicsoutput
           )
         }
-        vis_sample_fact=c(vis_chi,vis_mosaic_res)
+        vis_sample_fact = c(vis_chi,vis_mosaic_res)
       }
     }
     #C) both types numeric-----
@@ -413,7 +414,7 @@ visstat = function(dataframe,
   
   
    
-    return(vis_sample_fact)
+    return(invisible(vis_sample_fact))
   }
   #End of vis_sample_fact function -------
 

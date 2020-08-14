@@ -28,7 +28,8 @@ Contingency tables can be transformed to column wise structure with helper funct
 
 \item{minpercent}{number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed    in the mosaic count plots.}
 
-\item{graphicsoutput}{output format of plot. Allowed are the \code{character} strings "png","pdf","svg". Default "NULL" provides no graphical output.}
+\item{graphicsoutput}{output format of generated plots. Allowed are the \code{character} strings "png","pdf","svg". 
+Plots are stored in the working directory with a name following the pattern "statisticalTestName_varsample_varfactor.graphicsoutput"}
 }
 \value{
 Statistics of test with highest statistical power meeting assumptions.
@@ -39,8 +40,8 @@ the dependent variable (or response)
 \code{varsample} and the independent variable  \code{varfactor}. \code{varfactor} can have more than two features. 
 \code{visstat()} runs a decision tree selecting the statistical hypothesis test with the highest statistical power 
  fulfilling the assumptions of the underlying test. For each test 
- \code{visstat()} returns an appropriate graph displaying the data with the main test statistics 
-in the title and a text file with the complete test statistics including eventual post-hoc analysis. 
+ \code{visstat()} returns a graph displaying the data with the main test statistics 
+in the title and a list with the complete test statistics including eventual post-hoc analysis. 
 Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()}, 
 \code{aov()}, \code{kruskal.test()}, \code{fisher.test()},\code{chisqu.test()}. 
 Implemented tests for check of normal distribution of standardized residuals: \code{shapiro.test()} and \code{ks.test()}.
@@ -63,8 +64,6 @@ visstat(iris,"Petal.Width", "Species")
 
 ## ANOVA and One-way analysis of means
 visstat(InsectSprays,"count","spray")  
-visstat(InsectSprays,"count","spray",graphicsoutput="png") # example  with "png" output
-file.remove("anova_count_spray.png") # remove figure
 
 ## Wilcoxon rank sum test
 visstat(ToothGrowth,"len", "supp")

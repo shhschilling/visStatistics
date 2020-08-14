@@ -1,18 +1,23 @@
-#set working directory to temporary directory
-setwd(tempdir())#set working directory to temporary directory
 
 ##Examples------
 #Trees data set----
-#linear Regression- running
-visstat(trees,"Girth","Height") #linear regression without saving of plot
-visstat(trees,"Girth","Height",graphicsoutput = "png"); file.remove("regression_Girth_Height.png") #writing a png file to current directory and removing it; 
-
+#linear Regression
+visstat(trees,"Girth","Height") 
+#linear regression saving both statistics and generated plot
+#
+#save statistics to "linear_regression_trees" and graph to regression_Girth_Height.png
+# in working directory
+# If graphicsoutput variable is set, plots are stored in the working directory with a name following the pattern
+#"statisticalTestName_varsample_varfactor.graphicsoutput"
+linear_regression_trees = visstat(trees,"Girth","Height",graphicsoutput = "png") 
+#remove file
+file.remove("regression_Girth_Height.png")
 
 #example Welch two sample t.test
 mtcars$am = as.factor(mtcars$am)
-visstat(mtcars,"mpg","am")
+welch_cars=visstat(mtcars,"mpg","am")
+welch_cars
 
-test_norm(trees$Girth)
 
 
 
@@ -66,7 +71,7 @@ HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]));
 visstat(HairEyeColorMale,"Hair","Eye")
 HairEyeColorMaleFisher =  HairEyeColor[,,1]
 #replace cells to smaller values to enforce Cochran's rule
-HairEyeColorMaleFisher[HairEyeColorMaleFisher<10] =4
+HairEyeColorMaleFisher[HairEyeColorMaleFisher<10] = 4
 HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher));
 visstat(HairEyeColorMaleFisher,"Hair","Eye")
 
@@ -76,13 +81,11 @@ HairEyeColorMaleFisher = HairEyeColor[,,1]
 #slicing out a 2 x2 contingency table
 blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
 fishertest = blackBrownHazelGreen
-blackBrownHazelGreen= counts_to_cases(as.data.frame(blackBrownHazelGreen));
+blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
 visstat(blackBrownHazelGreen,"Hair","Eye")
 
 
-#Delete all plots
-pngplots=dir(getwd(),pattern=".png")
-file.remove(pngplots)
+
 
 
 

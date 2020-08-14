@@ -77,9 +77,9 @@ test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
     ),
     outer = TRUE
   )
-  mylist = list("Kolmogorov-Smirnoff" = KS, "Shapiro" = SH)
+  my_list = list("Kolmogorov-Smirnoff" = KS, "Shapiro" = SH)
   par(oldpar)
-  return(mylist)
+  return(my_list)
 }
 
 
@@ -261,10 +261,15 @@ two_sample_tTest = function(samples,
 
   my_list <-
     list(
-      "t-testatistics" = t,
-      "test_normal_sample1" = p1,
-      "test_normal_sample2" = p2
+      "dependent variable (response)" = samplename,
+      "indepedent variables (parameters)" =  unique(fact),
+      "t-test-statistics" = t,
+      "Shapiro-Wilk-test_sample1" = p1,
+      "Shapiro-Wilk-test_sample2" = p2
     )
+  
+  
+  
   par(oldpar)
   return(my_list)
 
@@ -385,14 +390,13 @@ two_sample_WilcoxonTest = function(samples,
 
   my_list <-
     list(
-      "p-value-Wilcoxon" = p_value,
-      "samplename" = samplename,
-      "factorname" = factorname,
+      "dependent variable (response)" = samplename,
+      "indepedent variables (parameters)" =  unique(fact),
       "statsWilcoxon" = t,
       "statsBoxplot" = b
     )
   par(oldpar)
-  return(my_list)
+   return(my_list)
 
 
 }
@@ -509,7 +513,7 @@ vis_chi_squared_test = function(samples,
 
   if (check_assumptions_chi == FALSE) {
     fisher_chi = counts
-    return(fisher_chi)
+    return(ifisher_chi)
   } else{
     row_sum = rowSums(counts)
     col_sum = colSums(counts)
@@ -732,7 +736,8 @@ vis_anova = function(samples,
       "adjusted_p_values_t_test" = tuk,
       "conf.level" = conf.level
     )
-  return(my_list)
+   
+   return(my_list)
 }
 
 
@@ -813,7 +818,7 @@ vis_anova_assumptions = function(samples,
 
     )
 
-  return(my_list)
+   return(my_list)
 }
 
 
@@ -929,7 +934,7 @@ vis_Kruskal_Wallis_clusters = function(samples,
   my_list <-
     list("kruskal_wallis" = kk,
          "adjusted_p_values_wilcoxon" = tuk)
-  return(my_list)
+   return(my_list)
 }
 
 
@@ -1129,13 +1134,13 @@ vis_regression_assumptions = function(x,
     )
   }
 
-  mylist = list(
+  my_list = list(
     "summary_regression" = resreg,
     "shapiro_test_residuals" = SH,
     "ks_test_residuals" = KS
 
   )
-  return(mylist)
+   return(my_list)
 }
 
 
@@ -1147,6 +1152,9 @@ vis_regression = function(x,
                           name_of_factor = character(),
                           name_of_sample = character())
 {
+  #Store default graphical parameter
+  oldpar = par(no.readonly = TRUE)
+  on.exit(par(oldpar))
   alpha = 1 - conf.level
   P = alpha
   #remove all NAs from both vectors
@@ -1267,20 +1275,21 @@ vis_regression = function(x,
     outer = TRUE
   )
 
-  mylist = list(
+  my_list = list(
     "summary_regression" = resreg,
     "shapiro_test_residuals" = SH,
     "ks_test_residuals" = KS
   )
-  return(mylist)
+  par(oldpar)
+   return(my_list)
 }
 
 
 #Mosaic plots-----
 vis_mosaic = function(samples,
                       fact,
-                      name_of_sample = character(),name_of_factor= character(),
-                      factorname,
+                      name_of_sample = character(),
+                      name_of_factor= character(),
                       minperc = 0.05,
                       numbers = TRUE)
 {
@@ -1296,10 +1305,11 @@ vis_mosaic = function(samples,
   }
 
   counts = makeTable(samples, fact,name_of_sample, name_of_factor)
-  check_assumptions =check_assumptions_count_data(samples, fact)
-  if (check_assumptions ==FALSE)
+  check_assumptions = check_assumptions_count_data(samples, fact)
+  if (check_assumptions == FALSE)
   {
-    return(counts)
+    my_list =counts
+     return(my_list)
   }
 
   else{
@@ -1456,9 +1466,9 @@ odds_ratio = function(a, b, c, d, alpha, zerocorrect) {
   upconf = exp(logUP)
 
   output = rbind(OR, lowconf, upconf, SE)
-
-  return(list = ("odds_ratio_statistics" = output))
-  #print(output)
+  my_list = ("odds_ratio_statistics" = output)
+  return(my_list)
+  
 }
 
 #create sorted table
@@ -1540,12 +1550,12 @@ create_two_samples_vector = function(samples, fact)
         return(warning("each group needs at least one entry"))
       } else {
         x = c(samples1, samples2)
-        mylist = list(
+        my_list = list(
           "sample1" = samples1,
           "sample2" = samples2,
           "sample1and2" = x
         )
-        return(mylist)
+        return(my_list)
       }
     }
   }
@@ -1732,7 +1742,7 @@ test_norm = function(x) {
   x <- x[!is.na(x)]
   #  KS = ks.test(x, pnorm, mean(x), sd(x))
   shapiro_wilk_test = shapiro.test(x)
-  # mylist = list("Kolmogorov-Smirnoff" = KS, "Shapiro" =SH)
+  # my_list = list("Kolmogorov-Smirnoff" = KS, "Shapiro" =SH)
   return(shapiro_wilk_test)
 }
 
@@ -1784,7 +1794,7 @@ colorscheme = function(colorcode = NULL)
   )
 
 
-  mylist = list(
+  my_list = list(
     "colortuple" = colortuple,
     "colortuple2" = colortuple2,
     "ColorPalette" = ColorPalette
@@ -1792,7 +1802,7 @@ colorscheme = function(colorcode = NULL)
 
   if (is.null(colorcode))
   {
-    return(mylist)
+    return(my_list)
   }
   else if (colorcode == 1) {
     return(colortuple)
