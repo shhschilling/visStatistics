@@ -1,13 +1,14 @@
-
-
+#set working directory to temporary directory
+setwd(tempdir())#set working directory to temporary directory
 
 ##Examples------
 #Trees data set----
 #linear Regression- running
 visstat(trees,"Girth","Height") #linear regression without saving of plot
-visstat(trees,"Girth","Height",graphicsoutput = "png")
+visstat(trees,"Girth","Height",graphicsoutput = "png"); file.remove("regression_Girth_Height.png") #writing a png file to current directory and removing it; 
 
-#example welch two sample t.test
+
+#example Welch two sample t.test
 mtcars$am = as.factor(mtcars$am)
 visstat(mtcars,"mpg","am")
 
@@ -63,18 +64,18 @@ visstat(titanic_train,"Survived","Pclass")
 #HairEyeColor data set: Pearsons Chi squared, mosaic plot with Pearson's residuals
 HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]));
 visstat(HairEyeColorMale,"Hair","Eye")
-HairEyeColorMaleFisher=HairEyeColor[,,1]
+HairEyeColorMaleFisher =  HairEyeColor[,,1]
 #replace cells to smaller values to enforce Cochran's rule
-HairEyeColorMaleFisher[HairEyeColorMaleFisher<10]=4
+HairEyeColorMaleFisher[HairEyeColorMaleFisher<10] =4
 HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher));
 visstat(HairEyeColorMaleFisher,"Hair","Eye")
 
 
 #2x2 contingency tables....
-HairEyeColorMaleFisher=HairEyeColor[,,1]
+HairEyeColorMaleFisher = HairEyeColor[,,1]
 #slicing out a 2 x2 contingency table
-blackBrownHazelGreen=HairEyeColorMaleFisher[1:2,3:4]
-fishertest=blackBrownHazelGreen
+blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
+fishertest = blackBrownHazelGreen
 blackBrownHazelGreen= counts_to_cases(as.data.frame(blackBrownHazelGreen));
 visstat(blackBrownHazelGreen,"Hair","Eye")
 

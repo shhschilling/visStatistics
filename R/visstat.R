@@ -34,9 +34,9 @@
 #' @param varsample column name of dependent variable in \code{dataframe}, datatype \code{character}.
 #' @param varfactor column name of independent variable in \code{dataframe}, datatype \code{character}.
 #' @param conf.level confidence level of the interval.
-#' @param numbers	a logical indicating whether to show numbers in mosaic count plots.
+#' @param numbers	a logical indicating whether to show numbers in mosaic count plots. 
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed	in the mosaic count plots.
-#' @param graphicsoutput output format of plot. Allowed are the \code{character} strings "png","pdf","svg". Default "NULL" provides no graphical output.
+#' @param graphicsoutput output format of generated plots. Allowed are the \code{character} strings "png","pdf","svg".
 #'
 #' @return Statistics of test with highest statistical power meeting assumptions.
 #' @examples
@@ -45,8 +45,7 @@
 #' 
 #' ## ANOVA and One-way analysis of means
 #' visstat(InsectSprays,"count","spray")  
-#' visstat(InsectSprays,"count","spray",graphicsoutput="png") # example  with "png" output
-#' file.remove("anova_count_spray.png") # remove figure
+
 #' 
 #' ## Wilcoxon rank sum test
 #' visstat(ToothGrowth,"len", "supp")
@@ -101,7 +100,7 @@ visstat = function(dataframe,
   #  - varfactor: independent variables choosen by user outout of columns of dataframe,  varfactor is the name given in the header
   #numbers: Boolean deciding if in mosaic plots counts of each category should be shown
   # minpercent=0.05 #minimal fraction of total count which has to be in each category of count data in order to be displayed in mosaic plot
-  # graphicsoutput can be "png", "jpeg", "jpg", "tiff", "bmp"
+  # graphicsoutput can be "png", "jpeg", "jpg", "tiff", "bmp". Default is "NULL". 
   
   
   
