@@ -36,7 +36,7 @@
 #' @param conf.level confidence level of the interval.
 #' @param numbers	a logical indicating whether to show numbers in mosaic count plots. 
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed	in the mosaic count plots.
-#' @param graphicsoutput output format of generated plot following the naming convention "statisticalTestName_varsample_varfactor.graphicsoutput"
+#' @param graphicsoutput saves plot of type "png", "jpeg", "jpg", "tiff" or  "bmp" in current working directory following the naming convention "statisticalTestName_varsample_varfactor.graphicsoutput"
 #'
 #' @return Statistics of test with highest statistical power meeting assumptions.
 #' @examples
@@ -68,12 +68,11 @@
 #' ## Linear regression
 #' visstat(trees,"Girth","Height") 
 #' 
-#' ## Linear regression saving graphical output to current working directory 
-#' if parameter graphicsoutput is set 
+#' ## Linear regression saving graphical output of type "png" to current working directory 
 #' linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "png") ; 
 #' if (!interactive()) file.remove("regression_Girth_Height.png")
-#' Diplay stats of linear regression
-#' linear_regression
+#' ## Display stats of linear regression
+#' linear_regression_trees
 
 #' @import vcd
 #' @import Cairo
@@ -105,9 +104,11 @@ visstat = function(dataframe,
   # or the independent variable (varfact)
   #  - varsample: dependent variable choosen by user out of columns of dataframe, varsample is the name given in the header
   #  - varfactor: independent variables choosen by user outout of columns of dataframe,  varfactor is the name given in the header
-  #numbers: Boolean deciding if in mosaic plots counts of each category should be shown
-  # minpercent=0.05 #minimal fraction of total count which has to be in each category of count data in order to be displayed in mosaic plot
-  # graphicsoutput can be "png", "jpeg", "jpg", "tiff", "bmp". Default is "NULL". 
+  # Optional parameters with set default values: 
+  # numbers: Boolean deciding if in mosaic plots counts of each category should be shown
+  # minpercent: number between 0 and 1 indicating the minimal fraction of total count which has to be in each category of count data in order to be displayed in mosaic plot
+  # graphicsoutput: character string indicating if a plot of type  "png", "jpeg", "jpg", "tiff", "bmp" should be saved to the current working directory following the 
+  # naming convention "statisticalTestName_varsample_varfactor.graphicsoutput". The default "NULL" does not save the current plot.
   
   
   

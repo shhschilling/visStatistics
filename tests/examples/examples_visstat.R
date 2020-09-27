@@ -10,7 +10,7 @@ visstat(trees,"Girth","Height")
 # following the naming convention
 #"statisticalTestName_varsample_varfactor.graphicsoutput" 
 linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "png") ; 
-if (!interactive()) file.remove("regression_Girth_Height.png")
+file.remove("regression_Girth_Height.png")
 
 
 #display stats of linear regression
