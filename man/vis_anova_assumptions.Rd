@@ -32,8 +32,8 @@ my_list: list containing the test statistics of the anova
 }
 \description{
 \code{vis_anova_assumptions} checks for normality of the standardised residuals of the anova both graphically by qq-plots as well as performing
-   the Shapiro-Wilk-test  and the Kolmogoov-Smirnov-Test.
-   \code{aov} further requires the homoscedacity of each factor level in \code{fact}, which is tested by the function Bartlett test. .
+   the Shapiro-Wilk-test \code{shapiro.test} and the Anderson-Darling-Test \code{ad.test}.
+   \code{aov} further tests the homoscedacity of each factor level in \code{fact} with the \code{bartlett.test}.
 }
 \examples{
 ToothGrowth$dose=as.factor(ToothGrowth$dose)

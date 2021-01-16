@@ -15,8 +15,8 @@
 #' in the title and a list with the complete test statistics including eventual post-hoc analysis. 
 #' Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()}, 
 #' \code{aov()}, \code{kruskal.test()}, \code{fisher.test()},\code{chisqu.test()}. 
-#' Implemented tests for check of normal distribution of standardized residuals: \code{shapiro.test()} and \code{ks.test()}.
-#' Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}
+#' Implemented tests for check of normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
+#' Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}.
 #' 
 #'  For the comparison of averages, the following algorithm is implemented: 
 #'  If the p-values of the standardized residuals of  \code{shapiro.test()} or \code{ks.test()} are smaller 
@@ -38,14 +38,14 @@
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed	in the mosaic count plots.
 #' @param graphicsoutput saves plot of type "png", "jpeg", "jpg", "tiff" or  "bmp" in current working directory following the naming convention "statisticalTestName_varsample_varfactor.graphicsoutput"
 #'
-#' @return Statistics of test with highest statistical power meeting assumptions.
+#' @return Statistics of test with highest statistical power meeting assumptions. All values are returned as invisibly copies. Values can be accessed by assigning a return value to \code{visstat}.
 #' @examples
 #' ## Kruskal-Wallis rank sum test
 #' visstat(iris,"Petal.Width", "Species") 
+
 #' 
 #' ## ANOVA and One-way analysis of means
 #' visstat(InsectSprays,"count","spray")  
-
 #' 
 #' ## Wilcoxon rank sum test
 #' visstat(ToothGrowth,"len", "supp")
@@ -53,7 +53,7 @@
 #' ## Welch Two Sample t-test
 #' mtcars$am=as.factor(mtcars$am) # transform to categorical data of type "factor"
 #' visstat(mtcars,"mpg","am") # Welch Two Sample t-test
-#' 
+
 #' ## Pearson's Chi-squared test
 #' visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye")
 #'
@@ -68,11 +68,16 @@
 #' ## Linear regression
 #' visstat(trees,"Girth","Height") 
 #' 
-#' ## Linear regression saving graphical output of type "png" to current working directory 
-#' linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "png") ; 
-#' if (!interactive()) file.remove("regression_Girth_Height.png")
-#' ## Display stats of linear regression
-#' linear_regression_trees
+#' ## A) accessing statistical ouput 
+#' stats_lin_reg=visstat(trees,"Girth","Height") 
+#' stats_lin_reg
+#' remove(stats_lin_reg)
+#' 
+#' ## B) saving graphical output of type "png" to current working directory ->should be changed to tmp
+#' visstat(trees,"Girth","Height",graphicsoutput = "png") ; 
+#' file.remove("regression_Girth_Height.png")
+#' 
+
 
 #' @import vcd
 #' @import Cairo
@@ -80,9 +85,10 @@
 #' @import grDevices
 #' @import grid
 #' @import multcompView
+#' @importFrom nortest ad.test
 #' @import stats
 #' @import utils
-#' @import vcd
+
 #' 
 #' @export visstat
 visstat = function(dataframe,
@@ -102,8 +108,8 @@ visstat = function(dataframe,
   #  - dataframe of type data.frame or list (generated from json file)
   #  with headers which are either the dependent variable (varsamples)
   # or the independent variable (varfact)
-  #  - varsample: dependent variable choosen by user out of columns of dataframe, varsample is the name given in the header
-  #  - varfactor: independent variables choosen by user outout of columns of dataframe,  varfactor is the name given in the header
+  #  - varsample: dependent variable chosen by user out of columns of dataframe, varsample is the name given in the header
+  #  - varfactor: independent variables chosen by user out of columns of dataframe,  varfactor is the name given in the header
   # Optional parameters with set default values: 
   # numbers: Boolean deciding if in mosaic plots counts of each category should be shown
   # minpercent: number between 0 and 1 indicating the minimal fraction of total count which has to be in each category of count data in order to be displayed in mosaic plot
@@ -377,7 +383,7 @@ visstat = function(dataframe,
 
 
       if (visanova$shapiro_test$p.value > alpha |
-          visanova$ks_test$p.value > alpha)
+          visanova$ad_test$p.value > alpha)
 
       {
         openGraphCairo(type = graphicsoutput)

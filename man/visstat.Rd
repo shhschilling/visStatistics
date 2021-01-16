@@ -43,8 +43,8 @@ the dependent variable (or response)
 in the title and a list with the complete test statistics including eventual post-hoc analysis. 
 Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()}, 
 \code{aov()}, \code{kruskal.test()}, \code{fisher.test()},\code{chisqu.test()}. 
-Implemented tests for check of normal distribution of standardized residuals: \code{shapiro.test()} and \code{ks.test()}.
-Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}
+Implemented tests for check of normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
+Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}.
 }
 \details{
 For the comparison of averages, the following algorithm is implemented: 

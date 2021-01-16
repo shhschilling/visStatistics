@@ -748,8 +748,8 @@ vis_anova = function(samples,
 #' Testing ANOVA assumptions
 #'
 #' \code{vis_anova_assumptions} checks for normality of the standardised residuals of the anova both graphically by qq-plots as well as performing
-#'    the Shapiro-Wilk-test  and the Kolmogoov-Smirnov-Test.
-#'    \code{aov} further requires the homoscedacity of each factor level in \code{fact}, which is tested by the function Bartlett test. .
+#'    the Shapiro-Wilk-test \code{shapiro.test} and the Anderson-Darling-Test \code{ad.test}.
+#'    \code{aov} further tests the homoscedacity of each factor level in \code{fact} with the \code{bartlett.test}.
 #'
 #' @param samples vector containing dependent variable, datatype numeric
 #' @param fact vector containing independent variable, datatype factor
@@ -788,21 +788,26 @@ vis_anova_assumptions = function(samples,
   qqnorm(rstandard(anova))
   qqline(rstandard(anova), col = "red", lwd = 2)
   par(mfrow = c(1, 1))
-  #check for normality of residuals
-  ks_test = ks.test(rstandard(anova), pnorm, mean(rstandard(anova)), sd(rstandard(anova)))
-  p_KS = signif(ks_test$p.value, 3)
+  #check for normality of standardized residuals
+  if (length(anova)>7){
+  ad_test = ad.test(rstandard(anova))
+  p_AD = signif(ad_test$p.value, 3)}
+  else{
+  ad_test="Anderson-Darling test requires sample size of at lest 7."  
+  p_AD=NA
+  }
   shapiro_test = shapiro.test(rstandard(anova))
-  p_SH = signif(shapiro_test$p.value, 3)
+  p_SH = shapiro_test$p.value
   bartlett_test = bartlett.test(samples ~ fact)
-  bart = signif(bartlett_test$p.value, 3)
+  p_bart = bartlett_test$p.value
   mtext(
     paste(
-      "Residual Analysis\n Shapiro-Wilk: P = ",
+      "Check for homogeneity of variances:Bartlett Test, p = ",
+      signif(p_bart, 2),
+      "\n Check for normality of standardized residuals:\n Shapiro-Wilk: p = ",
       signif(p_SH, 2),
-      "\n Kolmogorov-Smirnoff: P = ",
-      signif(p_KS, 2),
-      "\n Bartlett Test, P = ",
-      signif(bart, 2)
+      "\n Anderson-Darling: p = ",
+      signif(p_AD, 2)
     ),
     outer = TRUE
   )
@@ -812,10 +817,9 @@ vis_anova_assumptions = function(samples,
   my_list <-
     list(
       "shapiro_test" = shapiro_test,
-      "ks_test" = ks_test,
+      "ad_test" = ad_test,
       "summary_anova" = summary_anova,
-      "bartlett_test" = bartlett_test
-
+      "bartlett_test"=bartlett_test
     )
 
    return(my_list)
@@ -1113,9 +1117,9 @@ vis_regression_assumptions = function(x,
   {
     mtext(
       paste(
-        "Residual Analysis\n Shapiro-Wilk: P = ",
+        "Residual Analysis\n Shapiro-Wilk: p = ",
         p_SH,
-        "\n Kolmogorov-Smirnoff: P = ",
+        "\n Kolmogorov-Smirnoff: p = ",
         p_KS,
         "\n Requirements regression not met"
       ),
