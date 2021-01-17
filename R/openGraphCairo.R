@@ -9,7 +9,7 @@
 
 #' @param width see \code{Cairo()}
 #' @param height see \code{Cairo()}
-#' @param file name of file to be created or connection to write to  without file extension ".\code{type}". Default file name "visstat". 
+#' @param file name of file to be created or connection to write to without file extension ".\code{type}". Default file name "visstat". 
 #' @param type see \code{Cairo()}
 #' @param pointsize see \code{Cairo()}
 #' @param bg see \code{Cairo()}

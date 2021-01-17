@@ -22,7 +22,7 @@ openGraphCairo(
 
 \item{height}{see \code{Cairo()}}
 
-\item{file}{name of file to be created or connection to write to  without file extension ".\code{type}". Default file name "visstat".}
+\item{file}{name of file to be created or connection to write to without file extension ".\code{type}". Default file name "visstat".}
 
 \item{type}{see \code{Cairo()}}
 

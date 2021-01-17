@@ -14,7 +14,7 @@
 #'  \code{visstat()} returns a graph displaying the data with the main test statistics 
 #' in the title and a list with the complete test statistics including eventual post-hoc analysis. 
 #' Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()}, 
-#' \code{aov()}, \code{kruskal.test()}, \code{fisher.test()},\code{chisqu.test()}. 
+#' \code{aov()}, \code{kruskal.test()}, \code{fisher.test()}, \code{chisqu.test()}. 
 #' Implemented tests for check of normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
 #' Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}.
 #' 
@@ -38,7 +38,7 @@
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed	in the mosaic count plots.
 #' @param graphicsoutput saves plot of type "png", "jpeg", "jpg", "tiff" or  "bmp" in current working directory following the naming convention "statisticalTestName_varsample_varfactor.graphicsoutput"
 #'
-#' @return Statistics of test with highest statistical power meeting assumptions. All values are returned as invisibly copies. Values can be accessed by assigning a return value to \code{visstat}.
+#' @return \code{list} containing statistics of test with highest statistical power meeting assumptions. All values are returned as invisibly copies. Values can be accessed by assigning a return value to \code{visstat}.
 #' @examples
 #' ## Kruskal-Wallis rank sum test
 #' visstat(iris,"Petal.Width", "Species") 
@@ -57,20 +57,20 @@
 #' ## Pearson's Chi-squared test
 #' visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye")
 #'
-#' ## Fisher test: Example transforming contingency table to \code{data.frame}
+#' ## Fisher test: Example transforming contingency table to data.frame.
 #' HairEyeColorMaleFisher=HairEyeColor[,,1]
 #' HairEyeColorMaleFisher[HairEyeColorMaleFisher<10]=4 #create example enforcing Cochran's rule
-#' #transform contingency table to \code{data.frame}
+#' #transform contingency table to data.frame
 #' HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher)) 
 #' visstat(HairEyeColorMaleFisher,"Hair","Eye") # Fisher test
 #' remove(HairEyeColorMaleFisher)
 #'
+#
 #' ## Linear regression
-#' visstat(trees,"Girth","Height") 
 #' 
-#' ## A) accessing statistical ouput 
-#' stats_lin_reg=visstat(trees,"Girth","Height") 
-#' stats_lin_reg
+#' ## A) printing statistical ouput 
+#' stats_lin_reg=visstat(trees,"Girth","Height") #assign value to return values
+#' stats_lin_reg #printing tatistical output 
 #' remove(stats_lin_reg)
 #' 
 #' ## B) saving graphical output of type "png" to current working directory ->should be changed to tmp
@@ -85,9 +85,9 @@
 #' @import grDevices
 #' @import grid
 #' @import multcompView
-#' @importFrom nortest ad.test
 #' @import stats
 #' @import utils
+#' @importFrom nortest ad.test
 
 #' 
 #' @export visstat

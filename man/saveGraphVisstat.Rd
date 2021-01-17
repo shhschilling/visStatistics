@@ -9,7 +9,7 @@ saveGraphVisstat(file = NULL, type = NULL, oldPlotName = NULL)
 \arguments{
 \item{file}{name of file to be created or connection to write to without file extension ".\code{type}". Default file name "visstat".}
 
-\item{type}{see \code{Cairo()}}
+\item{type}{see \code{Cairo()}.}
 
 \item{oldPlotName}{old file name including .type extension to be overwritten}
 }

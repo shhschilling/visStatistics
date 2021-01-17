@@ -25,10 +25,9 @@
 `?visstat`
 
 ## Examples 
-### Trees data set: linear Regression
-`visstat(trees,"Girth","Height")` #without saving of plot
+### Trees data set: Linear regression
+`visstat(trees,"Girth","Height")` 
 
-`visstat(trees,"Girth","Height",graphicsoutput="png")`# saving the plot as"png"-file
 
 ###  Iris data set: Kruskal-Wallis test
 `visstat(iris,"Petal.Width", "Species")`
@@ -44,7 +43,7 @@
 
 `visstat(InsectSpraysAB,"count","spray")`
 
-### ToothGrowth data set: Wilcoxon rank sum test with coninuity correction
+### ToothGrowth data set: Wilcoxon rank sum test with continuity correction
 `visstat(ToothGrowth,"len", "supp")`
 
 #### HairEyeColor data set: Pearson's Chi-squared test

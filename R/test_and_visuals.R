@@ -61,7 +61,7 @@ test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
   qqnorm(x)
   qqline(x, col = "red", lwd = 2)
 
-  KS = ks.test(x, pnorm, mean(x), sd(x))
+  KS = ad.test(x)
   p_KS = signif(KS$p.value, 2)
   SH = shapiro.test(x)
   p_SH = signif(SH$p.value, 2)
@@ -69,15 +69,15 @@ test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
 
   mtext(
     paste(
-      "Shapiro-Wilk: P = ",
+      "Shapiro-Wilk: p = ",
       p_SH,
-      "\n Kolmogorov-Smirnoff: P = ",
+      "\n Anderson-Darling: p = ",
       p_KS,
       "\n Nullhypothesis: Data is normally distributed"
     ),
     outer = TRUE
   )
-  my_list = list("Kolmogorov-Smirnoff" = KS, "Shapiro" = SH)
+  my_list = list("Anderson-Darling" = KS, "Shapiro" = SH)
   par(oldpar)
   return(my_list)
 }
@@ -1029,16 +1029,16 @@ vis_regr_trumpets = function(x, y, P) {
   qqnorm(residuals(reg), ylab = "Sample Quantiles of  Residuals")
   qqline(residuals(reg), col = "red", lwd = 2)
 
-  KS = ks.test(residuals(reg), pnorm, mean(residuals(reg)), sd(residuals(reg)))
+  KS = ad.test(residuals(reg))
   p_KS = signif(KS$p.value, 2)
   SH = shapiro.test(residuals(reg))
   p_SH = signif(SH$p.value, 2)
 
   mtext(
     paste(
-      "Residual Analysis\n Shapiro-Wilk: P = ",
+      "Residual Analysis\n Shapiro-Wilk: p = ",
       p_SH,
-      "\n Kolmogorov-Smirnoff: P = ",
+      "\n  Anderson-Darling: P = ",
       p_KS
     ),
     outer = TRUE
@@ -1055,16 +1055,16 @@ vis_resid = function(resid, fitted) {
   qqnorm(resid)
   qqline(resid, col = "red", lwd = 2)
 
-  KS = ks.test(resid, pnorm, mean(resid), sd(resid))
+  KS = ad.test(resid)
   p_KS = signif(KS$p.value, 2)
   SH = shapiro.test(resid)
   p_SH = signif(SH$p.value, 2)
 
   mtext(
     paste(
-      "Residual Analysis\n Shapiro-Wilk: P = ",
+      "Residual Analysis\n Shapiro-Wilk: p = ",
       p_SH,
-      "\n Kolmogorov-Smirnoff: P = ",
+      "\n Anderson-Darling: p = ",
       p_KS
     ),
     outer = TRUE
@@ -1109,7 +1109,7 @@ vis_regression_assumptions = function(x,
   qqnorm(rstandard(reg), ylab = "Sample Quantiles of Std. Residuals")
   qqline(rstandard(reg), col = "red", lwd = 2)
 
-  KS = ks.test(rstandard(lm(y ~ x)), pnorm, mean(rstandard(lm(y ~ x))), sd(rstandard(lm(y ~ x))))
+  KS = ad.test(rstandard(lm(y ~ x)))
   p_KS = signif(KS$p.value, 2)
   SH = shapiro.test(rstandard(lm(y ~ x)))
   p_SH = signif(SH$p.value, 2)
@@ -1119,7 +1119,7 @@ vis_regression_assumptions = function(x,
       paste(
         "Residual Analysis\n Shapiro-Wilk: p = ",
         p_SH,
-        "\n Kolmogorov-Smirnoff: p = ",
+        "\n Anderson-Darling: p = ",
         p_KS,
         "\n Requirements regression not met"
       ),
@@ -1129,9 +1129,9 @@ vis_regression_assumptions = function(x,
   } else{
     mtext(
       paste(
-        "Residual Analysis\n Shapiro-Wilk: P = ",
+        "Residual Analysis\n Shapiro-Wilk: p = ",
         p_SH,
-        "\n Kolmogorov-Smirnoff: P = ",
+        "\n Anderson-Darling: p = ",
         p_KS
       ),
       outer = TRUE
@@ -1141,7 +1141,7 @@ vis_regression_assumptions = function(x,
   my_list = list(
     "summary_regression" = resreg,
     "shapiro_test_residuals" = SH,
-    "ks_test_residuals" = KS
+    "ad_test_residuals" = KS
 
   )
    return(my_list)
@@ -1247,7 +1247,7 @@ vis_regression = function(x,
 
   b = confint(reg)
 
-  KS = ks.test(rstandard(lm(y ~ x)), pnorm, mean(rstandard(lm(y ~ x))), sd(rstandard(lm(y ~ x))))
+  KS = ad.test(rstandard(lm(y ~ x)))
 
   SH = shapiro.test(rstandard(lm(y ~ x)))
 
@@ -1284,7 +1284,7 @@ vis_regression = function(x,
     "dependent variable y"=name_of_sample,
     "summary_regression" = resreg,
     "shapiro_test_residuals" = SH,
-    "ks_test_residuals" = KS
+    "ad_test_residuals" = KS
   )
   par(oldpar)
    return(my_list)
