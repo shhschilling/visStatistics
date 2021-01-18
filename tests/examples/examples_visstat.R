@@ -38,8 +38,6 @@ visstat(InsectSpraysAB,"count","spray")
 
 
 
-
-
 #Kruskal-Wallis test: iris----
 visstat(iris,"Petal.Width", "Species")
 

@@ -32,8 +32,7 @@
 #                                   graphicsoutput = "png", file=tempfile())
 
 saveGraphVisstat = function(file=NULL, type=NULL, oldPlotName = NULL) {
-  #return if no file file is provided or no file is provided 
-  
+  #return if no file is provided
    if (is.null(file))
     {
       #message("saveGraphVisstat() returns NULL if file=NULL")
@@ -61,31 +60,4 @@ saveGraphVisstat = function(file=NULL, type=NULL, oldPlotName = NULL) {
 
 }
 
-
-####only for reference, has to be deleted before submission
-
-## saveGraphCairo function-------
-saveGraphCairo = function(file, type=NULL,oldPlotName =NULL) {
-  #close file first
-  if(is.null(type))
-  {return()}
-  else{
-    
-    
-    
-    if(is.null(oldPlotName)) {
-      dummy_name="dummy_plot"
-      oldPlotName=paste(dummy_name,".",type,sep="")
-    }
-    
-    dev.off()
-    file2 = gsub("[^[:alnum:]]", "_", file)
-    file3 = gsub("_{2,}", "_", file2)
-    newFileName = paste0(file3,".", type)
-    file.copy(oldPlotName,newFileName,overwrite=T)
-    
-    file.remove(oldPlotName)
-    
-  }
-}
 

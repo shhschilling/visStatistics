@@ -67,16 +67,20 @@
 #'
 #
 #' ## Linear regression
+#' visstat(trees,"Girth","Height") 
 #' 
 #' ## A) printing statistical ouput 
 #' stats_lin_reg=visstat(trees,"Girth","Height") #assign value to return values
 #' stats_lin_reg #printing tatistical output 
 #' remove(stats_lin_reg)
 #' 
-#' ## B) saving graphical output of type "png" to current working directory ->should be changed to tmp
-#' visstat(trees,"Girth","Height",graphicsoutput = "png") ; 
+#' ## B) saving graphical output of type "png" to current directory with default 
+#' ##    naming convention "statisticalTestName_varsample_varfactor.graphicsoutput"
+#' visstat(trees,"Girth","Height",graphicsoutput = "png"); #creates file regression_Girth_Height.png in current directory
+#' ## remove the example plot 
 #' file.remove("regression_Girth_Height.png")
 #' 
+#' '## C) saving graphical output of type "pdf" to user chosen directory and user chosen file name 
 
 
 #' @import vcd
