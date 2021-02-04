@@ -12,9 +12,9 @@ visstat(trees,"Girth","Height")
 # Graphical output is named following the naming convention
 #"statisticalTestName_varsample_varfactor.graphicsoutput" 
 linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "png",plotDirectory=filedir) ; 
-#nach zweitem Aufruf Fehler par(oldpa)
-linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "pdf",plotDirectory=filedir) ; 
-linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "svg",plotDirectory=filedir) ; 
+
+linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "pdf",plotName="hugo",plotDirectory=filedir) ; 
+linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "svg",,plotName="dante",plotDirectory=filedir) ; 
 
 
 #display stats of linear regression
@@ -24,11 +24,10 @@ linear_regression_trees
 mtcars$am = as.factor(mtcars$am)
 welch_cars=visstat(mtcars,"mpg","am")
 #store graphical output in different formats in directory defined in argument plotDirectory
-welch_cars=visstat(mtcars,"mpg","am",graphicsoutput="png",plotDirectory=filedir) 
+welch_cars=visstat(mtcars,"mpg","am",graphicsoutput="png",plotName="hans",plotDirectory=filedir ) 
+#standard naming convention
 welch_cars=visstat(mtcars,"mpg","am",graphicsoutput="pdf",plotDirectory=filedir) 
-welch_cars=visstat(mtcars,"mpg","am",graphicsoutput="svg",plotDirectory=filedir) 
-welch_cars=visstat(mtcars,"mpg","am",graphicsoutput="ps",plotDirectory=filedir) 
-welch_cars
+
 
 
 
@@ -36,8 +35,8 @@ welch_cars
 
 #Kruskal-Wallis test: iris----
 visstat(iris,"Petal.Width", "Species")
-
-
+visstat(iris,"Petal.Width", "Species",graphicsoutput="pdf",plotDirectory=filedir)
+visstat(iris,"Petal.Width", "Species",graphicsoutput="pdf",plotName="iris_kruskal",plotDirectory=filedir)
 
 #Welch two sample t.test: InsectSprays ----
 # select sprays A and B
@@ -46,7 +45,7 @@ InsectSpraysAB <- InsectSprays[ which(InsectSprays$spray == 'A'
 InsectSpraysAB$spray = factor(InsectSpraysAB$spray)
 #Welcht-t-Test
 visstat(InsectSpraysAB,"count","spray") #plots not saved
-visstat(InsectSpraysAB,"count","spray",graphicsoutput = "png",plotDirectory=filedir) 
+visstat(InsectSpraysAB,"count","spray",graphicsoutput = "png",plotName="insect_count_spray",plotDirectory=filedir) 
 
 #Wilcoxon rank sum test: ToothGrowth ----
 visstat(ToothGrowth,"len", "supp")
@@ -77,8 +76,9 @@ titanic_train$Survived = as.factor(titanic_train$Survived)
 titanic_train$Pclass = as.factor(titanic_train$Pclass)
 #Pearsons Chi squared, mosaic plot with Pearson's residuals
 visstat(titanic_train,"Survived","Pclass")
-
-
+visstat(titanic_train,"Survived","Pclass",graphicsoutput="png")
+visstat(titanic_train,"Survived","Pclass",plotName="picasso",graphicsoutput="png")
+visstat(titanic_train,"Survived","Pclass",plotName="picasso_ps",graphicsoutput="ps")
 #Chi squared, mosaic plots with HairEyeColor----
 #HairEyeColor data set: Pearsons Chi squared, mosaic plot with Pearson's residuals
 HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]));
@@ -104,7 +104,7 @@ visstat(blackBrownHazelGreen,"Hair","Eye")
 graphicaltypes=c(".png", ".pdf", ".svg", ".ps")
 for (i in graphicaltypes) {
   plotname=dir(filedir,pattern=i)
- # print(file.path(filedir,plotname))
+ print(file.path(filedir,plotname))
   file.remove(file.path(filedir,plotname))
 }
 

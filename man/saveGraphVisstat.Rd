@@ -30,7 +30,8 @@ Closes all graphical devices with \code{dev.off()} and saves the output only if 
 # very simple KDE (adapted from example in \code{Cairo()})
 openGraphCairo(type = "png", fileDirectory=tempdir())  
 plot(rnorm(4000),rnorm(4000),col="#ff000018",pch=19,cex=2) 
-saveGraphVisstat("norm",type = "png",fileDirectory=tempdir()) #saves file "norm.png" in directory specified in \code{fileDirectory} 
+#save file "norm.png" in directory specified in \code{fileDirectory} 
+saveGraphVisstat("norm",type = "png",fileDirectory=tempdir())
 file.remove(file.path(tempdir(),"norm.png"))  # remove file "norm.png" from \code{fileDirectory}.
 
 }

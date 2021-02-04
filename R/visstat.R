@@ -36,10 +36,11 @@
 #' @param conf.level confidence level of the interval.
 #' @param numbers	a logical indicating whether to show numbers in mosaic count plots.
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed	in mosaic count plots.
-#' @param graphicsoutput saves plot of type "png",  "jpg", "tiff" or  "bmp" in directory specified in \code{plotDirectory}
-#' following the naming convention "statisticalTestName_varsample_varfactor.graphicsoutput".
-#' If the type of the graphical output is not specified, no plots are saved.
-#' @param  plotDirectory specifies directory, where generated plots are stored. Default is current working directory.
+#' @param graphicsoutput saves plot(s) of type "png",  "jpg", "tiff" or  "bmp" in directory specified in \code{plotDirectory}. 
+#' If graphicsoutput=NULL, no plots are saved.
+#' @param plotName graphical output is stored following the naming convention "plotName.graphicsoutput" in \code{plotDirectory}.
+#' Without specifying this parameter, plotName is automatically generated following the convention "statisticalTestName_varsample_varfactor".
+#' @param plotDirectory specifies directory, where generated plots are stored. Default is current working directory.
 #' @return \code{list} containing statistics of test with highest statistical power meeting assumptions. All values are returned as invisibly copies. Values can be accessed by assigning a return value to \code{visstat}.
 #' @examples
 #'
@@ -62,18 +63,28 @@
 #' ##slicing out a 2 x2 contingency table
 #' blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
 #' blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
-#' visstat(blackBrownHazelGreen,"Hair","Eye",graphicsoutput = "png",plotDirectory=getwd())
+
 #'
 #' ## Linear regression
 #' visstat(trees,"Girth","Height")
 #'
-#' ## saving graphical output of type "png" in temporary directory tempdir()
+#'## Saving the graphical output:
+#'
+#' ## A) saving graphical output of type "png" in temporary directory tempdir() 
+#' ##    with default naming convention:
 #' visstat(blackBrownHazelGreen,"Hair","Eye",graphicsoutput = "png",plotDirectory=tempdir())
 #' ##remove graphical output from plotDirectory
 #' file.remove(file.path(tempdir(),"chi_squared_or_fisher_Hair_Eye.png"))
 #' file.remove(file.path(tempdir(),"mosaic_complete_Hair_Eye.png"))
 
-
+#' ## B) Specifying pdf as output type: 
+#' visstat(iris,"Petal.Width", "Species",graphicsoutput = "pdf",plotDirectory=tempdir())
+#' file.remove(file.path(tempdir(),"kruskal_Petal_Width_Species.pdf"))
+#'
+#' ## C) Specifiying plotName overwrites default naming convention
+#' visstat(iris,"Petal.Width","Species",graphicsoutput = "pdf",
+#' plotName="kruskal_iris",plotDirectory=tempdir())
+#' file.remove(file.path(tempdir(),"kruskal_iris.pdf"))
 
 #' @import vcd
 #' @import Cairo
@@ -94,6 +105,7 @@ visstat = function(dataframe,
                    numbers = TRUE,
                    minpercent = 0.05,
                    graphicsoutput = NULL,
+                   plotName=NULL,
                    plotDirectory = getwd())
 {
   # The function vistat() visualizes the statistical hypothesis testing between the dependent variable (response) varsample and the independent variable (feature) varfactor.
@@ -110,9 +122,11 @@ visstat = function(dataframe,
   # Optional parameters with set default values:
   # numbers: Boolean deciding if in mosaic plots counts of each category should be shown
   # minpercent: number between 0 and 1 indicating the minimal fraction of total count which has to be in each category of count data in order to be displayed in mosaic plot
-  # graphicsoutput: character string indicating if a plot of type  "png", "jpeg", "jpg", "tiff", "bmp" should be saved to the current working directory following the
-  # naming convention "statisticalTestName_varsample_varfactor.graphicsoutput". The default "NULL" does not save the current plot.
-  # plotDirectory: specifiying directory to save plots. Default directory is the current working directory defined by getwd()
+  # graphicsoutput: character string indicating if a plot of type  "png", "jpeg", "jpg", "tiff", "bmp" should be saved to the director specified i plotDirectory following the
+  # Note that the parameter graphicsoutput must be specified to save plots.  The default "NULL" does not save the current plot(s).
+  # plotName: Graphical output is stored following the naming convention "plotName.graphicsoutput" in plotDirectory. 
+  # The default plotName=NULL generates automatically a plotName following the pattern  "statisticalTestName_varsample_varfactor".
+  # plotDirectory: specifies directory to save plots. Default directory is the current working directory defined by getwd()
   
   
   stopifnot(is.data.frame(dataframe))
@@ -142,7 +156,7 @@ visstat = function(dataframe,
   matchingCriteria = input$matchingCriteria
   
   
-  # This part must become a function-------
+  
   #dependent on samples, fact, name_of_sample, name_of_factor, conf.level,
   #paired=F,
   typesample = class(samples)
@@ -212,8 +226,14 @@ visstat = function(dataframe,
           samplename = varsample,
           factorname = matchingCriteria
         )
+        
+        if (is.null(plotName))
+        {filename=paste("ttest_", name_of_sample, "_", name_of_factor, sep = "")
+        }else{
+          filename=plotName
+        }
         saveGraphVisstat(
-          paste("ttest_", name_of_sample, "_", name_of_factor, sep = ""),
+          filename,
           type = graphicsoutput,
           fileDirectory = plotDirectory
         )
@@ -251,14 +271,15 @@ visstat = function(dataframe,
             samplename = varsample,
             factorname = matchingCriteria
           )
+          if (is.null(plotName))
+          {filename=paste("wilcoxon-test_", name_of_sample, "_", name_of_factor, sep = "")
+          }else{
+            filename=plotName
+          }
+          
+          
           saveGraphVisstat(
-            paste(
-              "wilcoxon-test_",
-              name_of_sample,
-              "_",
-              name_of_factor,
-              sep = ""
-            ),
+            fileName=filename,
             type = graphicsoutput,
             fileDirectory = plotDirectory
           )
@@ -275,8 +296,15 @@ visstat = function(dataframe,
             samplename = varsample,
             factorname = matchingCriteria
           )
+        
+          if (is.null(plotName))
+          {filename=paste("ttest_", name_of_sample, "_", name_of_factor, sep = "")
+          }else{
+            filename=plotName
+          }
+          
           saveGraphVisstat(
-            paste("ttest_", name_of_sample, "_", name_of_factor, sep = ""),
+            fileName=filename,
             type = graphicsoutput,
             fileDirectory = plotDirectory
           )
@@ -304,14 +332,20 @@ visstat = function(dataframe,
       openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
       
       vis_chi = vis_chi_squared_test(samples, fact, name_of_sample, "groups")
+      if (is.null(plotName))
+      {filename=paste(
+        "chi_squared_or_fisher_",
+        name_of_sample,
+        "_",
+        name_of_factor,
+        sep = ""
+      )
+      }else{
+        filename=paste(plotName,"_","chi_squared_or_fisher",sep="")
+      }
+      
       saveGraphVisstat(
-        paste(
-          "chi_squared_or_fisher_",
-          name_of_sample,
-          "_",
-          name_of_factor,
-          sep = ""
-        ),
+        fileName=filename,
         type = graphicsoutput,
         fileDirectory = plotDirectory
       )
@@ -336,14 +370,25 @@ visstat = function(dataframe,
         numbers = numberflag
       )
       
+      
+      
+      if (is.null(plotName))
+      {filename=paste(
+        "mosaic_complete_",
+        name_of_sample,
+        "_",
+        name_of_factor,
+        sep = ""
+      )
+      }else{
+        filename=paste(plotName,"_","mosaic_complete",sep="")
+      }
+      
+      
+      
       saveGraphVisstat(
-        paste(
-          "mosaic_complete_",
-          name_of_sample,
-          "_",
-          name_of_factor,
-          sep = ""
-        ),
+        filename
+        ,
         type = graphicsoutput,
         fileDirectory = plotDirectory
       )
@@ -393,8 +438,15 @@ visstat = function(dataframe,
                                      samples,
                                      name_of_factor = name_of_factor,
                                      name_of_sample = name_of_sample)
+    if (is.null(plotName))
+    {filename=paste("regression_", name_of_sample, "_", name_of_factor, sep = "")
+    }else{
+      filename=paste(plotName)
+    }
+    
+    
     saveGraphVisstat(
-      paste("regression_", name_of_sample, "_", name_of_factor, sep = ""),
+      fileName=filename,
       type = graphicsoutput,
       fileDirectory = plotDirectory
     )
@@ -427,8 +479,18 @@ visstat = function(dataframe,
                                   fact,
                                   samplename = varsample,
                                   factorname = varfactor)
+      
+      
+      if (is.null(plotName))
+      {
+        filename=paste("anova_", name_of_sample, "_", name_of_factor, sep = "")
+      }else{
+        filename=paste(plotName)
+      }
+      
+      
       saveGraphVisstat(
-        paste("anova_", name_of_sample, "_", name_of_factor, sep = ""),
+        fileName=filename,
         type = graphicsoutput,
         fileDirectory = plotDirectory
       )
@@ -452,8 +514,16 @@ visstat = function(dataframe,
         
       )
       
+      if (is.null(plotName))
+      {
+        filename=paste("kruskal_", name_of_sample, "_", name_of_factor, sep = "")
+      }else{
+        filename=paste(plotName)
+      }
+      
+      
       saveGraphVisstat(
-        paste("kruskal_", name_of_sample, "_", name_of_factor, sep = ""),
+        fileName=filename,
         type = graphicsoutput,
         fileDirectory = plotDirectory
       )

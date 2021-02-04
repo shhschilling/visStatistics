@@ -12,6 +12,7 @@ visstat(
   numbers = TRUE,
   minpercent = 0.05,
   graphicsoutput = NULL,
+  plotName = NULL,
   plotDirectory = getwd()
 )
 }
@@ -29,9 +30,11 @@ Contingency tables can be transformed to column wise structure with helper funct
 
 \item{minpercent}{number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed    in mosaic count plots.}
 
-\item{graphicsoutput}{saves plot of type "png",  "jpg", "tiff" or  "bmp" in directory specified in \code{plotDirectory}
-following the naming convention "statisticalTestName_varsample_varfactor.graphicsoutput".
-If the type of the graphical output is not specified, no plots are saved.}
+\item{graphicsoutput}{saves plot(s) of type "png",  "jpg", "tiff" or  "bmp" in directory specified in \code{plotDirectory}. 
+If graphicsoutput=NULL, no plots are saved.}
+
+\item{plotName}{graphical output is stored following the naming convention "plotName.graphicsoutput" in \code{plotDirectory}.
+Without specifying this parameter, plotName is automatically generated following the convention "statisticalTestName_varsample_varfactor".}
 
 \item{plotDirectory}{specifies directory, where generated plots are stored. Default is current working directory.}
 }
@@ -82,16 +85,24 @@ HairEyeColorMaleFisher = HairEyeColor[,,1]
 ##slicing out a 2 x2 contingency table
 blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
 blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
-visstat(blackBrownHazelGreen,"Hair","Eye",graphicsoutput = "png",plotDirectory=getwd())
 
 ## Linear regression
 visstat(trees,"Girth","Height")
 
-## saving graphical output of type "png" in temporary directory tempdir()
+## Saving the graphical output:
+
+## A) saving graphical output of type "png" in temporary directory tempdir() 
+##    with default naming convention:
 visstat(blackBrownHazelGreen,"Hair","Eye",graphicsoutput = "png",plotDirectory=tempdir())
 ##remove graphical output from plotDirectory
 file.remove(file.path(tempdir(),"chi_squared_or_fisher_Hair_Eye.png"))
 file.remove(file.path(tempdir(),"mosaic_complete_Hair_Eye.png"))
-chi_squared_Hair_Eye.png
-mosaic_complete_Hair_Eye.png
+## B) Specifying pdf as output type: 
+visstat(iris,"Petal.Width", "Species",graphicsoutput = "pdf",plotDirectory=tempdir())
+file.remove(file.path(tempdir(),"kruskal_Petal_Width_Species.pdf"))
+
+## C) Specifiying plotName overwrites default naming convention
+visstat(iris,"Petal.Width","Species",graphicsoutput = "pdf",
+plotName="kruskal_iris",plotDirectory=tempdir())
+file.remove(file.path(tempdir(),"kruskal_iris.pdf"))
 }
