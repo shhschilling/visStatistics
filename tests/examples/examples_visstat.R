@@ -2,7 +2,7 @@
 library(visStatistics)
 
 #specify directory where plots will be stored. Without definition of plotDirectory: current working directory
-filedir='/Users/sschilli/Desktop'
+filedir=tempdir()
 
 # linear regression: trees data set:----
 visstat(trees,"Girth","Height") 
@@ -31,10 +31,8 @@ welch_cars=visstat(mtcars,"mpg","am",graphicsoutput="ps",plotDirectory=filedir)
 welch_cars
 
 
-#Kruskal-Wallis Insect spray----
 
-kruskal_insects=visstat(InsectSprays,"count","spray")
-warnkruskal_insects=visstat(InsectSprays,"count","spray",graphicsoutput="png",plotDirectory=filedir)
+
 
 #Kruskal-Wallis test: iris----
 visstat(iris,"Petal.Width", "Species")
@@ -54,6 +52,22 @@ visstat(InsectSpraysAB,"count","spray",graphicsoutput = "png",plotDirectory=file
 visstat(ToothGrowth,"len", "supp")
 visstat(ToothGrowth,"len", "supp",graphicsoutput = "png",plotDirectory=filedir)
 visstat(ToothGrowth,"len", "supp",graphicsoutput = "pdf",plotDirectory=filedir)
+
+#Wilcoxon rank sum test:Grades by Sex
+dat <- data.frame(
+  Sex = as.factor(c(rep("Girl", 12), rep("Boy", 12))),
+  Grade = c(
+    19, 18, 9, 17, 8, 7, 16, 19, 20, 9, 11, 18,
+    16, 5, 15, 2, 14, 15, 4, 7, 15, 6, 7, 14
+  )
+)
+
+visstat(dat,"Grade", "Sex")
+
+
+
+
+
 
 #Chi squqred, mosaic plots with Titanic data set----
 #install.packages("titanic")
@@ -76,7 +90,7 @@ HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher));
 res_chi=visstat(HairEyeColorMaleFisher,"Hair","Eye") #test statistics stored in res_chi
 res_chi=visstat(HairEyeColorMaleFisher,"Hair","Eye",graphicsoutput = "png",plotDirectory=filedir) #stores two graphics outputs
 
-#2x2 contingency tables---
+#2x2 contingency tables----
 HairEyeColorMaleFisher = HairEyeColor[,,1]
 #slicing out a 2 x2 contingency table
 blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
@@ -86,11 +100,11 @@ visstat(blackBrownHazelGreen,"Hair","Eye")
 
 
 
-#remove output plots
+#remove output plots----
 graphicaltypes=c(".png", ".pdf", ".svg", ".ps")
 for (i in graphicaltypes) {
   plotname=dir(filedir,pattern=i)
-  print(file.path(filedir,plotname))
+ # print(file.path(filedir,plotname))
   file.remove(file.path(filedir,plotname))
 }
 

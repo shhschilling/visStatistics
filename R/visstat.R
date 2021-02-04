@@ -39,15 +39,12 @@
 #' @param graphicsoutput saves plot of type "png",  "jpg", "tiff" or  "bmp" in directory specified in \code{plotDirectory} 
 #' following the naming convention "statisticalTestName_varsample_varfactor.graphicsoutput". 
 #' If the type of the graphical output is not specified, no plots are saved.
-#' @param  plotDirectory specifies directory, where generated plots are stored. Default is working directory.
+#' @param  plotDirectory specifies directory, where generated plots are stored. Default is current working directory.
 #' @return \code{list} containing statistics of test with highest statistical power meeting assumptions. All values are returned as invisibly copies. Values can be accessed by assigning a return value to \code{visstat}.
 #' @examples
 #' 
 #' ## Kruskal-Wallis rank sum test
 #' visstat(iris,"Petal.Width", "Species") 
-
-#' 
-#' ## ANOVA and One-way analysis of means
 #' visstat(InsectSprays,"count","spray")  
 #' 
 #' ## Wilcoxon rank sum test
@@ -57,19 +54,26 @@
 #' mtcars$am=as.factor(mtcars$am) # transform to categorical data of type factor
 #' visstat(mtcars,"mpg","am") # Welch Two Sample t-test
 
-#' ## Pearson's Chi-squared test
+#' ## Pearson's Chi-squared test and mosaic plot with Pearson residuals
 #' visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye")
 #'
-#' ## Fisher test: Example transforming contingency table to data.frame.
-#' HairEyeColorMaleFisher=HairEyeColor[,,1]
-#' HairEyeColorMaleFisher[HairEyeColorMaleFisher<10]=4 #create example enforcing Cochran's rule
-#' ## transform contingency table to data.frame
-#' HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher)) 
-#' visstat(HairEyeColorMaleFisher,"Hair","Eye") # Fisher test
-#' remove(HairEyeColorMaleFisher)
+#' ##2x2 contingency tables with Fisher's exact test and mosaic plot with Pearson residuals
+#' HairEyeColorMaleFisher = HairEyeColor[,,1]
+#' ##slicing out a 2 x2 contingency table
+#' blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
+#' blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
+#' visstat(blackBrownHazelGreen,"Hair","Eye",graphicsoutput = "png",plotDirectory=getwd())
 #'
 #' ## Linear regression
 #' visstat(trees,"Girth","Height") 
+#' 
+#' ## saving graphical output of type "png" in temporary directory tempdir() 
+#' visstat(blackBrownHazelGreen,"Hair","Eye",graphicsoutput = "png",plotDirectory=tempdir())
+#' ##remove graphical output from plotDirectory
+#' file.remove(file.path(tempdir(),"chi_squared_or_fisher_Hair_Eye.png"))
+#' file.remove(file.path(tempdir(),"mosaic_complete_Hair_Eye.png"))
+#' chi_squared_Hair_Eye.png
+#' mosaic_complete_Hair_Eye.png
 
 #' @import vcd
 #' @import Cairo
@@ -120,11 +124,10 @@ visstat = function(dataframe,
   
   #store default graphical parameters------
   #oldpar=resetPar()
-  
   oldpar <- par(no.readonly = TRUE)
   oldpar$new=F
   #restore graphics parameters on exit
-  on.exit(par(oldpar)) 
+  on.exit(par(oldpar),add=TRUE) 
   
   
   #Set default values---------------------------
@@ -286,7 +289,7 @@ visstat = function(dataframe,
        
         vis_chi = vis_chi_squared_test(samples, fact, name_of_sample, "groups")
         saveGraphVisstat(paste(
-          "chi_squared_",
+          "chi_squared_or_fisher_",
           name_of_sample,
           "_",
           name_of_factor,

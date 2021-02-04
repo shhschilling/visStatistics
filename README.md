@@ -7,9 +7,6 @@
  A graph displaying the raw data accordingly to the chosen test as well as the test statistics is generated. Furthermore
  `visstat()` returns the corresponding test statistics as text.
   Implemented tests: `lm(), t.test(), wilcox.test(), aov(), oneway.test(),kruskal.test(), fisher.test(),chisqu.test()`.
-`visstat()` tests the fulfillment of the underlying assumptiosn of `aov` and `oneway.test` by calling the internal function `vis_anova_assumptions`.
-
-
 
 
 ## Installation from GitHub

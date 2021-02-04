@@ -535,7 +535,7 @@ vis_chi_squared_test = function(samples,
 
     #creates new plot for barplot
     #par(oma = c(0, 0, 3, 0), new <- TRUE) 
-    par(oma = c(0, 0, 3, 0)) 
+    par(mfrow = c(1, 1),oma = c(0, 0, 3, 0)) 
     
     maxlabels = length(levels(samples))
     if (maxlabels > 7 |
@@ -1827,11 +1827,11 @@ colorscheme = function(colorcode = NULL)
 
 }
 
-resetPar <- function() {
-  dev.new()
-  while (!is.null(dev.list()))  dev.off() 
-  oldpar <- par(no.readonly = TRUE)
-
-  return(oldpar)
-}
+# resetPar <- function() {
+#   dev.new
+#   while (!is.null(dev.list()))  dev.off() 
+#   oldpar <- par(no.readonly = TRUE)
+# 
+#   return(oldpar)
+# }
 
