@@ -6,7 +6,9 @@
 # Testing for normality and visualization ----
 
 test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
-  
+  #store default graphical parameters------
+ 
+
  
 
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
@@ -531,8 +533,10 @@ vis_chi_squared_test = function(samples,
     #  y_val = c(0, norm_counts[1, ], 0)
 
 
-
-    par(oma = c(0, 0, 3, 0), new <- TRUE)
+    #creates new plot for barplot
+    #par(oma = c(0, 0, 3, 0), new <- TRUE) 
+    par(oma = c(0, 0, 3, 0)) 
+    
     maxlabels = length(levels(samples))
     if (maxlabels > 7 |
         grepl("basis", samplename) | grepl("source", samplename)
@@ -1825,8 +1829,9 @@ colorscheme = function(colorcode = NULL)
 
 resetPar <- function() {
   dev.new()
+  while (!is.null(dev.list()))  dev.off() 
   oldpar <- par(no.readonly = TRUE)
-  dev.off()
+
   return(oldpar)
 }
 

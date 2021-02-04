@@ -119,7 +119,10 @@ visstat = function(dataframe,
   
   
   #store default graphical parameters------
-  oldpar=resetPar()
+  #oldpar=resetPar()
+  
+  oldpar <- par(no.readonly = TRUE)
+  oldpar$new=F
   #restore graphics parameters on exit
   on.exit(par(oldpar)) 
   
@@ -231,6 +234,7 @@ visstat = function(dataframe,
         #case 1: Wilcoxon-Test:
         #normal distribution not given for n<limit
         openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
+        
         vis_sample_fact = two_sample_WilcoxonTest(
           samples,
           fact,
@@ -249,6 +253,7 @@ visstat = function(dataframe,
           ),type = graphicsoutput,fileDirectory=plotDirectory)
       } else{
         openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
+        
         vis_sample_fact = two_sample_tTest(samples,
                                            fact,
                                            conf.level = conf.level,
@@ -258,6 +263,7 @@ visstat = function(dataframe,
           paste("ttest_", name_of_sample, "_", name_of_factor, sep = ""),type = graphicsoutput,fileDirectory = plotDirectory)
         
       }
+      
       return(invisible(vis_sample_fact))
     }
   }
@@ -277,6 +283,7 @@ visstat = function(dataframe,
       } else{
         #Chi^2 Test-----
         openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
+       
         vis_chi = vis_chi_squared_test(samples, fact, name_of_sample, "groups")
         saveGraphVisstat(paste(
           "chi_squared_",
@@ -295,7 +302,9 @@ visstat = function(dataframe,
         } else{
           numberflag = T
         }
+        
         openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
+        
         vis_mosaic_res = vis_mosaic(
           samples,
           fact,
@@ -319,6 +328,7 @@ visstat = function(dataframe,
 
         if (maxlabels > 7) {
           openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
+          
           vis_mosaic_res = vis_mosaic(
             samples,
             fact,
@@ -352,6 +362,7 @@ visstat = function(dataframe,
         (typesample == "integer" | typesample == "numeric"))
     {
       openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
+      
       vis_sample_fact = vis_regression(fact,
                                        samples,
                                        name_of_factor = name_of_factor,
@@ -368,6 +379,7 @@ visstat = function(dataframe,
         (typesample == "integer" | typesample == "numeric") &&
         nlevels(fact) > 2)
     {
+      
       visanova = vis_anova_assumptions(
         samples,
         fact,
@@ -375,13 +387,14 @@ visstat = function(dataframe,
         samplename = varsample,
         factorname = varfactor
       )
-
+      
 
       if (visanova$shapiro_test$p.value > alpha |
           visanova$ad_test$p.value > alpha)
 
       {
         openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
+        
         vis_sample_fact = vis_anova(samples,
                                     fact,
                                     samplename = varsample,
@@ -395,6 +408,7 @@ visstat = function(dataframe,
         #if p -values of both Shapiro-Wilk and Kruskall-Wallis-Test are smaller than 0.05, Kruskall-Wallis-Test
       } else{
         openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
+        
         vis_sample_fact = vis_Kruskal_Wallis_clusters(
           samples,
           fact,
@@ -420,7 +434,7 @@ visstat = function(dataframe,
  
 
   
-    par(oldpar)
+    
     return(invisible(vis_sample_fact))
   }
   #End of vis_sample_fact function -------

@@ -20,7 +20,6 @@
 #' 
 #' @export saveGraphVisstat
 #' 
-
 saveGraphVisstat = function(fileName = NULL, type=NULL, fileDirectory=getwd(),oldfile = NULL) {
   #return if no fileName is provided
   

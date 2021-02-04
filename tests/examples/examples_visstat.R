@@ -32,11 +32,14 @@ welch_cars
 
 
 #Kruskal-Wallis Insect spray----
+
 kruskal_insects=visstat(InsectSprays,"count","spray")
-kruskal_insects=visstat(InsectSprays,"count","spray",graphicsoutput="png",plotDirectory=filedir)
+warnkruskal_insects=visstat(InsectSprays,"count","spray",graphicsoutput="png",plotDirectory=filedir)
 
 #Kruskal-Wallis test: iris----
 visstat(iris,"Petal.Width", "Species")
+
+
 
 #Welch two sample t.test: InsectSprays ----
 # select sprays A and B
@@ -83,7 +86,7 @@ visstat(blackBrownHazelGreen,"Hair","Eye")
 
 
 
-#remove output plots-----
+#remove output plots
 graphicaltypes=c(".png", ".pdf", ".svg", ".ps")
 for (i in graphicaltypes) {
   plotname=dir(filedir,pattern=i)
