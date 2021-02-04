@@ -1,14 +1,13 @@
 # MIT License-----
-#Copyright (c) 2020 Sabine Schilling
-
+#Copyright (c) 2021 Sabine Schilling
 
 # Plotting functions----
 
-# Testing for Normality and Visualization ----
+# Testing for normality and visualization ----
 
 test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
-  oldpar = par(no.readonly = TRUE)
-  on.exit(par(oldpar))
+  
+ 
 
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
   #Remove NA from x
@@ -78,15 +77,13 @@ test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
     outer = TRUE
   )
   my_list = list("Anderson-Darling" = KS, "Shapiro" = SH)
-  par(oldpar)
+  
   return(my_list)
 }
 
 
 
-
 ###### Two-Sample t-Test ###############################
-
 two_sample_tTest = function(samples,
                             fact,
                             alternative = c("two.sided", "less", "greater"),
@@ -97,8 +94,7 @@ two_sample_tTest = function(samples,
                             samplename = "",
                             factorname = "")
 {
-  oldpar = par(no.readonly = TRUE)
-  on.exit(par(oldpar))
+ 
   alternative <- match.arg(alternative)
 
   if (!missing(mu) && (length(mu) != 1 || is.na(mu)))
@@ -258,7 +254,6 @@ two_sample_tTest = function(samples,
       unique(fact)[2]
     )
   )
-
   my_list <-
     list(
       "dependent variable (response)" = samplename,
@@ -268,14 +263,9 @@ two_sample_tTest = function(samples,
       "Shapiro-Wilk-test_sample2" = p2
     )
   
-  
-  
-  par(oldpar)
   return(my_list)
 
 }
-
-
 
 
 # Two-Sample Wilcoxon-Test  ###############################
@@ -302,8 +292,7 @@ two_sample_WilcoxonTest = function(samples,
   }
 
   #Store default graphical parameter
-  oldpar = par(no.readonly = TRUE)
-  on.exit(par(oldpar))
+  
   alpha = 1 - conf.level
 
   #Define color palette
@@ -395,7 +384,7 @@ two_sample_WilcoxonTest = function(samples,
       "statsWilcoxon" = t,
       "statsBoxplot" = b
     )
-  par(oldpar)
+  
    return(my_list)
 
 
@@ -409,7 +398,10 @@ two_sample_FTest = function(samples,
                             alternative = "two.sided") {
   # if (missing(conf.int)) conf.int = 0.95
   #  if (missing(alternative)) alternative = "two.sided"
-
+  #Store default graphical parameter
+  
+  
+  
   alpha = 1 - confint
   levels = unique(sort(fact))
 
@@ -488,6 +480,7 @@ two_sample_FTest = function(samples,
     ),
     outer = TRUE
   )
+  
 }
 
 
@@ -501,6 +494,8 @@ vis_chi_squared_test = function(samples,
                                 samplename,
                                 factorname,
                                 cex = 1) {
+ 
+  
   colortuple = colorscheme(1)
   ColorPalette = colorscheme(3)
   if (missing(samplename))
@@ -600,7 +595,7 @@ vis_chi_squared_test = function(samples,
       lwd = 2,
       cex = legendsize
     )
-
+    
     return(fisher_chi)
   }
 }
@@ -613,6 +608,9 @@ vis_anova = function(samples,
                      samplename = "",
                      factorname = "",
                      cex = 1) {
+  
+ 
+  
   alpha = 1 - conf.level
   samples3 = na.omit(samples)
   fact <- subset(fact,!is.na(samples))
@@ -736,7 +734,7 @@ vis_anova = function(samples,
       "adjusted_p_values_t_test" = tuk,
       "conf.level" = conf.level
     )
-   
+  
    return(my_list)
 }
 
@@ -1048,6 +1046,8 @@ vis_regr_trumpets = function(x, y, P) {
 
 ###### Visualize Residuals ###############################
 vis_resid = function(resid, fitted) {
+  
+  
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
   plot(fitted, resid, main = "Residuals vs. Fitted")
   abline(h = 0, col = 1, lwd = 2)
@@ -1069,15 +1069,15 @@ vis_resid = function(resid, fitted) {
     ),
     outer = TRUE
   )
+ 
 }
 
 
 ###### Visualize Regression ###############################
-
-
 vis_regression_assumptions = function(x,
                                       y,
                                       conf.level = 0.95) {
+  
   alpha = 1 - conf.level
   # P = alpha
 
@@ -1144,6 +1144,8 @@ vis_regression_assumptions = function(x,
     "ad_test_residuals" = KS
 
   )
+  
+  
    return(my_list)
 }
 
@@ -1156,9 +1158,7 @@ vis_regression = function(x,
                           name_of_factor = character(),
                           name_of_sample = character())
 {
-  #Store default graphical parameter
-  oldpar = par(no.readonly = TRUE)
-  on.exit(par(oldpar))
+  
   alpha = 1 - conf.level
   P = alpha
   #remove all NAs from both vectors
@@ -1286,7 +1286,7 @@ vis_regression = function(x,
     "shapiro_test_residuals" = SH,
     "ad_test_residuals" = KS
   )
-  par(oldpar)
+  
    return(my_list)
 }
 
@@ -1823,4 +1823,10 @@ colorscheme = function(colorcode = NULL)
 
 }
 
+resetPar <- function() {
+  dev.new()
+  oldpar <- par(no.readonly = TRUE)
+  dev.off()
+  return(oldpar)
+}
 

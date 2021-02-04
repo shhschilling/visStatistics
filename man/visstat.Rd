@@ -11,7 +11,8 @@ visstat(
   conf.level = 0.95,
   numbers = TRUE,
   minpercent = 0.05,
-  graphicsoutput = NULL
+  graphicsoutput = NULL,
+  plotDirectory = getwd()
 )
 }
 \arguments{
@@ -26,9 +27,13 @@ Contingency tables can be transformed to column wise structure with helper funct
 
 \item{numbers}{a logical indicating whether to show numbers in mosaic count plots.}
 
-\item{minpercent}{number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed    in the mosaic count plots.}
+\item{minpercent}{number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed    in mosaic count plots.}
 
-\item{graphicsoutput}{saves plot of type "png", "jpeg", "jpg", "tiff" or  "bmp" in current working directory following the naming convention "statisticalTestName_varsample_varfactor.graphicsoutput"}
+\item{graphicsoutput}{saves plot of type "png",  "jpg", "tiff" or  "bmp" in directory specified in \code{plotDirectory} 
+following the naming convention "statisticalTestName_varsample_varfactor.graphicsoutput". 
+If the type of the graphical output is not specified, no plots are saved.}
+
+\item{plotDirectory}{specifies directory, where generated plots are stored. Default is working directory.}
 }
 \value{
 \code{list} containing statistics of test with highest statistical power meeting assumptions. All values are returned as invisibly copies. Values can be accessed by assigning a return value to \code{visstat}.
@@ -58,6 +63,7 @@ If more than 20 percent of all cells have a count smaller than 5, is performed a
 In both cases case an additional mosaic plot showing Pearson's residuals is generated.
 }
 \examples{
+
 ## Kruskal-Wallis rank sum test
 visstat(iris,"Petal.Width", "Species") 
 
@@ -68,7 +74,7 @@ visstat(InsectSprays,"count","spray")
 visstat(ToothGrowth,"len", "supp")
 
 ## Welch Two Sample t-test
-mtcars$am=as.factor(mtcars$am) # transform to categorical data of type "factor"
+mtcars$am=as.factor(mtcars$am) # transform to categorical data of type factor
 visstat(mtcars,"mpg","am") # Welch Two Sample t-test
 ## Pearson's Chi-squared test
 visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye")
@@ -76,20 +82,11 @@ visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye")
 ## Fisher test: Example transforming contingency table to data.frame.
 HairEyeColorMaleFisher=HairEyeColor[,,1]
 HairEyeColorMaleFisher[HairEyeColorMaleFisher<10]=4 #create example enforcing Cochran's rule
-#transform contingency table to data.frame
+## transform contingency table to data.frame
 HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher)) 
 visstat(HairEyeColorMaleFisher,"Hair","Eye") # Fisher test
 remove(HairEyeColorMaleFisher)
 
 ## Linear regression
-
-## A) printing statistical ouput 
-stats_lin_reg=visstat(trees,"Girth","Height") #assign value to return values
-stats_lin_reg #printing tatistical output 
-remove(stats_lin_reg)
-
-## B) saving graphical output of type "png" to current working directory ->should be changed to tmp
-visstat(trees,"Girth","Height",graphicsoutput = "png") ; 
-file.remove("regression_Girth_Height.png")
-
+visstat(trees,"Girth","Height") 
 }

@@ -1,5 +1,5 @@
 #Helper function in visstat----
-#' Selects columns defined by characters varsample and varfactor from data.frame
+#' Selects columns defined by characters varsample and varfactor from a data.frame
 #'
 #'Selects columns defined by characters \code{varsample} and \code{varfactor} from \code{dataframe}, returns selected columns with their names.
 #' @param dataframe \code{data.frame} or \code{list} containing at least two columns with column headings of data type \code{character}. Data must be column wise ordered.

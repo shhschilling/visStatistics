@@ -35,11 +35,14 @@
 #' @param varfactor column name of independent variable in \code{dataframe}, datatype \code{character}.
 #' @param conf.level confidence level of the interval.
 #' @param numbers	a logical indicating whether to show numbers in mosaic count plots. 
-#' @param minpercent number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed	in the mosaic count plots.
-#' @param graphicsoutput saves plot of type "png", "jpeg", "jpg", "tiff" or  "bmp" in current working directory following the naming convention "statisticalTestName_varsample_varfactor.graphicsoutput"
-#'
+#' @param minpercent number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed	in mosaic count plots.
+#' @param graphicsoutput saves plot of type "png",  "jpg", "tiff" or  "bmp" in directory specified in \code{plotDirectory} 
+#' following the naming convention "statisticalTestName_varsample_varfactor.graphicsoutput". 
+#' If the type of the graphical output is not specified, no plots are saved.
+#' @param  plotDirectory specifies directory, where generated plots are stored. Default is working directory.
 #' @return \code{list} containing statistics of test with highest statistical power meeting assumptions. All values are returned as invisibly copies. Values can be accessed by assigning a return value to \code{visstat}.
 #' @examples
+#' 
 #' ## Kruskal-Wallis rank sum test
 #' visstat(iris,"Petal.Width", "Species") 
 
@@ -51,7 +54,7 @@
 #' visstat(ToothGrowth,"len", "supp")
 #' 
 #' ## Welch Two Sample t-test
-#' mtcars$am=as.factor(mtcars$am) # transform to categorical data of type "factor"
+#' mtcars$am=as.factor(mtcars$am) # transform to categorical data of type factor
 #' visstat(mtcars,"mpg","am") # Welch Two Sample t-test
 
 #' ## Pearson's Chi-squared test
@@ -60,28 +63,13 @@
 #' ## Fisher test: Example transforming contingency table to data.frame.
 #' HairEyeColorMaleFisher=HairEyeColor[,,1]
 #' HairEyeColorMaleFisher[HairEyeColorMaleFisher<10]=4 #create example enforcing Cochran's rule
-#' #transform contingency table to data.frame
+#' ## transform contingency table to data.frame
 #' HairEyeColorMaleFisher = counts_to_cases(as.data.frame(HairEyeColorMaleFisher)) 
 #' visstat(HairEyeColorMaleFisher,"Hair","Eye") # Fisher test
 #' remove(HairEyeColorMaleFisher)
 #'
-#
 #' ## Linear regression
 #' visstat(trees,"Girth","Height") 
-#' 
-#' ## A) printing statistical ouput 
-#' stats_lin_reg=visstat(trees,"Girth","Height") #assign value to return values
-#' stats_lin_reg #printing tatistical output 
-#' remove(stats_lin_reg)
-#' 
-#' ## B) saving graphical output of type "png" to current directory with default 
-#' ##    naming convention "statisticalTestName_varsample_varfactor.graphicsoutput"
-#' visstat(trees,"Girth","Height",graphicsoutput = "png"); #creates file regression_Girth_Height.png in current directory
-#' ## remove the example plot 
-#' file.remove("regression_Girth_Height.png")
-#' 
-#' '## C) saving graphical output of type "pdf" to user chosen directory and user chosen file name 
-
 
 #' @import vcd
 #' @import Cairo
@@ -101,7 +89,9 @@ visstat = function(dataframe,
                                    conf.level = 0.95,
                                    numbers = TRUE,
                                    minpercent = 0.05,
-                                   graphicsoutput = NULL)
+                                   graphicsoutput = NULL,
+                                   plotDirectory=getwd()
+                     )
 {
   # The function vistat() visualizes the statistical hypothesis testing between the dependent variable (response) varsample and the independent variable (feature) varfactor. 
   # The statistical hypothesis test (including the eventual corresponding post-hoc analysis) with the highest statistical power fulfilling
@@ -119,7 +109,7 @@ visstat = function(dataframe,
   # minpercent: number between 0 and 1 indicating the minimal fraction of total count which has to be in each category of count data in order to be displayed in mosaic plot
   # graphicsoutput: character string indicating if a plot of type  "png", "jpeg", "jpg", "tiff", "bmp" should be saved to the current working directory following the 
   # naming convention "statisticalTestName_varsample_varfactor.graphicsoutput". The default "NULL" does not save the current plot.
-  
+  # plotDirectory: specifiying directory to save plots. Default directory is the current working directory defined by getwd()
   
   
   stopifnot(is.data.frame(dataframe) )
@@ -128,11 +118,12 @@ visstat = function(dataframe,
   
   
   
-  
   #store default graphical parameters------
- # if (length(dev.list())>0) dev.off() #closes all graphical devices 
-  oldpar = par(no.readonly = TRUE)
-  on.exit(par(oldpar))
+  oldpar=resetPar()
+  #restore graphics parameters on exit
+  on.exit(par(oldpar)) 
+  
+  
   #Set default values---------------------------
   alpha = 1 - conf.level
   
@@ -205,14 +196,14 @@ visstat = function(dataframe,
       if
       (length(twosamples$sample1) > 100 &length(twosamples$sample2)>100)
       {
-        openGraphCairo(type = graphicsoutput)
+        openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
         vis_sample_fact = two_sample_tTest(samples,
                                            fact,
                                            conf.level=conf.level,
                                            alternative = 'two.sided',var.equal=F,paired=F,
                                            samplename=varsample,factorname=matchingCriteria)
         saveGraphVisstat(
-          paste("ttest_", name_of_sample, "_", name_of_factor, sep = ""),type = graphicsoutput)
+          paste("ttest_", name_of_sample, "_", name_of_factor, sep = ""),type = graphicsoutput, fileDirectory=plotDirectory)
       }
       #2. If assumptions of t-test are not met: Wilcoxon, else t-test
       else
@@ -239,7 +230,7 @@ visstat = function(dataframe,
         {
         #case 1: Wilcoxon-Test:
         #normal distribution not given for n<limit
-        openGraphCairo(type = graphicsoutput)
+        openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
         vis_sample_fact = two_sample_WilcoxonTest(
           samples,
           fact,
@@ -255,16 +246,16 @@ visstat = function(dataframe,
             "_",
             name_of_factor,
             sep = ""
-          ),type = graphicsoutput)
+          ),type = graphicsoutput,fileDirectory=plotDirectory)
       } else{
-        openGraphCairo(type = graphicsoutput)
+        openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
         vis_sample_fact = two_sample_tTest(samples,
                                            fact,
                                            conf.level = conf.level,
                                            alternative = 'two.sided',var.equal = F,paired = F,
                                            samplename =varsample,factorname =matchingCriteria)
         saveGraphVisstat(
-          paste("ttest_", name_of_sample, "_", name_of_factor, sep = ""),type = graphicsoutput)
+          paste("ttest_", name_of_sample, "_", name_of_factor, sep = ""),type = graphicsoutput,fileDirectory = plotDirectory)
         
       }
       return(invisible(vis_sample_fact))
@@ -285,7 +276,7 @@ visstat = function(dataframe,
 
       } else{
         #Chi^2 Test-----
-        openGraphCairo(type = graphicsoutput)
+        openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
         vis_chi = vis_chi_squared_test(samples, fact, name_of_sample, "groups")
         saveGraphVisstat(paste(
           "chi_squared_",
@@ -294,7 +285,7 @@ visstat = function(dataframe,
           name_of_factor,
           sep = ""
         ),
-        type = graphicsoutput)
+        type = graphicsoutput,fileDirectory=plotDirectory)
         #Mosaic plots -----
         #a) complete labeled mosaic graph
 
@@ -304,7 +295,7 @@ visstat = function(dataframe,
         } else{
           numberflag = T
         }
-        openGraphCairo(type = graphicsoutput)
+        openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
         vis_mosaic_res = vis_mosaic(
           samples,
           fact,
@@ -321,13 +312,13 @@ visstat = function(dataframe,
           name_of_factor,
           sep = ""
         ),
-        type = graphicsoutput)
+        type = graphicsoutput,fileDirectory=plotDirectory)
 
         #b) reduced plots if number of of levels>7
         #Display only categories with at least minpercent of entries
 
         if (maxlabels > 7) {
-          openGraphCairo(type = graphicsoutput)
+          openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
           vis_mosaic_res = vis_mosaic(
             samples,
             fact,
@@ -344,7 +335,7 @@ visstat = function(dataframe,
               name_of_factor,
               sep = ""
             ),
-            type = graphicsoutput
+            type = graphicsoutput,fileDirectory=plotDirectory
           )
         }
         vis_sample_fact = c(vis_chi,vis_mosaic_res)
@@ -360,13 +351,13 @@ visstat = function(dataframe,
          typefactor == "numeric") &&
         (typesample == "integer" | typesample == "numeric"))
     {
-      openGraphCairo(type = graphicsoutput)
+      openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
       vis_sample_fact = vis_regression(fact,
                                        samples,
                                        name_of_factor = name_of_factor,
                                        name_of_sample = name_of_sample)
       saveGraphVisstat(paste("regression_", name_of_sample, "_", name_of_factor, sep = ""),
-                     type = graphicsoutput)
+                     type = graphicsoutput,fileDirectory=plotDirectory)
     }
 
     #D) more than two comparisons----
@@ -390,20 +381,20 @@ visstat = function(dataframe,
           visanova$ad_test$p.value > alpha)
 
       {
-        openGraphCairo(type = graphicsoutput)
+        openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
         vis_sample_fact = vis_anova(samples,
                                     fact,
                                     samplename = varsample,
                                     factorname = varfactor)
         saveGraphVisstat(paste("anova_", name_of_sample, "_", name_of_factor, sep = ""),
-                       type = graphicsoutput)
+                       type = graphicsoutput,fileDirectory=plotDirectory)
         
         
         
         
         #if p -values of both Shapiro-Wilk and Kruskall-Wallis-Test are smaller than 0.05, Kruskall-Wallis-Test
       } else{
-        openGraphCairo(type = graphicsoutput)
+        openGraphCairo(type = graphicsoutput,fileDirectory=plotDirectory)
         vis_sample_fact = vis_Kruskal_Wallis_clusters(
           samples,
           fact,
@@ -417,7 +408,7 @@ visstat = function(dataframe,
         )
 
         saveGraphVisstat(paste("kruskal_", name_of_sample, "_", name_of_factor, sep = ""),
-                       type = graphicsoutput)
+                       type = graphicsoutput,fileDirectory=plotDirectory)
         
         
         
@@ -426,11 +417,10 @@ visstat = function(dataframe,
     }
   
   
-  #setting back to default parameters-----
-  #par(oldpar)
+ 
+
   
-  
-   
+    par(oldpar)
     return(invisible(vis_sample_fact))
   }
   #End of vis_sample_fact function -------

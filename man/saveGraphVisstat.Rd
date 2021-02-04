@@ -4,32 +4,33 @@
 \alias{saveGraphVisstat}
 \title{Saves Graphical Output}
 \usage{
-saveGraphVisstat(file = NULL, type = NULL, oldPlotName = NULL)
+saveGraphVisstat(
+  fileName = NULL,
+  type = NULL,
+  fileDirectory = getwd(),
+  oldfile = NULL
+)
 }
 \arguments{
-\item{file}{name of file to be created or connection to write to without file extension ".\code{type}". Default file name "visstat".}
+\item{fileName}{name of file to be created in directory \code{fileDirectory} without file extension ".\code{type}".}
 
 \item{type}{see \code{Cairo()}.}
 
-\item{oldPlotName}{old file name including .type extension to be overwritten}
+\item{fileDirectory}{path of directory, where graphic is stored. Default setting current working directory.}
+
+\item{oldfile}{old file of same name to be overwritten}
 }
 \value{
-NULL, if no \code{type} or \code{file} is provided, TRUE if graph is created
+NULL, if no \code{type} or \code{fileName} is provided, TRUE if graph is created
 }
 \description{
-Saves Graphical Output of call to function \code{visstat}
-}
-\details{
-to be filled
+Closes all graphical devices with \code{dev.off()} and saves the output only if both \code{fileName} and \code{type} are provided.
 }
 \examples{
-# return NULL
-saveGraphVisstat()
-
 # very simple KDE (adapted from example in \code{Cairo()})
-openGraphCairo(type="png",mag =2.54) #mag is conversion factor cm to inch
-plot(rnorm(4000),rnorm(4000),col ="#ff000018",pch=19,cex=2) # semi-transparent red
-saveGraphVisstat(file="random",type ="png")
-if (!interactive()) file.remove("random.png")
+openGraphCairo(type = "png", fileDirectory=tempdir())  
+plot(rnorm(4000),rnorm(4000),col="#ff000018",pch=19,cex=2) 
+saveGraphVisstat("norm",type = "png",fileDirectory=tempdir()) #saves file "norm.png" in directory specified in \code{fileDirectory} 
+file.remove(file.path(tempdir(),"norm.png"))  # remove file "norm.png" from \code{fileDirectory}.
 
 }
