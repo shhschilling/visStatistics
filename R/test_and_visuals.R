@@ -1392,7 +1392,7 @@ vis_mosaic = function(samples,
     my_list <-
       list(
         "mosaic_stats" =res
-        # "fisher_chi_stats"=fisherChi
+
       )
 
     return(my_list)

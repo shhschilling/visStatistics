@@ -10,11 +10,12 @@ Description: Visualization of the most powerful statistical hypothesis test.
     The function vistat() visualizes the statistical hypothesis testing between the 
     dependent variable (response) varsample and the independent variable (feature) varfactor. 
     The statistical hypothesis test (including the eventual corresponding post-hoc analysis) with
-    the highest statistical power fulfilling the assumptions of the corresponding test is performed based on a decision tree.
+    the highest statistical power fulfilling the assumptions of the corresponding test is automatically chosen based on a decision tree.
     A graph displaying the raw data accordingly to the chosen test as well as the test statistics including eventual 
-    post-hoc-analysis is generated and returned.
+    post-hoc-analysis is generated and returned. This automated workflow is especially suited for browser based interfaces to 
+    server-based deployments of R. 
     Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
-    Implemented tests for check of normal distribution of standardized residuals: shapiro.test() and ad.test().
+    Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
     Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
     For the comparison of averages, the following algorithm is implemented: 
     If the p-values of the standardized residuals of both shapiro.test() or ad.test() are smaller 
@@ -25,6 +26,10 @@ Description: Visualization of the most powerful statistical hypothesis test.
     For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented: 
     If more than 20 percent of all cells have a count smaller than 5, fisher.test() is performed and displayed,
     otherwise chisqu.test(). In both cases case an additional mosaic plot showing Pearson's residuals is generated. 
+    
+    
+    
+    
 Imports: vcd, Cairo, graphics, grDevices, grid, multcompView, stats, utils, nortest
 License: MIT + file LICENSE
 Encoding: UTF-8

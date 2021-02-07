@@ -1,6 +1,6 @@
 
 HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]));
-visstat(HairEyeColorMale,"Hair","Eye")
+res=visstat(HairEyeColorMale,"Hair","Eye")
 
 
 visstat(ToothGrowth,"len", "supp")#wilcoxon
@@ -13,7 +13,12 @@ visstat(iris,"Petal.Width", "Species") #kruskal wallis testing normality assumpt
 HairEyeColorMaleFisher = HairEyeColor[,,1]
 #slicing out a 2 x2 contingency table
 blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
-fishertest = blackBrownHazelGreen
 blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
-visstat(blackBrownHazelGreen,"Hair","Eye")
+test2=visstat(blackBrownHazelGreen,"Hair","Eye")
+
+
+#slicing out a 3 x3 table
+three = HairEyeColorMaleFisher[1:3,2:4]
+three = counts_to_cases(as.data.frame(three));
+test3=visstat(three,"Hair","Eye")
 

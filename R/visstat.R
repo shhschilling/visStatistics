@@ -15,7 +15,7 @@
 #' in the title and a list with the complete test statistics including eventual post-hoc analysis.
 #' Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()},
 #' \code{aov()}, \code{kruskal.test()}, \code{fisher.test()}, \code{chisqu.test()}.
-#' Implemented tests for check of normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
+#' Implemented tests for normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
 #' Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}.
 #'
 #'  For the comparison of averages, the following algorithm is implemented:
@@ -25,7 +25,7 @@
 #' Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed
 #'  (Lumley et al. (2002) <doi:10.1146/annurev.publheath.23.100901.140546>).
 #' For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented:
-#' If more than 20 percent of all cells have a count smaller than 5, is performed and displayed, otherwise \code{chisqu.test()}.
+#' If more than 20 percent of all cells have a count smaller than 5,  \code{fisher.test()}is performed and displayed, otherwise \code{chisqu.test()}.
 #' In both cases case an additional mosaic plot showing Pearson's residuals is generated.
 
 
