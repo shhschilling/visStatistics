@@ -1,21 +1,28 @@
 ##Examples------
+#clean the workspace -----
+rm(list=ls())
+while (!is.null(dev.list()))  dev.off()
 library(visStatistics)
+options(warn=0) #for debugging also warnings
+#only while developing, comment on when installed from CRAN
+library(nortest)
+library(vcd)
+library(multcompView)
+library(Cairo)
 
 #specify directory where plots will be stored. Without definition of plotDirectory: current working directory
 filedir=tempdir()
-
-# linear regression: trees data set:----
-visstat(trees,"Girth","Height") 
 
 # If graphicsoutput parameter is set, all plots are stored in the directory specified in the parameter plotDirectory. 
 # Default directory of plotDirectory is the working directory.
 # Graphical output is named following the naming convention
 #"statisticalTestName_varsample_varfactor.graphicsoutput" 
+#
+linear_regression_trees=visstat(trees,"Girth","Height"); 
 linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "png",plotDirectory=filedir) ; 
 
 linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "pdf",plotName="hugo",plotDirectory=filedir) ; 
 linear_regression_trees=visstat(trees,"Girth","Height",graphicsoutput = "svg",,plotName="dante",plotDirectory=filedir) ; 
-
 
 #display stats of linear regression
 linear_regression_trees
@@ -28,15 +35,16 @@ welch_cars=visstat(mtcars,"mpg","am",graphicsoutput="png",plotName="hans",plotDi
 #standard naming convention
 welch_cars=visstat(mtcars,"mpg","am",graphicsoutput="pdf",plotDirectory=filedir) 
 
-
-
-
+#ANOVA and oneway.test -----
+anova_npk=visstat(npk,"yield","block")
+anova_npk #print out results
 
 
 #Kruskal-Wallis test: iris----
 visstat(iris,"Petal.Width", "Species")
 visstat(iris,"Petal.Width", "Species",graphicsoutput="pdf",plotDirectory=filedir)
 visstat(iris,"Petal.Width", "Species",graphicsoutput="pdf",plotName="iris_kruskal",plotDirectory=filedir)
+
 
 #Welch two sample t.test: InsectSprays ----
 # select sprays A and B
@@ -47,28 +55,18 @@ InsectSpraysAB$spray = factor(InsectSpraysAB$spray)
 visstat(InsectSpraysAB,"count","spray") #plots not saved
 visstat(InsectSpraysAB,"count","spray",graphicsoutput = "png",plotName="insect_count_spray",plotDirectory=filedir) 
 
-#Wilcoxon rank sum test: ToothGrowth ----
-visstat(ToothGrowth,"len", "supp")
-visstat(ToothGrowth,"len", "supp",graphicsoutput = "png",plotDirectory=filedir)
-visstat(ToothGrowth,"len", "supp",graphicsoutput = "pdf",plotDirectory=filedir)
-
-#Wilcoxon rank sum test:Grades by Sex
-dat <- data.frame(
-  Sex = as.factor(c(rep("Girl", 12), rep("Boy", 12))),
-  Grade = c(
-    19, 18, 9, 17, 8, 7, 16, 19, 20, 9, 11, 18,
-    16, 5, 15, 2, 14, 15, 4, 7, 15, 6, 7, 14
-  )
-)
-
-visstat(dat,"Grade", "Sex")
+#Wilcoxon
+grades_gender <- data.frame(
+ Sex = as.factor(c(rep("Girl", 20), rep("Boy", 20))),
+ Grade = c(19.25, 18.1, 15.2, 18.34, 7.99, 6.23, 19.44, 20.33, 9.33, 11.3, 18.2,17.5,10.22,20.33,13.3,17.2,15.1,16.2,17.3,
+           16.5, 5.1, 15.25, 17.41, 14.5, 15, 14.3, 7.53, 15.23, 6,17.33, 7.25, 14,13.5,8,19.5,13.4,17.5,17.4,16.5,15.6))
+ visstat(grades_gender,"Grade", "Sex")
 
 
 
 
 
-
-#Chi squqred, mosaic plots with Titanic data set----
+#Chi squared, mosaic plots with Titanic data set----
 #install.packages("titanic")
 #example categorical data,
 library(titanic)
@@ -76,9 +74,10 @@ titanic_train$Survived = as.factor(titanic_train$Survived)
 titanic_train$Pclass = as.factor(titanic_train$Pclass)
 #Pearsons Chi squared, mosaic plot with Pearson's residuals
 visstat(titanic_train,"Survived","Pclass")
-visstat(titanic_train,"Survived","Pclass",graphicsoutput="png")
-visstat(titanic_train,"Survived","Pclass",plotName="picasso",graphicsoutput="png")
-visstat(titanic_train,"Survived","Pclass",plotName="picasso_ps",graphicsoutput="ps")
+visstat(titanic_train,"Survived","Pclass",graphicsoutput="png",plotDirectory=filedir)
+visstat(titanic_train,"Survived","Pclass",plotName="picasso",graphicsoutput="png",plotDirectory=filedir)
+visstat(titanic_train,"Survived","Pclass",plotName="picasso_ps",graphicsoutput="ps",plotDirectory=filedir)
+
 #Chi squared, mosaic plots with HairEyeColor----
 #HairEyeColor data set: Pearsons Chi squared, mosaic plot with Pearson's residuals
 HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]));
@@ -96,8 +95,8 @@ HairEyeColorMaleFisher = HairEyeColor[,,1]
 blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
 fishertest = blackBrownHazelGreen
 blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
-visstat(blackBrownHazelGreen,"Hair","Eye")
-
+fisher_stats=visstat(blackBrownHazelGreen,"Hair","Eye")
+fisher_stats
 
 
 #remove output plots----

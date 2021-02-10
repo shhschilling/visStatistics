@@ -5,7 +5,7 @@
  The function `visstat()` **vis**ualizes the **stat**istical hypothesis testing between two groups of data, where `varsample` is the dependent variable (or response) and `varfactor` is the independent variable (feature).
  The statistical hypothesis test with the highest statistical power and fulfilling the assumptions of the corresponding test is performed and visualized.
  A graph displaying the raw data accordingly to the chosen test as well as the test statistics is generated. Furthermore
- `visstat()` returns the corresponding test statistics as text.
+ `visstat()` returns the corresponding test statistics as text. The automated workflow is especially suited for browser based interfaces to server-based deployments of R. 
   Implemented tests: `lm(), t.test(), wilcox.test(), aov(), oneway.test(),kruskal.test(), fisher.test(),chisqu.test()`.
 
 

@@ -7,18 +7,13 @@
 
 test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
   #store default graphical parameters------
- 
-
- 
-
+  oldparnormvis <- par(no.readonly = TRUE)   
+  on.exit(par(oldparnormvis))   
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
   #Remove NA from x
   x <- x[!is.na(x)]
   n = length(x)
-
-
   norm_dens = function(z) {
-
     dnorm(z, mean(x), sd(x))
   }
 
@@ -42,12 +37,11 @@ test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
         col = "red",
         add = TRUE,
         lwd = 2)
-
-  par(new = TRUE) #the next high-level plotting command does not clean the frame before drawing
+  
+  
+  #par(new = TRUE) #the next high-level plotting command does not clean the frame before drawing
   #as if it were on a new device.
-
-  lines(density(x), col = "blue")
-
+  lines(density(x),col = "blue")
 
   legend(
     "topright",
@@ -67,8 +61,7 @@ test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
   SH = shapiro.test(x)
   p_SH = signif(SH$p.value, 2)
 
-
-  mtext(
+ mtext(
     paste(
       "Shapiro-Wilk: p = ",
       p_SH,
@@ -96,7 +89,8 @@ two_sample_tTest = function(samples,
                             samplename = "",
                             factorname = "")
 {
- 
+  oldpar <- par(no.readonly = TRUE)   
+  on.exit(par(oldpar)) 
   alternative <- match.arg(alternative)
 
   if (!missing(mu) && (length(mu) != 1 || is.na(mu)))
@@ -280,8 +274,12 @@ two_sample_WilcoxonTest = function(samples,
                                    samplename = "",
                                    factorname = "",
                                    cex = 1) {
+ 
+  oldparwilcox <- par(no.readonly = TRUE) #make a copy of current values
+ on.exit(par(oldparwilcox)) 
+  
   alternative <- match.arg(alternative)
-  #Error handling -----
+  #Error handling ----
   if (!((length(conf.level) == 1L) && is.finite(conf.level) &&
         (conf.level > 0) && (conf.level < 1)))
     return(warning("'conf.level' must be a single number between 0 and 1"))
@@ -401,7 +399,8 @@ two_sample_FTest = function(samples,
   # if (missing(conf.int)) conf.int = 0.95
   #  if (missing(alternative)) alternative = "two.sided"
   #Store default graphical parameter
-  
+  oldparftest <- par(no.readonly = TRUE)   
+  on.exit(par(oldparftest)) 
   
   
   alpha = 1 - confint
@@ -497,6 +496,8 @@ vis_chi_squared_test = function(samples,
                                 factorname,
                                 cex = 1) {
  
+  oldparchi <- par(no.readonly = TRUE)   
+  on.exit(par(oldparchi)) 
   
   colortuple = colorscheme(1)
   ColorPalette = colorscheme(3)
@@ -534,7 +535,7 @@ vis_chi_squared_test = function(samples,
 
 
     #creates new plot for barplot
-    #par(oma = c(0, 0, 3, 0), new <- TRUE) 
+    
     par(mfrow = c(1, 1),oma = c(0, 0, 3, 0)) 
     
     maxlabels = length(levels(samples))
@@ -566,6 +567,7 @@ vis_chi_squared_test = function(samples,
       ma = ma = max(1.1 * max_val_y)
       legendsize = cex
     }
+    
     barplot(
       norm_counts,
       names.arg = count_labels,
@@ -574,8 +576,6 @@ vis_chi_squared_test = function(samples,
       width = 1 / (nrow(counts) + 1),
       space = c(0, 1),
       col = col_vec_browser,
-      # density = rep(50, nrow(counts)),
-      # border = col_vec_fade,
       ylab = "%",
       xlab = samplename,
       beside = TRUE,
@@ -585,12 +585,9 @@ vis_chi_squared_test = function(samples,
     )
 
     box()
-
-
     mtext(titletext)
     category_names = as.character(category_names)
-
-    legend(
+   legend(
       "topright",
       inset = 0.05,
       category_names,
@@ -613,7 +610,8 @@ vis_anova = function(samples,
                      factorname = "",
                      cex = 1) {
   
- 
+  oldparanova <- par(no.readonly = TRUE)   
+  on.exit(par(oldparanova)) 
   
   alpha = 1 - conf.level
   samples3 = na.omit(samples)
@@ -777,8 +775,9 @@ vis_anova_assumptions = function(samples,
                                  samplename = "",
                                  factorname = "",
                                  cex = 1) {
-  # alpha = 1 - conf.level
-  #remove rows with NAs in samples
+  
+  oldparanovassum <- par(no.readonly = TRUE)   
+  on.exit(par(oldparanovassum)) 
   samples3 = na.omit(samples)
   fact <- subset(fact,!is.na(samples))
   samples = samples3
@@ -840,6 +839,10 @@ vis_Kruskal_Wallis_clusters = function(samples,
                                        factorname = "",
                                        cex = 1,
                                        notch = F) {
+  
+  oldparkruskal <- par(no.readonly = TRUE)   
+  on.exit(par(oldparkruskal)) 
+  
   alpha = 1 - conf.level
   #remove rows with NAs in samples
   samples3 = na.omit(samples)
@@ -946,6 +949,9 @@ vis_Kruskal_Wallis_clusters = function(samples,
 
 ##### Visualize Regression und trumpet curves ###############################
 vis_regr_trumpets = function(x, y, P) {
+  
+  oldparreg <- par(no.readonly = TRUE)   
+  on.exit(par(oldparreg)) 
   reg = lm(y ~ x)
   summary(reg)
 
@@ -989,7 +995,7 @@ vis_regr_trumpets = function(x, y, P) {
     col = colors()[84]
   )
   legend(
-    "topleft",
+    "bottomright",
     c("regr. line", paste("trumpet curves for gamma=", P)),
     lwd = 2,
     col = c(2, colors()[84], colors()[85]),
@@ -1050,7 +1056,8 @@ vis_regr_trumpets = function(x, y, P) {
 
 ###### Visualize Residuals ###############################
 vis_resid = function(resid, fitted) {
-  
+  oldparresid <- par(no.readonly = TRUE)   
+  on.exit(par(oldparresid)) 
   
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
   plot(fitted, resid, main = "Residuals vs. Fitted")
@@ -1082,6 +1089,8 @@ vis_regression_assumptions = function(x,
                                       y,
                                       conf.level = 0.95) {
   
+  oldparreg <- par(no.readonly = TRUE)   
+  on.exit(par(oldparreg)) 
   alpha = 1 - conf.level
   # P = alpha
 
@@ -1163,6 +1172,9 @@ vis_regression = function(x,
                           name_of_sample = character())
 {
   
+  oldparregr <- par(no.readonly = TRUE)   
+  on.exit(par(oldparregr))
+  
   alpha = 1 - conf.level
   P = alpha
   #remove all NAs from both vectors
@@ -1197,56 +1209,62 @@ vis_regression = function(x,
     xlab = name_of_factor,
     ylab = name_of_sample
   )
-
+  
   points(x,
          reg$fitted,
          type = "l",
-         col = 2,
+         col = colorscheme(2)[1], #dark green
          lwd = 2)
-
+#plot confidence band, lower boundary
   points(
     x,
     y_conf_low,
     type = "l",
     lwd = 2,
     lty = 2,
-    col = colors()[84]
+    col = colorscheme(1)[1]
   )
+  #plot confidence band, upper boundary
   points(
     x,
     y_conf_up,
     type = "l",
     lwd = 2,
     lty = 2,
-    col = colors()[84]
+    col = colorscheme(1)[1]
   )
+  #plot prognosis band, lower boundary
   points(
     x,
     y_progn_low,
     type = "l",
     lwd = 2,
     lty = 3,
-    col = colors()[85]
+    col = colorscheme(1)[2]
   )
+  #plot prognosis band, upper boundary
   points(
     x,
     y_progn_up,
     type = "l",
     lwd = 2,
     lty = 3,
-    col = colors()[85]
+    col = colorscheme(1)[2]
   )
 
   legend(
     "topleft",
-    inset = 0.05,
+    horiz=TRUE,
+    text.width = 0.75,
     c("regr. line", "confidence band", "prognosis band"),
-    lwd = 2,
-    col = c(2, colors()[84], colors()[85]),
-    lty = c(1, 2, 3),
-    bty = 'n'
+    lwd = 2, #line width
+    col = c(colorscheme(2)[1], colorscheme(1)[1],colorscheme(1)[2]),
+    lty = c(1, 2, 3), #line types of legend
+    bty = 'n', #no box around legend
+    cex=0.75 #reduces the legend size
   )
-
+  
+  
   s = summary(reg)
 
   b = confint(reg)
@@ -1303,6 +1321,11 @@ vis_mosaic = function(samples,
                       minperc = 0.05,
                       numbers = TRUE)
 {
+  
+  oldparmosaic <- par(no.readonly = TRUE)   
+  oldparmosaic$new=FALSE
+  on.exit(par(oldparmosaic))
+  
   if (missing(minperc))
   {
     #minperc is the minimum percehntage a column has to contribute to be displayed
@@ -1338,9 +1361,6 @@ vis_mosaic = function(samples,
     {
       res = mosaic(
         counts,
-        #labeling = labeling_border(rot_labels = c(0, 0, 0, 90)),
-        # rot_labels = c(0, 90, 0, 0),
-        # gp_labels = gpar(fontsize = 1),
         shade = TRUE,
         legend = TRUE,  #shows pearsons residual
         pop = F
@@ -1394,7 +1414,7 @@ vis_mosaic = function(samples,
         "mosaic_stats" =res
 
       )
-
+    
     return(my_list)
   }
 }
@@ -1712,7 +1732,7 @@ conf_band = function(x, reg, P, up) {
 
   a = reg$coefficients[2]
   b = reg$coefficients[1]
-  md = x - mean(x)
+  md = x - mean(x)        #residual 
 
   result = x
 
@@ -1827,11 +1847,11 @@ colorscheme = function(colorcode = NULL)
 
 }
 
-# resetPar <- function() {
-#   dev.new
-#   while (!is.null(dev.list()))  dev.off() 
-#   oldpar <- par(no.readonly = TRUE)
-# 
-#   return(oldpar)
-# }
+resetPar <- function() {
+  dev.new
+  while (!is.null(dev.list()))  dev.off() #restores to default values
+  oldpar <- par(no.readonly = TRUE)
+  return(oldpar)
+}
+
 

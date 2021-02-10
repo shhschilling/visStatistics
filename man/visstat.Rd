@@ -49,9 +49,11 @@ the dependent variable (or response)
  fulfilling the assumptions of the underlying test. For each test
  \code{visstat()} returns a graph displaying the data with the main test statistics
 in the title and a list with the complete test statistics including eventual post-hoc analysis.
+The automated workflow is especially suited for browser based interfaces to 
+server-based deployments of R. 
 Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()},
 \code{aov()}, \code{kruskal.test()}, \code{fisher.test()}, \code{chisqu.test()}.
-Implemented tests for check of normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
+Implemented tests for normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
 Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}.
 }
 \details{
@@ -62,29 +64,40 @@ and \code{aov()} resp. \code{t.test()} are performed and displayed.
 Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed
  (Lumley et al. (2002) <doi:10.1146/annurev.publheath.23.100901.140546>).
 For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented:
-If more than 20 percent of all cells have a count smaller than 5, is performed and displayed, otherwise \code{chisqu.test()}.
+If more than 20 percent of all cells have a count smaller than 5,  \code{fisher.test()}is performed and displayed, otherwise \code{chisqu.test()}.
 In both cases case an additional mosaic plot showing Pearson's residuals is generated.
 }
 \examples{
 
-## Kruskal-Wallis rank sum test
+## Kruskal-Wallis rank sum test (calling kruskal.test())
 visstat(iris,"Petal.Width", "Species")
 visstat(InsectSprays,"count","spray")
 
-## Wilcoxon rank sum test
-visstat(ToothGrowth,"len", "supp")
+## ANOVA (calling aov()) and One-way analysis of means (oneway.test())
+anova_npk=visstat(npk,"yield","block")
+anova_npk #prints summary of tests
 
-## Welch Two Sample t-test
-mtcars$am=as.factor(mtcars$am) # transform to categorical data of type factor
-visstat(mtcars,"mpg","am") # Welch Two Sample t-test
+## Welch Two Sample t-test (calling t.test())
+visstat(mtcars,"mpg","am") 
+
+## Wilcoxon rank sum test (calling wilcox.test())
+grades_gender <- data.frame(
+ Sex = as.factor(c(rep("Girl", 20), rep("Boy", 20))),
+ Grade = c(19.25, 18.1, 15.2, 18.34, 7.99, 6.23, 19.44, 
+           20.33, 9.33, 11.3, 18.2,17.5,10.22,20.33,13.3,17.2,15.1,16.2,17.3,
+           16.5, 5.1, 15.25, 17.41, 14.5, 15, 14.3, 7.53, 15.23, 6,17.33, 
+           7.25, 14,13.5,8,19.5,13.4,17.5,17.4,16.5,15.6))
+visstat(grades_gender,"Grade", "Sex")
+
 ## Pearson's Chi-squared test and mosaic plot with Pearson residuals
 visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye")
-
 ##2x2 contingency tables with Fisher's exact test and mosaic plot with Pearson residuals
 HairEyeColorMaleFisher = HairEyeColor[,,1]
 ##slicing out a 2 x2 contingency table
 blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
 blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
+fisher_stats=visstat(blackBrownHazelGreen,"Hair","Eye")
+fisher_stats #print out summary statistics
 
 ## Linear regression
 visstat(trees,"Girth","Height")
@@ -99,10 +112,12 @@ file.remove(file.path(tempdir(),"chi_squared_or_fisher_Hair_Eye.png"))
 file.remove(file.path(tempdir(),"mosaic_complete_Hair_Eye.png"))
 ## B) Specifying pdf as output type: 
 visstat(iris,"Petal.Width", "Species",graphicsoutput = "pdf",plotDirectory=tempdir())
+##remove graphical output from plotDirectory
 file.remove(file.path(tempdir(),"kruskal_Petal_Width_Species.pdf"))
 
 ## C) Specifiying plotName overwrites default naming convention
 visstat(iris,"Petal.Width","Species",graphicsoutput = "pdf",
 plotName="kruskal_iris",plotDirectory=tempdir())
+##remove graphical output from plotDirectory
 file.remove(file.path(tempdir(),"kruskal_iris.pdf"))
 }

@@ -42,11 +42,16 @@ openGraphCairo =  function(width = 640,
   
   
 {
+  oldparCairo <- par(no.readonly = TRUE)  
+  oldparCairo$new=FALSE
+  on.exit(par(oldparCairo))
+  
   if (is.null(type))
   {return()}
   
   else{
     
+   
     #set default fileName to "visstat_plot"
     if (is.null(fileName)) {
       fileName = "visstat_plot"}

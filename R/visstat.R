@@ -13,6 +13,8 @@
 #'  fulfilling the assumptions of the underlying test. For each test
 #'  \code{visstat()} returns a graph displaying the data with the main test statistics
 #' in the title and a list with the complete test statistics including eventual post-hoc analysis.
+#' The automated workflow is especially suited for browser based interfaces to 
+#' server-based deployments of R. 
 #' Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()},
 #' \code{aov()}, \code{kruskal.test()}, \code{fisher.test()}, \code{chisqu.test()}.
 #' Implemented tests for normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
@@ -44,26 +46,35 @@
 #' @return \code{list} containing statistics of test with highest statistical power meeting assumptions. All values are returned as invisibly copies. Values can be accessed by assigning a return value to \code{visstat}.
 #' @examples
 #'
-#' ## Kruskal-Wallis rank sum test
+#' ## Kruskal-Wallis rank sum test (calling kruskal.test())
 #' visstat(iris,"Petal.Width", "Species")
 #' visstat(InsectSprays,"count","spray")
-#'
-#' ## Wilcoxon rank sum test
-#' visstat(ToothGrowth,"len", "supp")
-#'
-#' ## Welch Two Sample t-test
-#' mtcars$am=as.factor(mtcars$am) # transform to categorical data of type factor
-#' visstat(mtcars,"mpg","am") # Welch Two Sample t-test
-
+#' 
+#' ## ANOVA (calling aov()) and One-way analysis of means (oneway.test())
+#' anova_npk=visstat(npk,"yield","block")
+#' anova_npk #prints summary of tests
+#' 
+#' ## Welch Two Sample t-test (calling t.test())
+#' visstat(mtcars,"mpg","am") 
+#' 
+#' ## Wilcoxon rank sum test (calling wilcox.test())
+#' grades_gender <- data.frame(
+#'  Sex = as.factor(c(rep("Girl", 20), rep("Boy", 20))),
+#'  Grade = c(19.25, 18.1, 15.2, 18.34, 7.99, 6.23, 19.44, 
+#'            20.33, 9.33, 11.3, 18.2,17.5,10.22,20.33,13.3,17.2,15.1,16.2,17.3,
+#'            16.5, 5.1, 15.25, 17.41, 14.5, 15, 14.3, 7.53, 15.23, 6,17.33, 
+#'            7.25, 14,13.5,8,19.5,13.4,17.5,17.4,16.5,15.6))
+#' visstat(grades_gender,"Grade", "Sex")
+#' 
 #' ## Pearson's Chi-squared test and mosaic plot with Pearson residuals
 #' visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye")
-#'
 #' ##2x2 contingency tables with Fisher's exact test and mosaic plot with Pearson residuals
 #' HairEyeColorMaleFisher = HairEyeColor[,,1]
 #' ##slicing out a 2 x2 contingency table
 #' blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
 #' blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
-
+#' fisher_stats=visstat(blackBrownHazelGreen,"Hair","Eye")
+#' fisher_stats #print out summary statistics
 #'
 #' ## Linear regression
 #' visstat(trees,"Girth","Height")
@@ -79,11 +90,13 @@
 
 #' ## B) Specifying pdf as output type: 
 #' visstat(iris,"Petal.Width", "Species",graphicsoutput = "pdf",plotDirectory=tempdir())
+#' ##remove graphical output from plotDirectory
 #' file.remove(file.path(tempdir(),"kruskal_Petal_Width_Species.pdf"))
 #'
 #' ## C) Specifiying plotName overwrites default naming convention
 #' visstat(iris,"Petal.Width","Species",graphicsoutput = "pdf",
 #' plotName="kruskal_iris",plotDirectory=tempdir())
+#' ##remove graphical output from plotDirectory
 #' file.remove(file.path(tempdir(),"kruskal_iris.pdf"))
 
 #' @import vcd
@@ -136,11 +149,9 @@ visstat = function(dataframe,
   
   
   #store default graphical parameters------
-  #oldpar=resetPar()
-  oldpar <- par(no.readonly = TRUE)
-  oldpar$new = F
-  #restore graphics parameters on exit
-  on.exit(par(oldpar), add = TRUE)
+  oldparvisstat <- par(no.readonly = TRUE)   
+  oldparvisstat$new=FALSE #reset the default value
+  on.exit(par(oldparvisstat))
   
   
   #Set default values---------------------------
@@ -160,7 +171,15 @@ visstat = function(dataframe,
   #dependent on samples, fact, name_of_sample, name_of_factor, conf.level,
   #paired=F,
   typesample = class(samples)
-  typefactor = class(fact)
+  typefactor = class(fact) #type of independent variable returned as a character vector
+  
+  
+  #transform independent variable "fact" of class "character" to factor
+  if (typefactor=="character"){
+    fact=as.factor(fact)  #transform independent variable "fact" of class "character" to factor
+    typefactor = class(fact) #store the newly generate class of type "factor" of the independent variable
+  }
+  
   maxlabels = length(levels(samples))
   ## Comparison of all  possible combinations of input variables ------------------
   ##A) median or mean-----
@@ -267,7 +286,7 @@ visstat = function(dataframe,
             fact,
             alternative = "two.sided",
             conf.level = conf.level,
-            notchf = T,
+            notchf = F,
             samplename = varsample,
             factorname = matchingCriteria
           )
@@ -419,6 +438,7 @@ visstat = function(dataframe,
           fileDirectory = plotDirectory
         )
       }
+      
       vis_sample_fact = c(vis_chi, vis_mosaic_res)
     }
   }
