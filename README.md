@@ -66,7 +66,8 @@ otherwise `chisqu.test()`. In both cases case an additional mosaic plot is gener
 
 `visstat(HairEyeColorMale,"Hair","Eye")`
 
-### Iris data set: Kruskal-Wallis test: Saving the graphical output of type "pdf in plotDirectory tempdir()
+### Iris data set: Kruskal-Wallis test
+### Saving the graphical output of type pdf in plotDirectory tempdir()
 
 `visstat(iris,"Petal.Width","Species",graphicsoutput="pdf",plotDirectory=tempdir())`
 
