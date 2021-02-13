@@ -1,14 +1,12 @@
 ##Examples------
-#clean the workspace -----
-rm(list=ls())
 while (!is.null(dev.list()))  dev.off()
 library(visStatistics)
 options(warn=0) #for debugging also warnings
-#only while developing, comment on when installed from CRAN
-library(nortest)
-library(vcd)
-library(multcompView)
-library(Cairo)
+#only while developing, comment  when installed from CRAN
+# library(nortest)
+# library(vcd)
+# library(multcompView)
+# library(Cairo)
 
 #specify directory where plots will be stored. Without definition of plotDirectory: current working directory
 filedir=tempdir()
@@ -99,12 +97,12 @@ fisher_stats=visstat(blackBrownHazelGreen,"Hair","Eye")
 fisher_stats
 
 
-#remove output plots----
-graphicaltypes=c(".png", ".pdf", ".svg", ".ps")
-for (i in graphicaltypes) {
-  plotname=dir(filedir,pattern=i)
- print(file.path(filedir,plotname))
-  file.remove(file.path(filedir,plotname))
-}
+#remove output plots from directory filedir----
+# graphicaltypes=c(".png", ".pdf", ".svg", ".ps")
+# for (i in graphicaltypes) {
+#   plotname=dir(filedir,pattern=i)
+#  print(file.path(filedir,plotname))
+#   file.remove(file.path(filedir,plotname))
+# }
 
 

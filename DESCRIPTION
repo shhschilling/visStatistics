@@ -12,7 +12,8 @@ Description: Visualization of the most powerful statistical hypothesis test.
     The statistical hypothesis test (including the eventual corresponding post-hoc analysis) with
     the highest statistical power fulfilling the assumptions of the corresponding test is chosen based on a decision tree.
     A graph displaying the raw data accordingly to the chosen test is generated, the test statistics including eventual 
-    post-hoc-analysis are returned. Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
+    post-hoc-analysis are returned. The automated workflow is especially suited for browser based interfaces to 
+    server-based deployments of R. Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
     Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
     Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
     For the comparison of averages, the following algorithm is implemented: 

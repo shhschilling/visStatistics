@@ -1,16 +1,15 @@
 ##Examples------
 #clean the workspace -----
-rm(list=ls())
-while (!is.null(dev.list()))  dev.off() #close eventual open graphical devices and restore default values of par()
+while (!is.null(dev.list()))  dev.off() #closes eventual open graphical devices and restore default values of par()
 #debugging: stop with warnings
 options(warn=2)
 #load libraries -----
 library(visStatistics)
 #only while developing, comment on when installed from CRAN
-library(nortest)
-library(vcd)
-library(multcompView)
-library(Cairo)
+# library(nortest)
+# library(vcd)
+# library(multcompView)
+# library(Cairo)
 
 
 #specify directory where plots will be stored----
@@ -72,7 +71,7 @@ titanic_train$Pclass = as.factor(titanic_train$Pclass)
 #Pearsons Chi squared, mosaic plot with Pearson's residuals
 
 titanic_chi=visstat(titanic_train,"Survived","Pclass")
-titanic_chi=visstat(titanic_train,"Survived","Pclass",graphicsoutput = "png",plotDirectory=filedir )
+titanic_chi=visstat(titanic_train,"Survived","Pclass",graphicsoutput = "png",plotDirectory=filedir)
 titanic_chi=visstat(titanic_train,"Survived","Pclass")
 titanic_chi
 
@@ -105,12 +104,12 @@ linear_regression_trees
 
 
 #remove output  plots
-graphicaltypes=c(".png")
-for (i in graphicaltypes) {
-  plotname=dir(filedir,pattern=i)
-  print(file.path(filedir,plotname))
-  file.remove(file.path(filedir,plotname))
-}
+# graphicaltypes=c(".png")
+# for (i in graphicaltypes) {
+#   plotname=dir(filedir,pattern=i)
+#   print(file.path(filedir,plotname))
+#   file.remove(file.path(filedir,plotname))
+#}
 
 
 

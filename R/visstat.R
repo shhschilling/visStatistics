@@ -79,20 +79,17 @@
 #' ## Linear regression
 #' visstat(trees,"Girth","Height")
 #'
-#'## Saving the graphical output:
-#'
+#'## Saving the graphical output in directory plotDirectory
 #' ## A) saving graphical output of type "png" in temporary directory tempdir() 
 #' ##    with default naming convention:
-#' visstat(blackBrownHazelGreen,"Hair","Eye",graphicsoutput = "png",plotDirectory=tempdir())
+#' visstat(blackBrownHazelGreen,"Hair","Eye",graphicsoutput = "png",plotDirectory=tempdir()) 
 #' ##remove graphical output from plotDirectory
 #' file.remove(file.path(tempdir(),"chi_squared_or_fisher_Hair_Eye.png"))
 #' file.remove(file.path(tempdir(),"mosaic_complete_Hair_Eye.png"))
-
 #' ## B) Specifying pdf as output type: 
 #' visstat(iris,"Petal.Width", "Species",graphicsoutput = "pdf",plotDirectory=tempdir())
 #' ##remove graphical output from plotDirectory
 #' file.remove(file.path(tempdir(),"kruskal_Petal_Width_Species.pdf"))
-#'
 #' ## C) Specifiying plotName overwrites default naming convention
 #' visstat(iris,"Petal.Width","Species",graphicsoutput = "pdf",
 #' plotName="kruskal_iris",plotDirectory=tempdir())
