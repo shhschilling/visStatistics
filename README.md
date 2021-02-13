@@ -12,15 +12,15 @@ For the comparison of averages, the implemented algorithm  depends on the value 
 If the p-values of the standardized residuals of both `shapiro.test()` or `ad.test()` are smaller 
 than  the error probability 1-`conf.level`,`kruskal.test()` resp. `wilcox.test()` are performed, otherwise the `oneway.test()`
 and `aov()` resp. t.test() are performed and displayed. Exception: 
-If the sample size is bigger than 100, t.test() is always performed and wilcox.test() is never executed 
+If the sample size is bigger than 100, `t.test()` is always performed and `wilcox.test()` is never executed 
 (Lumley et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>).
 For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented: 
-If more than 20 percent of all cells have a count smaller than 5, fisher.test() is performed and displayed,
-otherwise chisqu.test(). In both cases case an additional mosaic plot is generated.  
+If more than 20 percent of all cells have a count smaller than 5, `fisher.test()` is performed and displayed,
+otherwise `chisqu.test()`. In both cases case an additional mosaic plot is generated.  
   
   
 
-##Installation from CRAN
+## Installation from CRAN
 1. Install the package
 `install.packages("visStatistics")`
 2. Load the package
@@ -43,12 +43,10 @@ otherwise chisqu.test(). In both cases case an additional mosaic plot is generat
 `visstat(trees,"Girth","Height")` 
 
 
-###  Iris data set: Kruskal-Wallis test
 `visstat(iris,"Petal.Width", "Species")`
 
-
-###  InsectSprays data set: ANOVA
-`visstat(InsectSprays,"count","spray")`
+###  NPK factorial experiment: ANOVA
+`visstat(npk,"yield","block")`
 
 ### InsectSprays data set: Welch two sample t.test
 `InsectSpraysAB <- InsectSprays[ which(InsectSprays$spray == 'A'| InsectSprays$spray == 'B'), ] #select only sprays 'A und 'B'`
@@ -60,9 +58,16 @@ otherwise chisqu.test(). In both cases case an additional mosaic plot is generat
 ### ToothGrowth data set: Wilcoxon rank sum test with continuity correction
 `visstat(ToothGrowth,"len", "supp")`
 
-#### HairEyeColor data set: Pearson's Chi-squared test
+### Welch t.test
+`visstat(mtcars,"mpg","am")`
+
+### HairEyeColor data set: Pearson's Chi-squared test
 `HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]))`
 
 `visstat(HairEyeColorMale,"Hair","Eye")`
+
+### Iris data set: Kruskal-Wallis test: Saving the graphical output of type "pdf in plotDirectory tempdir()
+
+`visstat(iris,"Petal.Width","Species",graphicsoutput="pdf",plotDirectory=tempdir())`
 
 
