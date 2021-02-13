@@ -20,10 +20,10 @@
 #' Implemented tests for normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
 #' Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}.
 #'
-#'  For the comparison of averages, the following algorithm is implemented:
+#'  For the comparison of averages, the following algorithm  depends on the value of the parameter of \code{conf.level}, which defaults to 0.95. 
 #'  If the p-values of the standardized residuals of  \code{shapiro.test()} or \code{ks.test()} are smaller
-#' than 1-conf.level, \code{kruskal.test()} resp. \code{wilcox.test()} are performed, otherwise the \code{oneway.test()}
-#' and \code{aov()} resp. \code{t.test()} are performed and displayed.
+#' than the error probability 1-\code{conf.level}, \code{kruskal.test()} resp. \code{wilcox.test()} are performed, otherwise the \code{oneway.test()}
+#' and \code{aov()} resp. \code{t.test()} are performed and displayed. 
 #' Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed
 #'  (Lumley et al. (2002) <doi:10.1146/annurev.publheath.23.100901.140546>).
 #' For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented:
