@@ -1254,14 +1254,14 @@ vis_regression = function(x,
 
   legend(
     "topleft",
-    horiz=TRUE,
+    horiz=FALSE,
     text.width = 0.75,
     c("regr. line", "confidence band", "prognosis band"),
     lwd = 2, #line width
     col = c(colorscheme(2)[1], colorscheme(1)[1],colorscheme(1)[2]),
     lty = c(1, 2, 3), #line types of legend
     bty = 'n', #no box around legend
-    cex=0.75 #reduces the legend size
+    cex=0.5 #reduces the legend size
   )
   
   
