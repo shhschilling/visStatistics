@@ -6,10 +6,10 @@ options(warn=2)
 #load libraries -----
 library(visStatistics)
 #only while developing, comment on when installed from CRAN
-# library(nortest)
-# library(vcd)
-# library(multcompView)
-# library(Cairo)
+library(nortest)
+library(vcd)
+library(multcompView)
+library(Cairo)
 
 
 #specify directory where plots will be stored----

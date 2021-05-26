@@ -39,8 +39,6 @@ openGraphCairo =  function(width = 640,
                            bg = "transparent", canvas = "white", units = "px",
                            dpi=150) 
   
-  
-  
 {
   oldparCairo <- par(no.readonly = TRUE)  
   oldparCairo$new=FALSE

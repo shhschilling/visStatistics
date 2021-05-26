@@ -33,8 +33,8 @@
 
 #' @param dataframe \code{data.frame} containing at least two columns. Data must be column wise ordered.
 #'  Contingency tables can be transformed to column wise structure with helper function \code{counts_to_cases(as.data.frame())}.
-#' @param varsample column name of dependent variable in \code{dataframe}, datatype \code{character}.
-#' @param varfactor column name of independent variable in \code{dataframe}, datatype \code{character}.
+#' @param varsample column name of dependent variable in \code{dataframe}, datatype \code{character}. \code{varsample} must be one entry of the list \code{names(dataframe)}.
+#' @param varfactor column name of independent variable in \code{dataframe}, datatype \code{character}.\code{varsample} must be one entry of the list \code{names(dataframe)}.
 #' @param conf.level confidence level of the interval.
 #' @param numbers	a logical indicating whether to show numbers in mosaic count plots.
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed	in mosaic count plots.
@@ -127,8 +127,8 @@ visstat = function(dataframe,
   #  - dataframe of type data.frame or list (generated from json file)
   #  with headers which are either the dependent variable (varsamples)
   # or the independent variable (varfact)
-  #  - varsample: dependent variable chosen by user out of columns of dataframe, varsample is the name given in the header
-  #  - varfactor: independent variables chosen by user out of columns of dataframe,  varfactor is the name given in the header
+  #  - varsample: dependent variable chosen by user out of column names of dataframe. varsample must be one entry of the list names(dataframe).
+  #  - varfactor: independent variables chosen by user out of columns names  of dataframe. varsfactor  must be one entry of the list names(dataframe).
   # Optional parameters with set default values:
   # numbers: Boolean deciding if in mosaic plots counts of each category should be shown
   # minpercent: number between 0 and 1 indicating the minimal fraction of total count which has to be in each category of count data in order to be displayed in mosaic plot
@@ -544,18 +544,12 @@ visstat = function(dataframe,
         type = graphicsoutput,
         fileDirectory = plotDirectory
       )
-      
-      
+     
       
     }
     
   }
   
-  
-  
-  
-  
-  
   return(invisible(vis_sample_fact))
 }
-#End of vis_sample_fact function -------
+#End of visstat function -------

@@ -20,9 +20,9 @@ visstat(
 \item{dataframe}{\code{data.frame} containing at least two columns. Data must be column wise ordered.
 Contingency tables can be transformed to column wise structure with helper function \code{counts_to_cases(as.data.frame())}.}
 
-\item{varsample}{column name of dependent variable in \code{dataframe}, datatype \code{character}.}
+\item{varsample}{column name of dependent variable in \code{dataframe}, datatype \code{character}. \code{varsample} must be one entry of the list \code{names(dataframe)}.}
 
-\item{varfactor}{column name of independent variable in \code{dataframe}, datatype \code{character}.}
+\item{varfactor}{column name of independent variable in \code{dataframe}, datatype \code{character}.\code{varsample} must be one entry of the list \code{names(dataframe)}.}
 
 \item{conf.level}{confidence level of the interval.}
 
