@@ -7,12 +7,12 @@ Authors@R: c(
     person("Peter", "Kauf", email = "peter.kauf@zhaw.ch", role = "ctb"))
 Maintainer: Sabine Schilling <sabineschilling@gmx.ch>
 Description: Visualization of the most powerful statistical hypothesis test.
-    The function vistat() visualizes the statistical hypothesis testing between the 
+    The package visStatistics visualizes the statistical hypothesis testing between the 
     dependent variable (response) varsample and the independent variable (feature) varfactor. 
     The statistical hypothesis test (including the eventual corresponding post-hoc analysis) with
     the highest statistical power fulfilling the assumptions of the corresponding test is chosen based on a decision tree.
-    A graph displaying the raw data accordingly to the chosen test is generated, the test statistics including eventual 
-    post-hoc-analysis are returned. The automated workflow is especially suited for browser based interfaces to 
+    The test statistics including eventual post-hoc-analysis are returned and graph displaying the raw data accordingly to the chosen test is generated.
+    The automated workflow is especially suited for browser based interfaces to 
     server-based deployments of R. Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
     Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
     Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
@@ -29,7 +29,7 @@ Imports: vcd, Cairo, graphics, grDevices, grid, multcompView, stats, utils, nort
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.1.9001
 NeedsCompilation: no
 Packaged: 2020-05-09 20:05:43 UTC; sschilli
 Suggests: 

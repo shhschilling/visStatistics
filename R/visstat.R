@@ -24,8 +24,8 @@
 #'  If the p-values of the standardized residuals of  \code{shapiro.test()} or \code{ks.test()} are smaller
 #' than the error probability 1-\code{conf.level}, \code{kruskal.test()} resp. \code{wilcox.test()} are performed, otherwise the \code{oneway.test()}
 #' and \code{aov()} resp. \code{t.test()} are performed and displayed. 
-#' Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed
-#'  (Lumley et al. (2002) <doi:10.1146/annurev.publheath.23.100901.140546>).
+#' Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed (Lumley et al. (2002) 
+#' <doi:10.1146/annurev.publheath.23.100901.140546>).
 #' For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented:
 #' If more than 20 percent of all cells have a count smaller than 5,  \code{fisher.test()}is performed and displayed, otherwise \code{chisqu.test()}.
 #' In both cases case an additional mosaic plot showing Pearson's residuals is generated.
