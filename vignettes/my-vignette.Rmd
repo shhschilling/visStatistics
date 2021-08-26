@@ -6,6 +6,7 @@ output:
   rmarkdown::html_vignette:
     number_sections: true
     toc: true
+bibliography: visStatistics.bib
 vignette: >
   %\VignetteIndexEntry{visStatistics}
   %\VignetteEngine{knitr::rmarkdown}
@@ -25,22 +26,32 @@ library(visStatistics)
 
 <!-- Unnumbered section -->
 # Abstract{-}
- 1) the overall purpose of the study and the research problem(s) you investigated; 2) the basic design of the study; 3) major findings or trends found as a result of your analysis; and, 4) a brief summary of your interpretations and conclusions.
-
+<!--  1) the overall purpose of the study and the research problem(s) you investigated; 2) the basic design of the study; 3) major findings or trends found as a result of your analysis; and, 4) a brief summary of your interpretations and conclusions.
+-->
 
 <!-- 1) the overall purpose of the study and the research problem(s) you investigated; -->
 <!-- A) Statistics consulting -->
-Statistical consulting  requires often both a quick visualization and reproducible statistical analysis of the presented raw data. The package `visStatistics` with its core function `vistat()` fulfils this need. Based on a decision test it picks the 
+Statistical consulting  requires often both a quick visualization and a reproducible statistical analysis of the presented raw data. The package `visStatistics` with its core function `visstat()` fulfils this need. Based on a decision tree it picks the 
 statistical hypothesis test  with the highest statistical power between the dependent variable (response) `varsample` and the independent variable (feature) `varfactor`. The corresponding test statistics including eventual post-hoc-analysis are returned and 
-a graph displaying the raw data accordingly to the chosen test is generated. This fully automated workflow is especially suited for browser based interfaces to server-based deployments of R. 
+a graph displaying the raw data accordingly to the chosen test is generated. This fully automated workflow is especially suited for browser based interfaces to server-based deployments of R. Goal of the reminder of this vignette is to document the decision tree underlying `vistat()`.
+
+# Decision tree
+The decision tree depends both on the type of the  data (numerical/integer or categorical) and the number of levels of the categorical data.
+
+## Two sample tests: Student's t-Test or Wilcoxon rank sum test
+
+If the feature `varfactor` has  two levels and  the response `varsample` is of type numerical or integer, either a `t.test()` or `wilcox.test()`  with their respective default parameter settings are executed. The choice of either test follows the following algorithm: 
+
+* If the sample size is bigger than 100, the function `visstat()` performs always a `t.test()`.Lumley et al. (2002)Lumley:2002dsa <doi:10.1146/annurev.publhealth.23.100901.140546>
     
 # Implemented tests
-```
-lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test()
-```
+`lm()`, `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `fisher.test()`, `chisqu.test()`
+
 ## Implemented tests to check the normal distribution of standardized residuals
-    `shapiro.test() and ad.test()`
-    Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
+`shapiro.test()` and `ad.test()`
+
+##Implemented post-hoc tests
+`TukeyHSD()` for `aov() `and `pairwise.wilcox.test()` for `kruskal.test()`.
     For the comparison of averages, the implemented algorithm  depends on the value of the parameter of conf.level, which defaults to 0.95: 
     If the p-values of the standardized residuals of both shapiro.test() or ad.test() are smaller 
     than the error probability 1-conf.level, kruskal.test() resp. wilcox.test() are performed, otherwise the oneway.test()
