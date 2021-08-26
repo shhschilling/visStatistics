@@ -39,23 +39,25 @@ library(visStatistics)
 Statistical consulting  requires often both a quick first visualization and a reproducible statistical analysis of the presented raw data. The package `visStatistics` with its core function `visstat()` fulfils this need. Based on a decision tree it picks the 
 statistical hypothesis test  with the highest statistical power between the dependent variable (response) `varsample` and the independent variable (feature) `varfactor`. The corresponding test statistics including eventual post-hoc-analysis are returned and 
 a graph showing key statistics of the underlying test is generated. This fully automated workflow is especially suited for browser based interfaces to server-based deployments of R and has been successfully implemented to analyse medical raw data in an unbiased fashion. 
-This vignette  documents the algorithm underlying the decision tree of `vistat()`. It  depends on the type of the  data (numerical/integer or categorical), the number of levels of categorical data and the distribution of the samples. 
-With the exception of `conf.level`, all underlying statistical tests called by the decision tree are used  with their default parameter sets; whilst 
-the confidence level `conf.level`, defaulting to 0.95, can be adapted by the user  calling the core function `visstat()`.
+This vignette  documents the algorithm underlying the decision tree of `vistat()`. 
+The decision tree  depends on the type of the  data (numerical/integer or categorical),
+the number of levels of categorical data and the data distributions. 
+For the comparison of averages, the implemented algorithm  depends on the value of the chosen confidence level of the parameter `conf.level`,defaulting to 0.95. 
 
 
 
 # Two sample tests: Welch's t-Test or Wilcoxon rank sum test
 
 If the feature `varfactor` has two levels and  the response `varsample` is of type numerical or integer, either a Welch's t-Test `t.test()` or `wilcox.test()`  with their respective default parameter settings are executed. 
-Al underlying statistical functions are called  with their default parameters. Only the parameter `conf.level`, defaulting to 0.95, can be adapted by the user. 
+Al underlying statistical functions are called  with their default parameters. 
+Only the parameter `conf.level`, defaulting to 0.95, can be adapted by the user. 
 The choice of either test follows the following algorithm: 
 
 * If the sample size of both samples is bigger than 100, the function `visstat()` performs always **Welch's t-Test** (`t.test()`) [@Lumley:2002dsa ]. 
 
     **Graphical representation**
     
-    The title names the used test, the underlying null hypothesis with the associated p-value of null hypothesis. 
+    The title names the used test, the underlying null hypothesis with the associated p-value of the null hypothesis. 
     A box plot with an overlayed jitter plot showing each data point is generated. The number of data entry of each sample is displayed above each box. The means and confidence intervals are displayed in red. The confidence intervals are corrected for the familywise error rate in pairwise comparison by the Sidak method [@Sidak]. 
     The applied corrected probability of error is $\alpha_{Sidak}=1-$`conf.int`$^{1/2}$.
 
@@ -83,7 +85,7 @@ The choice of either test follows the following algorithm:
     
     
 
-## Examples
+##     Examples
 ```{r}
 # Welch's  t-test calling t.test()
 mtcars$am=as.factor(mtcars$am)
