@@ -748,10 +748,12 @@ vis_anova = function(samples,
 
 #' Testing ANOVA assumptions
 #'
-#' \code{vis_anova_assumptions} checks for normality of the standardised residuals of the anova both graphically by qq-plots as well as performing
+#' \code{vis_anova_assumptions()} checks for normality of the standardised residuals of the anova both graphically 
 #'    the Shapiro-Wilk-test \code{shapiro.test} and the Anderson-Darling-Test \code{ad.test}.
 #'    \code{aov} further tests the homoscedacity of each factor level in \code{fact} with the \code{bartlett.test}.
-#'
+#'    It generates plots of the standardized residuals versus the fitted mean values of the linear models for each level of \code{fact}. 
+#'    Furthermore it shows the  normal QQ plot of the standardized residuals. 
+#'  
 #' @param samples vector containing dependent variable, datatype numeric
 #' @param fact vector containing independent variable, datatype factor
 #' @param conf.level confidence level, 0.95=default

@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.width=7,
-  fig.height=7
+  fig.height=5
 )
 ```
 
@@ -36,22 +36,25 @@ library(visStatistics)
 
 <!-- Unnumbered section -->
 # Abstract{-}
-Statistical consulting  requires often both a quick first visualization and a reproducible statistical analysis of the presented raw data. The package `visStatistics` with its core function `visstat()` fulfils this need. Based on a decision tree it picks the 
-statistical hypothesis test  with the highest statistical power between the dependent variable (response) `varsample` and the independent variable (feature) `varfactor`. The corresponding test statistics including eventual post-hoc-analysis are returned and 
-a graph showing key statistics of the underlying test is generated. This fully automated workflow is especially suited for browser based interfaces to server-based deployments of R and has been successfully implemented to analyse medical raw data in an unbiased fashion. 
-This vignette  documents the algorithm underlying the decision tree of `vistat()`. 
-The decision tree  depends on the type of the  data (numerical/integer or categorical),
-the number of levels of categorical data and the data distributions. 
-For the comparison of averages, the implemented algorithm  depends on the value of the chosen confidence level of the parameter `conf.level`,defaulting to 0.95. 
+Statistical consulting  requires often both a quick first visualization and a reproducible statistical analysis 
+of the presented raw data. The package `visStatistics` with its core function `visstat()` fulfils this need. 
+Based on a decision tree it picks the statistical hypothesis test  with the highest statistical 
+power between the dependent variable (response) `varsample` and the independent variable (feature) `varfactor`. 
+The corresponding test statistics including eventual post-hoc-analysis are returned and 
+a graph showing key statistics of the underlying test is generated. 
+This fully automated workflow is especially suited for browser based interfaces to server-based
+deployments of R and has been successfully implemented to analyse medical raw data in an unbiased fashion. 
 
 
+# The decision tree
+The statistical tests performed by the core function `visstat` depend on the type of the  data (numerical/integer or categorical),
+the number of levels whilst dealing with categorical data and the data distributions. 
+The reminder of this vignette documents in detail the algorithm underlying the decision tree of `vistat`.
 
 # Two sample tests: Welch's t-Test or Wilcoxon rank sum test
 
-If the feature `varfactor` has two levels and  the response `varsample` is of type numerical or integer, either a Welch's t-Test `t.test()` or `wilcox.test()`  with their respective default parameter settings are executed. 
-Al underlying statistical functions are called  with their default parameters. 
-Only the parameter `conf.level`, defaulting to 0.95, can be adapted by the user. 
-The choice of either test follows the following algorithm: 
+If the feature `varfactor` has two levels and  the response `varsample` is of type numerical or integer, either an analysis of variance model fit  `aov ()` and  `oneway()`  
+The choice of both options follows the following algorithm: 
 
 * If the sample size of both samples is bigger than 100, the function `visstat()` performs always **Welch's t-Test** (`t.test()`) [@Lumley:2002dsa ]. 
 
@@ -63,7 +66,7 @@ The choice of either test follows the following algorithm:
 
     **Statistical output**
     
-    The test statistics of the Shapiro-Wilk test on the standardized residuals as well of      Welch's t-test are returned. 
+    The test statistics of the Shapiro-Wilk test on the standardized residuals as well of Welch's t-test are returned. 
 
 * If the sample size of one of the samples is smaller  than 100, `viststat()` checks  for the normality of the standardized residuals of both samples with the Shapiro-Wilk Normality Test (`shapiro.test()`). If the normality assumption is met, Welch's t-Test is performed, otherwise the Wilcoxon rank sum test. The detailed algorithm is: 
 
@@ -90,8 +93,8 @@ The choice of either test follows the following algorithm:
 # Welch's  t-test calling t.test()
 mtcars$am=as.factor(mtcars$am)
 ttestStatistics=visstat(mtcars,"mpg","am") 
-# print out test statistics 
-ttestStatistics
+#  uncomenting the next line prints out test statistics 
+# ttestStatistics
 ```
 ```{r}
 # Wilcoxon rank sum test (calling wilcox.test())
@@ -105,12 +108,21 @@ Grade = c(19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4,
 welchtestStatistics=visstat(grades_gender,"Grade", "Sex")
 ```
 
-# More than two samples: One Way Test, ANOVA and Kruskal-Wallis-Test
+# More than two samples: One=Way Test, ANOVA and Kruskal-Wallis-Test
+If the feature `varfactor` has more than two levels and  the response `varsample` is of type numerical or integer, in a first step 
+the function `vis_anova_assumptions()` checks for normality of the standardised residuals of the
+anova. It plots the standardized residuals versus the fitted mean values of the linear model for each level of `varfactor`. Furthermore it shows the  normal QQ plot of the standardized residuals. 
+Additionally the p-values of  Shapiro-Wilk-test `shapiro.test()` and the Anderson-Darling-Test `ad.test()` are displayed.
 
-If the feature `varfactor` has more than two levels and  the response `varsample` is of type numerical or integer, 
-either a Welch's t-Test `t.test()` or `wilcox.test()`  with their respective default parameter settings are executed. 
+`aov` further tests the homoscedacity of each factor level in `fact` with the `bartlett.test`.
 
-# Implemented tests
+aov$fitted are the fitted mean values.
+## Examples
+```{r}
+ anova_npk=visstat(npk,"yield","block")
+```
+
+# Overview implemented tests
 `lm()`, `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `fisher.test()`, `chisqu.test()`
 
 ## Implemented tests to check the normal distribution of standardized residuals
@@ -118,12 +130,7 @@ either a Welch's t-Test `t.test()` or `wilcox.test()`  with their respective def
 
 ##Implemented post-hoc tests
 `TukeyHSD()` for `aov() `and `pairwise.wilcox.test()` for `kruskal.test()`.
-    For the comparison of averages, the implemented algorithm  depends on the value of the parameter of conf.level, which defaults to 0.95: 
-    If the p-values of the standardized residuals of both shapiro.test() or ad.test() are smaller 
-    than the error probability 1-conf.level, kruskal.test() resp. wilcox.test() are performed, otherwise the oneway.test()
-    and aov() resp. t.test() are performed and displayed. Exception: 
-    If the sample size is bigger than 100, t.test() is always performed and wilcox.test() is never executed 
-    (Lumley et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). 
+   
     For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented: 
     If more than 20 percent of all cells have a count smaller than 5, fisher.test() is performed and displayed,
     otherwise chisqu.test(). In both cases case an additional mosaic plot is generated. 
