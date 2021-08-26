@@ -749,8 +749,8 @@ vis_anova = function(samples,
 #' Testing ANOVA assumptions
 #'
 #' \code{vis_anova_assumptions()} checks for normality of the standardised residuals of the anova both graphically 
-#'    the Shapiro-Wilk-test \code{shapiro.test} and the Anderson-Darling-Test \code{ad.test}.
-#'    \code{aov} further tests the homoscedacity of each factor level in \code{fact} with the \code{bartlett.test}.
+#'    the Shapiro-Wilk-test \code{shapiro.test()} and the Anderson-Darling-Test \code{ad.test()}.
+#'    It further tests the homoscedacity of each factor level in \code{fact} with the \code{bartlett.test()}.
 #'    It generates plots of the standardized residuals versus the fitted mean values of the linear models for each level of \code{fact}. 
 #'    Furthermore it shows the  normal QQ plot of the standardized residuals. 
 #'  
@@ -806,9 +806,9 @@ vis_anova_assumptions = function(samples,
   p_bart = bartlett_test$p.value
   mtext(
     paste(
-      "Check for homogeneity of variances:Bartlett Test, p = ",
+      "Check for homogeneity of variances: Bartlett Test, p = ",
       signif(p_bart, 2),
-      "\n Check for normality of standardized residuals:\n Shapiro-Wilk: p = ",
+      "\n Check for normality of standardized residuals: Shapiro-Wilk: p = ",
       signif(p_SH, 2),
       "\n Anderson-Darling: p = ",
       signif(p_AD, 2)

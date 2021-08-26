@@ -58,14 +58,8 @@ The choice of both options follows the following algorithm:
 
 * If the sample size of both samples is bigger than 100, the function `visstat()` performs always **Welch's t-Test** (`t.test()`) [@Lumley:2002dsa ]. 
 
-    **Graphical representation**
-    
-    The title names the used test, the underlying null hypothesis with the associated p-value of the null hypothesis. 
-    A box plot with an overlayed jitter plot showing each data point is generated. The number of data entry of each sample is displayed above each box. The means and confidence intervals are displayed in red. The confidence intervals are corrected for the familywise error rate in pairwise comparison by the Sidak method [@Sidak]. 
+    The graphical representation names the used test, the underlying null hypothesis with the associated p-value of the null hypothesis.  A box plot with an overlayed jitter plot showing each data point is generated. The number of data entry of each sample is displayed above each box. The means and confidence intervals are displayed in red. The confidence intervals are corrected for the familywise error rate in pairwise comparison by the Sidak method [@Sidak]. 
     The applied corrected probability of error is $\alpha_{Sidak}=1-$`conf.int`$^{1/2}$.
-
-    **Statistical output**
-    
     The test statistics of the Shapiro-Wilk test on the standardized residuals as well of Welch's t-test are returned. 
 
 * If the sample size of one of the samples is smaller  than 100, `viststat()` checks  for the normality of the standardized residuals of both samples with the Shapiro-Wilk Normality Test (`shapiro.test()`). If the normality assumption is met, Welch's t-Test is performed, otherwise the Wilcoxon rank sum test. The detailed algorithm is: 
@@ -108,21 +102,21 @@ Grade = c(19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4,
 welchtestStatistics=visstat(grades_gender,"Grade", "Sex")
 ```
 
-# More than two samples: One=Way Test, ANOVA and Kruskal-Wallis-Test
-If the feature `varfactor` has more than two levels and  the response `varsample` is of type numerical or integer, in a first step 
-the function `vis_anova_assumptions()` checks for normality of the standardised residuals of the
-anova. It plots the standardized residuals versus the fitted mean values of the linear model for each level of `varfactor`. Furthermore it shows the  normal QQ plot of the standardized residuals. 
-Additionally the p-values of  Shapiro-Wilk-test `shapiro.test()` and the Anderson-Darling-Test `ad.test()` are displayed.
+# More than two samples: One Way Test and ANOVA or Kruskal-Wallis-Test
+If the feature `varfactor` has more than two levels and  the response `varsample` is of type numerical or integer, first the  normality of the standardised residuals of the analysis of variance (ANOVA) fit by the function `aov()` is checked both the Shapiro-Wilk-test `shapiro.test()` and the Anderson-Darling-Test `ad.test()`. Furthermore the data is graphically analyzed by plotting
+the standardized residuals versus the fitted mean values of the linear model for each level of `varfactor`. Additionally the normal QQ plot of the standardized residuals is generated. 
+ The homoscedacity of each stratum is tested with the `bartlett.test()`.
 
-`aov` further tests the homoscedacity of each factor level in `fact` with the `bartlett.test`.
+* If the p-values of the standardized residuals  `shapiro.test()` are bigger
+  than the error probability `1-conf.level`,    **Welch's t-Test** (`t.test()`) is executed.
 
-aov$fitted are the fitted mean values.
+
 ## Examples
 ```{r}
  anova_npk=visstat(npk,"yield","block")
 ```
 
-# Overview implemented tests
+# Overview of implemented tests
 `lm()`, `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `fisher.test()`, `chisqu.test()`
 
 ## Implemented tests to check the normal distribution of standardized residuals

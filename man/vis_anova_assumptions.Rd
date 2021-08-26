@@ -31,9 +31,11 @@ my_list: list containing the test statistics of the anova
 \code{aov(samples~fact)},\code{bartlett.test(samples~fact)} and the tests of normality of the standardized residuals of aov, \code{ks_test} and \code{shapiro_test}
 }
 \description{
-\code{vis_anova_assumptions} checks for normality of the standardised residuals of the anova both graphically by qq-plots as well as performing
-   the Shapiro-Wilk-test \code{shapiro.test} and the Anderson-Darling-Test \code{ad.test}.
-   \code{aov} further tests the homoscedacity of each factor level in \code{fact} with the \code{bartlett.test}.
+\code{vis_anova_assumptions()} checks for normality of the standardised residuals of the anova both graphically 
+   the Shapiro-Wilk-test \code{shapiro.test()} and the Anderson-Darling-Test \code{ad.test()}.
+   It further tests the homoscedacity of each factor level in \code{fact} with the \code{bartlett.test()}.
+   It generates plots of the standardized residuals versus the fitted mean values of the linear models for each level of \code{fact}. 
+   Furthermore it shows the  normal QQ plot of the standardized residuals.
 }
 \examples{
 ToothGrowth$dose=as.factor(ToothGrowth$dose)
