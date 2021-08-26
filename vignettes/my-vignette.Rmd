@@ -26,24 +26,42 @@ library(visStatistics)
 
 <!-- Unnumbered section -->
 # Abstract{-}
-<!--  1) the overall purpose of the study and the research problem(s) you investigated; 2) the basic design of the study; 3) major findings or trends found as a result of your analysis; and, 4) a brief summary of your interpretations and conclusions.
--->
-
-<!-- 1) the overall purpose of the study and the research problem(s) you investigated; -->
-<!-- A) Statistics consulting -->
-Statistical consulting  requires often both a quick visualization and a reproducible statistical analysis of the presented raw data. The package `visStatistics` with its core function `visstat()` fulfils this need. Based on a decision tree it picks the 
+Statistical consulting  requires often both a quick first visualization and a reproducible statistical analysis of the presented raw data. The package `visStatistics` with its core function `visstat()` fulfils this need. Based on a decision tree it picks the 
 statistical hypothesis test  with the highest statistical power between the dependent variable (response) `varsample` and the independent variable (feature) `varfactor`. The corresponding test statistics including eventual post-hoc-analysis are returned and 
-a graph displaying the raw data accordingly to the chosen test is generated. This fully automated workflow is especially suited for browser based interfaces to server-based deployments of R. Goal of the reminder of this vignette is to document the decision tree underlying `vistat()`.
+a graph displaying the raw data accordingly to the chosen test is generated. This fully automated workflow is especially suited for browser based interfaces to server-based deployments of R and has been successfully implemented to analyse medical raw data in an unbiased fashion.  This vignette  documents the decision tree underlying `vistat()`.
 
 # Decision tree
-The decision tree depends both on the type of the  data (numerical/integer or categorical) and the number of levels of the categorical data.
+The decision tree depends both on the type of the  data (numerical/integer or categorical) and the number of levels of the categorical data. For the comparison of averages, the implemented algorithm depends on the value of the parameter of `conf.level`, which defaults to 0.95.
 
-## Two sample tests: Student's t-Test or Wilcoxon rank sum test
+## Two sample tests: Welch's t-Test or Wilcoxon rank sum test
 
-If the feature `varfactor` has  two levels and  the response `varsample` is of type numerical or integer, either a `t.test()` or `wilcox.test()`  with their respective default parameter settings are executed. The choice of either test follows the following algorithm: 
+If the feature `varfactor` has two levels and  the response `varsample` is of type numerical or integer, either a Welch's t-Test `t.test()` or `wilcox.test()`  with their respective default parameter settings are executed. 
 
-* If the sample size is bigger than 100, the function `visstat()` performs always a `t.test()`.Lumley et al. (2002)Lumley:2002dsa <doi:10.1146/annurev.publhealth.23.100901.140546>
-    
+The choice of either test follows the following algorithm: 
+
+* If the sample size of both samples is bigger than 100, the function `visstat()` performs always a `t.test()` [@Lumley:2002dsa ]. 
+* If the sample size of one of the samples is smaller  than 100, `viststat()`checks  for the normality of the standardized residuals of both samples with both the Shapiro-Wilk Normality Test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`).
+
+    * If the p-values of the standardized residuals of  `shapiro.test()` or `ad.test()` are smaller than the error probability `1-conf.level`, a  `wilcox.test()` is performed, 
+    * otherwise a `t.test()` is performed.
+
+### Examples
+```{r}
+# Welch's  t-test calling t.test()
+ ttestStatistics=visstat(mtcars,"mpg","am") 
+```
+```{r}
+# Wilcoxon rank sum test (calling wilcox.test())
+grades_gender <- data.frame(
+Sex = as.factor(c(rep("Girl", 20), rep("Boy", 20))),
+Grade = c(19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4, 
+            20.3, 9.3, 11.3, 18.2,17.5,10.2,20.1,13.3,17.2,15.1,16.2,17.3,
+            16.5, 5.1, 15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0,17.4,
+            7.3, 14.3,13.5,8.0,19.5,13.4,17.9,17.7,16.4,15.6))
+
+visstat(grades_gender,"Grade", "Sex")
+```
+
 # Implemented tests
 `lm()`, `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `fisher.test()`, `chisqu.test()`
 
@@ -90,3 +108,4 @@ add <- function(a, b) a + b
 ```{r, results = "asis"}
 #pander::pandoc.table(iris[1:3, 1:4])  #pander has to be included 
 ```
+# Bibliography
