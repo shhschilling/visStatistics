@@ -170,7 +170,7 @@ two_sample_tTest = function(samples,
 
   alpha_c = 1 - sqrt(1 - alpha)
   #two tests alpha<-0.025, corrects for pairwise testing by increasing the confidence interval from e.g. 95 % to 97.5 %
-  #corected confidence intervals taking intou co
+  #corrected confidence intervals 
   correction1 = qt(1 - 0.5 * alpha_c, length(x1) - 1) * sd(x1) / sqrt(length(x1))
   correction2 = qt(1 - 0.5 * alpha_c, length(x2) - 1) * sd(x2) / sqrt(length(x2))
 
@@ -359,9 +359,9 @@ two_sample_WilcoxonTest = function(samples,
   mtext(
     paste(
       t$method,
-      "p=value = ",
+      ": p=value = ",
       p_value,
-      " null hypothesis:
+      ", null hypothesis:
       \n median",
       samplename,
       "of",
@@ -370,6 +370,7 @@ two_sample_WilcoxonTest = function(samples,
       compare,
       "median",
       samplename,
+      "of",
       prefix,
       unique(fact)[2]
     ) ,

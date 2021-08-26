@@ -283,7 +283,7 @@ visstat = function(dataframe,
             fact,
             alternative = "two.sided",
             conf.level = conf.level,
-            notch = F,
+            notchf =  F,
             samplename = varsample,
             factorname = matchingCriteria
           )

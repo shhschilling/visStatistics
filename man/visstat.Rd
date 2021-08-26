@@ -61,8 +61,8 @@ For the comparison of averages, the following algorithm  depends on the value of
  If the p-values of the standardized residuals of  \code{shapiro.test()} or \code{ks.test()} are smaller
 than the error probability 1-\code{conf.level}, \code{kruskal.test()} resp. \code{wilcox.test()} are performed, otherwise the \code{oneway.test()}
 and \code{aov()} resp. \code{t.test()} are performed and displayed. 
-Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed
- (Lumley et al. (2002) <doi:10.1146/annurev.publheath.23.100901.140546>).
+Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed (Lumley et al. (2002) 
+<doi:10.1146/annurev.publheath.23.100901.140546>).
 For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented:
 If more than 20 percent of all cells have a count smaller than 5,  \code{fisher.test()}is performed and displayed, otherwise \code{chisqu.test()}.
 In both cases case an additional mosaic plot showing Pearson's residuals is generated.
@@ -83,10 +83,10 @@ visstat(mtcars,"mpg","am")
 ## Wilcoxon rank sum test (calling wilcox.test())
 grades_gender <- data.frame(
  Sex = as.factor(c(rep("Girl", 20), rep("Boy", 20))),
- Grade = c(19.25, 18.1, 15.2, 18.34, 7.99, 6.23, 19.44, 
-           20.33, 9.33, 11.3, 18.2,17.5,10.22,20.33,13.3,17.2,15.1,16.2,17.3,
-           16.5, 5.1, 15.25, 17.41, 14.5, 15, 14.3, 7.53, 15.23, 6,17.33, 
-           7.25, 14,13.5,8,19.5,13.4,17.5,17.4,16.5,15.6))
+ Grade = c(19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4, 
+20.3, 9.3, 11.3, 18.2,17.5,10.2,20.1,13.3,17.2,15.1,16.2,17.3,
+16.5, 5.1, 15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0,17.4,
+7.3, 14.3,13.5,8.0,19.5,13.4,17.9,17.7,16.4,15.6))
 visstat(grades_gender,"Grade", "Sex")
 
 ## Pearson's Chi-squared test and mosaic plot with Pearson residuals

@@ -6,17 +6,27 @@ output:
   rmarkdown::html_vignette:
     number_sections: true
     toc: true
-bibliography: visStatistics.bib
+bibliography: visstat.bib
 vignette: >
   %\VignetteIndexEntry{visStatistics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+<style type="text/css">
+  body{
+  font-size: 12pt;
+}
+</style>
+
+
+
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width=7,
+  fig.height=7
 )
 ```
 
@@ -28,27 +38,58 @@ library(visStatistics)
 # Abstract{-}
 Statistical consulting  requires often both a quick first visualization and a reproducible statistical analysis of the presented raw data. The package `visStatistics` with its core function `visstat()` fulfils this need. Based on a decision tree it picks the 
 statistical hypothesis test  with the highest statistical power between the dependent variable (response) `varsample` and the independent variable (feature) `varfactor`. The corresponding test statistics including eventual post-hoc-analysis are returned and 
-a graph displaying the raw data accordingly to the chosen test is generated. This fully automated workflow is especially suited for browser based interfaces to server-based deployments of R and has been successfully implemented to analyse medical raw data in an unbiased fashion.  This vignette  documents the decision tree underlying `vistat()`.
+a graph showing key statistics of the underlying test is generated. This fully automated workflow is especially suited for browser based interfaces to server-based deployments of R and has been successfully implemented to analyse medical raw data in an unbiased fashion. 
+This vignette  documents the algorithm underlying the decision tree of `vistat()`. It  depends on the type of the  data (numerical/integer or categorical), the number of levels of categorical data and the distribution of the samples. 
+With the exception of `conf.level`, all underlying statistical tests called by the decision tree are used  with their default parameter sets; whilst 
+the confidence level `conf.level`, defaulting to 0.95, can be adapted by the user  calling the core function `visstat()`.
 
-# Decision tree
-The decision tree depends both on the type of the  data (numerical/integer or categorical) and the number of levels of the categorical data. For the comparison of averages, the implemented algorithm depends on the value of the parameter of `conf.level`, which defaults to 0.95.
 
-## Two sample tests: Welch's t-Test or Wilcoxon rank sum test
+
+# Two sample tests: Welch's t-Test or Wilcoxon rank sum test
 
 If the feature `varfactor` has two levels and  the response `varsample` is of type numerical or integer, either a Welch's t-Test `t.test()` or `wilcox.test()`  with their respective default parameter settings are executed. 
-
+Al underlying statistical functions are called  with their default parameters. Only the parameter `conf.level`, defaulting to 0.95, can be adapted by the user. 
 The choice of either test follows the following algorithm: 
 
-* If the sample size of both samples is bigger than 100, the function `visstat()` performs always a `t.test()` [@Lumley:2002dsa ]. 
-* If the sample size of one of the samples is smaller  than 100, `viststat()`checks  for the normality of the standardized residuals of both samples with both the Shapiro-Wilk Normality Test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`).
+* If the sample size of both samples is bigger than 100, the function `visstat()` performs always **Welch's t-Test** (`t.test()`) [@Lumley:2002dsa ]. 
 
-    * If the p-values of the standardized residuals of  `shapiro.test()` or `ad.test()` are smaller than the error probability `1-conf.level`, a  `wilcox.test()` is performed, 
-    * otherwise a `t.test()` is performed.
+    **Graphical representation**
+    
+    The title names the used test, the underlying null hypothesis with the associated p-value of null hypothesis. 
+    A box plot with an overlayed jitter plot showing each data point is generated. The number of data entry of each sample is displayed above each box. The means and confidence intervals are displayed in red. The confidence intervals are corrected for the familywise error rate in pairwise comparison by the Sidak method [@Sidak]. 
+    The applied corrected probability of error is $\alpha_{Sidak}=1-$`conf.int`$^{1/2}$.
 
-### Examples
+    **Statistical output**
+    
+    The test statistics of the Shapiro-Wilk test on the standardized residuals as well of      Welch's t-test are returned. 
+
+* If the sample size of one of the samples is smaller  than 100, `viststat()` checks  for the normality of the standardized residuals of both samples with the Shapiro-Wilk Normality Test (`shapiro.test()`). If the normality assumption is met, Welch's t-Test is performed, otherwise the Wilcoxon rank sum test. The detailed algorithm is: 
+
+  * If the p-values of the standardized residuals of both distributions in the `shapiro.test()` are bigger
+  than the error probability `1-conf.level`,    **Welch's t-Test** (`t.test()`) is executed. Otherwise, 
+  
+  * if the p-values of the standardized residuals of both distributions in the `shapiro.test()` are smaller 
+  than the error probability `1-conf.level`,  a  **Wilcoxon rank sum test** (`wilcox.test()`) is executed.
+    
+    **Graphical representation**
+    
+    Analogue to Welch's t-test omiting mean and confidence interval. 
+    
+     **Statistical output**
+     
+    The test statistics  of the Wilcoxon rank sum test as well as the summary statistics of the generated
+    boxplots is generated.
+    
+    
+    
+
+## Examples
 ```{r}
 # Welch's  t-test calling t.test()
- ttestStatistics=visstat(mtcars,"mpg","am") 
+mtcars$am=as.factor(mtcars$am)
+ttestStatistics=visstat(mtcars,"mpg","am") 
+# print out test statistics 
+ttestStatistics
 ```
 ```{r}
 # Wilcoxon rank sum test (calling wilcox.test())
@@ -59,8 +100,13 @@ Grade = c(19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4,
             16.5, 5.1, 15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0,17.4,
             7.3, 14.3,13.5,8.0,19.5,13.4,17.9,17.7,16.4,15.6))
 
-visstat(grades_gender,"Grade", "Sex")
+welchtestStatistics=visstat(grades_gender,"Grade", "Sex")
 ```
+
+# More than two samples: One Way Test, ANOVA and Kruskal-Wallis-Test
+
+If the feature `varfactor` has more than two levels and  the response `varsample` is of type numerical or integer, 
+either a Welch's t-Test `t.test()` or `wilcox.test()`  with their respective default parameter settings are executed. 
 
 # Implemented tests
 `lm()`, `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `fisher.test()`, `chisqu.test()`
@@ -79,33 +125,5 @@ visstat(grades_gender,"Grade", "Sex")
     For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented: 
     If more than 20 percent of all cells have a count smaller than 5, fisher.test() is performed and displayed,
     otherwise chisqu.test(). In both cases case an additional mosaic plot is generated. 
-## Bla 2
-###  Bla 3
-* Bulleted list
-* Item 2
-    * Nested bullets need a 4-space indent.
-    * Item 2b
 
-* It's possible to put multiple paragraphs of text in a list item. 
-
-    But to do that, the second and subsequent paragraphs must be
-    indented by four or more spaces. It looks better if the first
-    bullet is also indented.
-    
-1.  Item 1.
-    *  Item a
-    *  Item b
-1.  Item 2.    
- 
- 
-```
-# A comment
-add <- function(a, b) a + b
-```    
-```{r}
-add <- function(a, b) a + b
-```    
-```{r, results = "asis"}
-#pander::pandoc.table(iris[1:3, 1:4])  #pander has to be included 
-```
 # Bibliography
