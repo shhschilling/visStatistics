@@ -18,7 +18,6 @@ For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:
 If more than 20 percent of all cells have a count smaller than 5, `fisher.test()` is performed and displayed,
 otherwise `chisqu.test()`. In both cases case an additional mosaic plot is generated.  
   
-  
 
 ## Installation from CRAN
 1. Install the package
@@ -37,6 +36,9 @@ otherwise `chisqu.test()`. In both cases case an additional mosaic plot is gener
 `library(visStatistics)`
 5. Help on the function usage
 `?visstat`
+
+## Getting Started
+If you are just getting started with **visStatistics**, have a look on the tutorial vignette. The vignette documents in detail the decision tree applied and illustrates it with plenty of examples. 
 
 ## Examples 
 ### Trees data set: Linear regression
