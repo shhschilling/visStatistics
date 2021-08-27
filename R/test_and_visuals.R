@@ -1278,7 +1278,7 @@ vis_regression = function(x,
 
   conf_intervall_regression = confint(reg,level=conf.level) # conf.int confidence interval of slope and intercept
 
-  KS = ad.test(rstandard(lm(y ~ x)))
+  AD = ad.test(rstandard(lm(y ~ x)))
 
   SH = shapiro.test(rstandard(lm(y ~ x)))
 
@@ -1315,7 +1315,7 @@ vis_regression = function(x,
     "dependent variable y"=name_of_sample,
     "summary_regression" = resreg,
     "shapiro_test_residuals" = SH,
-    "ad_test_residuals" = KS
+    "anderson_darling_test_residuals" = AD
   )
   
    return(my_list)
