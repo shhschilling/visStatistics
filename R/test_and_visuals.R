@@ -652,8 +652,8 @@ vis_anova = function(samples,
 
   spread = maximum - minimum
 
-  mi = minimum - 0.9 * spread
-  ma = maximum + 0.9 * spread
+  mi = minimum - spread
+  ma = maximum +  1.2 *spread
   par(mfrow = c(1, 1), oma = c(0, 0, 3, 0))
 
   stripchart(
@@ -732,7 +732,7 @@ vis_anova = function(samples,
     "top",
     inset = 0.05,
     horiz = F,
-    c("mean +- sd ", "mean with conf. intervall with Sidak correction"),
+    c("mean +- sd ", "mean with Sidak corrected conf. intervall "),
     col = c(colors()[131], colors()[552]),
     bty = 'n',
     lwd = 3
@@ -928,7 +928,7 @@ vis_Kruskal_Wallis_clusters = function(samples,
   )
 
   mtext(c("N = ", b$n), at = c(0.7, seq(1, n_classes)), las = 1) #nmber of cases in each group
-  tuk = sig_diffs_nongauss(samples, fact)
+  tuk = sig_diffs_nongauss(samples, fact,conf.level=conf.level)
 
   s = multcompLetters(tuk[[1]][, 4], threshold = alpha)
 
@@ -1678,14 +1678,18 @@ check_assumptions_count_data = function(samples, fact)
   }
 }
 
-sig_diffs_nongauss <- function(samples, fact)
+sig_diffs_nongauss <- function(samples, fact,conf.level=conf.level)
 {
   # function to produce a table similar to that produced for TukeyHSD,
   # but for non-normally distributed data
   # calculate p values for each data classification based on pairwise.wilcox.test
 
+  if (missing(conf.level)) {
+    conf.level=0.95
+  }
+  
   ufactor = levels(fact)
-  pwt = pairwise.wilcox.test(samples, fact)
+  pwt = pairwise.wilcox.test(samples, fact,conf.level=conf.level)
   factormeans = matrix(0, length(ufactor), 1)
   for (ii in 1:length(ufactor)) {
     pos = which(fact == ufactor[ii])
@@ -1706,16 +1710,16 @@ sig_diffs_nongauss <- function(samples, fact)
     tukeynames[ii] =
       paste(ufactor[xcomb[2, ii]], "-", ufactor[xcomb[1, ii]], sep = "")
 
-
     p_value = pwt$p.value[xcomb[2, ii] - 1, xcomb[1, ii]]
 
     if (is.na(p_value)) {
       p_value = 1
     }
+    
     tukeylike[ii, 4] = p_value
-    tukeylike[ii, 1] = 0
-    tukeylike[ii, 2] = 0
-    tukeylike[ii, 3] = 0
+    tukeylike[ii, 1] = NA
+    tukeylike[ii, 2] = NA
+    tukeylike[ii, 3] = NA
 
   }
   rownames(tukeylike) = tukeynames
@@ -1724,7 +1728,7 @@ sig_diffs_nongauss <- function(samples, fact)
   # by TukeyHSD and output
 
   tukeylike2 = list(tukeylike)
-  #print(tukeylike2)
+  
   return(tukeylike2)
 }
 
