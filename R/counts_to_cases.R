@@ -3,13 +3,15 @@
 #'
 #' @param x a \code{data.frame} of counts generated from a contingency table.   
 #' @param countcol character string, name of the column of x containing the counts. Default name of the column is  "Freq".
-#' @return data frame of cases of dimension (total number of counts as sum of "Freq" in x) times 2.
 
+#' @return data frame of cases of dimension (total number of counts as sum of "Freq" in x) times 2.
 #' @examples
+
 #' counts_to_cases(as.data.frame(HairEyeColor[,,1]),countcol="Freq")
+
 #' @export counts_to_cases
 
-# 
+#'
 counts_to_cases <- function(x, countcol = "Freq") {
   # Get the row indices to pull from x
   idx <- rep.int(seq_len(nrow(x)), x[[countcol]])
