@@ -1006,7 +1006,7 @@ vis_regr_trumpets = function(x, y, conf.level) {
   )
   legend(
     "bottomright",
-    c("regr. line", paste("trumpet curves for alpha=", 1-conf.level)),
+    c("regr. line", paste("confidence band for alpha=", 1-conf.level)),
     lwd = 2,
     col = c(2, colors()[84], colors()[85]),
     lty = c(1, 2, 3),
@@ -1014,7 +1014,7 @@ vis_regr_trumpets = function(x, y, conf.level) {
   )
   s = summary(reg)
   mtext(
-    paste("Regression: ax + b. trumpet curves for alpha = ", 1-conf.level, "\n \n"),
+    paste("Regression: ax + b. confidence band for alpha = ", 1-conf.level, "\n \n"),
     outer = TRUE,
     cex = 1.5
   )
@@ -1200,11 +1200,29 @@ vis_regression = function(x,
   ylim = 1.1 * max(y, na.rm <- T)
   reg = lm(y ~ x)
   resreg = summary(reg)
+  
+  
   ## error bands:
-  y_conf_low = conf_band(x, reg, conf.level, -1)
-  y_conf_up = conf_band(x, reg, conf.level, 1)
-  y_progn_low = progn_band(x, reg, conf.level, -1)
-  y_progn_up = progn_band(x, reg, conf.level, 1)
+  
+  # #old cold-depreciated, replaced by predict function------
+  # y_conf_lowa = conf_band(x, reg, conf.level, -1)
+  # y_conf_upa = conf_band(x, reg, conf.level, 1)
+  # y_progn_lowa = progn_band(x, reg, conf.level, -1)
+  # y_progn_upa = progn_band(x, reg, conf.level, 1)
+  # #-------------------
+  
+  conf.int_prediction <- predict(reg, interval = "confidence",level=conf.level)                   #confidence band
+  pred.int_prediction <- suppressWarnings(predict(reg, interval = "prediction",level=conf.level)) #prediction band 
+  
+  y_conf_low = conf.int_prediction[,2]
+  y_conf_up = conf.int_prediction[,3]
+  y_progn_low = pred.int_prediction[,2]
+  y_progn_up = pred.int_prediction[,3]
+  
+  predicted_value=conf.int_prediction[,1]
+  
+  error_bands=cbind(predicted_value,y_conf_low,y_conf_up,y_progn_low,y_progn_up)
+  
   ma = max(y, reg$fitted, y_progn_up, na.rm <- T)
   mi = min(y, reg$fitted, y_progn_low, na.rm <- T)
 
@@ -1314,6 +1332,7 @@ vis_regression = function(x,
     "independent variable x"=name_of_factor,
     "dependent variable y"=name_of_sample,
     "summary_regression" = resreg,
+    "error_bands"=error_bands,
     "shapiro_test_residuals" = SH,
     "anderson_darling_test_residuals" = AD
   )
@@ -1733,8 +1752,6 @@ sig_diffs_nongauss <- function(samples, fact,conf.level=conf.level)
 
 
 conf_band = function(x, reg, conf.level=conf.level, up) {
-  
-  
   #reg: result of linear regression lm
   #up: fact plus or minus
   if (missing(conf.level)) {
@@ -1753,11 +1770,16 @@ conf_band = function(x, reg, conf.level=conf.level, up) {
   
   # formula standard error of the regression line at point x:
   #https://stats.stackexchange.com/questions/101318/understanding-shape-and-calculation-of-confidence-bands-in-linear-regression
+  #See also statistics script page 124: konfidenzint4erval
+  
+  #http://www.sthda.com/english/articles/40-regression-analysis/166-predict-in-r-model-predictions-and-confidence-intervals/
   for (i in 1:length(x)) {
     result[i] = a * x[i] + b + 
       up * qt(1-alpha/2, length(x) - 2) *
+      #Standard error of the estimate
      sqrt(sum(reg$resid *  reg$resid) / (length(x) - 2)) *
-    sqrt(1 / (length(x) - 2) + md[i] ^ 2 / sum(md * md))
+      #
+    sqrt(1 / (length(x)) + md[i] ^ 2 / sum(md * md))
   }
   return(result)
 }
@@ -1777,8 +1799,14 @@ alpha=1-conf.level
   result = x
 
   for (i in 1:length(x)) {
-    result[i] = a * x[i] + b + up * qt(1-alpha/2, length(x) - 2) * sqrt(sum(reg$resid *
-                                                                      reg$resid) / (length(x) - 2)) * sqrt(1 + 1 / (length(x) - 2) + md[i] ^ 2 /                                                                                                             sum(md * md))
+    
+    result[i] = a * x[i] + b + 
+      up * qt(1-alpha/2, length(x) - 2) *
+      #Standard error of the estimate
+      sqrt(sum(reg$resid *  reg$resid) / (length(x) - 2)) *
+      #
+      sqrt(1+1 / (length(x)) + md[i] ^ 2 / sum(md * md))
+    
   }
   return(result)
 }

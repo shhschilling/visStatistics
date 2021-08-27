@@ -158,10 +158,33 @@ visstat(iris,"Petal.Width", "Species")
 ```
 In the above example  the scatter plots of the standardized residuals, the QQ -plot and the p-values of both Shapiro-Wilk-test and Anderson-Darling test smaller than the probability of error $\alpha=0.05$ suggest that we can not assume that the residuals are normally distributed. Therefore `visstat` switches to the non parametric alternative `kruskal.test()`. 
 
+
+
+
+
 # Linear Regression
-If bothe  feature `varfactor` and the response `varsample` have only one level of type 
+If the feature `varfactor` and the response `varsample` have only one level of type 
 numerical or integer, `visstat()` performs a linear regression. In the title of the graphical output the chosen confidence level, 
+<!-- https://www.graphpad.com/guides/prism/latest/curve-fitting/reg_confidence_and_prediction_linear.htm -->
+The goal of a prediction band is to cover with a prescribed probability the values of one or more future observations from the same population from which a given data set was sampled. Just as prediction intervals are wider than confidence intervals, prediction bands will be wider than confidence bands.
+
+
+## Confidence band 
+
+## Predcition band
+Prediction interval is the confidence interval for an observation and includes the estimate of the error.
+prediction band=confidence bahnd of the predicted values
+<!-- #from graph pad -->
+<!-- https://www.graphpad.com/guides/prism/latest/curve-fitting/reg_confidence_and_prediction_linear.htm -->
+"The goal of a prediction band is to cover with a prescribed probability the values of one or more future observations from the same population from which a given data set was sampled. Just as prediction intervals are wider than confidence intervals, prediction bands will be wider than confidence bands."
+The 95% prediction band is the area in which you expect 95% of all data points to fall
+
 ##  Example
+
+
+
+
+
 ```{r}
 visstat(trees,"Girth","Height",conf.level=0.99)
 ```

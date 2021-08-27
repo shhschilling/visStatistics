@@ -100,7 +100,7 @@ fisher_stats=visstat(blackBrownHazelGreen,"Hair","Eye")
 fisher_stats #print out summary statistics
 
 ## Linear regression
-visstat(trees,"Girth","Height")
+visstat(trees,"Girth","Height",conf.level=0.99)
 
 ## Saving the graphical output in directory plotDirectory
 ## A) saving graphical output of type "png" in temporary directory tempdir() 
