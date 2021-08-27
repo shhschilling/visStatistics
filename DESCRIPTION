@@ -1,7 +1,7 @@
 Package: visStatistics
 Type: Package
 Title: Automated Visualization of Statistical Tests
-Version: 1.0.0
+Version: 0.1.1
 Authors@R: c(
     person("Sabine", "Schilling", email = "sabineschilling@gmx.ch", role = c("cre","aut","cph")),
     person("Peter", "Kauf", email = "peter.kauf@zhaw.ch", role = "ctb"))
@@ -25,7 +25,7 @@ Description: Visualization of the most powerful statistical hypothesis test.
     For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented: 
     If more than 20 percent of all cells have a count smaller than 5, fisher.test() is performed and displayed,
     otherwise chisqu.test(). In both cases case an additional mosaic plot is generated. 
-Imports: vcd, Cairo, graphics, grDevices, grid, multcompView, stats, utils, nortest
+Imports: vcd, Cairo, graphics, grDevices, grid, multcompView, stats, utils,nortest 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
