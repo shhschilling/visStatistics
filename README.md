@@ -1,23 +1,27 @@
 # visStatistics
 
- Visualization of the statistical hypothesis test between two groups of categorical or numerical data.
+Visualization of the statistical hypothesis test between two groups of categorical or numerical data.
 
- The function `visstat()` **vis**ualizes the **stat**istical hypothesis testing between two groups of data, where `varsample` is the dependent variable (or response) and `varfactor` is the independent variable (feature).
- The statistical hypothesis test with the highest statistical power and fulfilling the assumptions of the corresponding test is performed and visualized.
- A graph displaying the raw data accordingly to the chosen test as well as the test statistics is generated. Furthermore
- `visstat()` returns the corresponding test statistics as text. The automated workflow is especially suited for browser based interfaces to server-based deployments of R. 
-Implemented tests to check the normal distribution of standardized residuals: `shapiro.test()` and `ad.test()`.
-Implemented post-hoc tests: `TukeyHSD()` for `aov()` and `pairwise.wilcox.test()` for `kruskal.test()`.
-For the comparison of averages, the implemented algorithm  depends on the value of the parameter of `conf.level`, which defaults to 0.95: 
-If the p-values of the standardized residuals of both `shapiro.test()` or `ad.test()` are smaller 
-than  the error probability 1-`conf.level`,`kruskal.test()` resp. `wilcox.test()` are performed, otherwise the `oneway.test()`
-and `aov()` resp. t.test() are performed and displayed. Exception: 
-If the sample size is bigger than 100, `t.test()` is always performed and `wilcox.test()` is never executed 
-(Lumley et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>).
-For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented: 
-If more than 20 percent of all cells have a count smaller than 5, `fisher.test()` is performed and displayed,
-otherwise `chisqu.test()`. In both cases case an additional mosaic plot is generated.  
-  
+Statistical consulting  requires often both a quick first visualization and a reproducible statistical analysis 
+of the presented raw data. The package `visStatistics` with its core function `visstat()` fulfils this need. 
+Based on a decision tree it picks the statistical hypothesis test  with the highest statistical 
+power between the dependent variable (response) `varsample` and the independent variable (feature) `varfactor`. 
+The corresponding test statistics including eventual post-hoc-analysis are returned and 
+a graph showing key statistics of the underlying test is generated. 
+
+This fully automated workflow is especially suited for browser based interfaces to server-based
+deployments of R and has been successfully implemented to analyse medical raw data in an unbiased fashion.
+ 
+
+## Implemented tests
+`lm()`, `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `fisher.test()`, `chisqu.test()`
+
+### Implemented tests to check the normal distribution of standardized residuals
+`shapiro.test()` and `ad.test()`
+
+### Implemented post-hoc tests
+`TukeyHSD()` for `aov() `and `pairwise.wilcox.test()` for `kruskal.test()`
+
 
 ## Installation from CRAN
 1. Install the package
@@ -38,12 +42,11 @@ otherwise `chisqu.test()`. In both cases case an additional mosaic plot is gener
 `?visstat`
 
 ## Getting Started
-If you are just getting started with **visStatistics**, have a look on the tutorial vignette. The vignette documents in detail the decision tree applied and illustrates it with plenty of examples. 
+The package vignette allows you to get familiar with all features of `visStatistics`. It documents in detail the algorithm of the decision tree and illustrates it with plenty of examples. 
 
 ## Examples 
 ### Trees data set: Linear regression
 `visstat(trees,"Girth","Height")` 
-
 
 `visstat(iris,"Petal.Width", "Species")`
 

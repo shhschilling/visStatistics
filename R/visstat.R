@@ -495,7 +495,7 @@ visstat = function(dataframe,
       vis_sample_fact = vis_anova(samples,
                                   fact,
                                   samplename = varsample,
-                                  factorname = varfactor)
+                                  factorname = varfactor,conf.level=conf.level)
       
       
       if (is.null(plotName))

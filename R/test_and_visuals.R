@@ -608,10 +608,12 @@ vis_chi_squared_test = function(samples,
 ## performs ANOVA, oneway test and post-hoc t.test
 vis_anova = function(samples,
                      fact,
-                     conf.level = 0.95,
+                     conf.level = conf.level,
                      samplename = "",
                      factorname = "",
                      cex = 1) {
+  
+  if (missing(conf.level)){conf.level=0.95}
   
   oldparanova <- par(no.readonly = TRUE)   
   on.exit(par(oldparanova)) 
@@ -650,8 +652,8 @@ vis_anova = function(samples,
 
   spread = maximum - minimum
 
-  mi = minimum - 0.8 * spread
-  ma = maximum + 0.8 * spread
+  mi = minimum - 0.9 * spread
+  ma = maximum + 0.9 * spread
   par(mfrow = c(1, 1), oma = c(0, 0, 3, 0))
 
   stripchart(
@@ -699,7 +701,7 @@ vis_anova = function(samples,
 
   }
 
-  tuk = TukeyHSD(an)
+  tuk = TukeyHSD(an,conf.level=conf.level)
 
   s = multcompLetters(tuk[[1]][, 4], threshold = alpha)
 
