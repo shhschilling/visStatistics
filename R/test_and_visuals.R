@@ -958,16 +958,16 @@ vis_Kruskal_Wallis_clusters = function(samples,
 
 
 ##### Visualize Regression und trumpet curves ###############################
-vis_regr_trumpets = function(x, y, P) {
-  
+vis_regr_trumpets = function(x, y, conf.level) {
+  if (missing(conf.level)){conf.level=0.95}
   oldparreg <- par(no.readonly = TRUE)   
   on.exit(par(oldparreg)) 
   reg = lm(y ~ x)
   summary(reg)
 
   ## error bands:
-  y_conf_low = conf_band(x, reg, P, -1)
-  y_conf_up = conf_band(x, reg, P, 1)
+  y_conf_low = conf_band(x, reg, conf.level, -1)
+  y_conf_up = conf_band(x, reg, conf.level, 1)
 
   ma = max(y, reg$fitted)
   mi = min(y, reg$fitted)
@@ -1006,7 +1006,7 @@ vis_regr_trumpets = function(x, y, P) {
   )
   legend(
     "bottomright",
-    c("regr. line", paste("trumpet curves for gamma=", P)),
+    c("regr. line", paste("trumpet curves for alpha=", 1-conf.level)),
     lwd = 2,
     col = c(2, colors()[84], colors()[85]),
     lty = c(1, 2, 3),
@@ -1014,7 +1014,7 @@ vis_regr_trumpets = function(x, y, P) {
   )
   s = summary(reg)
   mtext(
-    paste("Regression: ax + b. trumpet curves for gamma = ", P, "\n \n"),
+    paste("Regression: ax + b. trumpet curves for alpha = ", 1-conf.level, "\n \n"),
     outer = TRUE,
     cex = 1.5
   )
@@ -1056,7 +1056,7 @@ vis_regr_trumpets = function(x, y, P) {
     paste(
       "Residual Analysis\n Shapiro-Wilk: p = ",
       p_SH,
-      "\n  Anderson-Darling: P = ",
+      "\n  Anderson-Darling: p = ",
       p_KS
     ),
     outer = TRUE
@@ -1177,11 +1177,11 @@ vis_regression_assumptions = function(x,
 
 vis_regression = function(x,
                           y,
-                          conf.level = 0.05,
+                          conf.level = conf.level,
                           name_of_factor = character(),
                           name_of_sample = character())
 {
-  
+  if (missing(conf.level)){conf.level=0.95}
   oldparregr <- par(no.readonly = TRUE)   
   on.exit(par(oldparregr))
   
@@ -1200,12 +1200,11 @@ vis_regression = function(x,
   ylim = 1.1 * max(y, na.rm <- T)
   reg = lm(y ~ x)
   resreg = summary(reg)
-
   ## error bands:
-  y_conf_low = conf_band(x, reg, P, -1)
-  y_conf_up = conf_band(x, reg, P, 1)
-  y_progn_low = progn_band(x, reg, P, -1)
-  y_progn_up = progn_band(x, reg, P, 1)
+  y_conf_low = conf_band(x, reg, conf.level, -1)
+  y_conf_up = conf_band(x, reg, conf.level, 1)
+  y_progn_low = progn_band(x, reg, conf.level, -1)
+  y_progn_up = progn_band(x, reg, conf.level, 1)
   ma = max(y, reg$fitted, y_progn_up, na.rm <- T)
   mi = min(y, reg$fitted, y_progn_low, na.rm <- T)
 
@@ -1733,36 +1732,41 @@ sig_diffs_nongauss <- function(samples, fact,conf.level=conf.level)
 }
 
 
-conf_band = function(x, reg, P, up) {
+conf_band = function(x, reg, conf.level=conf.level, up) {
+  
+  
   #reg: result of linear regression lm
   #up: fact plus or minus
-  if (missing(P)) {
-    P = 0.05
+  if (missing(conf.level)) {
+    conf.level = 0.95
   }
 
   if (missing(up)) {
     up = 1
   }
+  alpha=1-conf.level
+  a = reg$coefficients[2] # slope
+  b = reg$coefficients[1] # constant
+  md = x - mean(x)        
 
-  a = reg$coefficients[2]
-  b = reg$coefficients[1]
-  md = x - mean(x)        #residual 
-
-  result = x
-
+  result=x #initialization
+  
+  # formula standard error of the regression line at point x:
+  #https://stats.stackexchange.com/questions/101318/understanding-shape-and-calculation-of-confidence-bands-in-linear-regression
   for (i in 1:length(x)) {
-    result[i] = a * x[i] + b + up * qt(P, length(x) - 2) * sqrt(sum(reg$resid *
-                                                                      reg$resid) / (length(x) - 2)) * sqrt(1 / (length(x) - 2) + md[i] ^ 2 / sum(md *
-                                                                                                                                                   md))
+    result[i] = a * x[i] + b + 
+      up * qt(1-alpha/2, length(x) - 2) *
+     sqrt(sum(reg$resid *  reg$resid) / (length(x) - 2)) *
+    sqrt(1 / (length(x) - 2) + md[i] ^ 2 / sum(md * md))
   }
   return(result)
 }
 
-progn_band = function(x, reg, P, up) {
-  if (missing(P)) {
-    P = 0.05
+progn_band = function(x, reg, conf.level, up) {
+  if (missing(conf.level)) {
+    conf.level = 0.95
   }
-
+alpha=1-conf.level
   if (missing(up)) {
     up = 1
   }
@@ -1773,7 +1777,7 @@ progn_band = function(x, reg, P, up) {
   result = x
 
   for (i in 1:length(x)) {
-    result[i] = a * x[i] + b + up * qt(P, length(x) - 2) * sqrt(sum(reg$resid *
+    result[i] = a * x[i] + b + up * qt(1-alpha/2, length(x) - 2) * sqrt(sum(reg$resid *
                                                                       reg$resid) / (length(x) - 2)) * sqrt(1 + 1 / (length(x) - 2) + md[i] ^ 2 /                                                                                                             sum(md * md))
   }
   return(result)

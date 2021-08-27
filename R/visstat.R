@@ -439,7 +439,7 @@ visstat = function(dataframe,
       vis_sample_fact = c(vis_chi, vis_mosaic_res)
     }
   }
-  #C) both types numeric-----
+  #C) both types numeric: Regression-----
   
   #Both samples and fact of type integer or numeric
   #Regression
@@ -454,7 +454,7 @@ visstat = function(dataframe,
     vis_sample_fact = vis_regression(fact,
                                      samples,
                                      name_of_factor = name_of_factor,
-                                     name_of_sample = name_of_sample)
+                                     name_of_sample = name_of_sample,conf.level=conf.level)
     if (is.null(plotName))
     {filename=paste("regression_", name_of_sample, "_", name_of_factor, sep = "")
     }else{

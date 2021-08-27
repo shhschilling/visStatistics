@@ -36,7 +36,8 @@ knitr::opts_chunk$set(
 library(visStatistics)
 ```
 
-<!-- https://pkgdown.r-lib.org/ shows how to publish the cod -->
+<!-- https://pkgdown.r-lib.org/ 
+shows how to publish the cod -->
 
 <!-- Unnumbered section -->
 # Abstract{-}
@@ -157,11 +158,23 @@ visstat(iris,"Petal.Width", "Species")
 ```
 In the above example  the scatter plots of the standardized residuals, the QQ -plot and the p-values of both Shapiro-Wilk-test and Anderson-Darling test smaller than the probability of error $\alpha=0.05$ suggest that we can not assume that the residuals are normally distributed. Therefore `visstat` switches to the non parametric alternative `kruskal.test()`. 
 
+# Linear Regression
+If bothe  feature `varfactor` and the response `varsample` have only one level of type 
+numerical or integer, `visstat()` performs a linear regression. In the title of the graphical output the chosen confidence level, 
+##  Example
+```{r}
+visstat(trees,"Girth","Height",conf.level=0.99)
+```
+
+# ${\chi}^2$- and Fisher Test
+
+
 # Overview of implemented tests
-`lm()`, `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `fisher.test()`, `chisqu.test()`
+ `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `lm()`,`fisher.test()`, `chisqu.test()`
 
 ## Implemented tests to check the normal distribution of standardized residuals
 `shapiro.test()` and `ad.test()`
+
 
 ##Implemented post-hoc tests
 `TukeyHSD()` for `aov() `and `pairwise.wilcox.test()` for `kruskal.test()`.
