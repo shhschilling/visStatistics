@@ -397,16 +397,16 @@ two_sample_WilcoxonTest = function(samples,
 #subtract means; two lines according to variances.
 two_sample_FTest = function(samples,
                             fact,
-                            conf.int = 0.95,
+                            conf.int = conf.int,
                             alternative = "two.sided") {
   # if (missing(conf.int)) conf.int = 0.95
   #  if (missing(alternative)) alternative = "two.sided"
   #Store default graphical parameter
   oldparftest <- par(no.readonly = TRUE)   
   on.exit(par(oldparftest)) 
+  if (missing(conf.int)){conf.int=0.95}
   
-  
-  alpha = 1 - confint
+  alpha = 1 - conf.int
   levels = unique(sort(fact))
 
   x1 = samples[fact == levels[1]]
@@ -1186,7 +1186,7 @@ vis_regression = function(x,
   on.exit(par(oldparregr))
   
   alpha = 1 - conf.level
-  P = alpha
+  
   #remove all NAs from both vectors
   xna <- x[!is.na(y) & !is.na(x)]
   yna <- y[!is.na(y) & !is.na(x)]
@@ -1276,7 +1276,7 @@ vis_regression = function(x,
   
   s = summary(reg)
 
-  b = confint(reg)
+  conf_intervall_regression = confint(reg,level=conf.level) # conf.int confidence interval of slope and intercept
 
   KS = ad.test(rstandard(lm(y ~ x)))
 
@@ -1284,23 +1284,23 @@ vis_regression = function(x,
 
   mtext(
     paste(
-      " regression: y = ax + b \n Confidence = ",
-      alpha,
+      " regression: y = ax + b \n confidence level = ",
+      conf.level,
       ", a = ",
       signif(reg$coefficients[2], 2),
-      ", interval [",
-      signif(b[2, 1], 2),
+      ", conf. interval [",
+      signif(conf_intervall_regression[2, 1], 2),
       ",",
-      signif(b[2, 2], 2),
+      signif(conf_intervall_regression[2, 2], 2),
       "]",
       ", p = ",
       signif(s$coefficients[2, 4], 2),
       "\n b = ",
       signif(reg$coefficients[1], 2),
-      ", interval [",
-      signif(b[1, 1], 2),
+      ", conf. interval [",
+      signif(conf_intervall_regression[1, 1], 2),
       ",",
-      signif(b[1, 2], 2),
+      signif(conf_intervall_regression[1, 2], 2),
       "]",
       ", p = ",
       signif(s$coefficients[1, 4], 2),
