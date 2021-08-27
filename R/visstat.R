@@ -153,7 +153,7 @@ visstat = function(dataframe,
   
   #Set default values---------------------------
   alpha = 1 - conf.level
-  conflevel=conf.level
+  
   ##Get input variables---------------------------------
   input = get_samples_fact_inputfile(dataframe, varsample, varfactor)
   #out of function get_groups_inputfile
@@ -480,7 +480,7 @@ visstat = function(dataframe,
     visanova = vis_anova_assumptions(
       samples,
       fact,
-      conf.level =conflevel ,
+      conf.level =conf.level ,
       samplename = varsample,
       factorname = varfactor
     )

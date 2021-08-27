@@ -59,39 +59,40 @@ The choice of both options follows the following algorithm:
 * If the sample size of both samples is bigger than 100, the function `visstat()` performs always **Welch's t-Test** (`t.test()`) [@Lumley:2002dsa ]. 
 
     The graphical representation names the used test, the underlying null hypothesis with the associated p-value of the null hypothesis.  A box plot with an overlayed jitter plot showing each data point is generated. The number of data entry of each sample is displayed above each box. The means and confidence intervals are displayed in red. The confidence intervals are corrected for the familywise error rate in pairwise comparison by the Sidak method [@Sidak]. 
-    The applied corrected probability of error is $\alpha_{Sidak}=1-$`conf.int`$^{1/2}$.
-    The test statistics of the Shapiro-Wilk test on the standardized residuals as well of Welch's t-test are returned. 
+    The applied corrected probability of error for the comparison of two groups is $\alpha_{Sidak}=1-$`conf.int`$^{1/2}$.
+    
+    The test statistics of the Shapiro-Wilk test on the standardized residuals as well of Welch's t-test are returned as a list. 
 
 * If the sample size of one of the samples is smaller  than 100, `viststat()` checks  for the normality of the standardized residuals of both samples with the Shapiro-Wilk Normality Test (`shapiro.test()`). If the normality assumption is met, Welch's t-Test is performed, otherwise the Wilcoxon rank sum test. The detailed algorithm is: 
 
-  * If the p-values of the standardized residuals of both distributions in the `shapiro.test()` are bigger
+  + If the p-values of the standardized residuals of both distributions in the `shapiro.test()` are bigger
   than the error probability `1-conf.level`,    **Welch's t-Test** (`t.test()`) is executed. Otherwise, 
   
-  * if the p-values of the standardized residuals of both distributions in the `shapiro.test()` are smaller 
+  + if the p-values of the standardized residuals of both distributions in the `shapiro.test()` are smaller 
   than the error probability `1-conf.level`,  a  **Wilcoxon rank sum test** (`wilcox.test()`) is executed.
     
-    **Graphical representation**
-    
-    Analogue to Welch's t-test omiting mean and confidence interval. 
-    
-     **Statistical output**
-     
-    The test statistics  of the Wilcoxon rank sum test as well as the summary statistics of the generated
-    boxplots is generated.
+  The graphical representation is analogue to Welch's t-test omiting mean and confidence interval. The test statistics  of the Wilcoxon rank sum test as well as the summary statistics of the generated boxplots is generated and returned as a list. 
     
     
     
 
 ##     Examples
+### Welch's  t-test calling t.test()
 ```{r}
-# Welch's  t-test calling t.test()
 mtcars$am=as.factor(mtcars$am)
 ttestStatistics=visstat(mtcars,"mpg","am") 
 #  uncomenting the next line prints out test statistics 
 # ttestStatistics
+ ```
+ 
+ ```{r}
+#Increasing the confidence level
+ttestStatistics=visstat(mtcars,"mpg","am",conf.level=0.99) 
 ```
+
+### Wilcoxon rank sum test (calling wilcox.test())
+
 ```{r}
-# Wilcoxon rank sum test (calling wilcox.test())
 grades_gender <- data.frame(
 Sex = as.factor(c(rep("Girl", 20), rep("Boy", 20))),
 Grade = c(19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4, 
@@ -99,22 +100,41 @@ Grade = c(19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4,
             16.5, 5.1, 15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0,17.4,
             7.3, 14.3,13.5,8.0,19.5,13.4,17.9,17.7,16.4,15.6))
 
-welchtestStatistics=visstat(grades_gender,"Grade", "Sex")
+wilcoxonStatistics=visstat(grades_gender,"Grade", "Sex")
 ```
 
 # More than two samples: One Way Test and ANOVA or Kruskal-Wallis-Test
-If the feature `varfactor` has more than two levels and  the response `varsample` is of type numerical or integer, first the  normality of the standardised residuals of the analysis of variance (ANOVA) fit by the function `aov()` is checked both the Shapiro-Wilk-test `shapiro.test()` and the Anderson-Darling-Test `ad.test()`. Furthermore the data is graphically analyzed by plotting
+
+## Checking for normal distribution of the standardized residuals 
+If the feature `varfactor` has more than two levels and  the response `varsample` is of type numerical or integer, the function `vis_anova_asumptions()` is automatically called. It  checks for normality of the standardised residuals of the analysis of variance (ANOVA) fit by the function `aov()` is checked both the Shapiro-Wilk-test `shapiro.test()` and the Anderson-Darling-Test `ad.test()`. Furthermore the data is graphically analyzed by plotting
 the standardized residuals versus the fitted mean values of the linear model for each level of `varfactor`. Additionally the normal QQ plot of the standardized residuals is generated. 
- The homoscedacity of each stratum is tested with the `bartlett.test()`.
 
-* If the p-values of the standardized residuals  `shapiro.test()` are bigger
-  than the error probability `1-conf.level`,    **Welch's t-Test** (`t.test()`) is executed.
+## Check for homogenity of variances in each level: Bartlett test
 
+Homoscedacity is tested with the `bartlett.test()`. It performs Bartlett's test of the null hypothesis that the variances in each of the levels are the same.
+
+## One Way Test and ANOVA
+
+If the p-values of the standardized residuals calculated by `shapiro.test()`  or `ad.test()` are bigger than the error probability `1-conf.level`,`aov()` and `oneway.test()` are executed and the corresponding p-values displayed.
+Both `aov()` and `oneway.test()` check, whether two or more samples from normal distributions have the same mean. Whereas `aov()` requires jomogenity of variances in each level (group), the `oneway.test()` does not assume that the variances in each group are necessarily equal.
+
+Depending on the p-value of the `bartlett.test()` the appropriate test has to be chosen by the user:  
+    * If the p-value of the `bartlett.test()` is bigger than `1-conf.level`, we can assume homogenity of variances in each level (group) and use p-values and further output generated by `aov()`.
+    * Otherwise homoscedacity can not be assumed and the output of `oneway.test()' should  be referred to. 
+
+
+### Tukey Honest Significant Differences
+
+bla
 
 ## Examples
+
+### One way test and ANOVA
 ```{r}
  anova_npk=visstat(npk,"yield","block")
 ```
+In the above example  the scatter plots of the standardized residuals, the QQ -plot and the p-values of both Shapiro-Wilk-test and Anderson-Darling test  greater than the probability of error $\alpha=0.05$ suggest that we can assume that the residuals are normally distributed. Therefore `visstat` excecutes in the following graph both `aov()` and `oneway.test()`.  At the given confidence level the homogeneity of variances can not be assumed ($p <\alpha$ as calculated with the `bartlett.test()`), and the user should report the p-value of the `oneway.test()`. 
+
 
 # Overview of implemented tests
 `lm()`, `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `fisher.test()`, `chisqu.test()`

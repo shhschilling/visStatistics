@@ -85,7 +85,7 @@ two_sample_tTest = function(samples,
                             mu = 0,
                             paired = FALSE,
                             var.equal = FALSE,
-                            conf.level = 0.95,
+                            conf.level = conf.level,
                             samplename = "",
                             factorname = "")
 {
@@ -100,7 +100,7 @@ two_sample_tTest = function(samples,
        conf.level < 0 || conf.level > 1))
     return(warning("'conf.level' must be a single number between 0 and 1"))
 
-
+  if (missing(conf.level)){conf.level=0.95}
 
   alpha = 1 - conf.level
   levels = unique(sort(fact))
@@ -223,7 +223,7 @@ two_sample_tTest = function(samples,
     na.action = na.omit
   )
   p_value = t$p.value
-  p_value = signif(p_value, 3)
+  p_value = signif(p_value, 2)
 
   if (alternative == "two.sided") {
     ah = "equals"
@@ -234,9 +234,9 @@ two_sample_tTest = function(samples,
   mtext(
     paste(
       t$method,
-      "p value = ",
+      " p value = ",
       p_value,
-      "null hypothesis:",
+      " null hypothesis:",
       "\n mean",
       samplename,
       "of",
@@ -269,7 +269,7 @@ two_sample_tTest = function(samples,
 two_sample_WilcoxonTest = function(samples,
                                    fact,
                                    alternative = c("two.sided", "less", "greater"),
-                                   conf.level = 0.95,
+                                   conf.level = conf.level,
                                    notchf = F,
                                    samplename = "",
                                    factorname = "",
@@ -284,6 +284,8 @@ two_sample_WilcoxonTest = function(samples,
         (conf.level > 0) && (conf.level < 1)))
     return(warning("'conf.level' must be a single number between 0 and 1"))
 
+  if (missing(conf.level)){conf.level=0.95}
+  
   if (!is.numeric(samples))
     return(warning("'samples' must be numeric"))
   if (!is.null(fact)) {
@@ -359,9 +361,9 @@ two_sample_WilcoxonTest = function(samples,
   mtext(
     paste(
       t$method,
-      ": p=value = ",
+      " p=value = ",
       p_value,
-      ", null hypothesis:
+      " null hypothesis:
       \n median",
       samplename,
       "of",
@@ -615,11 +617,12 @@ vis_anova = function(samples,
   on.exit(par(oldparanova)) 
   
   alpha = 1 - conf.level
+  
   samples3 = na.omit(samples)
   fact <- subset(fact,!is.na(samples))
   samples = samples3
   n_classes = length(unique(fact))
-
+  alpha_sidak=1-conf.level^(1/n_classes) #Sidak correction, https://en.wikipedia.org/wiki/%C5%A0id%C3%A1k_correction
   sdna = function(x)
   {
     sd(x, na.rm = T)
@@ -647,8 +650,8 @@ vis_anova = function(samples,
 
   spread = maximum - minimum
 
-  mi = minimum - 0.1 * spread
-  ma = maximum + 0.4 * spread
+  mi = minimum - 0.8 * spread
+  ma = maximum + 0.8 * spread
   par(mfrow = c(1, 1), oma = c(0, 0, 3, 0))
 
   stripchart(
@@ -681,9 +684,11 @@ vis_anova = function(samples,
     )
     arrows(
       i,
-      m[[i]] + qt(1 - 0.025, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
+      #m[[i]] + qt(1 - 0.025, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
+      m[[i]] + qt(1 - alpha_sidak/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
       i,
-      m[[i]] - qt(1 - 0.025, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
+     # m[[i]] - qt(1 - 0.025, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
+      m[[i]] - qt(1 - alpha_sidak/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
       angle = 90,
       code = 3,
       col = colors()[552],
@@ -713,11 +718,11 @@ vis_anova = function(samples,
        lwd = 2)
 
   mtext(paste(
-    "ANOVA: P = ",
-    signif(summaryAnova[[1]][["Pr(>F)"]][[1]], 3),
+    "ANOVA: p = ",
+    signif(summaryAnova[[1]][["Pr(>F)"]][[1]], 2),
     "\n",
-    "OneWay: P = ",
-    signif(oneway$p.value, 3)
+    "OneWay: p = ",
+    signif(oneway$p.value, 2)
   ),
   outer = TRUE)
 
@@ -725,7 +730,7 @@ vis_anova = function(samples,
     "top",
     inset = 0.05,
     horiz = F,
-    c("mean +- sd ", "mean with 95% conf. intervall"),
+    c("mean +- sd ", "mean with conf. intervall with Sidak correction"),
     col = c(colors()[131], colors()[552]),
     bty = 'n',
     lwd = 3
