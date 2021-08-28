@@ -493,7 +493,7 @@ visstat = function(dataframe,
         visanova$ad_test$p.value > alpha 
         
         ) 
-      # here we must differentiate between oneway test and anova
+      
     {
       openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
       

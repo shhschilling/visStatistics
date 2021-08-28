@@ -121,8 +121,9 @@ Homoscedacity is tested with the `bartlett.test()`. It performs Bartlett's test 
 
 
 ###  One Way Test and ANOVA {#aov}
-Depending on the p-value of the `bartlett.test()` the appropriate test is chosen:  
-    * If the p-value of the `bartlett.test()` is bigger than `1-conf.level`, we can assume homogenity of variances in each level (group) and the  p-values of `aov()` is displayed
+Depending on the p-value of the `bartlett.test()` the appropriate test is chosen:
+
+    * If the p-value of the `bartlett.test()` is bigger than `1-conf.level`, we can assume homogenity of variances in each level (group) and the  p-values of `aov()` is displayed.
     
     * Otherwise homoscedacity can not be assumed and the p-value  of `oneway.test()` is displayed. 
 
@@ -142,12 +143,18 @@ If the p-values of the standardized residuals calculated by `shapiro.test()` or 
 
 ### Examples
 
-#### One way test and ANOVA
+#### One way test
 ```{r}
- anova_npk=visstat(npk,"yield","block")
-# uncomment the following line to display the full list which is generated
-#anova_npk
+ oneway_npk=visstat(npk,"yield","block")
 ```
+### ANOVA
+The `InsectSprays` data set counts the insects treated with different insecticides. We To stabilize the variance we transform the count data with the squre root. 
+```{r}
+InsectSprays_tr=InsectSprays
+InsectSprays_tr$count=sqrt(InsectSprays$count)
+visstat(InsectSprays_tr, "count", "spray")
+```
+
 In the above example  the scatter plots of the standardized residuals, the QQ -plot and the p-values of both Shapiro-Wilk-test and Anderson-Darling tests are greater than the probability of error $\alpha=0.05$. Therefore we can assume that the residuals are normally distributed.  At the given confidence level the homogeneity of variances can not be assumed ($p <\alpha$ as calculated with the `bartlett.test()`), and  the p-value of the `oneway.test()` is displayed.
 
 #### Kruskal-Wallis rank sum test
@@ -156,6 +163,8 @@ The iris data set gives the measurement of the petal width in cm for three diffe
 visstat(iris,"Petal.Width", "Species")
 ```
 In the iris data  example, both the graphical analysis by the scatter plots of the standardized residuals and the QQ -plot as well as the p-values of  Shapiro-Wilk-test and Anderson-Darling test  suggest that we can not assume that the residuals are normally distributed. Therefore `visstat` switches to the non parametric alternative `kruskal.test()`. 
+
+
 
 # Linear Regression
 If the feature `varfactor` and the response `varsample` have only one level of type 
@@ -199,14 +208,14 @@ The linear regression model explains 64% of the total variance of the dependent 
  `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `lm()`,`fisher.test()`, `chisqu.test()`
 
 ## Implemented tests to check the normal distribution of standardized residuals
+
 `shapiro.test()` and `ad.test()`
 
 
 ## Implemented post-hoc tests
-`TukeyHSD()` for `aov() `and `pairwise.wilcox.test()` for `kruskal.test()`.
+
+`TukeyHSD()` for `aov()` and `pairwise.wilcox.test()` for `kruskal.test()`.
    
-    For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented: 
-    If more than 20 percent of all cells have a count smaller than 5, fisher.test() is performed and displayed,
-    otherwise chisqu.test(). In both cases case an additional mosaic plot is generated. 
+    
 
 # Bibliography
