@@ -749,95 +749,6 @@ vis_anova = function(samples,
 }
 
 
-## Visualize  ANOVA assumptions----
-
-###  Header vis_anova_asumptions -----
-
-#' Testing ANOVA assumptions
-#'
-#' \code{vis_anova_assumptions()} checks for normality of the standardised residuals of the anova both graphically 
-#'    the Shapiro-Wilk-test \code{shapiro.test()} and the Anderson-Darling-Test \code{ad.test()}.
-#'    It further tests the homoscedacity of each factor level in \code{fact} with the \code{bartlett.test()}.
-#'    It generates plots of the standardized residuals versus the fitted mean values of the linear models for each level of \code{fact}. 
-#'    Furthermore it shows the  normal QQ plot of the standardized residuals. 
-#'  
-#' @param samples vector containing dependent variable, datatype numeric
-#' @param fact vector containing independent variable, datatype factor
-#' @param conf.level confidence level, 0.95=default
-#' @param samplename name of sample used in graphical output, dataype character , ""=default
-#' @param factorname name of sample used in graphical output, dataype character, ""=default
-#' @param cex number indicating the amount by which plotting text and symbols should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
-#'
-#' @return my_list: list containing the test statistics of the anova
-#' \code{aov(samples~fact)},\code{bartlett.test(samples~fact)} and the tests of normality of the standardized residuals of aov, \code{ks_test} and \code{shapiro_test}
-#' @examples
-#'ToothGrowth$dose=as.factor(ToothGrowth$dose)
-#'vis_anova_assumptions(ToothGrowth$len, ToothGrowth$dose)
-#'
-#'vis_anova_assumptions(ToothGrowth$len, ToothGrowth$supp)
-#'vis_anova_assumptions(iris$Petal.Width,iris$Species)
-
-#' @export vis_anova_assumptions
-
-vis_anova_assumptions = function(samples,
-                                 fact,
-                                 conf.level = 0.95,
-                                 samplename = "",
-                                 factorname = "",
-                                 cex = 1) {
-  
-  oldparanovassum <- par(no.readonly = TRUE)   
-  on.exit(par(oldparanovassum)) 
-  samples3 = na.omit(samples)
-  fact <- subset(fact,!is.na(samples))
-  samples = samples3
-  anova = aov(samples ~ fact)
-  summary_anova = summary(anova)
-  par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
-  plot(anova$fitted, rstandard(anova), main = "std. Residuals vs. Fitted")
-  abline(h = 0, col = 1, lwd = 2)
-  qqnorm(rstandard(anova))
-  qqline(rstandard(anova), col = "red", lwd = 2)
-  par(mfrow = c(1, 1))
-  #check for normality of standardized residuals
-  if (length(anova)>7){
-  ad_test = ad.test(rstandard(anova))
-  p_AD = signif(ad_test$p.value, 3)}
-  else{
-  ad_test="Anderson-Darling test requires sample size of at lest 7."  
-  p_AD=NA
-  }
-  shapiro_test = shapiro.test(rstandard(anova))
-  p_SH = shapiro_test$p.value
-  bartlett_test = bartlett.test(samples ~ fact)
-  p_bart = bartlett_test$p.value
-  mtext(
-    paste(
-      "Check for homogeneity of variances: Bartlett Test, p = ",
-      signif(p_bart, 2),
-      "\n Check for normality of standardized residuals: Shapiro-Wilk: p = ",
-      signif(p_SH, 2),
-      "\n Anderson-Darling: p = ",
-      signif(p_AD, 2)
-    ),
-    outer = TRUE
-  )
-
-
-
-  my_list <-
-    list(
-      "shapiro_test" = shapiro_test,
-      "ad_test" = ad_test,
-      "summary_anova" = summary_anova,
-      "bartlett_test"=bartlett_test
-    )
-
-   return(my_list)
-}
-
-
-
 
 ###### Visualize Kruskal_Wallis ###############################
 ## performs Kruskal Wallis and post-hoc Wilcoxon:
@@ -1095,7 +1006,9 @@ vis_resid = function(resid, fitted) {
 
 
 ###### Visualize Regression ###############################
-vis_regression_assumptions = function(x,
+
+# only normality assumptions of standardized residuals
+vis_normality_assumptions = function(x,
                                       y,
                                       conf.level = 0.95) {
   
@@ -1288,7 +1201,7 @@ vis_regression = function(x,
     col = c(colorscheme(2)[1], colorscheme(1)[1],colorscheme(1)[2]),
     lty = c(1, 2, 3), #line types of legend
     bty = 'n', #no box around legend
-    cex=0.5 #reduces the legend size
+    cex=0.8 #reduces the legend size
   )
   
   
@@ -1301,10 +1214,8 @@ vis_regression = function(x,
   SH = shapiro.test(rstandard(lm(y ~ x)))
 
   mtext(
-    paste(
-      " regression: y = ax + b \n confidence level = ",
-      conf.level,
-      ", a = ",
+    paste( "y = a*x +b, confidence level = ", conf.level,  ", adjusted R2 = ", signif(s$adj.r.squared, 2),
+      " \n slope a = ",
       signif(reg$coefficients[2], 2),
       ", conf. interval [",
       signif(conf_intervall_regression[2, 1], 2),
@@ -1313,7 +1224,7 @@ vis_regression = function(x,
       "]",
       ", p = ",
       signif(s$coefficients[2, 4], 2),
-      "\n b = ",
+      "\n intercept b = ",
       signif(reg$coefficients[1], 2),
       ", conf. interval [",
       signif(conf_intervall_regression[1, 1], 2),
@@ -1321,9 +1232,7 @@ vis_regression = function(x,
       signif(conf_intervall_regression[1, 2], 2),
       "]",
       ", p = ",
-      signif(s$coefficients[1, 4], 2),
-      "\n adjusted R^2 = ",
-      signif(s$adj.r.squared, 2)
+      signif(s$coefficients[1, 4], 2)
     ),
     outer = TRUE
   )
@@ -1332,9 +1241,9 @@ vis_regression = function(x,
     "independent variable x"=name_of_factor,
     "dependent variable y"=name_of_sample,
     "summary_regression" = resreg,
-    "error_bands"=error_bands,
     "shapiro_test_residuals" = SH,
-    "anderson_darling_test_residuals" = AD
+    "anderson_darling_test_residuals" = AD,
+    "error_bands"=error_bands
   )
   
    return(my_list)
