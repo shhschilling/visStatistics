@@ -118,26 +118,6 @@ visstat = function(dataframe,
                    plotName=NULL,
                    plotDirectory = getwd())
 {
-  # The function vistat() visualizes the statistical hypothesis testing between the dependent variable (response) varsample and the independent variable (feature) varfactor.
-  # The statistical hypothesis test (including the eventual corresponding post-hoc analysis) with the highest statistical power fulfilling
-  # the assumptions of the corresponding test is performed.
-  # A graph displaying the raw data accordingly to the chosen test as well as the test statistics is generated and returned.
-  # Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(),chisqu.test().
-  # Three variables must be provided:
-  #  - dataframe of type data.frame or list (generated from json file)
-  #  with headers which are either the dependent variable (varsamples)
-  # or the independent variable (varfact)
-  #  - varsample: dependent variable chosen by user out of column names of dataframe. varsample must be one entry of the list names(dataframe).
-  #  - varfactor: independent variables chosen by user out of columns names  of dataframe. varsfactor  must be one entry of the list names(dataframe).
-  # Optional parameters with set default values:
-  # numbers: Boolean deciding if in mosaic plots counts of each category should be shown
-  # minpercent: number between 0 and 1 indicating the minimal fraction of total count which has to be in each category of count data in order to be displayed in mosaic plot
-  # graphicsoutput: character string indicating if a plot of type  "png", "jpeg", "jpg", "tiff", "bmp" should be saved to the director specified i plotDirectory following the
-  # Note that the parameter graphicsoutput must be specified to save plots.  The default "NULL" does not save the current plot(s).
-  # plotName: Graphical output is stored following the naming convention "plotName.graphicsoutput" in plotDirectory. 
-  # The default plotName=NULL generates automatically a plotName following the pattern  "statisticalTestName_varsample_varfactor".
-  # plotDirectory: specifies directory to save plots. Default directory is the current working directory defined by getwd()
-  
   
   stopifnot(is.data.frame(dataframe))
   stopifnot(varsample %in% names(dataframe))

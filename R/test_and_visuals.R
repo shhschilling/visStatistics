@@ -752,7 +752,8 @@ vis_anova = function(samples,
   )
   my_list <-
     list(
-      "summary statistics" = summarystat,
+      "summary statistics_anova" = summaryAnova,
+      "summary statistics_oneway" = oneway,
       "adjusted_p_values_tuk" = tuk,
       "conf.level" = conf.level
     )
