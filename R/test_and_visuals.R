@@ -1021,8 +1021,8 @@ vis_resid = function(resid, fitted) {
 ###### Visualize Regression ###############################
 
 # only normality assumptions of standardized residuals
-vis_normality_assumptions = function(x,
-                                     y,
+vis_normality_assumptions = function(y,
+                                     x,
                                      conf.level = 0.95) {
   
   oldparreg <- par(no.readonly = TRUE)   
@@ -1101,8 +1101,8 @@ vis_normality_assumptions = function(x,
 
 
 
-vis_regression = function(x,
-                          y,
+vis_regression = function(y,
+                          x,
                           conf.level = conf.level,
                           name_of_factor = character(),
                           name_of_sample = character())
@@ -1124,6 +1124,10 @@ vis_regression = function(x,
   x = sort(x)
   y = y[ord]
   ylim = 1.1 * max(y, na.rm <- T)
+  
+
+  
+  #di
   reg = lm(y ~ x)
   resreg = summary(reg)
   

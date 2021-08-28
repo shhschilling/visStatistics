@@ -2,7 +2,7 @@
 % Please edit documentation in R/vis_anova_assumptions.R
 \name{vis_anova_assumptions}
 \alias{vis_anova_assumptions}
-\title{Visualisation of the normality distribution of the standardised residualsd}
+\title{Visualisation of the normality distribution of the standardised residuals of the ANOVA}
 \usage{
 vis_anova_assumptions(
   samples,
@@ -31,7 +31,7 @@ vis_anova_assumptions(
    Shapiro-Wilk test \code{shapiro.test()}, the Anderson-Darling test \code{ad.test()} and the \code{bartlett.test()}.
 }
 \description{
-\code{vis_anova_assumptions()} checks for normality of the standardised residuals of the anova. Both the 
+\code{vis_anova_assumptions()} checks for normality of the standardised residuals of the ANOVA. Both the 
    Shapiro-Wilk test \code{shapiro.test()} and the Anderson-Darling test \code{ad.test()} check the 
    null that the standardized residuals are normally distributed. 
    It generates a scatter plot

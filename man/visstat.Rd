@@ -64,20 +64,12 @@ and \code{aov()} resp. \code{t.test()} are performed and displayed.
 Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed (Lumley et al. (2002) 
 <doi:10.1146/annurev.publheath.23.100901.140546>).
 For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented:
-If more than 20 percent of all cells have a count smaller than 5,  \code{fisher.test()}is performed and displayed, otherwise \code{chisqu.test()}.
+If more than 20 percent of all cells have a count smaller than 5,  \code{fisher.test()} is performed and displayed, otherwise the \code{chisqu.test()}.
 In both cases case an additional mosaic plot showing Pearson's residuals is generated.
 }
 \examples{
 
-## Kruskal-Wallis rank sum test (calling kruskal.test())
-visstat(iris,"Petal.Width", "Species")
-visstat(InsectSprays,"count","spray")
-
-## ANOVA (calling aov()) and One-way analysis of means (oneway.test())
-anova_npk=visstat(npk,"yield","block")
-anova_npk #prints summary of tests
-
-## Welch Two Sample t-test (calling t.test())
+#' ## Welch Two Sample t-test (calling t.test())
 visstat(mtcars,"mpg","am") 
 
 ## Wilcoxon rank sum test (calling wilcox.test())
@@ -89,6 +81,17 @@ grades_gender <- data.frame(
 7.3, 14.3,13.5,8.0,19.5,13.4,17.9,17.7,16.4,15.6))
 visstat(grades_gender,"Grade", "Sex")
 
+## One-way analysis of means (oneway.test())
+anova_npk=visstat(npk,"yield","block")
+anova_npk #prints summary of tests
+
+## Kruskal-Wallis rank sum test (calling kruskal.test())
+visstat(iris,"Petal.Width", "Species")
+visstat(InsectSprays,"count","spray")
+
+## Linear regression
+visstat(trees,"Height","Girth",conf.level=0.99)
+
 ## Pearson's Chi-squared test and mosaic plot with Pearson residuals
 visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye")
 ##2x2 contingency tables with Fisher's exact test and mosaic plot with Pearson residuals
@@ -99,8 +102,6 @@ blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
 fisher_stats=visstat(blackBrownHazelGreen,"Hair","Eye")
 fisher_stats #print out summary statistics
 
-## Linear regression
-visstat(trees,"Girth","Height",conf.level=0.99)
 
 ## Saving the graphical output in directory plotDirectory
 ## A) saving graphical output of type "png" in temporary directory tempdir() 
@@ -109,13 +110,17 @@ visstat(blackBrownHazelGreen,"Hair","Eye",graphicsoutput = "png",plotDirectory=t
 ##remove graphical output from plotDirectory
 file.remove(file.path(tempdir(),"chi_squared_or_fisher_Hair_Eye.png"))
 file.remove(file.path(tempdir(),"mosaic_complete_Hair_Eye.png"))
+
 ## B) Specifying pdf as output type: 
 visstat(iris,"Petal.Width", "Species",graphicsoutput = "pdf",plotDirectory=tempdir())
+
 ##remove graphical output from plotDirectory
 file.remove(file.path(tempdir(),"kruskal_Petal_Width_Species.pdf"))
+
 ## C) Specifiying plotName overwrites default naming convention
 visstat(iris,"Petal.Width","Species",graphicsoutput = "pdf",
 plotName="kruskal_iris",plotDirectory=tempdir())
 ##remove graphical output from plotDirectory
 file.remove(file.path(tempdir(),"kruskal_iris.pdf"))
+
 }
