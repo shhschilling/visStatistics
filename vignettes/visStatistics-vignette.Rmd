@@ -164,29 +164,27 @@ In the above example  the scatter plots of the standardized residuals, the QQ -p
 
 # Linear Regression
 If the feature `varfactor` and the response `varsample` have only one level of type 
-numerical or integer, `visstat()` performs a linear regression. In the title of the graphical output the chosen confidence level, 
+numerical or integer, `visstat()` performs a linear regression. In the title of the graphical output the chosen confidence level `conf.level`, the regression paramter with their corresponding confidence levels and p-values as well as the adjusted $R^2$ are given. 
+The graph shows the raw data, the regression line and both the confidence and pediction band corresponding to the chosen `conf.level`. The function returns a list with the test statistics of the linear regression, the pointwise estimates of the confidence band and the test results of both `shapiro.test()`and `ad.test()` testing the null that the standardized residuals of the regression are normally distributed. 
+
+
 <!-- https://www.graphpad.com/guides/prism/latest/curve-fitting/reg_confidence_and_prediction_linear.htm -->
-The goal of a prediction band is to cover with a prescribed probability the values of one or more future observations from the same population from which a given data set was sampled. Just as prediction intervals are wider than confidence intervals, prediction bands will be wider than confidence bands.
+<!-- The goal of a prediction band is to cover with a prescribed probability the values of one or more future observations from the same population from which a given data set was sampled. Just as prediction intervals are wider than confidence intervals, prediction bands will be wider than confidence bands. -->
 
 
-## Confidence band 
+<!-- ## Confidence band  -->
 
-## Predcition band
-Prediction interval is the confidence interval for an observation and includes the estimate of the error.
-prediction band=confidence bahnd of the predicted values
-<!-- #from graph pad -->
-<!-- https://www.graphpad.com/guides/prism/latest/curve-fitting/reg_confidence_and_prediction_linear.htm -->
-"The goal of a prediction band is to cover with a prescribed probability the values of one or more future observations from the same population from which a given data set was sampled. Just as prediction intervals are wider than confidence intervals, prediction bands will be wider than confidence bands."
-The 95% prediction band is the area in which you expect 95% of all data points to fall
+<!-- ## Predcition band -->
+<!-- Prediction interval is the confidence interval for an observation and includes the estimate of the error. -->
+<!-- <!-- #from graph pad --> -->
+<!-- <!-- https://www.graphpad.com/guides/prism/latest/curve-fitting/reg_confidence_and_prediction_linear.htm --> -->
+<!-- "The goal of a prediction band is to cover with a prescribed probability the values of one or more future observations from the same population from which a given data set was sampled. Just as prediction intervals are wider than confidence intervals, prediction bands will be wider than confidence bands." -->
+<!-- The 95% prediction band is the area in which you expect 95% of all data points to fall -->
 
 ##  Example
-
-
-
-
-
 ```{r}
-visstat(trees,"Girth","Height",conf.level=0.99)
+
+linreg=visstat(cars,"dist","speed",conf.level=0.99)
 ```
 
 # ${\chi}^2$- and Fisher Test
