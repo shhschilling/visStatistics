@@ -1,19 +1,20 @@
 Package: visStatistics
 Type: Package
 Title: Automated Visualization of Statistical Tests
-Version: 1.0.0
+Version: 0.1.2
 Authors@R: c(
     person("Sabine", "Schilling", email = "sabineschilling@gmx.ch", role = c("cre","aut","cph")),
     person("Peter", "Kauf", email = "peter.kauf@zhaw.ch", role = "ctb"))
 Maintainer: Sabine Schilling <sabineschilling@gmx.ch>
 Description: Visualization of the most powerful statistical hypothesis test.
-    The package visStatistics visualizes the statistical hypothesis testing between the 
-    dependent variable (response) varsample and the independent variable (feature) varfactor. 
-    The statistical hypothesis test (including the eventual corresponding post-hoc analysis) with
-    the highest statistical power fulfilling the assumptions of the corresponding test is chosen based on a decision tree.
-    The test statistics including eventual post-hoc-analysis are returned and graph displaying the raw data accordingly to the chosen test is generated.
-    The automated workflow is especially suited for browser based interfaces to 
-    server-based deployments of R. Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
+    Statistical consulting requires often both a quick first visualization and a reproducible
+    statistical analysis of the presented raw data. The R package visStatistics with its core function 
+    visstat() fulfils this need. Based on a decision tree it picks the statistical hypothesis test with 
+    the highest statistical power between the dependent variable (response) varsample and the independent variable
+    (feature) varfactor. The corresponding test statistics including eventual post-hoc-analysis are returned and a 
+    graph showing key statistics of the underlying test is generated. This automated workflow is especially suited 
+    for browser based interfaces to server-based deployments of R.
+    Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
     Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
     Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
     For the comparison of averages, the implemented algorithm  depends on the value of the parameter of conf.level, which defaults to 0.95: 
@@ -28,7 +29,6 @@ Description: Visualization of the most powerful statistical hypothesis test.
 Imports: vcd, Cairo, graphics, grDevices, grid, multcompView, stats, utils,nortest 
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 RoxygenNote: 7.1.1.9001
 NeedsCompilation: no
 Packaged: 2020-05-09 20:05:43 UTC; sschilli
