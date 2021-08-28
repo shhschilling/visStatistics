@@ -472,6 +472,9 @@ visstat = function(dataframe,
   #D) more than two comparisons----
   #A) sample is numeric or integer: ANOVA or Kruskal/Wallis
   
+  #excellent tutorial
+  # https://www.scribbr.com/statistics/anova-in-r/
+  
   
   if (typefactor == "factor" &&
       (typesample == "integer" | typesample == "numeric") &&

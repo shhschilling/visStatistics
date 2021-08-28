@@ -605,7 +605,7 @@ vis_chi_squared_test = function(samples,
 }
 
 ###### Visualize ANOVA ###############################
-## performs ANOVA, oneway test and post-hoc t.test
+## performs ANOVA or  oneway test and corresponding post hoc tests
 vis_anova = function(samples,
                      fact,
                      conf.level = conf.level,
@@ -641,12 +641,26 @@ vis_anova = function(samples,
   for (i in 1:n_classes) {
     samples_per_class[i] = sum(fact == unique(fact)[i])
   }
-
+  # tests
   an = aov(samples ~ fact)
   summaryAnova = summary(an)
-
   oneway = oneway.test(samples ~ fact)
-
+  #check for homogenity
+  bartlett_test = bartlett.test(samples ~ fact)
+  p_bart = bartlett_test$p.value
+  
+  if (p_bart>1-conf.level){
+    p_aov=summaryAnova[[1]][["Pr(>F)"]]
+    label_aov="ANOVA"
+    summarystat=summaryAnova
+  }else{
+    
+    p_aov=oneway$p.value
+    label_aov="One-Way test"
+    summarystat=oneway
+  }
+  
+  
   maximum = max(samples, na.rm = T)
   minimum = min(samples, na.rm = T)
 
@@ -720,11 +734,8 @@ vis_anova = function(samples,
        lwd = 2)
 
   mtext(paste(
-    "ANOVA: p = ",
-    signif(summaryAnova[[1]][["Pr(>F)"]][[1]], 2),
-    "\n",
-    "OneWay: p = ",
-    signif(oneway$p.value, 2)
+    label_aov,"p=",
+    signif(p_aov, 2)
   ),
   outer = TRUE)
 
@@ -739,9 +750,8 @@ vis_anova = function(samples,
   )
   my_list <-
     list(
-      "ANOVA" = summaryAnova,
-      "oneway_test" = oneway,
-      "adjusted_p_values_t_test" = tuk,
+      label_aov=summarystat,
+      "adjusted_p_values_tuk" = tuk,
       "conf.level" = conf.level
     )
   

@@ -68,7 +68,7 @@ ttestStatistics
 ### Wilcoxon rank sum test with continuity correction
 `visstat(ToothGrowth,"len", "supp")`
 
-### ANOVA
+### One-way test
 
 ```{r}
  anova_npk=visstat(npk,"yield","block")
