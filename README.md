@@ -12,6 +12,7 @@ a graph showing key statistics of the underlying test is generated.
 This fully automated workflow is especially suited for browser based interfaces to server-based
 deployments of R and has been successfully implemented to analyse medical raw data in an unbiased fashion.
  
+A detailed description of the package's functionality and its underlying decision tree, can be found in the `vignette` accompanying this package.
 
 ## Implemented tests
 `lm()`, `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `fisher.test()`, `chisqu.test()`
