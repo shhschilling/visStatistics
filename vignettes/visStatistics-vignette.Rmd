@@ -181,8 +181,11 @@ The graph shows the raw data, the regression line and both the confidence and pr
 <!-- ### Cars data set -->
 
 The cars data set reports the speed in mph  of cars and the distances (dist) in ft taken to stop.
-```{r}
 
+`linreg_cars=visstat(cars,"dist","speed")`
+Increasing the confidence level `conf.level` from the default 0.95 to 0.99 leads two wider confidence and prediction bands:
+
+```{r}
 linreg_cars=visstat(cars,"dist","speed",conf.level=0.99)
 #Check for normality of standardized residuals 
 linreg_cars$anderson_darling_test_residuals
