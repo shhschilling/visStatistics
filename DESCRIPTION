@@ -10,10 +10,8 @@ Description: Visualization of the most powerful statistical hypothesis test.
     Statistical consulting requires often both a quick first visualization and a reproducible
     statistical analysis of the presented raw data. The R package visStatistics with its core function 
     visstat() fulfils this need. Based on a decision tree it picks the statistical hypothesis test with 
-    the highest statistical power between the dependent variable (response) varsample and the independent variable
-    (feature) varfactor. The corresponding test statistics including eventual post-hoc-analysis are returned and a 
-    graph showing key statistics of the underlying test is generated. This automated workflow is especially suited 
-    for browser based interfaces to server-based deployments of R.
+    the highest statistical power between the dependent variable (response) and the independent variable
+    (feature) varfactor. 
     Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
     Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
     Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
