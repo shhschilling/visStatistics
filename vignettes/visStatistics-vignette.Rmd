@@ -60,8 +60,8 @@ The choice of both options follows the following algorithm:
 
 -   If the sample size of both samples is bigger than 100, the function `visstat()` performs always **Welch's t-Test** (`t.test()`) [@Lumley:2002dsa ].
 
-    The graphical representation names the used test, the underlying null hypothesis with the associated p-value of the null hypothesis. A box plot with an overlayed jitter plot showing each data point is generated. The number of data entry of each sample is displayed above each box. The means and Sidak corrected confidence intervals (see section \@ref(sidak)) are displayed in red.  
-    
+    The graphical representation names the used test, the underlying null hypothesis with the associated p-value of the null hypothesis. A box plot with an overlayed jitter plot showing each data point is generated. The number of data entry of each sample is displayed above each box. The means and `1-conf` confidence intervals  are displayed in red.  
+<!-- (see section \@ref(sidak))     -->
    
 
     The test statistics of the Shapiro-Wilk test on the standardized residuals as well of Welch's t-test are returned as a list.

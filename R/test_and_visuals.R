@@ -168,7 +168,9 @@ two_sample_tTest = function(samples,
          pch = 1,
          lwd = 3)
   
-  alpha_sidak = 1 - sqrt(1 - alpha)
+  #alpha_sidak = 1 - sqrt(1 - alpha)
+  
+  alpha_sidak=alpha #ignore the sidak correction
   
   correction1 = qt(1 - 0.5 * alpha_sidak, length(x1) - 1) * sd(x1) / sqrt(length(x1))
   correction2 = qt(1 - 0.5 * alpha_sidak, length(x2) - 1) * sd(x2) / sqrt(length(x2))
@@ -199,18 +201,18 @@ two_sample_tTest = function(samples,
     length = 0.1
   )
   
-  abline(
-    h = mean(x1, na.rm = T) + correction1,
-    col = "grey30",
-    lty = 2,
-    lwd = 1
-  )
-  abline(
-    h = mean(x1, na.rm = T) - correction1,
-    col = "grey30",
-    lty = 2,
-    lwd = 1
-  )
+  # abline(
+  #   h = mean(x1, na.rm = T) + correction1,
+  #   col = "grey30",
+  #   lty = 2,
+  #   lwd = 1
+  # )
+  # abline(
+  #   h = mean(x1, na.rm = T) - correction1,
+  #   col = "grey30",
+  #   lty = 2,
+  #   lwd = 1
+  # )
   text(1:length(b$n), c(ma, ma), paste("N=", b$n))
   t = t.test(
     x1,
@@ -689,7 +691,7 @@ vis_anova = function(samples,
   
   # sd:
   for (i in 1:n_classes) {
-    sn=qt(1 - alpha/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i])
+    sn=qt(1 - alpha_sidak/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i])
     lines(
       x = c(i - 0.2, i - 0.2),
      # y = c(m[[i]] - s[[i]], m[[i]] + s[[i]]),
@@ -710,11 +712,11 @@ vis_anova = function(samples,
     )
     arrows(
       i,
-      #m[[i]] + qt(1 - 0.025, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
-      m[[i]] + qt(1 - alpha_sidak/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
+      m[[i]] + qt(1 - alpha/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
+      #m[[i]] + qt(1 - alpha_sidak/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
       i,
-      # m[[i]] - qt(1 - 0.025, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
-      m[[i]] - qt(1 - alpha_sidak/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
+       m[[i]] - qt(1 - alpha/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
+      #m[[i]] - qt(1 - alpha_sidak/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
       angle = 90,
       code = 3,
       col = colors()[552],
@@ -750,10 +752,10 @@ vis_anova = function(samples,
   outer = TRUE)
   
   legend(
-    "top",
+    "topleft",
     inset = 0.05,
     horiz = F,
-    c( paste("mean with", conf.level*100 ,"% conf. intervall "),"mean with Sidak corrected confidence interval "),
+    c( paste("mean with", round((1-alpha_sidak)*100,0) ,"% conf. intervall, Sidak correction "),paste("mean with", conf.level*100 ,"% conf. intervall ")),
     col = c(colors()[131], colors()[552]),
     bty = 'n',
     lwd = 3
