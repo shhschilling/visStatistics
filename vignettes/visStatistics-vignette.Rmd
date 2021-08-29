@@ -117,11 +117,11 @@ Both `aov()` and `oneway.test()` check, whether two or more samples from normal 
 
 ### One Way Test and ANOVA {#sidak}
 
-Depending on the p-value of the `bartlett.test()` the appropriate test is chosen:
+Depending on the p-value of the `bartlett.test()` the appropriate test is shown in the title:
 
--   If the p-value of the `bartlett.test()` is bigger than `1-conf.level`, we can assume homogeneity of variances in each level (group) and the p-values of `aov()` is displayed in the title.
+-   If the p-value of the `bartlett.test()` is bigger than `1-conf.level`, we can assume homogeneity of variances in each level (group) and the p-values of `aov()` is displayed.
 
--   Otherwise homoscedacity can not be assumed and the p-value of `oneway.test()` is displayed.
+-   Otherwise homoscedacity can not be assumed and the p-value of `oneway.test()` is reported.
 
 To generate Sidak corrected confidence intervals, we calculate the corrected probability of error for the construction of M confidence intervals, 
 $$\alpha_{Sidak}=1-conf.int^{1/M}.$$ 
@@ -140,7 +140,7 @@ We use the Tukey Honest Significant Differences `TukeyHSD()` to create a set of 
 
 ### Kruskal-Wallis-Test
 
-If the p-values of the standardized residuals calculated by `shapiro.test()` or `ad.test()` are smaller than the error probability `1-conf.level`, a normal distribution of the residuals can not be assumed. In this case, `visstat()` chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. `kruskal.test()` tests the null that the medians are the same in each group (level). As post-hoc-analysis the `pairwise.wilcox.test()` applying the default Holm method [@Holm1979ASS] is used. If two groups differ significantly at the given `conf.level`, the green letters below the box plot differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list wtih the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.
+If the p-values of the standardized residuals calculated by `shapiro.test()` or `ad.test()` are smaller than the error probability `1-conf.level`, a normal distribution of the residuals can not be assumed. In this case, `visstat()` chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. `kruskal.test()` tests the null that the medians are the same in each group (level). As post-hoc-analysis the pairwise Wilcoxon rank sum test  `pairwise.wilcox.test()` applying the default Holm method [@Holm1979ASS] is used. If two groups differ significantly at the given `conf.level`, the green letters below the box plot differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list wtih the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.
 
 ### Examples
 
