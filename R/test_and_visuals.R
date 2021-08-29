@@ -168,11 +168,10 @@ two_sample_tTest = function(samples,
          pch = 1,
          lwd = 3)
   
-  alpha_c = 1 - sqrt(1 - alpha)
-  #two tests alpha<-0.025, corrects for pairwise testing by increasing the confidence interval from e.g. 95 % to 97.5 %
-  #corrected confidence intervals 
-  correction1 = qt(1 - 0.5 * alpha_c, length(x1) - 1) * sd(x1) / sqrt(length(x1))
-  correction2 = qt(1 - 0.5 * alpha_c, length(x2) - 1) * sd(x2) / sqrt(length(x2))
+  alpha_sidak = 1 - sqrt(1 - alpha)
+  
+  correction1 = qt(1 - 0.5 * alpha_sidak, length(x1) - 1) * sd(x1) / sqrt(length(x1))
+  correction2 = qt(1 - 0.5 * alpha_sidak, length(x2) - 1) * sd(x2) / sqrt(length(x2))
   
   arrows(
     1,
@@ -624,7 +623,10 @@ vis_anova = function(samples,
   fact <- subset(fact,!is.na(samples))
   samples = samples3
   n_classes = length(unique(fact))
+  #https://en.wikipedia.org/wiki/Bonferroni_correction
+  
   alpha_sidak=1-conf.level^(1/n_classes) #Sidak correction, https://en.wikipedia.org/wiki/%C5%A0id%C3%A1k_correction
+  #alpha_sidak=alpha #do not apply sidak correction
   sdna = function(x)
   {
     sd(x, na.rm = T)
@@ -683,15 +685,21 @@ vis_anova = function(samples,
     las = 2
   )
   
+  
+  
   # sd:
   for (i in 1:n_classes) {
+    sn=qt(1 - alpha/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i])
     lines(
       x = c(i - 0.2, i - 0.2),
-      y = c(m[[i]] - s[[i]], m[[i]] + s[[i]]),
+     # y = c(m[[i]] - s[[i]], m[[i]] + s[[i]]),
+     y = c(m[[i]] - sn, m[[i]] + sn),
+      
       col = colors()[131],
       lwd = 5
     )
   }
+  
   
   for (i in 1:n_classes) {
     lines(
@@ -745,7 +753,7 @@ vis_anova = function(samples,
     "top",
     inset = 0.05,
     horiz = F,
-    c("mean +- sd ", "mean with Sidak corrected conf. intervall "),
+    c( paste("mean with", conf.level*100 ,"% conf. intervall "),"mean with Sidak corrected confidence interval "),
     col = c(colors()[131], colors()[552]),
     bty = 'n',
     lwd = 3

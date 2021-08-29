@@ -17,12 +17,11 @@ visstat(
 )
 }
 \arguments{
-\item{dataframe}{\code{data.frame} containing at least two columns. Data must be column wise ordered.
-Contingency tables can be transformed to column wise structure with helper function \code{counts_to_cases(as.data.frame())}.}
+\item{dataframe}{\code{data.frame} containing at least two columns. Data must be column wise ordered.}
 
-\item{varsample}{column name of dependent variable in \code{dataframe}, datatype \code{character}. \code{varsample} must be one entry of the list \code{names(dataframe)}.}
+\item{varsample}{column name of the dependent variable in \code{dataframe}, datatype \code{character}. \code{varsample} must be one entry of the list \code{names(dataframe)}.}
 
-\item{varfactor}{column name of independent variable in \code{dataframe}, datatype \code{character}.\code{varsample} must be one entry of the list \code{names(dataframe)}.}
+\item{varfactor}{column name of the independent variable in \code{dataframe}, datatype \code{character}.\code{varsample} must be one entry of the list \code{names(dataframe)}.}
 
 \item{conf.level}{confidence level of the interval.}
 
@@ -42,34 +41,36 @@ Without specifying this parameter, plotName is automatically generated following
 \code{list} containing statistics of test with highest statistical power meeting assumptions. All values are returned as invisibly copies. Values can be accessed by assigning a return value to \code{visstat}.
 }
 \description{
-\code{visstat()} \strong{vis}ualizes the \strong{stat}istical hypothesis testing between
-the dependent variable (or response)
-\code{varsample} and the independent variable  \code{varfactor}. \code{varfactor} can have more than two features.
-\code{visstat()} runs a decision tree selecting the statistical hypothesis test with the highest statistical power
- fulfilling the assumptions of the underlying test. For each test
- \code{visstat()} returns a graph displaying the data with the main test statistics
-in the title and a list with the complete test statistics including eventual post-hoc analysis.
-The automated workflow is especially suited for browser based interfaces to 
-server-based deployments of R. 
+Based on a decision tree, \code{visstat()} picks the statistical hypothesis test with the highest statistical
+power between the dependent variable (response)  and the independent variable (feature) 
+in a \code{data.frame} named \code{dataframe}. 
+Data in the provided \code{dataframe} must be structured column wise, 
+where \code{varsample} and \code{varfactor} are \code{character} strings corresponding to the column names
+of the dependent and independent variable respectively.
+}
+\details{
+For each test \code{visstat()} returns both a graph with the main test statistics
+in its title as well as  a list of the  test statistics including eventual post-hoc analysis.
+
 Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()},
 \code{aov()}, \code{kruskal.test()}, \code{fisher.test()}, \code{chisqu.test()}.
 Implemented tests for normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
 Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}.
-}
-\details{
+
 For the comparison of averages, the following algorithm  depends on the value of the parameter of \code{conf.level}, which defaults to 0.95. 
- If the p-values of the standardized residuals of  \code{shapiro.test()} or \code{ks.test()} are smaller
+If the p-values of the standardized residuals of  \code{shapiro.test()} or \code{ks.test()} are smaller
 than the error probability 1-\code{conf.level}, \code{kruskal.test()} resp. \code{wilcox.test()} are performed, otherwise the \code{oneway.test()}
 and \code{aov()} resp. \code{t.test()} are performed and displayed. 
 Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed (Lumley et al. (2002) 
 <doi:10.1146/annurev.publheath.23.100901.140546>).
+
 For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented:
 If more than 20 percent of all cells have a count smaller than 5,  \code{fisher.test()} is performed and displayed, otherwise the \code{chisqu.test()}.
 In both cases case an additional mosaic plot showing Pearson's residuals is generated.
 }
 \examples{
 
-#' ## Welch Two Sample t-test (calling t.test())
+## Welch Two Sample t-test (calling t.test())
 visstat(mtcars,"mpg","am") 
 
 ## Wilcoxon rank sum test (calling wilcox.test())
@@ -90,13 +91,16 @@ visstat(iris,"Petal.Width", "Species")
 visstat(InsectSprays,"count","spray")
 
 ## Linear regression
-visstat(trees,"Height","Girth",conf.level=0.99)
+visstat(trees,"Girth","Height",conf.level=0.99)
 
 ## Pearson's Chi-squared test and mosaic plot with Pearson residuals
-visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye")
-##2x2 contingency tables with Fisher's exact test and mosaic plot with Pearson residuals
+###Transform array to data.frame
+HairEyeColorDataFrame=counts_to_cases(as.data.frame(HairEyeColor))
+visstat(HairEyeColorDataFrame,"Hair","Eye")
+
+## 2x2 contingency tables with Fisher's exact test and mosaic plot with Pearson residuals
 HairEyeColorMaleFisher = HairEyeColor[,,1]
-##slicing out a 2 x2 contingency table
+### slicing out a 2 x2 contingency table
 blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
 blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
 fisher_stats=visstat(blackBrownHazelGreen,"Hair","Eye")

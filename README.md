@@ -43,7 +43,7 @@ A detailed description of the package's functionality and its underlying decisio
 `?visstat`
 
 ## Getting Started
-The package vignette allows you to get familiar with all features of `visStatistics`. It documents in detail the algorithm of the decision tree and illustrates it with plenty of examples. 
+The package vignette allows you to get familiar with all features of `visStatistics`. It documents in detail the algorithm of the decision tree illustrated by with examples. 
 
 ## Examples 
 
@@ -77,21 +77,22 @@ ttestStatistics
 ```
 
 ### Kruskal-Wallis test
-Save the graphical output of type pdf in plotDirectory tempdir()
+Save the graphical output of type pdf in plotDirectory tempdir():
 
 `visstat(iris,"Petal.Width","Species",graphicsoutput="pdf",plotDirectory=tempdir())`
 
 ### Linear Regression
 `linreg_cars=visstat(cars,"dist","speed")`
 
-Incrasing the confidence level `conf.level` from the default 0.95 to 0.99 leads two wider confidence and prediction bands:
+Increasing the confidence level `conf.level` from the default 0.95 to 0.99 leads two wider confidence and prediction bands:
 
 `linreg_cars=visstat(cars,"dist","speed",conf.level=0.99)`
 
 ### Pearson's Chi-squared test
+Count data sets are often presented as multidimensional arrays, so called contingency tables, whereas `visstat()` requires a `data.frame` with a column structure. Arrays can be transformed to this column wise structure with the helper function `counts_to_cases()`:
 ```{r}
-HairEyeColorMale = counts_to_cases(as.data.frame(HairEyeColor[,,1]))
-visstat(HairEyeColorMale,"Hair","Eye")`
+HairEyeColorDataFrame=counts_to_cases(as.data.frame(HairEyeColor))
+visstat(HairEyeColorDataFrame,"Hair","Eye")
 ```
 
 

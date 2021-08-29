@@ -48,7 +48,7 @@
 
 #' @examples
 #'
-#' #' ## Welch Two Sample t-test (calling t.test())
+#' ## Welch Two Sample t-test (calling t.test())
 #' visstat(mtcars,"mpg","am") 
 #' 
 #' ## Wilcoxon rank sum test (calling wilcox.test())
@@ -69,13 +69,16 @@
 #' visstat(InsectSprays,"count","spray")
 #' 
 #' ## Linear regression
-#' visstat(trees,"Height","Girth",conf.level=0.99)
+#' visstat(trees,"Girth","Height",conf.level=0.99)
 #' 
 #' ## Pearson's Chi-squared test and mosaic plot with Pearson residuals
-#' visstat(counts_to_cases(as.data.frame(HairEyeColor[,,1])),"Hair","Eye")
-#' ##2x2 contingency tables with Fisher's exact test and mosaic plot with Pearson residuals
+#' ###Transform array to data.frame
+#' HairEyeColorDataFrame=counts_to_cases(as.data.frame(HairEyeColor))
+#' visstat(HairEyeColorDataFrame,"Hair","Eye")
+#' 
+#' ## 2x2 contingency tables with Fisher's exact test and mosaic plot with Pearson residuals
 #' HairEyeColorMaleFisher = HairEyeColor[,,1]
-#' ##slicing out a 2 x2 contingency table
+#' ### slicing out a 2 x2 contingency table
 #' blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
 #' blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
 #' fisher_stats=visstat(blackBrownHazelGreen,"Hair","Eye")

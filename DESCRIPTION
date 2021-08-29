@@ -11,19 +11,21 @@ Description: Visualization of the most powerful statistical hypothesis test.
     statistical analysis of the presented raw data. The R package visStatistics with its core function 
     visstat() fulfils this need. Based on a decision tree it picks the statistical hypothesis test with 
     the highest statistical power between the dependent variable (response) and the independent variable
-    (feature) varfactor. 
-    Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
-    Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
-    Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
-    For the comparison of averages, the implemented algorithm  depends on the value of the parameter of conf.level, which defaults to 0.95: 
-    If the p-values of the standardized residuals of both shapiro.test() or ad.test() are smaller 
-    than the error probability 1-conf.level, kruskal.test() resp. wilcox.test() are performed, otherwise the oneway.test()
-    and aov() resp. t.test() are performed and displayed. Exception: 
+    (feature):
+    For the comparison of averages, the chosen test depends on the p-values of the null that the normalized
+    standardized residuals of the regression model are normally distributed as tested by both shapiro.test() or ad.test(). 
+    If both p-values are smaller than the error probability 1-conf.level,
+    the non parametric tests kruskal.test() resp. wilcox.test() are performed, otherwise the parametric tests oneway.test()
+    and aov() resp. t.test().  Exception: 
     If the sample size is bigger than 100, t.test() is always performed and wilcox.test() is never executed 
     (Lumley et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). 
     For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented: 
     If more than 20 percent of all cells have a count smaller than 5, fisher.test() is performed and displayed,
     otherwise chisqu.test(). In both cases case an additional mosaic plot is generated. 
+    Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
+    Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
+    Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
+    See the visstat vignette for a detailed description of the decision tree and examples.
 Imports: vcd, Cairo, graphics, grDevices, grid, multcompView, stats, utils,nortest 
 License: MIT + file LICENSE
 Encoding: UTF-8
