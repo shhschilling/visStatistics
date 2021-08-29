@@ -145,7 +145,7 @@ The `npk` data sets reports the yield of peas in pounds/block on 6 blocks.
 #### One way test
 
 ```{r}
- oneway_npk=visstat(sleep,"yield","block")
+ oneway_npk=visstat(npk,"yield","block")
 ```
 The post-hoc analysis with `TukeyHSD()` reveals no significant difference between the yield in all  blocks (all green letters are the same).
 #### ANOVA
