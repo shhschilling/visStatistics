@@ -126,7 +126,7 @@ Depending on the p-value of the `bartlett.test()` the appropriate test is shown 
 To generate Sidak corrected confidence intervals, we calculate the corrected probability of error for the construction of M confidence intervals, 
 $$\alpha_{Sidak}=1-conf.int^{1/M}.$$ 
 Here, $M$ is the number of levels of the independent variable [@Sidak].
-Inserting the corrected $\alpha_{Sidak}$ into the standard formula for confidence intervals we obtain
+Inserting the corrected $\alpha_{Sidak}$ into the standard formula for confidence intervals we obtain the Sidak  corrected boundaries of the confidene interval
 $$ \left[{{\overline {x}}-t_{\left(1-{\frac {\alpha_{Sidak} }{2}};n-1\right)}{\frac {s}{\sqrt {n}}}\ ;\ {\overline {x}}+t_{\left(1-{\frac {\alpha_{Sidak} }{2}};n-1\right)}{\frac {s}{\sqrt {n}}}}\right],
 $$ 
 
