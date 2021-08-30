@@ -15,8 +15,8 @@ Description: Visualization of the most powerful statistical hypothesis test.
     For the comparison of averages, the chosen test depends on the p-values of the null that the normalized
     standardized residuals of the regression model are normally distributed as tested by both shapiro.test() or ad.test(). 
     If both p-values are smaller than the error probability 1-conf.level,
-    the non parametric tests kruskal.test() resp. wilcox.test() are performed, otherwise the parametric tests oneway.test()
-    and aov() resp. t.test().  Exception: 
+    the non-parametric tests kruskal.test() resp. wilcox.test() are performed, otherwise the parametric tests oneway.test()
+    and aov() resp. t.test(). Exception: 
     If the sample size is bigger than 100, t.test() is always performed and wilcox.test() is never executed 
     (Lumley et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). 
     For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented: 
@@ -26,7 +26,7 @@ Description: Visualization of the most powerful statistical hypothesis test.
     Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
     Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
     See the visstat vignette for a detailed description of the decision tree and examples.
-Imports: vcd, Cairo, graphics, grDevices, grid, multcompView, stats, utils,nortest 
+Imports: vcd, Cairo, graphics, grDevices, grid, multcompView, stats, utils, nortest 
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.1.1.9001
