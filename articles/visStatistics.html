@@ -277,7 +277,7 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <div id="chi2--and-fisher-test" class="section level1">
 <h1 class="hasAnchor">
 <a href="#chi2--and-fisher-test" class="anchor"></a><span class="math inline">\({\chi}^2\)</span>- and Fisher Test</h1>
-<p>If both the feature <code>varfactor</code> and the response are <code>varsample</code> are categorical of type <code>factor</code>, <code>visstat</code> performs a test for the independence of count data. Based on Cochran’s rule <span class="citation">(Cochran 1954)</span>, either a <span class="math inline">\({\chi}^2\)</span>- or a Fisher Test are performed: - If more than 20 percent of all cells have a count smaller than 5, <code><a href="https://rdrr.io/r/stats/fisher.test.html">fisher.test()</a></code> is performed and displayed, - otherwise the <code>chisqu.test()</code>.</p>
+<p>If both the feature <code>varfactor</code> and the response are <code>varsample</code> are categorical of type <code>factor</code>, <code>visstat</code> performs a test for the independence of count data. Based on Cochran’s rule <span class="citation">(Cochran 1954)</span>, either a <span class="math inline">\({\chi}^2\)</span>- or a Fisher Test are performed: - If more than 20 percent of all cells have a count smaller than 5, <code><a href="https://rdrr.io/r/stats/fisher.test.html">fisher.test()</a></code> is performed and displayed, otherwise the <code>chisqu.test()</code>.</p>
 <p>In both cases grouped column charts and an additional mosaic plot showing Pearson’s residuals are generated.</p>
 <div id="transforming-contingency-tables-counts_to_cases" class="section level2">
 <h2 class="hasAnchor">
