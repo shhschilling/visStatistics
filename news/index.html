@@ -132,7 +132,9 @@
 <h2 class="hasAnchor">
 <a href="#bug-fixes" class="anchor"></a>Bug fixes</h2>
 <ul>
-<li>Regression confidence and prediction bands now change with <code>conf.level</code>
+<li>Regression confidence and prediction bands now depend on <code>conf.level</code>
+</li>
+<li>Post-hoc-Analysis in Kruskal-Wallis-test (<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html">pairwise.wilcox.test()</a></code>) now depends on family wise error rate <code>1-conf.int</code>
 </li>
 </ul>
 </div>
