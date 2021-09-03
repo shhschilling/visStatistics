@@ -122,8 +122,20 @@
     <div id="visstatistics-012" class="section level1">
 <h1 class="page-header" data-toc-text="0.1.2">
 <a href="#visstatistics-012" class="anchor" aria-hidden="true"></a>visStatistics 0.1.2<small> Unreleased </small></h1>
-<ul><li>Added a <code>NEWS.md</code> file to track changes to the package.</li>
+<div id="news" class="section level2">
+<h2 class="hasAnchor">
+<a href="#news" class="anchor" aria-hidden="true"></a>News</h2>
+<ul><li>Added vignette</li>
 </ul></div>
+<div id="bug-fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes" class="anchor" aria-hidden="true"></a>Bug fixes</h2>
+<ul><li>Regression confidence and prediction bands now depend on <code>conf.level</code>
+</li>
+<li>Post-hoc-Analysis in Kruskal-Wallis-test (<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>) now depends on family wise error rate <code>1-conf.int</code>
+</li>
+</ul></div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
