@@ -43,7 +43,8 @@ A detailed description of the package's functionality and its underlying decisio
 `?visstat`
 
 ## Getting Started
-The package vignette allows you to get familiar with all features of `visStatistics`. It documents in detail the algorithm of the decision tree illustrated by with examples. 
+The package vignette
+allows you to get familiar with all features of `visStatistics`. It documents in detail the algorithm of the decision tree illustrated by examples. 
 
 ## Examples 
 
