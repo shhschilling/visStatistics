@@ -12,7 +12,6 @@ test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
   #Remove NA from x
   x <- x[!is.na(x)]
-  n = length(x)
   norm_dens = function(z) {
     dnorm(z, mean(x), sd(x))
   }
@@ -31,7 +30,7 @@ test_norm_vis = function(x, y_axis_hist = c(0, 0.04)) {
     ),
     ylim = c(0, 1.2 * ymax)
   )
-  maxhist = max(otto$density)
+ 
   #normal distribution with mean and sd of given distribution
   curve(norm_dens,
         col = "red",
@@ -100,7 +99,7 @@ two_sample_tTest = function(samples,
        conf.level < 0 || conf.level > 1))
     return(warning("'conf.level' must be a single number between 0 and 1"))
   
-  if (missing(conf.level)){conf.level=0.95}
+  if (missing(conf.level)) {conf.level = 0.95}
   
   alpha = 1 - conf.level
   levels = unique(sort(fact))
@@ -170,7 +169,7 @@ two_sample_tTest = function(samples,
   
   #alpha_sidak = 1 - sqrt(1 - alpha)
   
-  alpha_sidak=alpha #ignore the sidak correction
+  alpha_sidak = alpha #ignore the sidak correction
   
   correction1 = qt(1 - 0.5 * alpha_sidak, length(x1) - 1) * sd(x1) / sqrt(length(x1))
   correction2 = qt(1 - 0.5 * alpha_sidak, length(x2) - 1) * sd(x2) / sqrt(length(x2))
@@ -285,7 +284,7 @@ two_sample_WilcoxonTest = function(samples,
         (conf.level > 0) && (conf.level < 1)))
     return(warning("'conf.level' must be a single number between 0 and 1"))
   
-  if (missing(conf.level)){conf.level=0.95}
+  if (missing(conf.level)) {conf.level = 0.95}
   
   if (!is.numeric(samples))
     return(warning("'samples' must be numeric"))
@@ -295,11 +294,13 @@ two_sample_WilcoxonTest = function(samples,
   }
   
   #Store default graphical parameter
-  
-  alpha = 1 - conf.level
-  
   #Define color palette
   colortuple2 = colorscheme(2)
+  
+  
+  
+  
+  
   # Create to numeric vectors
   twosamples = create_two_samples_vector(samples, fact)
   x = twosamples$sample1and2
@@ -405,7 +406,7 @@ two_sample_FTest = function(samples,
   #Store default graphical parameter
   oldparftest <- par(no.readonly = TRUE)   
   on.exit(par(oldparftest)) 
-  if (missing(conf.int)){conf.int=0.95}
+  if (missing(conf.int)) {conf.int = 0.95}
   
   alpha = 1 - conf.int
   levels = unique(sort(fact))
@@ -532,7 +533,7 @@ vis_chi_squared_test = function(samples,
     {
       col_vec_browser = c(colortuple, head(ColorPalette, n = nrow(counts) - 2))
     } else{
-      col_vec_browser = c(colortuple, rainbow(nrow(counts) - 2, s = 0.4,alpha=1))
+      col_vec_browser = c(colortuple, rainbow(nrow(counts) - 2, s = 0.4,alpha = 1))
     }
     # x_val = seq(-0.5, ncol(counts) + 0.5, 1)
     #  y_val = c(0, norm_counts[1, ], 0)
@@ -614,7 +615,7 @@ vis_anova = function(samples,
                      factorname = "",
                      cex = 1) {
   
-  if (missing(conf.level)){conf.level=0.95}
+  if (missing(conf.level)) {conf.level = 0.95}
   
   oldparanova <- par(no.readonly = TRUE)   
   on.exit(par(oldparanova)) 
@@ -627,7 +628,7 @@ vis_anova = function(samples,
   n_classes = length(unique(fact))
   #https://en.wikipedia.org/wiki/Bonferroni_correction
   
-  alpha_sidak=1-conf.level^(1/n_classes) #Sidak correction, https://en.wikipedia.org/wiki/%C5%A0id%C3%A1k_correction
+  alpha_sidak = 1 - conf.level^(1/n_classes) #Sidak correction, https://en.wikipedia.org/wiki/%C5%A0id%C3%A1k_correction
   #alpha_sidak=alpha #do not apply sidak correction
   sdna = function(x)
   {
@@ -653,15 +654,15 @@ vis_anova = function(samples,
   bartlett_test = bartlett.test(samples ~ fact)
   p_bart = bartlett_test$p.value
   
-  if (p_bart>1-conf.level){
-    p_aov=summaryAnova[[1]][["Pr(>F)"]][1]
-    label_aov="ANOVA"
+  if (p_bart > 1 - conf.level) {
+    p_aov = summaryAnova[[1]][["Pr(>F)"]][1]
+    label_aov = "ANOVA"
     
-    summarystat=summaryAnova
-  }else{
-    p_aov=oneway$p.value
-    label_aov="One-Way test"
-    summarystat=oneway
+    summarystat = summaryAnova
+  } else {
+    p_aov = oneway$p.value
+    label_aov = "One-Way test"
+    summarystat = oneway
   }
   
   
@@ -673,7 +674,7 @@ vis_anova = function(samples,
   spread = maximum - minimum
   
   mi = minimum - spread
-  ma = maximum +  1.2 *spread
+  ma = maximum +  1.2 * spread
   par(mfrow = c(1, 1), oma = c(0, 0, 3, 0))
   
   stripchart(
@@ -691,12 +692,11 @@ vis_anova = function(samples,
   
   # sd:
   for (i in 1:n_classes) {
-    sn=qt(1 - alpha_sidak/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i])
+    sn = qt(1 - alpha_sidak/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i])
     lines(
       x = c(i - 0.2, i - 0.2),
      # y = c(m[[i]] - s[[i]], m[[i]] + s[[i]]),
      y = c(m[[i]] - sn, m[[i]] + sn),
-      
       col = colors()[131],
       lwd = 5
     )
@@ -727,7 +727,7 @@ vis_anova = function(samples,
     
   }
   
-  tuk = TukeyHSD(an,conf.level=conf.level)
+  tuk = TukeyHSD(an,conf.level = conf.level)
   
   s = multcompLetters(tuk[[1]][, 4], threshold = alpha)
   
@@ -755,7 +755,7 @@ vis_anova = function(samples,
     "topleft",
     inset = 0.05,
     horiz = F,
-    c( paste("mean with", round((1-alpha_sidak)*100,0) ,"% conf. intervall, Sidak correction "),paste("mean with", conf.level*100 ,"% conf. intervall ")),
+    c( paste("mean with", round((1 - alpha_sidak)*100,0) ,"% conf. intervall, Sidak correction "),paste("mean with", conf.level*100 ,"% conf. intervall ")),
     col = c(colors()[131], colors()[552]),
     bty = 'n',
     lwd = 3
@@ -787,7 +787,7 @@ vis_Kruskal_Wallis_clusters = function(samples,
   oldparkruskal <- par(no.readonly = TRUE)   
   on.exit(par(oldparkruskal)) 
   
-  if (missing(conf.level)){conf.level = 0.95}
+  if (missing(conf.level)) {conf.level = 0.95}
   alpha = 1 - conf.level
   #remove rows with NAs in samples
   samples3 = na.omit(samples)
@@ -894,7 +894,7 @@ vis_Kruskal_Wallis_clusters = function(samples,
 
 ##### Visualize Regression und trumpet curves ###############################
 vis_regr_trumpets = function(x, y, conf.level) {
-  if (missing(conf.level)){conf.level = 0.95}
+  if (missing(conf.level)) {conf.level = 0.95}
   oldparreg <- par(no.readonly = TRUE)   
   on.exit(par(oldparreg)) 
   reg = lm(y ~ x)
@@ -1118,7 +1118,7 @@ vis_regression = function(y,
                           name_of_factor = character(),
                           name_of_sample = character())
 {
-  if (missing(conf.level)){conf.level = 0.95}
+  if (missing(conf.level)) {conf.level = 0.95}
   oldparregr <- par(no.readonly = TRUE)   
   on.exit(par(oldparregr))
   
