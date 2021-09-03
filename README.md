@@ -1,100 +1,61 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
 # visStatistics
 
-Visualization of the statistical hypothesis test between two groups of categorical or numerical data.
+<!-- badges: start -->
+<!-- badges: end -->
 
-Statistical consulting  requires often both a quick first visualization and a reproducible statistical analysis 
-of the presented raw data. The package `visStatistics` with its core function `visstat()` fulfils this need. 
-Based on a decision tree it picks the statistical hypothesis test  with the highest statistical 
-power between the dependent variable (response) `varsample` and the independent variable (feature) `varfactor`. 
-The corresponding test statistics including eventual post-hoc-analysis are returned and 
-a graph showing key statistics of the underlying test is generated. 
+The goal of visStatistics is to …
 
-This fully automated workflow is especially suited for browser based interfaces to server-based
-deployments of R and has been successfully implemented to analyse medical raw data in an unbiased fashion.
- 
-A detailed description of the package's functionality and its underlying decision tree, can be found in the `vignette` accompanying this package.
+## Installation
 
-## Implemented tests
-`lm()`, `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `fisher.test()`, `chisqu.test()`
+You can install the released version of visStatistics from
+[CRAN](https://CRAN.R-project.org) with:
 
-### Implemented tests to check the normal distribution of standardized residuals
-`shapiro.test()` and `ad.test()`
-
-### Implemented post-hoc tests
-`TukeyHSD()` for `aov() `and `pairwise.wilcox.test()` for `kruskal.test()`
-
-
-## Installation from CRAN
-1. Install the package
-`install.packages("visStatistics")`
-2. Load the package
-`library(visStatistics)`
-
-## Installation from GitHub (always latest, developing version)
-1. Install the devtools package from CRAN. Invoke R and type
-`install.packages("devtools")`
-2.  Load the devtools package.
-`library(devtools)`
-3. Install the package from the github-repository
-`install_github("shhschilling/visStatistics")`
-4. Load the package 
-`library(visStatistics)`
-5. Help on the function usage
-`?visstat`
-
-## Getting Started
-The package vignette
-allows you to get familiar with all features of `visStatistics`. It documents in detail the algorithm of the decision tree illustrated by examples. 
-
-## Examples 
-
-###  Welch Two Sample t.test
-
-#### InsectSprays
-
-```{r}
-InsectSpraysAB <- InsectSprays[ which(InsectSprays$spray == 'A'| InsectSprays$spray == 'B'), ] 
-InsectSpraysAB$spray = factor(InsectSpraysAB$spray)
-visstat(InsectSpraysAB,"count","spray")
-```
-#### mtcars
-```{r}
-mtcars$am=as.factor(mtcars$am)
-ttestStatistics=visstat(mtcars,"mpg","am") 
-```
-Print out summary statistics:
-```{r}
-ttestStatistics
+``` r
+install.packages("visStatistics")
 ```
 
-### Wilcoxon rank sum test with continuity correction
-`visstat(ToothGrowth,"len", "supp")`
+And the development version from [GitHub](https://github.com/) with:
 
-### One-way test
-
-```{r}
- anova_npk=visstat(npk,"yield","block")
-
+``` r
+# install.packages("devtools")
+devtools::install_github("shhschilling/visStatistics")
 ```
 
-### Kruskal-Wallis test
-Save the graphical output of type pdf in plotDirectory tempdir():
+## Example
 
-`visstat(iris,"Petal.Width","Species",graphicsoutput="pdf",plotDirectory=tempdir())`
+This is a basic example which shows you how to solve a common problem:
 
-### Linear Regression
-`linreg_cars=visstat(cars,"dist","speed")`
-
-Increasing the confidence level `conf.level` from the default 0.95 to 0.99 leads two wider confidence and prediction bands:
-
-`linreg_cars=visstat(cars,"dist","speed",conf.level=0.99)`
-
-### Pearson's Chi-squared test
-Count data sets are often presented as multidimensional arrays, so called contingency tables, whereas `visstat()` requires a `data.frame` with a column structure. Arrays can be transformed to this column wise structure with the helper function `counts_to_cases()`:
-```{r}
-HairEyeColorDataFrame=counts_to_cases(as.data.frame(HairEyeColor))
-visstat(HairEyeColorDataFrame,"Hair","Eye")
+``` r
+library(visStatistics)
+## basic example code
 ```
 
+What is special about using `README.Rmd` instead of just `README.md`?
+You can include R chunks like so:
 
+``` r
+summary(cars)
+#>      speed           dist       
+#>  Min.   : 4.0   Min.   :  2.00  
+#>  1st Qu.:12.0   1st Qu.: 26.00  
+#>  Median :15.0   Median : 36.00  
+#>  Mean   :15.4   Mean   : 42.98  
+#>  3rd Qu.:19.0   3rd Qu.: 56.00  
+#>  Max.   :25.0   Max.   :120.00
+```
 
+You’ll still need to render `README.Rmd` regularly, to keep `README.md`
+up-to-date. `devtools::build_readme()` is handy for this. You could also
+use GitHub Actions to re-render `README.Rmd` every time you push. An
+example workflow can be found here:
+<https://github.com/r-lib/actions/tree/master/examples>.
+
+You can also embed plots, for example:
+
+<img src="man/figures/README-pressure-1.png" width="100%" />
+
+In that case, don’t forget to commit and push the resulting figure
+files, so they display on GitHub and CRAN.

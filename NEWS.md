@@ -1,3 +1,7 @@
 # visStatistics 0.1.2
 
-* Added a `NEWS.md` file to track changes to the package.
+## News
+* Added vignette
+
+## Bug fixes 
+* Regression confidence and prediction bands now change with `conf.level`

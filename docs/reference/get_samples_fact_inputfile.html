@@ -45,6 +45,8 @@
 
 
 
+
+
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
@@ -56,9 +58,15 @@
 
 
 
+  
+
+  
+
   </head>
 
   <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -72,36 +80,29 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">visStatistics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
+  <a href="../articles/visStatistics.html">Get started</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/visStatistics-vignette.html">visStatistics</a>
-    </li>
-  </ul>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/shhschilling/visStatistics/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -116,7 +117,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Selects columns defined by characters varsample and varfactor from a data.frame</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/shhschilling/visStatistics/blob/master/R/get_samples_fact_inputfile.R'><code>R/get_samples_fact_inputfile.R</code></a></small>
     <div class="hidden name"><code>get_samples_fact_inputfile.Rd</code></div>
     </div>
 
@@ -124,7 +125,7 @@
     <p>Selects columns defined by characters <code>varsample</code> and <code>varfactor</code> from <code>dataframe</code>, returns selected columns with their names.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_samples_fact_inputfile</span><span class='op'>(</span><span class='va'>dataframe</span>, <span class='va'>varsample</span>, <span class='va'>varfactor</span><span class='op'>)</span></pre>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>get_samples_fact_inputfile</span><span class='op'>(</span><span class='va'>dataframe</span>, <span class='va'>varsample</span>, <span class='va'>varfactor</span><span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -148,7 +149,7 @@
     <p>selected columns, <code>sample</code>, <code>factor</code>, <code>name_of_sample</code> (character string equaling varsample), <code>name_of_factor</code> (character string equaling varsample)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='r-in'><span class='fu'>get_samples_fact_inputfile</span><span class='op'>(</span><span class='va'>trees</span>,<span class='st'>"Girth"</span>,<span class='st'>"Height"</span><span class='op'>)</span></span>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='fu'>get_samples_fact_inputfile</span><span class='op'>(</span><span class='va'>trees</span>,<span class='st'>"Girth"</span>,<span class='st'>"Height"</span><span class='op'>)</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> $samples</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>  [1]  8.3  8.6  8.8 10.5 10.7 10.8 11.0 11.0 11.1 11.2 11.3 11.4 11.4 11.7 12.0</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> [16] 12.9 12.9 13.3 13.7 13.8 14.0 14.2 14.5 16.0 16.3 17.3 17.5 17.9 18.0 18.0</span>
@@ -167,7 +168,7 @@
 <span class='r-out co'><span class='r-pr'>#&gt;</span> $matchingCriteria</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> [1] ""</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-</pre>
+</code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -179,11 +180,11 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Sabine Schilling.</p>
+  <p><p>Developed by Sabine Schilling.</p></p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
 </div>
 
       </footer>
@@ -191,6 +192,8 @@
 
   
 
+
+  
 
   </body>
 </html>

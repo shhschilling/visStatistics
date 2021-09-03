@@ -40,19 +40,14 @@
 
 
 <meta property="og:title" content="Visualization of statistical hypothesis testing based on decision tree — visstat" />
-<meta property="og:description" content="visstat() visualizes the statistical hypothesis testing between
-the dependent variable (or response)
-varsample and the independent variable  varfactor. varfactor can have more than two features.
-visstat() runs a decision tree selecting the statistical hypothesis test with the highest statistical power
- fulfilling the assumptions of the underlying test. For each test
- visstat() returns a graph displaying the data with the main test statistics
-in the title and a list with the complete test statistics including eventual post-hoc analysis.
-The automated workflow is especially suited for browser based interfaces to 
-server-based deployments of R. 
-Implemented tests: lm(),t.test(), wilcox.test(),
-aov(), kruskal.test(), fisher.test(), chisqu.test().
-Implemented tests for normal distribution of standardized residuals: shapiro.test() and ad.test().
-Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test()." />
+<meta property="og:description" content="Based on a decision tree, visstat() picks the statistical hypothesis test with the highest statistical
+power between the dependent variable (response)  and the independent variable (feature) 
+in a data.frame named dataframe. 
+Data in the provided dataframe must be structured column wise, 
+where varsample and varfactor are character strings corresponding to the column names
+of the dependent and independent variable respectively." />
+
+
 
 
 
@@ -68,9 +63,15 @@ Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for 
 
 
 
+  
+
+  
+
   </head>
 
   <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -84,36 +85,29 @@ Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">visStatistics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
+  <a href="../articles/visStatistics.html">Get started</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/visStatistics-vignette.html">visStatistics</a>
-    </li>
-  </ul>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/shhschilling/visStatistics/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -128,27 +122,20 @@ Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for 
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Visualization of statistical hypothesis testing based on decision tree</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/shhschilling/visStatistics/blob/master/R/visstat.R'><code>R/visstat.R</code></a></small>
     <div class="hidden name"><code>visstat.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>visstat()</code> <strong>vis</strong>ualizes the <strong>stat</strong>istical hypothesis testing between
-the dependent variable (or response)
-<code>varsample</code> and the independent variable  <code>varfactor</code>. <code>varfactor</code> can have more than two features.
-<code>visstat()</code> runs a decision tree selecting the statistical hypothesis test with the highest statistical power
- fulfilling the assumptions of the underlying test. For each test
- <code>visstat()</code> returns a graph displaying the data with the main test statistics
-in the title and a list with the complete test statistics including eventual post-hoc analysis.
-The automated workflow is especially suited for browser based interfaces to 
-server-based deployments of R. 
-Implemented tests: <code><a href='https://rdrr.io/r/stats/lm.html'>lm()</a></code>,<code><a href='https://rdrr.io/r/stats/t.test.html'>t.test()</a></code>, <code><a href='https://rdrr.io/r/stats/wilcox.test.html'>wilcox.test()</a></code>,
-<code><a href='https://rdrr.io/r/stats/aov.html'>aov()</a></code>, <code><a href='https://rdrr.io/r/stats/kruskal.test.html'>kruskal.test()</a></code>, <code><a href='https://rdrr.io/r/stats/fisher.test.html'>fisher.test()</a></code>, <code>chisqu.test()</code>.
-Implemented tests for normal distribution of standardized residuals: <code><a href='https://rdrr.io/r/stats/shapiro.test.html'>shapiro.test()</a></code> and <code>ad.test()</code>.
-Implemented post-hoc tests: <code><a href='https://rdrr.io/r/stats/TukeyHSD.html'>TukeyHSD()</a></code> for aov() and <code><a href='https://rdrr.io/r/stats/pairwise.wilcox.test.html'>pairwise.wilcox.test()</a></code> for <code><a href='https://rdrr.io/r/stats/kruskal.test.html'>kruskal.test()</a></code>.</p>
+    <p>Based on a decision tree, <code>visstat()</code> picks the statistical hypothesis test with the highest statistical
+power between the dependent variable (response)  and the independent variable (feature) 
+in a <code>data.frame</code> named <code>dataframe</code>. 
+Data in the provided <code>dataframe</code> must be structured column wise, 
+where <code>varsample</code> and <code>varfactor</code> are <code>character</code> strings corresponding to the column names
+of the dependent and independent variable respectively.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>visstat</span><span class='op'>(</span>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>visstat</span><span class='op'>(</span>
   <span class='va'>dataframe</span>,
   <span class='va'>varsample</span>,
   <span class='va'>varfactor</span>,
@@ -158,23 +145,22 @@ Implemented post-hoc tests: <code><a href='https://rdrr.io/r/stats/TukeyHSD.html
   graphicsoutput <span class='op'>=</span> <span class='cn'>NULL</span>,
   plotName <span class='op'>=</span> <span class='cn'>NULL</span>,
   plotDirectory <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span><span class='op'>(</span><span class='op'>)</span>
-<span class='op'>)</span></pre>
+<span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>dataframe</th>
-      <td><p><code>data.frame</code> containing at least two columns. Data must be column wise ordered.
-Contingency tables can be transformed to column wise structure with helper function <code>counts_to_cases(as.data.frame())</code>.</p></td>
+      <td><p><code>data.frame</code> containing at least two columns. Data must be column wise ordered.</p></td>
     </tr>
     <tr>
       <th>varsample</th>
-      <td><p>column name of dependent variable in <code>dataframe</code>, datatype <code>character</code>. <code>varsample</code> must be one entry of the list <code>names(dataframe)</code>.</p></td>
+      <td><p>column name of the dependent variable in <code>dataframe</code>, datatype <code>character</code>. <code>varsample</code> must be one entry of the list <code>names(dataframe)</code>.</p></td>
     </tr>
     <tr>
       <th>varfactor</th>
-      <td><p>column name of independent variable in <code>dataframe</code>, datatype <code>character</code>.<code>varsample</code> must be one entry of the list <code>names(dataframe)</code>.</p></td>
+      <td><p>column name of the independent variable in <code>dataframe</code>, datatype <code>character</code>.<code>varsample</code> must be one entry of the list <code>names(dataframe)</code>.</p></td>
     </tr>
     <tr>
       <th>conf.level</th>
@@ -209,54 +195,52 @@ Without specifying this parameter, plotName is automatically generated following
     <p><code>list</code> containing statistics of test with highest statistical power meeting assumptions. All values are returned as invisibly copies. Values can be accessed by assigning a return value to <code>visstat</code>.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>For the comparison of averages, the following algorithm  depends on the value of the parameter of <code>conf.level</code>, which defaults to 0.95. 
- If the p-values of the standardized residuals of  <code><a href='https://rdrr.io/r/stats/shapiro.test.html'>shapiro.test()</a></code> or <code><a href='https://rdrr.io/r/stats/ks.test.html'>ks.test()</a></code> are smaller
+    <p>For each test <code>visstat()</code> returns both a graph with the main test statistics
+in its title as well as  a list of the  test statistics including eventual post-hoc analysis.</p>
+<p>Implemented tests: <code><a href='https://rdrr.io/r/stats/lm.html'>lm()</a></code>,<code><a href='https://rdrr.io/r/stats/t.test.html'>t.test()</a></code>, <code><a href='https://rdrr.io/r/stats/wilcox.test.html'>wilcox.test()</a></code>,
+<code><a href='https://rdrr.io/r/stats/aov.html'>aov()</a></code>, <code><a href='https://rdrr.io/r/stats/kruskal.test.html'>kruskal.test()</a></code>, <code><a href='https://rdrr.io/r/stats/fisher.test.html'>fisher.test()</a></code>, <code>chisqu.test()</code>.
+Implemented tests for normal distribution of standardized residuals: <code><a href='https://rdrr.io/r/stats/shapiro.test.html'>shapiro.test()</a></code> and <code>ad.test()</code>.
+Implemented post-hoc tests: <code><a href='https://rdrr.io/r/stats/TukeyHSD.html'>TukeyHSD()</a></code> for aov() and <code><a href='https://rdrr.io/r/stats/pairwise.wilcox.test.html'>pairwise.wilcox.test()</a></code> for <code><a href='https://rdrr.io/r/stats/kruskal.test.html'>kruskal.test()</a></code>.</p>
+<p>For the comparison of averages, the following algorithm  depends on the value of the parameter of <code>conf.level</code>, which defaults to 0.95. 
+If the p-values of the standardized residuals of  <code><a href='https://rdrr.io/r/stats/shapiro.test.html'>shapiro.test()</a></code> or <code><a href='https://rdrr.io/r/stats/ks.test.html'>ks.test()</a></code> are smaller
 than the error probability 1-<code>conf.level</code>, <code><a href='https://rdrr.io/r/stats/kruskal.test.html'>kruskal.test()</a></code> resp. <code><a href='https://rdrr.io/r/stats/wilcox.test.html'>wilcox.test()</a></code> are performed, otherwise the <code><a href='https://rdrr.io/r/stats/oneway.test.html'>oneway.test()</a></code>
 and <code><a href='https://rdrr.io/r/stats/aov.html'>aov()</a></code> resp. <code><a href='https://rdrr.io/r/stats/t.test.html'>t.test()</a></code> are performed and displayed. 
 Exception: If the sample size is bigger than 100,  <code><a href='https://rdrr.io/r/stats/wilcox.test.html'>wilcox.test()</a></code> is never executed,instead always the <code><a href='https://rdrr.io/r/stats/t.test.html'>t.test()</a></code> is performed (Lumley et al. (2002) 
-&lt;doi:10.1146/annurev.publheath.23.100901.140546&gt;).
-For the test of independence of count data, Cochran's rule (Cochran (1954) &lt;doi:10.2307/3001666&gt;) is implemented:
-If more than 20 percent of all cells have a count smaller than 5,  <code><a href='https://rdrr.io/r/stats/fisher.test.html'>fisher.test()</a></code>is performed and displayed, otherwise <code>chisqu.test()</code>.
+&lt;doi:10.1146/annurev.publheath.23.100901.140546&gt;).</p>
+<p>For the test of independence of count data, Cochran's rule (Cochran (1954) &lt;doi:10.2307/3001666&gt;) is implemented:
+If more than 20 percent of all cells have a count smaller than 5,  <code><a href='https://rdrr.io/r/stats/fisher.test.html'>fisher.test()</a></code> is performed and displayed, otherwise the <code>chisqu.test()</code>.
 In both cases case an additional mosaic plot showing Pearson's residuals is generated.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><span class='r-in'></span>
-<span class='r-in'><span class='co'>## Kruskal-Wallis rank sum test (calling kruskal.test())</span></span>
-<span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>iris</span>,<span class='st'>"Petal.Width"</span>, <span class='st'>"Species"</span><span class='op'>)</span></span>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'></span>
+<span class='r-in'><span class='co'>## Welch Two Sample t-test (calling t.test())</span></span>
+<span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>mtcars</span>,<span class='st'>"mpg"</span>,<span class='st'>"am"</span><span class='op'>)</span> </span>
 <span class='r-plt'><img src='visstat-1.png' alt='' width='700' height='433' /></span>
 <span class='r-plt'><img src='visstat-2.png' alt='' width='700' height='433' /></span>
-<span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>InsectSprays</span>,<span class='st'>"count"</span>,<span class='st'>"spray"</span><span class='op'>)</span></span>
-<span class='r-plt'><img src='visstat-3.png' alt='' width='700' height='433' /></span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
-<span class='r-plt'><img src='visstat-4.png' alt='' width='700' height='433' /></span>
 <span class='r-in'></span>
-<span class='r-in'><span class='co'>## ANOVA (calling aov()) and One-way analysis of means (oneway.test())</span></span>
+<span class='r-in'><span class='co'>## Wilcoxon rank sum test (calling wilcox.test())</span></span>
+<span class='r-in'><span class='va'>grades_gender</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span></span>
+<span class='r-in'> Sex <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"Girl"</span>, <span class='fl'>20</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"Boy"</span>, <span class='fl'>20</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'> Grade <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>19.3</span>, <span class='fl'>18.1</span>, <span class='fl'>15.2</span>, <span class='fl'>18.3</span>, <span class='fl'>7.9</span>, <span class='fl'>6.2</span>, <span class='fl'>19.4</span>, </span>
+<span class='r-in'><span class='fl'>20.3</span>, <span class='fl'>9.3</span>, <span class='fl'>11.3</span>, <span class='fl'>18.2</span>,<span class='fl'>17.5</span>,<span class='fl'>10.2</span>,<span class='fl'>20.1</span>,<span class='fl'>13.3</span>,<span class='fl'>17.2</span>,<span class='fl'>15.1</span>,<span class='fl'>16.2</span>,<span class='fl'>17.3</span>,</span>
+<span class='r-in'><span class='fl'>16.5</span>, <span class='fl'>5.1</span>, <span class='fl'>15.3</span>, <span class='fl'>17.1</span>, <span class='fl'>14.8</span>, <span class='fl'>15.4</span>, <span class='fl'>14.4</span>, <span class='fl'>7.5</span>, <span class='fl'>15.5</span>, <span class='fl'>6.0</span>,<span class='fl'>17.4</span>,</span>
+<span class='r-in'><span class='fl'>7.3</span>, <span class='fl'>14.3</span>,<span class='fl'>13.5</span>,<span class='fl'>8.0</span>,<span class='fl'>19.5</span>,<span class='fl'>13.4</span>,<span class='fl'>17.9</span>,<span class='fl'>17.7</span>,<span class='fl'>16.4</span>,<span class='fl'>15.6</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>grades_gender</span>,<span class='st'>"Grade"</span>, <span class='st'>"Sex"</span><span class='op'>)</span></span>
+<span class='r-plt'><img src='visstat-3.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## One-way analysis of means (oneway.test())</span></span>
 <span class='r-in'><span class='va'>anova_npk</span><span class='op'>=</span><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>npk</span>,<span class='st'>"yield"</span>,<span class='st'>"block"</span><span class='op'>)</span></span>
+<span class='r-plt'><img src='visstat-4.png' alt='' width='700' height='433' /></span>
 <span class='r-plt'><img src='visstat-5.png' alt='' width='700' height='433' /></span>
-<span class='r-plt'><img src='visstat-6.png' alt='' width='700' height='433' /></span>
 <span class='r-in'><span class='va'>anova_npk</span> <span class='co'>#prints summary of tests</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $ANOVA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`summary statistics_anova`</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>             Df Sum Sq Mean Sq F value Pr(&gt;F)  </span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> fact         5  343.3   68.66   2.318 0.0861 .</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> Residuals   18  533.1   29.61                 </span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> ---</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $oneway_test</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`summary statistics_oneway`</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> 	One-way analysis of means (not assuming equal variances)</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
@@ -264,7 +248,7 @@ In both cases case an additional mosaic plot showing Pearson's residuals is gene
 <span class='r-out co'><span class='r-pr'>#&gt;</span> F = 6.2463, num df = 5.0000, denom df = 8.0508, p-value = 0.01178</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> $adjusted_p_values_t_test</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $adjusted_p_values_tuk</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>   Tukey multiple comparisons of means</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span>     95% family-wise confidence level</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
@@ -293,33 +277,49 @@ In both cases case an additional mosaic plot showing Pearson's residuals is gene
 <span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 0.95</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
 <span class='r-in'></span>
-<span class='r-in'><span class='co'>## Welch Two Sample t-test (calling t.test())</span></span>
-<span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>mtcars</span>,<span class='st'>"mpg"</span>,<span class='st'>"am"</span><span class='op'>)</span> </span>
+<span class='r-in'><span class='co'>## Kruskal-Wallis rank sum test (calling kruskal.test())</span></span>
+<span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>iris</span>,<span class='st'>"Petal.Width"</span>, <span class='st'>"Species"</span><span class='op'>)</span></span>
+<span class='r-plt'><img src='visstat-6.png' alt='' width='700' height='433' /></span>
 <span class='r-plt'><img src='visstat-7.png' alt='' width='700' height='433' /></span>
-<span class='r-in'></span>
-<span class='r-in'><span class='co'>## Wilcoxon rank sum test (calling wilcox.test())</span></span>
-<span class='r-in'><span class='va'>grades_gender</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span></span>
-<span class='r-in'> Sex <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"Girl"</span>, <span class='fl'>20</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>"Boy"</span>, <span class='fl'>20</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>,</span>
-<span class='r-in'> Grade <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>19.3</span>, <span class='fl'>18.1</span>, <span class='fl'>15.2</span>, <span class='fl'>18.3</span>, <span class='fl'>7.9</span>, <span class='fl'>6.2</span>, <span class='fl'>19.4</span>, </span>
-<span class='r-in'><span class='fl'>20.3</span>, <span class='fl'>9.3</span>, <span class='fl'>11.3</span>, <span class='fl'>18.2</span>,<span class='fl'>17.5</span>,<span class='fl'>10.2</span>,<span class='fl'>20.1</span>,<span class='fl'>13.3</span>,<span class='fl'>17.2</span>,<span class='fl'>15.1</span>,<span class='fl'>16.2</span>,<span class='fl'>17.3</span>,</span>
-<span class='r-in'><span class='fl'>16.5</span>, <span class='fl'>5.1</span>, <span class='fl'>15.3</span>, <span class='fl'>17.1</span>, <span class='fl'>14.8</span>, <span class='fl'>15.4</span>, <span class='fl'>14.4</span>, <span class='fl'>7.5</span>, <span class='fl'>15.5</span>, <span class='fl'>6.0</span>,<span class='fl'>17.4</span>,</span>
-<span class='r-in'><span class='fl'>7.3</span>, <span class='fl'>14.3</span>,<span class='fl'>13.5</span>,<span class='fl'>8.0</span>,<span class='fl'>19.5</span>,<span class='fl'>13.4</span>,<span class='fl'>17.9</span>,<span class='fl'>17.7</span>,<span class='fl'>16.4</span>,<span class='fl'>15.6</span><span class='op'>)</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>grades_gender</span>,<span class='st'>"Grade"</span>, <span class='st'>"Sex"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>InsectSprays</span>,<span class='st'>"count"</span>,<span class='st'>"spray"</span><span class='op'>)</span></span>
 <span class='r-plt'><img src='visstat-8.png' alt='' width='700' height='433' /></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot compute exact p-value with ties</span>
+<span class='r-plt'><img src='visstat-9.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## Linear regression</span></span>
+<span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>trees</span>,<span class='st'>"Girth"</span>,<span class='st'>"Height"</span>,conf.level<span class='op'>=</span><span class='fl'>0.99</span><span class='op'>)</span></span>
+<span class='r-plt'><img src='visstat-10.png' alt='' width='700' height='433' /></span>
+<span class='r-plt'><img src='visstat-11.png' alt='' width='700' height='433' /></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'>## Pearson's Chi-squared test and mosaic plot with Pearson residuals</span></span>
-<span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='fu'><a href='counts_to_cases.html'>counts_to_cases</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='va'>HairEyeColor</span><span class='op'>[</span>,,<span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span>,<span class='st'>"Hair"</span>,<span class='st'>"Eye"</span><span class='op'>)</span></span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Chi-squared approximation may be incorrect</span>
-<span class='r-plt'><img src='visstat-9.png' alt='' width='700' height='433' /></span>
-<span class='r-plt'><img src='visstat-10.png' alt='' width='700' height='433' /></span>
-<span class='r-in'><span class='co'>##2x2 contingency tables with Fisher's exact test and mosaic plot with Pearson residuals</span></span>
+<span class='r-in'><span class='co'>###Transform array to data.frame</span></span>
+<span class='r-in'><span class='va'>HairEyeColorDataFrame</span><span class='op'>=</span><span class='fu'><a href='counts_to_cases.html'>counts_to_cases</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='va'>HairEyeColor</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>HairEyeColorDataFrame</span>,<span class='st'>"Hair"</span>,<span class='st'>"Eye"</span><span class='op'>)</span></span>
+<span class='r-plt'><img src='visstat-12.png' alt='' width='700' height='433' /></span>
+<span class='r-plt'><img src='visstat-13.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## 2x2 contingency tables with Fisher's exact test and mosaic plot with Pearson residuals</span></span>
 <span class='r-in'><span class='va'>HairEyeColorMaleFisher</span> <span class='op'>=</span> <span class='va'>HairEyeColor</span><span class='op'>[</span>,,<span class='fl'>1</span><span class='op'>]</span></span>
-<span class='r-in'><span class='co'>##slicing out a 2 x2 contingency table</span></span>
+<span class='r-in'><span class='co'>### slicing out a 2 x2 contingency table</span></span>
 <span class='r-in'><span class='va'>blackBrownHazelGreen</span> <span class='op'>=</span> <span class='va'>HairEyeColorMaleFisher</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span>,<span class='fl'>3</span><span class='op'>:</span><span class='fl'>4</span><span class='op'>]</span></span>
 <span class='r-in'><span class='va'>blackBrownHazelGreen</span> <span class='op'>=</span> <span class='fu'><a href='counts_to_cases.html'>counts_to_cases</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='va'>blackBrownHazelGreen</span><span class='op'>)</span><span class='op'>)</span>;</span>
 <span class='r-in'><span class='va'>fisher_stats</span><span class='op'>=</span><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>blackBrownHazelGreen</span>,<span class='st'>"Hair"</span>,<span class='st'>"Eye"</span><span class='op'>)</span></span>
-<span class='r-plt'><img src='visstat-11.png' alt='' width='700' height='433' /></span>
-<span class='r-plt'><img src='visstat-12.png' alt='' width='700' height='433' /></span>
+<span class='r-plt'><img src='visstat-14.png' alt='' width='700' height='433' /></span>
+<span class='r-plt'><img src='visstat-15.png' alt='' width='700' height='433' /></span>
 <span class='r-in'><span class='va'>fisher_stats</span> <span class='co'>#print out summary statistics</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> $p.value</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 0.503545</span>
@@ -353,9 +353,6 @@ In both cases case an additional mosaic plot showing Pearson's residuals is gene
 <span class='r-out co'><span class='r-pr'>#&gt;</span> Green         15     3</span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
 <span class='r-in'></span>
-<span class='r-in'><span class='co'>## Linear regression</span></span>
-<span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>trees</span>,<span class='st'>"Girth"</span>,<span class='st'>"Height"</span><span class='op'>)</span></span>
-<span class='r-plt'><img src='visstat-13.png' alt='' width='700' height='433' /></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'>## Saving the graphical output in directory plotDirectory</span></span>
 <span class='r-in'><span class='co'>## A) saving graphical output of type "png" in temporary directory tempdir() </span></span>
@@ -366,18 +363,22 @@ In both cases case an additional mosaic plot showing Pearson's residuals is gene
 <span class='r-out co'><span class='r-pr'>#&gt;</span> [1] TRUE</span>
 <span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/files.html'>file.remove</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>,<span class='st'>"mosaic_complete_Hair_Eye.png"</span><span class='op'>)</span><span class='op'>)</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> [1] TRUE</span>
+<span class='r-in'></span>
 <span class='r-in'><span class='co'>## B) Specifying pdf as output type: </span></span>
 <span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>iris</span>,<span class='st'>"Petal.Width"</span>, <span class='st'>"Species"</span>,graphicsoutput <span class='op'>=</span> <span class='st'>"pdf"</span>,plotDirectory<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
 <span class='r-in'><span class='co'>##remove graphical output from plotDirectory</span></span>
 <span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/files.html'>file.remove</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>,<span class='st'>"kruskal_Petal_Width_Species.pdf"</span><span class='op'>)</span><span class='op'>)</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> [1] TRUE</span>
+<span class='r-in'></span>
 <span class='r-in'><span class='co'>## C) Specifiying plotName overwrites default naming convention</span></span>
 <span class='r-in'><span class='fu'>visstat</span><span class='op'>(</span><span class='va'>iris</span>,<span class='st'>"Petal.Width"</span>,<span class='st'>"Species"</span>,graphicsoutput <span class='op'>=</span> <span class='st'>"pdf"</span>,</span>
 <span class='r-in'>plotName<span class='op'>=</span><span class='st'>"kruskal_iris"</span>,plotDirectory<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></span>
 <span class='r-in'><span class='co'>##remove graphical output from plotDirectory</span></span>
 <span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/files.html'>file.remove</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>,<span class='st'>"kruskal_iris.pdf"</span><span class='op'>)</span><span class='op'>)</span></span>
 <span class='r-out co'><span class='r-pr'>#&gt;</span> [1] TRUE</span>
-</pre>
+<span class='r-in'></span>
+</code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -389,11 +390,11 @@ In both cases case an additional mosaic plot showing Pearson's residuals is gene
 
       <footer>
       <div class="copyright">
-  <p>Developed by Sabine Schilling.</p>
+  <p><p>Developed by Sabine Schilling.</p></p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
 </div>
 
       </footer>
@@ -401,6 +402,8 @@ In both cases case an additional mosaic plot showing Pearson's residuals is gene
 
   
 
+
+  
 
   </body>
 </html>
