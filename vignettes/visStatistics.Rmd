@@ -207,7 +207,7 @@ Both the graphical analysis of the standardized residuals and p-values smaller t
 
 # ${\chi}^2$- and Fisher Test
 
-If both the feature `varfactor` and the response are `varsample` are categorical of type `factor`, `visstat` performs a test for the independence of count data. Based on Cochran's rule [@Cochran], either a ${\chi}^2$- or a Fisher Test are performed: - If more than 20 percent of all cells have a count smaller than 5, `fisher.test()` is performed and displayed, - otherwise the `chisqu.test()`.
+If both the feature `varfactor` and the response are `varsample` are categorical of type `factor`, `visstat` performs a test for the independence of count data. Based on Cochran's rule [@Cochran], either a ${\chi}^2$- or a Fisher Test are performed: - If more than 20 percent of all cells have a count smaller than 5, `fisher.test()` is performed and displayed, otherwise the `chisqu.test()`.
 
 In both cases grouped column charts and an additional mosaic plot showing Pearson's residuals are generated.
 
