@@ -124,15 +124,15 @@ shows how to publish the cod -->
 <h4 class="hasAnchor">
 <a href="#welchs-t-test-calling-t-test" class="anchor" aria-hidden="true"></a>Welch’s t-test calling t.test()</h4>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span>
-<span class="va">ttestStatistics</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>,<span class="st">"mpg"</span>,<span class="st">"am"</span><span class="op">)</span> </code></pre></div>
+<code class="sourceCode R"><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span>
+<span class="va">ttestStatistics</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>,<span class="st">"mpg"</span>,<span class="st">"am"</span><span class="op">)</span> </code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># uncomenting the next line prints out test statistics </span>
 <span class="co"># ttestStatistics</span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Increasing the confidence level</span>
-<span class="va">ttestStatistics</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>,<span class="st">"mpg"</span>,<span class="st">"am"</span>,conf.level<span class="op">=</span><span class="fl">0.99</span><span class="op">)</span> </code></pre></div>
+<span class="va">ttestStatistics</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>,<span class="st">"mpg"</span>,<span class="st">"am"</span>,conf.level<span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span> </code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
 </div>
 <div id="wilcoxon-rank-sum-test-calling-wilcox-test" class="section level4">
@@ -146,7 +146,7 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
             <span class="fl">16.5</span>, <span class="fl">5.1</span>, <span class="fl">15.3</span>, <span class="fl">17.1</span>, <span class="fl">14.8</span>, <span class="fl">15.4</span>, <span class="fl">14.4</span>, <span class="fl">7.5</span>, <span class="fl">15.5</span>, <span class="fl">6.0</span>,<span class="fl">17.4</span>,
             <span class="fl">7.3</span>, <span class="fl">14.3</span>,<span class="fl">13.5</span>,<span class="fl">8.0</span>,<span class="fl">19.5</span>,<span class="fl">13.4</span>,<span class="fl">17.9</span>,<span class="fl">17.7</span>,<span class="fl">16.4</span>,<span class="fl">15.6</span><span class="op">)</span><span class="op">)</span>
 
-<span class="va">wilcoxonStatistics</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">grades_gender</span>,<span class="st">"Grade"</span>, <span class="st">"Sex"</span><span class="op">)</span></code></pre></div>
+<span class="va">wilcoxonStatistics</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">grades_gender</span>,<span class="st">"Grade"</span>, <span class="st">"Sex"</span><span class="op">)</span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
 </div>
 </div>
@@ -196,13 +196,13 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <h4 class="hasAnchor">
 <a href="#one-way-test" class="anchor" aria-hidden="true"></a>One way test</h4>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"> <span class="va">oneway_npk</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span>,<span class="st">"yield"</span>,<span class="st">"block"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"> <span class="va">oneway_npk</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span>,<span class="st">"yield"</span>,<span class="st">"block"</span><span class="op">)</span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-5-1.png" width="672"><img src="visStatistics_files/figure-html/unnamed-chunk-5-2.png" width="672"></p>
 <p>The post-hoc analysis with <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> reveals no significant difference between the yield in all blocks (all green letters are the same). #### ANOVA</p>
 <p>To stabilize the variance we transform the count data with the square root.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">InsectSprays_tr</span><span class="op">=</span><span class="va">InsectSprays</span>
-<span class="va">InsectSprays_tr</span><span class="op">$</span><span class="va">count</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">count</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">InsectSprays_tr</span> <span class="op">=</span> <span class="va">InsectSprays</span>
+<span class="va">InsectSprays_tr</span><span class="op">$</span><span class="va">count</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">count</span><span class="op">)</span>
 <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">InsectSprays_tr</span>, <span class="st">"count"</span>, <span class="st">"spray"</span><span class="op">)</span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-6-1.png" width="672"><img src="visStatistics_files/figure-html/unnamed-chunk-6-2.png" width="672"></p>
 <p>In the above example the scatter plots of the standardized residuals, the QQ -plot and the p-values of both Shapiro-Wilk-test and Anderson-Darling tests are greater than the probability of error <span class="math inline">\(\alpha=0.05\)</span>. Therefore we can assume that the residuals are normally distributed. At the given confidence level the homogeneity of variances can not be assumed (<span class="math inline">\(p &lt;\alpha\)</span> as calculated with the <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>), and the p-value of the <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> is displayed.</p>
@@ -237,11 +237,11 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <a href="#cars" class="anchor" aria-hidden="true"></a>cars</h3>
 <p>The cars data set reports the speed in mph of cars and the distances (dist) in ft taken to stop.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">linreg_cars</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>,<span class="st">"dist"</span>,<span class="st">"speed"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">linreg_cars</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>,<span class="st">"dist"</span>,<span class="st">"speed"</span><span class="op">)</span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-8-1.png" width="672"><img src="visStatistics_files/figure-html/unnamed-chunk-8-2.png" width="672"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the default 0.95 to 0.99 leads two wider confidence and prediction bands:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">linreg_cars</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>,<span class="st">"dist"</span>,<span class="st">"speed"</span>,conf.level<span class="op">=</span><span class="fl">0.99</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">linreg_cars</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>,<span class="st">"dist"</span>,<span class="st">"speed"</span>,conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-9-1.png" width="672"><img src="visStatistics_files/figure-html/unnamed-chunk-9-2.png" width="672"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Extract the test statistics </span>
@@ -264,7 +264,7 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <a href="#trees" class="anchor" aria-hidden="true"></a>trees</h3>
 <p>The trees data set provides measurements of the diameter (named “Girth”) in inches and height in feet of black cherry trees.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">linreg_cars</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span>,<span class="st">"Height"</span>,<span class="st">"Girth"</span>,conf.level<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">linreg_cars</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span>,<span class="st">"Height"</span>,<span class="st">"Girth"</span>,conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-10-1.png" width="672"><img src="visStatistics_files/figure-html/unnamed-chunk-10-2.png" width="672"></p>
 <p>Both the graphical analysis of the standardized residuals and p-values smaller than <code>conf.level</code> in the Anderson-Darling normality test and the Shapiro-Wilk test of the standardized residuals suggest that the condition of normally distributed residuals of the regression model is not met. Furthermore the linear regression model explains only 24% of the total variance of the dependent variables “Height” of the cherry trees. The user should might consider other regression models. This further tests are not provided by <code><a href="../reference/visstat.html">visstat()</a></code>.</p>
 </div>
@@ -274,48 +274,50 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <h1 class="hasAnchor">
 <a href="#chi2--and-fisher-test" class="anchor" aria-hidden="true"></a><span class="math inline">\({\chi}^2\)</span>- and Fisher Test</h1>
 <p>If both the feature <code>varfactor</code> and the response are <code>varsample</code> are categorical of type <code>factor</code>, <code>visstat</code> performs a test for the independence of count data. Based on Cochran’s rule <span class="citation">(Cochran 1954)</span>, either a <span class="math inline">\({\chi}^2\)</span>- or a Fisher Test are performed: - If more than 20 percent of all cells have a count smaller than 5, <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> is performed and displayed, otherwise the <code>chisqu.test()</code>.</p>
-<p>In both cases grouped column charts and an additional mosaic plot showing Pearson’s residuals are generated.</p>
-<div id="transforming-contingency-tables-counts_to_cases" class="section level2">
+<p>In both cases a grouped column charts with the p-value of the corresponding test in the title and a mosaic plot showing Pearson’s residuals (for details see documentation of function <code>mosaic()</code> in the <code>vcd</code> package ) are generated.</p>
+<div id="transforming-contingency-tables" class="section level2">
 <h2 class="hasAnchor">
-<a href="#transforming-contingency-tables-counts_to_cases" class="anchor" aria-hidden="true"></a>Transforming contingency tables: <code>counts_to_cases()</code>
-</h2>
+<a href="#transforming-contingency-tables" class="anchor" aria-hidden="true"></a>Transforming contingency tables</h2>
 <p>Count data are often presented as multidimensional arrays, so called contingency tables, whereas <code><a href="../reference/visstat.html">visstat()</a></code> requires a <code>data.frame</code> with a column structure. Arrays can be transformed to this column wise structure with the helper function <code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code></p>
 <div id="example-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#example-1" class="anchor" aria-hidden="true"></a>Example</h3>
-<p>HairEyeColorDataFrame=counts_to_cases(as.data.frame(HairEyeColor)) ## Examples</p>
-</div>
-<div id="pearsons-chi-squared-test-and-mosaic-plot-with-pearson-residuals" class="section level3">
-<h3 class="hasAnchor">
-<a href="#pearsons-chi-squared-test-and-mosaic-plot-with-pearson-residuals" class="anchor" aria-hidden="true"></a>Pearson’s Chi-squared test and mosaic plot with Pearson residuals</h3>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">HairEyeColorDataFrame</span><span class="op">=</span><span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">HairEyeColorDataFrame</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span><span class="op">)</span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-11-1.png" width="672"><img src="visStatistics_files/figure-html/unnamed-chunk-11-2.png" width="672"></p>
+<code class="sourceCode R"><span class="va">HairEyeColorDataFrame</span> <span class="op">=</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 </div>
-<div id="x2-contingency-tables-with-fishers-exact-test-and-mosaic-plot-with-pearson-residuals" class="section level3">
-<h3 class="hasAnchor">
-<a href="#x2-contingency-tables-with-fishers-exact-test-and-mosaic-plot-with-pearson-residuals" class="anchor" aria-hidden="true"></a>2x2 contingency tables with Fisher’s exact test and mosaic plot with Pearson residuals</h3>
+</div>
+<div id="pearsons-chi-squared-test-and-mosaic-plot-with-pearson-residuals" class="section level2">
+<h2 class="hasAnchor">
+<a href="#pearsons-chi-squared-test-and-mosaic-plot-with-pearson-residuals" class="anchor" aria-hidden="true"></a>Pearson’s Chi-squared test and mosaic plot with Pearson residuals</h2>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">HairEyeColorDataFrame</span> <span class="op">=</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">HairEyeColorDataFrame</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span><span class="op">)</span></code></pre></div>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-12-1.png" width="672"><img src="visStatistics_files/figure-html/unnamed-chunk-12-2.png" width="672"></p>
+</div>
+<div id="fishers-exact-test-and-mosaic-plot-with-pearson-residuals" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fishers-exact-test-and-mosaic-plot-with-pearson-residuals" class="anchor" aria-hidden="true"></a>Fisher’s exact test and mosaic plot with Pearson residuals</h2>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">HairEyeColorMaleFisher</span> <span class="op">=</span> <span class="va">HairEyeColor</span><span class="op">[</span>,,<span class="fl">1</span><span class="op">]</span>
 <span class="co">#slicing out a 2 x2 contingency table</span>
 <span class="va">blackBrownHazelGreen</span> <span class="op">=</span> <span class="va">HairEyeColorMaleFisher</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>
 <span class="va">blackBrownHazelGreen</span> <span class="op">=</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span><span class="op">)</span><span class="op">)</span>;
-<span class="va">fisher_stats</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span><span class="op">)</span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-12-1.png" width="672"><img src="visStatistics_files/figure-html/unnamed-chunk-12-2.png" width="672"></p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<span class="va">fisher_stats</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span><span class="op">)</span></code></pre></div>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-13-1.png" width="672"><img src="visStatistics_files/figure-html/unnamed-chunk-13-2.png" width="672"></p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># fisher_stats  #uncommenting prints out summary statistics</span></code></pre></div>
-</div>
 </div>
 </div>
 <div id="saving-the-graphical-output" class="section level1">
 <h1 class="hasAnchor">
 <a href="#saving-the-graphical-output" class="anchor" aria-hidden="true"></a>Saving the graphical output</h1>
 <p>The generated graphs can be saved in the file formats supported by <code>Cairo():</code> “png”, “jpeg”, “pdf”, “svg”, “ps” and “tiff”. In the following example we save the graphics files in the output format “png” to the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>. The applied naming convention of the graphics file reflects the chosen statistical test and the variable names.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span>,graphicsoutput <span class="op">=</span> <span class="st">"png"</span>,plotDirectory<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
-<p>Remove the graphical output from <code>plotDirectory</code></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span>,graphicsoutput <span class="op">=</span> <span class="st">"png"</span>,plotDirectory <span class="op">=</span> 
+          
+          <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
+<p>Remove the graphical output from <code>plotDirectory</code></p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"> <span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,<span class="st">"chi_squared_or_fisher_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; [1] TRUE</span>
  <span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,<span class="st">"mosaic_complete_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span>

@@ -163,44 +163,9 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span>
 <span class="va">ttestStatistics</span> <span class="op">=</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>,<span class="st">"mpg"</span>,<span class="st">"am"</span><span class="op">)</span> </code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"> Print out summary statistics:</p>
+<p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"> Uncomment below line to print out summary statistics:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ttestStatistics</span>
-<span class="co">#&gt; $`dependent variable (response)`</span>
-<span class="co">#&gt; [1] "mpg"</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $`indepedent variables (parameters)`</span>
-<span class="co">#&gt; [1] 1 0</span>
-<span class="co">#&gt; Levels: 0 1</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $`t-test-statistics`</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  Welch Two Sample t-test</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; data:  x1 and x2</span>
-<span class="co">#&gt; t = -3.7671, df = 18.332, p-value = 0.001374</span>
-<span class="co">#&gt; alternative hypothesis: true difference in means is not equal to 0</span>
-<span class="co">#&gt; 95 percent confidence interval:</span>
-<span class="co">#&gt;  -11.280194  -3.209684</span>
-<span class="co">#&gt; sample estimates:</span>
-<span class="co">#&gt; mean of x mean of y </span>
-<span class="co">#&gt;  17.14737  24.39231 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $`Shapiro-Wilk-test_sample1`</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  Shapiro-Wilk normality test</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; data:  x</span>
-<span class="co">#&gt; W = 0.97677, p-value = 0.8987</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $`Shapiro-Wilk-test_sample2`</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;  Shapiro-Wilk normality test</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; data:  x</span>
-<span class="co">#&gt; W = 0.9458, p-value = 0.5363</span></code></pre></div>
+<code class="sourceCode R"><span class="co">#ttestStatistics</span></code></pre></div>
 </div>
 </div>
 <div id="wilcoxon-rank-sum-test-with-continuity-correction" class="section level3">
@@ -222,7 +187,7 @@
 <div id="kruskal-wallis-test" class="section level3">
 <h3 class="hasAnchor">
 <a href="#kruskal-wallis-test" class="anchor" aria-hidden="true"></a>Kruskal-Wallis test</h3>
-<p>Save the graphical output of type pdf in plotDirectory <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>:</p>
+<p>The generated graphs can be saved in all available formats of the <code>Cairo</code> package. Here we save the graphical output of type “pdf” in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span>,<span class="st">"Petal.Width"</span>,<span class="st">"Species"</span>,graphicsoutput <span class="op">=</span> <span class="st">"pdf"</span>,plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
@@ -237,6 +202,18 @@
 <code class="sourceCode R"><span class="va">HairEyeColorDataFrame</span> <span class="op">=</span> <span class="fu"><a href="reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">HairEyeColorDataFrame</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-9-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-9-2.png" width="100%"></p>
+</div>
+<div id="fishers-exact-test" class="section level3">
+<h3 class="hasAnchor">
+<a href="#fishers-exact-test" class="anchor" aria-hidden="true"></a>Fisher’s exact test</h3>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">HairEyeColorMaleFisher</span> <span class="op">=</span> <span class="va">HairEyeColor</span><span class="op">[</span>,,<span class="fl">1</span><span class="op">]</span>
+<span class="co">#slicing out a 2 x2 contingency table</span>
+<span class="va">blackBrownHazelGreen</span> <span class="op">=</span> <span class="va">HairEyeColorMaleFisher</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>
+<span class="va">blackBrownHazelGreen</span> <span class="op">=</span> <span class="fu"><a href="reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span><span class="op">)</span><span class="op">)</span>;
+<span class="va">fisher_stats</span> <span class="op">=</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span><span class="op">)</span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-10-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-10-2.png" width="100%"></p>
+<p>For details regarding the generated mosaic plots, please refer to the <code>mosaic()</code> in the <code>vcd</code> package.</p>
 </div>
 </div>
 </div>
