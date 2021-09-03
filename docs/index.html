@@ -87,114 +87,26 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="visstatistics" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#visstatistics" class="anchor" aria-hidden="true"></a>visStatistics</h1></div>
-<p>Visualization of the statistical hypothesis test between two groups of categorical or numerical data.</p>
-<p>Statistical consulting requires often both a quick first visualization and a reproducible statistical analysis of the presented raw data. The package <code>visStatistics</code> with its core function <code><a href="reference/visstat.html">visstat()</a></code> fulfils this need. Based on a decision tree it picks the statistical hypothesis test with the highest statistical power between the dependent variable (response) <code>varsample</code> and the independent variable (feature) <code>varfactor</code>. The corresponding test statistics including eventual post-hoc-analysis are returned and a graph showing key statistics of the underlying test is generated.</p>
-<p>This fully automated workflow is especially suited for browser based interfaces to server-based deployments of R and has been successfully implemented to analyse medical raw data in an unbiased fashion.</p>
-<p>A detailed description of the package’s functionality and its underlying decision tree, can be found in the <code>vignette</code> accompanying this package.</p>
-<div id="implemented-tests" class="section level2">
-<h2 class="hasAnchor">
-<a href="#implemented-tests" class="anchor" aria-hidden="true"></a>Implemented tests</h2>
-<p><code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>, <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>, <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>, <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>, <code>chisqu.test()</code></p>
-<div id="implemented-tests-to-check-the-normal-distribution-of-standardized-residuals" class="section level3">
-<h3 class="hasAnchor">
-<a href="#implemented-tests-to-check-the-normal-distribution-of-standardized-residuals" class="anchor" aria-hidden="true"></a>Implemented tests to check the normal distribution of standardized residuals</h3>
-<p><code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and <code>ad.test()</code></p>
-</div>
-<div id="implemented-post-hoc-tests" class="section level3">
-<h3 class="hasAnchor">
-<a href="#implemented-post-hoc-tests" class="anchor" aria-hidden="true"></a>Implemented post-hoc tests</h3>
-<p><code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>and <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> for <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code></p>
-</div>
-</div>
-<div id="installation-from-cran" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation-from-cran" class="anchor" aria-hidden="true"></a>Installation from CRAN</h2>
-<ol style="list-style-type: decimal">
-<li>Install the package <code>install.packages("visStatistics")</code>
-</li>
-<li>Load the package <code><a href="https://github.com/shhschilling/visStatistics" class="external-link">library(visStatistics)</a></code>
-</li>
-</ol>
-</div>
-<div id="installation-from-github-always-latest-developing-version" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation-from-github-always-latest-developing-version" class="anchor" aria-hidden="true"></a>Installation from GitHub (always latest, developing version)</h2>
-<ol style="list-style-type: decimal">
-<li>Install the devtools package from CRAN. Invoke R and type <code>install.packages("devtools")</code>
-</li>
-<li>Load the devtools package. <code><a href="https://devtools.r-lib.org/" class="external-link">library(devtools)</a></code>
-</li>
-<li>Install the package from the github-repository <code>install_github("shhschilling/visStatistics")</code>
-</li>
-<li>Load the package <code><a href="https://github.com/shhschilling/visStatistics" class="external-link">library(visStatistics)</a></code>
-</li>
-<li>Help on the function usage <code><a href="reference/visstat.html">?visstat</a></code>
-</li>
-</ol>
-</div>
-<div id="getting-started" class="section level2">
-<h2 class="hasAnchor">
-<a href="#getting-started" class="anchor" aria-hidden="true"></a>Getting Started</h2>
-<p>The package vignette allows you to get familiar with all features of <code>visStatistics</code>. It documents in detail the algorithm of the decision tree illustrated by examples.</p>
-</div>
-<div id="examples" class="section level2">
-<h2 class="hasAnchor">
-<a href="#examples" class="anchor" aria-hidden="true"></a>Examples</h2>
-<div id="welch-two-sample-ttest" class="section level3">
-<h3 class="hasAnchor">
-<a href="#welch-two-sample-ttest" class="anchor" aria-hidden="true"></a>Welch Two Sample t.test</h3>
-<div id="insectsprays" class="section level4">
-<h4 class="hasAnchor">
-<a href="#insectsprays" class="anchor" aria-hidden="true"></a>InsectSprays</h4>
-<pre class="{r}"><code>InsectSpraysAB &lt;- InsectSprays[ which(InsectSprays$spray == 'A'| InsectSprays$spray == 'B'), ] 
-InsectSpraysAB$spray = factor(InsectSpraysAB$spray)
-visstat(InsectSpraysAB,"count","spray")</code></pre>
-</div>
-<div id="mtcars" class="section level4">
-<h4 class="hasAnchor">
-<a href="#mtcars" class="anchor" aria-hidden="true"></a>mtcars</h4>
-<pre class="{r}"><code>mtcars$am=as.factor(mtcars$am)
-ttestStatistics=visstat(mtcars,"mpg","am") </code></pre>
-<p>Print out summary statistics:</p>
-<pre class="{r}"><code>ttestStatistics</code></pre>
-</div>
-</div>
-<div id="wilcoxon-rank-sum-test-with-continuity-correction" class="section level3">
-<h3 class="hasAnchor">
-<a href="#wilcoxon-rank-sum-test-with-continuity-correction" class="anchor" aria-hidden="true"></a>Wilcoxon rank sum test with continuity correction</h3>
-<p><code>visstat(ToothGrowth,"len", "supp")</code></p>
-</div>
-<div id="one-way-test" class="section level3">
-<h3 class="hasAnchor">
-<a href="#one-way-test" class="anchor" aria-hidden="true"></a>One-way test</h3>
-<pre class="{r}"><code> anova_npk=visstat(npk,"yield","block")
-</code></pre>
-</div>
-<div id="kruskal-wallis-test" class="section level3">
-<h3 class="hasAnchor">
-<a href="#kruskal-wallis-test" class="anchor" aria-hidden="true"></a>Kruskal-Wallis test</h3>
-<p>Save the graphical output of type pdf in plotDirectory tempdir():</p>
-<p><code>visstat(iris,"Petal.Width","Species",graphicsoutput="pdf",plotDirectory=tempdir())</code></p>
-</div>
-<div id="linear-regression" class="section level3">
-<h3 class="hasAnchor">
-<a href="#linear-regression" class="anchor" aria-hidden="true"></a>Linear Regression</h3>
-<p><code>linreg_cars=visstat(cars,"dist","speed")</code></p>
-<p>Increasing the confidence level <code>conf.level</code> from the default 0.95 to 0.99 leads two wider confidence and prediction bands:</p>
-<p><code>linreg_cars=visstat(cars,"dist","speed",conf.level=0.99)</code></p>
-</div>
-<div id="pearsons-chi-squared-test" class="section level3">
-<h3 class="hasAnchor">
-<a href="#pearsons-chi-squared-test" class="anchor" aria-hidden="true"></a>Pearson’s Chi-squared test</h3>
-<p>Count data sets are often presented as multidimensional arrays, so called contingency tables, whereas <code><a href="reference/visstat.html">visstat()</a></code> requires a <code>data.frame</code> with a column structure. Arrays can be transformed to this column wise structure with the helper function <code><a href="reference/counts_to_cases.html">counts_to_cases()</a></code>:</p>
-<pre class="{r}"><code>HairEyeColorDataFrame=counts_to_cases(as.data.frame(HairEyeColor))
-visstat(HairEyeColorDataFrame,"Hair","Eye")</code></pre>
-</div>
-</div>
-</div>
+Visualization of the most powerful statistical hypothesis test.
+    Statistical consulting requires often both a quick first visualization and a reproducible
+    statistical analysis of the presented raw data. The R package visStatistics with its core function 
+    visstat() fulfils this need. Based on a decision tree it picks the statistical hypothesis test with 
+    the highest statistical power between the dependent variable (response) and the independent variable
+    (feature):
+    For the comparison of averages, the chosen test depends on the p-values of the null that the normalized
+    standardized residuals of the regression model are normally distributed as tested by both shapiro.test() or ad.test(). 
+    If both p-values are smaller than the error probability 1-conf.level,
+    the non-parametric tests kruskal.test() resp. wilcox.test() are performed, otherwise the parametric tests oneway.test()
+    and aov() resp. t.test(). Exception: 
+    If the sample size is bigger than 100, t.test() is always performed and wilcox.test() is never executed 
+    (Lumley et al. (2002) &lt;<a href="https://doi.org/10.1146/annurev.publhealth.23.100901.140546">doi:10.1146/annurev.publhealth.23.100901.140546</a>&gt;). 
+    For the test of independence of count data, Cochran's rule (Cochran (1954) &lt;<a href="https://doi.org/10.2307/3001666">doi:10.2307/3001666</a>&gt;) is implemented: 
+    If more than 20 percent of all cells have a count smaller than 5, fisher.test() is performed and displayed,
+    otherwise chisqu.test(). In both cases case an additional mosaic plot is generated. 
+    Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
+    Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
+    Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
+    See the visstat vignette for a detailed description of the decision tree and examples.
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
