@@ -2,7 +2,13 @@
 title: "visStatistics"
 author: "Sabine Schilling"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+#output: rmarkdown::html_vignette : simple output
+output: 
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
+    number_sections: true
+    toc: true
+    toc_depth: 4
 bibliography: visstat.bib
 vignette: >
   %\VignetteIndexEntry{visStatistics}
