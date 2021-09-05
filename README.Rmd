@@ -1,5 +1,7 @@
 ---
-output: github_document
+# output: github_document
+output: rmarkdown::github_document
+
 ---
 
 <!-- README.md is automatically generated from README.Rmd. Please only edit this Rmd file! -->
@@ -77,6 +79,9 @@ visstat(InsectSpraysAB,"count","spray")
 
 #### mtcars data set
 
+```{r}
+
+```
 
 ```{r}
 mtcars$am = as.factor(mtcars$am)
