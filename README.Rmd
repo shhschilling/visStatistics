@@ -1,7 +1,7 @@
 ---
 # output: github_document
 output: rmarkdown::github_document
-
+#output: rmarkdown::html_vignette
 ---
 
 <!-- README.md is automatically generated from README.Rmd. Please only edit this Rmd file! -->
@@ -10,8 +10,10 @@ output: rmarkdown::github_document
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  # fig.path = "man/figures/README-",
-  out.width = "100%"
+  fig.width = 7,
+  fig.height = 5,
+  out.width = "100%",
+  fig.path = "man/figures/README-"
 )
 ```
 
