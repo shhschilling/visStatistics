@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 7,
   fig.height = 5,
-  fig.path = "man/figures/vignette-",
+  fig.path = "man/figures/visStatistics-",
   out.width = "100%"
 )
 ```
@@ -83,7 +83,7 @@ ttestStatistics = visstat(mtcars,"mpg","am")
 
 ```{r}
 #Increasing the confidence level
-ttestStatistics = visstat(mtcars,"mpg","am",conf.level= 0.99) 
+ttestStatistics = visstat(mtcars,"mpg","am",conf.level = 0.99) 
 ```
 
 #### Wilcoxon rank sum test (calling wilcox.test())
