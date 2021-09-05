@@ -158,7 +158,7 @@
 <code class="sourceCode R"><span class="va">InsectSpraysAB</span> <span class="op">&lt;-</span> <span class="va">InsectSprays</span><span class="op">[</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">spray</span> <span class="op">==</span> <span class="st">'A'</span> <span class="op">|</span> <span class="va">InsectSprays</span><span class="op">$</span><span class="va">spray</span> <span class="op">==</span> <span class="st">'B'</span><span class="op">)</span>, <span class="op">]</span> 
 <span class="va">InsectSpraysAB</span><span class="op">$</span><span class="va">spray</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">InsectSpraysAB</span><span class="op">$</span><span class="va">spray</span><span class="op">)</span>
 <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">InsectSpraysAB</span>,<span class="st">"count"</span>,<span class="st">"spray"</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"></p>
+<p><img src="README_files/figure-gfm/unnamed-chunk-2-1.png" width="100%"></p>
 </div>
 <div id="mtcars-data-set" class="section level4">
 <h4 class="hasAnchor">
@@ -166,7 +166,7 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span>
 <span class="va">ttestStatistics</span> <span class="op">=</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>,<span class="st">"mpg"</span>,<span class="st">"am"</span><span class="op">)</span> </code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"> Uncomment below line to print out summary statistics:</p>
+<p><img src="README_files/figure-gfm/unnamed-chunk-4-1.png" width="100%"> Uncomment below line to print out summary statistics:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#ttestStatistics</span></code></pre></div>
 </div>
@@ -178,14 +178,14 @@
 <code class="sourceCode R"><span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">ToothGrowth</span>,<span class="st">"len"</span>, <span class="st">"supp"</span><span class="op">)</span>
 <span class="co">#&gt; Warning in wilcox.test.default(x = c(15.2, 21.5, 17.6, 9.7, 14.5, 10, 8.2, :</span>
 <span class="co">#&gt; cannot compute exact p-value with ties</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-6-1.png" width="100%"></p>
+<p><img src="README_files/figure-gfm/unnamed-chunk-6-1.png" width="100%"></p>
 </div>
 <div id="one-way-test" class="section level3">
 <h3 class="hasAnchor">
 <a href="#one-way-test" class="anchor"></a>One-way test</h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"> <span class="va">anova_npk</span> <span class="op">=</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span>,<span class="st">"yield"</span>,<span class="st">"block"</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-7-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-7-2.png" width="100%"></p>
+<p><img src="README_files/figure-gfm/unnamed-chunk-7-1.png" width="100%"><img src="README_files/figure-gfm/unnamed-chunk-7-2.png" width="100%"></p>
 </div>
 <div id="kruskal-wallis-test" class="section level3">
 <h3 class="hasAnchor">
@@ -199,7 +199,7 @@
 <a href="#linear-regression" class="anchor"></a>Linear Regression</h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">linreg_cars</span> <span class="op">=</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>,<span class="st">"dist"</span>,<span class="st">"speed"</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-9-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-9-2.png" width="100%"> Increasing the confidence level <code>conf.level</code> from the default 0.95 to 0.99 leads two wider confidence and prediction bands: <img src="reference/figures/README-pressure-1.png" width="100%"><img src="reference/figures/README-pressure-2.png" width="100%"></p>
+<p><img src="README_files/figure-gfm/unnamed-chunk-9-1.png" width="100%"><img src="README_files/figure-gfm/unnamed-chunk-9-2.png" width="100%"> Increasing the confidence level <code>conf.level</code> from the default 0.95 to 0.99 leads two wider confidence and prediction bands: <img src="README_files/figure-gfm/pressure-1.png" width="100%"><img src="README_files/figure-gfm/pressure-2.png" width="100%"></p>
 </div>
 <div id="pearsons-chi-squared-test" class="section level3">
 <h3 class="hasAnchor">
@@ -208,7 +208,7 @@
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">HairEyeColorDataFrame</span> <span class="op">=</span> <span class="fu"><a href="reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">HairEyeColorDataFrame</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-10-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-10-2.png" width="100%"></p>
+<p><img src="README_files/figure-gfm/unnamed-chunk-10-1.png" width="100%"><img src="README_files/figure-gfm/unnamed-chunk-10-2.png" width="100%"></p>
 </div>
 <div id="fishers-exact-test" class="section level3">
 <h3 class="hasAnchor">
@@ -219,7 +219,7 @@
 <span class="va">blackBrownHazelGreen</span> <span class="op">=</span> <span class="va">HairEyeColorMaleFisher</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>
 <span class="va">blackBrownHazelGreen</span> <span class="op">=</span> <span class="fu"><a href="reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span><span class="op">)</span><span class="op">)</span>;
 <span class="va">fisher_stats</span> <span class="op">=</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-11-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-11-2.png" width="100%"></p>
+<p><img src="README_files/figure-gfm/unnamed-chunk-11-1.png" width="100%"><img src="README_files/figure-gfm/unnamed-chunk-11-2.png" width="100%"></p>
 <p>For details regarding the generated mosaic plots, please refer to the <code>mosaic()</code> in the <code>vcd</code> package.</p>
 </div>
 </div>
