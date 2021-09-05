@@ -23,11 +23,8 @@ implemented to analyse medical raw data in an unbiased fashion.
 
 A detailed description of the package’s functionality and its underlying
 decision tree, can be found in the `vignette` accompanying this package.
-
-## Implemented tests
-
-`lm()`, `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`,
-`fisher.test()`, `chisqu.test()`
+## Implemented tests `lm()`, `t.test()`, `wilcox.test()`, `aov()`,
+`kruskal.test()`, `fisher.test()`, `chisqu.test()`
 
 ### Implemented tests to check the normal distribution of standardized residuals
 
