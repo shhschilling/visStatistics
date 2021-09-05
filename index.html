@@ -20,9 +20,8 @@
     (feature):
     For the comparison of averages, the chosen test depends on the p-values of the null that the normalized
     standardized residuals of the regression model are normally distributed as tested by both shapiro.test() or ad.test(). 
-    If both p-values are smaller than the error probability 1-conf.level,
-    the non-parametric tests kruskal.test() resp. wilcox.test() are performed, otherwise the parametric tests oneway.test()
-    and aov() resp. t.test(). Exception: 
+    If both p-values are smaller than the error probability 1-conf.level,the non-parametric tests kruskal.test() resp. wilcox.test()
+    are performed, otherwise the parametric tests oneway.test() and aov() resp. t.test(). Exception: 
     If the sample size is bigger than 100, t.test() is always performed and wilcox.test() is never executed 
     (Lumley et al. (2002) &lt;doi:10.1146/annurev.publhealth.23.100901.140546&gt;). 
     For the test of independence of count data, Cochran's rule (Cochran (1954) &lt;doi:10.2307/3001666&gt;) is implemented: 
@@ -31,7 +30,7 @@
     Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
     Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
     Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
-    See the visstat vignette for a detailed description of the decision tree and examples.">
+    See the vissStatistics vignette for a detailed description of the decision tree and examples.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
