@@ -84,7 +84,7 @@ mtcars$am = as.factor(mtcars$am)
 ttestStatistics = visstat(mtcars,"mpg","am") 
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 Uncomment below line to print out summary statistics:
 
 ``` r
@@ -99,7 +99,7 @@ visstat(ToothGrowth,"len", "supp")
 #> cannot compute exact p-value with ties
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
 ### One-way test
 
@@ -107,7 +107,7 @@ visstat(ToothGrowth,"len", "supp")
  anova_npk = visstat(npk,"yield","block")
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-6-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-7-2.png" width="100%" />
 
 ### Kruskal-Wallis test
 
@@ -125,7 +125,7 @@ visstat(iris,"Petal.Width","Species",graphicsoutput = "pdf",plotDirectory = temp
 linreg_cars = visstat(cars,"dist","speed")
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-8-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-9-2.png" width="100%" />
 Increasing the confidence level `conf.level` from the default 0.95 to
 0.99 leads two wider confidence and prediction bands:
 <img src="man/figures/README-pressure-1.png" width="100%" /><img src="man/figures/README-pressure-2.png" width="100%" />
@@ -141,7 +141,7 @@ HairEyeColorDataFrame = counts_to_cases(as.data.frame(HairEyeColor))
 visstat(HairEyeColorDataFrame,"Hair","Eye")
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-9-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-10-2.png" width="100%" />
 
 ### Fisher’s exact test
 
@@ -153,7 +153,7 @@ blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
 fisher_stats = visstat(blackBrownHazelGreen,"Hair","Eye")
 ```
 
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-10-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-11-2.png" width="100%" />
 
 For details regarding the generated mosaic plots, please refer to the
 `mosaic()` in the `vcd` package.
