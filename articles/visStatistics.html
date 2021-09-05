@@ -130,14 +130,14 @@ shows how to publish the cod -->
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span>
 <span class="va">ttestStatistics</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>,<span class="st">"mpg"</span>,<span class="st">"am"</span><span class="op">)</span> </code></pre></div>
-<p><img src="man/figures/vignette-unnamed-chunk-2-1.png" width="100%"></p>
+<p><img src="man/figures/visStatistics-unnamed-chunk-2-1.png" width="100%"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># uncomenting the next line prints out test statistics </span>
 <span class="co"># ttestStatistics</span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Increasing the confidence level</span>
-<span class="va">ttestStatistics</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>,<span class="st">"mpg"</span>,<span class="st">"am"</span>,conf.level<span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span> </code></pre></div>
-<p><img src="man/figures/vignette-unnamed-chunk-3-1.png" width="100%"></p>
+<span class="va">ttestStatistics</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>,<span class="st">"mpg"</span>,<span class="st">"am"</span>,conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span> </code></pre></div>
+<p><img src="man/figures/visStatistics-unnamed-chunk-3-1.png" width="100%"></p>
 </div>
 <div id="wilcoxon-rank-sum-test-calling-wilcox-test" class="section level4">
 <h4 class="hasAnchor">
@@ -151,7 +151,7 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
             <span class="fl">7.3</span>, <span class="fl">14.3</span>,<span class="fl">13.5</span>,<span class="fl">8.0</span>,<span class="fl">19.5</span>,<span class="fl">13.4</span>,<span class="fl">17.9</span>,<span class="fl">17.7</span>,<span class="fl">16.4</span>,<span class="fl">15.6</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">wilcoxonStatistics</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">grades_gender</span>,<span class="st">"Grade"</span>, <span class="st">"Sex"</span><span class="op">)</span></code></pre></div>
-<p><img src="man/figures/vignette-unnamed-chunk-4-1.png" width="100%"></p>
+<p><img src="man/figures/visStatistics-unnamed-chunk-4-1.png" width="100%"></p>
 </div>
 </div>
 </div>
@@ -201,14 +201,14 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <a href="#one-way-test" class="anchor"></a>One way test</h4>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"> <span class="va">oneway_npk</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span>,<span class="st">"yield"</span>,<span class="st">"block"</span><span class="op">)</span></code></pre></div>
-<p><img src="man/figures/vignette-unnamed-chunk-5-1.png" width="100%"><img src="man/figures/vignette-unnamed-chunk-5-2.png" width="100%"></p>
+<p><img src="man/figures/visStatistics-unnamed-chunk-5-1.png" width="100%"><img src="man/figures/visStatistics-unnamed-chunk-5-2.png" width="100%"></p>
 <p>The post-hoc analysis with <code><a href="https://rdrr.io/r/stats/TukeyHSD.html">TukeyHSD()</a></code> reveals no significant difference between the yield in all blocks (all green letters are the same). #### ANOVA</p>
 <p>To stabilize the variance we transform the count data with the square root.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">InsectSprays_tr</span> <span class="op">=</span> <span class="va">InsectSprays</span>
 <span class="va">InsectSprays_tr</span><span class="op">$</span><span class="va">count</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">count</span><span class="op">)</span>
 <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">InsectSprays_tr</span>, <span class="st">"count"</span>, <span class="st">"spray"</span><span class="op">)</span></code></pre></div>
-<p><img src="man/figures/vignette-unnamed-chunk-6-1.png" width="100%"><img src="man/figures/vignette-unnamed-chunk-6-2.png" width="100%"></p>
+<p><img src="man/figures/visStatistics-unnamed-chunk-6-1.png" width="100%"><img src="man/figures/visStatistics-unnamed-chunk-6-2.png" width="100%"></p>
 <p>In the above example the scatter plots of the standardized residuals, the QQ -plot and the p-values of both Shapiro-Wilk-test and Anderson-Darling tests are greater than the probability of error <span class="math inline">\(\alpha=0.05\)</span>. Therefore we can assume that the residuals are normally distributed. At the given confidence level the homogeneity of variances can not be assumed (<span class="math inline">\(p &lt;\alpha\)</span> as calculated with the <code><a href="https://rdrr.io/r/stats/bartlett.test.html">bartlett.test()</a></code>), and the p-value of the <code><a href="https://rdrr.io/r/stats/oneway.test.html">oneway.test()</a></code> is displayed.</p>
 </div>
 <div id="kruskal-wallis-rank-sum-test" class="section level4">
@@ -217,7 +217,7 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <p>The iris data set gives the measurement of the petal width in cm for three different iris species.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span>,<span class="st">"Petal.Width"</span>, <span class="st">"Species"</span><span class="op">)</span></code></pre></div>
-<p><img src="man/figures/vignette-unnamed-chunk-7-1.png" width="100%"><img src="man/figures/vignette-unnamed-chunk-7-2.png" width="100%"></p>
+<p><img src="man/figures/visStatistics-unnamed-chunk-7-1.png" width="100%"><img src="man/figures/visStatistics-unnamed-chunk-7-2.png" width="100%"></p>
 <p>In the iris data example, both the graphical analysis by the scatter plots of the standardized residuals and the QQ -plot as well as the p-values of Shapiro-Wilk-test and Anderson-Darling test suggest that we can not assume that the residuals are normally distributed. Therefore <code>visstat</code> switches to the non parametric alternative <code><a href="https://rdrr.io/r/stats/kruskal.test.html">kruskal.test()</a></code>.</p>
 </div>
 </div>
@@ -242,11 +242,11 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <p>The cars data set reports the speed in mph of cars and the distances (dist) in ft taken to stop.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">linreg_cars</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>,<span class="st">"dist"</span>,<span class="st">"speed"</span><span class="op">)</span></code></pre></div>
-<p><img src="man/figures/vignette-unnamed-chunk-8-1.png" width="100%"><img src="man/figures/vignette-unnamed-chunk-8-2.png" width="100%"></p>
+<p><img src="man/figures/visStatistics-unnamed-chunk-8-1.png" width="100%"><img src="man/figures/visStatistics-unnamed-chunk-8-2.png" width="100%"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the default 0.95 to 0.99 leads two wider confidence and prediction bands:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">linreg_cars</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>,<span class="st">"dist"</span>,<span class="st">"speed"</span>,conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></code></pre></div>
-<p><img src="man/figures/vignette-unnamed-chunk-9-1.png" width="100%"><img src="man/figures/vignette-unnamed-chunk-9-2.png" width="100%"></p>
+<p><img src="man/figures/visStatistics-unnamed-chunk-9-1.png" width="100%"><img src="man/figures/visStatistics-unnamed-chunk-9-2.png" width="100%"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Extract the test statistics </span>
 <span class="va">linreg_cars</span><span class="op">$</span><span class="va">anderson_darling_test_residuals</span>
@@ -269,7 +269,7 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <p>The trees data set provides measurements of the diameter (named “Girth”) in inches and height in feet of black cherry trees.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">linreg_cars</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span>,<span class="st">"Height"</span>,<span class="st">"Girth"</span>,conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></code></pre></div>
-<p><img src="man/figures/vignette-unnamed-chunk-10-1.png" width="100%"><img src="man/figures/vignette-unnamed-chunk-10-2.png" width="100%"></p>
+<p><img src="man/figures/visStatistics-unnamed-chunk-10-1.png" width="100%"><img src="man/figures/visStatistics-unnamed-chunk-10-2.png" width="100%"></p>
 <p>Both the graphical analysis of the standardized residuals and p-values smaller than <code>conf.level</code> in the Anderson-Darling normality test and the Shapiro-Wilk test of the standardized residuals suggest that the condition of normally distributed residuals of the regression model is not met. Furthermore the linear regression model explains only 24% of the total variance of the dependent variables “Height” of the cherry trees. The user should might consider other regression models. This further tests are not provided by <code><a href="../reference/visstat.html">visstat()</a></code>.</p>
 </div>
 </div>
@@ -296,7 +296,7 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">HairEyeColorDataFrame</span> <span class="op">=</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">HairEyeColorDataFrame</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span><span class="op">)</span></code></pre></div>
-<p><img src="man/figures/vignette-unnamed-chunk-12-1.png" width="100%"><img src="man/figures/vignette-unnamed-chunk-12-2.png" width="100%"></p>
+<p><img src="man/figures/visStatistics-unnamed-chunk-12-1.png" width="100%"><img src="man/figures/visStatistics-unnamed-chunk-12-2.png" width="100%"></p>
 </div>
 <div id="fishers-exact-test-and-mosaic-plot-with-pearson-residuals" class="section level2">
 <h2 class="hasAnchor">
@@ -307,7 +307,7 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <span class="va">blackBrownHazelGreen</span> <span class="op">=</span> <span class="va">HairEyeColorMaleFisher</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>
 <span class="va">blackBrownHazelGreen</span> <span class="op">=</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span><span class="op">)</span><span class="op">)</span>;
 <span class="va">fisher_stats</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span><span class="op">)</span></code></pre></div>
-<p><img src="man/figures/vignette-unnamed-chunk-13-1.png" width="100%"><img src="man/figures/vignette-unnamed-chunk-13-2.png" width="100%"></p>
+<p><img src="man/figures/visStatistics-unnamed-chunk-13-1.png" width="100%"><img src="man/figures/visStatistics-unnamed-chunk-13-2.png" width="100%"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># fisher_stats  #uncommenting prints out summary statistics</span></code></pre></div>
 </div>
