@@ -45,27 +45,40 @@ shows how to publish the cod -->
 
 # Abstract {.unnumbered}
 
-Statistical consulting requires often both a quick first visualization and a reproducible statistical analysis of the presented raw data. The R package `visStatistics` with its core function `visstat()` fulfils this need. Based on a decision tree it picks the statistical hypothesis test with the highest statistical power between the dependent variable (response) named `varsample` and the independent variable (feature) named `varfactor` in a `data.frame` named `dataframe`. Data in the provided `dataframe` must be structured column wise, where `varsample` and `varfactor` are the character strings of the column names of the dependent and independent variable respectively.
+The R package `visStatistics` provides means to quickly visualize and analyze raw data.
 
-The corresponding test statistics including eventual post-hoc-analysis are returned and a graph showing key statistics of the underlying test is generated. This fully automated workflow is especially suited for browser based interfaces to server-based deployments of R and has been successfully implemented to analyse medical raw data in an unbiased fashion.
 
-The statistical tests performed by the core function `visstat` depend on the type of the data (numerical/integer or categorical), the number of levels whilst dealing with categorical data and the data distributions. The reminder of this vignette documents in detail the algorithm underlying the decision tree of `vistat()`.
+Based on a decision tree it picks the statistical hypothesis test with the highest statistical power between the dependent variable (response) named `varsample` and the independent variable (feature) named `varfactor` in a `data.frame` named `dataframe`. A minimal function call has the structure: 
+
+`
+visstat(dataframe,varsample,varfactor)
+`
+
+Data in the provided `dataframe` must be structured column wise, where `varsample` and `varfactor` are the character strings of the column names of the dependent and independent variable respectively. 
+
+The choice of statistical tests performed by the core function visstat() depends on the type of the data (quantitative numerical or qualitative categorical), the number of levels whilst dealing with categorical data and the data distributions. 
+
+`visStatistics` offers a fully automated workflow that is especially suited for browser-based interfaces to server-based deployments of R. It has been successfully applied for unbiased analysis of medical raw data.
+
+The remainder of this vignette focuses on the the algorithm underlying the decision tree of `vistat()`, whilst a call to `?visstat` documents all parameter settings of the function.  
+
+
 
 # Comparing means and medians
 
-If the feature `varfactor` has two or more levels and the response `varsample` is of type numerical or integer, tests to compare the means or medians of the samples are applied.
+If the feature `varfactor` is a categorical variable (in R a `factor`) with two or more levels and the response `varsample` is numeric, tests are applied.to compare the means or medians of the samples.
 
 ## Two sample tests: Welch's t-Test or Wilcoxon rank sum test
 
-If the feature `varfactor` has two levels and the response `varsample` is of type numerical or integer, either Welch's t-Test or the Wilcoxon rank sum test are performed. The choice of both options follows the following algorithm:
+If the independent variable `varfactor` has two levels and the dependent variable  `varsample` is numeric, either Welch's t-Test or the Wilcoxon rank sum test are performed. The choice follows the algorithm:
 
--   If the sample size of both is bigger than 100, `viststat()` performs always the `t.test()` [@Lumley2002dsa]. Otherwise,
+- If the sample size for both levels is bigger than 100,  perform always the `t.test()` [@Lumley2002dsa]. 
 
--   if the sample size of one of the samples is smaller than 100, `viststat()` checks first the assumption of normality of both samples with the Shapiro-Wilk Normality Test (`shapiro.test()`):
+- If the sample size of at least one of the levels is smaller than 100, checks first for normality of both distributions with the Shapiro-Wilk Normality Test  (`shapiro.test()`):
 
-    -   If the p-values in the `shapiro.test()` of both samples are bigger than the error probability `1-conf.level`,Welch's t-Test (`t.test()`) is executed. Otherwise,
+    -   If the p-values in the `shapiro.test()` of both samples are bigger than the error probability `1-conf.level`,Welch's t-Test (`t.test()`) is executed.
 
-    -   if the p-values of both samples in the `shapiro.test()` are smaller than the error probability `1-conf.level`, a Wilcoxon rank sum test (`wilcox.test()`) is executed.
+    -   If the p-values of both samples in the `shapiro.test()` are smaller than the error probability `1-conf.level`, a Wilcoxon rank sum test (`wilcox.test()`) is executed.
 
 The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the `t-test.()),  additionally the`conf.level\`\*100 % -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated boxplots is generated and returned as a list.
 
@@ -100,7 +113,7 @@ wilcoxonStatistics = visstat(grades_gender,"Grade", "Sex")
 
 ## More than two samples: One Way Test and ANOVA or Kruskal-Wallis-Test {#aov}
 
-If the feature `varfactor` has more than two levels and the response `varsample` is of type numerical or integer, the underlying assumptions of the analysis of variance, normality of the standardized residuals and homoscedacity, are checked by the function `vis_anova_asumptions()`.
+If the categorical (`factor`) variable `varfactor` has more than two levels and the response `varsample` is numeric, the underlying assumptions of the analysis of variance, normality of the standardized residuals and homoscedacity, are checked by the function `vis_anova_asumptions()`.
 
 ### Residual analysis
 
@@ -131,7 +144,7 @@ We use the Tukey Honest Significant Differences `TukeyHSD()` to create a set of 
 
 ### Kruskal-Wallis-Test
 
-If the p-values of the standardized residuals calculated by `shapiro.test()` or `ad.test()` are smaller than the error probability `1-conf.level`, a normal distribution of the residuals can not be assumed. In this case, `visstat()` chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. `kruskal.test()` tests the null that the medians are the same in each group (level). As post-hoc-analysis the pairwise Wilcoxon rank sum test `pairwise.wilcox.test()` applying the default Holm method [@Holm1979ASS] is used. If two groups differ significantly at the given `conf.level`, the green letters below the box plot differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list wtih the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.
+If the p-values of the standardized residuals calculated by `shapiro.test()` or `ad.test()` are smaller than the error probability `1-conf.level`, a normal distribution of the residuals can not be assumed. In this case, `visstat()` chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. `kruskal.test()` tests the null that the medians are the same in each group (level). As post-hoc-analysis the pairwise Wilcoxon rank sum test `pairwise.wilcox.test()` applying the default Holm method for multiple comparisons[@Holm1979ASS] is used. If the Holm corrected  p-value for a pair is smaller than `1-confint`, the green letters below the corresponding two box plots will differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list with the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.
 
 ### Examples
 
@@ -171,7 +184,7 @@ If the feature `varfactor` and the response `varsample` have only one level of t
 
 ## Residual analysis
 
-`visstat`\` checks the normal distribution of the standardized residuals derived from `lm()` both graphically and with the Shapiro-Wilk- and Anderson-Test (analogue to section \@ref(aov) ). If the p-values of the null that the standardized residuals are normally distributed of both Shapiro-Wilk and Anderson-Test are greater than `1-conf.int`, the title of the residual plot will display the message "Requirements regression not met".
+`visstat` checks the normal distribution of the standardized residuals derived from `lm()` both graphically and with the Shapiro-Wilk- and Anderson-Test (analogue to section \@ref(aov) ). If the p-values of the null that the standardized residuals are normally distributed of both Shapiro-Wilk and Anderson-Test are greater than `1-conf.int`, the title of the residual plot will display the message "Requirements regression not met".
 
 Independent of the residual analysis outcome, `visstat()`\` performs in the subsequent step the regression itself. The title of the graphical output lists the chosen confidence level `conf.level`, the regression parameter accompanied by their confidence levels and p-values as well as the adjusted $R^2$. The graph shows the raw data, the regression line and both the confidence and prediction bands corresponding to the chosen `conf.level`. The function returns a list with the test statistics of the linear regression, the p-values of the normality tests of the standardized residuals and the pointwise estimates of the confidence and prediction band.
 
