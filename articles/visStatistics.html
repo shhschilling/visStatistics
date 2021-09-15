@@ -76,7 +76,7 @@
       <h1 data-toc-skip>visStatistics</h1>
                         <h4 class="author">Sabine Schilling</h4>
             
-            <h4 class="date">2021-09-05</h4>
+            <h4 class="date">2021-09-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="hidden name"><code>visStatistics.Rmd</code></div>
@@ -98,25 +98,29 @@ shows how to publish the cod -->
 <div id="abstract" class="section level1 unnumbered">
 <h1 class="hasAnchor">
 <a href="#abstract" class="anchor"></a>Abstract</h1>
-<p>Statistical consulting requires often both a quick first visualization and a reproducible statistical analysis of the presented raw data. The R package <code>visStatistics</code> with its core function <code><a href="../reference/visstat.html">visstat()</a></code> fulfils this need. Based on a decision tree it picks the statistical hypothesis test with the highest statistical power between the dependent variable (response) named <code>varsample</code> and the independent variable (feature) named <code>varfactor</code> in a <code>data.frame</code> named <code>dataframe</code>. Data in the provided <code>dataframe</code> must be structured column wise, where <code>varsample</code> and <code>varfactor</code> are the character strings of the column names of the dependent and independent variable respectively.</p>
-<p>The corresponding test statistics including eventual post-hoc-analysis are returned and a graph showing key statistics of the underlying test is generated. This fully automated workflow is especially suited for browser based interfaces to server-based deployments of R and has been successfully implemented to analyse medical raw data in an unbiased fashion.</p>
-<p>The statistical tests performed by the core function <code>visstat</code> depend on the type of the data (numerical/integer or categorical), the number of levels whilst dealing with categorical data and the data distributions. The reminder of this vignette documents in detail the algorithm underlying the decision tree of <code>vistat()</code>.</p>
+<p>The R package <code>visStatistics</code> provides means to quickly visualize and analyze raw data.</p>
+<p>Based on a decision tree it picks the statistical hypothesis test with the highest statistical power between the dependent variable (response) named <code>varsample</code> and the independent variable (feature) named <code>varfactor</code> in a <code>data.frame</code> named <code>dataframe</code>. A minimal function call has the structure:</p>
+<p><code><a href="../reference/visstat.html">visstat(dataframe,varsample,varfactor)</a></code></p>
+<p>Data in the provided <code>dataframe</code> must be structured column wise, where <code>varsample</code> and <code>varfactor</code> are the character strings of the column names of the dependent and independent variable respectively.</p>
+<p>The choice of statistical tests performed by the core function visstat() depends on the type of the data (quantitative numerical or qualitative categorical), the number of levels whilst dealing with categorical data and the data distributions.</p>
+<p><code>visStatistics</code> offers a fully automated workflow that is especially suited for browser-based interfaces to server-based deployments of R. It has been successfully applied for unbiased analysis of medical raw data.</p>
+<p>The remainder of this vignette focuses on the the algorithm underlying the decision tree of <code>vistat()</code>, whilst a call to <code><a href="../reference/visstat.html">?visstat</a></code> documents all parameter settings of the function.</p>
 </div>
 <div id="comparing-means-and-medians" class="section level1">
 <h1 class="hasAnchor">
 <a href="#comparing-means-and-medians" class="anchor"></a>Comparing means and medians</h1>
-<p>If the feature <code>varfactor</code> has two or more levels and the response <code>varsample</code> is of type numerical or integer, tests to compare the means or medians of the samples are applied.</p>
+<p>If the feature <code>varfactor</code> is a categorical variable (in R a <code>factor</code>) with two or more levels and the response <code>varsample</code> is numeric, tests are applied.to compare the means or medians of the samples.</p>
 <div id="two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test" class="section level2">
 <h2 class="hasAnchor">
 <a href="#two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test" class="anchor"></a>Two sample tests: Welch’s t-Test or Wilcoxon rank sum test</h2>
-<p>If the feature <code>varfactor</code> has two levels and the response <code>varsample</code> is of type numerical or integer, either Welch’s t-Test or the Wilcoxon rank sum test are performed. The choice of both options follows the following algorithm:</p>
+<p>If the independent variable <code>varfactor</code> has two levels and the dependent variable <code>varsample</code> is numeric, either Welch’s t-Test or the Wilcoxon rank sum test are performed. The choice follows the algorithm:</p>
 <ul>
-<li><p>If the sample size of both is bigger than 100, <code>viststat()</code> performs always the <code><a href="https://rdrr.io/r/stats/t.test.html">t.test()</a></code> <span class="citation">(Lumley et al. 2002)</span>. Otherwise,</p></li>
+<li><p>If the sample size for both levels is bigger than 100, perform always the <code><a href="https://rdrr.io/r/stats/t.test.html">t.test()</a></code> <span class="citation">(Lumley et al. 2002)</span>.</p></li>
 <li>
-<p>if the sample size of one of the samples is smaller than 100, <code>viststat()</code> checks first the assumption of normality of both samples with the Shapiro-Wilk Normality Test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test()</a></code>):</p>
+<p>If the sample size of at least one of the levels is smaller than 100, checks first for normality of both distributions with the Shapiro-Wilk Normality Test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test()</a></code>):</p>
 <ul>
-<li><p>If the p-values in the <code><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test()</a></code> of both samples are bigger than the error probability <code>1-conf.level</code>,Welch’s t-Test (<code><a href="https://rdrr.io/r/stats/t.test.html">t.test()</a></code>) is executed. Otherwise,</p></li>
-<li><p>if the p-values of both samples in the <code><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test()</a></code> are smaller than the error probability <code>1-conf.level</code>, a Wilcoxon rank sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html">wilcox.test()</a></code>) is executed.</p></li>
+<li><p>If the p-values in the <code><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test()</a></code> of both samples are bigger than the error probability <code>1-conf.level</code>,Welch’s t-Test (<code><a href="https://rdrr.io/r/stats/t.test.html">t.test()</a></code>) is executed.</p></li>
+<li><p>If the p-values of both samples in the <code><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test()</a></code> are smaller than the error probability <code>1-conf.level</code>, a Wilcoxon rank sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html">wilcox.test()</a></code>) is executed.</p></li>
 </ul>
 </li>
 </ul>
@@ -158,7 +162,7 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <div id="aov" class="section level2">
 <h2 class="hasAnchor">
 <a href="#aov" class="anchor"></a>More than two samples: One Way Test and ANOVA or Kruskal-Wallis-Test</h2>
-<p>If the feature <code>varfactor</code> has more than two levels and the response <code>varsample</code> is of type numerical or integer, the underlying assumptions of the analysis of variance, normality of the standardized residuals and homoscedacity, are checked by the function <code>vis_anova_asumptions()</code>.</p>
+<p>If the categorical (<code>factor</code>) variable <code>varfactor</code> has more than two levels and the response <code>varsample</code> is numeric, the underlying assumptions of the analysis of variance, normality of the standardized residuals and homoscedacity, are checked by the function <code>vis_anova_asumptions()</code>.</p>
 <div id="residual-analysis" class="section level3">
 <h3 class="hasAnchor">
 <a href="#residual-analysis" class="anchor"></a>Residual analysis</h3>
@@ -190,7 +194,7 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <div id="kruskal-wallis-test" class="section level3">
 <h3 class="hasAnchor">
 <a href="#kruskal-wallis-test" class="anchor"></a>Kruskal-Wallis-Test</h3>
-<p>If the p-values of the standardized residuals calculated by <code><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test()</a></code> or <code>ad.test()</code> are smaller than the error probability <code>1-conf.level</code>, a normal distribution of the residuals can not be assumed. In this case, <code><a href="../reference/visstat.html">visstat()</a></code> chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. <code><a href="https://rdrr.io/r/stats/kruskal.test.html">kruskal.test()</a></code> tests the null that the medians are the same in each group (level). As post-hoc-analysis the pairwise Wilcoxon rank sum test <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html">pairwise.wilcox.test()</a></code> applying the default Holm method <span class="citation">(Holm 1979)</span> is used. If two groups differ significantly at the given <code>conf.level</code>, the green letters below the box plot differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list wtih the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.</p>
+<p>If the p-values of the standardized residuals calculated by <code><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test()</a></code> or <code>ad.test()</code> are smaller than the error probability <code>1-conf.level</code>, a normal distribution of the residuals can not be assumed. In this case, <code><a href="../reference/visstat.html">visstat()</a></code> chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. <code><a href="https://rdrr.io/r/stats/kruskal.test.html">kruskal.test()</a></code> tests the null that the medians are the same in each group (level). As post-hoc-analysis the pairwise Wilcoxon rank sum test <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html">pairwise.wilcox.test()</a></code> applying the default Holm method for multiple comparisons<span class="citation">(Holm 1979)</span> is used. If the Holm corrected p-value for a pair is smaller than <code>1-confint</code>, the green letters below the corresponding two box plots will differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list with the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.</p>
 </div>
 <div id="examples-1" class="section level3">
 <h3 class="hasAnchor">
@@ -230,7 +234,7 @@ Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base
 <div id="residual-analysis-1" class="section level2">
 <h2 class="hasAnchor">
 <a href="#residual-analysis-1" class="anchor"></a>Residual analysis</h2>
-<p><code>visstat</code>` checks the normal distribution of the standardized residuals derived from <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> both graphically and with the Shapiro-Wilk- and Anderson-Test (analogue to section @ref(aov) ). If the p-values of the null that the standardized residuals are normally distributed of both Shapiro-Wilk and Anderson-Test are greater than <code>1-conf.int</code>, the title of the residual plot will display the message “Requirements regression not met”.</p>
+<p><code>visstat</code> checks the normal distribution of the standardized residuals derived from <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> both graphically and with the Shapiro-Wilk- and Anderson-Test (analogue to section @ref(aov) ). If the p-values of the null that the standardized residuals are normally distributed of both Shapiro-Wilk and Anderson-Test are greater than <code>1-conf.int</code>, the title of the residual plot will display the message “Requirements regression not met”.</p>
 <p>Independent of the residual analysis outcome, <code><a href="../reference/visstat.html">visstat()</a></code>` performs in the subsequent step the regression itself. The title of the graphical output lists the chosen confidence level <code>conf.level</code>, the regression parameter accompanied by their confidence levels and p-values as well as the adjusted <span class="math inline">\(R^2\)</span>. The graph shows the raw data, the regression line and both the confidence and prediction bands corresponding to the chosen <code>conf.level</code>. The function returns a list with the test statistics of the linear regression, the p-values of the normality tests of the standardized residuals and the pointwise estimates of the confidence and prediction band.</p>
 </div>
 <div id="example" class="section level2">
