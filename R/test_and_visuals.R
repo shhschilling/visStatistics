@@ -127,17 +127,18 @@ two_sample_tTest = function(samples,
   )))))
   
   
-  par(oma = c(0, 0, 3, 0))
+  par(oma = c(1, 0, 3, 0))
   b = boxplot(
     samples ~ fact,
     lwd = 0.5,
-    xlab = factorname,
+    xlab = factorname, #wird nicht angezeigt
     ylab = samplename,
     ylim = c(mi, ma),
     varwidth = T,
     col = colorscheme(1)
   )
   
+
   stripchart(
     samples ~ fact,
     vertical = TRUE,
@@ -150,11 +151,11 @@ two_sample_tTest = function(samples,
     add = TRUE
   )
   
-  axis(side = 2)
-  axis(side = 1,
-       at = c(1, 2),
-       labels = levels)
-  box()
+  # axis(side = 2)
+  # axis(side = 1,
+  #      at = c(1, 2),
+  #      labels = levels)
+  # box()
   
   points(1,
          mean(x1),
@@ -234,20 +235,21 @@ two_sample_tTest = function(samples,
   mtext(
     paste(
       t$method,
-      " p value = ",
+      ", p value = ",
       p_value,
-      " null hypothesis:",
-      "\n mean",
+      ". \n Null hypothesis:",
+      " mean ",
       samplename,
-      "of",
+      " of ",
       factorname,
-      unique(fact)[1],
+      unique(fact)[1]," ",
       compare,
-      "mean",
+      " mean ",
       samplename,
-      "of",
+      " of ",
       factorname,
-      unique(fact)[2]
+      unique(fact)[2],
+      sep = ""
     )
   )
   my_list <-

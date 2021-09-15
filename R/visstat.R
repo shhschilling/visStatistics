@@ -139,7 +139,7 @@ visstat = function(dataframe,
   
   #store default graphical parameters------
   oldparvisstat <- par(no.readonly = TRUE)   
-  oldparvisstat$new=FALSE #reset the default value
+  oldparvisstat$new =FALSE #reset the default value
   on.exit(par(oldparvisstat))
   
   
@@ -157,6 +157,7 @@ visstat = function(dataframe,
   
   
   
+  
   #dependent on samples, fact, name_of_sample, name_of_factor, conf.level,
   #paired=F,
   typesample = class(samples)
@@ -164,8 +165,8 @@ visstat = function(dataframe,
   
   
   #transform independent variable "fact" of class "character" to factor
-  if (typefactor=="character"){
-    fact=as.factor(fact)  #transform independent variable "fact" of class "character" to factor
+  if (typefactor == "character") {
+    fact = as.factor(fact)  #transform independent variable "fact" of class "character" to factor
     typefactor = class(fact) #store the newly generate class of type "factor" of the independent variable
   }
   
@@ -232,7 +233,7 @@ visstat = function(dataframe,
           var.equal = F,
           paired = F,
           samplename = varsample,
-          factorname = matchingCriteria
+          factorname = varfactor 
         )
         
         if (is.null(plotName))
