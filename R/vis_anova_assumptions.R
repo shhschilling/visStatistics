@@ -2,15 +2,15 @@
 
 #' Visualisation of the normality distribution of the standardised residuals of the ANOVA
 #'
-#' \code{vis_anova_assumptions()} checks for normality of the standardised residuals of the ANOVA. Both the 
-#'    Shapiro-Wilk test \code{shapiro.test()} and the Anderson-Darling test \code{ad.test()} check the 
-#'    null that the standardized residuals are normally distributed. 
+#' \code{vis_anova_assumptions()} checks for normality of the standardised residuals of the ANOVA. Both the
+#'    Shapiro-Wilk test \code{shapiro.test()} and the Anderson-Darling test \code{ad.test()} check the
+#'    null that the standardized residuals are normally distributed.
 #'    It generates a scatter plot
-#'    of the standardized residuals versus the fitted mean values of the linear models for each level of \code{fact}. 
+#'    of the standardized residuals versus the fitted mean values of the linear models for each level of \code{fact}.
 #'    Furthermore a normal QQ plot of the standardized residuals is generated.
 #'    The null of homogeneity of variances  of each factor level is tested with the \code{bartlett.test()}.
 
-#'  
+#'
 #' @param samples vector containing dependent variable, datatype numeric
 #' @param fact vector containing independent variable, datatype factor
 #' @param conf.level confidence level, 0.95=default
@@ -23,47 +23,45 @@
 #'    Shapiro-Wilk test \code{shapiro.test()}, the Anderson-Darling test \code{ad.test()} and the \code{bartlett.test()}.
 
 #' @examples
-#'ToothGrowth$dose=as.factor(ToothGrowth$dose)
-#'vis_anova_assumptions(ToothGrowth$len, ToothGrowth$dose)
+#' ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+#' vis_anova_assumptions(ToothGrowth$len, ToothGrowth$dose)
 #'
-#'vis_anova_assumptions(ToothGrowth$len, ToothGrowth$supp)
-#'vis_anova_assumptions(iris$Petal.Width,iris$Species)
-
+#' vis_anova_assumptions(ToothGrowth$len, ToothGrowth$supp)
+#' vis_anova_assumptions(iris$Petal.Width, iris$Species)
+#'
 #' @export vis_anova_assumptions
 
-vis_anova_assumptions = function(samples,
-                                 fact,
-                                 conf.level = 0.95,
-                                 samplename = "",
-                                 factorname = "",
-                                 cex = 1
-                                 ) {
-  
-  oldparanovassum <- par(no.readonly = TRUE)   
-  on.exit(par(oldparanovassum)) 
-  samples3 = na.omit(samples)
-  fact <- subset(fact,!is.na(samples))
-  samples = samples3
-  anova = aov(samples ~ fact)
-  summary_anova = summary(anova)
+vis_anova_assumptions <- function(samples,
+                                  fact,
+                                  conf.level = 0.95,
+                                  samplename = "",
+                                  factorname = "",
+                                  cex = 1) {
+  oldparanovassum <- par(no.readonly = TRUE)
+  on.exit(par(oldparanovassum))
+  samples3 <- na.omit(samples)
+  fact <- subset(fact, !is.na(samples))
+  samples <- samples3
+  anova <- aov(samples ~ fact)
+  summary_anova <- summary(anova)
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
   plot(anova$fitted, rstandard(anova), main = "std. Residuals vs. Fitted")
   abline(h = 0, col = 1, lwd = 2)
   qqnorm(rstandard(anova))
   qqline(rstandard(anova), col = "red", lwd = 2)
   par(mfrow = c(1, 1))
-  #check for normality of standardized residuals
-  if (length(anova)>7){
-    ad_test = ad.test(rstandard(anova))
-    p_AD = signif(ad_test$p.value, 3)}
-  else{
-    ad_test="Anderson-Darling test requires sample size of at lest 7."  
-    p_AD=NA
+  # check for normality of standardized residuals
+  if (length(anova) > 7) {
+    ad_test <- ad.test(rstandard(anova))
+    p_AD <- signif(ad_test$p.value, 3)
+  } else {
+    ad_test <- "Anderson-Darling test requires sample size of at lest 7."
+    p_AD <- NA
   }
-  shapiro_test = shapiro.test(rstandard(anova))
-  p_SH = shapiro_test$p.value
-  bartlett_test = bartlett.test(samples ~ fact)
-  p_bart = bartlett_test$p.value
+  shapiro_test <- shapiro.test(rstandard(anova))
+  p_SH <- shapiro_test$p.value
+  bartlett_test <- bartlett.test(samples ~ fact)
+  p_bart <- bartlett_test$p.value
   mtext(
     paste(
       "Check for homogeneity of variances: Bartlett Test, p = ",
@@ -75,19 +73,16 @@ vis_anova_assumptions = function(samples,
     ),
     outer = TRUE
   )
-  
-  
-  
+
+
+
   list_aov <-
     list(
       "summary_anova" = summary_anova,
       "shapiro_test" = shapiro_test,
       "ad_test" = ad_test,
-      "bartlett_test"=bartlett_test
+      "bartlett_test" = bartlett_test
     )
-  
+
   return(list_aov)
 }
-
-
-

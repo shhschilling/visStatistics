@@ -46,24 +46,21 @@ shows how to publish the cod -->
 
 # Abstract {.unnumbered}
 
-The R package `visStatistics` provides means to quickly visualize and analyze raw data.
+The R package `visStatistics` provides means to quickly visualise and analyse raw data.
 
+Based on a decision tree it picks the statistical hypothesis test with the highest statistical power between the dependent variable (response) named `varsample` and the independent variable (feature) named `varfactor` in a `data.frame` named `dataframe`. A minimal function call has the structure:
 
-Based on a decision tree it picks the statistical hypothesis test with the highest statistical power between the dependent variable (response) named `varsample` and the independent variable (feature) named `varfactor` in a `data.frame` named `dataframe`. A minimal function call has the structure: 
+`visstat(dataframe,varsample,varfactor)`
 
-`
-visstat(dataframe,varsample,varfactor)
-`
+Data in the provided `dataframe` must be structured column wise, where `varsample` and `varfactor` are the character strings of the column names of the dependent and independent variable respectively.
 
-Data in the provided `dataframe` must be structured column wise, where `varsample` and `varfactor` are the character strings of the column names of the dependent and independent variable respectively. 
+The choice of statistical tests performed by the core function visstat() depends on the type of the data (quantitative numerical or qualitative categorical), the number of levels whilst dealing with categorical data and the distribution of the data (normally distributed versus non-normally distributed).
 
-The choice of statistical tests performed by the core function visstat() depends on the type of the data (quantitative numerical or qualitative categorical), the number of levels whilst dealing with categorical data and the data distributions. 
+The function returns the corresponding test statistics including eventual post-hoc-analysis and generates a graph showing key statistics of the underlying test.
 
-`visStatistics` offers a fully automated workflow that is especially suited for browser-based interfaces to server-based deployments of R. It has been successfully applied for unbiased analysis of medical raw data.
+`visStatistics` offers a fully automated workflow especially suited for server-based deployments of R. It has been successfully applied for unbiased analysis of medical raw data.
 
-The remainder of this vignette focuses on the the algorithm underlying the decision tree of `vistat()`, whilst a call to `?visstat` documents all parameter settings of the function.  
-
-
+The remainder of this vignette focuses on the the algorithm underlying the decision tree of `vistat()`, whilst a call to `?visstat` documents all parameter settings of the function.
 
 # Comparing means and medians
 
@@ -71,17 +68,17 @@ If the feature `varfactor` is a categorical variable (in R a `factor`) with two 
 
 ## Two sample tests: Welch's t-Test or Wilcoxon rank sum test
 
-If the independent variable `varfactor` has two levels and the dependent variable  `varsample` is numeric, either Welch's t-Test or the Wilcoxon rank sum test are performed. The choice follows the algorithm:
+If the independent variable `varfactor` has two levels and the dependent variable `varsample` is numeric, either Welch's t-Test or the Wilcoxon rank sum test are performed. The choice follows the algorithm:
 
-- If the sample size for both levels is bigger than 100,  perform always the `t.test()` [@Lumley2002dsa]. 
+-   If the sample size for both levels is bigger than 100, perform always the `t.test()` [@Lumley2002dsa].
 
-- If the sample size of at least one of the levels is smaller than 100, checks first for normality of both distributions with the Shapiro-Wilk Normality Test  (`shapiro.test()`):
+-   If the sample size of at least one of the levels is smaller than 100, checks first for normality of both distributions with the Shapiro-Wilk Normality Test (`shapiro.test()`):
 
     -   If the p-values in the `shapiro.test()` of both samples are bigger than the error probability `1-conf.level`,Welch's t-Test (`t.test()`) is executed.
 
     -   If the p-values of both samples in the `shapiro.test()` are smaller than the error probability `1-conf.level`, a Wilcoxon rank sum test (`wilcox.test()`) is executed.
 
-The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the `t-test.()),  additionally the`conf.level\`\*100 % -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated boxplots is generated and returned as a list.
+The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the `t-test.()),  additionally the`conf.level\`\*100 % -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated box plots is generated and returned as a list.
 
 ### Examples
 
@@ -132,7 +129,7 @@ Depending on the p-value of the `bartlett.test()` the appropriate test is shown 
 
 -   Otherwise homoscedacity can not be assumed and the p-value of `oneway.test()` is reported.
 
-To generate Sidak corrected confidence intervals, we calculate the corrected probability of error for the construction of M confidence intervals, $$\alpha_{Sidak}=1-conf.int^{1/M}.$$ Here, $M$ is the number of levels of the independent variable [@Sidak]. Inserting the corrected $\alpha_{Sidak}$ into the standard formula for confidence intervals we obtain the Sidak corrected boundaries of the confidene interval $$ \left[{{\overline {x}}-t_{\left(1-{\frac {\alpha_{Sidak} }{2}};n-1\right)}{\frac {s}{\sqrt {n}}}\ ;\ {\overline {x}}+t_{\left(1-{\frac {\alpha_{Sidak} }{2}};n-1\right)}{\frac {s}{\sqrt {n}}}}\right],
+To generate Sidak corrected confidence intervals, we calculate the corrected probability of error for the construction of M confidence intervals, $$\alpha_{Sidak}=1-conf.int^{1/M}.$$ Here, $M$ is the number of levels of the independent variable [@Sidak]. Inserting the corrected $\alpha_{Sidak}$ into the standard formula for confidence intervals we obtain the Sidak corrected boundaries of the confidence interval $$ \left[{{\overline {x}}-t_{\left(1-{\frac {\alpha_{Sidak} }{2}};n-1\right)}{\frac {s}{\sqrt {n}}}\ ;\ {\overline {x}}+t_{\left(1-{\frac {\alpha_{Sidak} }{2}};n-1\right)}{\frac {s}{\sqrt {n}}}}\right],
 $$
 
 where $\overline {x}$ is the mean, $s$ the standard deviation and $n$ the number of entries of each group (level).
@@ -141,11 +138,11 @@ Note that the current structure of `visstat()` does not allow the study of inter
 
 #### Post-hoc analysis: Tukey Honest Significant Differences
 
-We use the Tukey Honest Significant Differences `TukeyHSD()` to create a set of confidence intervals on the differences between the means of the levels of a factor with the specified family-wise probability `conf.level`. This list of confidence intervals accompanied by the adjusted p-values is returned. If the difference between two levels is significant at the given `conf.level`, the displayed letters at the bottom of the graph between the two levels will differ. Note that the Tukey HSD requires homoscedacity of the samples. In a future revision of `visStatistics` an approriate post-hoc test for non homogeneous data will be included.
+We use the Tukey Honest Significant Differences `TukeyHSD()` to create a set of confidence intervals on the differences between the means of the levels of a factor with the specified family-wise probability `conf.level`. This list of confidence intervals accompanied by the adjusted p-values is returned. If the difference between two levels is significant at the given `conf.level`, the displayed letters at the bottom of the graph between the two levels will differ. Note that the Tukey HSD requires homoscedacity of the samples. In a future revision of `visStatistics` an appropriate post-hoc test for non homogeneous data will be included.
 
 ### Kruskal-Wallis-Test
 
-If the p-values of the standardized residuals calculated by `shapiro.test()` or `ad.test()` are smaller than the error probability `1-conf.level`, a normal distribution of the residuals can not be assumed. In this case, `visstat()` chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. `kruskal.test()` tests the null that the medians are the same in each group (level). As post-hoc-analysis the pairwise Wilcoxon rank sum test `pairwise.wilcox.test()` applying the default Holm method for multiple comparisons[@Holm1979ASS] is used. If the Holm corrected  p-value for a pair is smaller than `1-confint`, the green letters below the corresponding two box plots will differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list with the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.
+If the p-values of the standardized residuals calculated by `shapiro.test()` or `ad.test()` are smaller than the error probability `1-conf.level`, a normal distribution of the residuals can not be assumed. In this case, `visstat()` chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. `kruskal.test()` tests the null that the medians are the same in each group (level). As post-hoc-analysis the pairwise Wilcoxon rank sum test `pairwise.wilcox.test()` applying the default Holm method for multiple comparisons[@Holm1979ASS] is used. If the Holm corrected p-value for a pair is smaller than `1-confint`, the green letters below the corresponding two box plots will differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list with the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.
 
 ### Examples
 
@@ -157,7 +154,7 @@ The `npk` data sets reports the yield of peas in pounds/block on 6 blocks. <!-- 
  oneway_npk = visstat(npk,"yield","block")
 ```
 
-The post-hoc analysis with `TukeyHSD()` reveals no significant difference between the yield in all blocks (all green letters are the same). \#\#\#\# ANOVA
+The post-hoc analysis with `TukeyHSD()` reveals no significant difference between the yield in all blocks (all green letters are the same). \#### ANOVA
 
 To stabilize the variance we transform the count data with the square root.
 
@@ -224,13 +221,14 @@ Both the graphical analysis of the standardized residuals and p-values smaller t
 
 If both the feature `varfactor` and the response are `varsample` are categorical of type `factor`, `visstat` performs a test for the independence of count data. Based on Cochran's rule [@Cochran], either a ${\chi}^2$- or a Fisher Test are performed: - If more than 20 percent of all cells have a count smaller than 5, `fisher.test()` is performed and displayed, otherwise the `chisqu.test()`.
 
-In both cases a grouped column charts with the p-value of the corresponding test in the title and a  mosaic plot showing Pearson's residuals (for details see documentation of function `mosaic()` in the `vcd` package ) are generated.
+In both cases a grouped column charts with the p-value of the corresponding test in the title and a mosaic plot showing Pearson's residuals (for details see documentation of function `mosaic()` in the `vcd` package ) are generated.
 
 ## Transforming contingency tables
 
 Count data are often presented as multidimensional arrays, so called contingency tables, whereas `visstat()` requires a `data.frame` with a column structure. Arrays can be transformed to this column wise structure with the helper function `counts_to_cases()`
 
 ### Example
+
 ```{r}
 HairEyeColorDataFrame = counts_to_cases(as.data.frame(HairEyeColor)) 
 ```
