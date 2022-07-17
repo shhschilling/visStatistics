@@ -37,6 +37,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -49,18 +51,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">visStatistics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.2</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="articles/visStatistics.html">Get started</a>
 </li>
@@ -73,7 +69,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/shhschilling/visStatistics/">
+  <a href="https://github.com/shhschilling/visStatistics/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -90,135 +86,131 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="visstatistics" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#visstatistics" class="anchor"></a>visStatistics</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="visstatistics">visStatistics<a class="anchor" aria-label="anchor" href="#visstatistics"></a>
+</h1></div>
 <p>Visualization of the statistical hypothesis test between two groups of categorical or numerical data.</p>
 <p>Statistical consulting requires often both a quick first visualization and a reproducible statistical analysis of the presented raw data. The package <code>visStatistics</code> with its core function <code><a href="reference/visstat.html">visstat()</a></code> fulfils this need. Based on a decision tree it picks the statistical hypothesis test with the highest statistical power between the dependent variable (response) <code>varsample</code> and the independent variable (feature) <code>varfactor</code>. The corresponding test statistics including eventual post-hoc-analysis are returned and a graph showing key statistics of the underlying test is generated.</p>
 <p>This fully automated workflow is especially suited for browser based interfaces to server-based deployments of R and has been successfully implemented to analyse medical raw data in an unbiased fashion.</p>
 <p>A detailed description of the package’s functionality and its underlying decision tree, can be found in the <code>vignette</code> accompanying this package.</p>
-<div id="implemented-tests" class="section level2">
-<h2 class="hasAnchor">
-<a href="#implemented-tests" class="anchor"></a>Implemented tests</h2>
-<p><code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code>, <code><a href="https://rdrr.io/r/stats/t.test.html">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html">wilcox.test()</a></code>, <code><a href="https://rdrr.io/r/stats/aov.html">aov()</a></code>, <code><a href="https://rdrr.io/r/stats/kruskal.test.html">kruskal.test()</a></code>, <code><a href="https://rdrr.io/r/stats/fisher.test.html">fisher.test()</a></code>, <code>chisqu.test()</code></p>
-<div id="implemented-tests-to-check-the-normal-distribution-of-standardized-residuals" class="section level3">
-<h3 class="hasAnchor">
-<a href="#implemented-tests-to-check-the-normal-distribution-of-standardized-residuals" class="anchor"></a>Implemented tests to check the normal distribution of standardized residuals</h3>
-<p><code><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test()</a></code> and <code>ad.test()</code></p>
+<div class="section level2">
+<h2 id="implemented-tests">Implemented tests<a class="anchor" aria-label="anchor" href="#implemented-tests"></a>
+</h2>
+<p><code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>, <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>, <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>, <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>, <code>chisqu.test()</code></p>
+<div class="section level3">
+<h3 id="implemented-tests-to-check-the-normal-distribution-of-standardized-residuals">Implemented tests to check the normal distribution of standardized residuals<a class="anchor" aria-label="anchor" href="#implemented-tests-to-check-the-normal-distribution-of-standardized-residuals"></a>
+</h3>
+<p><code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and <code>ad.test()</code></p>
 </div>
-<div id="implemented-post-hoc-tests" class="section level3">
-<h3 class="hasAnchor">
-<a href="#implemented-post-hoc-tests" class="anchor"></a>Implemented post-hoc tests</h3>
-<p><code><a href="https://rdrr.io/r/stats/TukeyHSD.html">TukeyHSD()</a></code> for <code><a href="https://rdrr.io/r/stats/aov.html">aov()</a></code>and <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html">pairwise.wilcox.test()</a></code> for <code><a href="https://rdrr.io/r/stats/kruskal.test.html">kruskal.test()</a></code></p>
+<div class="section level3">
+<h3 id="implemented-post-hoc-tests">Implemented post-hoc tests<a class="anchor" aria-label="anchor" href="#implemented-post-hoc-tests"></a>
+</h3>
+<p><code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>and <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> for <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code></p>
 </div>
 </div>
-<div id="installation-from-cran" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation-from-cran" class="anchor"></a>Installation from CRAN</h2>
-<ol>
-<li>Install the package <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages("visStatistics")</a></code>
+<div class="section level2">
+<h2 id="installation-from-cran">Installation from CRAN<a class="anchor" aria-label="anchor" href="#installation-from-cran"></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li>Install the package <code>install.packages("visStatistics")</code>
 </li>
-<li>Load the package <code><a href="https://shhschilling.github.io/visStatistics">library(visStatistics)</a></code>
+<li>Load the package <code><a href="https://github.com/shhschilling/visStatistics/" class="external-link">library(visStatistics)</a></code>
 </li>
 </ol>
 </div>
-<div id="installation-from-github-always-latest-developing-version" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation-from-github-always-latest-developing-version" class="anchor"></a>Installation from GitHub (always latest, developing version)</h2>
-<ol>
-<li>Install the devtools package from CRAN. Invoke R and type <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages("devtools")</a></code>
+<div class="section level2">
+<h2 id="installation-from-github-always-latest-developing-version">Installation from GitHub (always latest, developing version)<a class="anchor" aria-label="anchor" href="#installation-from-github-always-latest-developing-version"></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li>Install the devtools package from CRAN. Invoke R and type <code>install.packages("devtools")</code>
 </li>
-<li>Load the devtools package. <code><a href="https://rdrr.io/r/base/library.html">library(devtools)</a></code>
+<li>Load the devtools package. <code><a href="https://devtools.r-lib.org/" class="external-link">library(devtools)</a></code>
 </li>
 <li>Install the package from the github-repository <code>install_github("shhschilling/visStatistics")</code>
 </li>
-<li>Load the package <code><a href="https://shhschilling.github.io/visStatistics">library(visStatistics)</a></code>
+<li>Load the package <code><a href="https://github.com/shhschilling/visStatistics/" class="external-link">library(visStatistics)</a></code>
 </li>
 <li>Help on the function usage <code><a href="reference/visstat.html">?visstat</a></code>
 </li>
 </ol>
 </div>
-<div id="getting-started" class="section level2">
-<h2 class="hasAnchor">
-<a href="#getting-started" class="anchor"></a>Getting Started</h2>
+<div class="section level2">
+<h2 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h2>
 <p>The package vignette allows you to get familiar with all features of <code>visStatistics</code>. It documents in detail the algorithm of the decision tree illustrated by examples.</p>
 </div>
-<div id="examples" class="section level2">
-<h2 class="hasAnchor">
-<a href="#examples" class="anchor"></a>Examples</h2>
+<div class="section level2">
+<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shhschilling.github.io/visStatistics">visStatistics</a></span><span class="op">)</span></code></pre></div>
-<div id="welch-two-sample-ttest" class="section level3">
-<h3 class="hasAnchor">
-<a href="#welch-two-sample-ttest" class="anchor"></a>Welch Two Sample t.test</h3>
-<div id="insectsprays-data-set" class="section level4">
-<h4 class="hasAnchor">
-<a href="#insectsprays-data-set" class="anchor"></a>InsectSprays data set</h4>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/shhschilling/visStatistics/" class="external-link">visStatistics</a></span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="welch-two-sample-ttest">Welch Two Sample t.test<a class="anchor" aria-label="anchor" href="#welch-two-sample-ttest"></a>
+</h3>
+<div class="section level4">
+<h4 id="insectsprays-data-set">InsectSprays data set<a class="anchor" aria-label="anchor" href="#insectsprays-data-set"></a>
+</h4>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">InsectSpraysAB</span> <span class="op">&lt;-</span> <span class="va">InsectSprays</span><span class="op">[</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">spray</span> <span class="op">==</span> <span class="st">'A'</span> <span class="op">|</span> <span class="va">InsectSprays</span><span class="op">$</span><span class="va">spray</span> <span class="op">==</span> <span class="st">'B'</span><span class="op">)</span>, <span class="op">]</span> 
-<span class="va">InsectSpraysAB</span><span class="op">$</span><span class="va">spray</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">InsectSpraysAB</span><span class="op">$</span><span class="va">spray</span><span class="op">)</span>
-<span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">InsectSpraysAB</span>,<span class="st">"count"</span>,<span class="st">"spray"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">InsectSpraysAB</span> <span class="op">&lt;-</span> <span class="va">InsectSprays</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">spray</span> <span class="op">==</span> <span class="st">"A"</span> <span class="op">|</span> <span class="va">InsectSprays</span><span class="op">$</span><span class="va">spray</span> <span class="op">==</span> <span class="st">"B"</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="va">InsectSpraysAB</span><span class="op">$</span><span class="va">spray</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">InsectSpraysAB</span><span class="op">$</span><span class="va">spray</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">InsectSpraysAB</span>, <span class="st">"count"</span>, <span class="st">"spray"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"></p>
 </div>
-<div id="mtcars-data-set" class="section level4">
-<h4 class="hasAnchor">
-<a href="#mtcars-data-set" class="anchor"></a>mtcars data set</h4>
+<div class="section level4">
+<h4 id="mtcars-data-set">mtcars data set<a class="anchor" aria-label="anchor" href="#mtcars-data-set"></a>
+</h4>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span>
-<span class="va">ttestStatistics</span> <span class="op">=</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>,<span class="st">"mpg"</span>,<span class="st">"am"</span><span class="op">)</span> </code></pre></div>
+<code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
+<span><span class="va">ttestStatistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"> Uncomment below line to print out summary statistics:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#ttestStatistics</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># ttestStatistics</span></span></code></pre></div>
 </div>
 </div>
-<div id="wilcoxon-rank-sum-test-with-continuity-correction" class="section level3">
-<h3 class="hasAnchor">
-<a href="#wilcoxon-rank-sum-test-with-continuity-correction" class="anchor"></a>Wilcoxon rank sum test with continuity correction</h3>
+<div class="section level3">
+<h3 id="wilcoxon-rank-sum-test-with-continuity-correction">Wilcoxon rank sum test with continuity correction<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test-with-continuity-correction"></a>
+</h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">ToothGrowth</span>,<span class="st">"len"</span>, <span class="st">"supp"</span><span class="op">)</span>
-<span class="co">#&gt; Warning in wilcox.test.default(x = c(15.2, 21.5, 17.6, 9.7, 14.5, 10, 8.2, :</span>
-<span class="co">#&gt; cannot compute exact p-value with ties</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">ToothGrowth</span>, <span class="st">"len"</span>, <span class="st">"supp"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in wilcox.test.default(x = DATA[[1L]], y = DATA[[2L]], ...): cannot</span></span>
+<span><span class="co">#&gt; compute exact p-value with ties</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-6-1.png" width="100%"></p>
 </div>
-<div id="one-way-test" class="section level3">
-<h3 class="hasAnchor">
-<a href="#one-way-test" class="anchor"></a>One-way test</h3>
+<div class="section level3">
+<h3 id="one-way-test">One-way test<a class="anchor" aria-label="anchor" href="#one-way-test"></a>
+</h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"> <span class="va">anova_npk</span> <span class="op">=</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span>,<span class="st">"yield"</span>,<span class="st">"block"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">anova_npk</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span>, <span class="st">"yield"</span>, <span class="st">"block"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-7-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-7-2.png" width="100%"></p>
 </div>
-<div id="kruskal-wallis-test" class="section level3">
-<h3 class="hasAnchor">
-<a href="#kruskal-wallis-test" class="anchor"></a>Kruskal-Wallis test</h3>
-<p>The generated graphs can be saved in all available formats of the <code>Cairo</code> package. Here we save the graphical output of type “pdf” in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html">tempdir()</a></code>:</p>
+<div class="section level3">
+<h3 id="kruskal-wallis-test">Kruskal-Wallis test<a class="anchor" aria-label="anchor" href="#kruskal-wallis-test"></a>
+</h3>
+<p>The generated graphs can be saved in all available formats of the <code>Cairo</code> package. Here we save the graphical output of type “pdf” in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span>,<span class="st">"Petal.Width"</span>,<span class="st">"Species"</span>,graphicsoutput <span class="op">=</span> <span class="st">"pdf"</span>,plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span>, <span class="st">"Petal.Width"</span>, <span class="st">"Species"</span>, graphicsoutput <span class="op">=</span> <span class="st">"pdf"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div id="linear-regression" class="section level3">
-<h3 class="hasAnchor">
-<a href="#linear-regression" class="anchor"></a>Linear Regression</h3>
+<div class="section level3">
+<h3 id="linear-regression">Linear Regression<a class="anchor" aria-label="anchor" href="#linear-regression"></a>
+</h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">linreg_cars</span> <span class="op">=</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>,<span class="st">"dist"</span>,<span class="st">"speed"</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-9-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-9-2.png" width="100%"> Increasing the confidence level <code>conf.level</code> from the default 0.95 to 0.99 leads two wider confidence and prediction bands: <img src="reference/figures/README-pressure-1.png" width="100%"><img src="reference/figures/README-pressure-2.png" width="100%"></p>
-</div>
-<div id="pearsons-chi-squared-test" class="section level3">
-<h3 class="hasAnchor">
-<a href="#pearsons-chi-squared-test" class="anchor"></a>Pearson’s Chi-squared test</h3>
+<code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>, <span class="st">"dist"</span>, <span class="st">"speed"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-9-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-9-2.png" width="100%"> Increasing the confidence level <code>conf.level</code> from the default 0.95 to 0.99 leads two wider confidence and prediction bands: <img src="reference/figures/README-pressure-1.png" width="100%"><img src="reference/figures/README-pressure-2.png" width="100%"> ### Pearson’s Chi-squared test</p>
 <p>Count data sets are often presented as multidimensional arrays, so called contingency tables, whereas <code><a href="reference/visstat.html">visstat()</a></code> requires a <code>data.frame</code> with a column structure. Arrays can be transformed to this column wise structure with the helper function <code><a href="reference/counts_to_cases.html">counts_to_cases()</a></code>:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">HairEyeColorDataFrame</span> <span class="op">=</span> <span class="fu"><a href="reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">HairEyeColorDataFrame</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">HairEyeColorDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">HairEyeColorDataFrame</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-10-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-10-2.png" width="100%"></p>
 </div>
-<div id="fishers-exact-test" class="section level3">
-<h3 class="hasAnchor">
-<a href="#fishers-exact-test" class="anchor"></a>Fisher’s exact test</h3>
+<div class="section level3">
+<h3 id="fishers-exact-test">Fisher’s exact test<a class="anchor" aria-label="anchor" href="#fishers-exact-test"></a>
+</h3>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">HairEyeColorMaleFisher</span> <span class="op">=</span> <span class="va">HairEyeColor</span><span class="op">[</span>,,<span class="fl">1</span><span class="op">]</span>
-<span class="co">#slicing out a 2 x2 contingency table</span>
-<span class="va">blackBrownHazelGreen</span> <span class="op">=</span> <span class="va">HairEyeColorMaleFisher</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>
-<span class="va">blackBrownHazelGreen</span> <span class="op">=</span> <span class="fu"><a href="reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span><span class="op">)</span><span class="op">)</span>;
-<span class="va">fisher_stats</span> <span class="op">=</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>,<span class="st">"Hair"</span>,<span class="st">"Eye"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">HairEyeColorMaleFisher</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
+<span><span class="co"># slicing out a 2 x2 contingency table</span></span>
+<span><span class="va">blackBrownHazelGreen</span> <span class="op">&lt;-</span> <span class="va">HairEyeColorMaleFisher</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
+<span><span class="va">blackBrownHazelGreen</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-11-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-11-2.png" width="100%"></p>
 <p>For details regarding the generated mosaic plots, please refer to the <code>mosaic()</code> in the <code>vcd</code> package.</p>
 </div>
@@ -228,42 +220,53 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=visStatistics">https://​cloud.r-project.org/​package=visStatistics</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/shhschilling/visStatistics/">https://​github.com/​shhschilling/​visStatistics/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/shhschilling/visStatistics/issues">https://​github.com/​shhschilling/​visStatistics/​issues</a>
-</li>
+<li><a href="https://cloud.r-project.org/package=visStatistics" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/shhschilling/visStatistics/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/shhschilling/visStatistics/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>
-<a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
+<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
 </li>
 </ul>
 </div>
-<div class="developers">
-<h2>Developers</h2>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li>Sabine Schilling <br><small class="roles"> Maintainer, author, copyright holder </small>  </li>
-<li><a href="authors.html">All authors...</a></li>
+<li><a href="authors.html#citation">Citing visStatistics</a></li>
 </ul>
 </div>
+
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
+<ul class="list-unstyled">
+<li>Sabine Schilling <br><small class="roles"> Maintainer, author, copyright holder </small>  </li>
+<li><a href="authors.html">More about authors...</a></li>
+</ul>
+</div>
+
+
 
   </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Sabine Schilling.</p>
+  <p></p>
+<p>Developed by Sabine Schilling.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
@@ -271,6 +274,8 @@
 
   
 
+
+  
 
   </body>
 </html>
