@@ -54,11 +54,11 @@ Based on a decision tree it picks the statistical hypothesis test with the highe
 
 Data in the provided `dataframe` must be structured column wise, where `varsample` and `varfactor` are the character strings of the column names of the dependent and independent variable respectively.
 
-The choice of statistical tests performed by the core function visstat() depends on the type of the data (quantitative numerical or qualitative categorical), the number of levels whilst dealing with categorical data and the distribution of the data (normally distributed versus non-normally distributed).
+The choice of statistical tests performed by the core function visstat() depends on the type of the data (numeric/integer or categorical), the number of levels whilst dealing with categorical data and the data distributions (normally distributed versus non-normally distributed).
 
 The function returns the corresponding test statistics including eventual post-hoc-analysis and generates a graph showing key statistics of the underlying test.
 
-`visStatistics` offers a fully automated workflow especially suited for server-based deployments of R. It has been successfully applied for unbiased analysis of medical raw data.
+`visStatistics` offers a fully automated workflow. Therefore it is especially suited for server-based deployments of R, where the user can choose `varsample` and `varfactor` via a web interface. In such a set-up it has been successfully applied for the unbiased analysis of medical raw data.
 
 The remainder of this vignette focuses on the the algorithm underlying the decision tree of `vistat()`, whilst a call to `?visstat` documents all parameter settings of the function.
 
@@ -85,28 +85,31 @@ The graphical representation consists of box plots overlayed with jitter plots s
 #### Welch's t-test calling t.test()
 
 ```{r}
-mtcars$am = as.factor(mtcars$am)
-ttestStatistics = visstat(mtcars,"mpg","am") 
-# uncomenting the next line prints out test statistics 
+mtcars$am <- as.factor(mtcars$am)
+ttestStatistics <- visstat(mtcars, "mpg", "am")
+# uncomenting the next line prints out test statistics
 # ttestStatistics
 ```
 
 ```{r}
-#Increasing the confidence level
-ttestStatistics = visstat(mtcars,"mpg","am",conf.level = 0.99) 
+# Increasing the confidence level
+ttestStatistics <- visstat(mtcars, "mpg", "am", conf.level = 0.99)
 ```
 
 #### Wilcoxon rank sum test (calling wilcox.test())
 
 ```{r}
 grades_gender <- data.frame(
-Sex = as.factor(c(rep("Girl", 20), rep("Boy", 20))),
-Grade = c(19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4, 
-            20.3, 9.3, 11.3, 18.2,17.5,10.2,20.1,13.3,17.2,15.1,16.2,17.3,
-            16.5, 5.1, 15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0,17.4,
-            7.3, 14.3,13.5,8.0,19.5,13.4,17.9,17.7,16.4,15.6))
+  Sex = as.factor(c(rep("Girl", 20), rep("Boy", 20))),
+  Grade = c(
+    19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4,
+    20.3, 9.3, 11.3, 18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.3,
+    16.5, 5.1, 15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0, 17.4,
+    7.3, 14.3, 13.5, 8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6
+  )
+)
 
-wilcoxonStatistics = visstat(grades_gender,"Grade", "Sex")
+wilcoxonStatistics <- visstat(grades_gender, "Grade", "Sex")
 ```
 
 ## More than two samples: One Way Test and ANOVA or Kruskal-Wallis-Test {#aov}
@@ -151,7 +154,7 @@ The `npk` data sets reports the yield of peas in pounds/block on 6 blocks. <!-- 
 #### One way test
 
 ```{r}
- oneway_npk = visstat(npk,"yield","block")
+oneway_npk <- visstat(npk, "yield", "block")
 ```
 
 The post-hoc analysis with `TukeyHSD()` reveals no significant difference between the yield in all blocks (all green letters are the same). \#### ANOVA
@@ -159,19 +162,19 @@ The post-hoc analysis with `TukeyHSD()` reveals no significant difference betwee
 To stabilize the variance we transform the count data with the square root.
 
 ```{r}
-InsectSprays_tr = InsectSprays
-InsectSprays_tr$count = sqrt(InsectSprays$count)
+InsectSprays_tr <- InsectSprays
+InsectSprays_tr$count <- sqrt(InsectSprays$count)
 visstat(InsectSprays_tr, "count", "spray")
 ```
 
-In the above example the scatter plots of the standardized residuals, the QQ -plot and the p-values of both Shapiro-Wilk-test and Anderson-Darling tests are greater than the probability of error $\alpha=0.05$. Therefore we can assume that the residuals are normally distributed. At the given confidence level the homogeneity of variances can not be assumed ($p <\alpha$ as calculated with the `bartlett.test()`), and the p-value of the `oneway.test()` is displayed.
+In the above example the scatter plots of the standardized residuals, the QQ-plot and the p-values of both Shapiro-Wilk test and Anderson-Darling tests are greater than the probability of error $\alpha=0.05$. Therefore we can assume that the residuals are normally distributed. At the given confidence level the homogeneity of variances can not be assumed ($p <\alpha$ as calculated with the `bartlett.test()`), and the p-value of the `oneway.test()` is displayed.
 
 #### Kruskal-Wallis rank sum test
 
 The iris data set gives the measurement of the petal width in cm for three different iris species.
 
 ```{r}
-visstat(iris,"Petal.Width", "Species")
+visstat(iris, "Petal.Width", "Species")
 ```
 
 In the iris data example, both the graphical analysis by the scatter plots of the standardized residuals and the QQ -plot as well as the p-values of Shapiro-Wilk-test and Anderson-Darling test suggest that we can not assume that the residuals are normally distributed. Therefore `visstat` switches to the non parametric alternative `kruskal.test()`.
@@ -193,14 +196,14 @@ Independent of the residual analysis outcome, `visstat()`\` performs in the subs
 The cars data set reports the speed in mph of cars and the distances (dist) in ft taken to stop.
 
 ```{r}
-linreg_cars = visstat(cars,"dist","speed")
+linreg_cars <- visstat(cars, "dist", "speed")
 ```
 
 Increasing the confidence level `conf.level` from the default 0.95 to 0.99 leads two wider confidence and prediction bands:
 
 ```{r}
-linreg_cars = visstat(cars,"dist","speed",conf.level = 0.99)
-#Extract the test statistics 
+linreg_cars <- visstat(cars, "dist", "speed", conf.level = 0.99)
+# Extract the test statistics
 linreg_cars$anderson_darling_test_residuals
 linreg_cars$shapiro_test_residuals
 ```
@@ -212,7 +215,7 @@ The linear regression model explains 64% of the total variance of the dependent 
 The trees data set provides measurements of the diameter (named "Girth") in inches and height in feet of black cherry trees.
 
 ```{r}
-linreg_cars = visstat(trees,"Height","Girth",conf.level = 0.9)
+linreg_cars <- visstat(trees, "Height", "Girth", conf.level = 0.9)
 ```
 
 Both the graphical analysis of the standardized residuals and p-values smaller than `conf.level` in the Anderson-Darling normality test and the Shapiro-Wilk test of the standardized residuals suggest that the condition of normally distributed residuals of the regression model is not met. Furthermore the linear regression model explains only 24% of the total variance of the dependent variables "Height" of the cherry trees. The user should might consider other regression models. This further tests are not provided by `visstat()`.
@@ -230,24 +233,24 @@ Count data are often presented as multidimensional arrays, so called contingency
 ### Example
 
 ```{r}
-HairEyeColorDataFrame = counts_to_cases(as.data.frame(HairEyeColor)) 
+HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
 ```
 
 ## Pearson's Chi-squared test and mosaic plot with Pearson residuals
 
 ```{r}
-HairEyeColorDataFrame = counts_to_cases(as.data.frame(HairEyeColor))
-visstat(HairEyeColorDataFrame,"Hair","Eye")
+HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
+visstat(HairEyeColorDataFrame, "Hair", "Eye")
 ```
 
 ## Fisher's exact test and mosaic plot with Pearson residuals
 
 ```{r}
-HairEyeColorMaleFisher = HairEyeColor[,,1]
-#slicing out a 2 x2 contingency table
-blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
-blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
-fisher_stats = visstat(blackBrownHazelGreen,"Hair","Eye")
+HairEyeColorMaleFisher <- HairEyeColor[, , 1]
+# slicing out a 2 x2 contingency table
+blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
+blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
+fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 # fisher_stats  #uncommenting prints out summary statistics
 ```
 
@@ -256,16 +259,18 @@ fisher_stats = visstat(blackBrownHazelGreen,"Hair","Eye")
 The generated graphs can be saved in the file formats supported by `Cairo():` "png", "jpeg", "pdf", "svg", "ps" and "tiff". In the following example we save the graphics files in the output format "png" to the `plotDirectory` `tempdir()`. The applied naming convention of the graphics file reflects the chosen statistical test and the variable names.
 
 ```{r}
-visstat(blackBrownHazelGreen,"Hair","Eye",graphicsoutput = "png",plotDirectory = 
-          
-          tempdir()) 
+visstat(blackBrownHazelGreen, "Hair", "Eye",
+  graphicsoutput = "png", plotDirectory =
+
+    tempdir()
+)
 ```
 
 Remove the graphical output from `plotDirectory`
 
 ```{r}
- file.remove(file.path(tempdir(),"chi_squared_or_fisher_Hair_Eye.png"))
- file.remove(file.path(tempdir(),"mosaic_complete_Hair_Eye.png"))
+file.remove(file.path(tempdir(), "chi_squared_or_fisher_Hair_Eye.png"))
+file.remove(file.path(tempdir(), "mosaic_complete_Hair_Eye.png"))
 ```
 
 # Overview of implemented tests
