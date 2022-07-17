@@ -74,9 +74,9 @@ library(visStatistics)
 #### InsectSprays data set
 
 ```{r}
-InsectSpraysAB <- InsectSprays[ which(InsectSprays$spray == 'A' | InsectSprays$spray == 'B'), ] 
-InsectSpraysAB$spray = factor(InsectSpraysAB$spray)
-visstat(InsectSpraysAB,"count","spray")
+InsectSpraysAB <- InsectSprays[which(InsectSprays$spray == "A" | InsectSprays$spray == "B"), ]
+InsectSpraysAB$spray <- factor(InsectSpraysAB$spray)
+visstat(InsectSpraysAB, "count", "spray")
 ```
 
 #### mtcars data set
@@ -86,57 +86,57 @@ visstat(InsectSpraysAB,"count","spray")
 ```
 
 ```{r}
-mtcars$am = as.factor(mtcars$am)
-ttestStatistics = visstat(mtcars,"mpg","am") 
+mtcars$am <- as.factor(mtcars$am)
+ttestStatistics <- visstat(mtcars, "mpg", "am")
 ```
 Uncomment below line to print out summary statistics:
 ```{r}
-#ttestStatistics
+# ttestStatistics
 ```
 
 ### Wilcoxon rank sum test with continuity correction
 
 ```{r}
-visstat(ToothGrowth,"len", "supp")
+visstat(ToothGrowth, "len", "supp")
 ```
 
 ### One-way test
 
 ```{r}
- anova_npk = visstat(npk,"yield","block")
+anova_npk <- visstat(npk, "yield", "block")
 ```
 
 ### Kruskal-Wallis test
 The generated graphs can be saved in all available formats of the `Cairo` package. 
 Here we save the graphical output of type "pdf" in the `plotDirectory` `tempdir()`:
 ```{r}
-visstat(iris,"Petal.Width","Species",graphicsoutput = "pdf",plotDirectory = tempdir())
+visstat(iris, "Petal.Width", "Species", graphicsoutput = "pdf", plotDirectory = tempdir())
 ```
 ### Linear Regression
 
 ```{r}
-linreg_cars = visstat(cars,"dist","speed")
+linreg_cars <- visstat(cars, "dist", "speed")
 ```
 Increasing the confidence level `conf.level` from the default 0.95 to 0.99 leads two wider confidence and prediction bands:
 ```{r pressure, echo = FALSE}
-linreg_cars = visstat(cars,"dist","speed",conf.level = 0.99)
+linreg_cars <- visstat(cars, "dist", "speed", conf.level = 0.99)
 ```
 ### Pearson's Chi-squared test
 
 Count data sets are often presented as multidimensional arrays, so called contingency tables, whereas `visstat()` requires a `data.frame` with a column structure. Arrays can be transformed to this column wise structure with the helper function `counts_to_cases()`:
 ```{r}
-HairEyeColorDataFrame = counts_to_cases(as.data.frame(HairEyeColor))
-visstat(HairEyeColorDataFrame,"Hair","Eye")
+HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
+visstat(HairEyeColorDataFrame, "Hair", "Eye")
 ```
 
 ###  Fisher's exact test
 
 ```{r}
-HairEyeColorMaleFisher = HairEyeColor[,,1]
-#slicing out a 2 x2 contingency table
-blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
-blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
-fisher_stats = visstat(blackBrownHazelGreen,"Hair","Eye")
+HairEyeColorMaleFisher <- HairEyeColor[, , 1]
+# slicing out a 2 x2 contingency table
+blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
+blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
+fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 ```
 
 For details regarding the generated mosaic plots, please refer to the `mosaic()` in the `vcd` package.

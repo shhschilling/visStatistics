@@ -31,18 +31,19 @@ vis_anova_assumptions(
    Shapiro-Wilk test \code{shapiro.test()}, the Anderson-Darling test \code{ad.test()} and the \code{bartlett.test()}.
 }
 \description{
-\code{vis_anova_assumptions()} checks for normality of the standardised residuals of the ANOVA. Both the 
-   Shapiro-Wilk test \code{shapiro.test()} and the Anderson-Darling test \code{ad.test()} check the 
-   null that the standardized residuals are normally distributed. 
+\code{vis_anova_assumptions()} checks for normality of the standardised residuals of the ANOVA. Both the
+   Shapiro-Wilk test \code{shapiro.test()} and the Anderson-Darling test \code{ad.test()} check the
+   null that the standardized residuals are normally distributed.
    It generates a scatter plot
-   of the standardized residuals versus the fitted mean values of the linear models for each level of \code{fact}. 
+   of the standardized residuals versus the fitted mean values of the linear models for each level of \code{fact}.
    Furthermore a normal QQ plot of the standardized residuals is generated.
    The null of homogeneity of variances  of each factor level is tested with the \code{bartlett.test()}.
 }
 \examples{
-ToothGrowth$dose=as.factor(ToothGrowth$dose)
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
 vis_anova_assumptions(ToothGrowth$len, ToothGrowth$dose)
 
 vis_anova_assumptions(ToothGrowth$len, ToothGrowth$supp)
-vis_anova_assumptions(iris$Petal.Width,iris$Species)
+vis_anova_assumptions(iris$Petal.Width, iris$Species)
+
 }

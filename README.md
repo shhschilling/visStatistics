@@ -70,9 +70,9 @@ library(visStatistics)
 #### InsectSprays data set
 
 ``` r
-InsectSpraysAB <- InsectSprays[ which(InsectSprays$spray == 'A' | InsectSprays$spray == 'B'), ] 
-InsectSpraysAB$spray = factor(InsectSpraysAB$spray)
-visstat(InsectSpraysAB,"count","spray")
+InsectSpraysAB <- InsectSprays[which(InsectSprays$spray == "A" | InsectSprays$spray == "B"), ]
+InsectSpraysAB$spray <- factor(InsectSpraysAB$spray)
+visstat(InsectSpraysAB, "count", "spray")
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
@@ -80,23 +80,23 @@ visstat(InsectSpraysAB,"count","spray")
 #### mtcars data set
 
 ``` r
-mtcars$am = as.factor(mtcars$am)
-ttestStatistics = visstat(mtcars,"mpg","am") 
+mtcars$am <- as.factor(mtcars$am)
+ttestStatistics <- visstat(mtcars, "mpg", "am")
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
 Uncomment below line to print out summary statistics:
 
 ``` r
-#ttestStatistics
+# ttestStatistics
 ```
 
 ### Wilcoxon rank sum test with continuity correction
 
 ``` r
-visstat(ToothGrowth,"len", "supp")
-#> Warning in wilcox.test.default(x = c(15.2, 21.5, 17.6, 9.7, 14.5, 10, 8.2, :
-#> cannot compute exact p-value with ties
+visstat(ToothGrowth, "len", "supp")
+#> Warning in wilcox.test.default(x = DATA[[1L]], y = DATA[[2L]], ...): cannot
+#> compute exact p-value with ties
 ```
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
@@ -104,7 +104,7 @@ visstat(ToothGrowth,"len", "supp")
 ### One-way test
 
 ``` r
- anova_npk = visstat(npk,"yield","block")
+anova_npk <- visstat(npk, "yield", "block")
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-7-2.png" width="100%" />
@@ -116,20 +116,20 @@ The generated graphs can be saved in all available formats of the
 `plotDirectory` `tempdir()`:
 
 ``` r
-visstat(iris,"Petal.Width","Species",graphicsoutput = "pdf",plotDirectory = tempdir())
+visstat(iris, "Petal.Width", "Species", graphicsoutput = "pdf", plotDirectory = tempdir())
 ```
 
 ### Linear Regression
 
 ``` r
-linreg_cars = visstat(cars,"dist","speed")
+linreg_cars <- visstat(cars, "dist", "speed")
 ```
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-9-2.png" width="100%" />
 Increasing the confidence level `conf.level` from the default 0.95 to
 0.99 leads two wider confidence and prediction bands:
 <img src="man/figures/README-pressure-1.png" width="100%" /><img src="man/figures/README-pressure-2.png" width="100%" />
-### Pearson’s Chi-squared test
+\### Pearson’s Chi-squared test
 
 Count data sets are often presented as multidimensional arrays, so
 called contingency tables, whereas `visstat()` requires a `data.frame`
@@ -137,8 +137,8 @@ with a column structure. Arrays can be transformed to this column wise
 structure with the helper function `counts_to_cases()`:
 
 ``` r
-HairEyeColorDataFrame = counts_to_cases(as.data.frame(HairEyeColor))
-visstat(HairEyeColorDataFrame,"Hair","Eye")
+HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
+visstat(HairEyeColorDataFrame, "Hair", "Eye")
 ```
 
 <img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-10-2.png" width="100%" />
@@ -146,11 +146,11 @@ visstat(HairEyeColorDataFrame,"Hair","Eye")
 ### Fisher’s exact test
 
 ``` r
-HairEyeColorMaleFisher = HairEyeColor[,,1]
-#slicing out a 2 x2 contingency table
-blackBrownHazelGreen = HairEyeColorMaleFisher[1:2,3:4]
-blackBrownHazelGreen = counts_to_cases(as.data.frame(blackBrownHazelGreen));
-fisher_stats = visstat(blackBrownHazelGreen,"Hair","Eye")
+HairEyeColorMaleFisher <- HairEyeColor[, , 1]
+# slicing out a 2 x2 contingency table
+blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
+blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
+fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 ```
 
 <img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-11-2.png" width="100%" />

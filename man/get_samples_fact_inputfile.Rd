@@ -20,5 +20,6 @@ selected columns, \code{sample}, \code{factor}, \code{name_of_sample} (character
 Selects columns defined by characters \code{varsample} and \code{varfactor} from \code{dataframe}, returns selected columns with their names.
 }
 \examples{
-get_samples_fact_inputfile(trees,"Girth","Height")
+get_samples_fact_inputfile(trees, "Girth", "Height")
+
 }
