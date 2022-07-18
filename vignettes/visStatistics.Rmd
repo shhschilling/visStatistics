@@ -46,39 +46,43 @@ shows how to publish the cod -->
 
 # Abstract {.unnumbered}
 
-The R package `visStatistics` provides means to quickly visualise and analyse raw data.
-
-Based on a decision tree it picks the statistical hypothesis test with the highest statistical power between the dependent variable (response) named `varsample` and the independent variable (feature) named `varfactor` in a `data.frame` named `dataframe`. A minimal function call has the structure:
+The R package `visStatistics` provides means to quickly visualise and analyse raw data.Based on a decision tree it picks the statistical hypothesis test with the highest statistical power between the dependent variable (response) named `varsample` and the independent variable (feature) named `varfactor` in a `data.frame` named `dataframe`. A minimal function call has the structure:
 
 `visstat(dataframe,varsample,varfactor)`
 
-Data in the provided `dataframe` must be structured column wise, where `varsample` and `varfactor` are the character strings of the column names of the dependent and independent variable respectively.
+Data in the provided `dataframe` must be structured column wise, where `varsample` and `varfactor` are the character strings of the column names of the dependent (response) and independent (feature) variable respectively.
 
-The choice of statistical tests performed by the core function visstat() depends on the type of the data (numeric/integer or categorical), the number of levels whilst dealing with categorical data and the data distributions (normally distributed versus non-normally distributed).
+The choice of statistical tests performed by the core function `visstat()` depends if the data is numerical or categorical, the number of levels whilst dealing with categorical data and the data distributions (normally distributed versus non-normally distributed).
+
+Data of `class` `"numeric"` or `"integer"` will be referred in the reminder of this vignette as "numerical", data of `class` `"factor"` will be referred in the remainder of this vignette as "categorical".
 
 The function returns the corresponding test statistics including eventual post-hoc-analysis and generates a graph showing key statistics of the underlying test.
 
-`visStatistics` offers a fully automated workflow. Therefore it is especially suited for server-based deployments of R, where the user can choose `varsample` and `varfactor` via a web interface. In such a set-up it has been successfully applied for the unbiased analysis of medical raw data.
+`visStatistics` offers a fully automated workflow. It has been successfully applied for the unbiased analysis of medical raw data.
 
 The remainder of this vignette focuses on the the algorithm underlying the decision tree of `vistat()`, whilst a call to `?visstat` documents all parameter settings of the function.
 
+All statistical tests are called with their default parameter sets, with the exception of
+
 # Comparing means and medians
 
-If the feature `varfactor` is a categorical variable (in R a `factor`) with two or more levels and the response `varsample` is numeric, tests are applied.to compare the means or medians of the samples.
+If the feature `varfactor` is a categorical variable of `class` `"factor"` with two or more levels and the response `varsample` is a numerical variable of `class` `"numeric"` or `"integer"`, tests are applied to compare the means or medians.
 
-## Two sample tests: Welch's t-Test or Wilcoxon rank sum test
+## Two sample tests: Welch's t-test or Wilcoxon rank-sum test
 
-If the independent variable `varfactor` has two levels and the dependent variable `varsample` is numeric, either Welch's t-Test or the Wilcoxon rank sum test are performed. The choice follows the algorithm:
+If the feature `varfactor` is of `class` `"factor"` with exactly two levels and the response `varsample` is numerical, either Welch's t-test or the Wilcoxon rank-sum test are performed. The choice follows the algorithm below:
 
 -   If the sample size for both levels is bigger than 100, perform always the `t.test()` [@Lumley2002dsa].
 
--   If the sample size of at least one of the levels is smaller than 100, checks first for normality of both distributions with the Shapiro-Wilk Normality Test (`shapiro.test()`):
+-   If the sample size of at least one of the levels is smaller than 100, check first for normality of both levels with the Shapiro-Wilk Normality Test (`shapiro.test()`):
 
-    -   If the p-values in the `shapiro.test()` of both samples are bigger than the error probability `1-conf.level`,Welch's t-Test (`t.test()`) is executed.
+    -   If the p-values of the `shapiro.test()` of both levels are bigger than the error probability `1-conf.level`, choose Welch's t-Test (`t.test()`).
 
-    -   If the p-values of both samples in the `shapiro.test()` are smaller than the error probability `1-conf.level`, a Wilcoxon rank sum test (`wilcox.test()`) is executed.
+    -   If the p-values of at least one of the levels in the `shapiro.test()` are smaller than the error probability `1-conf.level`, a Wilcoxon rank sum test (`wilcox.test()`) is executed.
 
-The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the `t-test.()),  additionally the`conf.level\`\*100 % -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated box plots is generated and returned as a list.
+Note that `visstat()` only performs unpaired tests.
+
+The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the `t-test.()`, additionally the`conf.level\`\*100 % -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated box plots is generated and returned as a list.
 
 ### Examples
 
@@ -87,16 +91,16 @@ The graphical representation consists of box plots overlayed with jitter plots s
 ```{r}
 mtcars$am <- as.factor(mtcars$am)
 ttestStatistics <- visstat(mtcars, "mpg", "am")
-# uncomenting the next line prints out test statistics
-# ttestStatistics
+# Print the test statistics
+ttestStatistics
 ```
 
 ```{r}
-# Increasing the confidence level
+# Set the confidence level explicitly
 ttestStatistics <- visstat(mtcars, "mpg", "am", conf.level = 0.99)
 ```
 
-#### Wilcoxon rank sum test (calling wilcox.test())
+#### Wilcoxon rank-sum test (calling wilcox.test())
 
 ```{r}
 grades_gender <- data.frame(
@@ -112,13 +116,15 @@ grades_gender <- data.frame(
 wilcoxonStatistics <- visstat(grades_gender, "Grade", "Sex")
 ```
 
-## More than two samples: One Way Test and ANOVA or Kruskal-Wallis-Test {#aov}
+## More than two samples: One-way test and ANOVA or Kruskal-Wallis test {#aov}
 
-If the categorical (`factor`) variable `varfactor` has more than two levels and the response `varsample` is numeric, the underlying assumptions of the analysis of variance, normality of the standardized residuals and homoscedacity, are checked by the function `vis_anova_asumptions()`.
+If the independent, categorical variable `varfactor` has more than two levels and the dependent variable `varsample` is numerical, `visstat()` performs an analysis of variance (ANOVA, see `aov())` under the condition that the underlying assumptions are met: 1. normality of the standardized residuals and 2. homoscedasticity.
+
+If only 1 is met, `visstat()` performs a one-way test (see oneway.test()). If 1 does not apply, a Kruskal-Wallis test is used. These assumptions are tested by the function `vis_anova_assumptions()`.
 
 ### Residual analysis
 
-It checks for the normality of the standardised residuals of the analysis of variance (ANOVA) fit generated by the function `aov()` . To do so it applies both the Shapiro-Wilk-test `shapiro.test()` and the Anderson-Darling-Test `ad.test()` on the standardized residuals. Furthermore the data is graphically analysed by plotting the standardized residuals versus the fitted mean values of the linear model for each level of `varfactor`. Additionally the normal QQ plot of the standardized residuals is generated.
+Function `vis_anova_asumptions()` checks for the normality of the standardised residuals of the analysis of variance (ANOVA) fit generated by the function `aov()` . To do so it applies both the Shapiro-Wilk-test `shapiro.test()` and the Anderson-Darling-Test `ad.test()` on the standardized residuals. Furthermore the data is graphically analysed by plotting the standardized residuals versus the fitted mean values of the linear model for each level of `varfactor`. Additionally the normal QQ plot of the standardized residuals is generated.
 
 ### Check for homogenity of variances in each level: Bartlett test
 
