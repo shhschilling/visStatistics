@@ -72,7 +72,7 @@
       <h1 data-toc-skip>visStatistics</h1>
                         <h4 data-toc-skip class="author">Sabine Schilling</h4>
             
-            <h4 data-toc-skip class="date">2022-07-17</h4>
+            <h4 data-toc-skip class="date">2022-07-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/HEAD/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="hidden name"><code>visStatistics.Rmd</code></div>
@@ -94,34 +94,36 @@ shows how to publish the cod -->
 <div class="section level2">
 <h2 id="abstract">Abstract<a class="anchor" aria-label="anchor" href="#abstract"></a>
 </h2>
-<p>The R package <code>visStatistics</code> provides means to quickly visualise and analyse raw data.</p>
-<p>Based on a decision tree it picks the statistical hypothesis test with the highest statistical power between the dependent variable (response) named <code>varsample</code> and the independent variable (feature) named <code>varfactor</code> in a <code>data.frame</code> named <code>dataframe</code>. A minimal function call has the structure:</p>
+<p>The R package <code>visStatistics</code> provides means to quickly visualise and analyse raw data.Based on a decision tree it picks the statistical hypothesis test with the highest statistical power between the dependent variable (response) named <code>varsample</code> and the independent variable (feature) named <code>varfactor</code> in a <code>data.frame</code> named <code>dataframe</code>. A minimal function call has the structure:</p>
 <p><code>visstat(dataframe,varsample,varfactor)</code></p>
-<p>Data in the provided <code>dataframe</code> must be structured column wise, where <code>varsample</code> and <code>varfactor</code> are the character strings of the column names of the dependent and independent variable respectively.</p>
-<p>The choice of statistical tests performed by the core function visstat() depends on the type of the data (numeric/integer or categorical), the number of levels whilst dealing with categorical data and the data distributions (normally distributed versus non-normally distributed).</p>
+<p>Data in the provided <code>dataframe</code> must be structured column wise, where <code>varsample</code> and <code>varfactor</code> are the character strings of the column names of the dependent (response) and independent (feature) variable respectively.</p>
+<p>The choice of statistical tests performed by the core function <code><a href="../reference/visstat.html">visstat()</a></code> depends if the data is numerical or categorical, the number of levels whilst dealing with categorical data and the data distributions (normally distributed versus non-normally distributed).</p>
+<p>Data of <code>class</code> <code>"numeric"</code> or <code>"integer"</code> will be referred in the reminder of this vignette as “numerical”, data of <code>class</code> <code>"factor"</code> will be referred in the remainder of this vignette as “categorical”.</p>
 <p>The function returns the corresponding test statistics including eventual post-hoc-analysis and generates a graph showing key statistics of the underlying test.</p>
-<p><code>visStatistics</code> offers a fully automated workflow. Therefore it is especially suited for server-based deployments of R, where the user can choose <code>varsample</code> and <code>varfactor</code> via a web interface. In such a set-up it has been successfully applied for the unbiased analysis of medical raw data.</p>
+<p><code>visStatistics</code> offers a fully automated workflow. It has been successfully applied for the unbiased analysis of medical raw data.</p>
 <p>The remainder of this vignette focuses on the the algorithm underlying the decision tree of <code>vistat()</code>, whilst a call to <code><a href="../reference/visstat.html">?visstat</a></code> documents all parameter settings of the function.</p>
+<p>All statistical tests are called with their default parameter sets, with the exception of</p>
 </div>
 <div class="section level2">
 <h2 id="comparing-means-and-medians">Comparing means and medians<a class="anchor" aria-label="anchor" href="#comparing-means-and-medians"></a>
 </h2>
-<p>If the feature <code>varfactor</code> is a categorical variable (in R a <code>factor</code>) with two or more levels and the response <code>varsample</code> is numeric, tests are applied.to compare the means or medians of the samples.</p>
+<p>If the feature <code>varfactor</code> is a categorical variable of <code>class</code> <code>"factor"</code> with two or more levels and the response <code>varsample</code> is a numerical variable of <code>class</code> <code>"numeric"</code> or <code>"integer"</code>, tests are applied to compare the means or medians.</p>
 <div class="section level3">
-<h3 id="two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test">Two sample tests: Welch’s t-Test or Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test"></a>
+<h3 id="two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test">Two sample tests: Welch’s t-test or Wilcoxon rank-sum test<a class="anchor" aria-label="anchor" href="#two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test"></a>
 </h3>
-<p>If the independent variable <code>varfactor</code> has two levels and the dependent variable <code>varsample</code> is numeric, either Welch’s t-Test or the Wilcoxon rank sum test are performed. The choice follows the algorithm:</p>
+<p>If the feature <code>varfactor</code> is of <code>class</code> <code>"factor"</code> with exactly two levels and the response <code>varsample</code> is numerical, either Welch’s t-test or the Wilcoxon rank-sum test are performed. The choice follows the algorithm below:</p>
 <ul>
 <li><p>If the sample size for both levels is bigger than 100, perform always the <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> <span class="citation">(Lumley et al. 2002)</span>.</p></li>
 <li>
-<p>If the sample size of at least one of the levels is smaller than 100, checks first for normality of both distributions with the Shapiro-Wilk Normality Test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>):</p>
+<p>If the sample size of at least one of the levels is smaller than 100, check first for normality of both levels with the Shapiro-Wilk Normality Test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>):</p>
 <ul>
-<li><p>If the p-values in the <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> of both samples are bigger than the error probability <code>1-conf.level</code>,Welch’s t-Test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) is executed.</p></li>
-<li><p>If the p-values of both samples in the <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> are smaller than the error probability <code>1-conf.level</code>, a Wilcoxon rank sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is executed.</p></li>
+<li><p>If the p-values of the <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> of both levels are bigger than the error probability <code>1-conf.level</code>, choose Welch’s t-Test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>).</p></li>
+<li><p>If the p-values of at least one of the levels in the <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> are smaller than the error probability <code>1-conf.level</code>, a Wilcoxon rank sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is executed.</p></li>
 </ul>
 </li>
 </ul>
-<p>The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the <code>t-test.()),  additionally the</code>conf.level`*100 % -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated box plots is generated and returned as a list.</p>
+<p>Note that <code><a href="../reference/visstat.html">visstat()</a></code> only performs unpaired tests.</p>
+<p>The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the <code>t-test.()</code>, additionally the<code>conf.level\</code>*100 % -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated box plots is generated and returned as a list.</p>
 <div class="section level4">
 <h4 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h4>
@@ -133,15 +135,50 @@ shows how to publish the cod -->
 <span><span class="va">ttestStatistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># uncomenting the next line prints out test statistics</span></span>
-<span><span class="co"># ttestStatistics</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Print the test statistics</span></span>
+<span><span class="va">ttestStatistics</span></span>
+<span><span class="co">#&gt; $`dependent variable (response)`</span></span>
+<span><span class="co">#&gt; [1] "mpg"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $`indepedent variables (parameters)`</span></span>
+<span><span class="co">#&gt; [1] 1 0</span></span>
+<span><span class="co">#&gt; Levels: 0 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $`t-test-statistics`</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  Welch Two Sample t-test</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; data:  x1 and x2</span></span>
+<span><span class="co">#&gt; t = -3.7671, df = 18.332, p-value = 0.001374</span></span>
+<span><span class="co">#&gt; alternative hypothesis: true difference in means is not equal to 0</span></span>
+<span><span class="co">#&gt; 95 percent confidence interval:</span></span>
+<span><span class="co">#&gt;  -11.280194  -3.209684</span></span>
+<span><span class="co">#&gt; sample estimates:</span></span>
+<span><span class="co">#&gt; mean of x mean of y </span></span>
+<span><span class="co">#&gt;  17.14737  24.39231 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $`Shapiro-Wilk-test_sample1`</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  Shapiro-Wilk normality test</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; data:  x</span></span>
+<span><span class="co">#&gt; W = 0.97677, p-value = 0.8987</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $`Shapiro-Wilk-test_sample2`</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  Shapiro-Wilk normality test</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; data:  x</span></span>
+<span><span class="co">#&gt; W = 0.9458, p-value = 0.5363</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Increasing the confidence level</span></span>
+<code class="sourceCode R"><span><span class="co"># Set the confidence level explicitly</span></span>
 <span><span class="va">ttestStatistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="100%"></p>
 </div>
 <div class="section level5">
-<h5 id="wilcoxon-rank-sum-test-calling-wilcox-test">Wilcoxon rank sum test (calling wilcox.test())<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test-calling-wilcox-test"></a>
+<h5 id="wilcoxon-rank-sum-test-calling-wilcox-test">Wilcoxon rank-sum test (calling wilcox.test())<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test-calling-wilcox-test"></a>
 </h5>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grades_gender</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -160,13 +197,14 @@ shows how to publish the cod -->
 </div>
 </div>
 <div class="section level3">
-<h3 id="aov">More than two samples: One Way Test and ANOVA or Kruskal-Wallis-Test<a class="anchor" aria-label="anchor" href="#aov"></a>
+<h3 id="aov">More than two samples: One-way test and ANOVA or Kruskal-Wallis test<a class="anchor" aria-label="anchor" href="#aov"></a>
 </h3>
-<p>If the categorical (<code>factor</code>) variable <code>varfactor</code> has more than two levels and the response <code>varsample</code> is numeric, the underlying assumptions of the analysis of variance, normality of the standardized residuals and homoscedacity, are checked by the function <code>vis_anova_asumptions()</code>.</p>
+<p>If the independent, categorical variable <code>varfactor</code> has more than two levels and the dependent variable <code>varsample</code> is numerical, <code><a href="../reference/visstat.html">visstat()</a></code> performs an analysis of variance (ANOVA, see <code>aov())</code> under the condition that the underlying assumptions are met: 1. normality of the standardized residuals and 2. homoscedasticity.</p>
+<p>If only 1 is met, <code><a href="../reference/visstat.html">visstat()</a></code> performs a one-way test (see oneway.test()). If 1 does not apply, a Kruskal-Wallis test is used. These assumptions are tested by the function <code><a href="../reference/vis_anova_assumptions.html">vis_anova_assumptions()</a></code>.</p>
 <div class="section level4">
 <h4 id="residual-analysis">Residual analysis<a class="anchor" aria-label="anchor" href="#residual-analysis"></a>
 </h4>
-<p>It checks for the normality of the standardised residuals of the analysis of variance (ANOVA) fit generated by the function <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> . To do so it applies both the Shapiro-Wilk-test <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and the Anderson-Darling-Test <code>ad.test()</code> on the standardized residuals. Furthermore the data is graphically analysed by plotting the standardized residuals versus the fitted mean values of the linear model for each level of <code>varfactor</code>. Additionally the normal QQ plot of the standardized residuals is generated.</p>
+<p>Function <code>vis_anova_asumptions()</code> checks for the normality of the standardised residuals of the analysis of variance (ANOVA) fit generated by the function <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> . To do so it applies both the Shapiro-Wilk-test <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and the Anderson-Darling-Test <code>ad.test()</code> on the standardized residuals. Furthermore the data is graphically analysed by plotting the standardized residuals versus the fitted mean values of the linear model for each level of <code>varfactor</code>. Additionally the normal QQ plot of the standardized residuals is generated.</p>
 </div>
 <div class="section level4">
 <h4 id="check-for-homogenity-of-variances-in-each-level-bartlett-test">Check for homogenity of variances in each level: Bartlett test<a class="anchor" aria-label="anchor" href="#check-for-homogenity-of-variances-in-each-level-bartlett-test"></a>
