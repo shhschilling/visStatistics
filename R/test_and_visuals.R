@@ -243,7 +243,7 @@ two_sample_tTest <- function(samples,
       t$method,
       ", p value = ",
       p_value,
-      ". \n Null hypothesis:",
+      ". \n null hypothesis:",
       " mean ",
       samplename,
       " of ",
@@ -366,7 +366,6 @@ two_sample_WilcoxonTest <- function(samples,
   p_value <- t$p.value
   # p_value = signif(p_value,5)
   p_value <- formatC(signif(p_value, digits = 2))
-
   compare <- side_of_nh(alternative)
   if (factorname == "match") {
     prefix <- "of matched"
@@ -376,10 +375,9 @@ two_sample_WilcoxonTest <- function(samples,
   mtext(
     paste(
       t$method,
-      " p=value = ",
+      ", p=value = ",
       p_value,
-      " null hypothesis:
-      \n median",
+      "\n null hypothesis: median",
       samplename,
       "of",
       prefix,

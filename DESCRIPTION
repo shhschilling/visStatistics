@@ -7,9 +7,9 @@ Authors@R: c(
     person("Peter", "Kauf", email = "peter.kauf@zhaw.ch", role = "ctb"))
 Maintainer: Sabine Schilling <sabineschilling@gmx.ch>
 Description: Visualization of the most powerful statistical hypothesis test.
-    Statistical consulting requires often both a quick first visualization and a reproducible
-    statistical analysis of the presented raw data. The R package visStatistics with its core function 
-    visstat() fulfils this need. Based on a decision tree it picks the statistical hypothesis test with 
+    The R package `visStatistics` with its core function 
+    visstat() provides means to quickly visualise and analyse raw data.
+    Based on a decision tree it picks the statistical hypothesis test with 
     the highest statistical power between the dependent variable (response) and the independent variable
     (feature):
     For the comparison of averages, the chosen test depends on the p-values of the null that the normalized
@@ -24,7 +24,8 @@ Description: Visualization of the most powerful statistical hypothesis test.
     Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
     Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
     Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
-    See the vissStatistics vignette for a detailed description of the decision tree and examples.
+    All implemented  statistical tests are called with their default parameter sets which the exception of `conf.level`, which can be adjusted in the function call of `visstat()`.
+    The `vissStatistics` vignette offers a detailed description of the decision tree and examples.
 Imports: vcd, Cairo, graphics, grDevices, grid, multcompView, stats, utils, nortest 
 License: MIT + file LICENSE
 Encoding: UTF-8
