@@ -85,6 +85,7 @@ ttestStatistics <- visstat(mtcars, "mpg", "am")
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+
 Uncomment below line to print out summary statistics:
 
 ``` r
@@ -126,18 +127,21 @@ linreg_cars <- visstat(cars, "dist", "speed")
 ```
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-9-2.png" width="100%" />
+
 Increasing the confidence level `conf.level` from the default 0.95 to
 0.99 leads two wider confidence and prediction bands:
-<img src="man/figures/README-pressure-1.png" width="100%" /><img src="man/figures/README-pressure-2.png" width="100%" />
-\### Pearson’s Chi-squared test
 
-Count data sets are often presented as multidimensional arrays, so
-called contingency tables, whereas `visstat()` requires a `data.frame`
-with a column structure. Arrays can be transformed to this column wise
-structure with the helper function `counts_to_cases()`:
+<img src="man/figures/README-pressure-1.png" width="100%" /><img src="man/figures/README-pressure-2.png" width="100%" />
+
+### Pearson’s Chi-squared test
+
+Count data sets are often presented as multidimensional arrays,
+so-called contingency tables, whereas `visstat()` requires a
+`data.frame` with a column structure. Arrays can be transformed to this
+column wise structure with the helper function `countsToCases()`:
 
 ``` r
-HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
+HairEyeColorDataFrame <- countsToCases(as.data.frame(HairEyeColor))
 visstat(HairEyeColorDataFrame, "Hair", "Eye")
 ```
 
@@ -149,7 +153,7 @@ visstat(HairEyeColorDataFrame, "Hair", "Eye")
 HairEyeColorMaleFisher <- HairEyeColor[, , 1]
 # slicing out a 2 x2 contingency table
 blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
-blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
+blackBrownHazelGreen <- countsToCases(as.data.frame(blackBrownHazelGreen))
 fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 ```
 

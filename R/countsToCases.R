@@ -7,12 +7,12 @@
 #' @return data frame of cases of dimension (total number of counts as sum of "Freq" in x) times 2.
 #' @examples
 #'
-#' counts_to_cases(as.data.frame(HairEyeColor[, , 1]), countcol = "Freq")
+#' countsToCases(as.data.frame(HairEyeColor[, , 1]), countcol = "Freq")
 #'
-#' @export counts_to_cases
+#' @export countsToCases
 
 #'
-counts_to_cases <- function(x, countcol = "Freq") {
+countsToCases <- function(x, countcol = "Freq") {
   # Get the row indices to pull from x
   idx <- rep.int(seq_len(nrow(x)), x[[countcol]])
 
