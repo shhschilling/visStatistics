@@ -638,8 +638,8 @@ vis_anova <- function(samples,
   samples <- samples3
   n_classes <- length(unique(fact))
   # https://en.wikipedia.org/wiki/Bonferroni_correction
-
-  alpha_sidak <- 1 - conf.level^(1 / n_classes) # Sidak correction, https://en.wikipedia.org/wiki/%C5%A0id%C3%A1k_correction
+  number_of_pairwise_comparisons  <- n_classes*(n_classes - 1)/2
+  alpha_sidak <- 1 - conf.level^(1 / number_of_pairwise_comparisons) # Sidak correction, https://en.wikipedia.org/wiki/%C5%A0id%C3%A1k_correction
   # alpha_sidak=alpha #do not apply sidak correction
   sdna <- function(x) {
     sd(x, na.rm = T)
