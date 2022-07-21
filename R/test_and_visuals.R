@@ -82,7 +82,6 @@ test_norm_vis <- function(x, y_axis_hist = c(0, 0.04)) {
 two_sample_tTest <- function(samples,
                              fact,
                              alternative = c("two.sided", "less", "greater"),
-                             mu = 0,
                              paired = FALSE,
                              var.equal = FALSE,
                              conf.level = conf.level,
@@ -92,9 +91,7 @@ two_sample_tTest <- function(samples,
   on.exit(par(oldpar))
   alternative <- match.arg(alternative)
 
-  if (!missing(mu) && (length(mu) != 1 || is.na(mu))) {
-    return(warning("'mu' must be a single number"))
-  }
+  
   if (!missing(conf.level) &&
     (length(conf.level) != 1 || !is.finite(conf.level) ||
       conf.level < 0 || conf.level > 1)) {
@@ -110,6 +107,7 @@ two_sample_tTest <- function(samples,
 
   twosamples <- create_two_samples_vector(samples, fact)
   x <- twosamples$sample1and2
+
   x1 <- twosamples$sample1
   x2 <- twosamples$sample2
 
@@ -118,8 +116,8 @@ two_sample_tTest <- function(samples,
   p2 <- test_norm(twosamples$sample2)
 
   # margins of y -axis
-  lower <- 0.05
-  upper <- 0.1
+  lower <- 0.6
+  upper <- 0.2
   margins <- calc_min_max_of_y_axis(x, lower, upper)
   mi <- margins[[1]]
   ma <- margins[[2]]
@@ -131,14 +129,18 @@ two_sample_tTest <- function(samples,
   )))))
 
 
-  par(oma = c(1, 0, 3, 0))
+  
+  # par(mar=c(5,4,4,2)+0.1) #default
+  
+  par(mar = c(8,4,4,2) + 0.1)
+
   b <- boxplot(
     samples ~ fact,
     lwd = 0.5,
-    xlab = factorname, # wird nicht angezeigt
-    ylab = samplename,
-    ylim = c(mi, ma),
-    varwidth = T,
+    #xlab = factorname, # wird nicht angezeigt, bug!
+    #ylab = samplename,
+    ylim = c(mi - 2, ma),
+    varwidth = T, #boxplot width proportional to sample size
     col = colorscheme(1)
   )
 
@@ -155,11 +157,7 @@ two_sample_tTest <- function(samples,
     add = TRUE
   )
 
-  # axis(side = 2)
-  # axis(side = 1,
-  #      at = c(1, 2),
-  #      labels = levels)
-  # box()
+  mtext("Label", side = 1, line = 7)
 
   points(1,
     mean(x1),
@@ -207,18 +205,7 @@ two_sample_tTest <- function(samples,
     length = 0.1
   )
 
-  # abline(
-  #   h = mean(x1, na.rm = T) + correction1,
-  #   col = "grey30",
-  #   lty = 2,
-  #   lwd = 1
-  # )
-  # abline(
-  #   h = mean(x1, na.rm = T) - correction1,
-  #   col = "grey30",
-  #   lty = 2,
-  #   lwd = 1
-  # )
+  
   text(1:length(b$n), c(ma, ma), paste("N=", b$n))
   t <- t.test(
     x1,
@@ -243,7 +230,7 @@ two_sample_tTest <- function(samples,
       t$method,
       ", p value = ",
       p_value,
-      ". \n null hypothesis:",
+      "\n Null hypothesis:",
       " mean ",
       samplename,
       " of ",
@@ -261,7 +248,7 @@ two_sample_tTest <- function(samples,
   my_list <-
     list(
       "dependent variable (response)" = samplename,
-      "indepedent variables (parameters)" = unique(fact),
+      "independent variables (features)" = unique(fact),
       "t-test-statistics" = t,
       "Shapiro-Wilk-test_sample1" = p1,
       "Shapiro-Wilk-test_sample2" = p2
@@ -336,10 +323,12 @@ two_sample_WilcoxonTest <- function(samples,
     ))
   )
 
+  par(oma = c(0, 0, 2, 0)) # outer margin above: 2 lines..
+  par(mar = c(8,4,4,2) + 0.1) #increse margin of labels below
+  
   b <- boxplot(samples ~ fact, plot = 0) # holds  the counts
 
-  par(oma = c(0, 0, 3, 0)) # links unten,...
-
+  
 
   stripchart(
     samples ~ fact,
@@ -358,6 +347,7 @@ two_sample_WilcoxonTest <- function(samples,
     varwidth = T,
     col = colorscheme(1),
     ylim = c(0, ma),
+    xlab = factorname,
     add = T
   )
   # text(1:length(b$n), b$stats[5,]+1, paste("n=", b$n))
@@ -374,10 +364,9 @@ two_sample_WilcoxonTest <- function(samples,
   }
   mtext(
     paste(
-      t$method,
-      ", p=value = ",
+      t$method,",p-value = ",
       p_value,
-      "\n null hypothesis: median",
+      "\n Null hypothesis: median",
       samplename,
       "of",
       prefix,
@@ -765,7 +754,7 @@ vis_anova <- function(samples,
     "topleft",
     inset = 0.05,
     horiz = F,
-    c(paste("mean with", round((1 - alpha_sidak) * 100, 0), "% conf. intervall, Sidak correction "), paste("mean with", conf.level * 100, "% conf. intervall ")),
+    c(paste("mean with", round((1 - alpha_sidak) * 100, 1), "% conf. intervall, Sidak correction "), paste("mean with", conf.level * 100, "% conf. intervall ")),
     col = c(colors()[131], colors()[552]),
     bty = "n",
     lwd = 3
@@ -1518,7 +1507,8 @@ side_of_nh <- function(alternative) {
 create_two_samples_vector <- function(samples, fact) {
   # Creates column vector built out of two samples
   # samples all in one column
-  levels <- unique(sort(fact))
+  levels <- unique(sort(fact)) #comment out sort
+  
   # two levels
   if (length(levels) > 2) {
     return(warning(
