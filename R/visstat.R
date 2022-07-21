@@ -158,9 +158,6 @@ visstat <- function(dataframe,
   name_of_factor <- input$name_of_factor
   matchingCriteria <- input$matchingCriteria
 
-
-
-
   # dependent on samples, fact, name_of_sample, name_of_factor, conf.level,
   # paired=F,
   typesample <- class(samples)
@@ -230,10 +227,10 @@ visstat <- function(dataframe,
         vis_sample_fact <- two_sample_tTest(
           samples,
           fact,
+          alternative = c("two.sided"),
+          paired = FALSE,
+          var.equal = FALSE,
           conf.level = conf.level,
-          alternative = "two.sided",
-          var.equal = F,
-          paired = F,
           samplename = varsample,
           factorname = varfactor
         )
@@ -274,7 +271,9 @@ visstat <- function(dataframe,
           conf.level = conf.level,
           notchf =  F,
           samplename = varsample,
-          factorname = matchingCriteria
+          #factorname = matchingCriteria,
+          factorname = varfactor,
+          cex = 1
         )
         if (is.null(plotName)) {
           filename <- paste("wilcoxon-test_", name_of_sample, "_", name_of_factor, sep = "")
@@ -294,12 +293,12 @@ visstat <- function(dataframe,
         vis_sample_fact <- two_sample_tTest(
           samples,
           fact,
-          conf.level = conf.level,
           alternative = "two.sided",
-          var.equal = F,
           paired = F,
+          var.equal = F,
+          conf.level = conf.level,
           samplename = varsample,
-          factorname = matchingCriteria
+          factorname = varfactor
         )
 
         if (is.null(plotName)) {
@@ -538,7 +537,7 @@ visstat <- function(dataframe,
       )
     }
   }
-
+  
   return(invisible(vis_sample_fact))
 }
 # End of visstat function -------

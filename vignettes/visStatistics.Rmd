@@ -59,11 +59,11 @@ All statistical tests are called with their default parameter sets, with the exc
 
 # Comparing means and medians
 
-If the feature `varfactor` is a categorical variable of `class` `"factor"` with two or more levels and the response `varsample` is a numerical variable of `class` `"numeric"` or `"integer"`, tests are applied to compare the means or medians.
+If the feature named `varfactor` consists of data of `class` `"factor"` with two or more levels and the response named `varsample` consists of data of `class` `"numeric"` or `"integer"`, tests are applied to compare the means or medians.
 
 ## Two sample tests: Welch's t-test or Wilcoxon rank-sum test
 
-If the feature `varfactor` is of `class` `"factor"` with exactly two levels and the response `varsample` is numerical, either Welch's t-test or the Wilcoxon rank-sum test are performed. The choice follows the algorithm below:
+If the feature named `varfactor` consists of data of `class` `"factor"` with exactly two levels and the response named `varsample` is numerical, either Welch's t-test or the Wilcoxon rank-sum test are performed. The choice follows the algorithm below:
 
 -   If the sample size for both levels is bigger than 100, perform always the `t.test()` [@Lumley2002dsa].
 
@@ -75,21 +75,23 @@ If the feature `varfactor` is of `class` `"factor"` with exactly two levels and 
 
 Note that `visstat()` only performs unpaired tests.
 
-The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the `t-test.()`, additionally the`conf.level\`\*100 % -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated box plots is generated and returned as a list.
+The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the `t-test.()`, additionally the`conf.level\`$\cdot 100 \%$ -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated box plots is generated and returned as a list.
 
 ### Examples
 
 #### Welch's t-test calling t.test()
 
+As an example we use the motor trend car road test data set (`mtcars)` consisting of 32 observations. In the example below `mpg` denotes the Miles/US gallon used, `am` denotes the transmission type ((0 = automatic, 1 = manual)).
+
 ```{r}
-mtcars$am <- as.factor(mtcars$am)
+
 ttestStatistics <- visstat(mtcars, "mpg", "am")
 # Print the test statistics
 ttestStatistics
 ```
 
 ```{r}
-# Set the confidence level explicitly
+# Set the confidence level explicitly resulting in wider confidence levels
 ttestStatistics <- visstat(mtcars, "mpg", "am", conf.level = 0.99)
 ```
 
@@ -139,17 +141,17 @@ Depending on the p-value of the `bartlett.test()` the appropriate test is shown 
 
 Simple multiple comparisons of the means for the levels of a factor in an analysis of variance inflate the probability of declaring a significant difference when in fact it is not present. The family-wise error rate (also named the probability of a type I error) is the probability of at least one false positive comparison (falsely rejecting the null hypothesis) when multiple comparisons are performed.
 
-`visstat()` reduces the probability of a type I error by using Tukey's honestly significant differences (HSD, see `TukeyHSD()`). It creates a set of confidence intervals on the differences between the means per factor level with the specified family-wise probability `conf`. This set of confidence intervals accompanied by the Tukey HSD adjusted p-values is returned. If the difference between two levels is significant at the given `conf.level`, the displayed letters at the bottom of the graph between the two levels will differ.
+`visstat()` reduces the probability of a type I error by using Tukey's honestly significant differences (HSD, see `TukeyHSD()`). It creates a set of confidence intervals on the differences between the means per factor level with the specified family-wise probability `conf`. If a confidence intervall does not include the zero, there is a significant difference between the pair. The set of confidence intervals for all pairwise comparisons accompanied by the Tukey HSD adjusted p-values is returned.
+
+In the graphical representation of One-way test and ANOVA, the green letters between two levels only differ, if the Tukey's HSD corrected p-value for those two levels is smaller than `1-confint`.
 
 #### Post-hoc analysis: Sidak corrected confidence intervals
 
-Tukey\`s HSD procedure is based on **pairwise** comparisons of the differences between the means per factor level, whereas the Sidak procedure counteracts the problems of a type I error by lowering the family wise probability of error for **all** comparisons of the levels of the independent, categorical variable. 
+Tukey\`s HSD procedure is based on **pairwise** comparisons of the differences between the means per factor level, whereas the Sidak procedure counteracts the problems of a type I error by lowering the acceptable probability of a type I error for **all** comparisons of the levels of the independent, categorical variable.
 
-The Sidak corrected family wise probability of error [@Sidak] is defined as $$\alpha_{Sidak}=1-conf.int^{1/M},
-$$ where $M=\frac{n\cdot (n-1)}{n}$ is the number of pairwise comparisons of the $n$ levels of the categorical variable. 
+The Sidak corrected acceptable probability of error [@Sidak] is defined as $\alpha_{Sidak}=1$-`conf.int`$^{1/M}$, where $M=\frac{n\cdot (n-1)}{2}$ is the number of pairwise comparisons of the $n$ levels of the categorical variable.
 
-
-In the graphical representation of the ANOVA of `visstat` shows the `conf.level` confidence intervals along side the larger  Sidak-corrected $1-\alpha_{Sidak}$ confidence intervals. 
+In the graphical representation of One-way test and ANOVA, `visstat()` displays both the `conf.level`\$\\cdot 100 \\% \$ confidence intervals alongside the larger, Sidak-corrected $(1-\alpha_{Sidak})\cdot 100\%$ confidence intervals.
 
 #### Limitations
 
@@ -157,11 +159,11 @@ Note that the current structure of `visstat()` does not allow the study of inter
 
 ### Kruskal-Wallis test
 
-If the p-values of the standardized residuals calculated by `shapiro.test()` or `ad.test()` are smaller than the error probability `1-conf.level`, a normal distribution of the residuals can not be assumed. In this case, `visstat()` chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. `kruskal.test()` tests the null that the medians are the same in each group (level). As post-hoc-analysis the pairwise Wilcoxon rank sum test `pairwise.wilcox.test()` applying the default Holm method for multiple comparisons[@Holm1979ASS] is used. If the Holm corrected p-value for a pair is smaller than `1-confint`, the green letters below the corresponding two box plots will differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list with the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.
+If the p-values of the standardised residuals calculated by `shapiro.test()` or `ad.test()` are both smaller than the error probability `1-conf.level`, a normal distribution of the residuals can not be assumed. In this case, `visstat()` chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. `kruskal.test()` tests the null that the medians are the same in each group (level). As post-hoc-analysis the pairwise Wilcoxon rank sum test `pairwise.wilcox.test()` applying the default Holm method for multiple comparisons[@Holm1979ASS] is used. If the Holm corrected p-value for a pair is smaller than `1-confint`, the green letters below the corresponding two box plots will differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list with the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.
 
 ### Examples
 
-The `npk` data sets reports the yield of peas in pounds/block on 6 blocks. <!-- where either nitrogen (N), phosphate (P) or potassium (K) was spread. -->
+The `npk` data sets reports the yield of peas in pounds/block on 6 blocks, where the usage of the fertilizers nitrogen (N), phosphate (P) or potassium (K) was varied. Either no, one, two or three different were applied on the blocks.
 
 #### One way test
 
@@ -169,7 +171,7 @@ The `npk` data sets reports the yield of peas in pounds/block on 6 blocks. <!-- 
 oneway_npk <- visstat(npk, "yield", "block")
 ```
 
-The post-hoc analysis with `TukeyHSD()` reveals no significant difference between the yield in all blocks (all green letters are the same).
+The post-hoc analysis with `TukeyHSD()` reveals no significant difference between the yield between the different blocks (all green letters are the same).
 
 #### ANOVA
 
