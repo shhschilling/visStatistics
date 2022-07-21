@@ -70,7 +70,7 @@
       <img src="" class="logo" alt=""><h1>visStatistics</h1>
                         <h4 data-toc-skip class="author">Sabine Schilling</h4>
             
-            <h4 data-toc-skip class="date">2022-07-19</h4>
+            <h4 data-toc-skip class="date">2022-07-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/HEAD/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -104,11 +104,11 @@ shows how to publish the cod -->
 <div class="section level2">
 <h2 id="comparing-means-and-medians">Comparing means and medians<a class="anchor" aria-label="anchor" href="#comparing-means-and-medians"></a>
 </h2>
-<p>If the feature <code>varfactor</code> is a categorical variable of <code>class</code> <code>"factor"</code> with two or more levels and the response <code>varsample</code> is a numerical variable of <code>class</code> <code>"numeric"</code> or <code>"integer"</code>, tests are applied to compare the means or medians.</p>
+<p>If the feature named <code>varfactor</code> consists of data of <code>class</code> <code>"factor"</code> with two or more levels and the response named <code>varsample</code> consists of data of <code>class</code> <code>"numeric"</code> or <code>"integer"</code>, tests are applied to compare the means or medians.</p>
 <div class="section level3">
 <h3 id="two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test">Two sample tests: Welch’s t-test or Wilcoxon rank-sum test<a class="anchor" aria-label="anchor" href="#two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test"></a>
 </h3>
-<p>If the feature <code>varfactor</code> is of <code>class</code> <code>"factor"</code> with exactly two levels and the response <code>varsample</code> is numerical, either Welch’s t-test or the Wilcoxon rank-sum test are performed. The choice follows the algorithm below:</p>
+<p>If the feature named <code>varfactor</code> consists of data of <code>class</code> <code>"factor"</code> with exactly two levels and the response named <code>varsample</code> is numerical, either Welch’s t-test or the Wilcoxon rank-sum test are performed. The choice follows the algorithm below:</p>
 <ul>
 <li><p>If the sample size for both levels is bigger than 100, perform always the <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> <span class="citation">(Lumley et al. 2002)</span>.</p></li>
 <li>
@@ -120,59 +120,102 @@ shows how to publish the cod -->
 </li>
 </ul>
 <p>Note that <code><a href="../reference/visstat.html">visstat()</a></code> only performs unpaired tests.</p>
-<p>The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the <code>t-test.()</code>, additionally the<code>conf.level\</code>*100 % -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated box plots is generated and returned as a list.</p>
+<p>The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the <code>t-test.()</code>, additionally the<code>conf.level\</code><span class="math inline">\(\cdot 100 \%\)</span> -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated box plots is generated and returned as a list.</p>
 <div class="section level4">
 <h4 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h4>
 <div class="section level5">
 <h5 id="welchs-t-test-calling-t-test">Welch’s t-test calling t.test()<a class="anchor" aria-label="anchor" href="#welchs-t-test-calling-t-test"></a>
 </h5>
+<p>As an example we use the motor trend car road test data set (<code>mtcars)</code> consisting of 32 observations. In the example below <code>mpg</code> denotes the Miles/US gallon used, <code>am</code> denotes the transmission type ((0 = automatic, 1 = manual)).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
+<code class="sourceCode R"><span></span>
 <span><span class="va">ttestStatistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-2-2.png" width="100%"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print the test statistics</span></span>
 <span><span class="va">ttestStatistics</span></span>
-<span><span class="co">#&gt; $`dependent variable (response)`</span></span>
+<span><span class="co">#&gt; $`independent variable x`</span></span>
+<span><span class="co">#&gt; [1] "am"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $`dependent variable y`</span></span>
 <span><span class="co">#&gt; [1] "mpg"</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $`indepedent variables (parameters)`</span></span>
-<span><span class="co">#&gt; [1] 1 0</span></span>
-<span><span class="co">#&gt; Levels: 0 1</span></span>
+<span><span class="co">#&gt; $summary_regression</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $`t-test-statistics`</span></span>
+<span><span class="co">#&gt; Call:</span></span>
+<span><span class="co">#&gt; lm(formula = y ~ x)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  Welch Two Sample t-test</span></span>
+<span><span class="co">#&gt; Residuals:</span></span>
+<span><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
+<span><span class="co">#&gt; -9.3923 -3.0923 -0.2974  3.2439  9.5077 </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; data:  x1 and x2</span></span>
-<span><span class="co">#&gt; t = -3.7671, df = 18.332, p-value = 0.001374</span></span>
-<span><span class="co">#&gt; alternative hypothesis: true difference in means is not equal to 0</span></span>
-<span><span class="co">#&gt; 95 percent confidence interval:</span></span>
-<span><span class="co">#&gt;  -11.280194  -3.209684</span></span>
-<span><span class="co">#&gt; sample estimates:</span></span>
-<span><span class="co">#&gt; mean of x mean of y </span></span>
-<span><span class="co">#&gt;  17.14737  24.39231 </span></span>
+<span><span class="co">#&gt; Coefficients:</span></span>
+<span><span class="co">#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co">#&gt; (Intercept)   17.147      1.125  15.247 1.13e-15 ***</span></span>
+<span><span class="co">#&gt; x              7.245      1.764   4.106 0.000285 ***</span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $`Shapiro-Wilk-test_sample1`</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  Shapiro-Wilk normality test</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; data:  x</span></span>
-<span><span class="co">#&gt; W = 0.97677, p-value = 0.8987</span></span>
+<span><span class="co">#&gt; Residual standard error: 4.902 on 30 degrees of freedom</span></span>
+<span><span class="co">#&gt; Multiple R-squared:  0.3598, Adjusted R-squared:  0.3385 </span></span>
+<span><span class="co">#&gt; F-statistic: 16.86 on 1 and 30 DF,  p-value: 0.000285</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $`Shapiro-Wilk-test_sample2`</span></span>
+<span><span class="co">#&gt; $shapiro_test_residuals</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  Shapiro-Wilk normality test</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; data:  x</span></span>
-<span><span class="co">#&gt; W = 0.9458, p-value = 0.5363</span></span></code></pre></div>
+<span><span class="co">#&gt; data:  rstandard(lm(y ~ x))</span></span>
+<span><span class="co">#&gt; W = 0.98284, p-value = 0.8767</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $anderson_darling_test_residuals</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  Anderson-Darling normality test</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; data:  rstandard(lm(y ~ x))</span></span>
+<span><span class="co">#&gt; A = 0.19347, p-value = 0.8865</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $error_bands</span></span>
+<span><span class="co">#&gt;    predicted_value y_conf_low y_conf_up y_progn_low y_progn_up</span></span>
+<span><span class="co">#&gt; 1         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 2         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 3         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 4         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 5         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 6         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 7         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 8         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 9         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 10        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 11        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 12        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 13        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 14        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 15        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 16        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 17        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 18        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 19        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
+<span><span class="co">#&gt; 20        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
+<span><span class="co">#&gt; 21        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
+<span><span class="co">#&gt; 22        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
+<span><span class="co">#&gt; 23        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
+<span><span class="co">#&gt; 24        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
+<span><span class="co">#&gt; 25        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
+<span><span class="co">#&gt; 26        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
+<span><span class="co">#&gt; 27        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
+<span><span class="co">#&gt; 28        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
+<span><span class="co">#&gt; 29        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
+<span><span class="co">#&gt; 30        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
+<span><span class="co">#&gt; 31        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
+<span><span class="co">#&gt; 32        24.39231   21.61568  27.16894   14.003113   34.78150</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Set the confidence level explicitly</span></span>
+<code class="sourceCode R"><span><span class="co"># Set the confidence level explicitly resulting in wider confidence levels</span></span>
 <span><span class="va">ttestStatistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-3-2.png" width="100%"></p>
 </div>
 <div class="section level5">
 <h5 id="wilcoxon-rank-sum-test-calling-wilcox-test">Wilcoxon rank-sum test (calling wilcox.test())<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test-calling-wilcox-test"></a>
@@ -224,15 +267,15 @@ shows how to publish the cod -->
 <h5 id="post-hoc-analysis-tukeys-honestly-significant-differences-hsd">Post-hoc analysis: Tukey`s honestly significant differences (HSD)<a class="anchor" aria-label="anchor" href="#post-hoc-analysis-tukeys-honestly-significant-differences-hsd"></a>
 </h5>
 <p>Simple multiple comparisons of the means for the levels of a factor in an analysis of variance inflate the probability of declaring a significant difference when in fact it is not present. The family-wise error rate (also named the probability of a type I error) is the probability of at least one false positive comparison (falsely rejecting the null hypothesis) when multiple comparisons are performed.</p>
-<p><code><a href="../reference/visstat.html">visstat()</a></code> reduces the probability of a type I error by using Tukey’s honestly significant differences (HSD, see <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>). It creates a set of confidence intervals on the differences between the means per factor level with the specified family-wise probability <code>conf</code>. This set of confidence intervals accompanied by the Tukey HSD adjusted p-values is returned. If the difference between two levels is significant at the given <code>conf.level</code>, the displayed letters at the bottom of the graph between the two levels will differ.</p>
+<p><code><a href="../reference/visstat.html">visstat()</a></code> reduces the probability of a type I error by using Tukey’s honestly significant differences (HSD, see <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>). It creates a set of confidence intervals on the differences between the means per factor level with the specified family-wise probability <code>conf</code>. If a confidence intervall does not include the zero, there is a significant difference between the pair. The set of confidence intervals for all pairwise comparisons accompanied by the Tukey HSD adjusted p-values is returned.</p>
+<p>In the graphical representation of One-way test and ANOVA, the green letters between two levels only differ, if the Tukey’s HSD corrected p-value for those two levels is smaller than <code>1-confint</code>.</p>
 </div>
 <div class="section level5">
 <h5 id="post-hoc-analysis-sidak-corrected-confidence-intervals">Post-hoc analysis: Sidak corrected confidence intervals<a class="anchor" aria-label="anchor" href="#post-hoc-analysis-sidak-corrected-confidence-intervals"></a>
 </h5>
-<p>Tukey`s HSD procedure is based on <strong>pairwise</strong> comparisons of the differences between the means per factor level, whereas the Sidak procedure counteracts the problems of a type I error by lowering the family wise probability of error for <strong>all</strong> comparisons of the levels of the independent, categorical variable.</p>
-<p>The Sidak corrected family wise probability of error <span class="citation">(Šidák 1967)</span> is defined as <span class="math display">\[\alpha_{Sidak}=1-conf.int^{1/M},
-\]</span> where <span class="math inline">\(M=\frac{n\cdot (n-1)}{n}\)</span> is the number of pairwise comparisons of the <span class="math inline">\(n\)</span> levels of the categorical variable.</p>
-<p>In the graphical representation of the ANOVA of <code>visstat</code> shows the <code>conf.level</code> confidence intervals along side the larger Sidak-corrected <span class="math inline">\(1-\alpha_{Sidak}\)</span> confidence intervals.</p>
+<p>Tukey`s HSD procedure is based on <strong>pairwise</strong> comparisons of the differences between the means per factor level, whereas the Sidak procedure counteracts the problems of a type I error by lowering the acceptable probability of a type I error for <strong>all</strong> comparisons of the levels of the independent, categorical variable.</p>
+<p>The Sidak corrected acceptable probability of error <span class="citation">(Šidák 1967)</span> is defined as <span class="math inline">\(\alpha_{Sidak}=1\)</span>-<code>conf.int</code><span class="math inline">\(^{1/M}\)</span>, where <span class="math inline">\(M=\frac{n\cdot (n-1)}{2}\)</span> is the number of pairwise comparisons of the <span class="math inline">\(n\)</span> levels of the categorical variable.</p>
+<p>In the graphical representation of One-way test and ANOVA, <code><a href="../reference/visstat.html">visstat()</a></code> displays both the <code>conf.level</code>$\cdot 100 \% $ confidence intervals alongside the larger, Sidak-corrected <span class="math inline">\((1-\alpha_{Sidak})\cdot 100\%\)</span> confidence intervals.</p>
 </div>
 <div class="section level5">
 <h5 id="limitations">Limitations<a class="anchor" aria-label="anchor" href="#limitations"></a>
@@ -243,19 +286,19 @@ shows how to publish the cod -->
 <div class="section level4">
 <h4 id="kruskal-wallis-test">Kruskal-Wallis test<a class="anchor" aria-label="anchor" href="#kruskal-wallis-test"></a>
 </h4>
-<p>If the p-values of the standardized residuals calculated by <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> or <code>ad.test()</code> are smaller than the error probability <code>1-conf.level</code>, a normal distribution of the residuals can not be assumed. In this case, <code><a href="../reference/visstat.html">visstat()</a></code> chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> tests the null that the medians are the same in each group (level). As post-hoc-analysis the pairwise Wilcoxon rank sum test <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> applying the default Holm method for multiple comparisons<span class="citation">(Holm 1979)</span> is used. If the Holm corrected p-value for a pair is smaller than <code>1-confint</code>, the green letters below the corresponding two box plots will differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list with the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.</p>
+<p>If the p-values of the standardised residuals calculated by <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> or <code>ad.test()</code> are both smaller than the error probability <code>1-conf.level</code>, a normal distribution of the residuals can not be assumed. In this case, <code><a href="../reference/visstat.html">visstat()</a></code> chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> tests the null that the medians are the same in each group (level). As post-hoc-analysis the pairwise Wilcoxon rank sum test <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> applying the default Holm method for multiple comparisons<span class="citation">(Holm 1979)</span> is used. If the Holm corrected p-value for a pair is smaller than <code>1-confint</code>, the green letters below the corresponding two box plots will differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list with the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.</p>
 </div>
 <div class="section level4">
 <h4 id="examples-1">Examples<a class="anchor" aria-label="anchor" href="#examples-1"></a>
 </h4>
-<p>The <code>npk</code> data sets reports the yield of peas in pounds/block on 6 blocks. <!-- where either nitrogen (N), phosphate (P) or potassium (K) was spread. --></p>
+<p>The <code>npk</code> data sets reports the yield of peas in pounds/block on 6 blocks, where the usage of the fertilizers nitrogen (N), phosphate (P) or potassium (K) was varied. Either no, one, two or three different were applied on the blocks.</p>
 <div class="section level5">
 <h5 id="one-way-test">One way test<a class="anchor" aria-label="anchor" href="#one-way-test"></a>
 </h5>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">oneway_npk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span>, <span class="st">"yield"</span>, <span class="st">"block"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-5-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-5-2.png" width="100%"></p>
-<p>The post-hoc analysis with <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> reveals no significant difference between the yield in all blocks (all green letters are the same).</p>
+<p>The post-hoc analysis with <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> reveals no significant difference between the yield between the different blocks (all green letters are the same).</p>
 </div>
 <div class="section level5">
 <h5 id="anova">ANOVA<a class="anchor" aria-label="anchor" href="#anova"></a>
