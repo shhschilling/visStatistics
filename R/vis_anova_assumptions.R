@@ -1,8 +1,8 @@
-###  Header visAnovaAssumptions -----
+###  Header vis_anova_assumptions -----
 
 #' Visualisation of the normality distribution of the standardised residuals of the ANOVA
 #'
-#' \code{visAnovaAssumptions} checks for normality of the standardised residuals of the ANOVA. Both the
+#' \code{vis_anova_assumptions} checks for normality of the standardised residuals of the ANOVA. Both the
 #'    Shapiro-Wilk test \code{shapiro.test()} and the Anderson-Darling test \code{ad.test()} check the
 #'    null that the standardized residuals are normally distributed.
 #'    It generates a scatter plot
@@ -24,14 +24,14 @@
 
 #' @examples
 #' ToothGrowth$dose <- as.factor(ToothGrowth$dose)
-#' visAnovaAssumptions(ToothGrowth$len, ToothGrowth$dose)
+#' vis_anova_assumptions(ToothGrowth$len, ToothGrowth$dose)
 #'
-#' visAnovaAssumptions(ToothGrowth$len, ToothGrowth$supp)
-#' visAnovaAssumptions(iris$Petal.Width, iris$Species)
+#' vis_anova_assumptions(ToothGrowth$len, ToothGrowth$supp)
+#' vis_anova_assumptions(iris$Petal.Width, iris$Species)
 #'
-#' @export visAnovaAssumptions
+#' @export vis_anova_assumptions
 
-visAnovaAssumptions <- function(samples,
+vis_anova_assumptions <- function(samples,
                                   fact,
                                   conf.level = 0.95,
                                   samplename = "",

@@ -76,14 +76,14 @@
 #'
 #' ## Pearson's Chi-squared test and mosaic plot with Pearson residuals
 #' ### Transform array to data.frame
-#' HairEyeColorDataFrame <- countsToCases(as.data.frame(HairEyeColor))
+#' HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
 #' visstat(HairEyeColorDataFrame, "Hair", "Eye")
 #'
 #' ## 2x2 contingency tables with Fisher's exact test and mosaic plot with Pearson residuals
 #' HairEyeColorMaleFisher <- HairEyeColor[, , 1]
 #' ### slicing out a 2 x2 contingency table
 #' blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
-#' blackBrownHazelGreen <- countsToCases(as.data.frame(blackBrownHazelGreen))
+#' blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
 #' fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 #' fisher_stats # print out summary statistics
 #'
@@ -187,7 +187,7 @@ visstat <- function(dataframe,
       vis_sample_fact <- warning("In each group must be at least one member ")
     } else {
       # t-Test -----
-      # rest = two_sample_tTest(samples, fact, alpha, side = "two.sided", samplename=varsample,factorname=matchingCriteria)
+      
       x <- twosamples$sample1and2
       x1 <- twosamples$sample1
       x2 <- twosamples$sample2
@@ -224,15 +224,15 @@ visstat <- function(dataframe,
       if (length(twosamples$sample1) > 100 &
         length(twosamples$sample2) > 100) {
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-        vis_sample_fact <- two_sample_tTest(
+        vis_sample_fact <- two_sample_t_test(
           samples,
           fact,
           alternative = c("two.sided"),
           paired = FALSE,
           var.equal = FALSE,
           conf.level = conf.level,
-          samplename = varsample,
-          factorname = varfactor
+          samplename = name_of_sample,
+          factorname = name_of_factor
         )
 
         if (is.null(plotName)) {
@@ -290,7 +290,7 @@ visstat <- function(dataframe,
       } else {
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
 
-        vis_sample_fact <- two_sample_tTest(
+        vis_sample_fact <- two_sample_t_test(
           samples,
           fact,
           alternative = "two.sided",
@@ -471,7 +471,7 @@ visstat <- function(dataframe,
   if (typefactor == "factor" &&
     (typesample == "integer" | typesample == "numeric") &&
     nlevels(fact) > 2) {
-    visanova <- visAnovaAssumptions(
+    visanova <- vis_anova_assumptions(
       samples,
       fact,
       conf.level = conf.level,

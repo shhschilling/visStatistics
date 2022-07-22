@@ -79,7 +79,7 @@ test_norm_vis <- function(x, y_axis_hist = c(0, 0.04)) {
 
 
 ###### Two-Sample t-Test ###############################
-two_sample_tTest <- function(samples,
+two_sample_t_test <- function(samples,
                              fact,
                              alternative = c("two.sided", "less", "greater"),
                              paired = FALSE,
@@ -116,7 +116,7 @@ two_sample_tTest <- function(samples,
   p2 <- test_norm(twosamples$sample2)
 
   # margins of y -axis
-  lower <- 0.6
+  lower <- 0.2
   upper <- 0.2
   margins <- calc_min_max_of_y_axis(x, lower, upper)
   mi <- margins[[1]]
@@ -128,17 +128,11 @@ two_sample_tTest <- function(samples,
     x2
   )))))
 
-
-  
-  # par(mar=c(5,4,4,2)+0.1) #default
-  
-  par(mar = c(8,4,4,2) + 0.1)
-
   b <- boxplot(
     samples ~ fact,
     lwd = 0.5,
-    #xlab = factorname, # wird nicht angezeigt, bug!
-    #ylab = samplename,
+    xlab = factorname, # wird nicht angezeigt, bug!
+    ylab = samplename,
     ylim = c(mi - 2, ma),
     varwidth = T, #boxplot width proportional to sample size
     col = colorscheme(1)
@@ -157,7 +151,7 @@ two_sample_tTest <- function(samples,
     add = TRUE
   )
 
-  mtext("Label", side = 1, line = 7)
+
 
   points(1,
     mean(x1),
@@ -234,14 +228,16 @@ two_sample_tTest <- function(samples,
       " mean ",
       samplename,
       " of ",
-      factorname,
-      unique(fact)[1], " ",
+      factorname," ",
+      #unique(fact)[1],
+      levels(fact)[1],
+      " ",
       compare,
       " mean ",
       samplename,
       " of ",
-      factorname,
-      unique(fact)[2],
+      factorname," ",
+      levels(fact)[2],
       sep = ""
     )
   )
