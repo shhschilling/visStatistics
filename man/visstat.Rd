@@ -98,14 +98,14 @@ visstat(trees, "Girth", "Height", conf.level = 0.99)
 
 ## Pearson's Chi-squared test and mosaic plot with Pearson residuals
 ### Transform array to data.frame
-HairEyeColorDataFrame <- countsToCases(as.data.frame(HairEyeColor))
+HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(HairEyeColorDataFrame, "Hair", "Eye")
 
 ## 2x2 contingency tables with Fisher's exact test and mosaic plot with Pearson residuals
 HairEyeColorMaleFisher <- HairEyeColor[, , 1]
 ### slicing out a 2 x2 contingency table
 blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
-blackBrownHazelGreen <- countsToCases(as.data.frame(blackBrownHazelGreen))
+blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
 fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 fisher_stats # print out summary statistics
 

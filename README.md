@@ -138,10 +138,10 @@ Increasing the confidence level `conf.level` from the default 0.95 to
 Count data sets are often presented as multidimensional arrays,
 so-called contingency tables, whereas `visstat()` requires a
 `data.frame` with a column structure. Arrays can be transformed to this
-column wise structure with the helper function `countsToCases()`:
+column wise structure with the helper function `counts_to_cases()`:
 
 ``` r
-HairEyeColorDataFrame <- countsToCases(as.data.frame(HairEyeColor))
+HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(HairEyeColorDataFrame, "Hair", "Eye")
 ```
 
@@ -153,7 +153,7 @@ visstat(HairEyeColorDataFrame, "Hair", "Eye")
 HairEyeColorMaleFisher <- HairEyeColor[, , 1]
 # slicing out a 2 x2 contingency table
 blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
-blackBrownHazelGreen <- countsToCases(as.data.frame(blackBrownHazelGreen))
+blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
 fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 ```
 
