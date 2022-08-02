@@ -70,7 +70,7 @@
       <img src="" class="logo" alt=""><h1>visStatistics</h1>
                         <h4 data-toc-skip class="author">Sabine Schilling</h4>
             
-            <h4 data-toc-skip class="date">2022-07-21</h4>
+            <h4 data-toc-skip class="date">2022-08-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/HEAD/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -104,11 +104,11 @@ shows how to publish the cod -->
 <div class="section level2">
 <h2 id="comparing-means-and-medians">Comparing means and medians<a class="anchor" aria-label="anchor" href="#comparing-means-and-medians"></a>
 </h2>
-<p>If the feature named <code>varfactor</code> consists of data of <code>class</code> <code>"factor"</code> with two or more levels and the response named <code>varsample</code> consists of data of <code>class</code> <code>"numeric"</code> or <code>"integer"</code>, tests are applied to compare the means or medians.</p>
+<p>If the feature consists of data of <code>class</code> <code>"factor"</code> with two or more levels and the response consists of data of <code>class</code> <code>"numeric"</code> or <code>"integer"</code> (both of mode <code>"numeric"</code>), tests are applied to compare the means or medians.</p>
 <div class="section level3">
-<h3 id="two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test">Two sample tests: Welch’s t-test or Wilcoxon rank-sum test<a class="anchor" aria-label="anchor" href="#two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test"></a>
+<h3 id="two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test">Two sample tests: Welch’s t-test or Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test"></a>
 </h3>
-<p>If the feature named <code>varfactor</code> consists of data of <code>class</code> <code>"factor"</code> with exactly two levels and the response named <code>varsample</code> is numerical, either Welch’s t-test or the Wilcoxon rank-sum test are performed. The choice follows the algorithm below:</p>
+<p>If the feature has exactly two levels, either Welch’s t-test or the Wilcoxon rank sum test are performed. The choice follows the algorithm below:</p>
 <ul>
 <li><p>If the sample size for both levels is bigger than 100, perform always the <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> <span class="citation">(Lumley et al. 2002)</span>.</p></li>
 <li>
@@ -120,7 +120,7 @@ shows how to publish the cod -->
 </li>
 </ul>
 <p>Note that <code><a href="../reference/visstat.html">visstat()</a></code> only performs unpaired tests.</p>
-<p>The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the <code>t-test.()</code>, additionally the<code>conf.level\</code><span class="math inline">\(\cdot 100 \%\)</span> -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated box plots is generated and returned as a list.</p>
+<p>The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the <code>t-test.()</code>, additionally the<code>conf.level\</code><span class="math inline">\(\cdot 100 \%\)</span> -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated box plots is returned as a list.</p>
 <div class="section level4">
 <h4 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h4>
@@ -129,105 +129,64 @@ shows how to publish the cod -->
 </h5>
 <p>As an example we use the motor trend car road test data set (<code>mtcars)</code> consisting of 32 observations. In the example below <code>mpg</code> denotes the Miles/US gallon used, <code>am</code> denotes the transmission type ((0 = automatic, 1 = manual)).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
 <span><span class="va">ttestStatistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-2-2.png" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Print the test statistics</span></span>
 <span><span class="va">ttestStatistics</span></span>
-<span><span class="co">#&gt; $`independent variable x`</span></span>
-<span><span class="co">#&gt; [1] "am"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $`dependent variable y`</span></span>
+<span><span class="co">#&gt; $`dependent variable (response)`</span></span>
 <span><span class="co">#&gt; [1] "mpg"</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $summary_regression</span></span>
+<span><span class="co">#&gt; $`independent variables (features)`</span></span>
+<span><span class="co">#&gt; [1] 1 0</span></span>
+<span><span class="co">#&gt; Levels: 0 1</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Call:</span></span>
-<span><span class="co">#&gt; lm(formula = y ~ x)</span></span>
+<span><span class="co">#&gt; $`t-test-statistics`</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Residuals:</span></span>
-<span><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
-<span><span class="co">#&gt; -9.3923 -3.0923 -0.2974  3.2439  9.5077 </span></span>
+<span><span class="co">#&gt;  Welch Two Sample t-test</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Coefficients:</span></span>
-<span><span class="co">#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">#&gt; (Intercept)   17.147      1.125  15.247 1.13e-15 ***</span></span>
-<span><span class="co">#&gt; x              7.245      1.764   4.106 0.000285 ***</span></span>
-<span><span class="co">#&gt; ---</span></span>
-<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Residual standard error: 4.902 on 30 degrees of freedom</span></span>
-<span><span class="co">#&gt; Multiple R-squared:  0.3598, Adjusted R-squared:  0.3385 </span></span>
-<span><span class="co">#&gt; F-statistic: 16.86 on 1 and 30 DF,  p-value: 0.000285</span></span>
+<span><span class="co">#&gt; data:  x1 and x2</span></span>
+<span><span class="co">#&gt; t = 3.7671, df = 18.332, p-value = 0.001374</span></span>
+<span><span class="co">#&gt; alternative hypothesis: true difference in means is not equal to 0</span></span>
+<span><span class="co">#&gt; 95 percent confidence interval:</span></span>
+<span><span class="co">#&gt;   3.209684 11.280194</span></span>
+<span><span class="co">#&gt; sample estimates:</span></span>
+<span><span class="co">#&gt; mean of x mean of y </span></span>
+<span><span class="co">#&gt;  24.39231  17.14737 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $shapiro_test_residuals</span></span>
+<span><span class="co">#&gt; $`Shapiro-Wilk-test_sample1`</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  Shapiro-Wilk normality test</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; data:  rstandard(lm(y ~ x))</span></span>
-<span><span class="co">#&gt; W = 0.98284, p-value = 0.8767</span></span>
+<span><span class="co">#&gt; data:  x</span></span>
+<span><span class="co">#&gt; W = 0.9458, p-value = 0.5363</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $anderson_darling_test_residuals</span></span>
+<span><span class="co">#&gt; $`Shapiro-Wilk-test_sample2`</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  Anderson-Darling normality test</span></span>
+<span><span class="co">#&gt;  Shapiro-Wilk normality test</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; data:  rstandard(lm(y ~ x))</span></span>
-<span><span class="co">#&gt; A = 0.19347, p-value = 0.8865</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $error_bands</span></span>
-<span><span class="co">#&gt;    predicted_value y_conf_low y_conf_up y_progn_low y_progn_up</span></span>
-<span><span class="co">#&gt; 1         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 2         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 3         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 4         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 5         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 6         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 7         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 8         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 9         17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 10        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 11        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 12        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 13        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 14        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 15        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 16        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 17        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 18        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 19        17.14737   14.85062  19.44411    6.876013   27.41872</span></span>
-<span><span class="co">#&gt; 20        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
-<span><span class="co">#&gt; 21        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
-<span><span class="co">#&gt; 22        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
-<span><span class="co">#&gt; 23        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
-<span><span class="co">#&gt; 24        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
-<span><span class="co">#&gt; 25        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
-<span><span class="co">#&gt; 26        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
-<span><span class="co">#&gt; 27        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
-<span><span class="co">#&gt; 28        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
-<span><span class="co">#&gt; 29        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
-<span><span class="co">#&gt; 30        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
-<span><span class="co">#&gt; 31        24.39231   21.61568  27.16894   14.003113   34.78150</span></span>
-<span><span class="co">#&gt; 32        24.39231   21.61568  27.16894   14.003113   34.78150</span></span></code></pre></div>
+<span><span class="co">#&gt; data:  x</span></span>
+<span><span class="co">#&gt; W = 0.97677, p-value = 0.8987</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set the confidence level explicitly resulting in wider confidence levels</span></span>
+<span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
 <span><span class="va">ttestStatistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-3-2.png" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="100%"></p>
 </div>
 <div class="section level5">
-<h5 id="wilcoxon-rank-sum-test-calling-wilcox-test">Wilcoxon rank-sum test (calling wilcox.test())<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test-calling-wilcox-test"></a>
+<h5 id="wilcoxon-rank-sum-test-calling-wilcox-test">Wilcoxon rank sum test calling wilcox.test()<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test-calling-wilcox-test"></a>
 </h5>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grades_gender</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  Sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Girl"</span>, <span class="fl">20</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Boy"</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  Sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Girl"</span>, <span class="fl">21</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Boy"</span>, <span class="fl">23</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>    <span class="fl">19.3</span>, <span class="fl">18.1</span>, <span class="fl">15.2</span>, <span class="fl">18.3</span>, <span class="fl">7.9</span>, <span class="fl">6.2</span>, <span class="fl">19.4</span>,</span>
-<span>    <span class="fl">20.3</span>, <span class="fl">9.3</span>, <span class="fl">11.3</span>, <span class="fl">18.2</span>, <span class="fl">17.5</span>, <span class="fl">10.2</span>, <span class="fl">20.1</span>, <span class="fl">13.3</span>, <span class="fl">17.2</span>, <span class="fl">15.1</span>, <span class="fl">16.2</span>, <span class="fl">17.3</span>,</span>
+<span>    <span class="fl">20.3</span>, <span class="fl">9.3</span>, <span class="fl">11.3</span>, <span class="fl">18.2</span>, <span class="fl">17.5</span>, <span class="fl">10.2</span>, <span class="fl">20.1</span>, <span class="fl">13.3</span>, <span class="fl">17.2</span>, <span class="fl">15.1</span>, <span class="fl">16.2</span>, <span class="fl">17.0</span>,</span>
 <span>    <span class="fl">16.5</span>, <span class="fl">5.1</span>, <span class="fl">15.3</span>, <span class="fl">17.1</span>, <span class="fl">14.8</span>, <span class="fl">15.4</span>, <span class="fl">14.4</span>, <span class="fl">7.5</span>, <span class="fl">15.5</span>, <span class="fl">6.0</span>, <span class="fl">17.4</span>,</span>
-<span>    <span class="fl">7.3</span>, <span class="fl">14.3</span>, <span class="fl">13.5</span>, <span class="fl">8.0</span>, <span class="fl">19.5</span>, <span class="fl">13.4</span>, <span class="fl">17.9</span>, <span class="fl">17.7</span>, <span class="fl">16.4</span>, <span class="fl">15.6</span></span>
+<span>    <span class="fl">7.3</span>, <span class="fl">14.3</span>, <span class="fl">13.5</span>, <span class="fl">8.0</span>, <span class="fl">19.5</span>, <span class="fl">13.4</span>, <span class="fl">17.9</span>, <span class="fl">17.7</span>, <span class="fl">16.4</span>, <span class="fl">15.6</span>, <span class="fl">17.3</span>, <span class="fl">19.9</span>, <span class="fl">4.4</span>, <span class="fl">2.1</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -239,16 +198,16 @@ shows how to publish the cod -->
 <div class="section level3">
 <h3 id="aov">More than two samples: One-way test and ANOVA or Kruskal-Wallis test<a class="anchor" aria-label="anchor" href="#aov"></a>
 </h3>
-<p>If the independent, categorical variable <code>varfactor</code> has more than two levels and the dependent variable <code>varsample</code> is numerical, <code><a href="../reference/visstat.html">visstat()</a></code> performs an analysis of variance (ANOVA, see <code>aov())</code> under the condition that the underlying assumptions are met:</p>
+<p>If the feature consists of data of <code>class</code> <code>"factor"</code> with more than two levels and the response is of <code>mode</code> <code>"numeric"</code>, <code><a href="../reference/visstat.html">visstat()</a></code> performs an analysis of variance (ANOVA, see <code>aov())</code> under the condition that the underlying assumptions are met:</p>
 <ol style="list-style-type: decimal">
 <li><p>Normality of the standardized residuals and</p></li>
 <li><p>homoscedasticity.</p></li>
 </ol>
-<p>If only 1. is met, <code><a href="../reference/visstat.html">visstat()</a></code> performs a one-way test (see <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>). If 1. does not apply, a Kruskal-Wallis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is used. These assumptions are tested by the function <code><a href="../reference/visAnovaAssumptions.html">visAnovaAssumptions()</a></code>.</p>
+<p>If only 1. is met, <code><a href="../reference/visstat.html">visstat()</a></code> performs a one-way test (see <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>). If 1. does not apply, a Kruskal-Wallis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is used. These assumptions are tested by the function <code>visAnovaAssumptions()</code>.</p>
 <div class="section level4">
 <h4 id="residual-analysis">Residual analysis<a class="anchor" aria-label="anchor" href="#residual-analysis"></a>
 </h4>
-<p>Function <code><a href="../reference/visAnovaAssumptions.html">visAnovaAssumptions()</a></code> checks for the normality of the standardised residuals of the ANOVA fit generated by the function <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> . To do so it applies both the Shapiro-Wilk-test <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and the Anderson-Darling-Test <code>ad.test()</code> on the standardised residuals. Furthermore it visualises the standardised residuals versus the fitted mean values of the linear model for each level of <code>varfactor</code>. Additionally the normal QQ plot of the standardised residuals is generated.</p>
+<p>Function <code>visAnovaAssumptions()</code> checks for the normality of the standardised residuals of the ANOVA fit generated by the function <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> . To do so it applies both the Shapiro-Wilk-test <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and the Anderson-Darling-Test <code>ad.test()</code> on the standardised residuals. Furthermore it visualises the standardised residuals versus the fitted mean values of the linear model for each level of <code>varfactor</code>. Additionally the normal QQ plot of the standardised residuals is generated.</p>
 </div>
 <div class="section level4">
 <h4 id="homoscedasticity-homogeneity-of-variances-in-each-level-bartlett-test">Homoscedasticity: homogeneity of variances in each level: Bartlett test<a class="anchor" aria-label="anchor" href="#homoscedasticity-homogeneity-of-variances-in-each-level-bartlett-test"></a>
@@ -291,7 +250,7 @@ shows how to publish the cod -->
 <div class="section level4">
 <h4 id="examples-1">Examples<a class="anchor" aria-label="anchor" href="#examples-1"></a>
 </h4>
-<p>The <code>npk</code> data sets reports the yield of peas in pounds/block on 6 blocks, where the usage of the fertilizers nitrogen (N), phosphate (P) or potassium (K) was varied. Either no, one, two or three different were applied on the blocks.</p>
+<p>The <code>npk</code> data sets reports the yield of peas in pounds/block on six blocks, where the usage of the fertilizers nitrogen (N), phosphate (P) or potassium (K) was varied. Either no, one, two or three different fertilizers were applied on the blocks.</p>
 <div class="section level5">
 <h5 id="one-way-test">One way test<a class="anchor" aria-label="anchor" href="#one-way-test"></a>
 </h5>
@@ -383,19 +342,19 @@ shows how to publish the cod -->
 <div class="section level3">
 <h3 id="transforming-contingency-tables">Transforming contingency tables<a class="anchor" aria-label="anchor" href="#transforming-contingency-tables"></a>
 </h3>
-<p>Count data are often presented as multidimensional arrays, so called contingency tables, whereas <code><a href="../reference/visstat.html">visstat()</a></code> requires a <code>data.frame</code> with a column structure. Arrays can be transformed to this column wise structure with the helper function <code><a href="../reference/countsToCases.html">countsToCases()</a></code></p>
+<p>Count data are often presented as multidimensional arrays, so called contingency tables, whereas <code><a href="../reference/visstat.html">visstat()</a></code> requires a <code>data.frame</code> with a column structure. Arrays can be transformed to this column wise structure with the helper function <code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code></p>
 <div class="section level4">
 <h4 id="example-1">Example<a class="anchor" aria-label="anchor" href="#example-1"></a>
 </h4>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">HairEyeColorDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/countsToCases.html">countsToCases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">HairEyeColorDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
 <h3 id="pearsons-chi-squared-test-and-mosaic-plot-with-pearson-residuals">Pearson’s Chi-squared test and mosaic plot with Pearson residuals<a class="anchor" aria-label="anchor" href="#pearsons-chi-squared-test-and-mosaic-plot-with-pearson-residuals"></a>
 </h3>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">HairEyeColorDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/countsToCases.html">countsToCases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">HairEyeColorDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">HairEyeColorDataFrame</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-12-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-12-2.png" width="100%"></p>
 </div>
@@ -406,7 +365,7 @@ shows how to publish the cod -->
 <code class="sourceCode R"><span><span class="va">HairEyeColorMaleFisher</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co"># slicing out a 2 x2 contingency table</span></span>
 <span><span class="va">blackBrownHazelGreen</span> <span class="op">&lt;-</span> <span class="va">HairEyeColorMaleFisher</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
-<span><span class="va">blackBrownHazelGreen</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/countsToCases.html">countsToCases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">blackBrownHazelGreen</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-13-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-13-2.png" width="100%"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
