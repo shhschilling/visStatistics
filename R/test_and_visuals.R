@@ -189,6 +189,7 @@ two_sample_t_test <- function(samples,
     lwd = 2,
     length = 0.1
   )
+  
   arrows(
     2,
     mean(x2) + correction2,
@@ -1554,8 +1555,8 @@ side_of_nh <- function(alternative) {
 
 create_two_samples_vector <- function(samples, fact) {
   # Creates column vector built out of two samples
-  # samples all in one column
-  levels <- unique(fact) 
+  # samples all in one column and sorted 
+  levels <- unique(sort(fact)) 
   # two levels
   if (length(levels) > 2) {
     return(warning(
