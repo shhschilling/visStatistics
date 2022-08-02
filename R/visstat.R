@@ -187,7 +187,7 @@ visstat <- function(dataframe,
       vis_sample_fact <- warning("In each group must be at least one member ")
     } else {
       # t-Test -----
-      
+
       x <- twosamples$sample1and2
       x1 <- twosamples$sample1
       x2 <- twosamples$sample2
@@ -264,14 +264,14 @@ visstat <- function(dataframe,
         # normal distribution not given for n<limit
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
 
-        vis_sample_fact <- two_sample_WilcoxonTest(
+        vis_sample_fact <- two_sample_wilcoxon_test(
           samples,
           fact,
           alternative = "two.sided",
           conf.level = conf.level,
           notchf =  F,
           samplename = varsample,
-          #factorname = matchingCriteria,
+          # factorname = matchingCriteria,
           factorname = varfactor,
           cex = 1
         )
@@ -537,7 +537,7 @@ visstat <- function(dataframe,
       )
     }
   }
-  
+
   return(invisible(vis_sample_fact))
 }
 # End of visstat function -------

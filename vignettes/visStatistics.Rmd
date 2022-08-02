@@ -21,7 +21,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7,
+  fig.width = 8,
   fig.height = 5,
   out.width = "100%"
 )
@@ -59,11 +59,11 @@ All statistical tests are called with their default parameter sets, with the exc
 
 # Comparing means and medians
 
-If the feature named `varfactor` consists of data of `class` `"factor"` with two or more levels and the response named `varsample` consists of data of `class` `"numeric"` or `"integer"`, tests are applied to compare the means or medians.
+If the feature consists of data of `class` `"factor"` with two or more levels and the response consists of data of `class` `"numeric"` or `"integer"` (both of mode `"numeric"`), tests are applied to compare the means or medians.
 
-## Two sample tests: Welch's t-test or Wilcoxon rank-sum test
+## Two sample tests: Welch's t-test or Wilcoxon rank sum test
 
-If the feature named `varfactor` consists of data of `class` `"factor"` with exactly two levels and the response named `varsample` is numerical, either Welch's t-test or the Wilcoxon rank-sum test are performed. The choice follows the algorithm below:
+If the feature has exactly two levels, either Welch's t-test or the Wilcoxon rank sum test are performed. The choice follows the algorithm below:
 
 -   If the sample size for both levels is bigger than 100, perform always the `t.test()` [@Lumley2002dsa].
 
@@ -75,7 +75,7 @@ If the feature named `varfactor` consists of data of `class` `"factor"` with exa
 
 Note that `visstat()` only performs unpaired tests.
 
-The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the `t-test.()`, additionally the`conf.level\`$\cdot 100 \%$ -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated box plots is generated and returned as a list.
+The graphical representation consists of box plots overlayed with jitter plots showing each data point. In the case of the `t-test.()`, additionally the`conf.level\`$\cdot 100 \%$ -confidence intervals are shown.The test statistics of the chosen test as well as the summary statistics of the generated box plots is returned as a list.
 
 ### Examples
 
@@ -84,7 +84,7 @@ The graphical representation consists of box plots overlayed with jitter plots s
 As an example we use the motor trend car road test data set (`mtcars)` consisting of 32 observations. In the example below `mpg` denotes the Miles/US gallon used, `am` denotes the transmission type ((0 = automatic, 1 = manual)).
 
 ```{r}
-
+mtcars$am <- as.factor(mtcars$am)
 ttestStatistics <- visstat(mtcars, "mpg", "am")
 # Print the test statistics
 ttestStatistics
@@ -92,19 +92,20 @@ ttestStatistics
 
 ```{r}
 # Set the confidence level explicitly resulting in wider confidence levels
+mtcars$am <- as.factor(mtcars$am)
 ttestStatistics <- visstat(mtcars, "mpg", "am", conf.level = 0.99)
 ```
 
-#### Wilcoxon rank-sum test (calling wilcox.test())
+#### Wilcoxon rank sum test calling wilcox.test()
 
 ```{r}
 grades_gender <- data.frame(
-  Sex = as.factor(c(rep("Girl", 20), rep("Boy", 20))),
+  Sex = as.factor(c(rep("Girl", 21), rep("Boy", 23))),
   Grade = c(
     19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4,
-    20.3, 9.3, 11.3, 18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.3,
+    20.3, 9.3, 11.3, 18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.0,
     16.5, 5.1, 15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0, 17.4,
-    7.3, 14.3, 13.5, 8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6
+    7.3, 14.3, 13.5, 8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6, 17.3, 19.9, 4.4, 2.1
   )
 )
 
@@ -113,7 +114,7 @@ wilcoxonStatistics <- visstat(grades_gender, "Grade", "Sex")
 
 ## More than two samples: One-way test and ANOVA or Kruskal-Wallis test {#aov}
 
-If the independent, categorical variable `varfactor` has more than two levels and the dependent variable `varsample` is numerical, `visstat()` performs an analysis of variance (ANOVA, see `aov())` under the condition that the underlying assumptions are met:
+If the feature consists of data of `class` `"factor"` with more than two levels and the response is of `mode` `"numeric"`, `visstat()` performs an analysis of variance (ANOVA, see `aov())` under the condition that the underlying assumptions are met:
 
 1.  Normality of the standardized residuals and
 
@@ -163,7 +164,7 @@ If the p-values of the standardised residuals calculated by `shapiro.test()` or 
 
 ### Examples
 
-The `npk` data sets reports the yield of peas in pounds/block on 6 blocks, where the usage of the fertilizers nitrogen (N), phosphate (P) or potassium (K) was varied. Either no, one, two or three different were applied on the blocks.
+The `npk` data sets reports the yield of peas in pounds/block on six blocks, where the usage of the fertilizers nitrogen (N), phosphate (P) or potassium (K) was varied. Either no, one, two or three different fertilizers were applied on the blocks.
 
 #### One way test
 

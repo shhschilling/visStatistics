@@ -80,18 +80,18 @@ test_norm_vis <- function(x, y_axis_hist = c(0, 0.04)) {
 
 ###### Two-Sample t-Test ###############################
 two_sample_t_test <- function(samples,
-                             fact,
-                             alternative = c("two.sided", "less", "greater"),
-                             paired = FALSE,
-                             var.equal = FALSE,
-                             conf.level = conf.level,
-                             samplename = "",
-                             factorname = "") {
+                              fact,
+                              alternative = c("two.sided", "less", "greater"),
+                              paired = FALSE,
+                              var.equal = FALSE,
+                              conf.level = conf.level,
+                              samplename = "",
+                              factorname = "") {
   oldpar <- par(no.readonly = TRUE)
   on.exit(par(oldpar))
   alternative <- match.arg(alternative)
 
-  
+
   if (!missing(conf.level) &&
     (length(conf.level) != 1 || !is.finite(conf.level) ||
       conf.level < 0 || conf.level > 1)) {
@@ -103,8 +103,11 @@ two_sample_t_test <- function(samples,
   }
 
   alpha <- 1 - conf.level
+  
   levels <- unique(sort(fact))
-
+   
+  
+  
   twosamples <- create_two_samples_vector(samples, fact)
   x <- twosamples$sample1and2
 
@@ -131,10 +134,10 @@ two_sample_t_test <- function(samples,
   b <- boxplot(
     samples ~ fact,
     lwd = 0.5,
-    xlab = factorname, # wird nicht angezeigt, bug!
+    xlab = factorname,
     ylab = samplename,
     ylim = c(mi - 2, ma),
-    varwidth = T, #boxplot width proportional to sample size
+    varwidth = T, 
     col = colorscheme(1)
   )
 
@@ -168,7 +171,7 @@ two_sample_t_test <- function(samples,
 
   # alpha_sidak = 1 - sqrt(1 - alpha)
 
-  alpha_sidak <- alpha # ignore the sidak correction
+  alpha_sidak <- alpha 
 
   correction1 <- qt(1 - 0.5 * alpha_sidak, length(x1) - 1) * sd(x1) / sqrt(length(x1))
   correction2 <- qt(1 - 0.5 * alpha_sidak, length(x2) - 1) * sd(x2) / sqrt(length(x2))
@@ -199,7 +202,7 @@ two_sample_t_test <- function(samples,
     length = 0.1
   )
 
-  
+# Sample sizes above box plot 
   text(1:length(b$n), c(ma, ma), paste("N=", b$n))
   t <- t.test(
     x1,
@@ -210,37 +213,59 @@ two_sample_t_test <- function(samples,
     var.equal = FALSE,
     na.action = na.omit
   )
+#Legend
+  legend(
+    "bottomleft",
+    inset = 0.05,
+    horiz = F,
+    c(paste("mean with", conf.level * 100, "% conf. intervall ")),
+    col = c( colors()[552]),
+    bty = "n",
+    lwd = 3
+  )
+  
   p_value <- t$p.value
   p_value <- signif(p_value, 2)
 
+  # Title general generation 
   if (alternative == "two.sided") {
     ah <- "equals"
   } else {
     ah <- alternative
   }
   compare <- side_of_nh(alternative)
-  mtext(
+  
+
+
+
+  mean_or_median <- "population mean"
+  comparepvalue <- calculate_comparepvalue(p_value,conf.level)
+  
+  two_sample_title <-
     paste(
-      t$method,
-      ", p value = ",
-      p_value,
-      "\n Null hypothesis:",
-      " mean ",
+      t$method, ", \U03B1 = ", 1 - conf.level,
+      "\n Null hypothesis: ",
+      mean_or_median, " ",
       samplename,
       " of ",
-      factorname," ",
-      #unique(fact)[1],
-      levels(fact)[1],
-      " ",
-      compare,
-      " mean ",
+      factorname, " \"",
+      unique(sort(fact))[1],"\" ",
+      compare, " ",
+      mean_or_median, " ",
       samplename,
       " of ",
-      factorname," ",
-      levels(fact)[2],
+      factorname, " \"",
+      unique(sort(fact))[2],"\" ",
+      "\n p = ",
+      p_value, ", p ", comparepvalue, " \U03B1",
       sep = ""
     )
-  )
+
+
+
+
+  mtext(two_sample_title)
+
   my_list <-
     list(
       "dependent variable (response)" = samplename,
@@ -256,26 +281,32 @@ two_sample_t_test <- function(samples,
 
 # Two-Sample Wilcoxon-Test  ###############################
 # One function with flags for greater, less, two sided and notch
-two_sample_WilcoxonTest <- function(samples,
-                                    fact,
-                                    alternative = c("two.sided", "less", "greater"),
-                                    conf.level = conf.level,
-                                    notchf = F,
-                                    samplename = "",
-                                    factorname = "",
-                                    cex = 1) {
+two_sample_wilcoxon_test <- function(samples,
+                                     fact,
+                                     alternative = c("two.sided", "less", "greater"),
+                                     conf.level = conf.level,
+                                     notchf = FALSE,
+                                     samplename = "",
+                                     factorname = "",
+                                     cex = 1) {
   oldparwilcox <- par(no.readonly = TRUE) # make a copy of current values
   on.exit(par(oldparwilcox))
 
   alternative <- match.arg(alternative)
   # Error handling ----
-  if (!((length(conf.level) == 1L) && is.finite(conf.level) &&
-    (conf.level > 0) && (conf.level < 1))) {
-    return(warning("'conf.level' must be a single number between 0 and 1"))
-  }
+
 
   if (missing(conf.level)) {
     conf.level <- 0.95
+  }
+
+  if (missing(notchf)) {
+    notchf <- FALSE
+  }
+
+  if (!((length(conf.level) == 1L) && is.finite(conf.level) &&
+    (conf.level > 0) && (conf.level < 1))) {
+    return(warning("'conf.level' must be a single number between 0 and 1"))
   }
 
   if (!is.numeric(samples)) {
@@ -320,11 +351,11 @@ two_sample_WilcoxonTest <- function(samples,
   )
 
   par(oma = c(0, 0, 2, 0)) # outer margin above: 2 lines..
-  par(mar = c(8,4,4,2) + 0.1) #increse margin of labels below
-  
+  # par(mar = c(8,4,4,2) + 0.1) #increse margin of labels below
+
   b <- boxplot(samples ~ fact, plot = 0) # holds  the counts
 
-  
+
 
   stripchart(
     samples ~ fact,
@@ -343,7 +374,6 @@ two_sample_WilcoxonTest <- function(samples,
     varwidth = T,
     col = colorscheme(1),
     ylim = c(0, ma),
-    xlab = factorname,
     add = T
   )
   # text(1:length(b$n), b$stats[5,]+1, paste("n=", b$n))
@@ -358,25 +388,47 @@ two_sample_WilcoxonTest <- function(samples,
   } else {
     prefix <- character()
   }
-  mtext(
+  
+  # Title general generation 
+  if (alternative == "two.sided") {
+    ah <- "equals"
+  } else {
+    ah <- alternative
+  }
+  compare <- side_of_nh(alternative)
+  
+  
+  
+  
+  mean_or_median <- "population median"
+  comparepvalue <- calculate_comparepvalue(p_value,conf.level)
+  
+  two_sample_title <-
     paste(
-      t$method,",p-value = ",
-      p_value,
-      "\n Null hypothesis: median",
+      t$method, ", \U03B1 = ", 1 - conf.level,
+      "\n Null hypothesis: ",
+      mean_or_median, " ",
       samplename,
-      "of",
-      prefix,
-      unique(fact)[1],
-      compare,
-      "median",
+      " of ",
+      factorname, " ",
+      unique(sort(fact))[1], " ",
+      compare, " ",
+      mean_or_median, " ",
       samplename,
-      "of",
-      prefix,
-      unique(fact)[2]
-    ),
-    cex = cex,
-    outer = TRUE
-  )
+      " of ",
+      factorname, " ",
+      unique(sort(fact))[2],
+      "\n p = ",
+      p_value, ", p ", comparepvalue, " \U03B1",
+      sep = ""
+    )
+  
+  
+  
+  
+  mtext(two_sample_title)
+  
+  
 
   my_list <-
     list(
@@ -623,7 +675,7 @@ vis_anova <- function(samples,
   samples <- samples3
   n_classes <- length(unique(fact))
   # https://en.wikipedia.org/wiki/Bonferroni_correction
-  number_of_pairwise_comparisons  <- n_classes*(n_classes - 1)/2
+  number_of_pairwise_comparisons <- n_classes * (n_classes - 1) / 2
   alpha_sidak <- 1 - conf.level^(1 / number_of_pairwise_comparisons) # Sidak correction, https://en.wikipedia.org/wiki/%C5%A0id%C3%A1k_correction
   # alpha_sidak=alpha #do not apply sidak correction
   sdna <- function(x) {
@@ -1503,8 +1555,7 @@ side_of_nh <- function(alternative) {
 create_two_samples_vector <- function(samples, fact) {
   # Creates column vector built out of two samples
   # samples all in one column
-  levels <- unique(sort(fact)) #comment out sort
-  
+  levels <- unique(fact) 
   # two levels
   if (length(levels) > 2) {
     return(warning(
@@ -1708,7 +1759,14 @@ progn_band <- function(x, reg, conf.level, up) {
   }
   return(result)
 }
-
+calculate_comparepvalue <- function(p_value,conf.level) {
+  if (p_value < 1 - conf.level) {
+    comparepvalue <- "<"
+  } else {
+    comparepvalue <- ">"
+  }
+  return(comparepvalue)
+}
 
 # Check for normality with Shapiro-Wilk-test without visualization----
 test_norm <- function(x) {
