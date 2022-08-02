@@ -9,17 +9,12 @@
     The R package `visStatistics` with its core function 
     visstat() provides means to quickly visualise and analyse raw data.
     Based on a decision tree it picks the statistical hypothesis test with 
-    the highest statistical power between the dependent variable (response) and the independent variable
-    (feature):
-    For the comparison of averages, the chosen test depends on the p-values of the null that the normalized
-    standardized residuals of the regression model are normally distributed as tested by both shapiro.test() or ad.test(). 
-    If both p-values are smaller than the error probability 1-conf.level,the non-parametric tests kruskal.test() resp. wilcox.test()
-    are performed, otherwise the parametric tests oneway.test() and aov() resp. t.test(). Exception: 
-    If the sample size is bigger than 100, t.test() is always performed and wilcox.test() is never executed 
-    (Lumley et al. (2002) &lt;doi:10.1146/annurev.publhealth.23.100901.140546&gt;). 
+    the highest statistical power between the dependent variable (response) and the independent variable (feature):
+    For the comparison of averages of two groups with sample sizes bigger than 100 in both groups, visstat() performs a t.test() (Lumley et al. (2002) &lt;doi:10.1146/annurev.publhealth.23.100901.140546&gt;). Otherwise,for the comparison of averages of two or more groups, the chosen test depends on the p-values of the null that the normalized
+    standardized residuals of the regression model are normally distributed as tested by both shapiro.test() or ad.test(): 
+    If both p-values are smaller than the error probability 1-conf.level,the non-parametric tests kruskal.test() resp. wilcox.test() are performed, otherwise the parametric tests oneway.test() and aov() resp. t.test().
     For the test of independence of count data, Cochran's rule (Cochran (1954) &lt;doi:10.2307/3001666&gt;) is implemented: 
-    If more than 20 percent of all cells have a count smaller than 5, fisher.test() is performed and displayed,
-    otherwise chisqu.test(). In both cases case an additional mosaic plot is generated. 
+    If more than 20 percent of all cells have a count smaller than 5, fisher.test() is performed and displayed, otherwise chisqu.test(). In both cases case an additional mosaic plot is generated. 
     Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
     Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
     Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
@@ -35,17 +30,12 @@
     The R package `visStatistics` with its core function 
     visstat() provides means to quickly visualise and analyse raw data.
     Based on a decision tree it picks the statistical hypothesis test with 
-    the highest statistical power between the dependent variable (response) and the independent variable
-    (feature):
-    For the comparison of averages, the chosen test depends on the p-values of the null that the normalized
-    standardized residuals of the regression model are normally distributed as tested by both shapiro.test() or ad.test(). 
-    If both p-values are smaller than the error probability 1-conf.level,the non-parametric tests kruskal.test() resp. wilcox.test()
-    are performed, otherwise the parametric tests oneway.test() and aov() resp. t.test(). Exception: 
-    If the sample size is bigger than 100, t.test() is always performed and wilcox.test() is never executed 
-    (Lumley et al. (2002) &lt;doi:10.1146/annurev.publhealth.23.100901.140546&gt;). 
+    the highest statistical power between the dependent variable (response) and the independent variable (feature):
+    For the comparison of averages of two groups with sample sizes bigger than 100 in both groups, visstat() performs a t.test() (Lumley et al. (2002) &lt;doi:10.1146/annurev.publhealth.23.100901.140546&gt;). Otherwise,for the comparison of averages of two or more groups, the chosen test depends on the p-values of the null that the normalized
+    standardized residuals of the regression model are normally distributed as tested by both shapiro.test() or ad.test(): 
+    If both p-values are smaller than the error probability 1-conf.level,the non-parametric tests kruskal.test() resp. wilcox.test() are performed, otherwise the parametric tests oneway.test() and aov() resp. t.test().
     For the test of independence of count data, Cochran's rule (Cochran (1954) &lt;doi:10.2307/3001666&gt;) is implemented: 
-    If more than 20 percent of all cells have a count smaller than 5, fisher.test() is performed and displayed,
-    otherwise chisqu.test(). In both cases case an additional mosaic plot is generated. 
+    If more than 20 percent of all cells have a count smaller than 5, fisher.test() is performed and displayed, otherwise chisqu.test(). In both cases case an additional mosaic plot is generated. 
     Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
     Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
     Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
@@ -218,9 +208,9 @@
 <div class="section level3">
 <h3 id="pearsons-chi-squared-test">Pearson’s Chi-squared test<a class="anchor" aria-label="anchor" href="#pearsons-chi-squared-test"></a>
 </h3>
-<p>Count data sets are often presented as multidimensional arrays, so-called contingency tables, whereas <code><a href="reference/visstat.html">visstat()</a></code> requires a <code>data.frame</code> with a column structure. Arrays can be transformed to this column wise structure with the helper function <code><a href="reference/countsToCases.html">countsToCases()</a></code>:</p>
+<p>Count data sets are often presented as multidimensional arrays, so-called contingency tables, whereas <code><a href="reference/visstat.html">visstat()</a></code> requires a <code>data.frame</code> with a column structure. Arrays can be transformed to this column wise structure with the helper function <code><a href="reference/counts_to_cases.html">counts_to_cases()</a></code>:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">HairEyeColorDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/countsToCases.html">countsToCases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">HairEyeColorDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">HairEyeColorDataFrame</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-10-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-10-2.png" width="100%"></p>
 </div>
@@ -231,7 +221,7 @@
 <code class="sourceCode R"><span><span class="va">HairEyeColorMaleFisher</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co"># slicing out a 2 x2 contingency table</span></span>
 <span><span class="va">blackBrownHazelGreen</span> <span class="op">&lt;-</span> <span class="va">HairEyeColorMaleFisher</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
-<span><span class="va">blackBrownHazelGreen</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/countsToCases.html">countsToCases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">blackBrownHazelGreen</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-11-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-11-2.png" width="100%"></p>
 <p>For details regarding the generated mosaic plots, please refer to the <code>mosaic()</code> in the <code>vcd</code> package.</p>
