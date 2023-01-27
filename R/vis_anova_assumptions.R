@@ -4,10 +4,10 @@
 #'
 #' \code{vis_anova_assumptions} checks for normality of the standardised residuals of the ANOVA. Both the
 #'    Shapiro-Wilk test \code{shapiro.test()} and the Anderson-Darling test \code{ad.test()} check the
-#'    null that the standardized residuals are normally distributed.
+#'    null that the standardised residuals are normally distributed.
 #'    It generates a scatter plot
-#'    of the standardized residuals versus the fitted mean values of the linear models for each level of \code{fact}.
-#'    Furthermore a normal QQ plot of the standardized residuals is generated.
+#'    of the standardised residuals versus the fitted mean values of the linear models for each level of \code{fact}.
+#'    Furthermore a normal QQ plot of the standardised residuals is generated.
 #'    The null of homogeneity of variances  of each factor level is tested with the \code{bartlett.test()}.
 
 #'
@@ -50,7 +50,7 @@ vis_anova_assumptions <- function(samples,
   qqnorm(rstandard(anova))
   qqline(rstandard(anova), col = "red", lwd = 2)
   par(mfrow = c(1, 1))
-  # check for normality of standardized residuals
+  # check for normality of standardised residuals
   if (length(anova) > 7) {
     ad_test <- ad.test(rstandard(anova))
     p_AD <- signif(ad_test$p.value, 3)
@@ -64,11 +64,12 @@ vis_anova_assumptions <- function(samples,
   p_bart <- bartlett_test$p.value
   mtext(
     paste(
-      "Check for homogeneity of variances: Bartlett Test, p = ",
+      "Check for homogeneity of variances: Bartlett test, p = ",
       signif(p_bart, 2),
-      "\n Check for normality of standardized residuals: Shapiro-Wilk: p = ",
+      "\n Check for normality of standardised residuals:",
+      "\n Shapiro-Wilk test: p = ",
       signif(p_SH, 2),
-      "\n Anderson-Darling: p = ",
+      "\n Anderson-Darling test: p = ",
       signif(p_AD, 2)
     ),
     outer = TRUE

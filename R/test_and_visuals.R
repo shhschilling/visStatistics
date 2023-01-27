@@ -708,7 +708,7 @@ vis_anova <- function(samples,
     summarystat <- summaryAnova
   } else {
     p_aov <- oneway$p.value
-    label_aov <- "One-Way test"
+    label_aov <- "One-way test,"
     summarystat <- oneway
   }
 
@@ -803,7 +803,7 @@ vis_anova <- function(samples,
     "topleft",
     inset = 0.05,
     horiz = F,
-    c(paste("mean with", round((1 - alpha_sidak) * 100, 1), "% conf. intervall, Sidak correction "), paste("mean with", conf.level * 100, "% conf. intervall ")),
+    c(paste("mean with", round((1 - alpha_sidak) * 100, 1), "% conf. intervall, Sidak corrected"), paste("mean with", conf.level * 100, "% conf. intervall ")),
     col = c(colors()[131], colors()[552]),
     bty = "n",
     lwd = 3
@@ -1081,7 +1081,7 @@ vis_resid <- function(resid, fitted) {
 
 ###### Visualize Regression ###############################
 
-# only normality assumptions of standardized residuals
+# only normality assumptions of standardised residuals
 vis_normality_assumptions <- function(y,
                                       x,
                                       conf.level = 0.95) {
@@ -1111,7 +1111,7 @@ vis_normality_assumptions <- function(y,
     rstandard(reg),
     main = "std. Residuals vs. Fitted",
     xlab = "Fitted Values",
-    ylab = "Standardized Residuals"
+    ylab = "standardised Residuals"
   )
   abline(h = 0, col = 1, lwd = 2)
 

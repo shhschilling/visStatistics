@@ -112,11 +112,11 @@ grades_gender <- data.frame(
 wilcoxonStatistics <- visstat(grades_gender, "Grade", "Sex")
 ```
 
-## More than two samples: One-way test and ANOVA or Kruskal-Wallis test {#aov}
+## More than two samples: One-way test, ANOVA or Kruskal-Wallis test {#aov}
 
 If the feature consists of data of `class` `"factor"` with more than two levels and the response is of `mode` `"numeric"`, `visstat()` performs an analysis of variance (ANOVA, see `aov())` under the condition that the underlying assumptions are met:
 
-1.  Normality of the standardized residuals and
+1.  Normality of the standardised residuals and
 
 2.  homoscedasticity.
 
@@ -138,21 +138,21 @@ Depending on the p-value of the `bartlett.test()` the appropriate test is shown 
 
 -   Otherwise homoscedasticity can not be assumed and the p-value of `oneway.test()` is reported.
 
-#### Post-hoc analysis: Tukey\`s honestly significant differences (HSD)
+### Post-hoc analysis: Tukey\`s honestly significant differences (HSD) and Sidak corrected confidence intervals
 
-Simple multiple comparisons of the means for the levels of a factor in an analysis of variance inflate the probability of declaring a significant difference when in fact it is not present. The family-wise error rate (also named the probability of a type I error) is the probability of at least one false positive comparison (falsely rejecting the null hypothesis) when multiple comparisons are performed.
-
-`visstat()` reduces the probability of a type I error by using Tukey's honestly significant differences (HSD, see `TukeyHSD()`). It creates a set of confidence intervals on the differences between the means per factor level with the specified family-wise probability `conf`. If a confidence intervall does not include the zero, there is a significant difference between the pair. The set of confidence intervals for all pairwise comparisons accompanied by the Tukey HSD adjusted p-values is returned.
+Simple multiple comparisons of the means for the factor levels in  an analysis of variance inflate the probability of declaring a significant difference when in fact it is not present. The family-wise error rate (also named the probability of a type I error) is the probability of at least one false positive comparison, falsely rejecting the null hypothesis,  when multiple comparisons are performed.
+#### Tukey\`s honestly significant differences (HSD)
+`visstat()` reduces this probability of a type I error by using Tukey's honestly significant differences (HSD, see `TukeyHSD()`). It creates a set of confidence intervals on the differences between the means per factor level with the specified family-wise probability `conf`. If a confidence intervall does not include the zero, there is a significant difference between the pair. The set of confidence intervals for all pairwise comparisons accompanied by the Tukey HSD adjusted p-values is returned.
 
 In the graphical representation of One-way test and ANOVA, the green letters between two levels only differ, if the Tukey's HSD corrected p-value for those two levels is smaller than `1-confint`.
 
-#### Post-hoc analysis: Sidak corrected confidence intervals
+#### Sidak corrected confidence intervals
 
-Tukey\`s HSD procedure is based on **pairwise** comparisons of the differences between the means per factor level, whereas the Sidak procedure counteracts the problems of a type I error by lowering the acceptable probability of a type I error for **all** comparisons of the levels of the independent, categorical variable.
+Tukey\`s HSD procedure is based on **pairwise** comparisons of the differences between the means per factor level and creates a set of corresponding confidence intervals. The Sidak procedure, in contrast,  counteracts the problems of a type I error by lowering the acceptable probability of a type I error for **all** comparisons of the levels of the independent, categorical variable.
 
 The Sidak corrected acceptable probability of error [@Sidak] is defined as $\alpha_{Sidak}=1$-`conf.int`$^{1/M}$, where $M=\frac{n\cdot (n-1)}{2}$ is the number of pairwise comparisons of the $n$ levels of the categorical variable.
 
-In the graphical representation of One-way test and ANOVA, `visstat()` displays both the `conf.level`\$\\cdot 100 \\% \$ confidence intervals alongside the larger, Sidak-corrected $(1-\alpha_{Sidak})\cdot 100\%$ confidence intervals.
+In the graphical representation of One-way test and ANOVA, `visstat()` displays both the `conf.level` $\cdot 100 \% $ confidence intervals alongside the larger, Sidak-corrected $(1-\alpha_{Sidak})\cdot 100\%$ confidence intervals.
 
 #### Limitations
 
@@ -160,13 +160,13 @@ Note that the current structure of `visstat()` does not allow the study of inter
 
 ### Kruskal-Wallis test
 
-If the p-values of the standardised residuals calculated by `shapiro.test()` or `ad.test()` are both smaller than the error probability `1-conf.level`, a normal distribution of the residuals can not be assumed. In this case, `visstat()` chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. `kruskal.test()` tests the null that the medians are the same in each group (level). As post-hoc-analysis the pairwise Wilcoxon rank sum test `pairwise.wilcox.test()` applying the default Holm method for multiple comparisons[@Holm1979ASS] is used. If the Holm corrected p-value for a pair is smaller than `1-confint`, the green letters below the corresponding two box plots will differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list with the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.
+If the p-values of the standardised residuals calculated by `shapiro.test()` or `ad.test()` are both smaller than the error probability `1-conf.level`, a normal distribution of the residuals can not be assumed. In this case, `visstat()` chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. `kruskal.test()` tests the null that the medians are the same in each group level. As post-hoc-analysis the pairwise Wilcoxon rank sum test `pairwise.wilcox.test()` applying the default Holm method for multiple comparisons[@Holm1979ASS] is used. If the Holm corrected p-value for a pair is smaller than `1-confint`, the green letters below the corresponding two box plots will differ. Otherwise the graphical representation of the Kruskal-Wallis test is analogue to the above described Wilcoxon rank sum test. A list with the test statistics of the Kruskal-Wallis rank sum test as well as the p-values of the pairwise comparisons adjusted by the Holm method is returned.
 
 ### Examples
 
 The `npk` data sets reports the yield of peas in pounds/block on six blocks, where the usage of the fertilizers nitrogen (N), phosphate (P) or potassium (K) was varied. Either no, one, two or three different fertilizers were applied on the blocks.
 
-#### One way test
+#### One-way test
 
 ```{r}
 oneway_npk <- visstat(npk, "yield", "block")
@@ -184,7 +184,7 @@ InsectSprays_tr$count <- sqrt(InsectSprays$count)
 visstat(InsectSprays_tr, "count", "spray")
 ```
 
-In the above example the scatter plots of the standardized residuals, the QQ-plot and the p-values of both Shapiro-Wilk test and Anderson-Darling tests are greater than the probability of error $\alpha=0.05$. Therefore we can assume that the residuals are normally distributed. At the given confidence level the homogeneity of variances can not be assumed ($p <\alpha$ as calculated with the `bartlett.test()`), and the p-value of the `oneway.test()` is displayed.
+In the above example the scatter plots of the standardised residuals, the QQ-plot and the p-values of both Shapiro-Wilk test and Anderson-Darling tests are greater than the probability of error $\alpha=0.05$. Therefore we can assume that the residuals are normally distributed. At the given confidence level the homogeneity of variances can not be assumed ($p <\alpha$ as calculated with the `bartlett.test()`), and the p-value of the `oneway.test()` is displayed.
 
 #### Kruskal-Wallis rank sum test
 
@@ -194,17 +194,17 @@ The iris data set gives the measurement of the petal width in cm for three diffe
 visstat(iris, "Petal.Width", "Species")
 ```
 
-In the iris data example, both the graphical analysis by the scatter plots of the standardized residuals and the QQ -plot as well as the p-values of Shapiro-Wilk-test and Anderson-Darling test suggest that we can not assume that the residuals are normally distributed. Therefore `visstat` switches to the non parametric alternative `kruskal.test()`.
+In the iris data example, the graphical analysis of the scatter plots of the standardised residuals as well as the QQ -plot suggests that the residuals are not normally distributed. This visual inspection is confirmed by the very small p-values of the implemented tests of normality, Shapiro-Wilk-test and Anderson-Darling test. 
+If **both** p-values of the Shapiro-Wilk-test and Anderson-Darling test Shapiro-Wilk-test and Anderson-Darling test are smaller than $\alpha=1-$`conf.int` (as in the our example), 
+`visstat` switches to the non parametric alternative `kruskal.test()`.
 
 # Linear Regression
 
-If the feature `varfactor` and the response `varsample` have only one level of type `numerical` or `integer`, `visstat()` performs a simple linear regression
+If the feature `varfactor` and the response `varsample` have only one level of type `numerical` or `integer`, `visstat()` performs a simple linear regression.
 
 ## Residual analysis
 
-`visstat` checks the normal distribution of the standardized residuals derived from `lm()` both graphically and with the Shapiro-Wilk- and Anderson-Test (analogue to section \@ref(aov) ). If the p-values of the null that the standardized residuals are normally distributed of both Shapiro-Wilk and Anderson-Test are greater than `1-conf.int`, the title of the residual plot will display the message "Requirements regression not met".
-
-Independent of the residual analysis outcome, `visstat()`\` performs in the subsequent step the regression itself. The title of the graphical output lists the chosen confidence level `conf.level`, the regression parameter accompanied by their confidence levels and p-values as well as the adjusted $R^2$. The graph shows the raw data, the regression line and both the confidence and prediction bands corresponding to the chosen `conf.level`. The function returns a list with the test statistics of the linear regression, the p-values of the normality tests of the standardized residuals and the pointwise estimates of the confidence and prediction band.
+`visstat` checks the normal distribution of the standardised residuals derived from `lm()` both graphically and with the Shapiro-Wilk- and Anderson-Test (analogue to section \@ref(aov) ). If the p-values of the null that the standardised residuals are normally distributed of both Shapiro-Wilk and Anderson-Test are greater than `1-conf.int`, the title of the residual plot will display the message "Requirements regression not met".
 
 ## Example
 
@@ -225,7 +225,7 @@ linreg_cars$anderson_darling_test_residuals
 linreg_cars$shapiro_test_residuals
 ```
 
-The linear regression model explains 64% of the total variance of the dependent variables distance named "dist". p-values greater than `conf.level` in both Anderson-Darling normality test and the Shapiro-Wilk test of the standardized residuals suggest that the normality assumption underlying the linear regression is met.
+The linear regression model explains 64% of the total variance of the dependent variables distance named "dist". p-values greater than `conf.level` in both Anderson-Darling normality test and the Shapiro-Wilk test of the standardised residuals suggest that the normality assumption underlying the linear regression is met.
 
 ### trees
 
@@ -235,7 +235,7 @@ The trees data set provides measurements of the diameter (named "Girth") in inch
 linreg_cars <- visstat(trees, "Height", "Girth", conf.level = 0.9)
 ```
 
-Both the graphical analysis of the standardized residuals and p-values smaller than `conf.level` in the Anderson-Darling normality test and the Shapiro-Wilk test of the standardized residuals suggest that the condition of normally distributed residuals of the regression model is not met. Furthermore the linear regression model explains only 24% of the total variance of the dependent variables "Height" of the cherry trees. The user should might consider other regression models. This further tests are not provided by `visstat()`.
+Both the graphical analysis of the standardised residuals and p-values smaller than `conf.level` in the Anderson-Darling normality test and the Shapiro-Wilk test of the standardised residuals suggest that the condition of normally distributed residuals of the regression model is not met. Furthermore the linear regression model explains only 24% of the total variance of the dependent variables "Height" of the cherry trees. The user should might consider other regression models. This further tests are not provided by `visstat()`.
 
 # ${\chi}^2$- and Fisher Test
 
@@ -294,7 +294,7 @@ file.remove(file.path(tempdir(), "mosaic_complete_Hair_Eye.png"))
 
 `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `lm()`,`fisher.test()`, `chisqu.test()`
 
-## Implemented tests to check the normal distribution of standardized residuals
+## Implemented tests to check the normal distribution of standardised residuals
 
 `shapiro.test()` and `ad.test()`
 

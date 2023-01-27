@@ -33,10 +33,10 @@ vis_anova_assumptions(
 \description{
 \code{vis_anova_assumptions} checks for normality of the standardised residuals of the ANOVA. Both the
    Shapiro-Wilk test \code{shapiro.test()} and the Anderson-Darling test \code{ad.test()} check the
-   null that the standardized residuals are normally distributed.
+   null that the standardised residuals are normally distributed.
    It generates a scatter plot
-   of the standardized residuals versus the fitted mean values of the linear models for each level of \code{fact}.
-   Furthermore a normal QQ plot of the standardized residuals is generated.
+   of the standardised residuals versus the fitted mean values of the linear models for each level of \code{fact}.
+   Furthermore a normal QQ plot of the standardised residuals is generated.
    The null of homogeneity of variances  of each factor level is tested with the \code{bartlett.test()}.
 }
 \examples{
