@@ -1,3 +1,7 @@
+------------------------------------------------------------------------
+
+output: rmarkdown::github_document \#output: rmarkdown::html_vignette
+editor_options: markdown: wrap: 72 —
 
 <!-- README.md is automatically generated from README.Rmd. Please only edit this Rmd file! -->
 <!-- knitr before every resubmission -->
