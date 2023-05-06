@@ -2,8 +2,8 @@
 title: "visStatistics"
 author: "Sabine Schilling"
 date: "`r Sys.Date()`"
-output: rmarkdown::github_document
-#output: rmarkdown::html_vignette
+#output: rmarkdown::github_document
+output: rmarkdown::html_vignette
 bibliography: visstat.bib
 vignette: >
   %\VignetteIndexEntry{visStatistics}
@@ -186,7 +186,7 @@ InsectSprays_tr$count <- sqrt(InsectSprays$count)
 visstat(InsectSprays_tr, "count", "spray")
 ```
 
-In the above example the scatter plots of the standardised residuals, the QQ-plot and the p-values of both Shapiro-Wilk test and Anderson-Darling tests are greater than the probability of error $\alpha=0.05$. Therefore we can assume that the residuals are normally distributed. At the given confidence level the homogeneity of variances can not be assumed ($p <\alpha$ as calculated with the `bartlett.test()`), and the p-value of the `oneway.test()` is displayed.
+In the above example the scatter plots of the standardised residuals, the normal quantile-quantile plot (Q???Q plot)  and the p-values of both Shapiro-Wilk test and Anderson-Darling tests are greater than the probability of error $\alpha=0.05$. Therefore, we can assume that the residuals are normally distributed. At the given confidence level the homogeneity of variances can not be assumed ($p <\alpha$ as calculated with the `bartlett.test()`), and the p-value of the `oneway.test()` is displayed.
 
 #### Kruskal-Wallis rank sum test
 
@@ -206,7 +206,10 @@ If the feature `varfactor` and the response `varsample` have only one level of t
 
 ## Residual analysis
 
-`visstat` checks the normal distribution of the standardised residuals derived from `lm()` both graphically and with the Shapiro-Wilk- and Anderson-Test (analogue to section \@ref(aov) ). If the p-values of the null that the standardised residuals are normally distributed of both Shapiro-Wilk and Anderson-Test are greater than `1-conf.int`, the title of the residual plot will display the message "Requirements regression not met".
+`visstat()` checks the normal distribution of the standardised residuals derived from `lm()` both graphically and with the Shapiro-Wilk- and Anderson-Test (analogue to section \@ref(aov) ). If the p-values of the null that the standardised residuals are normally distributed of both Shapiro-Wilk and Anderson-Test are smaller  than `1-conf.int`, the title of the residual plot will display the message "Requirement of normally distributed residuals not met".
+
+
+Independent of the residual analysis outcome, `visstat()` performs the regression itself in the subsequent step. The title of the graphical output indicates the chosen confidence level conf.level, the regression parameter accompanied by their confidence intervals and p-values as well as the adjusted $R^2$. The graph shows the raw data, the regression line and both the confidence and prediction bands corresponding to the chosen conf.level. `visstat()` returns a list with the test statistics of the linear regression, the p-values of the normality tests of the standardized residuals and the pointwise estimates of the confidence and prediction band.
 
 ## Example
 
@@ -227,7 +230,7 @@ linreg_cars$anderson_darling_test_residuals
 linreg_cars$shapiro_test_residuals
 ```
 
-The linear regression model explains 64% of the total variance of the dependent variables distance named "dist". p-values greater than `conf.level` in both Anderson-Darling normality test and the Shapiro-Wilk test of the standardised residuals suggest that the normality assumption underlying the linear regression is met.
+The linear regression model explains 64% of the total variance of the dependent variables distance named "dist". p-values greater than `conf.level` in both Anderson-Darling normality test and the Shapiro-Wilk test of the standardised residuals suggest that the normality assumption of the residuals underlying the linear regression is met.
 
 ### trees
 
@@ -237,7 +240,7 @@ The trees data set provides measurements of the diameter (named "Girth") in inch
 linreg_cars <- visstat(trees, "Height", "Girth", conf.level = 0.9)
 ```
 
-Both the graphical analysis of the standardised residuals and p-values smaller than `conf.level` in the Anderson-Darling normality test and the Shapiro-Wilk test of the standardised residuals suggest that the condition of normally distributed residuals of the regression model is not met. Furthermore the linear regression model explains only 24% of the total variance of the dependent variables "Height" of the cherry trees. The user should might consider other regression models. This further tests are not provided by `visstat()`.
+Both the graphical analysis of the standardised residuals and p-values smaller than `conf.level` in the Anderson-Darling normality test and the Shapiro-Wilk test of the standardised residuals suggest that the condition of normally distributed residuals of the regression model is not met. Furthermore the linear regression model explains only 24% of the total variance of the dependent variables "Height" of the cherry trees. The user might consider other regression models. This further tests are not provided by `visstat()`.
 
 # ${\chi}^2$- and Fisher Test
 

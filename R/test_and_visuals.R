@@ -703,12 +703,12 @@ vis_anova <- function(samples,
 
   if (p_bart > 1 - conf.level) {
     p_aov <- summaryAnova[[1]][["Pr(>F)"]][1]
-    label_aov <- "ANOVA"
+    label_aov <- "ANOVA: "
 
     summarystat <- summaryAnova
   } else {
     p_aov <- oneway$p.value
-    label_aov <- "One-way test,"
+    label_aov <- "One-way test: "
     summarystat <- oneway
   }
 
@@ -931,7 +931,7 @@ vis_Kruskal_Wallis_clusters <- function(samples,
     lwd = 2
   )
 
-  title(paste(kk$method, "p =", signif(kk$p.value, digits = 3)), outer = TRUE)
+  title(paste(kk$method,": p =", signif(kk$p.value, digits = 3)), outer = TRUE)
   my_list <-
     list(
       "kruskal_wallis" = kk,
@@ -1129,7 +1129,7 @@ vis_normality_assumptions <- function(y,
         p_SH,
         "\n Anderson-Darling: p = ",
         p_KS,
-        "\n Requirements regression not met"
+        "\n Requirement of normally distributed residuals not met "
       ),
       outer = TRUE
     )
