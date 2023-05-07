@@ -563,6 +563,7 @@ vis_chi_squared_test <- function(samples,
   }
 
   counts <- makeTable(samples, fact, samplename, factorname)
+  #check for minimal size of 2x2
   check_assumptions_chi <- check_assumptions_count_data(samples, fact)
 
   if (check_assumptions_chi == FALSE) {
@@ -585,9 +586,7 @@ vis_chi_squared_test <- function(samples,
     } else {
       col_vec_browser <- c(colortuple, rainbow(nrow(counts) - 2, s = 0.4, alpha = 1))
     }
-    # x_val = seq(-0.5, ncol(counts) + 0.5, 1)
-    #  y_val = c(0, norm_counts[1, ], 0)
-
+    
 
     # creates new plot for barplot
 
@@ -1518,12 +1517,15 @@ makeTable <- function(samples, fact, samplename, factorname) {
 
 fisher_chi <- function(counts) {
   # if Cochran requirements for chi2 not given: fisher test is performed
-  # if more than 20% of cells have count smaller 5
+  # if more than 20% of cells have EXPECTED count smaller 5 or one cell has expected count smaller than 1
   #
-  #
-  if (any(counts == 0) # at least one cell with zero enry
+  
+  suppressWarnings(chisq  <- chisq.test(counts))
+  expected_counts=chisq$expected
+  
+  if (any(expected_counts < 1) # at least one cell with expectation value smaller 1
   |
-    sum(counts < 5) / length(counts) > 0.2 # more than 20% of cells have count smaller 5
+    sum(expected_counts < 5) / length(expected_counts) > 0.2 # more than 20% of cells have expected count smaller 5
     &
       # Fisher Tests breaks down for too large tables
       dim(counts)[2] < 7) {
@@ -1536,7 +1538,7 @@ fisher_chi <- function(counts) {
       B = 1e5
     )
   } else {
-    testFisherChi <- chisq.test(counts)
+    testFisherChi <- chisq
   }
 
   return(testFisherChi)
@@ -1769,7 +1771,7 @@ calculate_comparepvalue <- function(p_value,conf.level) {
   return(comparepvalue)
 }
 
-# Check for normality with Shapiro-Wilk-test without visualization----
+# Check for normality with Shapiro-Wilk test without visualization----
 test_norm <- function(x) {
   # Remove NA from x
   x <- x[!is.na(x)]

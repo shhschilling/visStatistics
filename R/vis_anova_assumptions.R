@@ -64,12 +64,12 @@ vis_anova_assumptions <- function(samples,
   p_bart <- bartlett_test$p.value
   mtext(
     paste(
-      "Check for homogeneity of variances: Bartlett test, p = ",
+      "Check for homogeneity of variances: Bartlett: p = ",
       signif(p_bart, 2),
       "\n Check for normality of standardised residuals:",
-      "\n Shapiro-Wilk test: p = ",
+      "\n Shapiro-Wilk: p = ",
       signif(p_SH, 2),
-      "\n Anderson-Darling test: p = ",
+      ", Anderson-Darling: p = ",
       signif(p_AD, 2)
     ),
     outer = TRUE

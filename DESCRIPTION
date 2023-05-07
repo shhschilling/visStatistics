@@ -9,18 +9,24 @@ Maintainer: Sabine Schilling <sabineschilling@gmx.ch>
 Description: Visualization of the most powerful statistical hypothesis test.
     The R package `visStatistics` with its core function 
     visstat() provides means to quickly visualise and analyse raw data.
-    Based on a decision tree it picks the statistical hypothesis test with 
-    the highest statistical power between the dependent variable (response) and the independent variable (feature):
-    For the comparison of averages of two groups with sample sizes bigger than 100 in both groups, visstat() performs a t.test() (Lumley et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). Otherwise,for the comparison of averages of two or more groups, the chosen test depends on the p-values of the null that the normalized
-    standardized residuals of the regression model are normally distributed as tested by both shapiro.test() or ad.test(): 
-    If both p-values are smaller than the error probability 1-conf.level,the non-parametric tests kruskal.test() resp. wilcox.test() are performed, otherwise the parametric tests oneway.test() and aov() resp. t.test().
+    Based on a decision tree it picks the statistical hypothesis test with the highest
+    statistical power between the dependent variable (response) and the independent variable (feature):
+    For the comparison of averages of two groups with sample sizes bigger than 100 in both groups, visstat()
+    performs a t.test()(Lumley et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). Otherwise,for the comparison of averages of 
+    two or more groups, the chosen test depends on the p-values of the null that the
+    standardised residuals of the regression model are normally distributed as tested by both shapiro.test() or ad.test(): 
+    If both p-values are smaller than the error probability 1-conf.level,the non-parametric tests kruskal.test() resp. wilcox.test() 
+    are performed, otherwise the parametric tests oneway.test() and aov() resp. t.test().
     For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented: 
-    If more than 20 percent of all cells have a count smaller than 5, fisher.test() is performed and displayed, otherwise chisqu.test(). In both cases case an additional mosaic plot is generated. 
+    If under the null hypothesis of independence, the expected counts of 80 percent of all cells is at least 5
+    and none of the expected cell counts is smaller than 1, chisqu.test() is performed,
+    otherwise the fisher.test(). 
     Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
     Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
     Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
-    All implemented  statistical tests are called with their default parameter sets which the exception of `conf.level`, which can be adjusted in the function call of `visstat()`.
-    The `vissStatistics` vignette offers a detailed description of the decision tree and examples.
+    All implemented statistical tests are called with their default parameter sets which the exception of `conf.level`, 
+    which can be adjusted in the function call of `visstat()`.
+    The `vissStatistics` vignette offers a detailed description of the above decision tree and examples.
 Imports: vcd, Cairo, graphics, grDevices, grid, multcompView, stats, utils, nortest 
 License: MIT + file LICENSE
 Encoding: UTF-8

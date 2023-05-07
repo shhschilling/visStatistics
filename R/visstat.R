@@ -28,8 +28,10 @@
 #' Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed (Lumley et al. (2002)
 #' <doi:10.1146/annurev.publheath.23.100901.140546>).
 #'
-#' For the test of independence of count data, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is implemented:
-#' If more than 20 percent of all cells have a count smaller than 5,  \code{fisher.test()} is performed and displayed, otherwise the \code{chisqu.test()}.
+#' For the test of independence of count data, Cochran's rule (Cochran (1954)
+#'<doi:10.2307/3001666>) is implemented:
+#' If more than 20 percent of all cells have an expected count smaller than 5 or
+#' an expected cell count is zero,  \code{fisher.test()} is performed and displayed, otherwise the \code{chisqu.test()}.
 #' In both cases case an additional mosaic plot showing Pearson's residuals is generated.
 
 
