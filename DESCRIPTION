@@ -8,23 +8,19 @@ Authors@R: c(
 Maintainer: Sabine Schilling <sabineschilling@gmx.ch>
 Description: Visualization of the most powerful statistical hypothesis test.
     The R package `visStatistics` with its core function 
-    visstat() provides means to quickly visualise and analyse raw data.
-    Based on a decision tree, it selects the statistical hypothesis test with the highest
-    statistical power between the dependent variable (response) and the independent variable (feature):
+    visstat() allows to quickly visualise raw data and, based on a decision tree, select the statistical hypothesis test with           the highest statistical power between the dependent variable (response) and the independent variable (feature):
     To compare the means of two groups with sample sizes greater than 100 in both groups, visstat()
-    performs a t.test()(Lumley et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). Otherwise, when comparing the means of
-    two or more groups, the test chosen depends on the p-values of the null that the
-    standardised residuals of the regression model are normally distributed as tested by both shapiro.test() or ad.test(): 
-    If both p-values are smaller than the error probability 1-conf.level,the non-parametric tests kruskal.test() resp. wilcox.test() 
-    are performed, otherwise the parametric tests oneway.test() and aov() resp. t.test() are applied.
-    For count data, visstat() tests the  null hypothesis, that the feature and the response are independent of each other using the 
-    chisqu.test() or fisher.test(). The  choice of test is based on Cochran's rule Cochran (1954) <doi:10.2307/3001666>).
+    performs a t.test()(Lumley et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). Otherwise, when comparing the mean     of two or more groups, the test chosen depends on the p-values of the null that the
+    standardised residuals of the regression model are normally distributed as tested by both shapiro.test() and ad.test(): 
+    If both p-values are smaller than the error probability 1-conf.level,the non-parametric tests kruskal.test() resp. wilcox.test()     are used, otherwise the parametric tests oneway.test() and aov() resp. t.test() are used.
+    For count data, visstat() tests the null hypothesis, that the feature and the response are independent of each other using the 
+    chisqu.test() or fisher.test(). The choice of test is based on Cochran's rule Cochran (1954) <doi:10.2307/3001666>).
     Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
-    Implemented tests to check the normal distribution of standardized residuals: shapiro.test() and ad.test().
+    Implemented tests to check the normal distribution of the standardised residuals: shapiro.test() and ad.test().
     Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
-    All implemented statistical tests are called with their default parameter sets, with the exception of `conf.level`, 
-    which can be adjusted in the function call of `visstat()`.
-    The `vissStatistics` vignette provides a detailed description of the above decision tree and examples.
+    All implemented statistical tests are called with their default parameter sets, except for `conf.level`, 
+    which can be adjusted in the `visstat()` function call.
+    A detailed description of the decision tree and numerous and numerous examples can be found in the visStatistics` vignette.
 Imports: vcd, Cairo, graphics, grDevices, grid, multcompView, stats, utils, nortest 
 License: MIT + file LICENSE
 Encoding: UTF-8
