@@ -142,8 +142,10 @@ than the error probability 1-<code>conf.level</code>, <code><a href="https://rdr
 and <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> resp. <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> are performed and displayed.
 Exception: If the sample size is bigger than 100,  <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> is never executed,instead always the <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> is performed (Lumley et al. (2002)
 &lt;doi:10.1146/annurev.publheath.23.100901.140546&gt;).</p>
-<p>For the test of independence of count data, Cochran's rule (Cochran (1954) &lt;doi:10.2307/3001666&gt;) is implemented:
-If more than 20 percent of all cells have a count smaller than 5,  <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> is performed and displayed, otherwise the <code>chisqu.test()</code>.
+<p>For the test of independence of count data, Cochran's rule (Cochran (1954)
+&lt;doi:10.2307/3001666&gt;) is implemented:
+If more than 20 percent of all cells have an expected count smaller than 5 or
+an expected cell count is zero,  <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> is performed and displayed, otherwise the <code>chisqu.test()</code>.
 In both cases case an additional mosaic plot showing Pearson's residuals is generated.</p>
     </div>
 
