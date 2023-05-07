@@ -100,8 +100,8 @@ Uncomment below line to print out summary statistics:
 
 ``` r
 visstat(ToothGrowth, "len", "supp")
-#> Warning in wilcox.test.default(x = DATA[[1L]], y = DATA[[2L]], ...): kann bei
-#> Bindungen keinen exakten p-Wert Berechnen
+#> Warning in wilcox.test.default(x = DATA[[1L]], y = DATA[[2L]], ...): cannot
+#> compute exact p-value with ties
 ```
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
