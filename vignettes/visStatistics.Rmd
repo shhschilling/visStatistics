@@ -80,7 +80,7 @@ The graphical representation consists of box plots overlayed with jitter plots s
 
 ### Examples
 
-#### Welch's t-test calling t.test()
+#### Welch's t-test
 
 As an example we use the motor trend car road test data set (`mtcars)` consisting of 32 observations. In the example below `mpg` denotes the Miles/US gallon used, `am` denotes the transmission type ((0 = automatic, 1 = manual)).
 
@@ -146,7 +146,7 @@ Simple multiple comparisons of the means for the factor levels in an analysis of
 #### Tukey\`s honestly significant differences (HSD)
 `visstat()` reduces this probability of a type I error by using Tukey's honestly significant differences (HSD, see `TukeyHSD()`). It creates a set of confidence intervals on the differences between the means per factor level with the specified family-wise probability `conf`. If a confidence intervall does not include the zero, there is a significant difference between the pair. The set of confidence intervals for all pairwise comparisons accompanied by the Tukey HSD adjusted p-values is returned.
 
-In the graphical representation of One-way test and ANOVA, the green letters between two levels only differ, if the Tukey's HSD corrected p-value for those two levels is smaller than $\alpha=1-$`confint`.
+In the graphical representation of One-way test and ANOVA, the green letters between two levels only differ, if the Tukey's HSD corrected p-value for those two levels is smaller than $\alpha=1-$`conf.int`.
 
 #### Sidak corrected confidence intervals
 
@@ -154,7 +154,7 @@ Tukey\`s HSD procedure is based on **pairwise** comparisons of the differences b
 
 The Sidak corrected acceptable probability of error [@Sidak] is defined as $\alpha_{Sidak}=1$-`conf.int`$^{1/M}$, where $M=\frac{n\cdot (n-1)}{2}$ is the number of pairwise comparisons of the $n$ levels of the categorical variable.
 
-In the graphical representation of One-way test and ANOVA, `visstat()` displays both the `conf.level` $\cdot 100 \% $ confidence intervals alongside the larger, Sidak-corrected $(1-\alpha_{Sidak})\cdot 100 \%$ confidence intervals.
+In the graphical representation of One-way test and ANOVA, `visstat()` displays both the `conf.level` $\cdot\; 100 \%$ confidence intervals alongside the larger, Sidak-corrected $(1-\alpha_{Sidak})\cdot 100\;\%$ confidence intervals.
 
 #### Limitations
 
