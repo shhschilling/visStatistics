@@ -72,7 +72,7 @@
                         <h4 data-toc-skip class="author">Sabine
 Schilling</h4>
             
-            <h4 data-toc-skip class="date">2023-05-06</h4>
+            <h4 data-toc-skip class="date">2023-05-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/HEAD/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -81,8 +81,8 @@ Schilling</h4>
     
     
 <style type="text/css">
-  body{
-  font-size: 12pt;
+ body{
+ font-size: 12pt;
 }
 </style>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -145,11 +145,9 @@ below:</p>
 <li><p>If the sample size for both levels is bigger than 100, perform
 always the <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> <span class="citation">(Lumley et al.
 2002)</span>.</p></li>
-<li>
-<p>If the sample size of at least one of the levels is smaller than
+<li><p>If the sample size of at least one of the levels is smaller than
 100, check first for normality of both levels with the Shapiro-Wilk
-Normality Test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>):</p>
-<ul>
+Normality Test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>):</p></li>
 <li><p>If the p-values of the <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> of both levels
 are bigger than the error probability <span class="math inline">\(\alpha
 =\)</span><code>1-conf.level</code>, choose Welch’s t-Test
@@ -158,8 +156,6 @@ are bigger than the error probability <span class="math inline">\(\alpha
 <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> are smaller than the error probability <span class="math inline">\(\alpha =\)</span>`<code>1-conf.level</code>, a
 Wilcoxon rank sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is
 executed.</p></li>
-</ul>
-</li>
 </ul>
 <p>Note that <code><a href="../reference/visstat.html">visstat()</a></code> only performs unpaired tests.</p>
 <p>The graphical representation consists of box plots overlayed with
@@ -230,13 +226,13 @@ denotes the transmission type ((0 = automatic, 1 = manual)).</p>
 </h5>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grades_gender</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  Sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Girl"</span>, <span class="fl">21</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Boy"</span>, <span class="fl">23</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="fl">19.3</span>, <span class="fl">18.1</span>, <span class="fl">15.2</span>, <span class="fl">18.3</span>, <span class="fl">7.9</span>, <span class="fl">6.2</span>, <span class="fl">19.4</span>,</span>
-<span>    <span class="fl">20.3</span>, <span class="fl">9.3</span>, <span class="fl">11.3</span>, <span class="fl">18.2</span>, <span class="fl">17.5</span>, <span class="fl">10.2</span>, <span class="fl">20.1</span>, <span class="fl">13.3</span>, <span class="fl">17.2</span>, <span class="fl">15.1</span>, <span class="fl">16.2</span>, <span class="fl">17.0</span>,</span>
-<span>    <span class="fl">16.5</span>, <span class="fl">5.1</span>, <span class="fl">15.3</span>, <span class="fl">17.1</span>, <span class="fl">14.8</span>, <span class="fl">15.4</span>, <span class="fl">14.4</span>, <span class="fl">7.5</span>, <span class="fl">15.5</span>, <span class="fl">6.0</span>, <span class="fl">17.4</span>,</span>
-<span>    <span class="fl">7.3</span>, <span class="fl">14.3</span>, <span class="fl">13.5</span>, <span class="fl">8.0</span>, <span class="fl">19.5</span>, <span class="fl">13.4</span>, <span class="fl">17.9</span>, <span class="fl">17.7</span>, <span class="fl">16.4</span>, <span class="fl">15.6</span>, <span class="fl">17.3</span>, <span class="fl">19.9</span>, <span class="fl">4.4</span>, <span class="fl">2.1</span></span>
-<span>  <span class="op">)</span></span>
+<span> Sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Girl"</span>, <span class="fl">21</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Boy"</span>, <span class="fl">23</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span> Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="fl">19.3</span>, <span class="fl">18.1</span>, <span class="fl">15.2</span>, <span class="fl">18.3</span>, <span class="fl">7.9</span>, <span class="fl">6.2</span>, <span class="fl">19.4</span>,</span>
+<span>  <span class="fl">20.3</span>, <span class="fl">9.3</span>, <span class="fl">11.3</span>, <span class="fl">18.2</span>, <span class="fl">17.5</span>, <span class="fl">10.2</span>, <span class="fl">20.1</span>, <span class="fl">13.3</span>, <span class="fl">17.2</span>, <span class="fl">15.1</span>, <span class="fl">16.2</span>, <span class="fl">17.0</span>,</span>
+<span>  <span class="fl">16.5</span>, <span class="fl">5.1</span>, <span class="fl">15.3</span>, <span class="fl">17.1</span>, <span class="fl">14.8</span>, <span class="fl">15.4</span>, <span class="fl">14.4</span>, <span class="fl">7.5</span>, <span class="fl">15.5</span>, <span class="fl">6.0</span>, <span class="fl">17.4</span>,</span>
+<span>  <span class="fl">7.3</span>, <span class="fl">14.3</span>, <span class="fl">13.5</span>, <span class="fl">8.0</span>, <span class="fl">19.5</span>, <span class="fl">13.4</span>, <span class="fl">17.9</span>, <span class="fl">17.7</span>, <span class="fl">16.4</span>, <span class="fl">15.6</span>, <span class="fl">17.3</span>, <span class="fl">19.9</span>, <span class="fl">4.4</span>, <span class="fl">2.1</span></span>
+<span> <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">wilcoxonStatistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">grades_gender</span>, <span class="st">"Grade"</span>, <span class="st">"Sex"</span><span class="op">)</span></span></code></pre></div>
@@ -251,26 +247,29 @@ test<a class="anchor" aria-label="anchor" href="#aov"></a>
 <p>If the feature consists of data of <code>class</code>
 <code>"factor"</code> with more than two levels and the response is of
 <code>mode</code> <code>"numeric"</code>, <code><a href="../reference/visstat.html">visstat()</a></code>
-performs an analysis of variance (ANOVA, see <code>aov())</code> under
-the condition that the underlying assumptions are met:</p>
+performs an analysis of variance (ANOVA, see <code>aov())</code>, if
+both of the following null hypotheses can not be rejected on the chosen
+error of probability of error <span class="math inline">\(\alpha=1-\)</span><code>conf.level</code></p>
 <ol style="list-style-type: decimal">
 <li><p>Normality of the standardised residuals and</p></li>
 <li><p>homoscedasticity.</p></li>
 </ol>
-<p>If only 1. is met, <code><a href="../reference/visstat.html">visstat()</a></code> performs a one-way test
-(see <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>). If 1. does not apply, a Kruskal-Wallis
-test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is used. These assumptions are tested
-by the function <code>visAnovaAssumptions()</code>.</p>
+<p>If only the first condition of the normality of the residuals is met,
+<code><a href="../reference/visstat.html">visstat()</a></code> performs a one-way test (see
+<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>). If the normality of the residuals can not
+be assumed, a Kruskal-Wallis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is used.
+These assumptions are tested by the function
+<code>visAnovaAssumptions()</code>.</p>
 <div class="section level4">
 <h4 id="residual-analysis">Residual analysis<a class="anchor" aria-label="anchor" href="#residual-analysis"></a>
 </h4>
 <p>Function <code>visAnovaAssumptions()</code> checks the standardised
 residuals of the ANOVA fit for normality using both the
 Shapiro-Wilk-test <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and the
-Anderson-Darling-Test <code>ad.test()</code>. Furthermore it visualises
-the standardised residuals versus the fitted mean values of the linear
-model for each level of the feature <code>varfactor</code>. Additionally
-the normal QQ plot of the standardised residuals is generated.</p>
+Anderson-Darling-Test <code>ad.test()</code>. It visualises the
+standardised residuals versus the fitted mean values of the linear model
+for each level of the feature <code>varfactor</code>and generates the
+normal Q-Q plot of the standardised residuals.</p>
 </div>
 <div class="section level4">
 <h4 id="homoscedasticity-homogeneity-of-variances-in-each-level-bartlett-test">Homoscedasticity: homogeneity of variances in each level: Bartlett
@@ -289,7 +288,7 @@ the same.</p>
 <h4 id="one-way-test-and-anova">One-way test and ANOVA<a class="anchor" aria-label="anchor" href="#one-way-test-and-anova"></a>
 </h4>
 <p>Depending on the p-value of the <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code> the
-appropriate test is shown in the title:</p>
+appropriate test is shown in the figure title:</p>
 <ul>
 <li><p>If the p-value of the <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code> is bigger than
 <code>1-conf.level</code>, we assume homogeneity of variances in each
@@ -322,7 +321,7 @@ pair. The set of confidence intervals for all pairwise comparisons
 accompanied by the Tukey HSD adjusted p-values is returned.</p>
 <p>In the graphical representation of One-way test and ANOVA, the green
 letters between two levels only differ, if the Tukey’s HSD corrected
-p-value for those two levels is smaller than <span class="math inline">\(\alpha=\)</span><code>1-confint</code>.</p>
+p-value for those two levels is smaller than <span class="math inline">\(\alpha=1-\)</span><code>confint</code>.</p>
 </div>
 <div class="section level5">
 <h5 id="sidak-corrected-confidence-intervals">Sidak corrected confidence intervals<a class="anchor" aria-label="anchor" href="#sidak-corrected-confidence-intervals"></a>
@@ -339,7 +338,7 @@ pairwise comparisons of the <span class="math inline">\(n\)</span>
 levels of the categorical variable.</p>
 <p>In the graphical representation of One-way test and ANOVA,
 <code><a href="../reference/visstat.html">visstat()</a></code> displays both the <code>conf.level</code> $ % $
-confidence intervals alongside the larger, Sidak-corrected <span class="math inline">\((1-\alpha_{Sidak})\cdot 100\%\)</span> confidence
+confidence intervals alongside the larger, Sidak-corrected <span class="math inline">\((1-\alpha_{Sidak})\cdot 100 \%\)</span> confidence
 intervals.</p>
 </div>
 <div class="section level5">
@@ -567,7 +566,7 @@ residuals<a class="anchor" aria-label="anchor" href="#pearsons-chi-squared-test-
 <span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-13-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-13-2.png" width="100%"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># fisher_stats  #uncommenting prints out summary statistics</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># fisher_stats #uncommenting prints out summary statistics</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -581,9 +580,9 @@ applied naming convention of the graphics file reflects the chosen
 statistical test and the variable names.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
-<span>  graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span></span>
+<span> graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span></span>
 <span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code></p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
