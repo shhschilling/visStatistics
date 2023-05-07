@@ -167,7 +167,7 @@ statistics of the generated box plots is returned as a list.</p>
 <h4 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h4>
 <div class="section level5">
-<h5 id="welchs-t-test-calling-t-test">Welch’s t-test calling t.test()<a class="anchor" aria-label="anchor" href="#welchs-t-test-calling-t-test"></a>
+<h5 id="welchs-t-test">Welch’s t-test<a class="anchor" aria-label="anchor" href="#welchs-t-test"></a>
 </h5>
 <p>As an example we use the motor trend car road test data set
 (<code>mtcars)</code> consisting of 32 observations. In the example
@@ -321,7 +321,7 @@ pair. The set of confidence intervals for all pairwise comparisons
 accompanied by the Tukey HSD adjusted p-values is returned.</p>
 <p>In the graphical representation of One-way test and ANOVA, the green
 letters between two levels only differ, if the Tukey’s HSD corrected
-p-value for those two levels is smaller than <span class="math inline">\(\alpha=1-\)</span><code>confint</code>.</p>
+p-value for those two levels is smaller than <span class="math inline">\(\alpha=1-\)</span><code>conf.int</code>.</p>
 </div>
 <div class="section level5">
 <h5 id="sidak-corrected-confidence-intervals">Sidak corrected confidence intervals<a class="anchor" aria-label="anchor" href="#sidak-corrected-confidence-intervals"></a>
@@ -337,9 +337,9 @@ categorical variable.</p>
 pairwise comparisons of the <span class="math inline">\(n\)</span>
 levels of the categorical variable.</p>
 <p>In the graphical representation of One-way test and ANOVA,
-<code><a href="../reference/visstat.html">visstat()</a></code> displays both the <code>conf.level</code> $ % $
-confidence intervals alongside the larger, Sidak-corrected <span class="math inline">\((1-\alpha_{Sidak})\cdot 100 \%\)</span> confidence
-intervals.</p>
+<code><a href="../reference/visstat.html">visstat()</a></code> displays both the <code>conf.level</code> <span class="math inline">\(\cdot\; 100 \%\)</span> confidence intervals
+alongside the larger, Sidak-corrected <span class="math inline">\((1-\alpha_{Sidak})\cdot 100\;\%\)</span>
+confidence intervals.</p>
 </div>
 <div class="section level5">
 <h5 id="limitations">Limitations<a class="anchor" aria-label="anchor" href="#limitations"></a>
