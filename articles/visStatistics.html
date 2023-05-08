@@ -80,14 +80,8 @@ Schilling</h4>
 
     
     
-<pre><code>
-
-
-```r
-library(visStatistics)</code></pre>
-<!-- https://pkgdown.r-lib.org/ 
-shows how to publish the code -->
-<!-- Unnumbered section -->
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/shhschilling/visStatistics/" class="external-link">visStatistics</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 class="unnumbered" id="abstract">Abstract<a class="anchor" aria-label="anchor" href="#abstract"></a>
 </h2>
@@ -121,8 +115,9 @@ data.</p>
 underlying the decision tree of <code>vistat()</code>, while a call to
 <code><a href="../reference/visstat.html">?visstat</a></code> documents all parameter settings of the
 function.</p>
-<p>All statistical tests are called with their default parameter sets,
-with the exception of</p>
+<p>All implemented statistical tests are called with their default
+parameter sets, except for <code>conf.level</code>, which can be
+adjusted in the <code><a href="../reference/visstat.html">visstat()</a></code> function call.</p>
 </div>
 <div class="section level2">
 <h2 id="comparing-means-and-medians">Comparing means and medians<a class="anchor" aria-label="anchor" href="#comparing-means-and-medians"></a>
@@ -146,17 +141,17 @@ perform the <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-
 100, first check for normality of both levels with the Shapiro-Wilk
 normality test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>):</p></li>
 <li><p>If the p-values of the <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> of both levels
-are greater than the error probability <span class="math inline">\(\alpha =\)</span><code>1-conf.level</code>, choose
-Welch’s t test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>).</p></li>
+are greater than the error probability <span class="math inline">\(\alpha = 1-\)</span><code>conf.level</code>,
+choose Welch’s t test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>).</p></li>
 <li><p>If the p-values of at least one of the levels in the
-<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> are smaller than the error probability <span class="math inline">\(\alpha =\)</span>`<code>1-conf.level</code>, a
+<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> are smaller than the error probability <span class="math inline">\(\alpha=1-\)</span><code>conf.level</code>, a
 Wilcoxon rank sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is
 executed.</p></li>
 </ul>
 <p>Note that <code><a href="../reference/visstat.html">visstat()</a></code> only performs unpaired tests.</p>
 <p>The graphical representation consists of box plots overlaid with
 jitter plots showing each data point. In the case of the
-<code>t-test.()</code>, the<code>conf.level\</code><span class="math inline">\(\cdot 100 \%\)</span> -confidence intervals are
+<code>t-test.()</code>, the<code>conf.leve</code><span class="math inline">\(\cdot 100 \%\)</span> - confidence intervals are
 also shown. The test statistics of the chosen test as well as the
 summary statistics of the generated box plots are returned as a
 list.</p>
@@ -168,77 +163,42 @@ list.</p>
 </h5>
 <p>As an example we use the motor trend car road test data set
 (<code>mtcars)</code>, which consists of 32 observations. In the example
-below <code>mpg</code> denotes miles per US gallon, <code>am</code>
-denotes the transmission type ((0 = automatic, 1 = manual)).</p>
+below <code>mpg</code> denotes miles per US gallon, <code>am</code> the
+transmission type ((0 = automatic, 1 = manual)).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
-<span><span class="va">ttestStatistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">t_test_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Print the test statistics</span></span>
-<span><span class="va">ttestStatistics</span></span>
-<span><span class="co">#&gt; $`dependent variable (response)`</span></span>
-<span><span class="co">#&gt; [1] "mpg"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $`independent variables (features)`</span></span>
-<span><span class="co">#&gt; [1] 1 0</span></span>
-<span><span class="co">#&gt; Levels: 0 1</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $`t-test-statistics`</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  Welch Two Sample t-test</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; data:  x1 and x2</span></span>
-<span><span class="co">#&gt; t = -3.7671, df = 18.332, p-value = 0.001374</span></span>
-<span><span class="co">#&gt; alternative hypothesis: true difference in means is not equal to 0</span></span>
-<span><span class="co">#&gt; 95 percent confidence interval:</span></span>
-<span><span class="co">#&gt;  -11.280194  -3.209684</span></span>
-<span><span class="co">#&gt; sample estimates:</span></span>
-<span><span class="co">#&gt; mean of x mean of y </span></span>
-<span><span class="co">#&gt;  17.14737  24.39231 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $`Shapiro-Wilk-test_sample1`</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  Shapiro-Wilk normality test</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; data:  x</span></span>
-<span><span class="co">#&gt; W = 0.97677, p-value = 0.8987</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $`Shapiro-Wilk-test_sample2`</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  Shapiro-Wilk normality test</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; data:  x</span></span>
-<span><span class="co">#&gt; W = 0.9458, p-value = 0.5363</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># t_test_statistics  # Uncomment this line to print out the test statistics</span></span></code></pre></div>
+<p>Increasing the confidence level <code>conf.level</code> from the
+default 0.95 to 0.99 results in wider confidence intervals:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Set the confidence level explicitly resulting in wider confidence levels</span></span>
-<span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
-<span><span class="va">ttestStatistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
+<span><span class="va">t_test_statistics_99</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="100%"></p>
 </div>
 <div class="section level5">
-<h5 id="wilcoxon-rank-sum-test-calling-wilcox-test">Wilcoxon rank sum test calling wilcox.test()<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test-calling-wilcox-test"></a>
+<h5 id="wilcoxon-rank-sum-test">Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test"></a>
 </h5>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grades_gender</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  Sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Girl"</span>, <span class="fl">21</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Boy"</span>, <span class="fl">23</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  Grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="fl">19.3</span>, <span class="fl">18.1</span>, <span class="fl">15.2</span>, <span class="fl">18.3</span>, <span class="fl">7.9</span>, <span class="fl">6.2</span>, <span class="fl">19.4</span>,</span>
-<span>    <span class="fl">20.3</span>, <span class="fl">9.3</span>, <span class="fl">11.3</span>, <span class="fl">18.2</span>, <span class="fl">17.5</span>, <span class="fl">10.2</span>, <span class="fl">20.1</span>, <span class="fl">13.3</span>, <span class="fl">17.2</span>, <span class="fl">15.1</span>, <span class="fl">16.2</span>, <span class="fl">17.0</span>,</span>
-<span>    <span class="fl">16.5</span>, <span class="fl">5.1</span>, <span class="fl">15.3</span>, <span class="fl">17.1</span>, <span class="fl">14.8</span>, <span class="fl">15.4</span>, <span class="fl">14.4</span>, <span class="fl">7.5</span>, <span class="fl">15.5</span>, <span class="fl">6.0</span>, <span class="fl">17.4</span>,</span>
-<span>    <span class="fl">7.3</span>, <span class="fl">14.3</span>, <span class="fl">13.5</span>, <span class="fl">8.0</span>, <span class="fl">19.5</span>, <span class="fl">13.4</span>, <span class="fl">17.9</span>, <span class="fl">17.7</span>, <span class="fl">16.4</span>, <span class="fl">15.6</span>, <span class="fl">17.3</span>, <span class="fl">19.9</span>, <span class="fl">4.4</span>, <span class="fl">2.1</span></span>
-<span>  <span class="op">)</span></span>
+<span>sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"girl"</span>, <span class="fl">21</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"boy"</span>, <span class="fl">23</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span><span class="fl">19.3</span>, <span class="fl">18.1</span>, <span class="fl">15.2</span>, <span class="fl">18.3</span>, <span class="fl">7.9</span>, <span class="fl">6.2</span>, <span class="fl">19.4</span>,</span>
+<span><span class="fl">20.3</span>, <span class="fl">9.3</span>, <span class="fl">11.3</span>, <span class="fl">18.2</span>, <span class="fl">17.5</span>, <span class="fl">10.2</span>, <span class="fl">20.1</span>, <span class="fl">13.3</span>, <span class="fl">17.2</span>, <span class="fl">15.1</span>, <span class="fl">16.2</span>, <span class="fl">17.0</span>,</span>
+<span><span class="fl">16.5</span>, <span class="fl">5.1</span>, <span class="fl">15.3</span>, <span class="fl">17.1</span>, <span class="fl">14.8</span>, <span class="fl">15.4</span>, <span class="fl">14.4</span>, <span class="fl">7.5</span>, <span class="fl">15.5</span>, <span class="fl">6.0</span>, <span class="fl">17.4</span>,</span>
+<span><span class="fl">7.3</span>, <span class="fl">14.3</span>, <span class="fl">13.5</span>, <span class="fl">8.0</span>, <span class="fl">19.5</span>, <span class="fl">13.4</span>, <span class="fl">17.9</span>, <span class="fl">17.7</span>, <span class="fl">16.4</span>, <span class="fl">15.6</span>, <span class="fl">17.3</span>, <span class="fl">19.9</span>, <span class="fl">4.4</span>, <span class="fl">2.1</span></span>
+<span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">wilcoxonStatistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">grades_gender</span>, <span class="st">"Grade"</span>, <span class="st">"Sex"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">wilcoxon_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">grades_gender</span>, <span class="st">"grade"</span>, <span class="st">"sex"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-4-1.png" width="100%"></p>
 </div>
 </div>
 </div>
 <div class="section level3">
-<h3 id="aov">One-way test, ANOVA or Kruskal-Wallis test<a class="anchor" aria-label="anchor" href="#aov"></a>
+<h3 id="one-way-test-anova-or-kruskal-wallis-test">One-way test, ANOVA or Kruskal-Wallis test<a class="anchor" aria-label="anchor" href="#one-way-test-anova-or-kruskal-wallis-test"></a>
 </h3>
 <p>If the feature consists of data of <code>class</code>
 <code>"factor"</code> with more than two levels and the response is of
@@ -260,7 +220,7 @@ function.</p>
 <h4 id="checking-the-anova-assumptions">Checking the ANOVA assumptions<a class="anchor" aria-label="anchor" href="#checking-the-anova-assumptions"></a>
 </h4>
 <div class="section level5">
-<h5 id="residual-analysis">Residual analysis<a class="anchor" aria-label="anchor" href="#residual-analysis"></a>
+<h5 id="aov_residuals">Residual analysis<a class="anchor" aria-label="anchor" href="#aov_residuals"></a>
 </h5>
 <p>The function <code>visAnovaAssumptions()</code> checks the
 standardised residuals of the ANOVA fit for normality using both the
@@ -369,15 +329,15 @@ Kruskal-Wallis rank sum test and the p-values of the pairwise
 comparisons adjusted by the Holm method is returned.</p>
 </div>
 <div class="section level4">
-<h4 id="examples-based-on-data-set-npk">Examples based on data set: npk<a class="anchor" aria-label="anchor" href="#examples-based-on-data-set-npk"></a>
+<h4 id="examples-1">Examples<a class="anchor" aria-label="anchor" href="#examples-1"></a>
 </h4>
+<div class="section level5">
+<h5 class="unnumbered" id="one-way-test">One-way test:<a class="anchor" aria-label="anchor" href="#one-way-test"></a>
+</h5>
 <p>The <code>npk</code> dataset reports the yield of peas in
 pounds/block on six blocks, where the application of nitrogen (N),
 phosphate (P) or potassium (K) fertilisers was varied. Either no, one,
 two or three different fertilisers were applied on the blocks.</p>
-<div class="section level5">
-<h5 class="unnumbered" id="one-way-test">One-way test<a class="anchor" aria-label="anchor" href="#one-way-test"></a>
-</h5>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">oneway_npk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span>, <span class="st">"yield"</span>, <span class="st">"block"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-5-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-5-2.png" width="100%"></p>
@@ -395,12 +355,14 @@ letters are equal).</p>
 <div class="section level5">
 <h5 class="unnumbered" id="anova">ANOVA<a class="anchor" aria-label="anchor" href="#anova"></a>
 </h5>
-<p>To stabilise the variance, we transform the count data by the square
-root.</p>
+<p>The InsectSprays data gives the counts of insects in agricultural
+experimental units treated with six different insecticides. To stabilise
+the variance in counts, we transform the count data of the
+<code>InsectSprays</code> data set by the square root.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">InsectSprays_tr</span> <span class="op">&lt;-</span> <span class="va">InsectSprays</span></span>
-<span><span class="va">InsectSprays_tr</span><span class="op">$</span><span class="va">count</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">count</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">InsectSprays_tr</span>, <span class="st">"count"</span>, <span class="st">"spray"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">insect_sprays_tr</span> <span class="op">&lt;-</span> <span class="va">InsectSprays</span></span>
+<span><span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">count_sqrt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">count</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">insect_sprays_tr</span>, <span class="st">"count_sqrt"</span>, <span class="st">"spray"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-6-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-6-2.png" width="100%">
 After the transformation, the homogeneity of variances can be assumed
 (<span class="math inline">\(p&gt; \alpha\)</span> as calculated with
@@ -423,7 +385,10 @@ normality, the Shapiro-Wilk test and the Anderson-Darling test. If
 <strong>both</strong> p-values of the Shapiro-Wilk test and the
 Anderson-Darling test are smaller than <span class="math inline">\(\alpha=1-\)</span><code>conf.int</code> (as in the
 example above ), <code>visstat</code> switches to the non-parametric
-alternative <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>.</p>
+alternative <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>. Post-hoc analysis with
+<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> reveals significant differences
+between the petal width of all three species (all green letters
+differ).</p>
 </div>
 </div>
 </div>
@@ -436,15 +401,15 @@ alternative <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="ext
 <code>numerical</code> or <code>integer</code>, <code><a href="../reference/visstat.html">visstat()</a></code>
 performs a simple linear regression.</p>
 <div class="section level3">
-<h3 id="residual-analysis-1">Residual analysis<a class="anchor" aria-label="anchor" href="#residual-analysis-1"></a>
+<h3 id="residual-analysis">Residual analysis<a class="anchor" aria-label="anchor" href="#residual-analysis"></a>
 </h3>
 <p><code><a href="../reference/visstat.html">visstat()</a></code> checks the normal distribution of the
 standardised residuals derived from <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> both graphically
-and with the Shapiro-Wilk and Anderson test (analogue to section <a href="#aov">ANOVA</a>. If the p-values of the null that the standardised
-residuals are normally distributed of both Shapiro-Wilk and Anderson
-test are smaller than 1-<code>conf.int</code>, the title of the residual
-plot will display the message “Requirement of normally distributed
-residuals not met”.</p>
+and with the Shapiro-Wilk and Anderson test (analogue to section <a href="#aov_residuals">Residual analysis</a>). If the p-values of the
+null that the standardised residuals are normally distributed of both
+Shapiro-Wilk and Anderson test are smaller than 1-<code>conf.int</code>,
+the title of the residual plot will display the message “Requirement of
+normally distributed residuals not met”.</p>
 <p>Regardless of the result of the residual analysis,
 <code><a href="../reference/visstat.html">visstat()</a></code> performs the regression itself in the next step.
 The title of the graphical output indicates the chosen confidence level
@@ -457,7 +422,7 @@ the normality tests of the standardised residuals and the pointwise
 estimates of the confidence and prediction bands.</p>
 </div>
 <div class="section level3">
-<h3 id="examples-1">Examples<a class="anchor" aria-label="anchor" href="#examples-1"></a>
+<h3 id="examples-2">Examples<a class="anchor" aria-label="anchor" href="#examples-2"></a>
 </h3>
 <div class="section level4">
 <h4 id="data-set-cars">Data set: cars<a class="anchor" aria-label="anchor" href="#data-set-cars"></a>
@@ -473,20 +438,6 @@ bands:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>, <span class="st">"dist"</span>, <span class="st">"speed"</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-9-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-9-2.png" width="100%"></p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Extract the test statistics</span></span>
-<span><span class="va">linreg_cars</span><span class="op">$</span><span class="va">anderson_darling_test_residuals</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  Anderson-Darling normality test</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; data:  rstandard(lm(y ~ x))</span></span>
-<span><span class="co">#&gt; A = 0.8005, p-value = 0.03555</span></span>
-<span><span class="va">linreg_cars</span><span class="op">$</span><span class="va">shapiro_test_residuals</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  Shapiro-Wilk normality test</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; data:  rstandard(lm(y ~ x))</span></span>
-<span><span class="co">#&gt; W = 0.94518, p-value = 0.0217</span></span></code></pre></div>
 <p>p-values greater than <code>conf.level</code> in both
 Anderson-Darling normality test and the Shapiro-Wilk test of the
 standardised residuals indicate that the normality assumption of the
@@ -497,7 +448,7 @@ residuals underlying the linear regression is met.</p>
 </h4>
 <p>The trees data set provides measurements of the diameter (called
 “Girth”) in inches and height in feet of black cherry trees.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span>, <span class="st">"Height"</span>, <span class="st">"Girth"</span>, conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-10-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-10-2.png" width="100%"></p>
 <p>Both the graphical analysis of the standardised residuals and
@@ -552,15 +503,15 @@ structure with the helper function <code><a href="../reference/counts_to_cases.h
 <p><code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code> transforms the contingency table
 <code>HairEyeColor</code> into <code>data.frame</code> named
 <code>HairEyeColorDataFrame</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">HairEyeColorDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
-<h4 id="pearsons-chi-squared-test">Pearson’s Chi-squared test<a class="anchor" aria-label="anchor" href="#pearsons-chi-squared-test"></a>
+<h4 id="pearsons-chi-squared-test">Pearson’s Chi-squared test —<a class="anchor" aria-label="anchor" href="#pearsons-chi-squared-test"></a>
 </h4>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">HairEyeColorDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">HairEyeColorDataFrame</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hair_eye_color_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_color_df</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-12-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-12-2.png" width="100%"></p>
 </div>
 <div class="section level4">
@@ -572,10 +523,12 @@ test.</p>
 <p>In the following example, we select only participants with black or
 brown hair and brown or blue eyes resulting in a 2 by 2 contingency
 table.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">HairBlackBrownEyesBrownBlue</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></span>
-<span><span class="va">HairBlackBrownEyesBrownBluedf</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairBlackBrownEyesBrownBlue</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">HairBlackBrownEyesBrownBluedf</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hair_black_brown_eyes_brown_blue</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></span>
+<span><span class="co">#Transform to data frame</span></span>
+<span><span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#Chi-squared test</span></span>
+<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue_df</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-13-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-13-2.png" width="100%"></p>
 </div>
 <div class="section level4">
@@ -584,50 +537,20 @@ table.</p>
 <p>Again, we cut a 2 x2 contingency table from the full data set, this
 time only keeping only male participants with black or brown hair and
 hazel or green eyes. Pearson’s Chi-squared on this 2 x2 contingency
-table would lead to a expected value smaller than 5 in one of the 4
-cells (corresponding to 25% of all cells) violating the requirement of
-the Chi-squared test that the expected counts should be at least 5 for
+table would give to an expected value less than 5 in one of the four
+cells (corresponding to 25% of all cells), violating the requirement of
+the Chi-squared test that the expected value should be at least 5 for
 the majority (80%) of the cells <span class="citation">(Cochran
-1954)</span>. Therefore the Fisher exact test is selected .</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">HairEyeColorMaleFisher</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
-<span><span class="co"># slicing out a 2 by 2  contingency table</span></span>
-<span><span class="va">blackBrownHazelGreenMale</span> <span class="op">&lt;-</span> <span class="va">HairEyeColorMaleFisher</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
-<span><span class="va">blackBrownHazelGreenMale</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">blackBrownHazelGreenMale</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreenMale</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
+1954)</span>. Therefore the Fisher exact test is chosen.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hair_eye_color_male</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
+<span><span class="co"># Slice out a 2 by 2 contingency table</span></span>
+<span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="va">hair_eye_color_male</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
+<span><span class="co">#Transform to data frame</span></span>
+<span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Fisher test</span></span>
+<span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-14-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-14-2.png" width="100%"></p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fisher_stats</span></span>
-<span><span class="co">#&gt; $p.value</span></span>
-<span><span class="co">#&gt; [1] 0.503545</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $conf.int</span></span>
-<span><span class="co">#&gt; [1] 0.07725895 2.40885255</span></span>
-<span><span class="co">#&gt; attr(,"conf.level")</span></span>
-<span><span class="co">#&gt; [1] 0.95</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $estimate</span></span>
-<span><span class="co">#&gt; odds ratio </span></span>
-<span><span class="co">#&gt;  0.5062015 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $null.value</span></span>
-<span><span class="co">#&gt; odds ratio </span></span>
-<span><span class="co">#&gt;          1 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $alternative</span></span>
-<span><span class="co">#&gt; [1] "two.sided"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $method</span></span>
-<span><span class="co">#&gt; [1] "Fisher's Exact Test for Count Data"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $data.name</span></span>
-<span><span class="co">#&gt; [1] "counts"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $mosaic_stats</span></span>
-<span><span class="co">#&gt;       Hair Brown Black</span></span>
-<span><span class="co">#&gt; Eye                   </span></span>
-<span><span class="co">#&gt; Hazel         25    10</span></span>
-<span><span class="co">#&gt; Green         15     3</span></span></code></pre></div>
 </div>
 </div>
 </div>
@@ -640,14 +563,14 @@ the following example we store the graphics files in the output format
 “png” to the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>. The
 naming convention used for the graphics file reflects the chosen
 statistical test and the variable names.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">blackBrownHazelGreenMale</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
-<span>  graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span></span>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
+<span>graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span></span>
 <span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"chi_squared_or_fisher_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"mosaic_complete_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span>

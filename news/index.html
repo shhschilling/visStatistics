@@ -55,11 +55,10 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-1-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-2"></a></h3>
-<ul><li>Regression confidence and prediction bands now depend on <code>conf.level</code>
+<ul><li>Regression confidence and prediction bands now depend on <code>conf.level</code>.</li>
+<li>Post-hoc-Analysis in Kruskal-Wallis-test (<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>) now depends on <code>1-conf.int</code>
 </li>
-<li>Post-hoc-Analysis in Kruskal-Wallis-test (<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>) now depends on family wise error rate <code>1-conf.int</code>
-</li>
-<li>Calculation of <span class="math inline"><em>a</em><em>l</em><em>p</em><em>h</em><em>a</em><sub><em>S</em><em>i</em><em>d</em><em>a</em><em>k</em></sub></span>corrected leading to larger Sidak corrected confidence intervals</li>
+<li>Switch to <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> now depends on expected cell counts</li>
 </ul></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
