@@ -41,17 +41,18 @@ Without specifying this parameter, plotName is automatically generated following
 \code{list} containing statistics of test with highest statistical power meeting assumptions. All values are returned as invisibly copies. Values can be accessed by assigning a return value to \code{visstat}.
 }
 \description{
-Based on a decision tree, \code{visstat()} picks the statistical hypothesis test with the highest statistical
-power between the dependent variable (response)  and the independent variable (feature)
-in a \code{data.frame} named \code{dataframe}.
+Based on a decision tree, \code{visstat()} picks the statistical hypothesis
+test with the highest statistical  power between the dependent variable
+(response)  and the independent variable (feature) in a \code{data.frame}
+named \code{dataframe}.
 Data in the provided \code{dataframe} must be structured column wise,
-where \code{varsample} and \code{varfactor} are \code{character} strings corresponding to the column names
-of the dependent and independent variable respectively.
+where \code{varsample} and \code{varfactor} are \code{character} strings
+corresponding to the column names of the dependent and independent variable
+respectively. For each test \code{visstat()} returns both a graph with the
+main test statistics in its title as well as  a list of the  test statistics 
+including eventual post-hoc analysis.
 }
 \details{
-For each test \code{visstat()} returns both a graph with the main test statistics
-in its title as well as  a list of the  test statistics including eventual post-hoc analysis.
-
 Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()},
 \code{aov()}, \code{kruskal.test()}, \code{fisher.test()}, \code{chisqu.test()}.
 Implemented tests for normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
