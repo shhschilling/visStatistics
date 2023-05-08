@@ -28,7 +28,7 @@ categorical or numerical data.
 
 Statistical consulting requires often both a quick first visualization
 and a reproducible statistical analysis of the presented raw data. The
-package `visStatistics` with its core function `visstat()` fulfils this
+package visStatistics with its core function `visstat()` fulfils this
 need. Based on a decision tree it picks the statistical hypothesis test
 with the highest statistical power between the dependent variable
 (response) `varsample` and the independent variable (feature)
@@ -62,7 +62,7 @@ decision tree, can be found in the `vignette` accompanying this package.
 1.  Install the package `install.packages("visStatistics")`
 2.  Load the package `library(visStatistics)`
 
-## Installation from GitHub (always latest, developing version)
+## Installation the latest,developing version from GitHub
 
 1.  Install the devtools package from CRAN. Invoke R and type
     `install.packages("devtools")`
@@ -76,7 +76,7 @@ decision tree, can be found in the `vignette` accompanying this package.
 
 The package vignette allows you to get familiar with all features of
 `visStatistics`. It documents in detail the algorithm of the decision
-tree illustrated by examples.
+tree illustrated by below examples.
 
 ## Examples
 
@@ -97,7 +97,6 @@ visstat(InsectSpraysAB, "count", "spray")
 #### mtcars data set
 
 ```{r}
-
 ```
 
 ```{r}
@@ -163,9 +162,9 @@ visstat(HairEyeColorDataFrame, "Hair", "Eye")
 ```{r}
 HairEyeColorMaleFisher <- HairEyeColor[, , 1]
 # slicing out a 2 x2 contingency table
-blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
-blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
-fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
+BlackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
+BlackBrownHazelGreen <- counts_to_cases(as.data.frame(BlackBrownHazelGreen))
+fisher_stats <- visstat(BlackBrownHazelGreen, "Hair", "Eye")
 ```
 
 For details regarding the generated mosaic plots, please refer to the

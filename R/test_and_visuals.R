@@ -103,11 +103,11 @@ two_sample_t_test <- function(samples,
   }
 
   alpha <- 1 - conf.level
-  
+
   levels <- unique(sort(fact))
-   
-  
-  
+
+
+
   twosamples <- create_two_samples_vector(samples, fact)
   x <- twosamples$sample1and2
 
@@ -137,7 +137,7 @@ two_sample_t_test <- function(samples,
     xlab = factorname,
     ylab = samplename,
     ylim = c(mi - 2, ma),
-    varwidth = T, 
+    varwidth = T,
     col = colorscheme(1)
   )
 
@@ -171,7 +171,7 @@ two_sample_t_test <- function(samples,
 
   # alpha_sidak = 1 - sqrt(1 - alpha)
 
-  alpha_sidak <- alpha 
+  alpha_sidak <- alpha
 
   correction1 <- qt(1 - 0.5 * alpha_sidak, length(x1) - 1) * sd(x1) / sqrt(length(x1))
   correction2 <- qt(1 - 0.5 * alpha_sidak, length(x2) - 1) * sd(x2) / sqrt(length(x2))
@@ -189,7 +189,7 @@ two_sample_t_test <- function(samples,
     lwd = 2,
     length = 0.1
   )
-  
+
   arrows(
     2,
     mean(x2) + correction2,
@@ -203,7 +203,7 @@ two_sample_t_test <- function(samples,
     length = 0.1
   )
 
-# Sample sizes above box plot 
+  # Sample sizes above box plot
   text(1:length(b$n), c(ma, ma), paste("N=", b$n))
   t <- t.test(
     x1,
@@ -214,34 +214,34 @@ two_sample_t_test <- function(samples,
     var.equal = FALSE,
     na.action = na.omit
   )
-#Legend
+  # Legend
   legend(
     "bottomleft",
     inset = 0.05,
     horiz = F,
     c(paste("mean with", conf.level * 100, "% conf. intervall ")),
-    col = c( colors()[552]),
+    col = c(colors()[552]),
     bty = "n",
     lwd = 3
   )
-  
+
   p_value <- t$p.value
   p_value <- signif(p_value, 2)
 
-  # Title general generation 
+  # Title general generation
   if (alternative == "two.sided") {
     ah <- "equals"
   } else {
     ah <- alternative
   }
   compare <- side_of_nh(alternative)
-  
+
 
 
 
   mean_or_median <- "population mean"
-  comparepvalue <- calculate_comparepvalue(p_value,conf.level)
-  
+  comparepvalue <- calculate_comparepvalue(p_value, conf.level)
+
   two_sample_title <-
     paste(
       t$method, ", \U03B1 = ", 1 - conf.level,
@@ -250,13 +250,13 @@ two_sample_t_test <- function(samples,
       samplename,
       " of ",
       factorname, " \"",
-      unique(sort(fact))[1],"\" ",
+      unique(sort(fact))[1], "\" ",
       compare, " ",
       mean_or_median, " ",
       samplename,
       " of ",
       factorname, " \"",
-      unique(sort(fact))[2],"\" ",
+      unique(sort(fact))[2], "\" ",
       "\n p = ",
       p_value, ", p ", comparepvalue, " \U03B1",
       sep = ""
@@ -389,21 +389,21 @@ two_sample_wilcoxon_test <- function(samples,
   } else {
     prefix <- character()
   }
-  
-  # Title general generation 
+
+  # Title general generation
   if (alternative == "two.sided") {
     ah <- "equals"
   } else {
     ah <- alternative
   }
   compare <- side_of_nh(alternative)
-  
-  
-  
-  
+
+
+
+
   mean_or_median <- "population median"
-  comparepvalue <- calculate_comparepvalue(p_value,conf.level)
-  
+  comparepvalue <- calculate_comparepvalue(p_value, conf.level)
+
   two_sample_title <-
     paste(
       t$method, ", \U03B1 = ", 1 - conf.level,
@@ -423,13 +423,13 @@ two_sample_wilcoxon_test <- function(samples,
       p_value, ", p ", comparepvalue, " \U03B1",
       sep = ""
     )
-  
-  
-  
-  
+
+
+
+
   mtext(two_sample_title)
-  
-  
+
+
 
   my_list <-
     list(
@@ -563,7 +563,7 @@ vis_chi_squared_test <- function(samples,
   }
 
   counts <- makeTable(samples, fact, samplename, factorname)
-  #check for minimal size of 2x2
+  # check for minimal size of 2x2
   check_assumptions_chi <- check_assumptions_count_data(samples, fact)
 
   if (check_assumptions_chi == FALSE) {
@@ -586,7 +586,7 @@ vis_chi_squared_test <- function(samples,
     } else {
       col_vec_browser <- c(colortuple, rainbow(nrow(counts) - 2, s = 0.4, alpha = 1))
     }
-    
+
 
     # creates new plot for barplot
 
@@ -791,11 +791,12 @@ vis_anova <- function(samples,
     lwd = 2
   )
 
-  mtext(paste(
-    label_aov, "p=",
-    signif(p_aov, 2)
-  ),
-  outer = TRUE
+  mtext(
+    paste(
+      label_aov, "p=",
+      signif(p_aov, 2)
+    ),
+    outer = TRUE
   )
 
   legend(
@@ -930,7 +931,7 @@ vis_Kruskal_Wallis_clusters <- function(samples,
     lwd = 2
   )
 
-  title(paste(kk$method,": p =", signif(kk$p.value, digits = 3)), outer = TRUE)
+  title(paste(kk$method, ": p =", signif(kk$p.value, digits = 3)), outer = TRUE)
   my_list <-
     list(
       "kruskal_wallis" = kk,
@@ -1352,7 +1353,6 @@ vis_mosaic <- function(samples,
     my_list <- counts
     return(my_list)
   } else {
-
     ## Mosaic plot
     ## The height  of the box is the same for all boxes in the same row and
     # is equal to the total count in that row.
@@ -1519,10 +1519,10 @@ fisher_chi <- function(counts) {
   # if Cochran requirements for chi2 not given: fisher test is performed
   # if more than 20% of cells have EXPECTED count smaller 5 or one cell has expected count smaller than 1
   #
-  
-  suppressWarnings(chisq  <- chisq.test(counts))
-  expected_counts=chisq$expected
-  
+
+  suppressWarnings(chisq <- chisq.test(counts))
+  expected_counts <- chisq$expected
+
   if (any(expected_counts < 1) # at least one cell with expectation value smaller 1
   |
     sum(expected_counts < 5) / length(expected_counts) > 0.2 # more than 20% of cells have expected count smaller 5
@@ -1557,8 +1557,8 @@ side_of_nh <- function(alternative) {
 
 create_two_samples_vector <- function(samples, fact) {
   # Creates column vector built out of two samples
-  # samples all in one column and sorted 
-  levels <- unique(sort(fact)) 
+  # samples all in one column and sorted
+  levels <- unique(sort(fact))
   # two levels
   if (length(levels) > 2) {
     return(warning(
@@ -1762,7 +1762,7 @@ progn_band <- function(x, reg, conf.level, up) {
   }
   return(result)
 }
-calculate_comparepvalue <- function(p_value,conf.level) {
+calculate_comparepvalue <- function(p_value, conf.level) {
   if (p_value < 1 - conf.level) {
     comparepvalue <- "<"
   } else {

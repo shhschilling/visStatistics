@@ -28,8 +28,7 @@ saveGraphVisstat <- function(fileName = NULL, type = NULL, fileDirectory = getwd
   } else if (is.null(type)) {
     # message("saveGraphVisstat() returns NULL if type=NULL")
     return()
-  } else
-  if (is.null(oldfile)) {
+  } else if (is.null(oldfile)) {
     dummy_name <- "visstat_plot"
     oldPlotName <- paste(dummy_name, ".", type, sep = "")
     oldfile <- file.path(fileDirectory, oldPlotName)

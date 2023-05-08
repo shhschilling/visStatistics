@@ -3,7 +3,7 @@ title: "visStatistics"
 author: "Sabine Schilling"
 date: "`r Sys.Date()`"
 output:
-  html_document:
+  html_vignette:
     number_sections: yes
     toc: yes
     toc_depth: 3     
@@ -14,21 +14,14 @@ vignette: >
  %\VignetteEngine{knitr::rmarkdown}
  %\VignetteEncoding{UTF-8}
 ---
-
-```{=html}
-<style type="text/css">
- body{
- font-size: 12pt;
-}
-</style>
 ```
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
- collapse = TRUE,
- comment = "#>",
- fig.width = 8,
- fig.height = 5,
- out.width = "100%"
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 5,
+  out.width = "100%"
 )
 ```
 
@@ -36,10 +29,10 @@ knitr::opts_chunk$set(
 library(visStatistics)
 ```
 
-```{=html}
+
 <!-- https://pkgdown.r-lib.org/ 
 shows how to publish the code -->
-```
+
 <!-- Unnumbered section -->
 
 # Abstract {.unnumbered}
@@ -105,13 +98,13 @@ ttestStatistics <- visstat(mtcars, "mpg", "am", conf.level = 0.99)
 
 ```{r}
 grades_gender <- data.frame(
- Sex = as.factor(c(rep("Girl", 21), rep("Boy", 23))),
- Grade = c(
-  19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4,
-  20.3, 9.3, 11.3, 18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.0,
-  16.5, 5.1, 15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0, 17.4,
-  7.3, 14.3, 13.5, 8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6, 17.3, 19.9, 4.4, 2.1
- )
+  Sex = as.factor(c(rep("Girl", 21), rep("Boy", 23))),
+  Grade = c(
+    19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4,
+    20.3, 9.3, 11.3, 18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.0,
+    16.5, 5.1, 15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0, 17.4,
+    7.3, 14.3, 13.5, 8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6, 17.3, 19.9, 4.4, 2.1
+  )
 )
 
 wilcoxonStatistics <- visstat(grades_gender, "Grade", "Sex")
@@ -292,7 +285,7 @@ For 2 by 2 contingency tables, `vistat()` applies the continuity correction  to 
 In the following example, we select only participants with black or brown hair and brown or blue eyes resulting in a  2 by 2 contingency table.
 
 ```{r}
-HairBlackBrownEyesBrownBlue <- HairEyeColor[1:2, 1:2,]
+HairBlackBrownEyesBrownBlue <- HairEyeColor[1:2, 1:2, ]
 HairBlackBrownEyesBrownBluedf <- counts_to_cases(as.data.frame(HairBlackBrownEyesBrownBlue))
 visstat(HairBlackBrownEyesBrownBluedf, "Hair", "Eye")
 ```
@@ -317,9 +310,9 @@ The generated graphics can be saved in the file formats supported by `Cairo():` 
 
 ```{r}
 visstat(blackBrownHazelGreenMale, "Hair", "Eye",
- graphicsoutput = "png", plotDirectory =
+  graphicsoutput = "png", plotDirectory =
 
-  tempdir()
+    tempdir()
 )
 ```
 
