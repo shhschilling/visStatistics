@@ -29,7 +29,7 @@
 #' <doi:10.1146/annurev.publheath.23.100901.140546>).
 #'
 #' For the test of independence of count data, Cochran's rule (Cochran (1954)
-#'<doi:10.2307/3001666>) is implemented:
+#' <doi:10.2307/3001666>) is implemented:
 #' If more than 20 percent of all cells have an expected count smaller than 5 or
 #' an expected cell count is zero,  \code{fisher.test()} is performed and displayed, otherwise the \code{chisqu.test()}.
 #' In both cases case an additional mosaic plot showing Pearson's residuals is generated.
@@ -161,23 +161,23 @@ visstat <- function(dataframe,
   matchingCriteria <- input$matchingCriteria
 
   # dependent on samples, fact, name_of_sample, name_of_factor, conf.level,
-  # paired=F,
+
   typesample <- class(samples)
   typefactor <- class(fact) # type of independent variable returned as a character vector
 
 
   # transform independent variable "fact" of class "character" to factor
   if (typefactor == "character") {
-    fact <- as.factor(fact) # transform independent variable "fact" of class "character" to factor
-    typefactor <- class(fact) # store the newly generate class of type "factor" of the independent variable
+    fact <- as.factor(fact) # transform  "fact" of class "character" to factor
+    typefactor <- class(fact) # store the class of type "factor"
   }
 
   maxlabels <- length(levels(samples))
-  ## Comparison of all  possible combinations of input variables ------------------
+  ## Comparison of all  possible combinations of input variables --------------
   ## A) median or mean-----
   # requirement: only two levels of factors
-  # if the chosen "sample" is numeric or integer, we can perform parametric tests like the t-test
-  # (if the assumption of normal distribution is met )
+  # if the chosen "sample" is numeric or integer, we can perform parametric tests
+  # like the t-test (if the assumption of normal distribution is met )
   # otherwise Wilcoxon test
 
   if (( # Wilcoxon or t-test -----
@@ -190,7 +190,7 @@ visstat <- function(dataframe,
     } else {
       # t-Test -----
 
-      x <- twosamples$sample1and2
+
       x1 <- twosamples$sample1
       x2 <- twosamples$sample2
       # the two-sample t-test is robust to non-normality due to the central limit theorem
@@ -249,8 +249,7 @@ visstat <- function(dataframe,
         )
       }
       # 2. If assumptions of t-test are not met: Wilcoxon, else t-test
-      else
-      if (!exists("p1") |
+      else if (!exists("p1") |
         (if (exists("p1")) {
           p1$p.value < alpha
         } else {
@@ -271,7 +270,7 @@ visstat <- function(dataframe,
           fact,
           alternative = "two.sided",
           conf.level = conf.level,
-          notchf =  F,
+          notchf = F,
           samplename = varsample,
           # factorname = matchingCriteria,
           factorname = varfactor,
@@ -432,8 +431,6 @@ visstat <- function(dataframe,
   if ((typefactor == "integer" |
     typefactor == "numeric") &&
     (typesample == "integer" | typesample == "numeric")) {
-
-
     # samples: independent variable, factor: dependent variable
 
 

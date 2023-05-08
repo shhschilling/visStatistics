@@ -43,8 +43,6 @@ openGraphCairo <- function(width = 640,
   if (is.null(type)) {
     return()
   } else {
-
-
     # set default fileName to "visstat_plot"
     if (is.null(fileName)) {
       fileName <- "visstat_plot"
