@@ -1127,7 +1127,7 @@ vis_normality_assumptions <- function(y,
       paste(
         "Residual Analysis\n Shapiro-Wilk: p = ",
         p_SH,
-        "\n Anderson-Darling: p = ",
+        ", Anderson-Darling: p = ",
         p_KS,
         "\n Requirement of normally distributed residuals not met "
       ),
@@ -1138,7 +1138,7 @@ vis_normality_assumptions <- function(y,
       paste(
         "Residual Analysis\n Shapiro-Wilk: p = ",
         p_SH,
-        "\n Anderson-Darling: p = ",
+        ", Anderson-Darling: p = ",
         p_KS
       ),
       outer = TRUE

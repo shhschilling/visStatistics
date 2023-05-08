@@ -6,15 +6,16 @@
 
 #' Visualization of statistical hypothesis testing based on decision tree
 #'
-#' Based on a decision tree, \code{visstat()} picks the statistical hypothesis test with the highest statistical
-#' power between the dependent variable (response)  and the independent variable (feature)
-#' in a \code{data.frame} named \code{dataframe}.
+#' Based on a decision tree, \code{visstat()} picks the statistical hypothesis
+#' test with the highest statistical  power between the dependent variable
+#' (response)  and the independent variable (feature) in a \code{data.frame}
+#' named \code{dataframe}.
 #' Data in the provided \code{dataframe} must be structured column wise,
-#' where \code{varsample} and \code{varfactor} are \code{character} strings corresponding to the column names
-#' of the dependent and independent variable respectively.
-#'
-#' For each test \code{visstat()} returns both a graph with the main test statistics
-#' in its title as well as  a list of the  test statistics including eventual post-hoc analysis.
+#' where \code{varsample} and \code{varfactor} are \code{character} strings
+#'corresponding to the column names of the dependent and independent variable
+#'respectively. For each test \code{visstat()} returns both a graph with the
+#' main test statistics in its title as well as  a list of the  test statistics 
+#' including eventual post-hoc analysis.
 #'
 #' Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()},
 #' \code{aov()}, \code{kruskal.test()}, \code{fisher.test()}, \code{chisqu.test()}.
@@ -139,39 +140,42 @@ visstat <- function(dataframe,
   stopifnot(is.data.frame(dataframe))
   stopifnot(varsample %in% names(dataframe))
   stopifnot(varfactor %in% names(dataframe))
-
-
-
+  
+  
+  
   # store default graphical parameters------
   oldparvisstat <- par(no.readonly = TRUE)
   oldparvisstat$new <- FALSE # reset the default value
   on.exit(par(oldparvisstat))
-
-
+  
+  
   # Set default values---------------------------
   alpha <- 1 - conf.level
-
+  
   ## Get input variables---------------------------------
-  input <- get_samples_fact_inputfile(dataframe, varsample, varfactor)
+  input <-
+    get_samples_fact_inputfile(dataframe, varsample, varfactor)
   # out of function get_groups_inputfile
   samples <- input$samples
   fact <- input$fact
   name_of_sample <- input$name_of_sample
   name_of_factor <- input$name_of_factor
   matchingCriteria <- input$matchingCriteria
-
+  
   # dependent on samples, fact, name_of_sample, name_of_factor, conf.level,
-
+  
   typesample <- class(samples)
-  typefactor <- class(fact) # type of independent variable returned as a character vector
-
-
+  typefactor <-
+    class(fact) # type of independent variable returned as a character vector
+  
+  
   # transform independent variable "fact" of class "character" to factor
   if (typefactor == "character") {
-    fact <- as.factor(fact) # transform  "fact" of class "character" to factor
+    fact <-
+      as.factor(fact) # transform  "fact" of class "character" to factor
     typefactor <- class(fact) # store the class of type "factor"
   }
-
+  
   maxlabels <- length(levels(samples))
   ## Comparison of all  possible combinations of input variables --------------
   ## A) median or mean-----
@@ -179,18 +183,20 @@ visstat <- function(dataframe,
   # if the chosen "sample" is numeric or integer, we can perform parametric tests
   # like the t-test (if the assumption of normal distribution is met )
   # otherwise Wilcoxon test
-
-  if (( # Wilcoxon or t-test -----
-    typesample == "integer" | typesample == "numeric") &&
-    (typefactor == "factor") && nlevels(fact) == 2) {
+  
+  if ((# Wilcoxon or t-test -----
+       typesample == "integer" | typesample == "numeric") &&
+      (typefactor == "factor") && nlevels(fact) == 2) {
     # check if there is at least one entry in each group, if not return empty
-    twosamples <- create_two_samples_vector(samples, fact) # returns list with three entries
+    twosamples <-
+      create_two_samples_vector(samples, fact) # returns list with three entries
     if (length(twosamples) < 3) {
-      vis_sample_fact <- warning("In each group must be at least one member ")
+      vis_sample_fact <-
+        warning("In each group must be at least one member ")
     } else {
       # t-Test -----
-
-
+      
+      
       x1 <- twosamples$sample1
       x2 <- twosamples$sample2
       # the two-sample t-test is robust to non-normality due to the central limit theorem
@@ -202,29 +208,27 @@ visstat <- function(dataframe,
       # Check assumptions of Shapiro-Test:length between 3 and 5000, at least one level
       # returns TRUE if size between 3 and 50000
       #
-
+      
       # There are two different ways to justify the use of the t-test"
       # 1.Your data is normally distributed and you have at least two samples per group
       # 2. You have large (N>100)sample sizes in each group
-
+      
       shapiro_assumptions1 <- check_assumptions_shapiro(x1)
       shapiro_assumptions2 <- check_assumptions_shapiro(x2)
-
+      
       if (shapiro_assumptions1 == TRUE) {
         p1 <- test_norm(twosamples$sample1)
       }
-
+      
       if (shapiro_assumptions2 == TRUE) {
         p2 <- test_norm(twosamples$sample2)
       }
       # Check if normal distributions are given in both samples by Shapiro and KS-Test --
       # Assume normal distributions if the p-value of at least one of the tests is greater alpha
-
-
       # Perform always t-test if both samples are >100
-
+      
       if (length(twosamples$sample1) > 100 &
-        length(twosamples$sample2) > 100) {
+          length(twosamples$sample2) > 100) {
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
         vis_sample_fact <- two_sample_t_test(
           samples,
@@ -236,35 +240,34 @@ visstat <- function(dataframe,
           samplename = name_of_sample,
           factorname = name_of_factor
         )
-
+        
         if (is.null(plotName)) {
-          filename <- paste("ttest_", name_of_sample, "_", name_of_factor, sep = "")
+          filename <-
+            paste("ttest_", name_of_sample, "_", name_of_factor, sep = "")
         } else {
           filename <- plotName
         }
-        saveGraphVisstat(
-          filename,
-          type = graphicsoutput,
-          fileDirectory = plotDirectory
-        )
+        saveGraphVisstat(filename,
+                         type = graphicsoutput,
+                         fileDirectory = plotDirectory)
       }
       # 2. If assumptions of t-test are not met: Wilcoxon, else t-test
       else if (!exists("p1") |
-        (if (exists("p1")) {
-          p1$p.value < alpha
-        } else {
-          FALSE
-        }) |
-        !exists("p2") |
-        (if (exists("p2")) {
-          (p2$p.value < alpha)
-        } else {
-          FALSE
-        })) {
+               (if (exists("p1")) {
+                 p1$p.value < alpha
+               } else {
+                 FALSE
+               }) |
+               !exists("p2") |
+               (if (exists("p2")) {
+                 (p2$p.value < alpha)
+               } else {
+                 FALSE
+               })) {
         # case 1: Wilcoxon-Test:
         # normal distribution not given for n<limit
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-
+        
         vis_sample_fact <- two_sample_wilcoxon_test(
           samples,
           fact,
@@ -277,20 +280,23 @@ visstat <- function(dataframe,
           cex = 1
         )
         if (is.null(plotName)) {
-          filename <- paste("wilcoxon-test_", name_of_sample, "_", name_of_factor, sep = "")
+          filename <-
+            paste("wilcoxon-test_",
+                  name_of_sample,
+                  "_",
+                  name_of_factor,
+                  sep = "")
         } else {
           filename <- plotName
         }
-
-
-        saveGraphVisstat(
-          fileName = filename,
-          type = graphicsoutput,
-          fileDirectory = plotDirectory
-        )
+        
+        
+        saveGraphVisstat(fileName = filename,
+                         type = graphicsoutput,
+                         fileDirectory = plotDirectory)
       } else {
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-
+        
         vis_sample_fact <- two_sample_t_test(
           samples,
           fact,
@@ -301,66 +307,63 @@ visstat <- function(dataframe,
           samplename = varsample,
           factorname = varfactor
         )
-
+        
         if (is.null(plotName)) {
-          filename <- paste("ttest_", name_of_sample, "_", name_of_factor, sep = "")
+          filename <-
+            paste("ttest_", name_of_sample, "_", name_of_factor, sep = "")
         } else {
           filename <- plotName
         }
-
-        saveGraphVisstat(
-          fileName = filename,
-          type = graphicsoutput,
-          fileDirectory = plotDirectory
-        )
+        
+        saveGraphVisstat(fileName = filename,
+                         type = graphicsoutput,
+                         fileDirectory = plotDirectory)
       }
-
+      
       return(invisible(vis_sample_fact))
     }
   }
-
-
-
-
-
+  
+  
+  
+  
+  
   ## B) Chi2 and Mosaic-----
-
+  
   if (typefactor == "factor" && typesample == "factor") {
     if (check_assumptions_count_data(samples, fact) == FALSE) {
-      vis_sample_fact <- makeTable(samples, fact, name_of_sample, name_of_factor)
+      vis_sample_fact <-
+        makeTable(samples, fact, name_of_sample, name_of_factor)
     } else {
       # Chi^2 Test-----
       openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-
-      vis_chi <- vis_chi_squared_test(samples, fact, name_of_sample, "groups")
+      
+      vis_chi <-
+        vis_chi_squared_test(samples, fact, name_of_sample, "groups")
       if (is.null(plotName)) {
-        filename <- paste(
-          "chi_squared_or_fisher_",
-          name_of_sample,
-          "_",
-          name_of_factor,
-          sep = ""
-        )
+        filename <- paste("chi_squared_or_fisher_",
+                          name_of_sample,
+                          "_",
+                          name_of_factor,
+                          sep = "")
       } else {
         filename <- paste(plotName, "_", "chi_squared_or_fisher", sep = "")
       }
-
-      saveGraphVisstat(
-        fileName = filename,
-        type = graphicsoutput,
-        fileDirectory = plotDirectory
-      )
+      
+      saveGraphVisstat(fileName = filename,
+                       type = graphicsoutput,
+                       fileDirectory = plotDirectory)
       # Mosaic plots -----
       # a) complete labeled mosaic graph
-
+      
       if (maxlabels > 7) {
         numberflag <- F
       } else {
         numberflag <- T
       }
-
+      
       openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-
+      
       vis_mosaic_res <- vis_mosaic(
         samples,
         fact,
@@ -369,35 +372,31 @@ visstat <- function(dataframe,
         minperc = 0,
         numbers = numberflag
       )
-
-
-
+      
+      
+      
       if (is.null(plotName)) {
-        filename <- paste(
-          "mosaic_complete_",
-          name_of_sample,
-          "_",
-          name_of_factor,
-          sep = ""
-        )
+        filename <- paste("mosaic_complete_",
+                          name_of_sample,
+                          "_",
+                          name_of_factor,
+                          sep = "")
       } else {
         filename <- paste(plotName, "_", "mosaic_complete", sep = "")
       }
-
-
-
-      saveGraphVisstat(
-        filename,
-        type = graphicsoutput,
-        fileDirectory = plotDirectory
-      )
-
+      
+      
+      
+      saveGraphVisstat(filename,
+                       type = graphicsoutput,
+                       fileDirectory = plotDirectory)
+      
       # b) reduced plots if number of of levels>7
       # Display only categories with at least minpercent of entries
-
+      
       if (maxlabels > 7) {
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-
+        
         vis_mosaic_res <- vis_mosaic(
           samples,
           fact,
@@ -418,58 +417,60 @@ visstat <- function(dataframe,
           fileDirectory = plotDirectory
         )
       }
-
+      
       vis_sample_fact <- c(vis_chi, vis_mosaic_res)
     }
   }
   # C) both types numeric: Regression-----
-
+  
   # Both samples and fact of type integer or numeric
   # Regression
   #
   #
   if ((typefactor == "integer" |
-    typefactor == "numeric") &&
-    (typesample == "integer" | typesample == "numeric")) {
-    # samples: independent variable, factor: dependent variable
-
-
+       typefactor == "numeric") &&
+      (typesample == "integer" | typesample == "numeric")) {
+    # samples: independent variable, factor: dependent   variable
     # check normality
-    normality_residual_assumptioon <- vis_normality_assumptions(samples, fact, conf.level = conf.level)
-
+    normality_residual_assumptioon <-
+      vis_normality_assumptions(samples, fact, conf.level = conf.level)
+    
     openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-
-    vis_sample_fact <- vis_regression(samples, # y: dependent
-      fact, # x: independent
+    
+    vis_sample_fact <- vis_regression(
+      samples,
+      # y: dependent
+      fact,
+      # x: independent
       name_of_factor = name_of_factor,
-      name_of_sample = name_of_sample, conf.level = conf.level
+      name_of_sample = name_of_sample,
+      conf.level = conf.level
     )
     if (is.null(plotName)) {
-      filename <- paste("regression_", name_of_sample, "_", name_of_factor, sep = "")
+      filename <-
+        paste("regression_", name_of_sample, "_", name_of_factor, sep = "")
     } else {
       filename <- paste(plotName)
     }
-
-
-
-
-    saveGraphVisstat(
-      fileName = filename,
-      type = graphicsoutput,
-      fileDirectory = plotDirectory
-    )
+    
+    
+    
+    
+    saveGraphVisstat(fileName = filename,
+                     type = graphicsoutput,
+                     fileDirectory = plotDirectory)
   }
-
+  
   # D) more than two comparisons----
   # A) sample is numeric or integer: ANOVA or Kruskal/Wallis
-
+  
   # excellent tutorial
   # https://www.scribbr.com/statistics/anova-in-r/
-
-
+  
+  
   if (typefactor == "factor" &&
-    (typesample == "integer" | typesample == "numeric") &&
-    nlevels(fact) > 2) {
+      (typesample == "integer" | typesample == "numeric") &&
+      nlevels(fact) > 2) {
     visanova <- vis_anova_assumptions(
       samples,
       fact,
@@ -477,41 +478,40 @@ visstat <- function(dataframe,
       samplename = varsample,
       factorname = varfactor
     )
-
-
+    
+    
     if (visanova$shapiro_test$p.value > alpha |
-      visanova$ad_test$p.value > alpha
-
-    ) {
+        visanova$ad_test$p.value > alpha) {
       openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-
-      vis_sample_fact <- vis_anova(samples,
+      
+      vis_sample_fact <- vis_anova(
+        samples,
         fact,
         samplename = varsample,
-        factorname = varfactor, conf.level = conf.level
+        factorname = varfactor,
+        conf.level = conf.level
       )
-
-
+      
+      
       if (is.null(plotName)) {
-        filename <- paste("anova_", name_of_sample, "_", name_of_factor, sep = "")
+        filename <-
+          paste("anova_", name_of_sample, "_", name_of_factor, sep = "")
       } else {
         filename <- paste(plotName)
       }
-
-
-      saveGraphVisstat(
-        fileName = filename,
-        type = graphicsoutput,
-        fileDirectory = plotDirectory
-      )
-
-
-
-
+      
+      
+      saveGraphVisstat(fileName = filename,
+                       type = graphicsoutput,
+                       fileDirectory = plotDirectory)
+      
+      
+      
+      
       # if p -values of both Shapiro-Wilk and Kruskall-Wallis-Test are smaller than 0.05, Kruskall-Wallis-Test
     } else {
       openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-
+      
       vis_sample_fact <- vis_Kruskal_Wallis_clusters(
         samples,
         fact,
@@ -521,22 +521,21 @@ visstat <- function(dataframe,
         cex = 1,
         notch = F
       )
-
+      
       if (is.null(plotName)) {
-        filename <- paste("kruskal_", name_of_sample, "_", name_of_factor, sep = "")
+        filename <-
+          paste("kruskal_", name_of_sample, "_", name_of_factor, sep = "")
       } else {
         filename <- paste(plotName)
       }
-
-
-      saveGraphVisstat(
-        fileName = filename,
-        type = graphicsoutput,
-        fileDirectory = plotDirectory
-      )
+      
+      
+      saveGraphVisstat(fileName = filename,
+                       type = graphicsoutput,
+                       fileDirectory = plotDirectory)
     }
   }
-
+  
   return(invisible(vis_sample_fact))
 }
 # End of visstat function -------

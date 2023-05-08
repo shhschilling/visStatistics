@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
   echo = TRUE,
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7,
+  fig.width = 8,
   fig.height = 5,
   out.width = "100%",
   fig.path = "man/figures/README-"
@@ -23,24 +23,20 @@ knitr::opts_chunk$set(
 
 # visStatistics
 
-Visualization of the statistical hypothesis test between two groups of
-categorical or numerical data.
+Visualization of the statistical hypothesis test with the highest statistical
+power between two groups of categorical or numerical data.
 
-Statistical consulting requires often both a quick first visualization
-and a reproducible statistical analysis of the presented raw data. The
-package visStatistics with its core function `visstat()` fulfils this
-need. Based on a decision tree it picks the statistical hypothesis test
+The package visStatistics with its core function `visstat()` allows a fast visualization
+and a reproducible statistical analysis of the presented data. Based on a decision tree, it selects the statistical hypothesis test
 with the highest statistical power between the dependent variable
 (response) `varsample` and the independent variable (feature)
-`varfactor`. The corresponding test statistics including eventual
-post-hoc-analysis are returned and a graph showing key statistics of the
-underlying test is generated.
+`varfactor`. The corresponding test statistics, including any
+post-hoc-analysis, are returned and a graph is generated showing the key statistics of the
+test.
 
-This fully automated workflow is especially suited for browser based
-interfaces to server-based deployments of R and has been successfully
-implemented to analyse medical raw data in an unbiased fashion.
+This fully automated workflow is particularly suited to browser-based interfaces to server-based deployments of R and data bases, and has been successfully implemented for unbiased statistical analysis of medical data sets.
 
-A detailed description of the package's functionality and its underlying
+A detailed description of the package the and its underlying
 decision tree, can be found in the `vignette` accompanying this package.
 
 ## Implemented tests
@@ -57,12 +53,12 @@ decision tree, can be found in the `vignette` accompanying this package.
 `TukeyHSD()` for `aov()`and `pairwise.wilcox.test()` for
 `kruskal.test()`
 
-## Installation from CRAN
+## Installation latest stable version from CRAN
 
 1.  Install the package `install.packages("visStatistics")`
 2.  Load the package `library(visStatistics)`
 
-## Installation the latest,developing version from GitHub
+## Installation of developing version from GitHub
 
 1.  Install the devtools package from CRAN. Invoke R and type
     `install.packages("devtools")`
@@ -84,14 +80,15 @@ tree illustrated by below examples.
 library(visStatistics)
 ```
 
-### Welch Two Sample t.test
+### Welch's t-test
 
 #### InsectSprays data set
 
 ```{r}
-InsectSpraysAB <- InsectSprays[which(InsectSprays$spray == "A" | InsectSprays$spray == "B"), ]
-InsectSpraysAB$spray <- factor(InsectSpraysAB$spray)
-visstat(InsectSpraysAB, "count", "spray")
+insect_sprays_a_b <- 
+  InsectSprays[which(InsectSprays$spray == "A" | InsectSprays$spray == "B"), ]
+insect_sprays_a_b$spray <- factor(insect_sprays_a_b$spray)
+visstat(insect_sprays_a_b, "count", "spray")
 ```
 
 #### mtcars data set
@@ -101,25 +98,38 @@ visstat(InsectSpraysAB, "count", "spray")
 
 ```{r}
 mtcars$am <- as.factor(mtcars$am)
-ttestStatistics <- visstat(mtcars, "mpg", "am")
+t_test_statistics <- visstat(mtcars, "mpg", "am")
 ```
 
-Uncomment below line to print out summary statistics:
+### Wilcoxon rank sum test
 
 ```{r}
-# ttestStatistics
+grades_gender <- data.frame(
+  sex = as.factor(c(rep("girl", 21), rep("boy", 23))),
+  grade = c(
+    19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4,
+    20.3, 9.3, 11.3, 18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.0,
+    16.5, 5.1, 15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0, 17.4,7.3, 14.3, 
+    13.5, 8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6, 17.3, 19.9, 4.4, 2.1
+  )
+)
+
+wilcoxon_statistics <- visstat(grades_gender, "grade", "sex")
 ```
 
-### Wilcoxon rank sum test with continuity correction
+### ANOVA 
 
 ```{r}
-visstat(ToothGrowth, "len", "supp")
+insect_sprays_tr <- InsectSprays
+insect_sprays_tr$count_sqrt <- sqrt(InsectSprays$count)
+visstat(insect_sprays_tr, "count_sqrt", "spray")
 ```
+
 
 ### One-way test
 
 ```{r}
-anova_npk <- visstat(npk, "yield", "block")
+one_way_npk <- visstat(npk, "yield", "block")
 ```
 
 ### Kruskal-Wallis test
@@ -129,7 +139,8 @@ The generated graphs can be saved in all available formats of the
 `plotDirectory` `tempdir()`:
 
 ```{r}
-visstat(iris, "Petal.Width", "Species", graphicsoutput = "pdf", plotDirectory = tempdir())
+visstat(iris, "Petal.Width", "Species", 
+        graphicsoutput = "pdf", plotDirectory = tempdir())
 ```
 
 ### Linear Regression
@@ -142,7 +153,7 @@ Increasing the confidence level `conf.level` from the default 0.95 to
 0.99 leads two wider confidence and prediction bands:
 
 ```{r pressure, echo = FALSE}
-linreg_cars <- visstat(cars, "dist", "speed", conf.level = 0.99)
+linreg_cars_99 <- visstat(cars, "dist", "speed", conf.level = 0.99)
 ```
 
 ### Pearson's Chi-squared test
@@ -153,19 +164,20 @@ so-called contingency tables, whereas `visstat()` requires a
 column wise structure with the helper function `counts_to_cases()`:
 
 ```{r}
-HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
-visstat(HairEyeColorDataFrame, "Hair", "Eye")
+hair_eye_color_df <- counts_to_cases(as.data.frame(HairEyeColor))
+visstat(hair_eye_color_df, "Hair", "Eye")
 ```
 
 ### Fisher's exact test
 
 ```{r}
-HairEyeColorMaleFisher <- HairEyeColor[, , 1]
-# slicing out a 2 x2 contingency table
-BlackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
-BlackBrownHazelGreen <- counts_to_cases(as.data.frame(BlackBrownHazelGreen))
-fisher_stats <- visstat(BlackBrownHazelGreen, "Hair", "Eye")
+hair_eye_color_male <- HairEyeColor[, , 1]
+# Slice out a 2 by 2 contingency table
+black_brown_hazel_green_male <- hair_eye_color_male[1:2, 3:4]
+#Transform to data frame
+black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_green_male))
+# Fisher test
+fisher_stats <- visstat(black_brown_hazel_green_male, "Hair", "Eye")
 ```
 
-For details regarding the generated mosaic plots, please refer to the
-`mosaic()` in the `vcd` package.
+
