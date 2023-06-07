@@ -62,7 +62,7 @@ For the comparison of averages, the following algorithm  depends on the value of
 If the p-values of the standardized residuals of  \code{shapiro.test()} or \code{ks.test()} are smaller
 than the error probability 1-\code{conf.level}, \code{kruskal.test()} resp. \code{wilcox.test()} are performed, otherwise the \code{oneway.test()}
 and \code{aov()} resp. \code{t.test()} are performed and displayed.
-Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed (Lumley et al. (2002)
+Exception: If the sample size of both levels is bigger than 30,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed (Lumley et al. (2002)
 <doi:10.1146/annurev.publheath.23.100901.140546>).
 
 For the test of independence of count data, Cochran's rule (Cochran (1954)
@@ -117,14 +117,16 @@ fisher_stats # print out summary statistics
 ## Saving the graphical output in directory plotDirectory
 ## A) saving graphical output of type "png" in temporary directory tempdir()
 ##    with default naming convention:
-visstat(blackBrownHazelGreen, "Hair", "Eye", graphicsoutput = "png", plotDirectory = tempdir())
+visstat(blackBrownHazelGreen, "Hair", "Eye", graphicsoutput = "png", 
+plotDirectory = tempdir())
 
 ## remove graphical output from plotDirectory
 file.remove(file.path(tempdir(), "chi_squared_or_fisher_Hair_Eye.png"))
 file.remove(file.path(tempdir(), "mosaic_complete_Hair_Eye.png"))
 
 ## B) Specifying pdf as output type:
-visstat(iris, "Petal.Width", "Species", graphicsoutput = "pdf", plotDirectory = tempdir())
+visstat(iris, "Petal.Width", "Species", graphicsoutput = "pdf", 
+plotDirectory = tempdir())
 
 ## remove graphical output from plotDirectory
 file.remove(file.path(tempdir(), "kruskal_Petal_Width_Species.pdf"))
