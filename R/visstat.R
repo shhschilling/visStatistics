@@ -26,7 +26,7 @@
 #' If the p-values of the standardized residuals of  \code{shapiro.test()} or \code{ks.test()} are smaller
 #' than the error probability 1-\code{conf.level}, \code{kruskal.test()} resp. \code{wilcox.test()} are performed, otherwise the \code{oneway.test()}
 #' and \code{aov()} resp. \code{t.test()} are performed and displayed.
-#' Exception: If the sample size is bigger than 100,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed (Lumley et al. (2002)
+#' Exception: If the sample size of both levels is bigger than 30,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed (Lumley et al. (2002)
 #' <doi:10.1146/annurev.publheath.23.100901.140546>).
 #'
 #' For the test of independence of count data, Cochran's rule (Cochran (1954)
@@ -95,14 +95,16 @@
 #' ## Saving the graphical output in directory plotDirectory
 #' ## A) saving graphical output of type "png" in temporary directory tempdir()
 #' ##    with default naming convention:
-#' visstat(blackBrownHazelGreen, "Hair", "Eye", graphicsoutput = "png", plotDirectory = tempdir())
+#' visstat(blackBrownHazelGreen, "Hair", "Eye", graphicsoutput = "png", 
+#' plotDirectory = tempdir())
 #'
 #' ## remove graphical output from plotDirectory
 #' file.remove(file.path(tempdir(), "chi_squared_or_fisher_Hair_Eye.png"))
 #' file.remove(file.path(tempdir(), "mosaic_complete_Hair_Eye.png"))
 #'
 #' ## B) Specifying pdf as output type:
-#' visstat(iris, "Petal.Width", "Species", graphicsoutput = "pdf", plotDirectory = tempdir())
+#' visstat(iris, "Petal.Width", "Species", graphicsoutput = "pdf", 
+#' plotDirectory = tempdir())
 #'
 #' ## remove graphical output from plotDirectory
 #' file.remove(file.path(tempdir(), "kruskal_Petal_Width_Species.pdf"))
@@ -200,7 +202,7 @@ visstat <- function(dataframe,
       x1 <- twosamples$sample1
       x2 <- twosamples$sample2
       # the two-sample t-test is robust to non-normality due to the central limit theorem
-      # checking for normality of samples not necessary if sample size roughly >100
+      # checking for normality of samples not necessary if sample size roughly >30
       # citation: THE IMPORTANCE OF THE NORMALITY ASSUMPTION IN LARGE PUBLIC HEALTH DATA SETS
       # DOI: 10.1146/annurev.publhealth.23.100901.140546
       #
@@ -211,7 +213,7 @@ visstat <- function(dataframe,
       
       # There are two different ways to justify the use of the t-test"
       # 1.Your data is normally distributed and you have at least two samples per group
-      # 2. You have large (N>100)sample sizes in each group
+      # 2. You have large (N>30)sample sizes in each group
       
       shapiro_assumptions1 <- check_assumptions_shapiro(x1)
       shapiro_assumptions2 <- check_assumptions_shapiro(x2)
@@ -461,7 +463,7 @@ visstat <- function(dataframe,
                      fileDirectory = plotDirectory)
   }
   
-  # D) more than two comparisons----
+  # D) more than two comparisons-----
   # A) sample is numeric or integer: ANOVA or Kruskal/Wallis
   
   # excellent tutorial

@@ -52,27 +52,35 @@ The function returns the corresponding test statistics, including any post-hoc-a
 The remainder of this vignette focuses on the the algorithm underlying the decision tree of `vistat()`, while a call to `?visstat` documents all parameter settings of the function.
 
 All implemented statistical tests are called with their default parameter sets, except for `conf.level`, 
-    which can be adjusted in the `visstat()` function call.
+    which can be adjusted in the `visstat()` function call. As a consequence, no paired tests are available. 
 
-# Comparing means and medians
+# Comparing central tendencies
 
-If the feature consists of data of `class` `"factor"` with two or more levels and the response consists of data of `class` `"numeric"` or `"integer"` (both of mode `"numeric"`), tests are applied to compare the means or medians.
+If the feature consists of data of `class` `"factor"` with two or more levels and the response consists of data of `class` `"numeric"` or `"integer"` (both of mode `"numeric"`), tests are applied to compare the central tendencies.
 
 ## Two sample tests: Welch's t-test or Wilcoxon rank sum test
 
-If the feature has exactly two levels, either Welch's t-test or the Wilcoxon rank sum test are performed. The choice follows the algorithm below:
+If the feature has exactly two levels,Welch's t-test or its non-parametric alternative, the Wilcoxon rank sum test, is performed. Welch's t-test tests the null hypothesis that the two samples have the same mean. 
+While Student's t-test requires homoscedasticity, Welch's t-test does not.  It loses little robustness compared to Student's t-test when assumptions of Student's t-test are met [@Moser:1992fp; @Delacre:2017iv]. Therefore the implementation of Studen't-test has been omitted.
+The null hypothesis of the Wilcoxon rank sum test is that both samples (levels) are drawn from the same population or have identical distributions. 
 
--  If the sample size for both levels is greater than 100, always perform the `t.test()` [@Lumley2002dsa].
 
--  If the sample size of at least one of the levels is smaller than 100, first check for normality of both levels with the Shapiro-Wilk normality test (`shapiro.test()`):
 
--  If the p-values of the `shapiro.test()` of both levels are greater than the error probability $\alpha = 1-$`conf.level`, choose Welch's t test (`t.test()`).
 
--  If the p-values of at least one of the levels in the `shapiro.test()` are smaller than the error probability $\alpha=1-$`conf.level`, a Wilcoxon rank sum test (`wilcox.test()`) is executed.
+The test choice follows the algorithm below:
 
-Note that `visstat()` only performs unpaired tests.
+- 
+If the sample size for both levels is greater than 30, always perform Welch's t-test (`t.test()`) [@ @Rasch:2011vl; @Lumley2002dsa]. 
 
-The graphical representation consists of box plots overlaid with jitter plots showing each data point. In the case of the `t-test.()`,  the`conf.leve`$\cdot 100 \%$ - confidence intervals are also shown. The test statistics of the chosen test as well as the summary statistics of the generated box plots are returned as a list.
+-  If the sample size of at least one of the levels is smaller than 30, first check for normality of both levels with the Shapiro-Wilk normality test (`shapiro.test()`):
+
+-  If the p-values of the `shapiro.test()` of both levels are greater than the error probability $\alpha = 1-$`conf.level`, perform the Welchs' t-tes (`t.test()`).
+
+-  If the p-value of at least one of the levels in the `shapiro.test()` is smaller than the error probability $\alpha=1-$`conf.level`, a Wilcoxon rank sum test (`wilcox.test()`) is executed.
+
+
+
+The graphical representation consists of box plots overlaid with jitter plots showing each data point. In the case of Welch's t-test,  the`conf.leve`$\cdot 100 \%$ - confidence intervals are also shown. The test statistics of the chosen test as well as the summary statistics of the generated box plots are returned as a list.
 
 ### Examples
 
@@ -122,11 +130,11 @@ If only the first condition for the normality of the residuals is met, `visstat(
 
 #### Residual analysis {#aov_residuals}
 
-The function `visAnovaAssumptions()` checks the standardised residuals of the ANOVA fit for normality using both the Shapiro-Wilk-test `shapiro.test()` and the Anderson-Darling test `ad.test()`. It plots the standardised residuals agianst the fitted means of the linear model for each level of the feature `varfactor`and generates the Q-Q plot of the standardised residuals.
+The function `visAnovaAssumptions()` checks the standardised residuals of the ANOVA fit for normality using both the Shapiro-Wilk-test `shapiro.test()` and the Anderson-Darling test `ad.test()`. It plots the standardised residuals against the fitted means of the linear model for each level of the feature `varfactor`and generates the Q-Q plot of the standardised residuals.
 
 #### Homoscedasticity: homogeneity of variances in each level: Bartlett test
 
-Both `aov()` and `oneway.test()` test whether two or more samples from normal distributions have the same mean. While `aov()` requires homogeneity of variances in each level (group), the `oneway.test()` does not requiree that the variances in each level are necessarily equal. Homoscedasticity is assessed using the Bartlett test, see `bartlett.test()`, under the null hypothesis that the variances in each of the levels are equal.
+Both `aov()` and `oneway.test()` test whether two or more samples from normal distributions have the same mean. While `aov()` requires homogeneity of variances in each level (group), the `oneway.test()` does not require that the variances in each level are necessarily equal. Homoscedasticity is assessed using the Bartlett test, see `bartlett.test()`, under the null hypothesis that the variances in each of the levels are equal.
 
 ### One-way test and ANOVA
 
@@ -159,7 +167,7 @@ Note that the current structure of `visstat()` does not allow the study of inter
 
 ### Kruskal-Wallis test
 
-If the p-values of the standardised residuals computed by `shapiro.test()` or `ad.test()` are both smaller than the error probability `1-conf.level`, a normal distribution of the residuals cannot be assumed. In this case, `visstat()` chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. `kruskal.test()` tests the null that the medians are equal at each group level. As post-hoc-analysis the pairwise Wilcoxon rank sum test `pairwise.wilcox.test()` is used, applying the default Holm method for multiple comparisons[@Holm1979ASS]. If the Holm-adjusted p-value for a pair is smaller than `1-confint`, the green letters under the corresponding two box plots will differ. Otherwise the graphical representation of the Kruskal-Wallis test is similar to the Wilcoxon rank sum test described above. A list with the test statistics of the Kruskal-Wallis rank sum test and the p-values of the pairwise comparisons adjusted by the Holm method is returned.
+If the p-value of the standardised residuals computed by `shapiro.test()` is smaller than the error probability `1-conf.level`, `visstat()` chooses a non-parametric alternative, the Kruskal-Wallis rank sum test. `kruskal.test()` tests the null that the medians are equal at each group level. As post-hoc-analysis the pairwise Wilcoxon rank sum test `pairwise.wilcox.test()` is used, applying the default Holm method for multiple comparisons[@Holm1979ASS]. If the Holm-adjusted p-value for a pair is smaller than `1-confint`, the green letters under the corresponding two box plots will differ. Otherwise the graphical representation of the Kruskal-Wallis test is similar to the Wilcoxon rank sum test described above. A list with the test statistics of the Kruskal-Wallis rank sum test and the p-values of the pairwise comparisons adjusted by the Holm method is returned.
 
 ### Examples 
 

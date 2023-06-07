@@ -1122,7 +1122,7 @@ vis_normality_assumptions <- function(y,
   p_KS <- signif(KS$p.value, 2)
   SH <- shapiro.test(rstandard(lm(y ~ x)))
   p_SH <- signif(SH$p.value, 2)
-  if (p_KS < alpha & p_SH < alpha) {
+  if (p_SH < alpha) {
     mtext(
       paste(
         "Residual Analysis\n Shapiro-Wilk: p = ",
