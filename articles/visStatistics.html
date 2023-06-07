@@ -72,7 +72,7 @@
                         <h4 data-toc-skip class="author">Sabine
 Schilling</h4>
             
-            <h4 data-toc-skip class="date">2023-05-09</h4>
+            <h4 data-toc-skip class="date">2023-06-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/HEAD/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -117,44 +117,52 @@ underlying the decision tree of <code>vistat()</code>, while a call to
 function.</p>
 <p>All implemented statistical tests are called with their default
 parameter sets, except for <code>conf.level</code>, which can be
-adjusted in the <code><a href="../reference/visstat.html">visstat()</a></code> function call.</p>
+adjusted in the <code><a href="../reference/visstat.html">visstat()</a></code> function call. As a consequence,
+no paired tests are available.</p>
 </div>
 <div class="section level2">
-<h2 id="comparing-means-and-medians">Comparing means and medians<a class="anchor" aria-label="anchor" href="#comparing-means-and-medians"></a>
+<h2 id="comparing-central-tendencies">Comparing central tendencies<a class="anchor" aria-label="anchor" href="#comparing-central-tendencies"></a>
 </h2>
 <p>If the feature consists of data of <code>class</code>
 <code>"factor"</code> with two or more levels and the response consists
 of data of <code>class</code> <code>"numeric"</code> or
 <code>"integer"</code> (both of mode <code>"numeric"</code>), tests are
-applied to compare the means or medians.</p>
+applied to compare the central tendencies.</p>
 <div class="section level3">
 <h3 id="two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test">Two sample tests: Welch’s t-test or Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test"></a>
 </h3>
-<p>If the feature has exactly two levels, either Welch’s t-test or the
-Wilcoxon rank sum test are performed. The choice follows the algorithm
-below:</p>
+<p>If the feature has exactly two levels,Welch’s t-test or its
+non-parametric alternative, the Wilcoxon rank sum test, is performed.
+Welch’s t-test tests the null hypothesis that the two samples have the
+same mean. While Student’s t-test requires homoscedasticity, Welch’s
+t-test does not. It loses little robustness compared to Student’s t-test
+when assumptions of Student’s t-test are met <span class="citation">(Moser and Stevens 1992;
+<strong>Delacre:2017iv?</strong>)</span>. Therefore the implementation
+of Studen’t-test has been omitted. The null hypothesis of the Wilcoxon
+rank sum test is that both samples (levels) are drawn from the same
+population or have identical distributions.</p>
+<p>The test choice follows the algorithm below:</p>
 <ul>
-<li><p>If the sample size for both levels is greater than 100, always
-perform the <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> <span class="citation">(Lumley et al.
-2002)</span>.</p></li>
+<li><p>If the sample size for both levels is greater than 30, always
+perform Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) <span class="citation">(@
+Rasch, Kubinger, and Moder 2011; Lumley et al. 2002)</span>.</p></li>
 <li><p>If the sample size of at least one of the levels is smaller than
-100, first check for normality of both levels with the Shapiro-Wilk
+30, first check for normality of both levels with the Shapiro-Wilk
 normality test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>):</p></li>
 <li><p>If the p-values of the <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> of both levels
 are greater than the error probability <span class="math inline">\(\alpha = 1-\)</span><code>conf.level</code>,
-choose Welch’s t test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>).</p></li>
-<li><p>If the p-values of at least one of the levels in the
-<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> are smaller than the error probability <span class="math inline">\(\alpha=1-\)</span><code>conf.level</code>, a
+perform the Welchs’ t-tes (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>).</p></li>
+<li><p>If the p-value of at least one of the levels in the
+<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> is smaller than the error probability <span class="math inline">\(\alpha=1-\)</span><code>conf.level</code>, a
 Wilcoxon rank sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is
 executed.</p></li>
 </ul>
-<p>Note that <code><a href="../reference/visstat.html">visstat()</a></code> only performs unpaired tests.</p>
 <p>The graphical representation consists of box plots overlaid with
-jitter plots showing each data point. In the case of the
-<code>t-test.()</code>, the<code>conf.leve</code><span class="math inline">\(\cdot 100 \%\)</span> - confidence intervals are
-also shown. The test statistics of the chosen test as well as the
-summary statistics of the generated box plots are returned as a
-list.</p>
+jitter plots showing each data point. In the case of Welch’s t-test,
+the<code>conf.leve</code><span class="math inline">\(\cdot 100
+\%\)</span> - confidence intervals are also shown. The test statistics
+of the chosen test as well as the summary statistics of the generated
+box plots are returned as a list.</p>
 <div class="section level4">
 <h4 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h4>
@@ -225,7 +233,7 @@ function.</p>
 <p>The function <code>visAnovaAssumptions()</code> checks the
 standardised residuals of the ANOVA fit for normality using both the
 Shapiro-Wilk-test <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and the Anderson-Darling
-test <code>ad.test()</code>. It plots the standardised residuals agianst
+test <code>ad.test()</code>. It plots the standardised residuals against
 the fitted means of the linear model for each level of the feature
 <code>varfactor</code>and generates the Q-Q plot of the standardised
 residuals.</p>
@@ -237,7 +245,7 @@ test<a class="anchor" aria-label="anchor" href="#homoscedasticity-homogeneity-of
 <p>Both <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> and <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> test whether
 two or more samples from normal distributions have the same mean. While
 <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> requires homogeneity of variances in each level
-(group), the <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> does not requiree that the
+(group), the <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> does not require that the
 variances in each level are necessarily equal. Homoscedasticity is
 assessed using the Bartlett test, see <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>,
 under the null hypothesis that the variances in each of the levels are
@@ -312,21 +320,21 @@ independent variable.</p>
 <div class="section level4">
 <h4 id="kruskal-wallis-test">Kruskal-Wallis test<a class="anchor" aria-label="anchor" href="#kruskal-wallis-test"></a>
 </h4>
-<p>If the p-values of the standardised residuals computed by
-<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> or <code>ad.test()</code> are both smaller
-than the error probability <code>1-conf.level</code>, a normal
-distribution of the residuals cannot be assumed. In this case,
-<code><a href="../reference/visstat.html">visstat()</a></code> chooses a non-parametric alternative, the
-Kruskal-Wallis rank sum test. <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> tests the null
-that the medians are equal at each group level. As post-hoc-analysis the
-pairwise Wilcoxon rank sum test <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> is
-used, applying the default Holm method for multiple comparisons<span class="citation">(Holm 1979)</span>. If the Holm-adjusted p-value for a
-pair is smaller than <code>1-confint</code>, the green letters under the
-corresponding two box plots will differ. Otherwise the graphical
-representation of the Kruskal-Wallis test is similar to the Wilcoxon
-rank sum test described above. A list with the test statistics of the
-Kruskal-Wallis rank sum test and the p-values of the pairwise
-comparisons adjusted by the Holm method is returned.</p>
+<p>If the p-value of the standardised residuals computed by
+<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> is smaller than the error probability
+<code>1-conf.level</code>, <code><a href="../reference/visstat.html">visstat()</a></code> chooses a
+non-parametric alternative, the Kruskal-Wallis rank sum test.
+<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> tests the null that the medians are equal at
+each group level. As post-hoc-analysis the pairwise Wilcoxon rank sum
+test <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> is used, applying the default
+Holm method for multiple comparisons<span class="citation">(Holm
+1979)</span>. If the Holm-adjusted p-value for a pair is smaller than
+<code>1-confint</code>, the green letters under the corresponding two
+box plots will differ. Otherwise the graphical representation of the
+Kruskal-Wallis test is similar to the Wilcoxon rank sum test described
+above. A list with the test statistics of the Kruskal-Wallis rank sum
+test and the p-values of the pairwise comparisons adjusted by the Holm
+method is returned.</p>
 </div>
 <div class="section level4">
 <h4 id="examples-1">Examples<a class="anchor" aria-label="anchor" href="#examples-1"></a>
@@ -615,6 +623,16 @@ Lumley, Thomas, Paula Diehr, Scott Emerson, and Lu Chen. 2002.
 <span>“<span class="nocase">The importance of the normality assumption
 in large public health data sets.</span>”</span> <em>Annual Review of
 Public Health</em> 23: 151–69. <a href="https://doi.org/10.1146/annurev.publhealth.23.100901.140546" class="external-link">https://doi.org/10.1146/annurev.publhealth.23.100901.140546</a>.
+</div>
+<div id="ref-Moser:1992fp" class="csl-entry">
+Moser, B K, and GR Stevens. 1992. <span>“<span class="nocase">Homogeneity of variance in the two-sample means
+test</span>.”</span> <em>The American Statistician</em>, February,
+19–21. <a href="https://doi.org/10.1080/00031305.1992.10475839" class="external-link">https://doi.org/10.1080/00031305.1992.10475839</a>.
+</div>
+<div id="ref-Rasch:2011vl" class="csl-entry">
+Rasch, Dieter, Klaus D Kubinger, and Karl Moder. 2011. <span>“<span class="nocase">The two-sample t test: pre-testing its assumptions does
+not pay off</span>.”</span> <em>Statistical Papers</em> 52 (1): 219–31.
+<a href="https://doi.org/10.1007/s00362-009-0224-x" class="external-link">https://doi.org/10.1007/s00362-009-0224-x</a>.
 </div>
 <div id="ref-Sidak" class="csl-entry">
 Šidák, Zbyněk. 1967. <span>“<span class="nocase">Rectangular Confidence
