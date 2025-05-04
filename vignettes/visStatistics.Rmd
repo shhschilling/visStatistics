@@ -3,11 +3,11 @@ title: "visStatistics"
 author: "Sabine Schilling"
 date: "`r Sys.Date()`"
 output:
-  html_vignette:
-    number_sections: yes
-    toc: yes
-    toc_depth: 3     
-        
+ html_vignette:
+  number_sections: yes
+  toc: yes
+  toc_depth: 3   
+    
 bibliography: visstat.bib
 vignette: >
  %\VignetteIndexEntry{visStatistics}
@@ -18,12 +18,12 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  echo = TRUE,
-  collapse = TRUE,
-  comment = "#>",
-  fig.width = 8,
-  fig.height = 5,
-  out.width = "100%"
+ echo = TRUE,
+ collapse = TRUE,
+ comment = "#>",
+ fig.width = 8,
+ fig.height = 5,
+ out.width = "100%"
 )
 ```
 
@@ -35,13 +35,13 @@ library(visStatistics)
 
 # Abstract {.unnumbered}
 
-The R package `visStatistics` provides means to quickly visualise and analyse raw data by selecting,  based on a decision tree, the statistical hypothesis test with the highest statistical power between the dependent variable (response) named `varsample` and the independent variable (feature) named `varfactor` in a `data.frame` named `dataframe`. A minimal function call has the structure:
+The R package `visStatistics` provides means to quickly visualise and analyse raw data by selecting, based on a decision tree, the statistical hypothesis test with the highest statistical power between the dependent variable (response) named `varsample` and the independent variable (feature) named `varfactor` in a `data.frame` named `dataframe`. A minimal function call has the structure:
 
 `visstat(dataframe,varsample,varfactor)`
 
-The data in the provided `dataframe` must be structured by column, where `varsample` and `varfactor` are the character strings of the column names of the dependent (response) and independent (feature) variables,  respectively.
+The data in the provided `dataframe` must be structured by column, where `varsample` and `varfactor` are the character strings of the column names of the dependent (response) and independent (feature) variables, respectively.
 
-The choice of statistical tests performed by the core function `visstat()` depends on wether  the data are numerical or categorical, the number of levels of categorical data and the data distributions (normal versus non-normal).
+The choice of statistical tests performed by the core function `visstat()` depends on wether the data are numerical or categorical, the number of levels of categorical data and the data distributions (normal versus non-normal).
 
 Data of `class` `"numeric"` or `"integer"` will be referred in the reminder of this vignette as "numerical", data of `class` `"factor"` will be referred in the remainder of this vignette as "categorical".
 
@@ -52,7 +52,7 @@ The function returns the corresponding test statistics, including any post-hoc-a
 The remainder of this vignette focuses on the the algorithm underlying the decision tree of `vistat()`, while a call to `?visstat` documents all parameter settings of the function.
 
 All implemented statistical tests are called with their default parameter sets, except for `conf.level`, 
-    which can be adjusted in the `visstat()` function call. As a consequence, no paired tests are available. 
+  which can be adjusted in the `visstat()` function call. As a consequence, no paired tests are available. 
 
 # Comparing central tendencies
 
@@ -61,26 +61,23 @@ If the feature consists of data of `class` `"factor"` with two or more levels an
 ## Two sample tests: Welch's t-test or Wilcoxon rank sum test
 
 If the feature has exactly two levels,Welch's t-test or its non-parametric alternative, the Wilcoxon rank sum test, is performed. Welch's t-test tests the null hypothesis that the two samples have the same mean. 
-While Student's t-test requires homoscedasticity, Welch's t-test does not.  It loses little robustness compared to Student's t-test when assumptions of Student's t-test are met [@Moser:1992fp; @Delacre:2017iv]. Therefore the implementation of Studen't-test has been omitted.
+While Student's t-test requires homoscedasticity, Welch's t-test does not. It loses little robustness compared to Student's t-test when assumptions of Student's t-test are met [@Moser:1992fp; @Delacre:2017iv]. Therefore the implementation of Studen't-test has been omitted.
 The null hypothesis of the Wilcoxon rank sum test is that both samples (levels) are drawn from the same population or have identical distributions. 
-
-
-
 
 The test choice follows the algorithm below:
 
 - 
 If the sample size for both levels is greater than 30, always perform Welch's t-test (`t.test()`) [@ @Rasch:2011vl; @Lumley2002dsa]. 
-
--  If the sample size of at least one of the levels is smaller than 30, first check for normality of both levels with the Shapiro-Wilk normality test (`shapiro.test()`):
-
--  If the p-values of the `shapiro.test()` of both levels are greater than the error probability $\alpha = 1-$`conf.level`, perform the Welchs' t-tes (`t.test()`).
-
--  If the p-value of at least one of the levels in the `shapiro.test()` is smaller than the error probability $\alpha=1-$`conf.level`, a Wilcoxon rank sum test (`wilcox.test()`) is executed.
+ For large samples, the t test has been shown to be robust in many situations o test or not to test: Paper: Preliminary assessment of normality when comparing two independent samples
 
 
+- If the sample size of at least one of the levels is smaller than 30, first check for normality of both levels with the Shapiro-Wilk normality test (`shapiro.test()`):
 
-The graphical representation consists of box plots overlaid with jitter plots showing each data point. In the case of Welch's t-test,  the`conf.leve`$\cdot 100 \%$ - confidence intervals are also shown. The test statistics of the chosen test as well as the summary statistics of the generated box plots are returned as a list.
+- If the p-values of the `shapiro.test()` of both levels are greater than the error probability $\alpha = 1-$`conf.level`, perform the Welchs' t-tes (`t.test()`).
+
+- If the p-value of at least one of the levels in the `shapiro.test()` is smaller than the error probability $\alpha=1-$`conf.level`, a Wilcoxon rank sum test (`wilcox.test()`) is executed.
+
+The graphical representation consists of box plots overlaid with jitter plots showing each data point. In the case of Welch's t-test, the`conf.leve`$\cdot 100 \%$ - confidence intervals are also shown. The test statistics of the chosen test as well as the summary statistics of the generated box plots are returned as a list.
 
 ### Examples
 
@@ -91,7 +88,7 @@ As an example we use the motor trend car road test data set (`mtcars)`, which co
 ```{r}
 mtcars$am <- as.factor(mtcars$am)
 t_test_statistics <- visstat(mtcars, "mpg", "am")
-# t_test_statistics  # Uncomment this line to print out the test statistics
+# t_test_statistics # Uncomment this line to print out the test statistics
 ```
 Increasing the confidence level `conf.level` from the default 0.95 to 0.99 results in wider confidence intervals:
 ```{r}
@@ -140,9 +137,9 @@ Both `aov()` and `oneway.test()` test whether two or more samples from normal di
 
 Depending on the p-value of the `bartlett.test()`, the corresponding test is shown in the figure title:
 
--  If the p-value of the `bartlett.test()` is greater than `1-conf.level`, we assume homogeneity of variances in each level (group) and the p-values of `aov()` is displayed.
+- If the p-value of the `bartlett.test()` is greater than `1-conf.level`, we assume homogeneity of variances in each level (group) and the p-values of `aov()` is displayed.
 
--  Otherwise homoscedasticity cannot be assumed and the p-value of `oneway.test()` is reported.
+- Otherwise homoscedasticity cannot be assumed and the p-value of `oneway.test()` is reported.
 
 #### Post-hoc analysis: Tukey\`s honestly significant differences (HSD) and Sidak corrected confidence intervals
 
@@ -207,7 +204,7 @@ visstat(iris, "Petal.Width", "Species")
 In the iris data example, the graphical analysis of the scatter plots of the standardised residuals as well as the Q-Q plot suggest that the residuals are not normally distributed. This visual inspection is confirmed by the very small p-values of the implemented tests of normality, the Shapiro-Wilk test and the Anderson-Darling test. 
 If **both** p-values of the Shapiro-Wilk test and the Anderson-Darling test are smaller than $\alpha=1-$`conf.int` (as in the example above ), 
 `visstat` switches to the non-parametric alternative `kruskal.test()`.
-Post-hoc analysis with `pairwise.wilcox.test()` reveals  significant differences between the petal width of all three species (all green letters differ).
+Post-hoc analysis with `pairwise.wilcox.test()` reveals significant differences between the petal width of all three species (all green letters differ).
 
 # Linear Regression
 
@@ -225,7 +222,7 @@ Regardless of the result of the residual analysis, `visstat()` performs the regr
 
 ### Data set: cars
 
-The cars data set reports the speed of cars in mph  and the distance (dist) in ft taken to stop.
+The cars data set reports the speed of cars in mph and the distance (dist) in ft taken to stop.
 
 ```{r}
 linreg_cars <- visstat(cars, "dist", "speed")
@@ -251,23 +248,23 @@ Both the graphical analysis of the standardised residuals and p-values less than
 
 # ${\chi}^2$- and Fisher Test
 
-If both the feature `varfactor` and the response are `varsample` are categorical of type `factor`, `visstat` tests the  null hypothesis, that the feature and the response are independent of each other. 
+If both the feature `varfactor` and the response are `varsample` are categorical of type `factor`, `visstat` tests the null hypothesis, that the feature and the response are independent of each other. 
 
 
-Categorical data are usually presented  as multidimensional arrays, called contingency tables. The values in each cell of the contingency table are the observed frequencies for each unique combination of  feature and response. Based on the observed frequencies,  `visstat()`  calculates the  expected frequencies under the null hypothesis. 
+Categorical data are usually presented as multidimensional arrays, called contingency tables. The values in each cell of the contingency table are the observed frequencies for each unique combination of feature and response. Based on the observed frequencies, `visstat()` calculates the expected frequencies under the null hypothesis. 
 
 If the expected frequencies are large, where large is defined as at least 80% of the expected frequencies being greater than 5 and none of the expected frequencies being less than 1, the `chisqu.test()` is performed, otherwise the `fisher.test() [@Cochran].
-In the case of 2-by-2 contingency tables, the continuity correction is applied to the the  `chisqu.test()`. 
+In the case of 2-by-2 contingency tables, the continuity correction is applied to the the `chisqu.test()`. 
 
 
-`visstat()` prints  a grouped column plot with the p-value of the corresponding test in the title and a mosaic plot with Pearson's residuals (for details see documentation of function `mosaic()` in the `vcd` package ) are generated.
+`visstat()` prints a grouped column plot with the p-value of the corresponding test in the title and a mosaic plot with Pearson's residuals (for details see documentation of function `mosaic()` in the `vcd` package ) are generated.
 
 ## Converting a contingency tables to a `data.frame`.
 `visstat()` needs a `data.frame` with a column structure as input. Contingency tables can be transformed into this structure with the helper function `counts_to_cases()`.
 
 ## Examples based on data set: HairEyeColor
 
-###  Creating a `data.frame` from a contingency table
+### Creating a `data.frame` from a contingency table
 `counts_to_cases()` transforms the contingency table `HairEyeColor` into `data.frame` named `HairEyeColorDataFrame`.
 
 
@@ -284,9 +281,9 @@ visstat(hair_eye_color_df, "Hair", "Eye")
 
 
 ### Pearson's Chi-squared test with Yate's continuity correction 
-For 2 by 2 contingency tables, `vistat()` applies the continuity correction  to the test statistics of the  Chi-squared test.
+For 2 by 2 contingency tables, `vistat()` applies the continuity correction to the test statistics of the Chi-squared test.
 
-In the following example, we select only participants with black or brown hair and brown or blue eyes resulting in a  2 by 2 contingency table.
+In the following example, we select only participants with black or brown hair and brown or blue eyes resulting in a 2 by 2 contingency table.
 
 ```{r}
 hair_black_brown_eyes_brown_blue <- HairEyeColor[1:2, 1:2, ]
@@ -298,7 +295,7 @@ visstat(hair_black_brown_eyes_brown_blue_df, "Hair", "Eye")
 
 
 ### Fisher's exact test and mosaic plot with Pearson residuals
-Again,  we cut a  2 x2 contingency table from the full data set, this time only
+Again, we cut a 2 x2 contingency table from the full data set, this time only
 keeping only male participants with black or brown hair and hazel or green eyes. 
 Pearson's Chi-squared on this 2 x2 contingency table would give to an expected 
 value less than 5 in one of the four cells (corresponding to 25% of all cells),

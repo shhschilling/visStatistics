@@ -1,4 +1,5 @@
 Version: 1.0
+ProjectId: f072cc02-3222-467d-97b4-b9fd017f4f86
 
 RestoreWorkspace: Default
 SaveWorkspace: Default
@@ -13,6 +14,7 @@ RnwWeave: Sweave
 LaTeX: pdfLaTeX
 
 BuildType: Package
+PackageUseDevtools: Yes
 PackageInstallArgs: --no-multiarch --with-keep.source
 PackageBuildArgs: --compact-vignettes="qpdf"
 PackageCheckArgs: --as-cran

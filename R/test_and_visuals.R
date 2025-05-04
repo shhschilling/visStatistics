@@ -101,19 +101,12 @@ two_sample_t_test <- function(samples,
   if (missing(conf.level)) {
     conf.level <- 0.95
   }
-
   alpha <- 1 - conf.level
-
   levels <- unique(sort(fact))
-
-
-
   twosamples <- create_two_samples_vector(samples, fact)
   x <- twosamples$sample1and2
-
   x1 <- twosamples$sample1
   x2 <- twosamples$sample2
-
   # Check normality of both samples-----
   p1 <- test_norm(twosamples$sample1)
   p2 <- test_norm(twosamples$sample2)
@@ -244,7 +237,7 @@ two_sample_t_test <- function(samples,
 
   two_sample_title <-
     paste(
-      t$method, ", \U03B1 = ", 1 - conf.level,
+      t$method, ", alpha =", 1 - conf.level,
       "\n Null hypothesis: ",
       mean_or_median, " ",
       samplename,
@@ -258,7 +251,7 @@ two_sample_t_test <- function(samples,
       factorname, " \"",
       unique(sort(fact))[2], "\" ",
       "\n p = ",
-      p_value, ", p ", comparepvalue, " \U03B1",
+      p_value, ", p ", comparepvalue," ~ alpha ~ ",
       sep = ""
     )
 
@@ -406,7 +399,7 @@ two_sample_wilcoxon_test <- function(samples,
 
   two_sample_title <-
     paste(
-      t$method, ", \U03B1 = ", 1 - conf.level,
+      t$method, ", alpha = ", 1 - conf.level,
       "\n Null hypothesis: ",
       mean_or_median, " ",
       samplename,
@@ -420,7 +413,7 @@ two_sample_wilcoxon_test <- function(samples,
       factorname, " ",
       unique(sort(fact))[2],
       "\n p = ",
-      p_value, ", p ", comparepvalue, " \U03B1",
+      p_value, ", p ", comparepvalue, " alpha",
       sep = ""
     )
 
