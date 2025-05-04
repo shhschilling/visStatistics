@@ -1,13 +1,72 @@
-.Rproj.user
+# R-specific files
 .Rhistory
 .RData
-.Ruserdata
-*.pdf
-Meta
-.log
-/Meta/
-docs
-.Rdata
-.httr-oauth
+.Rproj.user/
+*.Rproj
+.Renviron
+.Rprofile
+*.Rds
+*.rds
+
+# R package build and check artifacts
+*.Rcheck/
+man/*.Rd
+src/*.o
+src/*.so
+src/*.dll
+*.tar.gz
+*.zip
+
+# pkgdown-related files
+docs/
+_pkgdown/
+pkgdown/_site/
+
+# macOS-specific files
 .DS_Store
-.quarto
+._*
+
+# User-specific configuration files
+.bash_profile
+.bashrc
+.zshrc
+.profile
+
+# GitHub Actions and CI/CD
+*.log
+*.Rout
+.Rout.fail
+
+# Temporary and editor files
+*.swp
+*~
+*.bak
+*.tmp
+*.temp
+
+# Data and output files
+data/*
+!data/*.R
+!data/*.rda
+inst/extdata/*
+!inst/extdata/*.R
+!inst/extdata/*.rda
+
+# Vignette and documentation output
+vignettes/*.html
+vignettes/*.pdf
+vignettes/*.Rout
+
+# Test-related files
+tests/testthat/_cache/
+tests/testthat/_snaps/
+
+# Keep critical package files
+!NAMESPACE
+!DESCRIPTION
+!README.md
+!LICENSE
+!NEWS.md
+!.github/
+!pkgdown.yml
+!.Rbuildignore
