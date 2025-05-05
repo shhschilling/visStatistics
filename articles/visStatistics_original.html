@@ -29,9 +29,9 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="active nav-item"><a class="nav-link" href="../articles/visStatistics.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/visStatistics.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
+<li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/visStatistics_original.html">visStatistics</a></li>
@@ -63,8 +63,8 @@ Schilling</h4>
             
             <h4 data-toc-skip class="date">2025-05-05</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
-      <div class="d-none name"><code>visStatistics.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics_original.Rmd" class="external-link"><code>vignettes/visStatistics_original.Rmd</code></a></small>
+      <div class="d-none name"><code>visStatistics_original.Rmd</code></div>
     </div>
 
     
@@ -172,13 +172,13 @@ transmission type ((0 = automatic, 1 = manual)).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
 <span><span class="va">t_test_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"></p>
+<p><img src="visStatistics_original_files/figure-html/unnamed-chunk-2-1.png" width="100%"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the
 default 0.95 to 0.99 results in wider confidence intervals:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
 <span><span class="va">t_test_statistics_99</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="100%"></p>
+<p><img src="visStatistics_original_files/figure-html/unnamed-chunk-3-1.png" width="100%"></p>
 </div>
 <div class="section level5">
 <h5 id="wilcoxon-rank-sum-test">Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test"></a>
@@ -195,7 +195,7 @@ default 0.95 to 0.99 results in wider confidence intervals:</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">wilcoxon_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">grades_gender</span>, <span class="st">"grade"</span>, <span class="st">"sex"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-4-1.png" width="100%"></p>
+<p><img src="visStatistics_original_files/figure-html/unnamed-chunk-4-1.png" width="100%"></p>
 </div>
 </div>
 </div>
@@ -355,7 +355,7 @@ phosphate (P) or potassium (K) fertilisers was varied. Either no, one,
 two or three different fertilisers were applied on the blocks.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">oneway_npk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span>, <span class="st">"yield"</span>, <span class="st">"block"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-5-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-5-2.png" width="100%"></p>
+<p><img src="visStatistics_original_files/figure-html/unnamed-chunk-5-1.png" width="100%"><img src="visStatistics_original_files/figure-html/unnamed-chunk-5-2.png" width="100%"></p>
 <p>We can assume that the residuals are normally distributed based on
 the scatterplots of the standardised residuals, the normal
 quantile-quantile plot (Q-Q plot), and the p-values of both the
@@ -379,7 +379,7 @@ the variance in counts, we transform the count data of the
 <code class="sourceCode R"><span><span class="va">insect_sprays_tr</span> <span class="op">&lt;-</span> <span class="va">InsectSprays</span></span>
 <span><span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">count_sqrt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">count</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">insect_sprays_tr</span>, <span class="st">"count_sqrt"</span>, <span class="st">"spray"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-6-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-6-2.png" width="100%"></p>
+<p><img src="visStatistics_original_files/figure-html/unnamed-chunk-6-1.png" width="100%"><img src="visStatistics_original_files/figure-html/unnamed-chunk-6-2.png" width="100%"></p>
 <p>After the transformation, the homogeneity of variances can be assumed
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>&gt;</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">p&gt; \alpha</annotation></semantics></math>
 as calculated with the <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>), and the p-value of
@@ -392,7 +392,7 @@ the <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()
 three different iris species.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span>, <span class="st">"Petal.Width"</span>, <span class="st">"Species"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-7-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-7-2.png" width="100%"></p>
+<p><img src="visStatistics_original_files/figure-html/unnamed-chunk-7-1.png" width="100%"><img src="visStatistics_original_files/figure-html/unnamed-chunk-7-2.png" width="100%"></p>
 <p>In the iris data example, the graphical analysis of the scatter plots
 of the standardised residuals as well as the Q-Q plot suggest that the
 residuals are not normally distributed. This visual inspection is
@@ -449,13 +449,13 @@ confidence and prediction bands.</p>
 (dist) in ft taken to stop.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>, <span class="st">"dist"</span>, <span class="st">"speed"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-8-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-8-2.png" width="100%"></p>
+<p><img src="visStatistics_original_files/figure-html/unnamed-chunk-8-1.png" width="100%"><img src="visStatistics_original_files/figure-html/unnamed-chunk-8-2.png" width="100%"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the
 default 0.95 to 0.99 results in wider confidence and prediction
 bands:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>, <span class="st">"dist"</span>, <span class="st">"speed"</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-9-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-9-2.png" width="100%"></p>
+<p><img src="visStatistics_original_files/figure-html/unnamed-chunk-9-1.png" width="100%"><img src="visStatistics_original_files/figure-html/unnamed-chunk-9-2.png" width="100%"></p>
 <p>p-values greater than <code>conf.level</code> in both
 Anderson-Darling normality test and the Shapiro-Wilk test of the
 standardised residuals indicate that the normality assumption of the
@@ -468,7 +468,7 @@ residuals underlying the linear regression is met.</p>
 “Girth”) in inches and height in feet of black cherry trees.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span>, <span class="st">"Height"</span>, <span class="st">"Girth"</span>, conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-10-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-10-2.png" width="100%"></p>
+<p><img src="visStatistics_original_files/figure-html/unnamed-chunk-10-1.png" width="100%"><img src="visStatistics_original_files/figure-html/unnamed-chunk-10-2.png" width="100%"></p>
 <p>Both the graphical analysis of the standardised residuals and
 p-values less than 1-<code>conf.level</code> in the Anderson-Darling
 normality test and the Shapiro-Wilk test of the standardised residuals
@@ -533,7 +533,7 @@ structure with the helper function <code><a href="../reference/counts_to_cases.h
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_color_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_color_df</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-12-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-12-2.png" width="100%"></p>
+<p><img src="visStatistics_original_files/figure-html/unnamed-chunk-12-1.png" width="100%"><img src="visStatistics_original_files/figure-html/unnamed-chunk-12-2.png" width="100%"></p>
 </div>
 <div class="section level4">
 <h4 id="pearsons-chi-squared-test-with-yates-continuity-correction">Pearson’s Chi-squared test with Yate’s continuity correction<a class="anchor" aria-label="anchor" href="#pearsons-chi-squared-test-with-yates-continuity-correction"></a>
@@ -550,7 +550,7 @@ table.</p>
 <span><span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#Chi-squared test</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue_df</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-13-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-13-2.png" width="100%"></p>
+<p><img src="visStatistics_original_files/figure-html/unnamed-chunk-13-1.png" width="100%"><img src="visStatistics_original_files/figure-html/unnamed-chunk-13-2.png" width="100%"></p>
 </div>
 <div class="section level4">
 <h4 id="fishers-exact-test-and-mosaic-plot-with-pearson-residuals">Fisher’s exact test and mosaic plot with Pearson residuals<a class="anchor" aria-label="anchor" href="#fishers-exact-test-and-mosaic-plot-with-pearson-residuals"></a>
@@ -571,7 +571,7 @@ the majority (80%) of the cells <span class="citation">(Cochran
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Fisher test</span></span>
 <span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-14-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-14-2.png" width="100%"></p>
+<p><img src="visStatistics_original_files/figure-html/unnamed-chunk-14-1.png" width="100%"><img src="visStatistics_original_files/figure-html/unnamed-chunk-14-2.png" width="100%"></p>
 </div>
 </div>
 </div>
