@@ -18,7 +18,6 @@ src/*.dll
 *.zip
 
 # pkgdown-related files
-docs/
 _pkgdown/
 pkgdown/_site/
 
@@ -53,9 +52,7 @@ inst/extdata/*
 !inst/extdata/*.rda
 
 # Vignette outputs
-vignettes/*.html
 vignettes/*.pdf
-vignettes/*.Rout
 
 # Test-related files
 tests/testthat/_cache/
@@ -70,3 +67,5 @@ tests/testthat/_snaps/
 !.github/
 !pkgdown.yml
 !.Rbuildignore
+/doc/
+/Meta/
