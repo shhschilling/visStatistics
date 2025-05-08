@@ -23,21 +23,26 @@ knitr::opts_chunk$set(
 
 # visStatistics
 
-Visualization of the statistical hypothesis test with the highest statistical
-power between two groups of categorical or numerical data.
+Visualization of the statistical hypothesis test with the highest
+statistical power between two groups of categorical or numerical data.
 
-The package visStatistics with its core function `visstat()` allows a fast visualization
-and a reproducible statistical analysis of the presented data. Based on a decision tree, it selects the statistical hypothesis test
-with the highest statistical power between the dependent variable
-(response) `varsample` and the independent variable (feature)
-`varfactor`. The corresponding test statistics, including any
-post-hoc-analysis, are returned and a graph is generated showing the key statistics of the
-test.
+The package `visStatistics` enables rapid visualization and statistical analysis of raw data by automatically selecting the hypothesis test with the highest statistical power to evaluate the relationship between a dependent variable (`varsample`) and an independent variable (`varfactor`) within a `data.frame`.
 
-This fully automated workflow is particularly suited to browser-based interfaces to server-based deployments of R and data bases, and has been successfully implemented for unbiased statistical analysis of medical data sets.
+A minimal function call has the following structure:
 
-A detailed description of the package the and its underlying
-decision tree, can be found in the `vignette` accompanying this package.
+`visstat(dataframe, varsample, varfactor)`
+
+
+The choice of statistical test performed by the core function `visstat()` depends on whether the variables are numerical or categorical, the number of levels in the categorical variable, and the distribution characteristics (normal vs. non-normal).
+
+The function generates a graph showing the key statistics of the selected test.
+The complete test statistics are also returned as part of the output.
+
+
+This fully automated workflow is particularly suited to browser-based
+interfaces to server-based deployments of R and data bases.
+
+A detailed description of the package the and its underlying decision logic, can be found in the `vignette` accompanying this package.
 
 ## Implemented tests
 
@@ -71,8 +76,7 @@ decision tree, can be found in the `vignette` accompanying this package.
 ## Getting Started
 
 The package vignette allows you to get familiar with all features of
-`visStatistics`. It documents in detail the algorithm of the decision
-tree illustrated by below examples.
+`visStatistics`. It documents in detail the decision logic  illustrated by below examples.
 
 ## Examples
 
@@ -117,14 +121,13 @@ grades_gender <- data.frame(
 wilcoxon_statistics <- visstat(grades_gender, "grade", "sex")
 ```
 
-### ANOVA 
+### ANOVA
 
 ```{r}
 insect_sprays_tr <- InsectSprays
 insect_sprays_tr$count_sqrt <- sqrt(InsectSprays$count)
 visstat(insect_sprays_tr, "count_sqrt", "spray")
 ```
-
 
 ### One-way test
 
@@ -179,5 +182,3 @@ black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_
 # Fisher test
 fisher_stats <- visstat(black_brown_hazel_green_male, "Hair", "Eye")
 ```
-
-

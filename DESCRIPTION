@@ -9,8 +9,8 @@ Maintainer: Sabine Schilling <sabineschilling@gmx.ch>
 Description: Visualization of the most powerful statistical hypothesis test.
     The R package `visStatistics` with its core function 
     visstat() allows to quickly visualise raw data and, based on a decision tree, select the statistical hypothesis test with             the highest statistical power between the dependent variable (response) and the independent variable (feature).
-    To compare the means of two groups with sample sizes greater than 100 in both groups, visstat()
-    performs a t.test()(Lumley et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). Otherwise, when comparing the mean       of two or more groups, the test chosen depends on the p-values of the null that the
+    To compare the means of two groups with sample sizes greater than 30 in both groups, visstat()
+    performs a t.test()(Lumley et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). Otherwise, when comparing the mean       of two or more groups, the chosen test depends on the p-values of the null that the
     standardised residuals of the regression model are normally distributed as tested by both shapiro.test() and ad.test(): 
     If both p-values are smaller than the error probability 1-conf.level,the non-parametric tests kruskal.test() resp. wilcox.test()      are used, otherwise the parametric tests oneway.test() and aov() resp. t.test() are used.
     For count data, visstat() tests the null hypothesis, that the feature and the response are independent of each other using the 
