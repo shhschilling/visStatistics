@@ -102,17 +102,17 @@ the output.</p>
 <code><a href="../reference/visstat.html">?visstat</a></code>. A graphical representation of the decision tree
 for a categorical feature and a numeric response is given in Section
 @ref(sec-decisiontree),Figure @ref(fig:fig-decision-tree).</p>
-<p><strong>Note:</strong><br>
-Except for the user-adjustable <code>conf.level</code> parameter, all
-statistical tests are applied using their default settings from the
-corresponding base R functions (e.g., <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>).</p>
+<p>Note: Except for the user-adjustable <code>conf.level</code>
+parameter, all statistical tests are applied using their default
+settings from the corresponding base R functions (e.g.,
+<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>).</p>
 <p>As a consequence, paired tests are not currently supported.
 Furthermore, since the main purpose of this package is to
 <strong>visualize</strong> statistical test results, only simple linear
 regression is implemented.</p>
 </div>
 <div class="section level2">
-<h2 id="sec-decisiontree">Decision Logic for Selecting Tests of Central Tendency<a class="anchor" aria-label="anchor" href="#sec-decisiontree"></a>
+<h2 id="sec-decisiontree">Decision logic for selecting tests of central tendency<a class="anchor" aria-label="anchor" href="#sec-decisiontree"></a>
 </h2>
 <p>If the feature consists of <code>class</code> “<code>factor</code>”
 with two or more levels and the response consists is of
@@ -141,10 +141,10 @@ test<a class="anchor" aria-label="anchor" href="#two-sample-tests-welchs-t-test-
 compare group means if normality assumptions hold; otherwise, the
 Wilcoxon rank sum test is applied (see Figure
 @ref(fig:fig-decision-tree)). Welch’s t-test evaluates the null
-hypothesis that the two groups have equal means. Unlike
-Student<code>s t-test, which assumes equal variances (homoscedasticity), Welch</code>s
-test does not require this assumption. Welch’s t-test exhibits minimal
-loss of robustness compared to Student`s t-test, even when the latter’s
+hypothesis that the two groups have equal means. Unlike Student’s
+t-test, which assumes equal variances (homoscedasticity), Welch’s test
+does not require this assumption. Welch’s t-test exhibits minimal loss
+of robustness compared to Student’s t-test, even when the latter’s
 assumptions are satisfied <span class="citation">(Moser and Stevens
 1992; Delacre et al. 2017)</span>; therefore, Student’s t-test is not
 implemented. In contrast to parametric tests, the Wilcoxon rank sum test
@@ -154,7 +154,7 @@ relying on the assumption of normality.</p>
 <ul>
 <li>If the sample size in both groups exceeds 30, the function always
 performs Welch’s <em>t</em>-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) is always
-performed . For large samples, Welch`s <em>t</em>-test is robust across
+performed . For large samples, Welch’s <em>t</em>-test is robust across
 a variety of conditions, even when normality is not strictly met <span class="citation">(@ Rasch, Kubinger, and Moder 2011; Lumley et al.
 2002)</span>.</li>
 <li>If at least one group has fewer than 30 observations, the function
@@ -164,7 +164,7 @@ applies the Shapiro-Wilk normality test to both groups:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values
 exceed the significance level
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">\alpha = 1-</annotation></semantics></math><code>conf.level</code>,
-it performs Welch<code>s     *t*-test (</code>t.test()`).</p></li>
+it performs Welch’s <em>t</em>-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>).</p></li>
 <li><p>If at least one
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
 falls below
@@ -175,11 +175,11 @@ it uses the Wilcoxon rank sum test
 </li>
 </ul>
 <p>The graphical output consists of box plots overlaid with jittered
-points to display individual observations.
-WhenWelch<code>s *t*-test is applied, the function also includes confidence intervals at the specified</code>conf.level`.
-In addition to the plot, the function returns a list containing the test
-results of the selected statistical test and the summary statistics used
-to generate the box plots.</p>
+points to display individual observations. When’Welch’s <em>t</em>-test
+is applied, the function also includes confidence intervals at the
+specified <code>conf.level</code>. In addition to the plot, the function
+returns a list containing the test results of the selected statistical
+test and the summary statistics used to generate the box plots.</p>
 <div class="section level4">
 <h4 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h4>
@@ -196,7 +196,7 @@ automatic, <code>1</code> = manual).</p>
 <span><span class="va">t_test_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the
-default 0.95 to 0.99 results in wider confidence interval, as a higher
+default 0.95 to 0.99 results in wider confidence intervals, as a higher
 confidence level requires more conservative bounds to ensure that the
 interval includes the true parameter value with greater certainty.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -280,7 +280,7 @@ are equal.</p>
 </div>
 </div>
 <div class="section level4">
-<h4 id="one-way-test-and-anova">One-way Test and ANOVA<a class="anchor" aria-label="anchor" href="#one-way-test-and-anova"></a>
+<h4 id="one-way-test-and-anova">One-way test and ANOVA<a class="anchor" aria-label="anchor" href="#one-way-test-and-anova"></a>
 </h4>
 <p>Depending on the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
@@ -299,11 +299,11 @@ from the ANOVA (<code><a href="https://rdrr.io/r/stats/aov.html" class="external
 <li>Otherwise, homoscedasticity cannot be assumed, and the function
 reports the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
-fromWelch<code>s one-way test (</code>oneway.test()`).</li>
+from’Welch’s one-way test (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>).</li>
 </ul>
 <div class="section level5">
-<h5 id="post-hoc-analysis-tukeys-honestly-significant-differences-hsd-and-sidak-corrected-confidence-intervals">Post-hoc Analysis: Tukey’s Honestly Significant Differences (HSD)
-and Sidak-Corrected Confidence Intervals<a class="anchor" aria-label="anchor" href="#post-hoc-analysis-tukeys-honestly-significant-differences-hsd-and-sidak-corrected-confidence-intervals"></a>
+<h5 id="post-hoc-analysis-tukeys-honestly-significant-differences-hsd-and-sidak-corrected-confidence-intervals">Post-hoc analysis: Tukey’s Honestly Significant Differences (HSD)
+and Sidak-corrected confidence intervals<a class="anchor" aria-label="anchor" href="#post-hoc-analysis-tukeys-honestly-significant-differences-hsd-and-sidak-corrected-confidence-intervals"></a>
 </h5>
 <p>Simple pairwise comparisons of group means following an analysis of
 variance increase the probability of incorrectly declaring a significant
@@ -467,7 +467,7 @@ labels (all green letters differ).</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="simple-linear-regression">Simple Linear Regression<a class="anchor" aria-label="anchor" href="#simple-linear-regression"></a>
+<h2 id="simple-linear-regression">Simple linear regression<a class="anchor" aria-label="anchor" href="#simple-linear-regression"></a>
 </h2>
 <p>If the feature <code>varfactor</code> and the response
 <code>varsample</code> have only one level of type
