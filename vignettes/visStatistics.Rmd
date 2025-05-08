@@ -17,11 +17,7 @@ editor_options:
     wrap: sentence
 ---
 
----
-title: "visStatistics"
-author: "Sabine Schilling"
-date: "`r Sys.Date()`"
----
+
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -62,12 +58,11 @@ This vignette outlines the decision logic behind `visstat()`; the full parameter
 A graphical representation of the decision tree for a categorical feature and a numeric response is given in Section \@ref(sec-decisiontree),Figure \@ref(fig:fig-decision-tree).
 
 
-**Note:**  
-Except for the user-adjustable `conf.level` parameter, all statistical tests are applied using their default settings from the corresponding base R functions (e.g., `t.test()`).
+Note: Except for the user-adjustable `conf.level` parameter, all statistical tests are applied using their default settings from the corresponding base R functions (e.g., `t.test()`).
 
 As a consequence, paired tests are not currently supported. Furthermore, since the main purpose of this package is to **visualize** statistical test results, only simple linear regression is implemented.
 
-# Decision Logic for Selecting Tests of Central Tendency {#sec-decisiontree}
+# Decision logic for selecting tests of central tendency {#sec-decisiontree}
 
 If the feature consists of `class` "`factor`" with two or more levels and the response consists is of `class` "`numeric`" or "`integer`" (both having mode "`numeric`"), statistical tests are applied to compare the central tendencies across groups.
 A graphical overview of the decision logic used to select statistical tests for comparing central tendencies is provided in Figure \@ref(fig:fig-decision-tree).
@@ -83,11 +78,11 @@ When the feature has exactly two levels, Welch's
 t-test is used to compare group means if normality assumptions hold; otherwise, the Wilcoxon rank sum test is applied (see Figure \@ref(fig:fig-decision-tree)).
 Welch's
 t-test evaluates the null hypothesis that the two groups have equal means.
-Unlike Student`s
-t-test, which assumes equal variances (homoscedasticity), Welch`s
+Unlike Student's
+t-test, which assumes equal variances (homoscedasticity), Welch's
 test does not require this assumption.
 Welch's
-t-test exhibits minimal loss of robustness compared to Student`s
+t-test exhibits minimal loss of robustness compared to Student's
 t-test, even when the latter's
 assumptions are satisfied [@Moser:1992fp; @Delacre:2017iv]; therefore, Student's
 t-test is not implemented.
@@ -95,15 +90,14 @@ In contrast to parametric tests, the Wilcoxon rank sum test evaluates whether tw
 
 The test selection follows the algorithm below:
 
--   If the sample size in both groups exceeds 30, the function always performs Welch's *t*-test (`t.test()`) is always performed . For large samples, Welch`s *t*-test is robust across a variety of conditions, even when normality is not strictly met [\@ @Rasch:2011vl; @Lumley2002dsa].
+-   If the sample size in both groups exceeds 30, the function always performs Welch's *t*-test (`t.test()`) is always performed . For large samples, Welch's *t*-test is robust across a variety of conditions, even when normality is not strictly met [\@ @Rasch:2011vl; @Lumley2002dsa].
 -   If at least one group has fewer than 30 observations, the function applies the Shapiro-Wilk normality test to both groups:
-    -   If both $p$-values exceed the significance level $\alpha = 1-$`conf.level`, it performs Welch`s
-        *t*-test (`t.test()`).
+    -   If both $p$-values exceed the significance level $\alpha = 1-$`conf.level`, it performs Welch's *t*-test (`t.test()`).
 
     -   If at least one $p$-value falls below $\alpha=1-$`conf.level`, it uses the Wilcoxon rank sum test (`wilcox.test()`).
 
 The graphical output consists of box plots overlaid with jittered points to display individual observations.
-WhenWelch`s
+When'Welch's
 *t*-test is applied, the function also includes confidence intervals at the specified `conf.level`.
 In addition to the plot, the function returns a list containing the test results of the selected statistical test and the summary statistics used to generate the box plots.
 
@@ -119,7 +113,7 @@ mtcars$am <- as.factor(mtcars$am)
 t_test_statistics <- visstat(mtcars, "mpg", "am")
 ```
 
-Increasing the confidence level `conf.level` from the default 0.95 to 0.99 results in wider confidence interval, as a higher confidence level requires more conservative bounds to ensure that the interval includes the true parameter value with greater certainty.
+Increasing the confidence level `conf.level` from the default 0.95 to 0.99 results in wider confidence intervals, as a higher confidence level requires more conservative bounds to ensure that the interval includes the true parameter value with greater certainty.
 
 ```{r}
 mtcars$am <- as.factor(mtcars$am)
@@ -179,14 +173,14 @@ While `aov()` assumes homogeneity of variances across groups, `oneway.test()` do
 Homoscedasticity is assessed using Bartlett`s
 test (`bartlett.test()`), which tests the null hypothesis that the variances across all levels of the grouping variable are equal.
 
-### One-way Test and ANOVA
+### One-way test and ANOVA
 
 Depending on the $p$-value returned by `bartlett.test()`, the corresponding test is selected and its $p$-value is displayed in the figure title:
 
 -   If the $p$-value of `bartlett.test()` is greater than $1 -$ `conf.level`, we assume homogeneity of variances across groups and report the $p$-value from the ANOVA (`aov()`).
--   Otherwise, homoscedasticity cannot be assumed, and the function reports the $p$-value fromWelch`s one-way test (`oneway.test()`).
+-   Otherwise, homoscedasticity cannot be assumed, and the function reports the $p$-value from'Welch's one-way test (`oneway.test()`).
 
-#### Post-hoc Analysis: Tukey's Honestly Significant Differences (HSD) and Sidak-Corrected Confidence Intervals
+#### Post-hoc analysis: Tukey's Honestly Significant Differences (HSD) and Sidak-corrected confidence intervals
 
 Simple pairwise comparisons of group means following an analysis of variance increase the probability of incorrectly declaring a significant difference when, in fact, there is none .
 
@@ -271,7 +265,7 @@ This is confirmed by very small $p$-values from both the Shapiro–Wilk and Ande
 If both $p$-values are below the significance level $\alpha = 1 -$conf.level, `visstat()` switches to the non-parametric `kruskal.test()`.
 Post-hoc analysis using `pairwise.wilcox.test()` shows significant differences in petal width between all three species, as indicated by distinct group labels (all green letters differ).
 
-# Simple Linear Regression
+# Simple linear regression
 
 If the feature `varfactor` and the response `varsample` have only one level of type `numerical` or `integer`, `visstat()` performs a simple linear regression.
 Note that multiple linear regression is **not** implemented, as the main focus of `visstat()` is the visualisation of statistical tests.
