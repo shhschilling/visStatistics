@@ -31,12 +31,6 @@
       <ul class="navbar-nav me-auto">
 <li class="active nav-item"><a class="nav-link" href="../articles/visStatistics.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/visStatistics_original.html">visStatistics</a></li>
-  </ul>
-</li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -61,7 +55,7 @@
                         <h4 data-toc-skip class="author">Sabine
 Schilling</h4>
             
-            <h4 data-toc-skip class="date">2025-05-05</h4>
+            <h4 data-toc-skip class="date">2025-05-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -74,108 +68,129 @@ Schilling</h4>
 <div class="section level2">
 <h2 class="unnumbered" id="abstract">Abstract<a class="anchor" aria-label="anchor" href="#abstract"></a>
 </h2>
-<p>The R package <code>visStatistics</code> provides means to quickly
-visualise and analyse raw data by selecting, based on a decision tree,
-the statistical hypothesis test with the highest statistical power
-between the dependent variable (response) named <code>varsample</code>
-and the independent variable (feature) named <code>varfactor</code> in a
-<code>data.frame</code> named <code>dataframe</code>. A minimal function
-call has the structure:</p>
-<p><code>visstat(dataframe,varsample,varfactor)</code></p>
-<p>The data in the provided <code>dataframe</code> must be structured by
-column, where <code>varsample</code> and <code>varfactor</code> are the
-character strings of the column names of the dependent (response) and
-independent (feature) variables, respectively.</p>
-<p>The choice of statistical tests performed by the core function
-<code><a href="../reference/visstat.html">visstat()</a></code> depends on whether the data are numerical or
-categorical, the number of levels of categorical data and the data
-distributions (normal versus non-normal).</p>
-<p>Data of <code>class</code> <code>"numeric"</code> or
-<code>"integer"</code> will be referred in the remainder of this
-vignette as “numerical”, data of <code>class</code>
-<code>"factor"</code> will be referred in the remainder of this vignette
-as “categorical”.</p>
-<p>The function returns the corresponding test statistics, including any
-post-hoc-analysis, and generates a graph showing the key statistics of
-the underlying test.</p>
-<p><code>visStatistics</code> provides a fully automated workflow. It
-has been successfully used for the unbiased analysis of raw medical
-data.</p>
-<p>The remainder of this vignette focuses on the algorithm underlying
-the decision tree of <code><a href="../reference/visstat.html">visstat()</a></code>, while a call to
-<code><a href="../reference/visstat.html">?visstat</a></code> documents all parameter settings of the
-function.</p>
-<p>All implemented statistical tests are called with their default
-parameter sets, except for <code>conf.level</code>, which can be
-adjusted in the <code><a href="../reference/visstat.html">visstat()</a></code> function call. As a consequence,
-no paired tests are available.</p>
+<p>The R package <code>visStatistics</code> enables rapid visualization
+and statistical analysis of raw data by automatically selecting the
+hypothesis test with the highest statistical power to evaluate the
+relationship between a dependent variable (<code>varsample</code>) and
+an independent variable (<code>varfactor</code>) within a
+data.frame.</p>
+<p>A minimal function call has the following structure:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">dataframe</span>, <span class="va">varsample</span>, <span class="va">varfactor</span><span class="op">)</span></span></code></pre></div>
+<p>The data must be structured in columns, with <code>varsample</code>
+and <code>varfactor</code> being character strings naming the dependent
+(response) and independent (feature) variables, respectively.</p>
+<p>The choice of statistical test performed by the core function
+<code><a href="../reference/visstat.html">visstat()</a></code> depends on whether the variables are numerical or
+categorical, the number of levels in the categorical variable, and the
+distribution characteristics (normal vs. non-normal).</p>
+<p>In this vignette, data of <code>class</code> <code>"numeric"</code>
+or <code>"integer"</code> are referred to as “numerical”, while data of
+<code>class</code> <code>"factor"</code> are referred to as
+“categorical”.</p>
+<p>The function generates a graph showing the key statistics of the
+selected test. The complete test statistics are also returned as part of
+the output.</p>
+<p>This vignette outlines the decision logic behind
+<code><a href="../reference/visstat.html">visstat()</a></code>; the full parameter list is available via
+<code><a href="../reference/visstat.html">?visstat</a></code>. A graphical representation of the the decision
+tree for a categorical feature and a numeric response is given in
+Section @ref(sec-decisiontree),Figure @ref(fig:fig-decision-tree).</p>
+<p>Note: All statistical tests use default settings except for the
+user-adjustable <code>conf.level</code> parameter. As a consequence,
+paired tests are not currently supported. Furthermore, as the main
+purpose of this package is the visualization of statistical test
+results, only simple linear regression is implemented.</p>
 </div>
 <div class="section level2">
-<h2 id="comparing-central-tendencies">Comparing central tendencies<a class="anchor" aria-label="anchor" href="#comparing-central-tendencies"></a>
+<h2 id="sec-decisiontree">Decision Logic for Selecting Tests of Central Tendency<a class="anchor" aria-label="anchor" href="#sec-decisiontree"></a>
 </h2>
-<p>If the feature consists of data of <code>class</code>
-<code>"factor"</code> with two or more levels and the response consists
-of data of <code>class</code> <code>"numeric"</code> or
-<code>"integer"</code> (both of mode <code>"numeric"</code>), tests are
-applied to compare the central tendencies.</p>
+<p>If the feature consists of <code>class</code> “<code>factor</code>”
+with two or more levels and the response consists is of
+<code>class</code> “<code>numeric</code>” or “<code>integer</code>”
+(both having mode “<code>numeric</code>”), statistical tests are applied
+to compare the central tendencies across groups. A graphical overview of
+the decision logic used to select statistical tests for comparing
+central tendencies is provided in Figure @ref(fig:fig-decision-tree).
+This section explains the conditions under which parametric and
+non-parametric tests are chosen, based on the response type, the number
+of factor levels, and the underlying distributional assumptions.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">"figures/decision_tree_v6.pdf"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<embed src="figures/decision_tree_v6.pdf" title="Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity." width="100%,fig.height =" type="application/pdf"></embed><p class="caption">
+Decision tree used to select the appropriate statistical test for a
+categorical predictor and numerical response, based on the number of
+factor levels, normality and homoscedasticity.
+</p>
+</div>
 <div class="section level3">
-<h3 id="two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test">Two sample tests: Welch’s t-test or Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test"></a>
+<h3 id="two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test">Two sample tests: Welch’s <em>t</em>-test or Wilcoxon rank sum
+test<a class="anchor" aria-label="anchor" href="#two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test"></a>
 </h3>
-<p>If the feature has exactly two levels, Welch’s t-test or its
-non-parametric alternative, the Wilcoxon rank sum test, is performed.
-Welch’s t-test evaluates the null hypothesis that the two groups have
-equal means. While Student’s t-test assumes equal variances
-(homoscedasticity), Welch’s t-test does not require this assumption. It
-loses little robustness compared to Student’s t-test even when the
-assumptions of Student’s t-test are met <span class="citation">(Moser
-and Stevens 1992; <strong>Delacre:2017iv?</strong>)</span>; therefore,
-Student’s t-test is not implemented. The Wilcoxon rank sum test, on the
-other hand, tests whether the two samples come from the same population
-or have identical distributions, without assuming normality.</p>
-<p>The test choice follows the algorithm below:</p>
+<p>When the feature has exactly two levels, Welch’s t-test is used to
+compare group means if normality assumptions hold; otherwise, the
+Wilcoxon rank sum test is applied (see Figure
+@ref(fig:fig-decision-tree)). Welch’s t-test evaluates the null
+hypothesis that the two groups have equal means. Unlike Student’s
+t-test, which assumes equal variances (homoscedasticity), Welch’s test
+does not require this assumption. Welch’s t-test exhibits minimal loss
+of robustness compared to Student’s t-test, even when the latter’s
+assumptions are satisfied <span class="citation">(Moser and Stevens
+1992; Delacre et al. 2017)</span>; therefore, Student’s t-test is not
+implemented. In contrast to parametric tests, the Wilcoxon rank sum test
+evaluates whether two samples derive from the same distribution, without
+relying on the assumption of normality.</p>
+<p>The test selection follows the algorithm below:</p>
 <ul>
-<li><p>If the sample size for both levels is greater than 30, always
-perform Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) <span class="citation">(@
-Rasch, Kubinger, and Moder 2011; Lumley et al. 2002)</span>. For large
-samples, the t test has been shown to be robust in many situations o
-test or not to test: Paper: Preliminary assessment of normality when
-comparing two independent samples</p></li>
-<li><p>If the sample size of at least one of the levels is smaller than
-30, first check for normality of both levels with the Shapiro-Wilk
-normality test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>):</p></li>
-<li><p>If the p-values of the <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> of both levels
-are greater than the error probability
+<li>
+<strong>If the sample size in both groups exceeds 30</strong>, the
+function always performs Welch’s <em>t</em>-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>)
+is always performed . For large samples, Welch’s <em>t</em>-test is
+robust across a variety of conditions, even when normality is not
+strictly met <span class="citation">(@ Rasch, Kubinger, and Moder 2011;
+Lumley et al. 2002)</span>.</li>
+<li>
+<strong>If at least one group has fewer than 30
+observations</strong>, the function applies the Shapiro–Wilk normality
+test to both groups:
+<ul>
+<li><p><strong>If both p-values exceed the significance level</strong>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">\alpha = 1-</annotation></semantics></math><code>conf.level</code>,
-perform the Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>).</p></li>
-<li><p>If the p-value of at least one of the levels in the
-<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> is smaller than the error probability
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">\alpha=1-</annotation></semantics></math><code>conf.level</code>,
-a Wilcoxon rank sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is
-executed.</p></li>
+it performs Welch’s <em>t</em>-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>).</p></li>
+<li><p><strong>If at least one p-value falls below
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">\alpha=1-</annotation></semantics></math><code>conf.level</code></strong>,
+it uses the Wilcoxon rank sum test
+(<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>).</p></li>
 </ul>
-<p>The graphical representation consists of box plots overlaid with
-jitter plots showing each data point. In the case of Welch’s t-test, the
-<code>conf.level</code><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⋅</mo><mn>100</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\cdot 100 \%</annotation></semantics></math>
-- confidence intervals are also shown. The test statistics of the chosen
-test as well as the summary statistics of the generated box plots are
-returned as a list.</p>
+</li>
+</ul>
+<p>The graphical output consists of box plots overlaid with jittered
+points to display individual observations. When Welch’s <em>t</em>-test
+is applied,, the function also includes confidence intervals at the
+specified <code>conf.level</code>. In addition to the plot, the function
+returns a list containing the test results of the selected statistical
+test and the summary statistics used to generate the box plots.</p>
 <div class="section level4">
 <h4 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h4>
 <div class="section level5">
-<h5 id="welchs-t-test">Welch’s t-test<a class="anchor" aria-label="anchor" href="#welchs-t-test"></a>
+<h5 id="welchs-t-test">Welch’s <em>t</em>-test<a class="anchor" aria-label="anchor" href="#welchs-t-test"></a>
 </h5>
-<p>As an example we use the motor trend car road test data set
-(<code>mtcars)</code>, which consists of 32 observations. In the example
-below <code>mpg</code> denotes miles per US gallon, <code>am</code> the
-transmission type ((0 = automatic, 1 = manual)).</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<p>As an example, we use the <em>Motor Trend Car Road Tests</em> data
+set (<code>mtcars</code>), which contains 32 observations. In the
+example below, <code>mpg</code> denotes miles per (US) gallon, and
+<code>am</code> represents the transmission type (<code>0</code> =
+automatic, <code>1</code> = manual).</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
 <span><span class="va">t_test_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the
-default 0.95 to 0.99 results in wider confidence intervals:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+default 0.95 to 0.99 results in wider confidence interval, as a higher
+confidence level requires more conservative bounds to ensure that the
+interval includes the true parameter value with greater certainty.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
 <span><span class="va">t_test_statistics_99</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="100%"></p>
@@ -183,7 +198,7 @@ default 0.95 to 0.99 results in wider confidence intervals:</p>
 <div class="section level5">
 <h5 id="wilcoxon-rank-sum-test">Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test"></a>
 </h5>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grades_gender</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"girl"</span>, <span class="fl">21</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"boy"</span>, <span class="fl">23</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -202,22 +217,25 @@ default 0.95 to 0.99 results in wider confidence intervals:</p>
 <div class="section level3">
 <h3 id="one-way-test-anova-or-kruskal-wallis-test">One-way test, ANOVA or Kruskal-Wallis test<a class="anchor" aria-label="anchor" href="#one-way-test-anova-or-kruskal-wallis-test"></a>
 </h3>
-<p>If the feature consists of data of <code>class</code>
-<code>"factor"</code> with more than two levels and the response is of
-<code>mode</code> <code>"numeric"</code>, <code><a href="../reference/visstat.html">visstat()</a></code>
-performs an analysis of variance (ANOVA),if neither of the following
-null hypotheses cannot be rejected on the chosen
-<code>conf.level</code>:</p>
+<p>If the feature is of <code>class</code> “<code>factor</code>” with
+more than two levels and the response is of <code>mode</code>
+“<code>numeric</code>”, <code><a href="../reference/visstat.html">visstat()</a></code> initially attempts an
+analysis of variance (ANOVA). ANOVA is performed only if both of the
+following null hypotheses <strong>cannot</strong> be rejected at the
+specified <code>conf.level</code>:</p>
 <ol style="list-style-type: decimal">
-<li>normality of the standardised residuals and</li>
-<li>homoscedasticity.</li>
+<li>The standardized residuals follow a normal distribution, and<br>
+</li>
+<li>The residuals exhibit homoscedasticity (equal variances across
+groups).</li>
 </ol>
-<p>If only the first condition for the normality of the residuals is
-met, <code><a href="../reference/visstat.html">visstat()</a></code> performs a one-way test (see
-<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>). If the normality of the residuals cannot be
-assumed, a Kruskal-Wallis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is used.
-These assumptions are tested by the <code>visAnovaAssumptions()</code>
-function.</p>
+<p>If only the assumption of normality is satisfied,
+<code><a href="../reference/visstat.html">visstat()</a></code> applies Welch’s one-way test
+(<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>).<br>
+If the normality assumption is violated, a Kruskal–Wallis test
+(<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is used instead.</p>
+<p>These assumptions are tested internally using the
+<code>visAnovaAssumptions()</code> function.</p>
 <div class="section level4">
 <h4 id="checking-the-anova-assumptions">Checking the ANOVA assumptions<a class="anchor" aria-label="anchor" href="#checking-the-anova-assumptions"></a>
 </h4>
@@ -226,65 +244,78 @@ function.</p>
 </h5>
 <p>The <code>visAnovaAssumptions()</code> function assesses the
 normality of standardized residuals from the ANOVA fit using both the
-Shapiro-Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson-Darling
-test (<code>ad.test())</code>.</p>
-<p>It plots the standardised residuals against the fitted means of the
-linear model for each level of the feature <code>varfactor</code>and
-generates the Q-Q plot of the standardised residuals.</p>
+Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson–Darling
+test (<code>ad.test()</code>). Normality is assumed if at least one of
+the two tests yields a p-value greater than
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">1 -</annotation></semantics></math><code>conf.level</code> (see Figure @ref(fig:fig-decision-tree)).</p>
+<p>The function generates two diagnostic plots:<br>
+- a scatterplot of the standardized residuals against the fitted means
+of the linear model for each level of the feature
+(<code>varfactor</code>), and<br>
+- a Q–Q plot of the standardized residuals.</p>
 </div>
 <div class="section level5">
 <h5 id="homoscedasticity-homogeneity-of-variances-in-each-level-bartlett-test">Homoscedasticity: homogeneity of variances in each level: Bartlett
 test<a class="anchor" aria-label="anchor" href="#homoscedasticity-homogeneity-of-variances-in-each-level-bartlett-test"></a>
 </h5>
-<p>Both <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> and <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> test whether
-two or more samples from normal distributions have the same mean. While
-<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> requires homogeneity of variances in each level
-(group), the <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> does not require that the
-variances in each level are necessarily equal. Homoscedasticity is
-assessed using the Bartlett test, see <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>,
-under the null hypothesis that the variances in each of the levels are
+<p>Both <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> and <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> assess whether
+two or more samples drawn from normal distributions have the same mean.
+While <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> assumes homogeneity of variances across groups,
+<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> does not require the variances to be
 equal.</p>
+<p>Homoscedasticity is assessed using Bartlett’s test
+(<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>), which tests the null hypothesis that the
+variances across all levels of the grouping variable are equal.</p>
 </div>
 </div>
 <div class="section level4">
-<h4 id="one-way-test-and-anova">One-way test and ANOVA<a class="anchor" aria-label="anchor" href="#one-way-test-and-anova"></a>
+<h4 id="one-way-test-and-anova">One-way Test and ANOVA<a class="anchor" aria-label="anchor" href="#one-way-test-and-anova"></a>
 </h4>
-<p>Depending on the p-value of the <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>, the
-corresponding test is shown in the figure title:</p>
+<p>Depending on the p-value returned by <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>,
+the corresponding test is selected and its p-value is displayed in the
+figure title:</p>
 <ul>
-<li><p>If the p-value of the <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code> is greater
-than <code>1-conf.level</code>, we assume homogeneity of variances in
-each level (group) and the p-values of <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> are
-displayed.</p></li>
-<li><p>Otherwise homoscedasticity cannot be assumed and the p-value of
-<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> is reported.</p></li>
+<li>If the p-value of <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code> is greater than
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">1 -</annotation></semantics></math><code>conf.level</code>, we assume homogeneity of variances across
+groups and report the p-value from the ANOVA (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>).</li>
+<li>Otherwise, homoscedasticity cannot be assumed, and the function
+reports the p-value from Welch’s one-way test
+(<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>).</li>
 </ul>
 <div class="section level5">
-<h5 id="post-hoc-analysis-tukeys-honestly-significant-differences-hsd-and-sidak-corrected-confidence-intervals">Post-hoc analysis: Tukey's honestly significant differences (HSD)
-and Sidak corrected confidence intervals<a class="anchor" aria-label="anchor" href="#post-hoc-analysis-tukeys-honestly-significant-differences-hsd-and-sidak-corrected-confidence-intervals"></a>
+<h5 id="post-hoc-analysis-tukeys-honestly-significant-differences-hsd-and-šidák-corrected-confidence-intervals">Post-hoc Analysis: Tukey’s Honestly Significant Differences (HSD)
+and Šidák-Corrected Confidence Intervals<a class="anchor" aria-label="anchor" href="#post-hoc-analysis-tukeys-honestly-significant-differences-hsd-and-%C5%A1id%C3%A1k-corrected-confidence-intervals"></a>
 </h5>
-<p>Simple multiple comparisons of the means for the factor levels in an
-analysis of variance inflate the probability of declaring a significant
-difference when, in fact, there is none . The family-wise error rate
-(also called the probability of a type I error) is the probability of at
-least one false positive comparison, in which the null hypothesis is
-falsely rejected, when multiple comparisons are performed.</p>
+<p>Simple pairwise comparisons of group means following an analysis of
+variance increase the probability of incorrectly declaring a significant
+difference when, in fact, there is none .</p>
+<p>This inflation of error is quantified by the <strong>family-wise
+error rate</strong> (FWER), which refers to the probability of making at
+least one Type I error — that is, falsely rejecting the null hypothesis
+— across all pairwise comparisons.</p>
+<p>To control the family-wise error rate (FWER), <code><a href="../reference/visstat.html">visstat()</a></code>
+performs post-hoc analysis using <strong>Tukey’s Honestly Significant
+Difference (HSD)</strong> test and displays <strong>Šidák-corrected
+confidence intervals</strong>.</p>
 <div class="section level6">
-<h6 id="tukeys-honestly-significant-differences-hsd">Tukey`s honestly significant differences (HSD)<a class="anchor" aria-label="anchor" href="#tukeys-honestly-significant-differences-hsd"></a>
+<h6 id="tukeys-honestly-significant-differences-hsd">Tukey’s Honestly Significant Differences (HSD)<a class="anchor" aria-label="anchor" href="#tukeys-honestly-significant-differences-hsd"></a>
 </h6>
-<p>The <code><a href="../reference/visstat.html">visstat()</a></code> function reduces the probability of a type
-I error by applying Tukey’s Honestly Significant Differences as
-implemented in <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>. Based on the specified
-confidence level <code>conf.level</code>, it constructs a set of
-confidence intervals for all pairwise differences between factor level
-means. A significant difference between two means is indicated when the
-corresponding confidence interval does not include the zero. The
-function returns both the confidence intervals and the Tukey
-HSD-adjusted p-values for all pairwise comparisons.</p>
-<p>In the graphical representation of One-way test and ANOVA, green
-letters between two factor levels differ only, if the Tukey’s HSD
-adjusted p-value for their comparison is smaller than
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">\alpha=1-</annotation></semantics></math><code>conf.int</code>.</p>
+<p>The <code><a href="../reference/visstat.html">visstat()</a></code> function controls the probability of a
+Type I error by applying Tukey’s Honestly Significant Differences
+procedure, as implemented in <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>.<br>
+Based on the specified confidence level (<code>conf.level</code>), it
+constructs a set of confidence intervals for all pairwise differences
+between factor level means. A significant difference between two means
+is indicated when the corresponding confidence interval does
+<strong>not</strong> include zero.<br>
+The function returns both the HSD-adjusted p-values and the associated
+confidence intervals for all pairwise comparisons.</p>
+<p>In the graphical output for the one-way test and ANOVA, <strong>green
+letters displayed below each group</strong> summarize the results of the
+Tukey HSD post-hoc test: Two groups are considered significantly
+different if they are assigned <strong>different letters</strong>,
+indicating a Tukey HSD-adjusted p-value smaller than
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">\alpha = 1 -</annotation></semantics></math><code>conf.level</code>.</p>
 </div>
 </div>
 <div class="section level5">
@@ -353,7 +384,7 @@ comparisons adjusted by the Holm method is returned.</p>
 pounds/block on six blocks, where the application of nitrogen (N),
 phosphate (P) or potassium (K) fertilisers was varied. Either no, one,
 two or three different fertilisers were applied on the blocks.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">oneway_npk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span>, <span class="st">"yield"</span>, <span class="st">"block"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-5-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-5-2.png" width="100%"></p>
 <p>We can assume that the residuals are normally distributed based on
@@ -375,7 +406,7 @@ letters are equal).</p>
 experimental units treated with six different insecticides. To stabilise
 the variance in counts, we transform the count data of the
 <code>InsectSprays</code> data set by the square root.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">insect_sprays_tr</span> <span class="op">&lt;-</span> <span class="va">InsectSprays</span></span>
 <span><span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">count_sqrt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">count</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">insect_sprays_tr</span>, <span class="st">"count_sqrt"</span>, <span class="st">"spray"</span><span class="op">)</span></span></code></pre></div>
@@ -390,7 +421,7 @@ the <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()
 </h5>
 <p>The iris data set gives the measurement of the petal width in cm for
 three different iris species.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span>, <span class="st">"Petal.Width"</span>, <span class="st">"Species"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-7-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-7-2.png" width="100%"></p>
 <p>In the iris data example, the graphical analysis of the scatter plots
@@ -447,13 +478,13 @@ confidence and prediction bands.</p>
 </h4>
 <p>The cars data set reports the speed of cars in mph and the distance
 (dist) in ft taken to stop.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>, <span class="st">"dist"</span>, <span class="st">"speed"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-8-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-8-2.png" width="100%"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the
 default 0.95 to 0.99 results in wider confidence and prediction
 bands:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>, <span class="st">"dist"</span>, <span class="st">"speed"</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-9-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-9-2.png" width="100%"></p>
 <p>p-values greater than <code>conf.level</code> in both
@@ -466,7 +497,7 @@ residuals underlying the linear regression is met.</p>
 </h4>
 <p>The trees data set provides measurements of the diameter (called
 “Girth”) in inches and height in feet of black cherry trees.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span>, <span class="st">"Height"</span>, <span class="st">"Girth"</span>, conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-10-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-10-2.png" width="100%"></p>
 <p>Both the graphical analysis of the standardised residuals and
@@ -524,13 +555,13 @@ structure with the helper function <code><a href="../reference/counts_to_cases.h
 <p><code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code> transforms the contingency table
 <code>HairEyeColor</code> into <code>data.frame</code> named
 <code>HairEyeColorDataFrame</code>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">HairEyeColorDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="pearsons-chi-squared-test">Pearson’s Chi-squared test<a class="anchor" aria-label="anchor" href="#pearsons-chi-squared-test"></a>
 </h4>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_color_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_color_df</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-12-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-12-2.png" width="100%"></p>
@@ -544,7 +575,7 @@ test.</p>
 <p>In the following example, we select only participants with black or
 brown hair and brown or blue eyes resulting in a 2 by 2 contingency
 table.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_black_brown_eyes_brown_blue</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></span>
 <span><span class="co">#Transform to data frame</span></span>
 <span><span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue</span><span class="op">)</span><span class="op">)</span></span>
@@ -563,7 +594,7 @@ cells (corresponding to 25% of all cells), violating the requirement of
 the Chi-squared test that the expected value should be at least 5 for
 the majority (80%) of the cells <span class="citation">(Cochran
 1954)</span>. Therefore the Fisher exact test is chosen.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_color_male</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co"># Slice out a 2 by 2 contingency table</span></span>
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="va">hair_eye_color_male</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
@@ -584,18 +615,19 @@ the following example we store the graphics files in the output format
 “png” to the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>. The
 naming convention used for the graphics file reflects the chosen
 statistical test and the variable names.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
 <span>graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"chi_squared_or_fisher_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"mosaic_complete_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>```</p>
 </div>
 <div class="section level2">
 <h2 id="overview-of-implemented-tests">Overview of implemented tests<a class="anchor" aria-label="anchor" href="#overview-of-implemented-tests"></a>
@@ -625,6 +657,12 @@ residuals<a class="anchor" aria-label="anchor" href="#implemented-tests-to-check
 Cochran, William G. and. 1954. <span>“<span class="nocase">The
 combination of estimates from different experiments</span>.”</span>
 <em>Scandinavian Journal of Statistics</em> 10 (1): 101–20. <a href="https://doi.org/10.2307/3001666" class="external-link">https://doi.org/10.2307/3001666</a>.
+</div>
+<div id="ref-Delacre:2017iv" class="csl-entry">
+Delacre, M, D Lakens, C Leys International Review of Social, and 2017.
+2017. <span>“<span class="nocase">Why Psychologists Should by Default
+Use Welch’s t-test Instead of Student’s t-test</span>.”</span>
+<em>International Review of Social Psychology</em>. <a href="https://doi.org/10.5334/irsp.82" class="external-link">https://doi.org/10.5334/irsp.82</a>.
 </div>
 <div id="ref-Holm1979ASS" class="csl-entry">
 Holm, S. 1979. <span>“<span>A Simple Sequentially Rejective Multiple
