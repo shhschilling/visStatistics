@@ -60,8 +60,8 @@ Note: Except for the user-adjustable `conf.level` parameter, all statistical tes
 If the feature consists of `class` "`factor`" with two or more levels and the response consists is of `class` "`numeric`" or "`integer`" (both having mode "`numeric`"), statistical tests are applied to compare the central tendencies across groups. 
 This section describes the conditions under which parametric and non-parametric tests are chosen, based on the response type, the number of factor levels, and the underlying distributional assumptions. A graphical overview of the decision logic used is provided in Figure \@ref(fig:fig-decision-tree).
 
-```{r fig-decision-tree, fig.cap="Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity.", out.width="100%,fig.height ="}
-knitr::include_graphics("figures/decision_tree_v6.pdf")
+```{r fig-decision-tree, fig.cap="Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity.", out.width="100%,fig.height =100% "}
+knitr::include_graphics("../man/figures/decision_tree.png")
 ```
 
 ## Two sample tests: Welch's *t*-test or Wilcoxon rank sum test

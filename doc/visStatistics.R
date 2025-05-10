@@ -11,10 +11,12 @@ knitr::opts_chunk$set(
 ## ----setup--------------------------------------------------------------------
 library(visStatistics)
 
+## ----fig-decision-tree, fig.cap="Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity.", out.width="100%,fig.height =100% "----
+knitr::include_graphics("../man/figures/decision_tree.png")
+
 ## -----------------------------------------------------------------------------
 mtcars$am <- as.factor(mtcars$am)
 t_test_statistics <- visstat(mtcars, "mpg", "am")
-# t_test_statistics # Uncomment this line to print out the test statistics
 
 ## -----------------------------------------------------------------------------
 mtcars$am <- as.factor(mtcars$am)
@@ -51,7 +53,10 @@ linreg_cars <- visstat(cars, "dist", "speed")
 linreg_cars <- visstat(cars, "dist", "speed", conf.level = 0.99)
 
 ## -----------------------------------------------------------------------------
-linreg_cars <- visstat(trees, "Height", "Girth", conf.level = 0.9)
+linreg_trees <- visstat(trees, "Volume", "Girth", conf.level = 0.9)
+
+## -----------------------------------------------------------------------------
+linreg_cars <- visstat(trees, "Volume", "Girth", conf.level = 0.9)
 
 ## -----------------------------------------------------------------------------
 HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
@@ -63,7 +68,7 @@ visstat(hair_eye_color_df, "Hair", "Eye")
 ## -----------------------------------------------------------------------------
 hair_black_brown_eyes_brown_blue <- HairEyeColor[1:2, 1:2, ]
 #Transform to data frame
-hair_black_brown_eyes_brown_blue_df<- counts_to_cases(as.data.frame(hair_black_brown_eyes_brown_blue))
+hair_black_brown_eyes_brown_blue_df <- counts_to_cases(as.data.frame(hair_black_brown_eyes_brown_blue))
 #Chi-squared test
 visstat(hair_black_brown_eyes_brown_blue_df, "Hair", "Eye")
 
