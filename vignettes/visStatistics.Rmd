@@ -17,8 +17,6 @@ editor_options:
     wrap: sentence
 ---
 
-
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
  echo = TRUE,
@@ -36,29 +34,43 @@ library(visStatistics)
 
 # Abstract {.unnumbered}
 
-The package `visStatistics` enables rapid visualization and statistical analysis of raw data by automatically selecting the hypothesis test with the highest statistical power to evaluate the relationship between a response (`varsample`) and a feature (`varfactor`) within a `data.frame`. Its core function, `visstat()`, generates a graph showing key statistics from the selected test and returns the corresponding test results, including any post-hoc analysis.
+The package `visStatistics` enables rapid visualization and statistical analysis of raw data by automatically selecting the hypothesis test with the highest statistical power to evaluate the relationship between a response (`varsample`) and a feature (`varfactor`) within a `data.frame`.
+Its core function, `visstat()`, generates a graph showing key statistics from the selected test and returns the corresponding test results, including any post-hoc analysis.
 
-A minimal function call has the form 
-`visstat(dataframe, varsample, varfactor)`. 
+A minimal function call has the form `visstat(dataframe, varsample, varfactor)`.
 
-The input `data.frame` must be column-based, and the arguments `varsample` and `varfactor` must be character strings naming columns of the `data.frame`. The significance level $\alpha$, used throughout for hypothesis testing, is defined as `1 - conf.level`, where `conf.level` is a user-controllable argument (defaulting to `0.95`).
+The input `data.frame` must be column-based, and the arguments `varsample` and `varfactor` must be character strings naming columns of the `data.frame`.
+The significance level $\alpha$, used throughout for hypothesis testing, is defined as `1 - conf.level`, where `conf.level` is a user-controllable argument (defaulting to `0.95`).
 Data of class `"numeric"` or `"integer"` are referred to in the remainder of this vignette as numerical, while data of class `"factor"` are referred to as categorical.
 
-The choice of statistical tests performed by the function `visstat()` depends on whether the data are numerical or categorical, the number of levels in the categorical variable, and the distribution of the data. The function prioritizes interpretable visual output and tests that remain valid under the assumptions evaluated applying the following decision logic:
+The choice of statistical tests performed by the function `visstat()` depends on whether the data are numerical or categorical, the number of levels in the categorical variable, and the distribution of the data.
+The function prioritizes interpretable visual output and tests that remain valid under the assumptions evaluated applying the following decision logic:
 
-(1) When the response is numerical and the predictor is categorical, test of central tendencies are performed. If the categorical predictor has two levels, Welch's t-test (`t.test()`) is used, if both groups have more than 30 observations, relying on the central limit theorem to justify its application regardless of underlying normality [@Lumley2002dsa]. For smaller samples, group-wise normality is assessed using the Shapiro-Wilk test (`shapiro.test()`). If both groups return p-values greater than $\alpha$, Welch's t-test is applied; otherwise, the Wilcoxon rank-sum test (`wilcox.test()`) is used.
-For predictors with more than two levels, an ANOVA model (`aov()`) is initially fitted. Residual normality is evaluated using both the Shapiro-Wilk test (`shapiro.test()`) and Anderson-Darling test (`ad.test()`), and normality is assumed if either test yields $p > \alpha$. If the residuals are considered normal, Bartlett's test (`bartlett.test()`) is used to assess homoscedasticity. When variances are homogeneous ($p > \alpha$), ANOVA is applied with Tukey's HSD (`TukeyHSD()`) for post-hoc comparison. If variances differ significantly ($p \le \alpha$), Welch's one-way test (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal-Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
+(1) When the response is numerical and the predictor is categorical, test of central tendencies are performed.
+    If the categorical predictor has two levels, Welch's t-test (`t.test()`) is used, if both groups have more than 30 observations, relying on the central limit theorem to justify its application regardless of underlying normality [@Lumley2002dsa].
+    For smaller samples, group-wise normality is assessed using the Shapiro-Wilk test (`shapiro.test()`).
+    If both groups return p-values greater than $\alpha$, Welch's t-test is applied; otherwise, the Wilcoxon rank-sum test (`wilcox.test()`) is used.
+    For predictors with more than two levels, an ANOVA model (`aov()`) is initially fitted.
+    Residual normality is evaluated using both the Shapiro-Wilk test (`shapiro.test()`) and Anderson-Darling test (`ad.test()`), and normality is assumed if either test yields $p > \alpha$.
+    If the residuals are considered normal, Bartlett's test (`bartlett.test()`) is used to assess homoscedasticity.
+    When variances are homogeneous ($p > \alpha$), ANOVA is applied with Tukey's HSD (`TukeyHSD()`) for post-hoc comparison.
+    If variances differ significantly ($p \le \alpha$), Welch's one-way test (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal-Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
 
-(2) When both the response and predictor are numerical, a simple linear regression model (`lm()`) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation.
+(2) When both the response and predictor are numerical, a simple linear regression model (`lm()`) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands.
+    Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation.
 
-(3) In the case of two categorical variables, `visstat()` tests the null hypothesis that the predictor and response variables are independent using either `chisq.test()` or `fisher.test()`. The choice of test is based on Cochran's rule [@Cochran], which advises that the $\chi^2$ approximation is reliable only if no expected cell count is zero and no more than 20 percent of cells have expected counts below 5.
+(3) In the case of two categorical variables, `visstat()` tests the null hypothesis that the predictor and response variables are independent using either `chisq.test()` or `fisher.test()`.
+    The choice of test is based on Cochran's rule [@Cochran], which advises that the $\chi^2$ approximation is reliable only if no expected cell count is zero and no more than 20 percent of cells have expected counts below 5.
 
-Note: Except for the user-adjustable `conf.level` parameter, all statistical tests are applied using their default settings from the corresponding base R functions (e.g., `t.test()`). As a consequence, paired tests are not currently supported. Furthermore, since the main purpose of this package is to visualize statistical test results, only simple linear regression is implemented.
+Note: Except for the user-adjustable `conf.level` parameter, all statistical tests are applied using their default settings from the corresponding base R functions (e.g., `t.test()`).
+As a consequence, paired tests are not currently supported.
+Furthermore, since the main purpose of this package is to visualize statistical test results, only simple linear regression is implemented.
 
 # Decision logic for selecting tests of central tendency {#sec-decisiontree}
 
-If the feature consists of `class` "`factor`" with two or more levels and the response consists is of `class` "`numeric`" or "`integer`" (both having mode "`numeric`"), statistical tests are applied to compare the central tendencies across groups. 
-This section describes the conditions under which parametric and non-parametric tests are chosen, based on the response type, the number of factor levels, and the underlying distributional assumptions. A graphical overview of the decision logic used is provided in Figure \@ref(fig:fig-decision-tree).
+If the feature consists of `class` "`factor`" with two or more levels and the response consists is of `class` "`numeric`" or "`integer`" (both having mode "`numeric`"), statistical tests are applied to compare the central tendencies across groups.
+This section describes the conditions under which parametric and non-parametric tests are chosen, based on the response type, the number of factor levels, and the underlying distributional assumptions.
+A graphical overview of the decision logic used is provided in Figure \@ref(fig:fig-decision-tree).
 
 ```{r fig-decision-tree, fig.cap="Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity.", out.width="100%,fig.height =100% "}
 knitr::include_graphics("../man/figures/decision_tree.png")
@@ -66,17 +78,27 @@ knitr::include_graphics("../man/figures/decision_tree.png")
 
 ## Two sample tests: Welch's *t*-test or Wilcoxon rank sum test
 
-When the feature variable has exactly two levels, Welch's t-test is used to compare group means if the assumption of normality is satisfied. Otherwise, the Wilcoxon rank sum test is applied (see Figure \@ref(fig:fig-decision-tree)).
+When the feature variable has exactly two levels, Welch's t-test is used to compare group means if the assumption of normality is satisfied.
+Otherwise, the Wilcoxon rank sum test is applied (see Figure \@ref(fig:fig-decision-tree)).
 
-Welch's t-test evaluates the null hypothesis that the two groups have equal means. Unlike Student's t-test, which assumes equal variances (homoscedasticity), Welch's test does not require this assumption. Welch's test exhibits minimal loss of robustness even when Student's t-test assumptions are satisfied [@Moser:1992fp; @Delacre:2017iv]. Therefore, Student's t-test is not implemented.
+Welch's t-test evaluates the null hypothesis that the two groups have equal means.
+Unlike Student's t-test, which assumes equal variances (homoscedasticity), Welch's test does not require this assumption.
+Welch's test exhibits minimal loss of robustness even when Student's t-test assumptions are satisfied [@Moser:1992fp; @Delacre:2017iv].
+Therefore, Student's t-test is not implemented.
 
 The Wilcoxon rank sum test, in contrast, is a non-parametric method that compares two distributions without requiring normality.
 
-The function selects between these tests as follows. If both groups have more than 30 observations, Welch's t-test (`t.test()`) is always performed. For large samples, the test remains robust even when normality is not strictly met [@Rasch:2011vl; @Lumley2002dsa].
+The function selects between these tests as follows.
+If both groups have more than 30 observations, Welch's t-test (`t.test()`) is always performed.
+For large samples, the test remains robust even when normality is not strictly met [@Rasch:2011vl; @Lumley2002dsa].
 
-If either group has fewer than 30 observations, the function applies the Shapiro-Wilk test (`shapiro.test()`) to each group. If both $p$-values exceed the significance level $\alpha = 1 -$ `conf.level`, Welch's t-test is applied. If at least one $p$-value falls below $\alpha$, the Wilcoxon rank sum test (`wilcox.test()`) is used instead.
+If either group has fewer than 30 observations, the function applies the Shapiro-Wilk test (`shapiro.test()`) to each group.
+If both $p$-values exceed the significance level $\alpha = 1 -$ `conf.level`, Welch's t-test is applied.
+If at least one $p$-value falls below $\alpha$, the Wilcoxon rank sum test (`wilcox.test()`) is used instead.
 
-The graphical output consists of box plots overlaid with jittered points to display individual observations. When Welch's t-test is applied, the function includes confidence intervals based on the user-specified `conf.level`. The function returns a list containing the results of the applied test and the summary statistics used to construct the plot.
+The graphical output consists of box plots overlaid with jittered points to display individual observations.
+When Welch's t-test is applied, the function includes confidence intervals based on the user-specified `conf.level`.
+The function returns a list containing the results of the applied test and the summary statistics used to construct the plot.
 
 ### Examples
 
@@ -121,10 +143,8 @@ ANOVA is performed only if both of the following null hypotheses cannot be rejec
 1.  The standardized residuals follow a normal distribution, and\
 2.  The residuals exhibit homoscedasticity (equal variances across groups).
 
-If only the assumption of normality is satisfied, `visstat()` applies Welch's
-one-way test (`oneway.test()`).
-If the normality assumption is violated, a Kruskal-W
-allis test (`kruskal.test()`) is used instead.
+If only the assumption of normality is satisfied, `visstat()` applies Welch's one-way test (`oneway.test()`).
+If the normality assumption is violated, a Kruskal-W allis test (`kruskal.test()`) is used instead.
 
 These assumptions are tested internally using the `visAnovaAssumptions()` function.
 
@@ -132,23 +152,19 @@ These assumptions are tested internally using the `visAnovaAssumptions()` functi
 
 #### Residual analysis {#aov_residuals} {.unnumbered}
 
-The `visAnovaAssumptions()` function assesses the normality of standardized residuals from the ANOVA fit using both the Shapiro-W
-ilk test (`shapiro.test()`) and the Anderson-D
-arling test (`ad.test()`).
+The `visAnovaAssumptions()` function assesses the normality of standardized residuals from the ANOVA fit using both the Shapiro-W ilk test (`shapiro.test()`) and the Anderson-D arling test (`ad.test()`).
 Normality is assumed if at least one of the two tests yields a $p$-value greater than $1 -$ `conf.level` (see Figure \@ref(fig:fig-decision-tree)).
 
 The function generates two diagnostic plots:\
 - a scatterplot of the standardized residuals against the fitted means of the linear model for each level of the feature (`varfactor`), and\
-- a Q-Q
-plot of the standardized residuals.
+- a Q-Q plot of the standardized residuals.
 
 #### Homoscedasticity: homogeneity of variances in each level: Bartlett test {.unnumbered}
 
 Both `aov()` and `oneway.test()` assess whether two or more samples drawn from normal distributions have the same mean.
 While `aov()` assumes homogeneity of variances across groups, `oneway.test()` does not require the variances to be equal.
 
-Homoscedasticity is assessed using Bartlett`s
-test (`bartlett.test()`), which tests the null hypothesis that the variances across all levels of the grouping variable are equal.
+Homoscedasticity is assessed using Bartlett`s test (`bartlett.test()\`), which tests the null hypothesis that the variances across all levels of the grouping variable are equal.
 
 ### One-way test and ANOVA
 
@@ -178,7 +194,6 @@ The Sidak procedure, on the other hand, addresses the problems of a type I error
 The Sidak corrected acceptable probability of error [@Sidak] is defined as $\alpha_{Sidak}=(1$-`conf.int`$)^{1/M}$, where $M=\frac{n\cdot (n-1)}{2}$ is the number of pairwise comparisons of the $n$ levels of the categorical variable.
 
 In the graphical display of One-way test and ANOVA, `visstat()` displays both the `conf.level` $\cdot\; 100 \%$-confidence intervals alongside the larger, Sidak-corrected $(1-\alpha_{Sidak})\cdot 100\;\%$-confidence intervals.
-
 
 Note that the current structure of `visstat()` does not allow the study of interactions between the different levels of an independent variable.
 
@@ -250,7 +265,7 @@ Note that multiple linear regression is **not** implemented, as the main focus o
 If the feature `varfactor` and the response `varsample` contain only one level each and both are of type `numeric` or `integer`, `visstat()` performs a simple linear regression.
 Note that multiple linear regression is not implemented, as the main focus of `visstat()` is on the visualisation of statistical tests.
 
-## Residual analysis 
+## Residual analysis
 
 `visstat()` checks the normality of the standardised residuals from `lm()` both graphically and using the Shapiro-Wilk and Anderson-Darling tests (see also section [Residual analysis](#aov_residuals)).
 If the $p$-values for the null hypothesis of normally distributed residuals from both tests are smaller than $1 -$`conf.int`, the title of the residual plot will display the message: "Requirement of normally distributed residuals not met".
@@ -297,11 +312,15 @@ Furthermore, the linear regression model explains 93% of the total variance in t
 
 # ${\chi}^2$- and Fisher Test
 
-When both the feature `varfactor` and the response `varsample` are categorical variables (i.e., of type `factor`), `visstat()` tests the null hypothesis that the two variables are independent. Categorical data are typically represented as contingency tables, which cross-tabulate the observed frequencies for each combination of factor levels. Based on these observed frequencies, `visstat()` computes the expected frequencies under the null hypothesis of independence.
+When both the feature `varfactor` and the response `varsample` are categorical variables (i.e., of type `factor`), `visstat()` tests the null hypothesis that the two variables are independent.
+Categorical data are typically represented as contingency tables, which cross-tabulate the observed frequencies for each combination of factor levels.
+Based on these observed frequencies, `visstat()` computes the expected frequencies under the null hypothesis of independence.
 
-If the expected frequencies are sufficiently large - specifically, if at least 80% of the cells have expected counts greater than 5 and no expected count is zero - the function uses Pearson's  ${\chi}^2$-test (`chisq.test()`). Otherwise, it switches to Fisher's exact test (`fisher.test()`) [@Cochran]. For 2-by-2 contingency tables, Yate's a continuity correction [@Yates:1934] is applied to Pearson's  ${\chi}^2$-test. 
+If the expected frequencies are sufficiently large - specifically, if at least 80% of the cells have expected counts greater than 5 and no expected count is zero - the function uses Pearson's ${\chi}^2$-test (`chisq.test()`).
+Otherwise, it switches to Fisher's exact test (`fisher.test()`) [@Cochran].
+For 2-by-2 contingency tables, Yate's a continuity correction [@Yates:1934] is applied to Pearson's ${\chi}^2$-test.
 
-The function produces a grouped column plot that includes the test's $p$-value in the title, as well as a mosaic plot showing Pearson residuals (see the documentation of `mosaic()` in the `vcd` package for details).
+For both ${\chi}^2$- and Fisher Test 'visstat()' displays a grouped column plot that includes the respective test's $p$-value in the title, as well as a mosaic plot showing Pearson residuals (see the documentation of `mosaic()` in the `vcd` package for details).
 
 All features of `visstat()` will be illustrated using the built-in data set `HairEyeColor`.
 
@@ -310,14 +329,13 @@ All features of `visstat()` will be illustrated using the built-in data set `Hai
 `visstat()` requires input in the form of a column-based `data.frame`.
 Contingency tables can be converted to this format using the helper function `counts_to_cases()`.
 
-
 `counts_to_cases()` transforms the contingency table `HairEyeColor` into `data.frame` named `HairEyeColorDataFrame`.
 
 ```{r}
 HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
 ```
 
-## Pearson's  ${\chi}^2$-test
+## Pearson's ${\chi}^2$-test
 
 ```{r}
 hair_eye_color_df <- counts_to_cases(as.data.frame(HairEyeColor))
@@ -326,8 +344,8 @@ visstat(hair_eye_color_df, "Hair", "Eye")
 
 ### Pearson's ${\chi}^2$-test with Yate's continuity correction
 
-For 2-by-2 contingency tables, `visstat()` applies  Yate's continuity correction [@Yates:1934] when computing the $\chi^2$ test statistic.
- In the following example, we restrict the data to participants with either black or brown hair and either brown or blue eyes, resulting in a 2-by-2 contingency table.
+For 2-by-2 contingency tables, `visstat()` applies Yate's continuity correction [@Yates:1934] when computing the $\chi^2$ test statistic.
+In the following example, we restrict the data to participants with either black or brown hair and either brown or blue eyes, resulting in a 2-by-2 contingency table.
 
 ```{r}
 hair_black_brown_eyes_brown_blue <- HairEyeColor[1:2, 1:2, ]
@@ -337,15 +355,13 @@ hair_black_brown_eyes_brown_blue_df <- counts_to_cases(as.data.frame(hair_black_
 visstat(hair_black_brown_eyes_brown_blue_df, "Hair", "Eye")
 ```
 
-
 ## Fisher's exact test and mosaic plot with Pearson residuals
 
-Again, we extract a 2-by-2 contingency table from the full dataset, this time keeping only male participants with black or brown hair and hazel or green eyes. 
+Again, we extract a 2-by-2 contingency table from the full dataset, this time keeping only male participants with black or brown hair and hazel or green eyes.
 
-Pearson's ${\chi}^2$ test applied to this table would yield an expected frequency less than 5 in one of the four cells (25% of all cells), which violates the requirement that at least 80% of the expected frequencies must be 5 or greater [@Cochran]. 
+Pearson's ${\chi}^2$ test applied to this table would yield an expected frequency less than 5 in one of the four cells (25% of all cells), which violates the requirement that at least 80% of the expected frequencies must be 5 or greater [@Cochran].
 
 Therefore, `visstat()` automatically selects Fisher's exact test instead.
-
 
 ```{r}
 hair_eye_color_male <- HairEyeColor[, , 1]
@@ -359,10 +375,9 @@ fisher_stats <- visstat(black_brown_hazel_green_male, "Hair", "Eye")
 
 # Saving the graphical output
 
-
-The generated graphics can be saved in any file format supported by `Cairo()`, including "png", "jpeg", "pdf", "svg", "ps", and "tiff". 
-In the following example, we store the graphics in PNG format in the `plotDirectory` `tempdir()`. The file names reflect the statistical test used and the variable names involved.
-
+The generated graphics can be saved in any file format supported by `Cairo()`, including "png", "jpeg", "pdf", "svg", "ps", and "tiff".
+In the following example, we store the graphics in PNG format in the `plotDirectory` `tempdir()`.
+The file names reflect the statistical test used and the variable names involved.
 
 ```{r}
 visstat(black_brown_hazel_green_male, "Hair", "Eye",

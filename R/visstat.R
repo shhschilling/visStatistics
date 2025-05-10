@@ -3,39 +3,77 @@
 # Feedback highly welcome: sabineschilling@gmx.ch
 
 # Header visstat -----
-
-#' Visualization of statistical hypothesis testing based on decision tree
+#' 
+#' Automated Visualization of Statistical Hypothesis Test
+#' 
+#' @description
+#' \code{visstat()} automatically visualizes the hypothesis test with the highest
+#' statistical power between a dependent variable (response) and an independent
+#' variable (feature) in a given \code{data.frame} named \code{dataframe}, based on the
+#' sample size, distribution, and class of both the response and feature.
+#' The data in \code{dataframe} must be structured column-wise, where \code{varsample}
+#' and \code{varfactor} are \code{character} strings corresponding to the column names
+#' of the response and feature variables, respectively.
+#' The automatically generated output figures illustrate the selected statistical
+#' hypothesis test, display the main test statistics, and include assumption checks and
+#' post hoc comparisons when applicable. The primary test results are returned as a
+#' list object.
 #'
-#' Based on a decision tree, \code{visstat()} picks the statistical hypothesis
-#' test with the highest statistical  power between the dependent variable
-#' (response)  and the independent variable (feature) in a \code{data.frame}
-#' named \code{dataframe}.
-#' Data in the provided \code{dataframe} must be structured column wise,
-#' where \code{varsample} and \code{varfactor} are \code{character} strings
-#'corresponding to the column names of the dependent and independent variable
-#'respectively. For each test \code{visstat()} returns both a graph with the
-#' main test statistics in its title as well as  a list of the  test statistics 
-#' including eventual post-hoc analysis.
+#'@details
+#' Decision logic (for more details, please refer to the package's \code{vignette}).
 #'
-#' Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()},
-#' \code{aov()}, \code{kruskal.test()}, \code{fisher.test()}, \code{chisqu.test()}.
-#' Implemented tests for normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
-#' Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}.
+#' In the following, data of class \code{numeric} or \code{integer} are referred to
+#' as numerical, while data of class \code{factor} are referred to as categorical.
+#' The significance level \eqn{\alpha} is defined as one minus the confidence level,
+#' given by the argument \code{conf.level}.' 
 #'
-#' For the comparison of averages, the following algorithm  depends on the value of the parameter of \code{conf.level}, which defaults to 0.95:
-#' If the p-values of the standardized residuals of  \code{shapiro.test()} or \code{ks.test()} are smaller
-#' than the error probability 1-\code{conf.level}, \code{kruskal.test()} resp. \code{wilcox.test()} are performed, otherwise the \code{oneway.test()}
-#' and \code{aov()} resp. \code{t.test()} are performed and displayed.
-#' Exception: If the sample size of both levels is bigger than 30,  \code{wilcox.test()} is never executed,instead always the \code{t.test()} is performed (Lumley et al. (2002)
-#' <doi:10.1146/annurev.publheath.23.100901.140546>).
+#' The choice of statistical tests performed by the function \code{visstat()}
+#' depends on whether the data are numerical or categorical, the number of levels in
+#' the categorical variable, the distribution of the data, and the chosen \code{conf.level()}.
 #'
-#' For the test of independence of count data, Cochran's rule (Cochran (1954)
-#' <doi:10.2307/3001666>) is implemented:
-#' If more than 20 percent of all cells have an expected count smaller than 5 or
-#' an expected cell count is zero,  \code{fisher.test()} is performed and displayed, otherwise the \code{chisqu.test()}.
-#' In both cases case an additional mosaic plot showing Pearson's residuals is generated.
-
-
+#' The function prioritizes interpretable visual output and tests that remain valid
+#' under their assumptions, following the decision logic below:
+#'
+#' (1) When the response is numerical and the predictor is categorical, tests
+#' of central tendency are performed. If the categorical predictor has two levels:
+#' - Welch's t-test (\code{t.test()}) is used if both groups have more than 30
+#'   observations (Lumley et al. (2002) <doi:10.1146/annurev.publheath.23.100901.140546>).
+#' - For smaller samples, normality is assessed using \code{shapiro.test()}.
+#'   If both groups return p-values greater than \eqn{\alpha}, Welch's t-test is applied;
+#'   otherwise, the Wilcoxon rank-sum test (\code{wilcox.test()}) is used.
+#'
+#' For predictors with more than two levels:
+#' - An ANOVA model (\code{aov()}) is initially fitted.
+#' - Residual normality is tested with \code{shapiro.test()} and \code{ad.test()}.
+#'   If \eqn{p > \alpha} for either test, normality is assumed.
+#' - Homogeneity of variance is tested with \code{bartlett.test()}:
+#'   - If \eqn{p > \alpha}, use ANOVA with \code{TukeyHSD()}.
+#'   - If \eqn{p \le \alpha}, use \code{oneway.test()} with \code{TukeyHSD()}.
+#' - If residuals are not normal, use \code{kruskal.test()} with
+#'   \code{pairwise.wilcox.test()}.
+#'
+#' (2) When both the response and predictor are numerical, a linear model (\code{lm()})
+#' is fitted, with residual diagnostics and a confidence band plot.
+#'
+#' (3) When both variables are categorical, \code{visstat()} uses \code{chisq.test()} or
+#' \code{fisher.test()} depending on expected counts, following Cochran's rule
+#' (Cochran (1954) <doi:10.2307/3001666>).
+#' 
+#' Implemented main tests: \code{t.test()}, \code{wilcox.test()},
+#' \code{aov()}, \code{oneway.test()}, \code{lm()}, \code{kruskal.test()},
+#' \code{fisher.test()}, \code{chisq.test()}.
+#'
+#' Implemented tests for assumptions:
+#' \itemize{
+#'   \item Normality: \code{shapiro.test()} and \code{ad.test()}.
+#'   \item Heteroscedasticity: \code{bartlett.test()}.
+#' }
+#'
+#' Implemented post hoc tests:
+#' \itemize{
+#'   \item \code{TukeyHSD()} for \code{aov()} and \code{oneway.test()}.
+#'   \item \code{pairwise.wilcox.test()} for \code{kruskal.test()}.
+#' }
 #' @param dataframe \code{data.frame} containing at least two columns. Data must be column wise ordered.
 #' @param varsample column name of the dependent variable (response) in \code{dataframe}, datatype \code{character}. \code{varsample} must be one entry of the list \code{names(dataframe)}.
 #' @param varfactor column name of the independent variable (feature) in \code{dataframe}, datatype \code{character}.\code{varsample} must be one entry of the list \code{names(dataframe)}.

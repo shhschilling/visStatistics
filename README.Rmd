@@ -34,7 +34,7 @@ A minimal function call looks of its main function `visstat()` looks like:
 visstat(dataframe, varsample = "response", varfactor = "feature")
 ```
 
-The input must be a column-based `data.frame`, and `varsample` and `varfactor` are character strings naming columns of that data frame.&#x20;
+The input must be a column-based `data.frame`, and `varsample` and `varfactor` are character strings naming columns of that data frame.
 
 The function selects a statistical test based on the class of the response and feature variables, the number of levels in categorical variables, and conditions such as normality and homoscedasticity.
 

@@ -5,20 +5,20 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>visStatistics • visStatistics</title>
+<title>Automated Visualization of Statistical Tests • visStatistics</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="visStatistics">
-<meta name="description" content="Automatically select and visualize statistical tests in R.">
-<meta property="og:description" content="Automatically select and visualize statistical tests in R.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Automated Visualization of Statistical Tests">
+<meta name="description" content="Visualization of the most powerful statistical hypothesis test. The R package `visStatistics` with its core function visstat() allows to quickly visualise raw data and, based on a decision tree, select the statistical hypothesis test with the highest statistical power between the dependent variable (response) and the independent variable (feature). To compare the means of two groups with sample sizes greater than 30 in both groups, visstat() performs a t.test()(Lumley et al. (2002) &lt;doi:10.1146/annurev.publhealth.23.100901.140546&gt;). Otherwise, when comparing the mean of two or more groups, the chosen test depends on the p-values of the null that the standardised residuals of the regression model are normally distributed as tested by both shapiro.test() and ad.test(): If p-values are smaller than the error probability 1-conf.level,the non-parametric tests kruskal.test() resp. wilcox.test() are used, otherwise the parametric tests oneway.test() and, if also homoscedacity can be assumed as tested by the bartlett(test) aov() resp. t.test() are used. For count data, visstat() tests the null hypothesis, that the feature and the response are independent of each other using the chisqu.test() or fisher.test(). The choice of test is based on Cochran's rule Cochran (1954) &lt;doi:10.2307/3001666&gt;). Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test(). Implemented tests to check the normal distribution of the standardised residuals: shapiro.test() and ad.test(). Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test(). All implemented statistical tests are called with their default parameter sets, except for conf.level, which can be adjusted in the visstat() function call. A detailed description of the decision tree and numerous examples can be found in the visStatistics vignette.">
+<meta property="og:description" content="Visualization of the most powerful statistical hypothesis test. The R package `visStatistics` with its core function visstat() allows to quickly visualise raw data and, based on a decision tree, select the statistical hypothesis test with the highest statistical power between the dependent variable (response) and the independent variable (feature). To compare the means of two groups with sample sizes greater than 30 in both groups, visstat() performs a t.test()(Lumley et al. (2002) &lt;doi:10.1146/annurev.publhealth.23.100901.140546&gt;). Otherwise, when comparing the mean of two or more groups, the chosen test depends on the p-values of the null that the standardised residuals of the regression model are normally distributed as tested by both shapiro.test() and ad.test(): If p-values are smaller than the error probability 1-conf.level,the non-parametric tests kruskal.test() resp. wilcox.test() are used, otherwise the parametric tests oneway.test() and, if also homoscedacity can be assumed as tested by the bartlett(test) aov() resp. t.test() are used. For count data, visstat() tests the null hypothesis, that the feature and the response are independent of each other using the chisqu.test() or fisher.test(). The choice of test is based on Cochran's rule Cochran (1954) &lt;doi:10.2307/3001666&gt;). Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test(). Implemented tests to check the normal distribution of the standardised residuals: shapiro.test() and ad.test(). Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test(). All implemented statistical tests are called with their default parameter sets, except for conf.level, which can be adjusted in the visstat() function call. A detailed description of the decision tree and numerous examples can be found in the visStatistics vignette.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="index.html">visStatistics</a>
 
@@ -32,7 +32,7 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
+<li class="nav-item"><a class="nav-link" href="articles/index.html">Articles</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
