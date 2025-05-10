@@ -12,7 +12,8 @@ appropriate hypothesis test to evaluate the relationship between a
 response (`varsample`) and a feature (`varfactor`) within a
 `data.frame`.
 
-A minimal function call looks like:
+A minimal function call looks of its main function `visstat()` looks
+like:
 
     visstat(dataframe, varsample = "response", varfactor = "feature")
 
@@ -37,18 +38,49 @@ For a detailed description of the decision logic see
 
 ## Installation of latest stable version from CRAN
 
-1.  Install the package `install.packages("visStatistics")`
-2.  Load the package `library(visStatistics)`
+1.  Install the package
 
-## Installation of developing version from GitHub
+<!-- -->
 
-1.  Install the devtools package from CRAN. Invoke R and type
-    `install.packages("devtools")`
-2.  Load the devtools package. `library(devtools)`
-3.  Install the package from the github-repository
-    `install_github("shhschilling/visStatistics")`
-4.  Load the package `library(visStatistics)`
-5.  Help on the function usage `?visstat`
+    install.packages("visStatistics")
+
+1.  Load the package
+
+<!-- -->
+
+    library(visStatistics)
+
+## Installation of the developing version from GitHub
+
+1.  Install devtools from CRAN if not already installed
+
+<!-- -->
+
+    install.packages("devtools")
+
+1.  Load devtools
+
+<!-- -->
+
+    library(devtools)
+
+1.  Install the `visStatistics` package from GitHub
+
+<!-- -->
+
+    install_github("shhschilling/visStatistics")
+
+1.  Load the package
+
+<!-- -->
+
+    library(visStatistics)
+
+1.  View help
+
+<!-- -->
+
+    ?visstat
 
 ## Examples
 
@@ -151,9 +183,9 @@ column wise structure with the helper function `counts_to_cases()`:
 Data of class `"numeric"` or `"integer"` are referred to as numerical,
 while data of class `"factor"` are referred to as categorical.
 
-### Numerical Response ~ Categorical Predictor
+### Numerical response ~ categorical feature
 
-When the response is numerical and the predictor is categorical, test of
+When the response is numerical and the feature is categorical, test of
 central tendencies are selected:
 
 `t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`,`kruskal.test()`
@@ -168,31 +200,33 @@ central tendencies are selected:
 
 #### Post-hoc tests
 
-`TukeyHSD()` for `aov()`and `pairwise.wilcox.test()` for
-`kruskal.test()`
+- `TukeyHSD()` (for `aov()`and `oneway.test()`)
+- `pairwise.wilcox.test()` (for `kruskal.test()`)
 
 The decision below tree summarizes the underlying decision logic for
-tests of central tendencies
+tests of central tendencies.
 
     knitr::include_graphics("man/figures/decision_tree.png")
 
-<img src="man/figures/decision_tree.png" alt="Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity." width="100%,fig.height =100% " />
+<img src="man/figures/decision_tree.png" alt="*Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity.*" width="100%,fig.height =100% " />
 <p class="caption">
-Decision tree used to select the appropriate statistical test for a
+*Decision tree used to select the appropriate statistical test for a
 categorical predictor and numerical response, based on the number of
-factor levels, normality and homoscedasticity.
+factor levels, normality and homoscedasticity.*
 </p>
 
-### Numerical Response ~ Numerical Predictor
+### Numerical response ~ numerical feature
 
-When both the response and predictor are numerical, a simple linear
-regression model (`lm()`) is fitted.
+When both the response and feature are numerical, a simple linear
+regression model is fitted:
 
-### Categorical Response ~ Categorical Predictor
+`lm()`
 
-When both variables are categorical, visStatistics() tests the null
+### Categorical response ~ categorical predictor
+
+When both variables are categorical, `visstat()` tests the null
 hypothesis of independence using one of the following:
 
-- chisq.test() (default for larger samples)
-- fisher.test() (used for small expected cell counts based on Cochran’s
-  rule)
+- `chisq.test()` (default for larger samples)
+- `fisher.test()` (used for small expected cell counts based on
+  Cochran’s rule)
