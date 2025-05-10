@@ -19,11 +19,11 @@ visstat(
 \arguments{
 \item{dataframe}{\code{data.frame} containing at least two columns. Data must be column wise ordered.}
 
-\item{varsample}{column name of the dependent variable in \code{dataframe}, datatype \code{character}. \code{varsample} must be one entry of the list \code{names(dataframe)}.}
+\item{varsample}{column name of the dependent variable (response) in \code{dataframe}, datatype \code{character}. \code{varsample} must be one entry of the list \code{names(dataframe)}.}
 
-\item{varfactor}{column name of the independent variable in \code{dataframe}, datatype \code{character}.\code{varsample} must be one entry of the list \code{names(dataframe)}.}
+\item{varfactor}{column name of the independent variable (feature) in \code{dataframe}, datatype \code{character}.\code{varsample} must be one entry of the list \code{names(dataframe)}.}
 
-\item{conf.level}{confidence level of the interval.}
+\item{conf.level}{confidence level}
 
 \item{numbers}{a logical indicating whether to show numbers in mosaic count plots.}
 
@@ -58,7 +58,7 @@ Implemented tests: \code{lm()},\code{t.test()}, \code{wilcox.test()},
 Implemented tests for normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
 Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}.
 
-For the comparison of averages, the following algorithm  depends on the value of the parameter of \code{conf.level}, which defaults to 0.95.
+For the comparison of averages, the following algorithm  depends on the value of the parameter of \code{conf.level}, which defaults to 0.95:
 If the p-values of the standardized residuals of  \code{shapiro.test()} or \code{ks.test()} are smaller
 than the error probability 1-\code{conf.level}, \code{kruskal.test()} resp. \code{wilcox.test()} are performed, otherwise the \code{oneway.test()}
 and \code{aov()} resp. \code{t.test()} are performed and displayed.

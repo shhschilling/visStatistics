@@ -22,7 +22,7 @@
 #' Implemented tests for normal distribution of standardized residuals: \code{shapiro.test()} and \code{ad.test()}.
 #' Implemented post-hoc tests: \code{TukeyHSD()} for aov() and \code{pairwise.wilcox.test()} for \code{kruskal.test()}.
 #'
-#' For the comparison of averages, the following algorithm  depends on the value of the parameter of \code{conf.level}, which defaults to 0.95.
+#' For the comparison of averages, the following algorithm  depends on the value of the parameter of \code{conf.level}, which defaults to 0.95:
 #' If the p-values of the standardized residuals of  \code{shapiro.test()} or \code{ks.test()} are smaller
 #' than the error probability 1-\code{conf.level}, \code{kruskal.test()} resp. \code{wilcox.test()} are performed, otherwise the \code{oneway.test()}
 #' and \code{aov()} resp. \code{t.test()} are performed and displayed.
@@ -37,9 +37,9 @@
 
 
 #' @param dataframe \code{data.frame} containing at least two columns. Data must be column wise ordered.
-#' @param varsample column name of the dependent variable in \code{dataframe}, datatype \code{character}. \code{varsample} must be one entry of the list \code{names(dataframe)}.
-#' @param varfactor column name of the independent variable in \code{dataframe}, datatype \code{character}.\code{varsample} must be one entry of the list \code{names(dataframe)}.
-#' @param conf.level confidence level of the interval.
+#' @param varsample column name of the dependent variable (response) in \code{dataframe}, datatype \code{character}. \code{varsample} must be one entry of the list \code{names(dataframe)}.
+#' @param varfactor column name of the independent variable (feature) in \code{dataframe}, datatype \code{character}.\code{varsample} must be one entry of the list \code{names(dataframe)}.
+#' @param conf.level confidence level 
 #' @param numbers	a logical indicating whether to show numbers in mosaic count plots.
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total count data of a category to be displayed	in mosaic count plots.
 #' @param graphicsoutput saves plot(s) of type "png",  "jpg", "tiff" or  "bmp" in directory specified in \code{plotDirectory}.
@@ -225,12 +225,12 @@ visstat <- function(dataframe,
       if (shapiro_assumptions2 == TRUE) {
         p2 <- test_norm(twosamples$sample2)
       }
-      # Check if normal distributions are given in both samples by Shapiro and KS-Test --
-      # Assume normal distributions if the p-value of at least one of the tests is greater alpha
-      # Perform always t-test if both samples are >100
+      # Check if normal distributions are given in both samples by Shapiro --
+      # Assume normal distributions if the p-value is greater alpha
+      # Perform always t-test if both samples are >30
       
-      if (length(twosamples$sample1) > 100 &
-          length(twosamples$sample2) > 100) {
+      if (length(twosamples$sample1) > 30 &
+          length(twosamples$sample2) > 30) {
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
         vis_sample_fact <- two_sample_t_test(
           samples,
