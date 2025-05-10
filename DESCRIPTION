@@ -7,20 +7,37 @@ Authors@R: c(
     person("Peter", "Kauf", email = "peter.kauf@zhaw.ch", role = "ctb"))
 Maintainer: Sabine Schilling <sabineschilling@gmx.ch>
 Description: Visualization of the most powerful statistical hypothesis test.
-    The R package `visStatistics` with its core function 
-    visstat() allows to quickly visualise raw data and, based on a decision tree, select the statistical hypothesis test with             the highest statistical power between the dependent variable (response) and the independent variable (feature).
-    To compare the means of two groups with sample sizes greater than 30 in both groups, visstat()
-    performs a t.test()(Lumley et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). Otherwise, when comparing the mean       of two or more groups, the chosen test depends on the p-values of the null that the
-    standardised residuals of the regression model are normally distributed as tested by both shapiro.test() and ad.test(): 
-    If p-values are smaller than the error probability 1-conf.level,the non-parametric tests kruskal.test() resp. wilcox.test()      are used, otherwise the parametric tests oneway.test() and, if also homoscedacity can be assumed as tested by the bartlett(test) aov() resp. t.test() are used.
-    For count data, visstat() tests the null hypothesis, that the feature and the response are independent of each other using the 
-    chisqu.test() or fisher.test(). The choice of test is based on Cochran's rule Cochran (1954) <doi:10.2307/3001666>).
-    Implemented tests: lm(), t.test(), wilcox.test(), aov(), kruskal.test(), fisher.test(), chisqu.test().
-    Implemented tests to check the normal distribution of the standardised residuals: shapiro.test() and ad.test().
+    The 'visStatistics' package provides automated visualization and selection
+    of the statistical hypothesis test with the highest statistical power between 
+    a response and a feature variable in a data frame, based on their class,
+    distribution, and sample size. Variables of class 'numeric' or 'integer' are 
+    referred to as numerical, and variables of class 'factor' are referred to as 
+    categorical. When the response is numerical and the predictor is categorical 
+    with two levels, Welch's t-test (t.test()) is used if both groups have more 
+    than 30 observations, relying on the central limit theorem 
+    (Lumley et al. (2002) <doi:10.1146/annurev.publheath.23.100901.140546>).
+    For smaller samples, normality is assessed using the Shapiro-Wilk test (shapiro.test());
+    if both groups return p-values greater than alpha, Welch's t-test is applied;
+    otherwise, the Wilcoxon rank-sum test (wilcox.test()) is used. For predictors 
+    with more than two levels, an ANOVA model (aov()) is fitted if residuals are
+    normally distributed (tested via shapiro.test() and ad.test()) and variances 
+    are homogeneous (tested via bartlett.test()). If residuals are normal but variances 
+    differ significantly, oneway.test() is used instead. If residuals are not normally 
+    distributed, the Kruskal-Wallis test (kruskal.test()) is selected, followed by pairwise Wilcoxon 
+    tests (pairwise.wilcox.test()). When both variables are numerical, 
+    a simple linear regression model (lm()) is fitted, with residual diagnostics 
+    and confidence band plots. When both variables are categorical, the null hypothesis 
+    of independence is tested using chisq.test() or fisher.test(), 
+    based on Cochran's rule (Cochran (1954) <doi:10.2307/3001666>). 
+    Post hoc tests include TukeyHSD() for ANOVA and oneway.test(), and pairwise.wilcox.test()
+    for Kruskal-Wallis. The function outputs plots and returns an invisible list
+    of test results. The  parameter 'conf.level' sets the confidence 
+    level for all procedures, it defaults to 0.95 and can be adjusted by the user. 
+    A detailed vignette expands on the decision logic and accompanies each case with a reproducible example.
+    Implemented main tests: t.test(), wilcox.test(), aov(), oneway.test(), kruskal.test(),lm(), fisher.test(), chisqu.test().
+    Implemented tests to check the assumption of normality: shapiro.test() and ad.test().
+    Implemented testto check the assumption of heteroscedacity:bartlett.test()
     Implemented post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
-    All implemented statistical tests are called with their default parameter sets, except for conf.level, 
-    which can be adjusted in the visstat() function call.
-    A detailed description of the decision tree and numerous examples can be found in the visStatistics vignette.
 Imports: vcd, Cairo, graphics, grDevices, grid, multcompView, stats, utils, nortest 
 License: MIT + file LICENSE
 Encoding: UTF-8
