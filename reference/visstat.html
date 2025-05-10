@@ -89,15 +89,15 @@ including eventual post-hoc analysis.</p>
 
 
 <dt id="arg-varsample">varsample<a class="anchor" aria-label="anchor" href="#arg-varsample"></a></dt>
-<dd><p>column name of the dependent variable in <code>dataframe</code>, datatype <code>character</code>. <code>varsample</code> must be one entry of the list <code>names(dataframe)</code>.</p></dd>
+<dd><p>column name of the dependent variable (response) in <code>dataframe</code>, datatype <code>character</code>. <code>varsample</code> must be one entry of the list <code>names(dataframe)</code>.</p></dd>
 
 
 <dt id="arg-varfactor">varfactor<a class="anchor" aria-label="anchor" href="#arg-varfactor"></a></dt>
-<dd><p>column name of the independent variable in <code>dataframe</code>, datatype <code>character</code>.<code>varsample</code> must be one entry of the list <code>names(dataframe)</code>.</p></dd>
+<dd><p>column name of the independent variable (feature) in <code>dataframe</code>, datatype <code>character</code>.<code>varsample</code> must be one entry of the list <code>names(dataframe)</code>.</p></dd>
 
 
 <dt id="arg-conf-level">conf.level<a class="anchor" aria-label="anchor" href="#arg-conf-level"></a></dt>
-<dd><p>confidence level of the interval.</p></dd>
+<dd><p>confidence level</p></dd>
 
 
 <dt id="arg-numbers">numbers<a class="anchor" aria-label="anchor" href="#arg-numbers"></a></dt>
@@ -132,7 +132,7 @@ Without specifying this parameter, plotName is automatically generated following
 <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>, <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>, <code>chisqu.test()</code>.
 Implemented tests for normal distribution of standardized residuals: <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and <code>ad.test()</code>.
 Implemented post-hoc tests: <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> for aov() and <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> for <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>.</p>
-<p>For the comparison of averages, the following algorithm  depends on the value of the parameter of <code>conf.level</code>, which defaults to 0.95.
+<p>For the comparison of averages, the following algorithm  depends on the value of the parameter of <code>conf.level</code>, which defaults to 0.95:
 If the p-values of the standardized residuals of  <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> or <code><a href="https://rdrr.io/r/stats/ks.test.html" class="external-link">ks.test()</a></code> are smaller
 than the error probability 1-<code>conf.level</code>, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> resp. <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> are performed, otherwise the <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>
 and <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> resp. <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> are performed and displayed.
