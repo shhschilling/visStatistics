@@ -26,32 +26,38 @@ knitr::opts_chunk$set(
 Visualization of the statistical hypothesis test with the highest
 statistical power between two groups of categorical or numerical data.
 
-The package `visStatistics` enables rapid visualization and statistical analysis of raw data by automatically selecting the hypothesis test with the highest statistical power to evaluate the relationship between a dependent variable (`varsample`) and an independent variable (`varfactor`) within a `data.frame`.
+# Abstract {.unnumbered}
+# visStatistics
 
-A minimal function call has the following structure:
+`visStatistics` is an R package for rapid visualization and statistical analysis of raw data. It automatically selects and applies the most appropriate hypothesis test to evaluate the relationship between a response (`varsample`) and a feature (`varfactor`) within a `data.frame`. 
 
-`visstat(dataframe, varsample, varfactor)`
+A minimal function call looks like:
 
-The data must be structured in columns, with `varsample` and `varfactor` being character strings naming the dependent (response) and independent (feature) variables, respectively.
+```r
+visstat(dataframe, varsample = "response", varfactor = "feature")
+```
 
-The choice of statistical test performed by the core function visstat() depends on the variable types, number of factor levels, and distributional assumptions. For example, it may use a t-test to compare group means assuming normality, or a Wilcoxon rank-sum test to compare the ranks of two groups without distributional assumptions. For more than two groups, it may use ANOVA or the Kruskal???Wallis test. Numeric-numeric relationships are analyzed using linear regression, and categorical associations with the ${\chi}^2$- or Fisher???s exact test, depending on cell counts.
+The input must be a column-based `data.frame`, and `varsample` and `varfactor` are character strings naming columns of that data frame.&#x20;
 
+The function selects a statistical test based on the class of the response and feature variables, the number of levels in categorical variables, and conditions such as normality and homoscedasticity.
 
-The function generates a graph showing the key statistics of the selected test.
-The complete test statistics are also returned as part of the output.
+The automatically generated output figures illustrate the selected statistical test, display the main test statistics, and include assumption checks and post hoc comparisons when applicable. The primary test results are returned as a list object.
 
-
-This fully automated workflow is particularly suited to browser-based
-interfaces to server-based deployments of R and data bases.
-
-A detailed description of the package the and its underlying decision logic, can be found in the `vignette` accompanying this package.
-
-A graphical representation of the decision tree for a categorical feature and a numeric response is given in Figure \@ref(fig:fig-decision-tree).
+This automated workflow is particularly suited for browser-based interfaces or server-side R applications that interact with databases.
 
 
-## Implemented tests
+For an overview of the decision logic see
 
-`lm()`, `t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`,
+```r
+vignette("visStatistics")
+```
+
+### Implemented tests
+1. When the response is numerical and the predictor is categorical, test of central tendencies are performed: 
+ `t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`,`kruskal.test()`
+1. 
+ 
+ `lm()`,
 `fisher.test()`, `chisqu.test()`
 
 ### Implemented tests to check the normal distribution of standardized residuals
@@ -80,8 +86,8 @@ A graphical representation of the decision tree for a categorical feature and a 
 
 ## Getting Started
 
-The package vignette allows you to get familiar with all features of
-`visStatistics`. It documents in detail the decision logic  illustrated by below examples.
+The `vignette("visStatistics")`allows you to get familiar with all features of
+`visStatistics`. It documents in detail its  decision logic illustrated by below examples.
 
 ## Examples
 
