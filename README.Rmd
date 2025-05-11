@@ -26,75 +26,85 @@ knitr::opts_chunk$set(
 Visualization of the statistical hypothesis test with the highest
 statistical power between two groups of categorical or numerical data.
 
-`visStatistics` is an R package for rapid visualization and statistical analysis of raw data. It automatically selects and applies the most appropriate hypothesis test to evaluate the relationship between a response (`varsample`) and a feature (`varfactor`) within a `data.frame`. 
+`visStatistics` is an R package for rapid visualization and statistical
+analysis of raw data. It automatically selects and applies the most
+appropriate hypothesis test to evaluate the relationship between a
+response (`varsample`) and a feature (`varfactor`) within a
+`data.frame`.
 
-A minimal function call looks of its main function `visstat()` looks like:
+A minimal function call looks of its main function `visstat()` looks
+like:
 
-```r
+``` r
 visstat(dataframe, varsample = "response", varfactor = "feature")
 ```
 
-The input must be a column-based `data.frame`, and `varsample` and `varfactor` are character strings naming columns of that data frame.
+The input must be a column-based `data.frame`, and `varsample` and
+`varfactor` are character strings naming columns of that data frame.
 
-The function selects a statistical test based on the class of the response and feature variables, the number of levels in categorical variables, and conditions such as normality and homoscedasticity.
+The function selects a statistical test based on the class of the
+response and feature variables, the number of levels in categorical
+variables, and conditions such as normality and homoscedasticity.
 
-The automatically generated output figures illustrate the selected statistical test, display the main test statistics, and include assumption checks and post hoc comparisons when applicable. The primary test results are returned as a list object.
+The automatically generated output figures illustrate the selected
+statistical test, display the main test statistics, and include
+assumption checks and post hoc comparisons when applicable. The primary
+test results are returned as a list object.
 
-This automated workflow is particularly suited for browser-based interfaces or server-side R applications that interact with databases.
-
+This automated workflow is particularly suited for browser-based
+interfaces or server-side R applications that interact with databases.
 
 For a detailed description of the decision logic see
 
-```r
+``` r
 vignette("visStatistics")
 ```
 
-
-
 ## Installation of latest stable version from CRAN
 
-1. Install the package 
-```r
+1.  Install the package
+
+``` r
 install.packages("visStatistics")
 ```
-2. Load the package 
-```
+
+2.  Load the package
+
+```         
 library(visStatistics)
 ```
 
-
 ## Installation of the development version from GitHub
 
-1. Install **devtools** from CRAN if not already installed:
+1.  Install **devtools** from CRAN if not already installed:
 
-   ```r
-   install.packages("devtools")
-   ```
+    ``` r
+    install.packages("devtools")
+    ```
 
-2. Load the **devtools** package:
+2.  Load the **devtools** package:
 
-   ```r
-   library(devtools)
-   ```
+    ``` r
+    library(devtools)
+    ```
 
-3. Install the `visStatistics` package from GitHub:
+3.  Install the `visStatistics` package from GitHub:
 
-   ```r
-   install_github("shhschilling/visStatistics")
-   ```
+    ``` r
+    install_github("shhschilling/visStatistics")
+    ```
 
-4. Load the `visStatistics` package:
+4.  Load the `visStatistics` package:
 
-   ```r
-   library(visStatistics)
-   ```
+    ``` r
+    library(visStatistics)
+    ```
 
-5. View help for the main function:
+5.  View help for the main function:
 
-   ```r
-   ?visstat
-   ```
-
+    ``` r
+    ?visstat
+    ```
 
 ## Examples
 
@@ -202,42 +212,50 @@ black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_
 fisher_stats <- visstat(black_brown_hazel_green_male, "Hair", "Eye")
 ```
 
-
 ## Implemented tests
-Data of class `"numeric"` or `"integer"` are referred to as numerical, while data of class `"factor"` are referred to as categorical.
 
-### Numerical response ~ categorical feature
-When the response is numerical and the feature is categorical, test of central tendencies are selected: 
+Data of class `"numeric"` or `"integer"` are referred to as numerical,
+while data of class `"factor"` are referred to as categorical.
 
- `t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`,`kruskal.test()`
+### Numerical response \~ categorical feature
 
+When the response is numerical and the feature is categorical, test of
+central tendencies are selected:
+
+`t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`,`kruskal.test()`
 
 #### Normality assumption check
 
 `shapiro.test()` and `ad.test()`
 
-#### Homoscedactiy assumption check
+#### Homoscedasticity assumption check
+
 `bartlett.test()`
 
 #### Post-hoc tests
 
-- `TukeyHSD()` (for `aov()`and `oneway.test()`)
- - `pairwise.wilcox.test()` (for `kruskal.test()`)
+-   `TukeyHSD()` (for `aov()`and `oneway.test()`)
+-   `pairwise.wilcox.test()` (for `kruskal.test()`)
 
-The decision below tree summarizes the underlying decision logic for tests of central tendencies.
+The decision below tree summarizes the underlying decision logic for
+tests of central tendencies.
+
 ```{r fig-decision-tree, fig.cap="*Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity.*", out.width="100%,fig.height =100% "}
 knitr::include_graphics("man/figures/decision_tree.png")
 ```
-### Numerical response ~ numerical feature
 
-When both the response and feature are numerical, a simple linear regression model is fitted:
+### Numerical response \~ numerical feature
+
+When both the response and feature are numerical, a simple linear
+regression model is fitted:
 
 `lm()`
 
+### Categorical response \~ categorical predictor
 
-### Categorical response ~ categorical predictor
+When both variables are categorical, `visstat()` tests the null
+hypothesis of independence using one of the following:
 
-When both variables are categorical, `visstat()` tests the null hypothesis of independence using one of the following:
-
--	`chisq.test()` (default for larger samples)
--	`fisher.test()` (used for small expected cell counts based on Cochran's rule)
+-   `chisq.test()` (default for larger samples)
+-   `fisher.test()` (used for small expected cell counts based on
+    Cochran's rule)

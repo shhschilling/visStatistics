@@ -162,7 +162,7 @@ visstat(trees, "Girth", "Height", conf.level = 0.99)
 HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(HairEyeColorDataFrame, "Hair", "Eye")
 
-## 2x2 contingency tables with Fisher's exact test and mosaic plot 
+## 2x2 contingency tables with Fisher's exact test and mosaic plot
 ## with Pearson residuals
 HairEyeColorMaleFisher <- HairEyeColor[, , 1]
 ### slicing out a 2 x2 contingency table
@@ -176,16 +176,20 @@ fisher_stats # print out summary statistics
 ## Saving the graphical output in directory plotDirectory
 ## A) saving graphical output of type "png" in temporary directory tempdir()
 ##    with default naming convention:
-visstat(blackBrownHazelGreen, "Hair", "Eye", graphicsoutput = "png", 
-plotDirectory = tempdir())
+visstat(blackBrownHazelGreen, "Hair", "Eye",
+  graphicsoutput = "png",
+  plotDirectory = tempdir()
+)
 
 ## remove graphical output from plotDirectory
 file.remove(file.path(tempdir(), "chi_squared_or_fisher_Hair_Eye.png"))
 file.remove(file.path(tempdir(), "mosaic_complete_Hair_Eye.png"))
 
 ## B) Specifying pdf as output type:
-visstat(iris, "Petal.Width", "Species", graphicsoutput = "pdf", 
-plotDirectory = tempdir())
+visstat(iris, "Petal.Width", "Species",
+  graphicsoutput = "pdf",
+  plotDirectory = tempdir()
+)
 
 ## remove graphical output from plotDirectory
 file.remove(file.path(tempdir(), "kruskal_Petal_Width_Species.pdf"))

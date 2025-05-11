@@ -80,15 +80,15 @@ vis_anova_assumptions <- function(samples,
     ),
     outer = TRUE
   )
-  
-  
-  
+
+
+
   list_aov <- list(
     summary_anova = summary_anova,
     shapiro_test = shapiro_test,
     ad_test = ad_test,
     bartlett_test = bartlett_test
   )
-  
+
   return(list_aov)
 }

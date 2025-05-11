@@ -15,12 +15,12 @@ column wise ordered.}
 \item{varsample}{column name of dependent variable in dataframe,
 datatype \code{character}}
 
-\item{varfactor}{column name of independent variable in dataframe, datatype 
+\item{varfactor}{column name of independent variable in dataframe, datatype
 \code{character}}
 }
 \value{
-selected columns, \code{sample}, \code{factor}, \code{name_of_sample} 
-(character string equaling varsample), \code{name_of_factor} 
+selected columns, \code{sample}, \code{factor}, \code{name_of_sample}
+(character string equaling varsample), \code{name_of_factor}
 (character string equaling varsample)
 }
 \description{

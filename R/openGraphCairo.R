@@ -50,7 +50,7 @@ openGraphCairo <- function(width = 640,
   oldparCairo <- par(no.readonly = TRUE)
   oldparCairo$new <- FALSE
   on.exit(par(oldparCairo))
-  
+
   if (is.null(type)) {
     return()
   } else {
@@ -58,10 +58,10 @@ openGraphCairo <- function(width = 640,
     if (is.null(fileName)) {
       fileName <- "visstat_plot"
     }
-    
+
     fullfilename <- paste(fileName, ".", type, sep = "")
     Cairofilename <- file.path(fileDirectory, fullfilename)
-    
+
     if (type == "png") {
       CairoPNG(filename = Cairofilename)
     } else if (type == "pdf") {
