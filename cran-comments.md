@@ -17,8 +17,4 @@ This is a resubmission. The previous version 0.1.1 is already on CRAN.
 - Post hoc analysis in Kruskal-Wallis test (`pairwise.wilcox.test()`) now uses the specified `conf.level`.
 - Switching to `fisher.test()` now correctly depends on expected cell counts.
 
-### Test environments
-
-- local: macOS 14.4.1 (arm64), R 4.5.0
-- R CMD check results: **no errors, no warnings, no notes**
 

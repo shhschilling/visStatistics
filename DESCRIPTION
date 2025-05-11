@@ -1,63 +1,70 @@
-Package: visStatistics
 Type: Package
+Package: visStatistics
 Title: Automated Visualization of Statistical Tests
 Version: 0.1.2
 Authors@R: c(
-    person("Sabine", "Schilling", email = "sabineschilling@gmx.ch", role = c("cre","aut","cph")),
-    person("Peter", "Kauf", email = "peter.kauf@zhaw.ch", role = "ctb"))
+    person("Sabine", "Schilling", , "sabineschilling@gmx.ch", role = c("cre", "aut", "cph")),
+    person("Peter", "Kauf", , "peter.kauf@zhaw.ch", role = "ctb")
+  )
 Maintainer: Sabine Schilling <sabineschilling@gmx.ch>
-Description: Automated visualization of statistical hypothesis testing.
-    The 'visStatistics' package provides automated visualization and selection
-    of a statistical hypothesis test between a response and a feature variable
-    in a data frame, chosen to be valid under the data's type, distribution,
-    sample size, and user-defined 'conf.level'.
-    Throughout, variables of class 'numeric' or 'integer' are referred to
-    as numerical, variables of class 'factor' are referred to as
-    categorical, and assumptions of normality and homoscedasticity are
-    considered met when the corresponding test yields a p-value greater
-    than alpha = 1 - 'conf.level'. When the response is numerical and the
-    predictor is categorical with two levels, Welch's t-test (t.test())
-    is used if both groups have more than 30 observations, relying on the
-    central limit theorem (Lumley et al. (2002)
-    <doi:10.1146/annurev.publheath.23.100901.140546>). For smaller
+Description: Automated selection and visualization of statistical hypothesis test
+    Automated selection and visualization  of a statistical hypothesis test between a response and a
+    feature variable in a data frame, chosen to be valid based on the
+    class, distribution, and sample size of both variables, as well as the
+    user-defined 'conf.level'. Throughout, variables of class 'numeric'
+    or 'integer' are referred to as numerical, variables of class 'factor'
+    are referred to as categorical, and assumptions of normality and
+    homoscedasticity are considered met when the corresponding test yields
+    a p-value greater than alpha = 1 - 'conf.level'. When the response is
+    numerical and the predictor is categorical with two levels, Welch's
+    t-test (t.test()) is used if both groups have more than 30
+    observations, relying on the central limit theorem (Lumley et al.
+    (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). For smaller
     samples, normality is assessed using the Shapiro-Wilk test
     (shapiro.test()); if normality is met, Welch's t-test is applied;
     otherwise, the Wilcoxon rank-sum test (wilcox.test()) is used. For
-    predictors with more than two levels, an ANOVA model (aov()) is
-    fitted if residuals are normally distributed (tested via
-    shapiro.test() and ad.test()) and variances are homogeneous
-    (bartlett.test()). If normality holds but variances differ,
-    oneway.test() is used instead. If residuals are not normally
-    distributed, the Kruskal-Wallis test (kruskal.test()) is selected,
-    followed by pairwise Wilcoxon tests (pairwise.wilcox.test()). When
-    both variables are numerical, a simple linear regression model
-    (lm()) is fitted, with residual diagnostics and confidence band
-    plots. When both variables are categorical, the null hypothesis of
-    independence is tested using chisq.test() or fisher.test(), based on
-    Cochran's rule (Cochran (1954) <doi:10.2307/3001666>). Post hoc
-    tests include TukeyHSD() for ANOVA and oneway.test(), and
-    pairwise.wilcox.test() for Kruskal-Wallis. The function outputs
-    plots and returns an invisible list of test results. This automated workflow 
-    is particularly suited for integration into browser-based interfaces or
-    server-side R applications that interact with databases. A detailed
-    vignette expands on the decision logic and accompanies each case
-    with a reproducible example.
-    Main tests: t.test(), wilcox.test(), aov(), oneway.test(), kruskal.test(),lm(),
-    fisher.test(), chisq.test().
-    Tests for normality: shapiro.test() and ad.test().
-    Tests for homoscedasticity:bartlett.test()
-    Post-hoc tests: TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
-Imports: vcd, Cairo, graphics, grDevices, grid, multcompView, stats, utils, nortest 
+    predictors with more than two levels, an ANOVA model (aov()) is fitted
+    if residuals are normally distributed (tested via shapiro.test() and
+    ad.test()) and variances are homogeneous (bartlett.test()). If
+    normality holds but variances differ, oneway.test() is used instead.
+    If residuals are not normally distributed, the Kruskal-Wallis test
+    (kruskal.test()) is selected, followed by pairwise Wilcoxon tests
+    (pairwise.wilcox.test()). When both variables are numerical, a simple
+    linear regression model (lm()) is fitted, with residual diagnostics
+    and confidence band plots. When both variables are categorical, the
+    null hypothesis of independence is tested using chisq.test() or
+    fisher.test(), based on Cochran's rule (Cochran (1954)
+    <doi:10.2307/3001666>). Post hoc tests include TukeyHSD() for ANOVA
+    and oneway.test(), and pairwise.wilcox.test() for Kruskal-Wallis. The
+    function outputs plots and returns an invisible list of test results.
+    This automated workflow is particularly suited for integration into
+    browser-based interfaces or server-side R applications that interact
+    with databases. A detailed vignette expands on the decision logic and
+    accompanies each case with a reproducible example.  Main tests:
+    t.test(), wilcox.test(), aov(), oneway.test(), kruskal.test(),lm(),
+    fisher.test(), chisq.test().  Tests for normality: shapiro.test() and
+    ad.test().  Tests for homoscedasticity:bartlett.test() Post-hoc tests:
+    TukeyHSD() for aov() and pairwise.wilcox.test() for kruskal.test().
 License: MIT + file LICENSE
-Encoding: UTF-8
-RoxygenNote: 7.3.2
-NeedsCompilation: no
-Packaged: 2020-05-09 20:05:43 UTC; sschilli
-Suggests: 
-    knitr,
-    rmarkdown,
-    bookdown   
-VignetteBuilder: knitr
 URL: https://github.com/shhschilling/visStatistics/,
     https://shhschilling.github.io/visStatistics/
 BugReports: https://github.com/shhschilling/visStatistics/issues
+Imports: 
+    Cairo,
+    graphics,
+    grDevices,
+    grid,
+    multcompView,
+    nortest,
+    stats,
+    utils,
+    vcd
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
+NeedsCompilation: no
+Packaged: 2020-05-09 20:05:43 UTC; sschilli
+RoxygenNote: 7.3.2

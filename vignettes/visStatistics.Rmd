@@ -135,7 +135,7 @@ Homoscedasticity is assessed using Bartlett`s test (`bartlett.test()\`), which t
 Depending on the $p$-value returned by `bartlett.test()`, the corresponding test is selected and its $p$-value is displayed in the figure title:
 
 -   If the $p$-value of `bartlett.test()` is greater than $1 -$ `conf.level`, we assume homogeneity of variances across groups and report the $p$-value from the ANOVA (`aov()`).
--   Otherwise, homoscedasticity cannot be assumed, and the function reports the $p$-value from'Welch's one-way test (`oneway.test()`).
+-   Otherwise, homoscedasticity cannot be assumed, and the function reports the $p$-value from Welch's one-way test (`oneway.test()`).
 
 #### Post-hoc analysis: Tukey's Honestly Significant Differences (HSD) and Sidak-corrected confidence intervals {.unnumbered}
 
