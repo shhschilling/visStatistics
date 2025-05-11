@@ -12,10 +12,10 @@ counts_to_cases(x, countcol = "Freq")
 \item{x}{a \code{data.frame} of counts generated from a contingency table.}
 
 \item{countcol}{character string, name of the column of x containing the
-counts. Default name of the column is  "Freq".}
+counts. Default name of the column is  'Freq'.}
 }
 \value{
-data frame of cases of dimension (total number of counts as sum of "Freq" in x) times 2.
+data frame of cases of dimension (total number of counts as sum of 'Freq' in x) times 2.
 }
 \description{
 Convert data frame of counts to data frame of cases.
@@ -24,6 +24,6 @@ as.data.frame from a contingency table
 }
 \examples{
 
-counts_to_cases(as.data.frame(HairEyeColor[, , 1]), countcol = "Freq")
+counts_to_cases(as.data.frame(HairEyeColor[, , 1]), countcol = 'Freq')
 
 }

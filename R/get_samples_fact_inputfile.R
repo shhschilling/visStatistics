@@ -1,7 +1,9 @@
 # Helper function in visstat----
-#' Selects columns defined by characters varsample and varfactor from a data.frame
+#' Selects columns defined by characters varsample and varfactor from
+#' a data.frame
 #'
-#' Selects columns defined by characters \code{varsample} and \code{varfactor} from \code{dataframe}, returns selected columns with their names.
+#' Selects columns defined by characters \code{varsample} and \code{varfactor}
+#'  from \code{dataframe}, returns selected columns with their names.
 #' @param dataframe \code{data.frame} or \code{list} containing at least two columns with column headings of data type \code{character}. Data must be column wise ordered.
 #' @param varsample column name of dependent variable in dataframe, datatype \code{character}
 #' @param varfactor column name of independent variable in dataframe, datatype \code{character}
@@ -62,7 +64,7 @@ get_samples_fact_inputfile <- function(dataframe, varsample, varfactor) {
     fact <- dataframe[, varfactor]
     name_of_sample <- varsample
     name_of_factor <- varfactor
-    matchingCriteria <- ""
+    matching_criteria <- ""
   }
 
 
@@ -72,7 +74,7 @@ get_samples_fact_inputfile <- function(dataframe, varsample, varfactor) {
     "fact" = fact,
     "name_of_sample" = name_of_sample,
     "name_of_factor" = name_of_factor,
-    "matchingCriteria" = matchingCriteria
+    "matching_criteria" = matching_criteria
   )
   return(mylist)
 }
