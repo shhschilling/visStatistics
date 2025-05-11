@@ -9,10 +9,10 @@
 #' column wise ordered.
 #' @param varsample column name of dependent variable in dataframe,
 #' datatype \code{character}
-#' @param varfactor column name of independent variable in dataframe, datatype 
+#' @param varfactor column name of independent variable in dataframe, datatype
 #' \code{character}
-#' @return selected columns, \code{sample}, \code{factor}, \code{name_of_sample} 
-#' (character string equaling varsample), \code{name_of_factor} 
+#' @return selected columns, \code{sample}, \code{factor}, \code{name_of_sample}
+#' (character string equaling varsample), \code{name_of_factor}
 #' (character string equaling varsample)
 #'
 #' @examples
@@ -32,8 +32,10 @@ get_samples_fact_inputfile <- function(dataframe, varsample, varfactor) {
       matched_selected_group0 <- which(data$group0 == 1 & data$match == 1)
       matched_selected_group1 <- which(data$group1 == 1 &
                                          data$match == 1)
-      fact <- c(rep(fulldata$group0name, length(matched_selected_group0)),
-                rep(fulldata$group1name, length(matched_selected_group1)))
+      fact <- c(
+        rep(fulldata$group0name, length(matched_selected_group0)),
+        rep(fulldata$group1name, length(matched_selected_group1))
+      )
       fact <- as.factor(fact)
       fullsample <- data[, varsample]
       

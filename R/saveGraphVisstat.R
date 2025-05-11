@@ -42,11 +42,13 @@ saveGraphVisstat <- function(fileName = NULL,
   }
   
   
-  while (!is.null(dev.list()))
-    dev.off() # closes all devices
+  while (!is.null(dev.list())) {
+    dev.off()
+  } # closes all devices
   
   # overwrite existing files
-  file2 <- gsub("[^[:alnum:]]", "_", fileName) # replaces numbers and '^' with underscore
+  file2 <- gsub("[^[:alnum:]]", "_", fileName) # replaces numbers and '^' with
+  # underscore
   file3 <- gsub("_{2,}", "_", file2)
   
   newFileName <- paste0(file3, ".", type)
