@@ -2,7 +2,7 @@
 % Please edit documentation in R/visstat.R
 \name{visstat}
 \alias{visstat}
-\title{Automated Visualization of Statistical Hypothesis Testng}
+\title{Automated Visualization of Statistical Hypothesis Testing}
 \usage{
 visstat(
   dataframe,
@@ -180,4 +180,7 @@ visstat(iris, "Petal.Width", "Species",
 ## remove graphical output from plotDirectory
 file.remove(file.path(tempdir(), "kruskal_iris.pdf"))
 
+}
+\seealso{
+\url{https://shhschilling.github.io/visStatistics/}
 }
