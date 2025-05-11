@@ -64,13 +64,14 @@ counts. Default name of the column is  'Freq'.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>data frame of cases of dimension (total number of counts as sum of 'Freq' in x) times 2.</p>
+    <p>data frame of cases of dimension (total number of counts as sum of
+'Freq' in x) times 2.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">counts_to_cases</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span><span class="op">)</span>, countcol <span class="op">=</span> <span class="st">'Freq'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">counts_to_cases</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span><span class="op">)</span>, countcol <span class="op">=</span> <span class="st">"Freq"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        Hair   Eye</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1     Black Brown</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1.1   Black Brown</span>
