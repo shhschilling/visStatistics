@@ -331,8 +331,10 @@ is fitted, with residual diagnostics and a confidence band plot.</p>
 <span class="r-in"><span><span class="co">## Saving the graphical output in directory plotDirectory</span></span></span>
 <span class="r-in"><span><span class="co">## A) saving graphical output of type "png" in temporary directory tempdir()</span></span></span>
 <span class="r-in"><span><span class="co">##    with default naming convention:</span></span></span>
-<span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>, graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, </span></span>
-<span class="r-in"><span>plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">blackBrownHazelGreen</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span></span>
+<span class="r-in"><span>  graphicsoutput <span class="op">=</span> <span class="st">"png"</span>,</span></span>
+<span class="r-in"><span>  plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## remove graphical output from plotDirectory</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"chi_squared_or_fisher_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -341,8 +343,10 @@ is fitted, with residual diagnostics and a confidence band plot.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## B) Specifying pdf as output type:</span></span></span>
-<span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">iris</span>, <span class="st">"Petal.Width"</span>, <span class="st">"Species"</span>, graphicsoutput <span class="op">=</span> <span class="st">"pdf"</span>, </span></span>
-<span class="r-in"><span>plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">iris</span>, <span class="st">"Petal.Width"</span>, <span class="st">"Species"</span>,</span></span>
+<span class="r-in"><span>  graphicsoutput <span class="op">=</span> <span class="st">"pdf"</span>,</span></span>
+<span class="r-in"><span>  plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## remove graphical output from plotDirectory</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"kruskal_Petal_Width_Species.pdf"</span><span class="op">)</span><span class="op">)</span></span></span>
