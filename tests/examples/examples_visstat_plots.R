@@ -1,6 +1,7 @@
 ## Examples------
 # clean the workspace -----
-while (!is.null(dev.list())) dev.off() # closes eventual open graphical devices and restore default values of par()
+while (!is.null(dev.list()))
+  dev.off() # closes eventual open graphical devices and restore default values of par()
 # debugging: stop with warnings
 options(warn = 2)
 # load libraries -----
@@ -21,12 +22,22 @@ filedir <- tempdir()
 # Welch two sample t.test: mtcars data set ----
 
 welch_cars <- visstat(mtcars, "mpg", "am")
-welch_cars <- visstat(mtcars, "mpg", "am", graphicsoutput = "png", plotDirectory = filedir)
+welch_cars <- visstat(mtcars,
+                      "mpg",
+                      "am",
+                      graphicsoutput = "png",
+                      plotDirectory = filedir)
 welch_cars
 
 # Kruskal-Wallis test: iris----
 iris_kruskal <- visstat(iris, "Petal.Width", "Species")
-iris_kruskal <- visstat(iris, "Petal.Width", "Species", graphicsoutput = "png", plotDirectory = filedir)
+iris_kruskal <- visstat(
+  iris,
+  "Petal.Width",
+  "Species",
+  graphicsoutput = "png",
+  plotDirectory = filedir
+)
 iris_kruskal <- visstat(iris, "Petal.Width", "Species") # error: overlaying plots
 iris_kruskal
 
@@ -34,8 +45,9 @@ iris_kruskal
 # select sprays A and B
 # not functioning
 InsectSpraysAB <- InsectSprays[which(InsectSprays$spray == "A" |
-  InsectSprays$spray == "B"), ]
-InsectSpraysAB$spray <- factor(InsectSpraysAB$spray) # resets the number of levels to 2, attention: as.factor does not do that
+                                       InsectSprays$spray == "B"), ]
+# resets the number of levels to 2, attention: as.factor does not do that
+InsectSpraysAB$spray <- factor(InsectSpraysAB$spray) 
 # Welcht-t-Test
 insect_t_test <- visstat(InsectSpraysAB, "count", "spray")
 insect_t_test
@@ -61,19 +73,6 @@ visstat(weight_gender, "weight", "gender3")
 visstat(weight_gender, "weight", "gender4")
 visstat(weight_gender, "weight", "gender5")
 visstat(weight_gender, "weight", "gender6")
-# Chi squared, mosaic plots with Titanic data set----
-# install.packages("titanic")
-# example categorical data,
-library(titanic)
-# without the transformation to factors Kruskal -Wallis is peformed
-titanic_train$Survived <- as.factor(titanic_train$Survived)
-titanic_train$Pclass <- as.factor(titanic_train$Pclass)
-# Pearsons Chi squared, mosaic plot with Pearson's residuals
-
-titanic_chi <- visstat(titanic_train, "Survived", "Pclass")
-titanic_chi <- visstat(titanic_train, "Survived", "Pclass", graphicsoutput = "png", plotDirectory = filedir)
-titanic_chi <- visstat(titanic_train, "Survived", "Pclass")
-titanic_chi
 
 
 HairEyeColorMaleFisher <- HairEyeColor[, , 1]
@@ -97,7 +96,11 @@ fisher_stats
 # linear regression: trees data set:----
 linear_regression_trees <- visstat(trees, "Girth", "Volume")
 linear_regression_trees <- visstat(trees, "Girth", "Height")
-linear_regression_trees <- visstat(trees, "Girth", "Height", graphicsoutput = "png", plotDirectory = filedir)
+linear_regression_trees <- visstat(trees,
+                                   "Girth",
+                                   "Height",
+                                   graphicsoutput = "png",
+                                   plotDirectory = filedir)
 linear_regression_trees <- visstat(trees, "Girth", "Height")
 # display stats of linear regression
 linear_regression_trees
