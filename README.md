@@ -3,14 +3,13 @@
 
 # visStatistics
 
-Visualization of the statistical hypothesis test with the highest
-statistical power between two groups of categorical or numerical data.
+Visualization of a statistical hypothesis test selected to be valid under
+the data???s type, distribution, sample size, and confidence level
 
 `visStatistics` is an R package for rapid visualization and statistical
-analysis of raw data. It automatically selects and applies the most
-appropriate hypothesis test to evaluate the relationship between a
-response (`varsample`) and a feature (`varfactor`) within a
-`data.frame`.
+analysis of raw data. It automatically selects and applies a hypothesis test
+that is valid for evaluating the relationship between a response (`varsample`)
+and a feature (`varfactor`) within a `data.frame`.
 
 A minimal function call looks of its main function `visstat()` looks
 like:
@@ -22,15 +21,14 @@ The input must be a column-based `data.frame`, and `varsample` and
 
 The function selects a statistical test based on the class of the
 response and feature variables, the number of levels in categorical
-variables, and conditions such as normality and homoscedasticity.
+variables, and assumptions such as normality and homoscedasticity as well as the chosen 'conf.level'.
 
 The automatically generated output figures illustrate the selected
 statistical test, display the main test statistics, and include
 assumption checks and post hoc comparisons when applicable. The primary
 test results are returned as a list object.
 
-This automated workflow is particularly suited for browser-based
-interfaces or server-side R applications that interact with databases.
+This automated workflow is particularly suited for integration into browser-based interfaces or server-side R applications that interact with databases.
 
 For a detailed description of the decision logic see
 
@@ -86,7 +84,7 @@ For a detailed description of the decision logic see
 
     library(visStatistics)
 
-### Welch’s t-test
+### Welch???s t-test
 
 #### InsectSprays data set
 
@@ -137,7 +135,7 @@ For a detailed description of the decision logic see
 ### Kruskal-Wallis test
 
 The generated graphs can be saved in all available formats of the
-`Cairo` package. Here we save the graphical output of type “pdf” in the
+`Cairo` package. Here we save the graphical output of type ???pdf??? in the
 `plotDirectory` `tempdir()`:
 
     visstat(iris, "Petal.Width", "Species", 
@@ -154,7 +152,7 @@ Increasing the confidence level `conf.level` from the default 0.95 to
 
 <img src="man/figures/README-pressure-1.png" width="100%" /><img src="man/figures/README-pressure-2.png" width="100%" />
 
-### Pearson’s Chi-squared test
+### Pearson???s Chi-squared test
 
 Count data sets are often presented as multidimensional arrays,
 so-called contingency tables, whereas `visstat()` requires a
@@ -166,7 +164,7 @@ column wise structure with the helper function `counts_to_cases()`:
 
 <img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-10-2.png" width="100%" />
 
-### Fisher’s exact test
+### Fisher???s exact test
 
     hair_eye_color_male <- HairEyeColor[, , 1]
     # Slice out a 2 by 2 contingency table
@@ -229,4 +227,4 @@ hypothesis of independence using one of the following:
 
 - `chisq.test()` (default for larger samples)
 - `fisher.test()` (used for small expected cell counts based on
-  Cochran’s rule)
+  Cochran???s rule)

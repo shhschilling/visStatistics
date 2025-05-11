@@ -4,13 +4,14 @@
 
 # Header visstat -----
 #' 
-#' Automated Visualization of Statistical Hypothesis Test
+#' Automated Visualization of Statistical Hypothesis Testng
 #' 
 #' @description
-#' \code{visstat()} automatically visualizes the hypothesis test with the highest
-#' statistical power between a dependent variable (response) and an independent
-#' variable (feature) in a given \code{data.frame} named \code{dataframe}, based on the
-#' sample size, distribution, and class of both the response and feature.
+#' \code{visstat()} provides automated visualization and selection of a
+#' statistical hypothesis test between a response and a feature variable in
+#' a given \code{data.frame} named \code{dataframe}, selecting a test that is
+#' appropriate under the data's type, distribution, sample size, and the
+#' specified \code{conf.level}.
 #' The data in \code{dataframe} must be structured column-wise, where \code{varsample}
 #' and \code{varfactor} are \code{character} strings corresponding to the column names
 #' of the response and feature variables, respectively.
@@ -22,10 +23,12 @@
 #'@details
 #' Decision logic (for more details, please refer to the package's \code{vignette}).
 #'
-#' In the following, data of class \code{numeric} or \code{integer} are referred to
+#' Throughout, data of class \code{numeric} or \code{integer} are referred to
 #' as numerical, while data of class \code{factor} are referred to as categorical.
 #' The significance level \eqn{\alpha} is defined as one minus the confidence level,
-#' given by the argument \code{conf.level}.' 
+#' given by the argument \code{conf.level}.' Assumptions of normality and homoscedasticity are
+#'considered met when the corresponding test yields a p-value greater
+#'than alpha = 1 - 'conf.level'.
 #'
 #' The choice of statistical tests performed by the function \code{visstat()}
 #' depends on whether the data are numerical or categorical, the number of levels in
