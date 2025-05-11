@@ -4,7 +4,7 @@
 
 # Header visstat -----
 #' 
-#' Automated Visualization of Statistical Hypothesis Testng
+#' Automated Visualization of Statistical Hypothesis Testing
 #' 
 #' @description
 #' \code{visstat()} provides automated visualization and selection of a
@@ -77,6 +77,7 @@
 #'   \item \code{TukeyHSD()} for \code{aov()} and \code{oneway.test()}.
 #'   \item \code{pairwise.wilcox.test()} for \code{kruskal.test()}.
 #' }
+#' @seealso \url{https://shhschilling.github.io/visStatistics/}
 #' @param dataframe \code{data.frame} containing at least two columns. Data must be column wise ordered.
 #' @param varsample column name of the dependent variable (response) in \code{dataframe}, datatype \code{character}. \code{varsample} must be one entry of the list \code{names(dataframe)}.
 #' @param varfactor column name of the independent variable (feature) in \code{dataframe}, datatype \code{character}.\code{varsample} must be one entry of the list \code{names(dataframe)}.
