@@ -12,7 +12,7 @@ saveGraphVisstat(
 )
 }
 \arguments{
-\item{fileName}{name of file to be created in directory \code{fileDirectory} without file extension ".\code{type}".}
+\item{fileName}{name of file to be created in directory \code{fileDirectory} without file extension '.\code{type}'.}
 
 \item{type}{see \code{Cairo()}.}
 
@@ -29,10 +29,10 @@ Closes all graphical devices with \code{dev.off()} and saves the output only if 
 \examples{
 
 # very simple KDE (adapted from example in Cairo())
-openGraphCairo(type = "png", fileDirectory = tempdir())
-plot(rnorm(4000), rnorm(4000), col = "#ff000018", pch = 19, cex = 2)
-# save file "norm.png" in directory specified in fileDirectory
-saveGraphVisstat("norm", type = "png", fileDirectory = tempdir())
-file.remove(file.path(tempdir(), "norm.png")) # remove file "norm.png" from fileDirectory.
+openGraphCairo(type = 'png', fileDirectory = tempdir())
+plot(rnorm(4000), rnorm(4000), col = '#ff000018', pch = 19, cex = 2)
+# save file 'norm.png' in directory specified in fileDirectory
+saveGraphVisstat('norm', type = 'png', fileDirectory = tempdir())
+file.remove(file.path(tempdir(), 'norm.png')) # remove file 'norm.png' from fileDirectory.
 
 }

@@ -1,4 +1,4 @@
-###  Header vis_anova_assumptions -----
+### Header vis_anova_assumptions -----
 
 #' Visualisation of the normality distribution of the standardised residuals of the ANOVA
 #'
@@ -14,8 +14,8 @@
 #' @param samples vector containing dependent variable, datatype numeric
 #' @param fact vector containing independent variable, datatype factor
 #' @param conf.level confidence level, 0.95=default
-#' @param samplename name of sample used in graphical output, dataype character , ""=default
-#' @param factorname name of sample used in graphical output, dataype character, ""=default
+#' @param samplename name of sample used in graphical output, dataype character , ''=default
+#' @param factorname name of sample used in graphical output, dataype character, ''=default
 #' @param cex number indicating the amount by which plotting text and symbols should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.
 
 #'
@@ -31,12 +31,9 @@
 #'
 #' @export vis_anova_assumptions
 
-vis_anova_assumptions <- function(samples,
-                                  fact,
-                                  conf.level = 0.95,
-                                  samplename = "",
-                                  factorname = "",
-                                  cex = 1) {
+vis_anova_assumptions <- function(
+    samples, fact, conf.level = 0.95, samplename = "",
+    factorname = "", cex = 1) {
   oldparanovassum <- par(no.readonly = TRUE)
   on.exit(par(oldparanovassum))
   samples3 <- na.omit(samples)
@@ -62,28 +59,20 @@ vis_anova_assumptions <- function(samples,
   p_SH <- shapiro_test$p.value
   bartlett_test <- bartlett.test(samples ~ fact)
   p_bart <- bartlett_test$p.value
-  mtext(
-    paste(
-      "Check for homogeneity of variances: Bartlett: p = ",
-      signif(p_bart, 2),
-      "\n Check for normality of standardised residuals:",
-      "\n Shapiro-Wilk: p = ",
-      signif(p_SH, 2),
-      ", Anderson-Darling: p = ",
-      signif(p_AD, 2)
-    ),
-    outer = TRUE
+  mtext(paste(
+    "Check for homogeneity of variances: Bartlett: p = ", signif(
+      p_bart,
+      2
+    ), "\n Check for normality of standardised residuals:", "\n Shapiro-Wilk: p = ",
+    signif(p_SH, 2), ", Anderson-Darling: p = ", signif(p_AD, 2)
+  ), outer = TRUE)
+
+
+
+  list_aov <- list(
+    summary_anova = summary_anova, shapiro_test = shapiro_test,
+    ad_test = ad_test, bartlett_test = bartlett_test
   )
-
-
-
-  list_aov <-
-    list(
-      "summary_anova" = summary_anova,
-      "shapiro_test" = shapiro_test,
-      "ad_test" = ad_test,
-      "bartlett_test" = bartlett_test
-    )
 
   return(list_aov)
 }

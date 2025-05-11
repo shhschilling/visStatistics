@@ -20,9 +20,9 @@ vis_anova_assumptions(
 
 \item{conf.level}{confidence level, 0.95=default}
 
-\item{samplename}{name of sample used in graphical output, dataype character , ""=default}
+\item{samplename}{name of sample used in graphical output, dataype character , ''=default}
 
-\item{factorname}{name of sample used in graphical output, dataype character, ""=default}
+\item{factorname}{name of sample used in graphical output, dataype character, ''=default}
 
 \item{cex}{number indicating the amount by which plotting text and symbols should be scaled relative to the default. 1=default, 1.5 is 50\% larger, 0.5 is 50\% smaller, etc.}
 }

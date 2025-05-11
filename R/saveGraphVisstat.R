@@ -2,7 +2,7 @@
 #'
 #' Closes all graphical devices with \code{dev.off()} and saves the output only if both \code{fileName} and \code{type} are provided.
 #'
-#' @param fileName name of file to be created in directory \code{fileDirectory} without file extension ".\code{type}".
+#' @param fileName name of file to be created in directory \code{fileDirectory} without file extension '.\code{type}'.
 #' @param type see \code{Cairo()}.
 #' @param fileDirectory path of directory, where graphic is stored. Default setting current working directory.
 #' @param oldfile old file of same name to be overwritten
@@ -13,20 +13,22 @@
 #' # very simple KDE (adapted from example in Cairo())
 #' openGraphCairo(type = "png", fileDirectory = tempdir())
 #' plot(rnorm(4000), rnorm(4000), col = "#ff000018", pch = 19, cex = 2)
-#' # save file "norm.png" in directory specified in fileDirectory
+#' # save file 'norm.png' in directory specified in fileDirectory
 #' saveGraphVisstat("norm", type = "png", fileDirectory = tempdir())
-#' file.remove(file.path(tempdir(), "norm.png")) # remove file "norm.png" from fileDirectory.
+#' file.remove(file.path(tempdir(), "norm.png")) # remove file 'norm.png' from fileDirectory.
 #'
 #' @export saveGraphVisstat
 #'
-saveGraphVisstat <- function(fileName = NULL, type = NULL, fileDirectory = getwd(), oldfile = NULL) {
+saveGraphVisstat <- function(
+    fileName = NULL, type = NULL, fileDirectory = getwd(),
+    oldfile = NULL) {
   # return if no fileName is provided
 
   if (is.null(fileName)) {
-    # message("saveGraphVisstat() returns NULL if file=NULL")
+    # message('saveGraphVisstat() returns NULL if file=NULL')
     return()
   } else if (is.null(type)) {
-    # message("saveGraphVisstat() returns NULL if type=NULL")
+    # message('saveGraphVisstat() returns NULL if type=NULL')
     return()
   } else if (is.null(oldfile)) {
     dummy_name <- "visstat_plot"
