@@ -251,7 +251,7 @@ two_sample_t_test <- function(samples,
       factorname, " \"",
       unique(sort(fact))[2], "\" ",
       "\n p = ",
-      p_value, ", p ", comparepvalue, " ~ alpha ~ ",
+      p_value, ", p ", comparepvalue, "alpha",
       sep = ""
     )
 
