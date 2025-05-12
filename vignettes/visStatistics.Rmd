@@ -52,15 +52,17 @@ Note: Except for the user-adjustable `conf.level` parameter, all statistical tes
 
 # Decision logic for selecting tests of central tendency {#sec-decisiontree}
 
-If the feature consists of `class` "`factor`" with two or more levels and the response consists is of `class` "`numeric`" or "`integer`" (both having mode "`numeric`"), statistical tests are applied to compare the central tendencies across groups. This section describes the conditions under which parametric and non-parametric tests are chosen, based on the response type, the number of factor levels, and the underlying distributional assumptions. A graphical overview of the decision logic used is provided in Figure \@ref(fig:fig-decision-tree).
+If the feature consists of `class` "`factor`" with two or more levels and the response consists is of `class` "`numeric`" or "`integer`" (both having mode "`numeric`"), statistical tests are applied to compare the central tendencies across groups. This section describes the conditions under which parametric and non-parametric tests are chosen, based on the response type, the number of factor levels, and the underlying distributional assumptions. A graphical overview of the decision logic used is provided in below figure.
+<!-- Figure \@ref(fig:fig-decision-tree). -->
 
 ```{r fig-decision-tree, fig.cap="Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity.", out.width="100%,fig.height =100% "}
 knitr::include_graphics("../man/figures/decision_tree.png")
 ```
 
-## Two sample tests: Welch's *t*-test or Wilcoxon rank sum test
+## Two sample tests: Welch's t-test or Wilcoxon rank sum test
 
-When the feature variable has exactly two levels, Welch's t-test is used to compare group means if the assumption of normality is satisfied. Otherwise, the Wilcoxon rank sum test is applied (see Figure \@ref(fig:fig-decision-tree)).
+When the feature variable has exactly two levels, Welch's t-test is used to compare group means if the assumption of normality is satisfied. Otherwise, the Wilcoxon rank sum test is applied.
+<!-- (see Figure \@ref(fig:fig-decision-tree)). -->
 
 Welch's t-test evaluates the null hypothesis that the two groups have equal means. Unlike Student's t-test, which assumes equal variances (homoscedasticity), Welch's test does not require this assumption. Welch's test exhibits minimal loss of robustness even when Student's t-test assumptions are satisfied [@Moser:1992fp; @Delacre:2017iv]. Therefore, Student's t-test is not implemented.
 
@@ -119,9 +121,10 @@ These assumptions are tested internally using the `visAnovaAssumptions()` functi
 
 ### Checking the ANOVA assumptions
 
-#### Residual analysis {#aov_residuals} {.unnumbered}
+#### Residual analysis {.unnumbered}
 
-The `visAnovaAssumptions()` function assesses the normality of standardized residuals from the ANOVA fit using both the Shapiro-W ilk test (`shapiro.test()`) and the Anderson-D arling test (`ad.test()`). Normality is assumed if at least one of the two tests yields a $p$-value greater than $1 -$ `conf.level` (see Figure \@ref(fig:fig-decision-tree)).
+The `visAnovaAssumptions()` function assesses the normality of standardized residuals from the ANOVA fit using both the Shapiro-W ilk test (`shapiro.test()`) and the Anderson-D arling test (`ad.test()`). Normality is assumed if at least one of the two tests yields a $p$-value greater than $1 -$ `conf.level`.
+<!-- (see Figure \@ref(fig:fig-decision-tree)). -->
 
 The function generates two diagnostic plots:\
 - a scatterplot of the standardized residuals against the fitted means of the linear model for each level of the feature (`varfactor`), and\
@@ -222,7 +225,7 @@ If the feature `varfactor` and the response `varsample` contain only one level e
 
 ## Residual analysis
 
-`visstat()` checks the normality of the standardised residuals from `lm()` both graphically and using the Shapiro-Wilk and Anderson-Darling tests (see also section [Residual analysis](#aov_residuals)). If the $p$-values for the null hypothesis of normally distributed residuals from both tests are smaller than $1 -$`conf.int`, the title of the residual plot will display the message: "Requirement of normally distributed residuals not met".
+`visstat()` checks the normality of the standardised residuals from `lm()` both graphically and using the Shapiro-Wilk and Anderson-Darling tests.  If the $p$-values for the null hypothesis of normally distributed residuals from both tests are smaller than $1 -$`conf.int`, the title of the residual plot will display the message: "Requirement of normally distributed residuals not met".
 
 Regardless of the result of the residual analysis, `visstat()` proceeds to perform the regression. The title of the graphical output indicates the chosen confidence level (`conf.level`), the estimated regression parameters with their confidence intervals and $p$-values, and the adjusted $R^2$. The plot displays the raw data, the fitted regression line, and both the confidence and prediction bands corresponding to the specified `conf.level`.
 
@@ -336,18 +339,42 @@ file.remove(file.path(tempdir(), "chi_squared_or_fisher_Hair_Eye.png"))
 file.remove(file.path(tempdir(), "mosaic_complete_Hair_Eye.png"))
 ```
 
-\`\`\`
+# Implemented tests
 
-# Overview of implemented tests
+## Numerical response \~ categorical feature
 
-`t.test()`, `wilcox.test()`, `aov()`, `kruskal.test()`, `lm()`,`fisher.test()`, `chisq.test()`
+When the response is numerical and the feature is categorical, test of
+central tendencies are selected:
 
-## Implemented tests to check the normal distribution of standardised residuals
+`t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`,`kruskal.test()`
+
+### Normality assumption check
 
 `shapiro.test()` and `ad.test()`
 
-## Implemented post-hoc tests
+### Homoscedasticity assumption check
 
-`TukeyHSD()` for `aov()` and `pairwise.wilcox.test()` for `kruskal.test()`.
+`bartlett.test()`
+
+### Post-hoc tests
+
+-   `TukeyHSD()` (for `aov()`and `oneway.test()`)
+-   `pairwise.wilcox.test()` (for `kruskal.test()`)
+
+## Numerical response \~ numerical feature
+
+When both the response and feature are numerical, a simple linear
+regression model is fitted:
+
+`lm()`
+
+##  Categorical response \~ categorical predictor
+
+When both variables are categorical, `visstat()` tests the null
+hypothesis of independence using one of the following:
+
+-   `chisq.test()` (default for larger samples)
+-   `fisher.test()` (used for small expected cell counts based on
+    Cochran's rule)
 
 # Bibliography
