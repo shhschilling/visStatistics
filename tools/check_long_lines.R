@@ -9,13 +9,13 @@
 #' @export
 check_long_lines <- function(path = "R", limit = 80) {
   r_files <- list.files(path, pattern = "\\.R$", full.names = TRUE, recursive = TRUE)
-  
+
   found <- FALSE
-  
+
   for (file in r_files) {
     lines <- readLines(file, warn = FALSE, encoding = "UTF-8")
     long_lines <- which(nchar(lines) > limit)
-    
+
     if (length(long_lines)) {
       found <- TRUE
       for (i in long_lines) {
@@ -26,7 +26,7 @@ check_long_lines <- function(path = "R", limit = 80) {
       }
     }
   }
-  
+
   if (!found) {
     message("✔ No lines longer than ", limit, " characters found in ", normalizePath(path), "/")
   }

@@ -1,6 +1,7 @@
 ## Examples------
-while (!is.null(dev.list()))
+while (!is.null(dev.list())) {
   dev.off()
+}
 library(visStatistics)
 options(warn = 0) # for debugging also warnings
 # only while developing, comment  when installed from CRAN
@@ -19,10 +20,11 @@ filedir <- tempdir()
 #
 linear_regression_trees <- visstat(trees, "Girth", "Height")
 linear_regression_trees <- visstat(trees,
-                                   "Girth",
-                                   "Height",
-                                   graphicsoutput = "png",
-                                   plotDirectory = filedir)
+  "Girth",
+  "Height",
+  graphicsoutput = "png",
+  plotDirectory = filedir
+)
 linear_regression_trees <- visstat(
   trees,
   "Girth",
@@ -35,8 +37,7 @@ linear_regression_trees <- visstat(
   trees,
   "Girth",
   "Height",
-  graphicsoutput = "svg",
-  ,
+  graphicsoutput = "svg", ,
   plotName = "dante",
   plotDirectory = filedir
 )
@@ -57,10 +58,11 @@ welch_cars <- visstat(
 )
 # standard naming convention
 welch_cars <- visstat(mtcars,
-                      "mpg",
-                      "am",
-                      graphicsoutput = "pdf",
-                      plotDirectory = filedir)
+  "mpg",
+  "am",
+  graphicsoutput = "pdf",
+  plotDirectory = filedir
+)
 
 # ANOVA and oneway.test -----
 anova_npk <- visstat(npk, "yield", "block")
@@ -89,7 +91,7 @@ visstat(
 # Welch two sample t.test: InsectSprays ----
 # select sprays A and B
 InsectSpraysAB <- InsectSprays[which(InsectSprays$spray == "A" |
-                                       InsectSprays$spray == "B"), ]
+  InsectSprays$spray == "B"), ]
 InsectSpraysAB$spray <- factor(InsectSpraysAB$spray)
 # Welcht-t-Test
 visstat(InsectSpraysAB, "count", "spray") # plots not saved

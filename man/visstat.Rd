@@ -49,8 +49,8 @@ parameter, plotName is automatically generated following the convention
 Default is current working directory.}
 }
 \value{
-\code{list} containing statistics of test with highest statistical
-  power meeting assumptions. All values are returned as invisibly copies.
+\code{list} containing statistics of automatically selected test
+  meeting assumptions. All values are returned as invisible copies.
   Values can be accessed by assigning a return value to \code{visstat}.
 }
 \description{

@@ -5,14 +5,14 @@ toggle_vignette_mode <- function(file = "vignettes/visStatistics.Rmd", mode = c(
     'title: "visStatistics"',
     'author: "Sabine Schilling"',
     'date: "`r Sys.Date()`"',
-    'bibliography: visstat.bib',
-    'vignette: >',
-    '  %\\VignetteIndexEntry{visStatistics}',
-    '  %\\VignetteEngine{knitr::rmarkdown}',
-    '  %\\VignetteEncoding{UTF-8}',
-    'editor_options:',
-    '  markdown:',
-    '    wrap: sentence'
+    "bibliography: visstat.bib",
+    "vignette: >",
+    "  %\\VignetteIndexEntry{visStatistics}",
+    "  %\\VignetteEngine{knitr::rmarkdown}",
+    "  %\\VignetteEncoding{UTF-8}",
+    "editor_options:",
+    "  markdown:",
+    "    wrap: sentence"
   )
 
   output_block <- switch(mode,

@@ -3,6 +3,7 @@
 ## News
 
 -   Added vignette `visStatistics.Rmd` documenting the statistical decision logic and illustrating each case with reproducible examples.
+-   Added graphical summary of decision logic to README and vignette
 
 ## Improvements
 
