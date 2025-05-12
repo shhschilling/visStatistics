@@ -1,7 +1,8 @@
 ## Examples------
 # clean the workspace -----
-while (!is.null(dev.list()))
-  dev.off() # closes eventual open graphical devices and restore default values of par()
+while (!is.null(dev.list())) {
+  dev.off()
+} # closes eventual open graphical devices and restore default values of par()
 # debugging: stop with warnings
 options(warn = 2)
 # load libraries -----
@@ -23,10 +24,11 @@ filedir <- tempdir()
 
 welch_cars <- visstat(mtcars, "mpg", "am")
 welch_cars <- visstat(mtcars,
-                      "mpg",
-                      "am",
-                      graphicsoutput = "png",
-                      plotDirectory = filedir)
+  "mpg",
+  "am",
+  graphicsoutput = "png",
+  plotDirectory = filedir
+)
 welch_cars
 
 # Kruskal-Wallis test: iris----
@@ -45,9 +47,9 @@ iris_kruskal
 # select sprays A and B
 # not functioning
 InsectSpraysAB <- InsectSprays[which(InsectSprays$spray == "A" |
-                                       InsectSprays$spray == "B"), ]
+  InsectSprays$spray == "B"), ]
 # resets the number of levels to 2, attention: as.factor does not do that
-InsectSpraysAB$spray <- factor(InsectSpraysAB$spray) 
+InsectSpraysAB$spray <- factor(InsectSpraysAB$spray)
 # Welcht-t-Test
 insect_t_test <- visstat(InsectSpraysAB, "count", "spray")
 insect_t_test
@@ -97,10 +99,11 @@ fisher_stats
 linear_regression_trees <- visstat(trees, "Girth", "Volume")
 linear_regression_trees <- visstat(trees, "Girth", "Height")
 linear_regression_trees <- visstat(trees,
-                                   "Girth",
-                                   "Height",
-                                   graphicsoutput = "png",
-                                   plotDirectory = filedir)
+  "Girth",
+  "Height",
+  graphicsoutput = "png",
+  plotDirectory = filedir
+)
 linear_regression_trees <- visstat(trees, "Girth", "Height")
 # display stats of linear regression
 linear_regression_trees

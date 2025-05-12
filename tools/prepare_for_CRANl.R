@@ -12,15 +12,16 @@ covr::report()
 # devtools::test()
 # testthat::test_dir("tests/testthat/")
 
-# Run examples 
+# Run examples
 devtools::run_examples()
 
 # autotest::autotest_package(test = TRUE)
 
 # Check package as CRAN using the correct CRAN repo
-withr::with_options(list(repos = c(CRAN = "https://cloud.r-project.org/")),
-                    {callr::default_repos()
-                      rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran")) })
+withr::with_options(list(repos = c(CRAN = "https://cloud.r-project.org/")), {
+  callr::default_repos()
+  rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"))
+})
 # devtools::check(args = c("--no-manual", "--as-cran"))
 
 # Check content
@@ -74,7 +75,7 @@ rstudioapi::terminalKill(id)
 
 # See outputs now available in revdep/
 revdep_details(revdep = "pkg")
-revdep_summary()                 # table of results by package
+revdep_summary() # table of results by package
 revdep_report()
 # Clean up when on CRAN
 revdep_reset()

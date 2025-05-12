@@ -28,7 +28,7 @@ saveGraphVisstat <- function(fileName = NULL,
                              fileDirectory = getwd(),
                              oldfile = NULL) {
   # return if no fileName is provided
-  
+
   if (is.null(fileName)) {
     # message('saveGraphVisstat() returns NULL if file=NULL')
     return()
@@ -40,21 +40,21 @@ saveGraphVisstat <- function(fileName = NULL,
     oldPlotName <- paste(dummy_name, ".", type, sep = "")
     oldfile <- file.path(fileDirectory, oldPlotName)
   }
-  
-  
+
+
   while (!is.null(dev.list())) {
     dev.off()
   } # closes all devices
-  
+
   # overwrite existing files
   file2 <- gsub("[^[:alnum:]]", "_", fileName) # replaces numbers and '^' with
   # underscore
   file3 <- gsub("_{2,}", "_", file2)
-  
+
   newFileName <- paste0(file3, ".", type)
   Cairofile <- file.path(fileDirectory, newFileName)
   file.copy(oldfile, Cairofile, overwrite = T)
-  
+
   if (file.exists(oldfile)) {
     file.remove(oldfile)
   }

@@ -102,8 +102,8 @@
 #'   "statisticalTestName_varsample_varfactor".
 #' @param plotDirectory specifies directory, where generated plots are stored.
 #'   Default is current working directory.
-#' @return \code{list} containing statistics of test with highest statistical
-#'   power meeting assumptions. All values are returned as invisibly copies.
+#' @return \code{list} containing statistics of automatically selected test
+#'   meeting assumptions. All values are returned as invisible copies.
 #'   Values can be accessed by assigning a return value to \code{visstat}.
 
 #' @examples
