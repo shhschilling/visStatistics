@@ -1482,11 +1482,11 @@ odds_ratio <- function(a, b, c, d, alpha, zerocorrect) {
   alpha <- 0.05
   zalph <- qnorm(1 - alpha / 2)
 
-  logLOW <- log(OR) - zalph * SE
-  logUP <- log(OR) + zalph * SE
+  log_low <- log(OR) - zalph * SE
+  log_up<- log(OR) + zalph * SE
 
-  lowconf <- exp(logLOW) # lower confidence
-  upconf <- exp(logUP)
+  lowconf <- exp(log_low) # lower confidence
+  upconf <- exp(log_up)
 
   output <- rbind(OR, lowconf, upconf, SE)
   my_list <- ("odds_ratio_statistics" <- output)
