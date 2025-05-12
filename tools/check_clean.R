@@ -1,5 +1,5 @@
 check_clean <- function(pkg = ".", ...) {
-  toggle_vignette_mode(mode = "cran")
+  toggle_vignette_mode(mode = "cranch")
 
   message("???? Running devtools::check() with --as-cran and compact vignettes...")
   devtools::check(pkg = pkg, args = "--as-cran", build_args = "--compact-vignettes=qpdf", ...)

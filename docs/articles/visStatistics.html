@@ -55,7 +55,7 @@
                         <h4 data-toc-skip class="author">Sabine
 Schilling</h4>
             
-            <h4 data-toc-skip class="date">2025-05-11</h4>
+            <h4 data-toc-skip class="date">2025-05-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/HEAD/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -64,7 +64,7 @@ Schilling</h4>
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/shhschilling/visStatistics/" class="external-link">visStatistics</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/shhschilling/visStatistics" class="external-link">visStatistics</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 class="unnumbered" id="abstract">Abstract<a class="anchor" aria-label="anchor" href="#abstract"></a>
 </h2>
@@ -162,8 +162,8 @@ to compare the central tendencies across groups. This section describes
 the conditions under which parametric and non-parametric tests are
 chosen, based on the response type, the number of factor levels, and the
 underlying distributional assumptions. A graphical overview of the
-decision logic used is provided in Figure
-@ref(fig:fig-decision-tree).</p>
+decision logic used is provided in below figure.
+<!-- Figure \@ref(fig:fig-decision-tree). --></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">"../man/figures/decision_tree.png"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
@@ -174,13 +174,12 @@ factor levels, normality and homoscedasticity.
 </p>
 </div>
 <div class="section level3">
-<h3 id="two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test">Two sample tests: Welch’s <em>t</em>-test or Wilcoxon rank sum
-test<a class="anchor" aria-label="anchor" href="#two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test"></a>
+<h3 id="two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test">Two sample tests: Welch’s t-test or Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test"></a>
 </h3>
 <p>When the feature variable has exactly two levels, Welch’s t-test is
 used to compare group means if the assumption of normality is satisfied.
-Otherwise, the Wilcoxon rank sum test is applied (see Figure
-@ref(fig:fig-decision-tree)).</p>
+Otherwise, the Wilcoxon rank sum test is applied.
+<!-- (see Figure \@ref(fig:fig-decision-tree)). --></p>
 <p>Welch’s t-test evaluates the null hypothesis that the two groups have
 equal means. Unlike Student’s t-test, which assumes equal variances
 (homoscedasticity), Welch’s test does not require this assumption.
@@ -241,13 +240,13 @@ interval includes the true parameter value with greater certainty.</p>
 </h5>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grades_gender</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"girl"</span>, <span class="fl">21</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"boy"</span>, <span class="fl">23</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span><span class="fl">19.3</span>, <span class="fl">18.1</span>, <span class="fl">15.2</span>, <span class="fl">18.3</span>, <span class="fl">7.9</span>, <span class="fl">6.2</span>, <span class="fl">19.4</span>,</span>
-<span><span class="fl">20.3</span>, <span class="fl">9.3</span>, <span class="fl">11.3</span>, <span class="fl">18.2</span>, <span class="fl">17.5</span>, <span class="fl">10.2</span>, <span class="fl">20.1</span>, <span class="fl">13.3</span>, <span class="fl">17.2</span>, <span class="fl">15.1</span>, <span class="fl">16.2</span>, <span class="fl">17.0</span>,</span>
-<span><span class="fl">16.5</span>, <span class="fl">5.1</span>, <span class="fl">15.3</span>, <span class="fl">17.1</span>, <span class="fl">14.8</span>, <span class="fl">15.4</span>, <span class="fl">14.4</span>, <span class="fl">7.5</span>, <span class="fl">15.5</span>, <span class="fl">6.0</span>, <span class="fl">17.4</span>,</span>
-<span><span class="fl">7.3</span>, <span class="fl">14.3</span>, <span class="fl">13.5</span>, <span class="fl">8.0</span>, <span class="fl">19.5</span>, <span class="fl">13.4</span>, <span class="fl">17.9</span>, <span class="fl">17.7</span>, <span class="fl">16.4</span>, <span class="fl">15.6</span>, <span class="fl">17.3</span>, <span class="fl">19.9</span>, <span class="fl">4.4</span>, <span class="fl">2.1</span></span>
-<span><span class="op">)</span></span>
+<span>  sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"girl"</span>, <span class="fl">21</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"boy"</span>, <span class="fl">23</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fl">19.3</span>, <span class="fl">18.1</span>, <span class="fl">15.2</span>, <span class="fl">18.3</span>, <span class="fl">7.9</span>, <span class="fl">6.2</span>, <span class="fl">19.4</span>,</span>
+<span>    <span class="fl">20.3</span>, <span class="fl">9.3</span>, <span class="fl">11.3</span>, <span class="fl">18.2</span>, <span class="fl">17.5</span>, <span class="fl">10.2</span>, <span class="fl">20.1</span>, <span class="fl">13.3</span>, <span class="fl">17.2</span>, <span class="fl">15.1</span>, <span class="fl">16.2</span>, <span class="fl">17.0</span>,</span>
+<span>    <span class="fl">16.5</span>, <span class="fl">5.1</span>, <span class="fl">15.3</span>, <span class="fl">17.1</span>, <span class="fl">14.8</span>, <span class="fl">15.4</span>, <span class="fl">14.4</span>, <span class="fl">7.5</span>, <span class="fl">15.5</span>, <span class="fl">6.0</span>, <span class="fl">17.4</span>,</span>
+<span>    <span class="fl">7.3</span>, <span class="fl">14.3</span>, <span class="fl">13.5</span>, <span class="fl">8.0</span>, <span class="fl">19.5</span>, <span class="fl">13.4</span>, <span class="fl">17.9</span>, <span class="fl">17.7</span>, <span class="fl">16.4</span>, <span class="fl">15.6</span>, <span class="fl">17.3</span>, <span class="fl">19.9</span>, <span class="fl">4.4</span>, <span class="fl">2.1</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">wilcoxon_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">grades_gender</span>, <span class="st">"grade"</span>, <span class="st">"sex"</span><span class="op">)</span></span></code></pre></div>
@@ -280,7 +279,7 @@ Kruskal-W allis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" 
 <h4 id="checking-the-anova-assumptions">Checking the ANOVA assumptions<a class="anchor" aria-label="anchor" href="#checking-the-anova-assumptions"></a>
 </h4>
 <div class="section level5">
-<h5 class="unnumbered" id="residual-analysis-aov_residuals">Residual analysis {#aov_residuals}<a class="anchor" aria-label="anchor" href="#residual-analysis-aov_residuals"></a>
+<h5 class="unnumbered" id="residual-analysis">Residual analysis<a class="anchor" aria-label="anchor" href="#residual-analysis"></a>
 </h5>
 <p>The <code>visAnovaAssumptions()</code> function assesses the
 normality of standardized residuals from the ANOVA fit using both the
@@ -289,7 +288,8 @@ arling test (<code>ad.test()</code>). Normality is assumed if at least
 one of the two tests yields a
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
 greater than
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">1 -</annotation></semantics></math><code>conf.level</code> (see Figure @ref(fig:fig-decision-tree)).</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">1 -</annotation></semantics></math><code>conf.level</code>.
+<!-- (see Figure \@ref(fig:fig-decision-tree)). --></p>
 <p>The function generates two diagnostic plots:<br>
 - a scatterplot of the standardized residuals against the fitted means
 of the linear model for each level of the feature
@@ -331,7 +331,7 @@ from the ANOVA (<code><a href="https://rdrr.io/r/stats/aov.html" class="external
 <li>Otherwise, homoscedasticity cannot be assumed, and the function
 reports the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
-from’Welch’s one-way test (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>).</li>
+from Welch’s one-way test (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>).</li>
 </ul>
 <div class="section level5">
 <h5 class="unnumbered" id="post-hoc-analysis-tukeys-honestly-significant-differences-hsd-and-sidak-corrected-confidence-intervals">Post-hoc analysis: Tukey’s Honestly Significant
@@ -515,11 +515,11 @@ performs a simple linear regression. Note that multiple linear
 regression is not implemented, as the main focus of
 <code><a href="../reference/visstat.html">visstat()</a></code> is on the visualisation of statistical tests.</p>
 <div class="section level3">
-<h3 id="residual-analysis">Residual analysis<a class="anchor" aria-label="anchor" href="#residual-analysis"></a>
+<h3 id="residual-analysis-1">Residual analysis<a class="anchor" aria-label="anchor" href="#residual-analysis-1"></a>
 </h3>
 <p><code><a href="../reference/visstat.html">visstat()</a></code> checks the normality of the standardised
 residuals from <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> both graphically and using the
-Shapiro-Wilk and Anderson-Darling tests (see also section <a href="#aov_residuals">Residual analysis</a>). If the
+Shapiro-Wilk and Anderson-Darling tests. If the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values
 for the null hypothesis of normally distributed residuals from both
 tests are smaller than
@@ -660,9 +660,9 @@ participants with either black or brown hair and either brown or blue
 eyes, resulting in a 2-by-2 contingency table.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_black_brown_eyes_brown_blue</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></span>
-<span><span class="co">#Transform to data frame</span></span>
+<span><span class="co"># Transform to data frame</span></span>
 <span><span class="va">hair_black_brown_eyes_brown_blue_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#Chi-squared test</span></span>
+<span><span class="co"># Chi-squared test</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue_df</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-14-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-14-2.png" width="100%"></p>
 </div>
@@ -685,7 +685,7 @@ exact test instead.</p>
 <code class="sourceCode R"><span><span class="va">hair_eye_color_male</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co"># Slice out a 2 by 2 contingency table</span></span>
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="va">hair_eye_color_male</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
-<span><span class="co">#Transform to data frame</span></span>
+<span><span class="co"># Transform to data frame</span></span>
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Fisher test</span></span>
 <span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
@@ -702,9 +702,9 @@ the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.ht
 reflect the statistical test used and the variable names involved.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
-<span>graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span></span>
+<span>  graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
@@ -712,26 +712,60 @@ reflect the statistical test used and the variable names involved.</p>
 <span><span class="co">#&gt; [1] TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"mosaic_complete_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<p>```</p>
 </div>
 <div class="section level2">
-<h2 id="overview-of-implemented-tests">Overview of implemented tests<a class="anchor" aria-label="anchor" href="#overview-of-implemented-tests"></a>
+<h2 id="implemented-tests">Implemented tests<a class="anchor" aria-label="anchor" href="#implemented-tests"></a>
 </h2>
-<p><code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>,
-<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>,
-<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>,<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>,
-<code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code></p>
 <div class="section level3">
-<h3 id="implemented-tests-to-check-the-normal-distribution-of-standardised-residuals">Implemented tests to check the normal distribution of standardised
-residuals<a class="anchor" aria-label="anchor" href="#implemented-tests-to-check-the-normal-distribution-of-standardised-residuals"></a>
+<h3 id="numerical-response-categorical-feature">Numerical response ~ categorical feature<a class="anchor" aria-label="anchor" href="#numerical-response-categorical-feature"></a>
 </h3>
+<p>When the response is numerical and the feature is categorical, test
+of central tendencies are selected:</p>
+<p><code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>,
+<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>,
+<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>,<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code></p>
+<div class="section level4">
+<h4 id="normality-assumption-check">Normality assumption check<a class="anchor" aria-label="anchor" href="#normality-assumption-check"></a>
+</h4>
 <p><code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and <code>ad.test()</code></p>
 </div>
+<div class="section level4">
+<h4 id="homoscedasticity-assumption-check">Homoscedasticity assumption check<a class="anchor" aria-label="anchor" href="#homoscedasticity-assumption-check"></a>
+</h4>
+<p><code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code></p>
+</div>
+<div class="section level4">
+<h4 id="post-hoc-tests">Post-hoc tests<a class="anchor" aria-label="anchor" href="#post-hoc-tests"></a>
+</h4>
+<ul>
+<li>
+<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> (for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>and
+<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>)</li>
+<li>
+<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> (for
+<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>)</li>
+</ul>
+</div>
+</div>
 <div class="section level3">
-<h3 id="implemented-post-hoc-tests">Implemented post-hoc tests<a class="anchor" aria-label="anchor" href="#implemented-post-hoc-tests"></a>
+<h3 id="numerical-response-numerical-feature">Numerical response ~ numerical feature<a class="anchor" aria-label="anchor" href="#numerical-response-numerical-feature"></a>
 </h3>
-<p><code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> and
-<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> for <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>.</p>
+<p>When both the response and feature are numerical, a simple linear
+regression model is fitted:</p>
+<p><code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p>
+</div>
+<div class="section level3">
+<h3 id="categorical-response-categorical-predictor">Categorical response ~ categorical predictor<a class="anchor" aria-label="anchor" href="#categorical-response-categorical-predictor"></a>
+</h3>
+<p>When both variables are categorical, <code><a href="../reference/visstat.html">visstat()</a></code> tests the
+null hypothesis of independence using one of the following:</p>
+<ul>
+<li>
+<code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code> (default for larger samples)</li>
+<li>
+<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> (used for small expected cell counts
+based on Cochran’s rule)</li>
+</ul>
 </div>
 </div>
 <div class="section level2">

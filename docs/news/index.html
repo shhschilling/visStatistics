@@ -34,17 +34,27 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.2" id="visstatistics-012">visStatistics 0.1.2<a class="anchor" aria-label="anchor" href="#visstatistics-012"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.1.2" id="visstatistics-012">visStatistics 0.1.2<a class="anchor" aria-label="anchor" href="#visstatistics-012"></a></h2><p class="text-muted">CRAN release: 2025-05-12</p>
 <div class="section level3">
 <h3 id="news-0-1-2">News<a class="anchor" aria-label="anchor" href="#news-0-1-2"></a></h3>
-<ul><li>Added vignette</li>
+<ul><li>Added vignette <code>visStatistics.Rmd</code> documenting the statistical decision logic and illustrating each case with reproducible examples.</li>
+<li>Added graphical summary of decision logic to README and vignette</li>
+</ul></div>
+<div class="section level3">
+<h3 id="improvements-0-1-2">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-1-2"></a></h3>
+<ul><li>Extended <code>README.html</code> and the <code>@details</code> section of the main function <code><a href="../reference/visstat.html">visstat()</a></code>:
+<ul><li>More precise parameter descriptions and clearer presentation of the decision logic.</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="change-in-decision-logic-0-1-2">Change in decision logic<a class="anchor" aria-label="anchor" href="#change-in-decision-logic-0-1-2"></a></h3>
+<ul><li>Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) is now applied when both groups have more than 30 observations (previous threshold was 100).</li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-1-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-2"></a></h3>
-<ul><li>Regression confidence and prediction bands now depend on <code>conf.level</code>.</li>
-<li>Post-hoc-Analysis in Kruskal-Wallis-test (<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>) now depends on <code>1-conf.int</code>
-</li>
-<li>Switch to <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> now depends on expected cell counts</li>
+<ul><li>Confidence and prediction bands in regression now depend on the specified <code>conf.level</code> instead of always defaulting to 0.95.</li>
+<li>Post hoc analysis in Kruskal-Wallis test (<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>) now uses the specified <code>conf.level</code> instead of always defaulting to 0.95.</li>
+<li>Switching to <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> now correctly follows expected cell count thresholds.</li>
 </ul></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

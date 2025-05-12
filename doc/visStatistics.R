@@ -91,3 +91,4 @@ visstat(black_brown_hazel_green_male, "Hair", "Eye",
 ## -----------------------------------------------------------------------------
 file.remove(file.path(tempdir(), "chi_squared_or_fisher_Hair_Eye.png"))
 file.remove(file.path(tempdir(), "mosaic_complete_Hair_Eye.png"))
+
