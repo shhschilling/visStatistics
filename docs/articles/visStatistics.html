@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>visStatistics • visStatistics</title>
+<title>visStatistics: The right test, visualised • visStatistics</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="visStatistics">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="visStatistics: The right test, visualised">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -51,11 +51,11 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>visStatistics</h1>
+      <h1>visStatistics: The right test, visualised</h1>
                         <h4 data-toc-skip class="author">Sabine
 Schilling</h4>
             
-            <h4 data-toc-skip class="date">2025-05-13</h4>
+            <h4 data-toc-skip class="date">2025-05-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/HEAD/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -96,26 +96,32 @@ distribution of the data. The function prioritizes interpretable visual
 output and tests that remain valid under the assumptions evaluated
 applying the following decision logic:</p>
 <ol style="list-style-type: decimal">
-<li><p>When the response is numerical and the predictor is categorical,
-test of central tendencies are performed. If the categorical predictor
-has two levels, Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) is used, if both
-groups have more than 30 observations, relying on the central limit
-theorem to justify its application regardless of underlying normality
-<span class="citation">(Lumley et al. 2002)</span>. For smaller samples,
-group-wise normality is assessed using the Shapiro-Wilk test
-(<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>). If both groups return p-values greater
-than
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>,
-Welch’s t-test is applied; otherwise, the Wilcoxon rank-sum test
-(<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is used. For predictors with more than two
-levels, an ANOVA model (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) is initially fitted.
-Residual normality is evaluated using both the Shapiro-Wilk test
-(<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and Anderson-Darling test
-(<code>ad.test()</code>), and normality is assumed if either test yields
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>&gt;</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">p &gt; \alpha</annotation></semantics></math>.
-If the residuals are considered normal, Bartlett’s test
-(<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>) is used to assess homoscedasticity. When
-variances are homogeneous
+<li>When the response is numerical and the predictor is categorical, a
+statistical hypothesis test of central tendencies is selected.</li>
+</ol>
+<ul>
+<li><p>If the categorical predictor has exactly two levels, Welch’s
+t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>), is applied whenever both groups contain
+more than 30 observations, with the validity of the test supported by
+the approximate normality of the sampling distribution of the mean under
+the central limit theorem <span class="citation">(Rasch, Kubinger, and
+Moder 2011; Lumley et al. 2002)</span>. For smaller samples, group-wise
+normality is assessed using the Shapiro-Wilk test
+(<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) at the significance level
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.
+If both groups are found to be approximately normally distributed
+according to the Shapiro-Wilk test, Welch’s t-test is applied;
+otherwise, the Wilcoxon rank-sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is
+used.</p></li>
+<li><p>For predictors with more than two levels, an ANOVA model
+(<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) is initially fitted. The normality of residuals is
+evaluated using both the Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>)
+and the Anderson–Darling test (<code>ad.test()</code>); residuals are
+considered approximately normal if at least one of the two tests yields
+a result exceeding the significance threshold
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.
+If this condition is met, Bartlett’s test (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>)
+is then used to assess homoscedasticity. When variances are homogeneous
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>&gt;</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">p &gt; \alpha</annotation></semantics></math>),
 ANOVA is applied with Tukey’s HSD (<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>) for post-hoc
 comparison. If variances differ significantly
@@ -126,7 +132,20 @@ both tests
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>≤</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">p \le \alpha</annotation></semantics></math>),
 the Kruskal-Wallis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is selected,
 followed by pairwise Wilcoxon tests
-(<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>).</p></li>
+(<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>). A graphical overview of the
+decision logic used is provided in below figure.
+<!-- Figure \@ref(fig:fig-decision-tree). --></p></li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">"../man/figures/decision_tree.png"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="../reference/figures/decision_tree.png" alt="Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity." width="100%,fig.height =100% "><p class="caption">
+Decision tree used to select the appropriate statistical test for a
+categorical predictor and numerical response, based on the number of
+factor levels, normality and homoscedasticity.
+</p>
+</div>
+<ol start="2" style="list-style-type: decimal">
 <li><p>When both the response and predictor are numerical, a simple
 linear regression model (<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>) is fitted and analysed in
 detail, including residual diagnostics, formal tests, and the plotting
@@ -152,7 +171,7 @@ visualize statistical test results, only simple linear regression is
 implemented.</p>
 </div>
 <div class="section level2">
-<h2 id="sec-decisiontree">Decision logic for selecting tests of central tendency<a class="anchor" aria-label="anchor" href="#sec-decisiontree"></a>
+<h2 id="decision-logic-for-selecting-tests-of-central-tendency">Decision logic for selecting tests of central tendency<a class="anchor" aria-label="anchor" href="#decision-logic-for-selecting-tests-of-central-tendency"></a>
 </h2>
 <p>If the feature consists of <code>class</code> “<code>factor</code>”
 with two or more levels and the response consists is of
@@ -161,50 +180,35 @@ with two or more levels and the response consists is of
 to compare the central tendencies across groups. This section describes
 the conditions under which parametric and non-parametric tests are
 chosen, based on the response type, the number of factor levels, and the
-underlying distributional assumptions. A graphical overview of the
-decision logic used is provided in below figure.
-<!-- Figure \@ref(fig:fig-decision-tree). --></p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">"../man/figures/decision_tree.png"</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="../reference/figures/decision_tree.png" alt="Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity." width="100%,fig.height =100% "><p class="caption">
-Decision tree used to select the appropriate statistical test for a
-categorical predictor and numerical response, based on the number of
-factor levels, normality and homoscedasticity.
-</p>
-</div>
+underlying distributional assumptions.</p>
 <div class="section level3">
-<h3 id="two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test">Two sample tests: Welch’s t-test or Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#two-sample-tests-welchs-t-test-or-wilcoxon-rank-sum-test"></a>
+<h3 id="welchs-t-test-and-wilcoxon-rank-sum-test">Welch’s t-test and Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#welchs-t-test-and-wilcoxon-rank-sum-test"></a>
 </h3>
-<p>When the feature variable has exactly two levels, Welch’s t-test is
-used to compare group means if the assumption of normality is satisfied.
-Otherwise, the Wilcoxon rank sum test is applied.
-<!-- (see Figure \@ref(fig:fig-decision-tree)). --></p>
-<p>Welch’s t-test evaluates the null hypothesis that the two groups have
-equal means. Unlike Student’s t-test, which assumes equal variances
-(homoscedasticity), Welch’s test does not require this assumption.
-Welch’s test exhibits minimal loss of robustness even when Student’s
-t-test assumptions are satisfied <span class="citation">(Moser and
-Stevens 1992; Delacre et al. 2017)</span>. Therefore, Student’s t-test
-is not implemented.</p>
-<p>The Wilcoxon rank sum test, in contrast, is a non-parametric method
-that compares two distributions without requiring normality.</p>
+<p>When the feature variable has exactly two levels, Welch’s t-test or
+the Wilcoxon rank-sum test is applied.</p>
+<!-- (see Figure \@ref(fig:fig-decision-tree)). -->
+<p>Welch’s t-test assumes that the observations are independent and that
+the response variable is approximately normally distributed within each
+group. In contrast to Student’s t-test, it does not require the
+assumption of equal variances (homoscedasticity) between groups. Welch’s
+test remains valid and exhibits only minimal loss of efficiency even
+when the assumptions of Student’s t-test—namely, normality and equal
+variances of the response variable across groups—are satisfied <span class="citation">(Moser and Stevens 1992; Delacre et al. 2017)</span>.
+Therefore, Student’s t-test is not implemented.</p>
+<p>The Wilcoxon rank-sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is a
+non-parametric alternative that tests for a difference in location
+between two independent distributions.</p>
 <p>The function selects between these tests as follows. If both groups
-have more than 30 observations, Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>)
-is always performed. For large samples, the test remains robust even
-when normality is not strictly met <span class="citation">(Rasch,
-Kubinger, and Moder 2011; Lumley et al. 2002)</span>.</p>
-<p>If either group has fewer than 30 observations, the function applies
-the Shapiro-Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) to each group. If
-both
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values
-exceed the significance level
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">\alpha = 1 -</annotation></semantics></math><code>conf.level</code>, Welch’s t-test is applied. If at least one
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
-falls below
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>,
-the Wilcoxon rank sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is used
-instead.</p>
+contain more than 30 observations, Welch’s t-test
+(<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) is always applied, relying on the central limit
+theorem to justify its application regardless of underlying normality
+<span class="citation">(Rasch, Kubinger, and Moder 2011; Lumley et al.
+2002)</span>.</p>
+<p>If either group contains fewer than 30 observations, the Shapiro–Wilk
+test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) is applied separately to each group.
+Welch’s t-test is used if both tests do not reject normality at the
+significance level $$; otherwise, the Wilcoxon rank-sum test
+(<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is applied.</p>
 <p>The graphical output consists of box plots overlaid with jittered
 points to display individual observations. When Welch’s t-test is
 applied, the function includes confidence intervals based on the
@@ -283,9 +287,9 @@ Kruskal-W allis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" 
 </h5>
 <p>The <code>visAnovaAssumptions()</code> function assesses the
 normality of standardized residuals from the ANOVA fit using both the
-Shapiro-W ilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson-D
-arling test (<code>ad.test()</code>). Normality is assumed if at least
-one of the two tests yields a
+Shapiro-W ilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the
+Anderson-Darling test (<code>ad.test()</code>). Normality is assumed if
+at least one of the two tests yields a
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
 greater than
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">1 -</annotation></semantics></math><code>conf.level</code>.

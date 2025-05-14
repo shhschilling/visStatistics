@@ -3,12 +3,9 @@
 
 <!-- knitr before every resubmission -->
 
-# visStatistics
+# visStatistics: The right test, visualised.
 
-Visualization of the statistical hypothesis test with the highest
-statistical power between two groups of categorical or numerical data.
-
-`visStatistics` is an R package for rapid visualization and statistical
+`visStatistics` allows for a rapid visualisation and statistical
 analysis of raw data. It automatically selects and applies the most
 appropriate hypothesis test to evaluate the relationship between a
 response (`varsample`) and a feature (`varfactor`) within a
@@ -227,8 +224,8 @@ central tendencies are selected:
 
 #### Post-hoc tests
 
-- `TukeyHSD()` (for `aov()`and `oneway.test()`)
-- `pairwise.wilcox.test()` (for `kruskal.test()`)
+- `TukeyHSD()` (used following `aov()`and `oneway.test()`)
+- `pairwise.wilcox.test()` (used following `kruskal.test()`)
 
 The decision below tree summarises the underlying decision logic for
 tests of central tendencies.
