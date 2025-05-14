@@ -48,10 +48,9 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="visstatistics">visStatistics<a class="anchor" aria-label="anchor" href="#visstatistics"></a>
+<div class="page-header"><h1 id="visstatistics-the-right-test-visualised">visStatistics: The right test, visualised.<a class="anchor" aria-label="anchor" href="#visstatistics-the-right-test-visualised"></a>
 </h1></div>
-<p>Visualization of the statistical hypothesis test with the highest statistical power between two groups of categorical or numerical data.</p>
-<p><code>visStatistics</code> is an R package for rapid visualization and statistical analysis of raw data. It automatically selects and applies the most appropriate hypothesis test to evaluate the relationship between a response (<code>varsample</code>) and a feature (<code>varfactor</code>) within a <code>data.frame</code>.</p>
+<p><code>visStatistics</code> allows for a rapid visualisation and statistical analysis of raw data. It automatically selects and applies the most appropriate hypothesis test to evaluate the relationship between a response (<code>varsample</code>) and a feature (<code>varfactor</code>) within a <code>data.frame</code>.</p>
 <p>A minimal function call looks of its main function <code><a href="reference/visstat.html">visstat()</a></code> looks like:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">dataframe</span>, varsample <span class="op">=</span> <span class="st">"response"</span>, varfactor <span class="op">=</span> <span class="st">"feature"</span><span class="op">)</span></span></code></pre></div>
@@ -231,9 +230,9 @@
 </h4>
 <ul>
 <li>
-<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> (for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>and <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>)</li>
+<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> (used following <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>and <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>)</li>
 <li>
-<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> (for <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>)</li>
+<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> (used following <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>)</li>
 </ul>
 <p>The decision below tree summarises the underlying decision logic for tests of central tendencies.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
