@@ -55,7 +55,7 @@
                         <h4 data-toc-skip class="author">Sabine
 Schilling</h4>
             
-            <h4 data-toc-skip class="date">2025-05-14</h4>
+            <h4 data-toc-skip class="date">2025-05-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -68,35 +68,33 @@ Schilling</h4>
 <div class="section level2">
 <h2 class="unnumbered" id="abstract">Abstract<a class="anchor" aria-label="anchor" href="#abstract"></a>
 </h2>
-<p>The package <code>visStatistics</code> enables rapid visualization
-and statistical analysis of raw data by automatically selecting the
-hypothesis test with the highest statistical power to evaluate the
-relationship between a response (<code>varsample</code>) and a feature
-(<code>varfactor</code>) within a <code>data.frame</code>. Its core
-function, <code><a href="../reference/visstat.html">visstat()</a></code>, generates a graph showing key
-statistics from the selected test and returns the corresponding test
-results, including any post-hoc analysis.</p>
-<p>A minimal function call has the form
-<code>visstat(dataframe, varsample, varfactor)</code>.</p>
+<p><code>visStatistics</code> allows for a rapid visualisation and
+statistical analysis of raw data. It automatically applies the most
+appropriate hypothesis test to evaluate the relationship between a
+response and a feature within a data frame. Its core function,
+`visstat(), visualiyes this test by an approprate graph (box plots,
+regression lines, mosaic plots, column blocks ) the corresponding test
+results, including eventual assumption and post-hoc analysis.</p>
 <p>The input <code>data.frame</code> must be column-based, and the
-arguments <code>varsample</code> and <code>varfactor</code> must be
-character strings naming columns of the <code>data.frame</code>. The
+response <code>varsample</code> and featuure <code>varfactor</code> must
+be character strings naming columns of the <code>data.frame</code>. The
 significance level
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>,
 used throughout for hypothesis testing, is defined as
 <code>1 - conf.level</code>, where <code>conf.level</code> is a
 user-controllable argument (defaulting to <code>0.95</code>). Data of
 class <code>"numeric"</code> or <code>"integer"</code> are referred to
-in the remainder of this vignette as numerical, while data of class
+in the remainder of this vignette as numeric, while data of class
 <code>"factor"</code> are referred to as categorical.</p>
 <p>The choice of statistical tests performed by the function
-<code><a href="../reference/visstat.html">visstat()</a></code> depends on whether the data are numerical or
+<code><a href="../reference/visstat.html">visstat()</a></code> depends on whether the data are numeric or
 categorical, the number of levels in the categorical variable, and the
 distribution of the data. The function prioritizes interpretable visual
-output and tests that remain valid under the assumptions evaluated
-applying the following decision logic:</p>
+output and tests that remain valid under the the fowlloing decision
+logic:</p>
+<!--  Numeric response and categorical feature -->
 <ol style="list-style-type: decimal">
-<li>When the response is numerical and the predictor is categorical, a
+<li>When the response is numeric and the predictor is categorical, a
 statistical hypothesis test of central tendencies is selected.</li>
 </ol>
 <ul>
@@ -139,20 +137,23 @@ decision logic used is provided in below figure.
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="st">"../man/figures/decision_tree.png"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="../reference/figures/decision_tree.png" alt="Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity." width="100%,fig.height =100% "><p class="caption">
+<img src="../reference/figures/decision_tree.png" alt="Decision tree used to select the appropriate statistical test for a categorical predictor and numeric response, based on the number of factor levels, normality and homoscedasticity." width="100%,fig.height =100% "><p class="caption">
 Decision tree used to select the appropriate statistical test for a
-categorical predictor and numerical response, based on the number of
+categorical predictor and numeric response, based on the number of
 factor levels, normality and homoscedasticity.
 </p>
 </div>
+<!-- (2)  Numeric response and numeric predictor  -->
 <ol start="2" style="list-style-type: decimal">
-<li><p>When both the response and predictor are numerical, a simple
-linear regression model (<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>) is fitted and analysed in
-detail, including residual diagnostics, formal tests, and the plotting
-of fitted values with confidence bands. Note that only one explanatory
-variable is allowed, as the function is designed for two-dimensional
-visualisation.</p></li>
-<li><p>In the case of two categorical variables, <code><a href="../reference/visstat.html">visstat()</a></code>
+<li>When both the response and predictor are numeric, a simple linear
+regression model (<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>) is fitted and analysed in detail,
+including residual diagnostics, formal tests, and the plotting of fitted
+values with confidence bands. Note that only one explanatory variable is
+allowed, as the function is designed for two-dimensional
+visualisation.</li>
+</ol>
+<!-- (3) Categorical  response and categorical predictor --><ol start="3" style="list-style-type: decimal">
+<li>In the case of two categorical variables, <code><a href="../reference/visstat.html">visstat()</a></code>
 tests the null hypothesis that the predictor and response variables are
 independent using either <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code> or
 <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>. The choice of test is based on Cochran’s
@@ -160,7 +161,7 @@ rule <span class="citation">(Cochran 1954)</span>, which advises that
 the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
 approximation is reliable only if no expected cell count is zero and no
-more than 20 percent of cells have expected counts below 5.</p></li>
+more than 20 percent of cells have expected counts below 5.</li>
 </ol>
 <p>Note: Except for the user-adjustable <code>conf.level</code>
 parameter, all statistical tests are applied using their default
@@ -507,11 +508,11 @@ labels (all green letters differ).</p>
 <h2 id="simple-linear-regression">Simple linear regression<a class="anchor" aria-label="anchor" href="#simple-linear-regression"></a>
 </h2>
 <p>If the feature <code>varfactor</code> and the response
-<code>varsample</code> have only one level of type
-<code>numerical</code> or <code>integer</code>, <code><a href="../reference/visstat.html">visstat()</a></code>
-performs a simple linear regression. Note that multiple linear
-regression is <strong>not</strong> implemented, as the main focus of
-<code><a href="../reference/visstat.html">visstat()</a></code> is the visualisation of statistical tests.</p>
+<code>varsample</code> have only one level of type <code>numeric</code>
+or <code>integer</code>, <code><a href="../reference/visstat.html">visstat()</a></code> performs a simple linear
+regression. Note that multiple linear regression is <strong>not</strong>
+implemented, as the main focus of <code><a href="../reference/visstat.html">visstat()</a></code> is the
+visualisation of statistical tests.</p>
 <p>If the feature <code>varfactor</code> and the response
 <code>varsample</code> contain only one level each and both are of type
 <code>numeric</code> or <code>integer</code>, <code><a href="../reference/visstat.html">visstat()</a></code>
@@ -721,10 +722,10 @@ reflect the statistical test used and the variable names involved.</p>
 <h2 id="implemented-tests">Implemented tests<a class="anchor" aria-label="anchor" href="#implemented-tests"></a>
 </h2>
 <div class="section level3">
-<h3 id="numerical-response-categorical-feature">Numerical response ~ categorical feature<a class="anchor" aria-label="anchor" href="#numerical-response-categorical-feature"></a>
+<h3 id="numeric-response-categorical-feature">numeric response ~ categorical feature<a class="anchor" aria-label="anchor" href="#numeric-response-categorical-feature"></a>
 </h3>
-<p>When the response is numerical and the feature is categorical, test
-of central tendencies are selected:</p>
+<p>When the response is numeric and the feature is categorical, test of
+central tendencies are selected:</p>
 <p><code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>,
 <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>,
 <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>,<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code></p>
@@ -752,14 +753,14 @@ of central tendencies are selected:</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="numerical-response-numerical-feature">Numerical response ~ numerical feature<a class="anchor" aria-label="anchor" href="#numerical-response-numerical-feature"></a>
+<h3 id="numeric-response-numeric-feature">numeric response ~ numeric feature<a class="anchor" aria-label="anchor" href="#numeric-response-numeric-feature"></a>
 </h3>
-<p>When both the response and feature are numerical, a simple linear
+<p>When both the response and feature are numeric, a simple linear
 regression model is fitted:</p>
 <p><code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p>
 </div>
 <div class="section level3">
-<h3 id="categorical-response-categorical-predictor">Categorical response ~ categorical predictor<a class="anchor" aria-label="anchor" href="#categorical-response-categorical-predictor"></a>
+<h3 id="categorical-response-categorical-feature">Categorical response ~ categorical feature<a class="anchor" aria-label="anchor" href="#categorical-response-categorical-feature"></a>
 </h3>
 <p>When both variables are categorical, <code><a href="../reference/visstat.html">visstat()</a></code> tests the
 null hypothesis of independence using one of the following:</p>
