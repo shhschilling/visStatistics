@@ -22,7 +22,8 @@ withr::with_options(list(repos = c(CRAN = "https://cloud.r-project.org/")), {
   callr::default_repos()
   rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"))
 })
-# devtools::check(args = c("--no-manual", "--as-cran"))
+
+devtools::check(args = c("--no-manual", "--as-cran"))
 
 # Check content
 # install.packages('checkhelper', repos = 'https://thinkr-open.r-universe.dev')
