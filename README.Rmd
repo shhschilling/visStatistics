@@ -103,14 +103,19 @@ library(visStatistics)
 ? visstat
 ```
 
+6. Study all the details of the package in its vignette:
+
+``` {r visstat-vignette, eval = FALSE}
+vignette("visStatistics")
+```
 # Decision logic
 
-Throughout the remainder, data of class `"numeric"` or `"integer"` are referred as numeric, while data of class `"factor"` are referred to as categorical.
+Throughout the remainder, data of class `"numeric"` or `"integer"` are referred as numerical, while data of class `"factor"` are referred to as categorical.
 
-The choice of statistical tests performed by the function `visstat()` depends on whether the data are numeric or categorical, the number of levels in the categorical variable, and the distribution of the data. The function prioritizes interpretable visual output and tests that remain valid under the the fowlloing decision logic:
+The choice of statistical tests performed by the function `visstat()` depends on whether the data are numerical or categorical, the number of levels in the categorical variable, and the distribution of the data. The function prioritizes interpretable visual output and tests that remain valid under the the fowlloing decision logic:
 
 
-(1) When the response is numeric and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.
+(1) When the response is numerical and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.
 - If the categorical predictor has exactly two levels, Welch's t- test (`t.test()`), is applied whenever both groups contain more than 30 observations, with the validity of the test supported by the approximate normality of the sampling distribution of the mean under the central limit theorem
 [@Rasch:2011, @Lumley:2002]. For smaller samples, group - wise normality is assessed using the Shapiro -
 Wilk test (`shapiro.test()`) at the significance level$\alpha$. If both groups are found to be approximately normally distributed according to the Shapiro -
@@ -128,7 +133,7 @@ A graphical overview of the decision logic used is provided in below figure.
 
 <p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
 Decision tree used to select the appropriate statistical test for a categorical
-predictor and numeric response, based on the number of factor levels, normality,
+predictor and numerical response, based on the number of factor levels, normality,
 and homoscedasticity.
 </p>
 
@@ -137,7 +142,7 @@ and homoscedasticity.
 
 
 (2)
-When both the response and predictor are numeric, a simple linear regression model (`lm()`) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation.
+When both the response and predictor are numerical, a simple linear regression model (`lm()`) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation.
 
 <!-- (3) Categorical response and categorical predictor -->
 (3)
