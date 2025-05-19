@@ -220,7 +220,10 @@ two_sample_t_test <- function(samples,
 
   p_value <- t$p.value
   p_value <- signif(p_value, 2)
-
+  test_statistic <- t$statistic
+  test_statistic <- round(test_statistic, 2)
+  stat_name <- names(t$statistic)
+  
   # Title general generation
   if (alternative == "two.sided") {
     ah <- "equals"
@@ -250,7 +253,8 @@ two_sample_t_test <- function(samples,
       " of ",
       factorname, " \"",
       unique(sort(fact))[2], "\" ",
-      "\n p = ",
+      "\n",stat_name,"=",test_statistic,
+      ", p = ",
       p_value, ", p ", comparepvalue, "alpha",
       sep = ""
     )
@@ -374,8 +378,13 @@ two_sample_wilcoxon_test <- function(samples,
   text(1:length(b$n), c(ma, ma), paste("N =", b$n))
   t <- wilcox.test(samples ~ fact, alternative = alternative, na.action = na.omit)
   p_value <- t$p.value
-  # p_value = signif(p_value,5)
   p_value <- formatC(signif(p_value, digits = 2))
+  
+  test_statistic <- t$statistic
+  test_statistic <- round(test_statistic, 2)
+  stat_name <- names(t$statistic)
+  
+ 
   compare <- side_of_nh(alternative)
   if (factorname == "match") {
     prefix <- "of matched"
@@ -412,7 +421,8 @@ two_sample_wilcoxon_test <- function(samples,
       " of ",
       factorname, " ",
       unique(sort(fact))[2],
-      "\n p = ",
+      "\n",stat_name,"=",test_statistic,
+      ", p = ",
       p_value, ", p ", comparepvalue, " alpha",
       sep = ""
     )
@@ -518,6 +528,10 @@ two_sample_FTest <- function(samples,
   t <- var.test(x1, x2, alternative = alternative)
   p_value <- t$p.value
   p_value <- signif(p_value, 3)
+  
+  test_statistic <- t$statistic
+  test_statistic <- formatC(signif(test_statistic, digits = 2))
+  
 
   mtext(
     paste(

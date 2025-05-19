@@ -1,19 +1,17 @@
 ---
+title: "visStatistics"
 output:
-  # html_vignette:
-  bookdown::html_document2:
-    toc: true 
-    keep_md: true
+  rmarkdown::html_vignette:
+    toc: true
     number_sections: true
     toc_depth: 3
-title: "visStatistics: The right test, visualised"
-author: "Sabine Schilling"
-date: "`r Sys.Date()`"
-bibliography: visstat.bib
 vignette: >
-  %\VignetteIndexEntry{visStatistics: The right test, visualised}
+  %\VignetteIndexEntry{visStatistics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: visstat.bib
+author: "Sabine Schilling"
+date: "`r Sys.Date()`"
 editor_options:
   markdown:
     wrap: sentence
@@ -21,7 +19,8 @@ editor_options:
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  echo = TRUE,
+  echo = FALSE,
+  eval = TRUE,
   collapse = TRUE,
   comment = "#>",
   fig.width = 8,
@@ -34,45 +33,59 @@ knitr::opts_chunk$set(
 library(visStatistics)
 ```
 
-# Abstract {.unnumbered}
+# Overview {.unnumbered}
+`visStatistics` allows for rapid visualisation and statistical analysis of raw
+data. It automatically selects and visualises the most
+appropriate hypothesis test between a
+response (`varsample`) and a feature (`varfactor`) within a
+`data.frame`. Its core function, `visstat()`,
+visualises this test with appropriate graphs (box plots, bar charts,regression lines with confidence bands, 
+mosaic plots,residual plots, Q-Q plots), annotated with the main test results, including
+any assumption checks and post-hoc analyses.
+A minimal function call looks looks
+like:
 
-`visStatistics`  allows for a rapid visualisation and statistical
-analysis of raw data. 
-It automatically applies the most
-appropriate hypothesis test to evaluate the relationship between a
-response and a feature within a data frame. 
-Its core function, `visstat(), visualises this test by an approprate graph (box plots, regression lines, mosaic plots, bar charts) the corresponding test results, including eventual assumption and post-hoc analysis.
+``` r
+visstat(dataframe, varsample = "response", varfactor = "feature")
+```
+The input `data.frame` must be column-based, and the response `varsample` and  feature `varfactor` must be character strings naming columns of the `data.frame`. The significance level $\alpha$, used throughout for hypothesis testing, is defined as `1 - conf.level`, where `conf.level` is a user-controllable argument (defaulting to `0.95`). 
 
-The input `data.frame` must be column-based, and the response `varsample` and  feature `varfactor` must be character strings naming columns of the `data.frame`. The significance level $\alpha$, used throughout for hypothesis testing, is defined as `1 - conf.level`, where `conf.level` is a user-controllable argument (defaulting to `0.95`). Data of class `"numeric"` or `"integer"` are referred to in the remainder of this vignette as numeric, while data of class `"factor"` are referred to as categorical.
 
-The choice of statistical tests performed by the function `visstat()` depends on whether the data are numeric or categorical, the number of levels in the categorical variable, and the distribution of the data. The function prioritizes interpretable visual output and tests that remain valid under the the fowlloing decision logic: 
+# Overview of the decision logic 
+Data of class `"numeric"` or `"integer"` are referred to in the remainder as numerical, while data of class `"factor"` are referred to as categorical.
+The choice of statistical tests performed by the function `visstat()` depends on whether the data are numerical or categorical, the number of levels in the categorical variable, and the distribution of the data. The function prioritizes interpretable visual output and tests that remain valid under the the fowlloing decision logic: 
 
-<!--  Numeric response and categorical feature -->
+## Numerical response and categorical feature
+When the response is numerical and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.
+ 
+### Categorical predictor with two levels 
 
-(1) When the response is numeric and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.
- - If the categorical predictor has exactly two levels, Welch’s t-test (`t.test()`), is applied whenever both groups contain more than 30 observations, with the validity of the test supported by the approximate normality of the sampling distribution of the mean under the central limit theorem 
+If the categorical predictor has exactly two levels, Welch’s t-test (`t.test()`), is applied whenever both groups contain more than 30 observations, with the validity of the test supported by the approximate normality of the sampling distribution of the mean under the central limit theorem 
 [@Rasch:2011vl; @Lumley2002dsa]. For smaller samples, group-wise normality is assessed using the Shapiro-Wilk test (`shapiro.test()`) at the significance level $\alpha$. If both groups are found to be approximately normally distributed according to the Shapiro-Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank-sum test (`wilcox.test()`) is used.
 
- - For predictors with more than two levels, an ANOVA model (`aov()`) is initially fitted. The normality of residuals is evaluated using both the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.
-If this condition is met, Bartlett's test (`bartlett.test()`) is then used to assess homoscedasticity. When variances are homogeneous ($p > \alpha$), ANOVA is applied with Tukey's HSD (`TukeyHSD()`) for post-hoc comparison. If variances differ significantly ($p \le \alpha$), Welch's one-way test (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal-Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
-A graphical overview of the decision logic used is provided in Figure \@ref(fig:fig-decision-tree).
+### Categorical predictor with more than two levels 
 
-```{r fig-decision-tree, fig.cap="Decision tree used to select the appropriate statistical test for a categorical predictor and numeric response, based on the number of factor levels, normality and homoscedasticity.", out.width="100%,fig.height =100% "}
+For predictors with more than two levels, an ANOVA model (`aov()`) is initially fitted. The normality of residuals is evaluated using both the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.
+If this condition is met, Bartlett's test (`bartlett.test()`) is then used to assess homoscedasticity. When variances are homogeneous ($p > \alpha$), ANOVA is applied with Tukey's HSD (`TukeyHSD()`) for post-hoc comparison. If variances differ significantly ($p \le \alpha$), Welch's one-way test (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal-Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
+A graphical overview of the decision logic used is provided in figure.
+<!-- \@ref(fig:fig-decision-tree).  -->
+
+```{r fig-decision-tree, fig.cap="Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity.", out.width="100%,fig.height =100% "}
 knitr::include_graphics("../man/figures/decision_tree.png")
 ```
-<!-- (2)  Numeric response and numeric predictor  -->
-(2)
-When both the response and predictor are numeric, a simple linear regression model (`lm()`) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation.
+## Numerical response and numerical predictor  
 
-<!-- (3) Categorical  response and categorical predictor -->
-(3) 
+When both the response and predictor are numerical, a simple linear regression model (`lm()`) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation.
+
+##  Categorical  response and categorical predictor
+
 In the case of two categorical variables, `visstat()` tests the null hypothesis that the predictor and response variables are independent using either `chisq.test()` or `fisher.test()`. The choice of test is based on Cochran's rule [@Cochran], which advises that the $\chi^2$ approximation is reliable only if no expected cell count is zero and no more than 20 percent of cells have expected counts below 5.
 
 Note: Except for the user-adjustable `conf.level` parameter, all statistical tests are applied using their default settings from the corresponding base R functions (e.g., `t.test()`). As a consequence, paired tests are not currently supported. Furthermore, since the main purpose of this package is to visualize statistical test results, only simple linear regression is implemented.
 
 # Decision logic for selecting tests of central tendency 
 
-If the feature consists of `class` "`factor`" with two or more levels and the response consists is of `class` "`numeric`" or "`integer`" (both having mode "`numeric`"), statistical tests are applied to compare the central tendencies across groups. This section describes the conditions under which parametric and non-parametric tests are chosen, based on the response type, the number of factor levels, and the underlying distributional assumptions.
+If the feature consists of `class` "`factor`" with two or more levels and the response consists is of `class` "`numerical`" or "`integer`" (both having mode "`numerical`"), statistical tests are applied to compare the central tendencies across groups. This section describes the conditions under which parametric and non-parametric tests are chosen, based on the response type, the number of factor levels, and the underlying distributional assumptions.
 
 ## Welch's t-test  and  Wilcoxon rank sum test
 When the feature variable has exactly two levels, Welch's t-test or the
@@ -149,7 +162,7 @@ wilcoxon_statistics <- visstat(grades_gender, "grade", "sex")
 
 ## One-way test, ANOVA or Kruskal-Wallis test
 
-If the feature is of `class` "`factor`" with more than two levels and the response is of `mode` "`numeric`", `visstat()` initially attempts an analysis of variance (ANOVA). ANOVA is performed only if both of the following null hypotheses cannot be rejected at the specified `conf.level`:
+If the feature is of `class` "`factor`" with more than two levels and the response is of `mode` "`numerical`", `visstat()` initially attempts an analysis of variance (ANOVA). ANOVA is performed only if both of the following null hypotheses cannot be rejected at the specified `conf.level`:
 
 1.  The standardized residuals follow a normal distribution, and\
 2.  The residuals exhibit homoscedasticity (equal variances across groups).
@@ -258,9 +271,9 @@ If both $p$-values are below the significance level $\alpha = 1 -$conf.level, `v
 
 # Simple linear regression
 
-If the feature `varfactor` and the response `varsample` have only one level of type `numeric` or `integer`, `visstat()` performs a simple linear regression. Note that multiple linear regression is **not** implemented, as the main focus of `visstat()` is the visualisation of statistical tests.
+If the feature `varfactor` and the response `varsample` have only one level of type `numerical` or `integer`, `visstat()` performs a simple linear regression. Note that multiple linear regression is **not** implemented, as the main focus of `visstat()` is the visualisation of statistical tests.
 
-If the feature `varfactor` and the response `varsample` contain only one level each and both are of type `numeric` or `integer`, `visstat()` performs a simple linear regression. Note that multiple linear regression is not implemented, as the main focus of `visstat()` is on the visualisation of statistical tests.
+If the feature `varfactor` and the response `varsample` contain only one level each and both are of type `numerical` or `integer`, `visstat()` performs a simple linear regression. Note that multiple linear regression is not implemented, as the main focus of `visstat()` is on the visualisation of statistical tests.
 
 ## Residual analysis
 
@@ -380,9 +393,9 @@ file.remove(file.path(tempdir(), "mosaic_complete_Hair_Eye.png"))
 
 # Implemented tests
 
-## numeric response \~ categorical feature
+## Numerical response and categorical feature
 
-When the response is numeric and the feature is categorical, test of
+When the response is numerical and the feature is categorical, test of
 central tendencies are selected:
 
 `t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`,`kruskal.test()`
@@ -400,14 +413,14 @@ central tendencies are selected:
 -   `TukeyHSD()` (for `aov()`and `oneway.test()`)
 -   `pairwise.wilcox.test()` (for `kruskal.test()`)
 
-## numeric response \~ numeric feature
+## Numerical response and numerical feature
 
-When both the response and feature are numeric, a simple linear
+When both the response and feature are numerical, a simple linear
 regression model is fitted:
 
 `lm()`
 
-##  Categorical response \~ categorical feature
+##  Categorical response and categorical feature
 
 When both variables are categorical, `visstat()` tests the null
 hypothesis of independence using one of the following:
