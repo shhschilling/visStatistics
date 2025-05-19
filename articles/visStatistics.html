@@ -91,8 +91,8 @@ visualisations, e.g. in statistical consulting projects.</p>
 <ul>
 <li><p>Section 2 summarises the decision logic of chosing a
 <strong>statisti</strong>cal test, whilst</p></li>
-<li><p>Sections 3 - 5 <strong>vis</strong>ualises the decision logic
-using examples,</p></li>
+<li><p>Sections 3 - 5 gives background on the implemented tests and
+<strong>vis</strong>ualises the decision logic using examples,</p></li>
 <li><p>Section 6 gives an overview of the implemented tests.</p></li>
 </ul>
 </div>
@@ -732,18 +732,15 @@ regression line</p>
 is the intercept and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>$
 its slope.</p>
-<p>If the feature <code>varfactor</code> and the response
-<code>varsample</code> contain only one level each and both are of type
-<code>numerical</code> or <code>integer</code>, <code><a href="../reference/visstat.html">visstat()</a></code>
-performs a simple linear regression. Note that multiple linear
-regression is not implemented, as the main focus of
-<code><a href="../reference/visstat.html">visstat()</a></code> is on the visualisation of statistical tests.</p>
+<p>Note that multiple linear regression is not implemented, as the main
+focus of <code><a href="../reference/visstat.html">visstat()</a></code> is on the visualisation of statistical
+tests.</p>
 <div class="section level4">
 <h4 id="residual-analysis-1">Residual analysis<a class="anchor" aria-label="anchor" href="#residual-analysis-1"></a>
 </h4>
 <p><code><a href="../reference/visstat.html">visstat()</a></code> checks the normality of the standardised
 residuals from <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> both graphically and using the
-Shapiro-Wilk and Anderson-Darling tests. If the
+Shapiro-Wilk and Anderson-Darling tests.If the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values
 for the null hypothesis of normally distributed residuals from both
 tests are smaller than
