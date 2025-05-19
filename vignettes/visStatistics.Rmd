@@ -60,7 +60,7 @@ The remainder of this vignette is organised as follows:
 
  - Section 2 summarises the decision logic of chosing a **statisti**cal test, whilst 
  
- - Sections 3 - 5 **vis**ualises the decision logic using examples,
+ - Sections 3 - 5 gives background on the implemented tests and **vis**ualises the decision logic using examples,
  
  - Section 6 gives an overview of the implemented tests.
  
@@ -447,13 +447,11 @@ $$y=a +b \cdot x$$,where
 $a$ is the intercept and $b$$ its slope.
 
 
-
-
-If the feature `varfactor` and the response `varsample` contain only one level each and both are of type `numerical` or `integer`, `visstat()` performs a simple linear regression. Note that multiple linear regression is not implemented, as the main focus of `visstat()` is on the visualisation of statistical tests.
+Note that multiple linear regression is not implemented, as the main focus of `visstat()` is on the visualisation of statistical tests.
 
 ### Residual analysis
 
-`visstat()` checks the normality of the standardised residuals from `lm()` both graphically and using the Shapiro-Wilk and Anderson-Darling tests.  If the $p$-values for the null hypothesis of normally distributed residuals from both tests are smaller than $1 -$`conf.int`, the title of the residual plot will display the message: "Requirement of normally distributed residuals not met".
+`visstat()` checks the normality of the standardised residuals from `lm()` both graphically and using the Shapiro-Wilk and Anderson-Darling tests.If the $p$-values for the null hypothesis of normally distributed residuals from both tests are smaller than $1 -$`conf.int`, the title of the residual plot will display the message: "Requirement of normally distributed residuals not met".
 
 Regardless of the result of the residual analysis, `visstat()` proceeds to perform the regression. The title of the graphical output indicates the chosen confidence level (`conf.level`), the estimated regression parameters with their confidence intervals and $p$-values, and the adjusted $R^2$. The plot displays the raw data, the fitted regression line, and both the confidence and prediction bands corresponding to the specified `conf.level`.
 
