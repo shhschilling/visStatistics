@@ -1,6 +1,7 @@
 ## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
-  echo = TRUE,
+  echo = FALSE,
+  eval = TRUE,
   collapse = TRUE,
   comment = "#>",
   fig.width = 8,
@@ -11,7 +12,7 @@ knitr::opts_chunk$set(
 ## ----setup--------------------------------------------------------------------
 library(visStatistics)
 
-## ----fig-decision-tree, fig.cap="Decision tree used to select the appropriate statistical test for a categorical predictor and numeric response, based on the number of factor levels, normality and homoscedasticity.", out.width="100%,fig.height =100% "----
+## ----fig-decision-tree, fig.cap="Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality and homoscedasticity.", out.width="100%,fig.height =100% "----
 knitr::include_graphics("../man/figures/decision_tree.png")
 
 ## -----------------------------------------------------------------------------

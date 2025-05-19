@@ -54,10 +54,9 @@ Default is current working directory.}
   Values can be accessed by assigning a return value to \code{visstat}.
 }
 \description{
-\code{visstat()} provides automated visualization and selection
+\code{visstat()} provides automated selection and visualization 
 of a statistical hypothesis test between a response and a feature variable in
-a given \code{data.frame} named \code{dataframe}, selecting a test that is
-appropriate under the data's type, distribution, sample size, and the
+a given \code{data.frame} named \code{dataframe} based on the data's type, distribution, sample size, and the
 specified \code{conf.level}. The data in \code{dataframe} must be structured
 column-wise, where \code{varsample} and \code{varfactor} are \code{character}
 strings corresponding to the column names of the response and feature
@@ -204,5 +203,8 @@ file.remove(file.path(tempdir(), "kruskal_iris.pdf"))
 
 }
 \seealso{
-\url{https://shhschilling.github.io/visStatistics/}
+See also the package's vignette
+\code{vignette("visStatistics")} for the overview,
+and the accompanying webpage
+\url{https://shhschilling.github.io/visStatistics/}.
 }
