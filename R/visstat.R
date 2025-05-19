@@ -486,7 +486,7 @@ visstat <- function(dataframe,
       vis_sample_fact <- c(vis_chi, vis_mosaic_res)
     }
   }
-  # C) both types numeric: Regression-----
+  # C) both types numerical: Regression-----
   
   # Both samples and fact of type integer or numeric
   # Regression
