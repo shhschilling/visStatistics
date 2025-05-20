@@ -1,0 +1,103 @@
+---
+output: rmarkdown::html_document
+#csl: apa.csl  # optional, if you want citation styling
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+<!-- README.md is automatically generated from README.Rmd. Please only edit this Rmd file! -->
+
+<!-- knitr before every resubmission -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 5,
+  out.width = "100%",
+  fig.path = "man/figures/README-"
+)
+```
+
+## Introduction
+  
+  The hypergeometric distribution models the probability of obtaining \( k \) successes in \( n \) draws, **without replacement**, from a population of size \( N \) containing \( m \) successes.
+
+This is exactly what happens in lottery games like **6/49 lotto**.
+
+
+  
+## Lotto as a Hypergeometric Problem
+  
+  In a 6/49 lotto game:
+  
+  - There are \( N = 49 \) total numbers,
+- You choose \( m = 6 \) of them (your numbers),
+- The lottery also draws \( n = 6 \) numbers,
+- Let \( X \) be the number of your numbers that match the drawn ones.
+
+The number of matches \( X \) follows a **hypergeometric distribution**.
+
+---
+  
+## Probability Mass Function
+  
+  The hypergeometric PMF is:
+  
+  $$
+  P(X = k) = \frac{\binom{m}{k} \binom{N - m}{n - k}}{\binom{N}{n}}
+$$
+  
+  For the 6/49 lotto case:
+  
+  $$
+  P(X = k) = \frac{\binom{6}{k} \binom{43}{6 - k}}{\binom{49}{6}}, \quad k = 0, 1, \dots, 6
+$$
+  
+  ---
+  
+## R Code: Visualising the Distribution
+  
+  ```{r, echo=TRUE, message=FALSE}
+# Parameters
+N <- 49  # Total numbers
+m <- 6   # Your numbers
+n <- 6   # Lotto draws
+k <- 0:6 # Possible number of matches
+  
+
+# Hypergeometric PMF
+probs <- dhyper(k, m, N - m, n)
+
+# Plot
+barplot(probs,
+        names.arg = k,
+        col = "lightblue",
+        ylim = c(0, max(probs) * 1.1),
+        ylab = "Probability",
+        xlab = "Number of Matches",
+        main = "Hypergeometric Distribution: Lotto 6/49")
+        
+  ```      
+# Binomial Coefficient
+
+The **binomial coefficient** \( \binom{n}{k} \), read as "n choose k", gives the number of ways to choose \( k \) elements from a set of \( n \) distinct elements **without regard to order**.
+
+It is defined as:
+
+$$
+\binom{n}{k} = \frac{n!}{k!(n - k)!}
+$$
+
+Where:
+- \( n! \) is the factorial of \( n \): \( n! = n \cdot (n-1) \cdot (n-2) \cdots 1 \),
+- \( k \in \{0, 1, 2, \dots, n\} \),
+- \( \binom{n}{0} = \binom{n}{n} = 1 \).
+
+### Example
+
+```{r}
+choose(5, 2)  # "5 choose 2"

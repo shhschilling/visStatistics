@@ -39,7 +39,7 @@
 #' central tendency are performed. If the categorical predictor has two levels:
 #' - Welch's t-test (\code{t.test()}) is used if both groups have more than 30
 #' observations (Lumley et al. (2002)
-#' <doi:10.1146/annurev.publheath.23.100901.140546>).
+#' <doi:10.1146/annurev.publhealth.23.100901.140546>).
 #' - For smaller samples, normality is assessed using \code{shapiro.test()}.
 #' If both groups return p-values greater than \eqn{\alpha}, Welch's t-test is
 #' applied; otherwise, the Wilcoxon rank-sum test (\code{wilcox.test()}) is
