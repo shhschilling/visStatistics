@@ -56,6 +56,10 @@ that rely on server-side R applications connected to secure databases,
 where users have no direct access, or for quick data visualisations,
 e.g. in statistical consulting projects.
 
+This scripted workflow is particularly well suited for interactive interfaces where users access data only through a graphical front end backed by server-side R sessions, as well as for quick data exploration e.g. in statistical consulting contexts.
+
+
+
 The remainder of this vignette is organised as follows:
 
  - Section 2 summarises the decision logic of choosing a **statisti**cal test, whilst 
@@ -436,14 +440,14 @@ If both $p$-values are below the significance level $\alpha = 1 -$conf.level, `v
 
 ## Simple linear regression
 
-If the feature `varfactor` and the response `varsample`  are both numerical and contain only one level each , `visstat()` performs a simple linear regression.
+If the feature `varfactor` and the response `varsample`  are both numerical and *contain only one level each* , `visstat()` performs a simple linear regression.
 
 
 The resulting regression plot displays the point estimation of the regression line
 
-$$y=a +b \cdot x$$,where
-
-$a$ is the intercept and $b$$ its slope.
+$y=a +b \cdot x$, where
+where $y$ is the response variable, $x$ is the feature variable, 
+$a$ the intercept and $b$ the slope pf the regression line
 
 
 Note that multiple linear regression is not implemented, as the main focus of `visstat()` is on the visualisation of statistical tests.
@@ -556,7 +560,29 @@ $$
 This reduced test statistic yields a larger p-value, thereby lowering the
 risk of a type I error.
 
-## Fisher's exact test 
+<!-- ## Fisher's exact test  -->
+<!-- Fisher's exact test [@Fisher:1935] is a non-parametric method that does not   -->
+<!-- rely on large-sample approximations. -->
+
+<!-- When any expected frequency $E_{ij}$ is below 5, `visstat()` applies   -->
+<!-- Fisher’s exact test using `fisher.test()`. The test calculates an exact   -->
+<!-- $p$-value for testing independence by conditioning on the observed margins:   -->
+<!-- the row totals $R_i = \sum_{j=1}^C O_{ij}$ and the column totals   -->
+<!-- $C_j = \sum_{i=1}^R O_{ij}$. These margins define the structure of the   -->
+<!-- contingency table and remain fixed during the test. -->
+
+<!-- In the $2 \times 2$ case, the $p$-value is computed from the hypergeometric   -->
+<!-- distribution by summing the probabilities of all tables with the same margins   -->
+<!-- as the observed one, whose probabilities under the null are less than or equal   -->
+<!-- to that of the observed table. -->
+
+<!-- For general $R \times C$ tables, `fisher.test()` generalises this approach   -->
+<!-- using the multivariate hypergeometric distribution. -->
+
+
+
+## Fisher's exact test
+
 Fisher's exact test [@Fisher:1935] is a non-parametric method that does not  
 rely on large-sample approximations.
 
@@ -564,16 +590,52 @@ When any expected frequency $E_{ij}$ is below 5, `visstat()` applies
 Fisher’s exact test using `fisher.test()`. The test calculates an exact  
 $p$-value for testing independence by conditioning on the observed margins:  
 the row totals $R_i = \sum_{j=1}^C O_{ij}$ and the column totals  
-$C_j = \sum_{i=1}^R O_{ij}$. These margins define the structure of the  
-contingency table and remain fixed during the test.
+$C_j = \sum_{i=1}^R O_{ij}$, defining the structure of the  
+contingency table.
 
-In the $2 \times 2$ case, the $p$-value is computed from the hypergeometric  
-distribution by summing the probabilities of all tables with the same margins  
-as the observed one, whose probabilities under the null are less than or equal  
-to that of the observed table.
+In the $2 \times 2$ case, the observed table can be written as:
 
-For general $R \times C$ tables, `fisher.test()` generalises this approach  
-using the multivariate hypergeometric distribution.
+$$
+\begin{array}{c|cc|c}
+ & C_1 & C_2 & \text{Row sums} \\\\
+\hline
+R_1 & a & b & a + b \\\\
+R_2 & c & d & c + d \\\\
+\hline
+\text{Column sums} & a + c & b + d & n
+\end{array}
+$$
+
+Let
+$$
+O = \begin{bmatrix} a & b \\\\ c & d \end{bmatrix}
+$$
+denote the above observed $2 \times 2$ contingency table.  
+The exact probability of observing this table under the null hypothesis of  
+independence, given the fixed margins, is given by the his given by the hypergeometric probability mass function (PMF)
+
+$$
+\mathbb{P}(O  \mid 
+R_1, R_2, C_1, C_2) = 
+\frac{\binom{a + b}{a} \binom{c + d}{c}}{\binom{n}{a + c}},
+$$
+
+where $n = a + b + c + d$ is the total sample size.
+
+<!-- Because all other cell values are determined by $a$ and the fixed margins, -->
+<!-- this is often written more simply as: -->
+
+<!-- $$ -->
+<!-- P(a \mid \text{margins}) = -->
+<!-- \frac{\binom{a + b}{a} \binom{c + d}{c}}{\binom{n}{a + c}}. -->
+<!-- $$ -->
+
+The $p$-value is computed by summing the probabilities of all tables  
+with the same margins whose probabilities under the null are less than  
+or equal to that of the observed table.
+
+For general $R \times C$ tables, `fisher.test()` generalises this  
+approach using the multivariate hypergeometric distribution.
 
 ## Test choice and graphical output
 

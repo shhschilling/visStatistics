@@ -25,16 +25,19 @@ knitr::opts_chunk$set(
 <!-- pkgdown::start -->
 # visStatistics: The right test, visualised
 
-The R package `visStatistics` allows for rapid **vis**ualisation and statistical
+The R package `visStatistics` allows for rapid visualisation and statistical
 analysis of raw data. It automatically selects and visualises the most
-appropriate **statistic**al hypothesis test between a
+appropriate statistical hypothesis test between a
 response (`varsample`) and a feature (`varfactor`) within a
 `data.frame`.
-
-This workflow is particularly suited for browser - based interfaces 
-that rely on server -side R applications connected to secure databases, 
-where users have no direct access, or for quick data visualisation,
-e.g. in statistical consulting projects.
+The package focuses on visualising the selected test using appropriate plots -
+such as box plots, bar charts, regression lines with confidence bands, 
+mosaic plots, residual plots and Q-Q plots. Each plot is annotated with relevant
+test statistics and, where applicable, assumption checks and post-hoc results.
+The scripted workflow is particularly well suited for interactive interfaces,
+where users access data only through a graphical front end backed by server-side
+R sessions, as well as for quick data exploration, for example, in statistical
+consulting contexts.
 
 # Getting Started
 A minimal function call looks of its main function `visstat()` looks
