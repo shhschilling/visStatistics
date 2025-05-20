@@ -40,6 +40,13 @@ all_files_remaining
 # usethis::use_spell_check()
 spelling::spell_check_package()
 
+hunspell::hunspell("colour", dict = hunspell::dictionary("en_GB"))
+text <- readLines("vignettes/visStatistics.Rmd")
+text2 <- readLines("README.Rmd")
+errors <- hunspell::hunspell(text, dict = hunspell::dictionary("en_GB"))
+errors2 <- hunspell::hunspell(text2, dict = hunspell::dictionary("en_GB"))
+unique(unlist(errors))
+unique(unlist(errors2))
 # Check URL are correct
 # install.packages('urlchecker', repos = 'https://r-lib.r-universe.dev')
 urlchecker::url_check()

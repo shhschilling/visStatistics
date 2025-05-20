@@ -58,7 +58,7 @@ e.g. in statistical consulting projects.
 
 The remainder of this vignette is organised as follows:
 
- - Section 2 summarises the decision logic of chosing a **statisti**cal test, whilst 
+ - Section 2 summarises the decision logic of choosing a **statisti**cal test, whilst 
  
  - Sections 3 - 5 gives background on the implemented tests and **vis**ualises the decision logic using examples,
  
@@ -72,7 +72,7 @@ Throughout the remainder, data of class `"numeric"` or `"integer"` are referred 
 
 The choice of statistical tests performed by the function `visstat()` depends on whether the data are numerical or categorical, the number of levels in the categorical variable, the distribution of the data, as well as the user-defined 'conf.level'.
 
-The function prioritizes interpretable visual output and tests that remain valid under the the fowlloing decision logic:
+The function prioritizes interpretable visual output and tests that remain valid under the the following decision logic:
 
 ## Numerical response and categorical predictor
 
@@ -105,7 +105,7 @@ and homoscedasticity.
 
 ## Numerical response and numerical feature
 
-When both the response and predictor are numeric, a simple linear regression model (`lm()`) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that **only one** precictor variable is allowed, as the function is designed for two-dimensional visualisation.
+When both the response and predictor are numeric, a simple linear regression model (`lm()`) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that **only one** predictor variable is allowed, as the function is designed for two-dimensional visualisation.
 
 ## Categorical response and categorical feature 
 
@@ -113,15 +113,12 @@ In the case of two categorical variables, `visstat()` tests the null hypothesis 
 
 Note:Except for the user - adjustable `conf.level` parameter, all statistical tests are applied using their default settings from the corresponding base R functions (e.g., `t.test()`). As a consequence, paired tests are not currently supported. Furthermore, since the main purpose of this package is to visualize statistical test results, only simple linear regression is implemented.
 
-Sections 3-5 willexplains all the details of the above described decision logic based on examples.
-
-.
 
 # Numerical response and categorical feature
 
 If the feature consists of `class` "`factor`" with two or more levels and the response consists is of `class` "`numeric`" or "`integer`" (both having mode "`numerical`"), statistical tests are applied to compare the central tendencies across groups. This section describes the conditions under which parametric and non-parametric tests are chosen, based on the response type, the number of factor levels, and the underlying distributional assumptions.
 
-## Welch's t-test  and  Wilcoxon rank sum test
+## Categorical feature with two levels: Welch's t-test  and  Wilcoxon rank sum test
 
 
 When the feature variable has exactly two levels, Welch's t-test or the
@@ -148,7 +145,7 @@ $$
 
 where $\bar{x}_1$ and $\bar{x}_2$ are the sample means, $s_1^2$ and $s_2^2$ the sample 
 variances, and $n_1$, $n_2$ the sample sizes in the two groups. The statistic follows 
-a *t*-distribution with degrees of freedom approximated by the Welch-'Satterthwaite 
+a *t*-distribution with degrees of freedom approximated by the Welch-Satterthwaite 
 equation:
 
 $$
@@ -209,7 +206,7 @@ The title is structured as follows:
  
  - Second line: Null hypotheses automatically adapted based on the user specified `varsample` and `varfacor`.
  
- - Third line: Test statstic, p value and automated comparison with $\alpha$
+ - Third line: Test statistic, p value and automated comparison with $\alpha$
 
 
 The
@@ -255,14 +252,14 @@ grades_gender <- data.frame(
 wilcoxon_statistics <- visstat(grades_gender, "grade", "sex")
 ```
 
-##  ANOVA, One-way test and Kruskal-Wallis test 
+## Categorical feature with more than two levels: ANOVA, One-way test and Kruskal-Wallis test 
 
 If the feature is of `class` "`factor`" with **more than two levels** and the response is of `mode` "`numerical`", `visstat()` either performs an analysis of variance (`aov()`), a one-way test (`oneway.test()`) or, as a non-parametric alternative, the Kruskal-W allis test (`kruskal.test()`).
 
-In the remainder of this section we will briefly introduce the tests, explain the the test choice and demonstrate how the assumptions are tested.
-and illustrate each tests by an example.
+In the remainder of this section we will briefly introduce the tests, explain the the test choice, demonstrate how the assumptions are tested and illustrate each tests by an example.
 
-<h4> Analysis of Variance (ANOVA) </h4>
+<!-- <h4> Analysis of Variance (ANOVA) </h4> -->
+### Analysis of Variance (ANOVA) 
 
 The analysis of variance (`aov()`) tests the null hypothesis that the means  
 of multiple groups are equal. It assumes independent observations, normally  
@@ -284,16 +281,16 @@ Under the null hypothesis, this statistic follows an F-distribution with two
 parameters for degrees of freedom: the numerator ($k - 1$) and the denominator  
 ($N - k$). The resulting *p*-value is computed from this distribution.
 
-<h4> Welch's One-Way test </h4>
+### Welch's One-Way test
 When the assumptions of homoscedasticity is not met, but the assumptions of
-independent observations and normally distributed residuals are ,et. 
+independent observations and normally distributed residuals are met. 
 Welch's One-Way test  [@Welch:1951] provides an alternative to `aov()'. 
-It compares group means using   weights based on sample sizes and variances 
+It compares group means using weights based on sample sizes and variances 
 [@Welch:1951]. The degrees of freedom are adjusted using a Satterthwaite-type 
 approximation [@Satterthwaite:1946], resulting in an F-statistic with non-integer
 degrees of freedom.
 
-<h4> Kruskal–Wallis Test  </h4>
+###  Kruskal–Wallis Test  
 
 When both the assumptions of normality and homoscedasticity are not met,  
 `kruskal.test()` provides a non-parametric alternative. It compares  
@@ -304,23 +301,25 @@ $$
 H = \frac{12}{N(N+1)} \sum_{i=1}^{k} n_i \left(\bar{R}_i - \bar{R} \right)^2,
 $$
 
-where $n_i$ is the sample size in group $i$,$k$ is the number of groups. 
+where $n_i$ is the sample size in group $i$,$k$ is the number of groups, 
 $\bar{R}_i$ is the average rank of group $i$, 
 $N$ is the total sample size, and $\bar{R} = \frac{N+1}{2}$ is  
 the average of all ranks. Under the null hypothesis, $H$ approximately follows  
 a $\chi^2$ distribution with $k - 1$ degrees of freedom.
 
 
-
 ###  Test choice
-From the above assumptions for the different tests, follows directly the test logic: 
- `visstat()` initially attempts an analysis of variance (ANOVA) as implemented in `aov()`.
-ANOVA is performed only if **both** of the following null hypotheses cannot be rejected at the specified `conf.level`:
+
+From above assumptions for `aov()`) and `oneway.test()`, follows directly the 
+test logic: `visstat()` initially attempts an analysis of variance (ANOVA) as
+implemented in `aov()`. It  is performed only if **both** of the following null hypotheses cannot be rejected at the specified `conf.level`:
 
 1.  The standardized residuals follow a normal distribution, and\
 2.  The residuals exhibit homoscedasticity (equal variances across groups).
 
-If only the assumption of normality is satisfied, `visstat()` applies Welch's one-way test (`oneway.test()`). If the normality assumption is violated, a Kruskal-W allis test (`kruskal.test()`) is used instead.
+If only the assumption of normality is satisfied, `visstat()` applies Welch's one-way test (`oneway.test()`). 
+
+If the normality assumption is violated, a Kruskal-W allis test (`kruskal.test()`) is used instead.
 
 These assumptions are tested internally using the `visAnovaAssumptions()` function.
 
@@ -517,7 +516,7 @@ r_{ij} = \frac{O_{ij} - E_{ij}}{\sqrt{E_{ij}}}, \quad i = 1, \ldots, R,\quad
 j = 1, \ldots, C.
 $$
 Positive residuals (shaded in blue) indicate observed counts greater than
-expected, while negative values suggest underrepresentation (shaded in red).
+expected, while negative values suggest under-representation (shaded in red).
 Colour shading thus highlights which combinations of categorical levels
 contribute most to the overall association.
 
@@ -585,15 +584,15 @@ Otherwise, it switches to Fisher's exact test (`fisher.test()`) [@Cochran:1954].
 For 2-by-2 contingency tables, Yate's a continuity correction [@Yates:1934] is always applied to Pearson's ${\chi}^2$-test.
 
 
-For all tests of independence  `visstat()` displays a grouped column plot that includes the respective test's $p$-value in the title, as well as a mosaic plot showing color-coded Pearson residuals and the p-value of Pearson's $\chi^2$-test.
+For all tests of independence  `visstat()` displays a grouped column plot that includes the respective test's $p$-value in the title, as well as a mosaic plot showing colour-coded Pearson residuals and the p-value of Pearson's $\chi^2$-test.
 
-## Transforming a contingency table to data frame
+## Transforming a contingency table to a data frame
  The following examples for tests of categorical feature and response are all based on the `HairEyeColor` contingency table. 
  
-Contingency tables must get converted to the required column-based `data.frame` using the helper function `counts_to_cases()`. The function transforms the contingency table `HairEyeColor` into `data.frame` named `HairEyeColorDataFrame`.
+Contingency tables must get converted to the required column-based `data.frame` using the helper function `counts_to_cases()`. The function transforms the contingency table `HairEyeColor` into `data.frame` named `HairEyeColourDataFrame`.
 
 ```{r}
-HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
+HairEyeColourDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
 ```
 
 
@@ -604,8 +603,8 @@ In all examples of this section,  we will test the null hypothesis, that hair co
 ### Pearson's ${\chi}^2$-test 
 
 ```{r}
-hair_eye_color_df <- counts_to_cases(as.data.frame(HairEyeColor))
-visstat(hair_eye_color_df, "Hair", "Eye")
+hair_eye_colour_df <- counts_to_cases(as.data.frame(HairEyeColor))
+visstat(hair_eye_colour_df, "Hair", "Eye")
 ```
 
 The graphical output shows that the null hypothesis of 
@@ -626,7 +625,7 @@ hair_black_brown_eyes_brown_blue_df <- counts_to_cases(as.data.frame(hair_black_
 visstat(hair_black_brown_eyes_brown_blue_df, "Hair", "Eye")
 ```
 Also in this reduced data set we reject the null hypothesis of independence of the hair colors "brown" and "black" from the eye colours "brown" and " blue". The mosaic plot shows that blue eyed persons with black hair are under-represented.
-Note the higher p-value of  Pearson's ${\chi}^2$-test with Yate's continuity correction (p=0.00354) compared to the p-value of Perasons  ${\chi}^2$-test (p=00229)shown in the mosaic plot. 
+Note the higher p-value of  Pearson's ${\chi}^2$-test with Yate's continuity correction (p=0.00354) compared to the p-value of Pearson's  ${\chi}^2$-test (p=00229)shown in the mosaic plot. 
 
 
 ### Fisher's exact test 
@@ -638,9 +637,9 @@ Pearson's ${\chi}^2$ test applied to this table would yield an expected frequenc
 Therefore, `visstat()` automatically selects Fisher's exact test instead.
 
 ```{r}
-hair_eye_color_male <- HairEyeColor[, , 1]
+hair_eye_colour_male <- HairEyeColor[, , 1]
 # Slice out a 2 by 2 contingency table
-black_brown_hazel_green_male <- hair_eye_color_male[1:2, 3:4]
+black_brown_hazel_green_male <- hair_eye_colour_male[1:2, 3:4]
 # Transform to data frame
 black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_green_male))
 # Fisher test
