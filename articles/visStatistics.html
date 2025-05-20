@@ -87,6 +87,10 @@ be character strings naming columns of the <code>data.frame</code>.</p>
 interfaces that rely on server-side R applications connected to secure
 databases, where users have no direct access, or for quick data
 visualisations, e.g. in statistical consulting projects.</p>
+<p>This scripted workflow is particularly well suited for interactive
+interfaces where users access data only through a graphical front end
+backed by server-side R sessions, as well as for quick data exploration
+e.g. in statistical consulting contexts.</p>
 <p>The remainder of this vignette is organised as follows:</p>
 <ul>
 <li><p>Section 2 summarises the decision logic of choosing a
@@ -725,15 +729,21 @@ labels (all green letters differ).</p>
 <h3 id="simple-linear-regression">Simple linear regression<a class="anchor" aria-label="anchor" href="#simple-linear-regression"></a>
 </h3>
 <p>If the feature <code>varfactor</code> and the response
-<code>varsample</code> are both numerical and contain only one level
-each , <code><a href="../reference/visstat.html">visstat()</a></code> performs a simple linear regression.</p>
+<code>varsample</code> are both numerical and <em>contain only one level
+each</em> , <code><a href="../reference/visstat.html">visstat()</a></code> performs a simple linear
+regression.</p>
 <p>The resulting regression plot displays the point estimation of the
 regression line</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>a</mi><mo>+</mo><mi>b</mi><mo>⋅</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">y=a +b \cdot x</annotation></semantics></math>,where</p>
-<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
-is the intercept and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>$
-its slope.</p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>a</mi><mo>+</mo><mi>b</mi><mo>⋅</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">y=a +b \cdot x</annotation></semantics></math>,
+where where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>
+is the response variable,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+is the feature variable,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+the intercept and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
+the slope pf the regression line</p>
 <p>Note that multiple linear regression is not implemented, as the main
 focus of <code><a href="../reference/visstat.html">visstat()</a></code> is on the visualisation of statistical
 tests.</p>
@@ -907,6 +917,21 @@ resulting in a smaller test statistic:
 </annotation></semantics></math></p>
 <p>This reduced test statistic yields a larger p-value, thereby lowering
 the risk of a type I error.</p>
+<!-- ## Fisher's exact test  -->
+<!-- Fisher's exact test [@Fisher:1935] is a non-parametric method that does not   -->
+<!-- rely on large-sample approximations. -->
+<!-- When any expected frequency $E_{ij}$ is below 5, `visstat()` applies   -->
+<!-- Fisher’s exact test using `fisher.test()`. The test calculates an exact   -->
+<!-- $p$-value for testing independence by conditioning on the observed margins:   -->
+<!-- the row totals $R_i = \sum_{j=1}^C O_{ij}$ and the column totals   -->
+<!-- $C_j = \sum_{i=1}^R O_{ij}$. These margins define the structure of the   -->
+<!-- contingency table and remain fixed during the test. -->
+<!-- In the $2 \times 2$ case, the $p$-value is computed from the hypergeometric   -->
+<!-- distribution by summing the probabilities of all tables with the same margins   -->
+<!-- as the observed one, whose probabilities under the null are less than or equal   -->
+<!-- to that of the observed table. -->
+<!-- For general $R \times C$ tables, `fisher.test()` generalises this approach   -->
+<!-- using the multivariate hypergeometric distribution. -->
 </div>
 <div class="section level3">
 <h3 id="fishers-exact-test">Fisher’s exact test<a class="anchor" aria-label="anchor" href="#fishers-exact-test"></a>
@@ -922,23 +947,56 @@ calculates an exact<br><math display="inline" xmlns="http://www.w3.org/1998/Math
 for testing independence by conditioning on the observed margins:<br>
 the row totals
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>i</mi></msub><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>C</mi></msubsup><msub><mi>O</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">R_i = \sum_{j=1}^C O_{ij}</annotation></semantics></math>
-and the column totals<br><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mi>j</mi></msub><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>R</mi></msubsup><msub><mi>O</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">C_j = \sum_{i=1}^R O_{ij}</annotation></semantics></math>.
-These margins define the structure of the<br>
-contingency table and remain fixed during the test.</p>
+and the column totals<br><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mi>j</mi></msub><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>R</mi></msubsup><msub><mi>O</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">C_j = \sum_{i=1}^R O_{ij}</annotation></semantics></math>,
+defining the structure of the<br>
+contingency table.</p>
 <p>In the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">2 \times 2</annotation></semantics></math>
-case, the
+case, the observed table can be written as:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="center" style="text-align: center"></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>C</mi><mn>1</mn></msub></mtd><mtd columnalign="center" style="text-align: center"><msub><mi>C</mi><mn>2</mn></msub></mtd><mtd columnalign="center" style="text-align: center"><mtext mathvariant="normal">Row sums</mtext></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>R</mi><mn>1</mn></msub></mtd><mtd columnalign="center" style="text-align: center"><mi>a</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>b</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>a</mi><mo>+</mo><mi>b</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>R</mi><mn>2</mn></msub></mtd><mtd columnalign="center" style="text-align: center"><mi>c</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>d</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>c</mi><mo>+</mo><mi>d</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mtext mathvariant="normal">Column sums</mtext></mtd><mtd columnalign="center" style="text-align: center"><mi>a</mi><mo>+</mo><mi>c</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>b</mi><mo>+</mo><mi>d</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>n</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">
+\begin{array}{c|cc|c}
+ &amp; C_1 &amp; C_2 &amp; \text{Row sums} \\\\
+\hline
+R_1 &amp; a &amp; b &amp; a + b \\\\
+R_2 &amp; c &amp; d &amp; c + d \\\\
+\hline
+\text{Column sums} &amp; a + c &amp; b + d &amp; n
+\end{array}
+</annotation></semantics></math></p>
+<p>Let
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mi>a</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>b</mi></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mi>c</mi></mtd><mtd columnalign="center" style="text-align: center"><mi>d</mi></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">
+O = \begin{bmatrix} a &amp; b \\\\ c &amp; d \end{bmatrix}
+</annotation></semantics></math> denote the above observed
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">2 \times 2</annotation></semantics></math>
+contingency table.<br>
+The exact probability of observing this table under the null hypothesis
+of<br>
+independence, given the fixed margins, is given by the his given by the
+hypergeometric probability mass function (PMF)</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ℙ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>O</mi><mo>∣</mo><msub><mi>R</mi><mn>1</mn></msub><mo>,</mo><msub><mi>R</mi><mn>2</mn></msub><mo>,</mo><msub><mi>C</mi><mn>1</mn></msub><mo>,</mo><msub><mi>C</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mrow><mi>a</mi><mo>+</mo><mi>b</mi></mrow><mi>a</mi></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mrow><mi>c</mi><mo>+</mo><mi>d</mi></mrow><mi>c</mi></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mi>n</mi><mrow><mi>a</mi><mo>+</mo><mi>c</mi></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mfrac><mo>,</mo></mrow><annotation encoding="application/x-tex">
+\mathbb{P}(O  \mid 
+R_1, R_2, C_1, C_2) = 
+\frac{\binom{a + b}{a} \binom{c + d}{c}}{\binom{n}{a + c}},
+</annotation></semantics></math></p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mi>a</mi><mo>+</mo><mi>b</mi><mo>+</mo><mi>c</mi><mo>+</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">n = a + b + c + d</annotation></semantics></math>
+is the total sample size.</p>
+<!-- Because all other cell values are determined by $a$ and the fixed margins, -->
+<!-- this is often written more simply as: -->
+<!-- $$ -->
+<!-- P(a \mid \text{margins}) = -->
+<!-- \frac{\binom{a + b}{a} \binom{c + d}{c}}{\binom{n}{a + c}}. -->
+<!-- $$ -->
+<p>The
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
-is computed from the hypergeometric<br>
-distribution by summing the probabilities of all tables with the same
-margins<br>
-as the observed one, whose probabilities under the null are less than or
-equal<br>
-to that of the observed table.</p>
+is computed by summing the probabilities of all tables<br>
+with the same margins whose probabilities under the null are less
+than<br>
+or equal to that of the observed table.</p>
 <p>For general
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>×</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">R \times C</annotation></semantics></math>
-tables, <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> generalises this approach<br>
-using the multivariate hypergeometric distribution.</p>
+tables, <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> generalises this<br>
+approach using the multivariate hypergeometric distribution.</p>
 </div>
 <div class="section level3">
 <h3 id="test-choice-and-graphical-output-1">Test choice and graphical output<a class="anchor" aria-label="anchor" href="#test-choice-and-graphical-output-1"></a>
