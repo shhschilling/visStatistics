@@ -55,7 +55,7 @@
                         <h4 data-toc-skip class="author">Sabine
 Schilling</h4>
             
-            <h4 data-toc-skip class="date">2025-05-19</h4>
+            <h4 data-toc-skip class="date">2025-05-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -89,7 +89,7 @@ databases, where users have no direct access, or for quick data
 visualisations, e.g. in statistical consulting projects.</p>
 <p>The remainder of this vignette is organised as follows:</p>
 <ul>
-<li><p>Section 2 summarises the decision logic of chosing a
+<li><p>Section 2 summarises the decision logic of choosing a
 <strong>statisti</strong>cal test, whilst</p></li>
 <li><p>Sections 3 - 5 gives background on the implemented tests and
 <strong>vis</strong>ualises the decision logic using examples,</p></li>
@@ -112,7 +112,7 @@ user-controllable argument (defaulting to <code>0.95</code>).</p>
 categorical, the number of levels in the categorical variable, the
 distribution of the data, as well as the user-defined ‘conf.level’.</p>
 <p>The function prioritizes interpretable visual output and tests that
-remain valid under the the fowlloing decision logic:</p>
+remain valid under the the following decision logic:</p>
 <div class="section level3">
 <h3 id="numerical-response-and-categorical-predictor">Numerical response and categorical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-categorical-predictor"></a>
 </h3>
@@ -171,7 +171,7 @@ factor levels, normality, and homoscedasticity.
 regression model (<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>) is fitted and analysed in detail,
 including residual diagnostics, formal tests, and the plotting of fitted
 values with confidence bands. Note that <strong>only one</strong>
-precictor variable is allowed, as the function is designed for
+predictor variable is allowed, as the function is designed for
 two-dimensional visualisation.</p>
 </div>
 <div class="section level3">
@@ -192,9 +192,6 @@ settings from the corresponding base R functions (e.g.,
 supported. Furthermore, since the main purpose of this package is to
 visualize statistical test results, only simple linear regression is
 implemented.</p>
-<p>Sections 3-5 willexplains all the details of the above described
-decision logic based on examples.</p>
-<p>.</p>
 </div>
 </div>
 <div class="section level2">
@@ -209,7 +206,8 @@ describes the conditions under which parametric and non-parametric tests
 are chosen, based on the response type, the number of factor levels, and
 the underlying distributional assumptions.</p>
 <div class="section level3">
-<h3 id="welchs-t-test-and-wilcoxon-rank-sum-test">Welch’s t-test and Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#welchs-t-test-and-wilcoxon-rank-sum-test"></a>
+<h3 id="categorical-feature-with-two-levels-welchs-t-test-and-wilcoxon-rank-sum-test">Categorical feature with two levels: Welch’s t-test and Wilcoxon
+rank sum test<a class="anchor" aria-label="anchor" href="#categorical-feature-with-two-levels-welchs-t-test-and-wilcoxon-rank-sum-test"></a>
 </h3>
 <p>When the feature variable has exactly two levels, Welch’s t-test or
 the Wilcoxon rank-sum test is applied.</p>
@@ -244,7 +242,7 @@ the sample variances, and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mn>2</mn></msub><annotation encoding="application/x-tex">n_2</annotation></semantics></math>
 the sample sizes in the two groups. The statistic follows a
 <em>t</em>-distribution with degrees of freedom approximated by the
-Welch-’Satterthwaite equation:</p>
+Welch-Satterthwaite equation:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ν</mi><mo>=</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><msubsup><mi>s</mi><mn>1</mn><mn>2</mn></msubsup><msub><mi>n</mi><mn>1</mn></msub></mfrac><mo>+</mo><mfrac><msubsup><mi>s</mi><mn>2</mn><mn>2</mn></msubsup><msub><mi>n</mi><mn>2</mn></msub></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mrow><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>s</mi><mn>1</mn><mn>2</mn></msubsup><mi>/</mi><msub><mi>n</mi><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mrow><msub><mi>n</mi><mn>1</mn></msub><mo>−</mo><mn>1</mn></mrow></mfrac><mo>+</mo><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>s</mi><mn>2</mn><mn>2</mn></msubsup><mi>/</mi><msub><mi>n</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mrow><msub><mi>n</mi><mn>2</mn></msub><mo>−</mo><mn>1</mn></mrow></mfrac></mrow></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
 \nu = \frac{
   \left( \frac{s_1^2}{n_1} + \frac{s_2^2}{n_2} \right)^2
@@ -315,7 +313,7 @@ user-specified <code>conf.level</code>.</p>
 <li><p>Second line: Null hypotheses automatically adapted based on the
 user specified <code>varsample</code> and
 <code>varfacor</code>.</p></li>
-<li><p>Third line: Test statstic, p value and automated comparison with
+<li><p>Third line: Test statistic, p value and automated comparison with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math></p></li>
 </ul>
 <p>The function returns a list containing the results of the applied
@@ -368,7 +366,8 @@ differences between the central tendencies of grades of “boys” and
 </div>
 </div>
 <div class="section level3">
-<h3 id="anova-one-way-test-and-kruskal-wallis-test">ANOVA, One-way test and Kruskal-Wallis test<a class="anchor" aria-label="anchor" href="#anova-one-way-test-and-kruskal-wallis-test"></a>
+<h3 id="categorical-feature-with-more-than-two-levels-anova-one-way-test-and-kruskal-wallis-test">Categorical feature with more than two levels: ANOVA, One-way test
+and Kruskal-Wallis test<a class="anchor" aria-label="anchor" href="#categorical-feature-with-more-than-two-levels-anova-one-way-test-and-kruskal-wallis-test"></a>
 </h3>
 <p>If the feature is of <code>class</code> “<code>factor</code>” with
 <strong>more than two levels</strong> and the response is of
@@ -377,12 +376,12 @@ either performs an analysis of variance (<code><a href="https://rdrr.io/r/stats/
 test (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) or, as a non-parametric alternative,
 the Kruskal-W allis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>).</p>
 <p>In the remainder of this section we will briefly introduce the tests,
-explain the the test choice and demonstrate how the assumptions are
-tested. and illustrate each tests by an example.</p>
-<h5 id="anova-one-way-test-and-kruskal-wallis-test-1">
-Analysis of Variance (ANOVA)
-<a class="anchor" aria-label="anchor" href="#anova-one-way-test-and-kruskal-wallis-test-1"></a>
-</h5>
+explain the the test choice, demonstrate how the assumptions are tested
+and illustrate each tests by an example.</p>
+<!-- <h4> Analysis of Variance (ANOVA) </h4> -->
+<div class="section level4">
+<h4 id="analysis-of-variance-anova">Analysis of Variance (ANOVA)<a class="anchor" aria-label="anchor" href="#analysis-of-variance-anova"></a>
+</h4>
 <p>The analysis of variance (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) tests the null
 hypothesis that the means<br>
 of multiple groups are equal. It assumes independent observations,
@@ -421,21 +420,21 @@ parameters for degrees of freedom: the numerator
 and the denominator<br>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>−</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">N - k</annotation></semantics></math>).
 The resulting <em>p</em>-value is computed from this distribution.</p>
-<h5 id="anova-one-way-test-and-kruskal-wallis-test-2">
-Welch’s One-Way test
-<a class="anchor" aria-label="anchor" href="#anova-one-way-test-and-kruskal-wallis-test-2"></a>
-</h5>
+</div>
+<div class="section level4">
+<h4 id="welchs-one-way-test">Welch’s One-Way test<a class="anchor" aria-label="anchor" href="#welchs-one-way-test"></a>
+</h4>
 <p>When the assumptions of homoscedasticity is not met, but the
 assumptions of independent observations and normally distributed
-residuals are ,et. Welch’s One-Way test <span class="citation">(Welch
+residuals are met. Welch’s One-Way test <span class="citation">(Welch
 1951)</span> provides an alternative to `aov()’. It compares group means
 using weights based on sample sizes and variances <span class="citation">(Welch 1951)</span>. The degrees of freedom are
 adjusted using a Satterthwaite-type approximation <span class="citation">(Satterthwaite 1946)</span>, resulting in an
 F-statistic with non-integer degrees of freedom.</p>
-<h5 id="anova-one-way-test-and-kruskal-wallis-test-3">
-Kruskal–Wallis Test
-<a class="anchor" aria-label="anchor" href="#anova-one-way-test-and-kruskal-wallis-test-3"></a>
-</h5>
+</div>
+<div class="section level4">
+<h4 id="kruskalwallis-test">Kruskal–Wallis Test<a class="anchor" aria-label="anchor" href="#kruskalwallis-test"></a>
+</h4>
 <p>When both the assumptions of normality and homoscedasticity are not
 met,<br><code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> provides a non-parametric alternative. It
 compares<br>
@@ -450,7 +449,7 @@ H = \frac{12}{N(N+1)} \sum_{i=1}^{k} n_i \left(\bar{R}_i - \bar{R} \right)^2,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mi>i</mi></msub><annotation encoding="application/x-tex">n_i</annotation></semantics></math>
 is the sample size in group
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>,<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
-is the number of groups.
+is the number of groups,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>R</mi><mo accent="true">‾</mo></mover><mi>i</mi></msub><annotation encoding="application/x-tex">\bar{R}_i</annotation></semantics></math>
 is the average rank of group
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>,
@@ -466,14 +465,16 @@ a
 distribution with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k - 1</annotation></semantics></math>
 degrees of freedom.</p>
+</div>
 <div class="section level4">
 <h4 id="test-choice">Test choice<a class="anchor" aria-label="anchor" href="#test-choice"></a>
 </h4>
-<p>From the above assumptions for the different tests, follows directly
-the test logic: <code><a href="../reference/visstat.html">visstat()</a></code> initially attempts an analysis of
-variance (ANOVA) as implemented in <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>. ANOVA is
-performed only if <strong>both</strong> of the following null hypotheses
-cannot be rejected at the specified <code>conf.level</code>:</p>
+<p>From above assumptions for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) and
+<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>, follows directly the test logic:
+<code><a href="../reference/visstat.html">visstat()</a></code> initially attempts an analysis of variance
+(ANOVA) as implemented in <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>. It is performed only if
+<strong>both</strong> of the following null hypotheses cannot be
+rejected at the specified <code>conf.level</code>:</p>
 <ol style="list-style-type: decimal">
 <li>The standardized residuals follow a normal distribution, and<br>
 </li>
@@ -482,8 +483,9 @@ groups).</li>
 </ol>
 <p>If only the assumption of normality is satisfied,
 <code><a href="../reference/visstat.html">visstat()</a></code> applies Welch’s one-way test
-(<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>). If the normality assumption is violated, a
-Kruskal-W allis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is used instead.</p>
+(<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>).</p>
+<p>If the normality assumption is violated, a Kruskal-W allis test
+(<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is used instead.</p>
 <p>These assumptions are tested internally using the
 <code>visAnovaAssumptions()</code> function.</p>
 </div>
@@ -858,7 +860,7 @@ r_{ij} = \frac{O_{ij} - E_{ij}}{\sqrt{E_{ij}}}, \quad i = 1, \ldots, R,\quad
 j = 1, \ldots, C.
 </annotation></semantics></math> Positive residuals (shaded in blue)
 indicate observed counts greater than expected, while negative values
-suggest underrepresentation (shaded in red). Colour shading thus
+suggest under-representation (shaded in red). Colour shading thus
 highlights which combinations of categorical levels contribute most to
 the overall association.</p>
 </div>
@@ -954,12 +956,12 @@ expected count is zero - the function uses Pearson’s
 <p>For all tests of independence <code><a href="../reference/visstat.html">visstat()</a></code> displays a
 grouped column plot that includes the respective test’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
-in the title, as well as a mosaic plot showing color-coded Pearson
+in the title, as well as a mosaic plot showing colour-coded Pearson
 residuals and the p-value of Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>-test.</p>
 </div>
 <div class="section level3">
-<h3 id="transforming-a-contingency-table-to-data-frame">Transforming a contingency table to data frame<a class="anchor" aria-label="anchor" href="#transforming-a-contingency-table-to-data-frame"></a>
+<h3 id="transforming-a-contingency-table-to-a-data-frame">Transforming a contingency table to a data frame<a class="anchor" aria-label="anchor" href="#transforming-a-contingency-table-to-a-data-frame"></a>
 </h3>
 <p>The following examples for tests of categorical feature and response
 are all based on the <code>HairEyeColor</code> contingency table.</p>
@@ -967,9 +969,9 @@ are all based on the <code>HairEyeColor</code> contingency table.</p>
 <code>data.frame</code> using the helper function
 <code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code>. The function transforms the contingency
 table <code>HairEyeColor</code> into <code>data.frame</code> named
-<code>HairEyeColorDataFrame</code>.</p>
+<code>HairEyeColourDataFrame</code>.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">HairEyeColorDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">HairEyeColourDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="examples-3">Examples<a class="anchor" aria-label="anchor" href="#examples-3"></a>
@@ -982,8 +984,8 @@ each other.</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test-1"></a>
 </h4>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hair_eye_color_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_color_df</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">hair_eye_colour_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_colour_df</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-13-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-13-2.png" width="100%"></p>
 <p>The graphical output shows that the null hypothesis of Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
@@ -1017,7 +1019,7 @@ independence of the hair colors “brown” and “black” from the eye colours
 black hair are under-represented. Note the higher p-value of Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test
 with Yate’s continuity correction (p=0.00354) compared to the p-value of
-Perasons
+Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test
 (p=00229)shown in the mosaic plot.</p>
 </div>
@@ -1036,9 +1038,9 @@ greater <span class="citation">(Cochran 1954)</span>.</p>
 <p>Therefore, <code><a href="../reference/visstat.html">visstat()</a></code> automatically selects Fisher’s
 exact test instead.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hair_eye_color_male</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
+<code class="sourceCode R"><span><span class="va">hair_eye_colour_male</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co"># Slice out a 2 by 2 contingency table</span></span>
-<span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="va">hair_eye_color_male</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
+<span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="va">hair_eye_colour_male</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
 <span><span class="co"># Transform to data frame</span></span>
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Fisher test</span></span>
@@ -1128,9 +1130,9 @@ based on Cochran’s rule)</li>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-Cochran:1954" class="csl-entry">
-Cochran, William G. 1954. <span>“The Combination of Estimates from
-Different Experiments.”</span> <em>Scandinavian Journal of
-Statistics</em> 10 (1): 101–20. <a href="https://doi.org/10.2307/3001666" class="external-link">https://doi.org/10.2307/3001666</a>.
+Cochran, William G. 1954. <span>“The <span>Combination</span> of
+<span>Estimates</span> from <span>Different Experiments</span>.”</span>
+<em>Biometrics</em> 10 (1): 101. <a href="https://doi.org/10.2307/3001666" class="external-link">https://doi.org/10.2307/3001666</a>.
 </div>
 <div id="ref-Delacre:2017" class="csl-entry">
 Delacre, Marie, Daniël Lakens, and Christophe Leys. 2017. <span>“Why
