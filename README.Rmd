@@ -117,15 +117,16 @@ Throughout the remainder, data of class `"numeric"` or `"integer"` are referred 
 
 
 (1) When the response is numerical and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.
-- If the categorical predictor has exactly two levels, Welch's t- test (`t.test()`), is applied whenever both groups contain more than 30 observations, with the validity of the test supported by the approximate normality of the sampling distribution of the mean under the central limit theorem
+- If the categorical predictor has exactly two levels, Welch's t-test (`t.test()`) is applied whenever both groups contain more than 30 observations, with the validity of the test supported by the approximate normality of the sampling distribution of the mean under the central limit theorem
 [@Rasch:2011, @Lumley:2002]. For smaller samples, group - wise normality is assessed using the Shapiro -
-Wilk test (`shapiro.test()`) at the significance level$\alpha$. If both groups are found to be approximately normally distributed according to the Shapiro -
+Wilk test (`shapiro.test()`) at the significance level $\alpha$. If both groups are found to be approximately normally distributed according to the Shapiro -
 Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank-sum test (`wilcox.test()`) is used.
 
-- For predictors with more than two levels, an ANOVA model (`aov()`) is initially fitted. The normality of residuals is evaluated using both the Shapiro-Wilk test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.
-If this condition is met, Bartlett's test (`bartlett.test()`) is then used to assess homoscedasticity. When variances are homogeneous ($p > \alpha$), ANOVA is applied with Tukey's HSD (`TukeyHSD()`) for post-hoc comparison. If variances differ significantly ($p \le \alpha$), Welch's one -
-way test (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal-Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
-A graphical overview of the decision logic used is provided in below figure.
+- For predictors with more than two levels, a model of Fisher's one-way analysis of variables (ANOVA) (`aov()`) is initially fitted. The normality of residuals is evaluated using both the Shapiro-Wilk test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.
+If this condition is met, Bartlett's test (`bartlett.test()`) is then used to assess homoscedasticity. When variances are homogeneous ($p > \alpha$), Fisher's one-way ANOVA (`aov()`) is applied with Tukey's Honestly Significant Differences (HSD) (`TukeyHSD()`) for post-hoc comparison. If variances differ significantly ($p \le \alpha$), Welch's heteroscedastic one-way ANOVA (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal-Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
+A graphical overview of the decision logic used is provided in the figure below.
+
+
 
 <div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: left;">
 
@@ -139,6 +140,7 @@ and homoscedasticity.
 </p>
 
 </div>
+
 
 
 
@@ -172,7 +174,7 @@ central tendencies are selected.
 
 ### Welch two sample t-test
 
-#### InsectSprays data set
+#### InsectSprays dataset
 
 ```{r insect-sprays-data, eval = TRUE}
 insect_sprays_a_b <-
@@ -182,7 +184,7 @@ insect_sprays_a_b$spray <- factor(insect_sprays_a_b$spray)
 visstat(insect_sprays_a_b, "count", "spray")
 ```
 
-#### mtcars data set
+#### mtcars dataset
 
 ```{r mtcars-data}
 mtcars$am <- as.factor(mtcars$am)
@@ -254,7 +256,7 @@ linreg_cars_99 <- visstat(cars, "dist", "speed", conf.level = 0.99)
 
 ### Pearson's Chi-squared test
 
-Count data sets are often presented as multidimensional arrays, so - called contingency tables, whereas `visstat()` requires a
+Count datasets are often presented as multidimensional arrays, so - called contingency tables, whereas `visstat()` requires a
 `data.frame` with a column structure. Arrays can be transformed to this
 column wise structure with the helper function `counts_to_cases()`:
 ```{r chihair-data}
