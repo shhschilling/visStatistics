@@ -149,7 +149,7 @@ When both the response and predictor are numerical, a simple linear regression m
 
 <!-- (3) Categorical response and categorical predictor -->
 (3)
-In the case of two categorical variables, `visstat()` tests the null hypothesis that the predictor and response variables are independent using either `chisq.test()` or `fisher.test()`. The choice of test is based on Cochran's rule [@Cochran:1954], which advises that the$\chi^2$approximation is reliable only if no expected cell count is zero and no more than 20 percent of cells have expected counts below 5.
+In the case of two categorical variables, `visstat()` tests the null hypothesis that the predictor and response variables are independent using either Pearson’s \( \chi^2 \)-test (`chisq.test()`) or Fisher's exact test (`fisher.test()`). The choice of test is based on Cochran's rule [@Cochran:1954], which advises that the $\chi^2$approximation is reliable only if no expected cell count is less than 1 and no more than 20 percent of cells have expected counts below 5.
 
 Note: Except for the user - adjustable `conf.level` parameter, all statistical tests are applied using their default settings from the corresponding base R functions (e.g., `t.test()`). As a consequence, paired tests are not currently supported. Furthermore, since the main purpose of this package is to visualize statistical test results, only simple linear regression is implemented.
 For a more detailed description of the underlying decision logic see
