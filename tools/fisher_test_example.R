@@ -81,3 +81,4 @@ p_val
 # Compare again with fisher.test on the same matrix
 mat <- matrix(c(8, 2, 1, 5), nrow = 2, byrow = TRUE)
 fisher.test(mat, alternative = "two.sided")$p.value
+
