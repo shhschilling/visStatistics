@@ -258,6 +258,8 @@ two_sample_t_test <- function(samples,
       p_value, ", p ", comparepvalue, "alpha",
       sep = ""
     )
+  
+  
 
 
 
@@ -409,7 +411,7 @@ two_sample_wilcoxon_test <- function(samples,
   two_sample_title <-
     paste(
       t$method, ", alpha = ", 1 - conf.level,
-      "\n Null hypothesis: ",
+      "\n Null hypoth.: ",
       mean_or_median, " ",
       samplename,
       " of ",
