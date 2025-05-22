@@ -1,4 +1,10 @@
-# visStatistics 0.1.2
+# visStatistics 0.1.4
+
+## News
+
+Extended vignette: All implemented tests explained. 
+
+# visStatistics 0.1.3
 
 ## News
 
