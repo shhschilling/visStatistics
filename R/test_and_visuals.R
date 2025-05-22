@@ -705,7 +705,7 @@ vis_anova <- function(samples,
   an <- aov(samples ~ fact)
   summaryAnova <- summary(an)
   oneway <- oneway.test(samples ~ fact)
-  # check for homogenity
+  # check for homogeneity
   bartlett_test <- bartlett.test(samples ~ fact)
   p_bart <- bartlett_test$p.value
 
