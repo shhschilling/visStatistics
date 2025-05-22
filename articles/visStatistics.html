@@ -55,7 +55,7 @@
                         <h4 data-toc-skip class="author">Sabine
 Schilling</h4>
             
-            <h4 data-toc-skip class="date">2025-05-21</h4>
+            <h4 data-toc-skip class="date">2025-05-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -144,7 +144,7 @@ normal if at least one of the two tests yields a result exceeding the
 significance threshold
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.
 If this condition is met, Bartlett’s test (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>)
-asseses homoscedasticity. When variances are homogeneous
+assesses homoscedasticity. When variances are homogeneous
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>&gt;</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">p &gt; \alpha</annotation></semantics></math>),
 Fisher’s one-way ANOVA (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) is applied with Tukey’s
 Honestly Significant Differences (HSD) (<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>) for
@@ -191,13 +191,20 @@ the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>approximation
 is reliable only if no expected cell count is less than 1 and no more
 than 20 percent of cells have expected counts below 5.</p>
-<p>Note: Except for the user-adjustable <code>conf.level</code>
-parameter, all statistical tests are applied using their default
-settings from the corresponding base R functions (e.g.,
-<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>). As a consequence, paired tests are not currently
-supported. Furthermore, since the main purpose of this package is to
-visualize statistical test results, only simple linear regression is
-implemented.</p>
+</div>
+<div class="section level3">
+<h3 id="limitations">Limitations<a class="anchor" aria-label="anchor" href="#limitations"></a>
+</h3>
+<p>The main purpose of this package is a decision-logic based automatic
+visualisation of statistical test results. Therefore, except for the
+user-adjustable <code>conf.level</code> parameter, all statistical tests
+are applied using their default settings from the corresponding base R
+functions. As a consequence, paired tests are currently not supported
+and <code><a href="../reference/visstat.html">visstat()</a></code> does not allow to study interactions terms
+between the different levels of an independent variable in an analysis
+of variance. Focusing on the graphical representation of tests, only
+simple linear regression is implemented, as multiple linear regressions
+cannot be visualised.</p>
 </div>
 </div>
 <div class="section level2">
@@ -372,7 +379,7 @@ central tendencies of grades of “boys” and “girls” in a class:</p>
 <strong>more than two levels</strong> and the response is of
 <code>mode</code> “<code>numerical</code>”, <code><a href="../reference/visstat.html">visstat()</a></code>
 either performs Fisher’s one-way ANOVA <span class="citation">(Fisher
-1935)</span> (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>), Welch’s heteroscedastic one-way ANOVA
+1971)</span> (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>), Welch’s heteroscedastic one-way ANOVA
 <span class="citation">(Welch 1951)</span> (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>)
 or, as a non-parametric alternative, the Kruskal–Wallis test <span class="citation">(Kruskal and Wallis 1952)</span>
 (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>).</p>
@@ -470,23 +477,23 @@ degrees of freedom.</p>
 <div class="section level4">
 <h4 id="test-choice">Test choice<a class="anchor" aria-label="anchor" href="#test-choice"></a>
 </h4>
-<p>From above test assumptions for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> and
-<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> follows the test logic:
-<code><a href="../reference/visstat.html">visstat()</a></code> initially models<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> and analysis
-its residuals: If both - the standardised residuals follow a normal
-distribution, and - the residuals exhibit homoscedasticity (equal
-variances across groups), then the test statistic of Fisher’s one=way
-ANOVA are returned. If only the assumption of normality is satisfied,
-<code><a href="../reference/visstat.html">visstat()</a></code> applies Welch’s heteroscedastic one-way test
-(<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>). If the normality assumption is violated,
-the Kruskal–Wallis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is used
-instead.</p>
-<p>These assumptions are tested using the
-<code>visAnovaAssumptions()</code> function.</p>
 </div>
 <div class="section level4">
 <h4 id="testing-the-assumptions-visanovaassumptions">Testing the assumptions (<code>visAnovaAssumptions()</code>)<a class="anchor" aria-label="anchor" href="#testing-the-assumptions-visanovaassumptions"></a>
 </h4>
+<p>The test logic for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> and <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>
+follows from their respective assumptions. <code><a href="../reference/visstat.html">visstat()</a></code>
+initially models the data using <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> and analyses the
+residuals.</p>
+<p>If both of the following conditions are met: (1) the standardised
+residuals follow a normal distribution, and (2) the residuals exhibit
+homoscedasticity (equal variances across groups), then the test
+statistic from <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> is returned.</p>
+<p>If only the normality assumption is satisfied, <code><a href="../reference/visstat.html">visstat()</a></code>
+applies <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>. If the normality assumption is
+violated, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> is used instead.</p>
+<p>These assumptions are tested using the
+<code>visAnovaAssumptions()</code> function.</p>
 <div class="section level5">
 <h5 id="normality-of-residuals-shapiro-test-and-ad-test">Normality of residuals (<code>shapiro.test()</code> and
 <code>ad.test()</code>)<a class="anchor" aria-label="anchor" href="#normality-of-residuals-shapiro-test-and-ad-test"></a>
@@ -502,8 +509,7 @@ the two tests yields a p-value greater than
 <ul>
 <li>a scatter plot of the standardised residuals against the fitted
 means of the linear model for each level of the feature
-(<code>varfactor</code>), and<br>
-</li>
+(<code>varfactor</code>), and</li>
 <li>a Q–Q plot of the standardised residuals.</li>
 </ul>
 </div>
@@ -516,86 +522,119 @@ While <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov
 <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> does not require the variances to be
 equal.</p>
 <p>Homoscedasticity is assessed using Bartlett’s test
-(<code>bartlett.test()\</code>), which tests the null hypothesis that
-the variances across all levels of the grouping variable are equal.</p>
+(<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>), which tests the null hypothesis that the
+variances across all levels of the grouping variable are equal.</p>
 </div>
 </div>
 <div class="section level4">
-<h4 id="post-hoc-analysis">Post-hoc analysis<a class="anchor" aria-label="anchor" href="#post-hoc-analysis"></a>
+<h4 id="controlling-the-family-wise-error-rate">Controlling the family-wise error rate<a class="anchor" aria-label="anchor" href="#controlling-the-family-wise-error-rate"></a>
 </h4>
-<p>After a significant test result we would like to identify which
-specific groups or means are significantly different from each other.
-But simple pairwise comparisons of group means or medians following an
-ANOVA or Kruskal–Wallis test increase the probability of incorrectly
-declaring a significant difference when, in fact, there is none. This
-inflation of error is quantified by the family-wise error rate, which
-refers to the probability of making at least one Type I error, that is,
-falsely rejecting the null hypothesis across all pairwise comparisons.
-Post-hoc tests controls the probability of a Type I error.</p>
+<p>After a significant test result, we would like to identify which
+specific groups differ significantly from each other. However, simple
+pairwise comparisons of group means or medians following an ANOVA or
+Kruskal–Wallis test increase the probability of incorrectly declaring a
+significant difference when, in fact, there is none.</p>
+<p>This error is quantified by the family-wise error rate
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mrow><mi>P</mi><mi>F</mi></mrow></msub><annotation encoding="application/x-tex">\alpha_{PF}</annotation></semantics></math>
+(pronounced “alpha per family of tests”), which refers to the
+probability of making at least one Type I error, that is, falsely
+rejecting the null hypothesis across all pairwise comparisons.</p>
+<p>Given
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+levels of the categorical variable, there are</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mfrac><mrow><mi>n</mi><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">
+M = \frac{n \cdot (n - 1)}{2}
+</annotation></semantics></math></p>
+<p>pairwise comparisons possible, defining a <em>family of tests</em>
+<span class="citation">(Abdi 2007)</span>.</p>
 <div class="section level5">
-<h5 class="unnumbered" id="following-the-anova-tukeyhsd-and-sidak-corrected-confidence-intervals">Following the ANOVA: <code>TukeyHSD()</code> and
-Sidak-corrected confidence intervals<a class="anchor" aria-label="anchor" href="#following-the-anova-tukeyhsd-and-sidak-corrected-confidence-intervals"></a>
+<h5 class="unnumbered" id="šidák-correction">Šidák correction<a class="anchor" aria-label="anchor" href="#%C5%A1id%C3%A1k-correction"></a>
 </h5>
-<p>Following <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> or <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> , the
-<code><a href="../reference/visstat.html">visstat()</a></code> function controls the probability of a Type I
-error by applying Tukey’s Honestly Significant Differences procedure, as
-implemented in <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>: It assses all pairwise
-differences between factor level means, using a critical value derived
-from the studentised range distribution.</p>
-<p>Based on the specified confidence level (<code>conf.level</code>), it
-constructs confidence intervals for all pairwise differences between
-factor level means. A significant difference between two means is
-indicated when the corresponding confidence interval does not include
-zero. <code><a href="../reference/visstat.html">visstat()</a></code> returns both the HSD-adjusted p-values and
-the associated confidence intervals for all pairwise comparisons.</p>
-<p>In the graphical output, green letters displayed below each group
-summarize the results of the Tukey HSD post-hoc test: Two groups are
-considered significantly different if they are assigned different
-letters, indicating a Tukey HSD-adjusted p-value smaller than
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.</p>
+<p>If
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">\alpha_{PT}</annotation></semantics></math>
+(pronounced “alpha per test”) is the probability of making a Type I
+error in one comparison, then
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub></mrow><annotation encoding="application/x-tex">1 - \alpha_{PT}</annotation></semantics></math>
+is the probability of not making a Type I error in one comparison.</p>
+<p>If all
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>M</mi><annotation encoding="application/x-tex">M</annotation></semantics></math>
+comparisons are <strong>independent</strong> of each other, the
+probability of making no Type I error across the entire family of
+pairwise comparisons is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>M</mi></msup><annotation encoding="application/x-tex">(1 - \alpha_{PT})^M</annotation></semantics></math>.
+The family-wise error rate is then given by its complement <span class="citation">(Abdi 2007)</span>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mrow><mi>P</mi><mi>F</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>−</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>M</mi></msup><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\alpha_{PF} = 1 - (1 - \alpha_{PT})^M.
+</annotation></semantics></math></p>
+<p>Let us illustrate the inflation of the family-wise error rate with
+increasing group number
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+(equal to the number of <code>levels</code> in the categorical
+variable)) by the following examples: With
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><mo>=</mo><mn>0.05</mn></mrow><annotation encoding="application/x-tex">\alpha_{PT}=0.05</annotation></semantics></math>
+comparing
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">n=3</annotation></semantics></math>
+groups results in a family-wise error rate of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mrow><mi>P</mi><mi>F</mi></mrow></msub><mo>≈</mo><mn>14</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\alpha_{PF} \approx 14\%</annotation></semantics></math>,
+whereas comparing
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">n=6</annotation></semantics></math>
+groups (as in the examples below) already leads to the probability of at
+least one time falsely rejecting the null hypothesis of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mrow><mi>P</mi><mi>F</mi></mrow></msub><mo>≈</mo><mn>54</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\alpha_{PF} \approx 54\%</annotation></semantics></math>.</p>
+<p>Solving the last equation defining
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mrow><mi>P</mi><mi>F</mi></mrow></msub><annotation encoding="application/x-tex">\alpha_{PF}</annotation></semantics></math>
+for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">\alpha_{PT}</annotation></semantics></math>
+yields the Šidák equation <span class="citation">(Šidák
+1967)</span>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>−</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>α</mi><mrow><mi>P</mi><mi>F</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mn>1</mn><mi>/</mi><mi>M</mi></mrow></msup><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\alpha_{PT}=1-(1-{\alpha_{PF}})^{1/M}.
+</annotation></semantics></math> This shows that, in order to achieve a
+given family-wise error rate, the corresponding per-test significance
+level must be reduced when there are more than two groups.
+<!-- ###### Šidák  correction in `visstat()` {.unnumbered} --></p>
+<p><code><a href="../reference/visstat.html">visstat()</a></code> sets
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mrow><mi>P</mi><mi>F</mi></mrow></msub><annotation encoding="application/x-tex">\alpha_{PF}</annotation></semantics></math>
+to the user-defined
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">\alpha = 1 -</annotation></semantics></math><code>conf.level</code>, resulting in</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>−</mo><msup><mtext mathvariant="monospace">𝚌𝚘𝚗𝚏.𝚕𝚎𝚟𝚎𝚕</mtext><mrow><mn>1</mn><mi>/</mi><mi>M</mi></mrow></msup><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\alpha_{PT} = 1 - \texttt{conf.level}^{1 / M}.
+</annotation></semantics></math></p>
+<p>The Šidák approach becomes very conservative when the number of
+comparisons is large or when the tests are not independent.</p>
 </div>
 <div class="section level5">
-<h5 class="unnumbered" id="following-the-kruskalwallis-rank-sum-test-pairwise-wilcox-test">Following the Kruskal–Wallis rank sum test:
-<code>pairwise.wilcox.test()</code><a class="anchor" aria-label="anchor" href="#following-the-kruskalwallis-rank-sum-test-pairwise-wilcox-test"></a>
+<h5 id="post-hoc-test-following-following-an-anova-tukeyhsd">Post-hoc-test following following an ANOVA: <code class="unnumbered">TukeyHSD()</code><a class="anchor" aria-label="anchor" href="#post-hoc-test-following-following-an-anova-tukeyhsd"></a>
+</h5>
+<p>The Šidák correction adjusts the significance level to control the
+family-wise error rate for any set of independent comparisons, while
+Tukey’s Honestly Significant Differences (<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>)
+procedure applies this control specifically to all pairwise mean
+comparisons after an ANOVA (either <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> or
+<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>), using a critical value derived from the
+studentised range distribution.</p>
+<p>Based on the user-specified confidence level
+(<code>conf.level</code>), confidence intervals are constructed for all
+pairwise differences between factor level means. A significant
+difference between two means is indicated when the corresponding
+confidence interval does not include zero. <code><a href="../reference/visstat.html">visstat()</a></code>
+returns both the HSD-adjusted p-values and the associated confidence
+intervals for all pairwise comparisons.</p>
+</div>
+<div class="section level5">
+<h5 class="unnumbered" id="post-hoc-test-following-the-kruskalwallis-rank-sum-test-pairwise-wilcox-test">Post-hoc-test following the Kruskal–Wallis rank
+sum test: <code>pairwise.wilcox.test()</code><a class="anchor" aria-label="anchor" href="#post-hoc-test-following-the-kruskalwallis-rank-sum-test-pairwise-wilcox-test"></a>
 </h5>
 <!-- If the p-value from the Shapiro--Wilk test (`shapiro.test()`) applied to the standardised residuals is smaller than the significance level $\alpha$, `visstat()` selects as non-parametric alternative: the Kruskal--Wallis rank sum test. -->
 <p>As a post-hoc analysis following the Kruskal–Wallis test,
 <code><a href="../reference/visstat.html">visstat()</a></code> applies the pairwise Wilcoxon rank sum test using
-<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>, with Holm’s method as the default
-adjustment for multiple comparisons <span class="citation">(Holm
-1979)</span>.</p>
-<p>If the Holm-adjusted p-value for a given pair of groups is smaller
-than the significance level
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>,
-the green letters displayed below the corresponding box plots will
-differ. Otherwise, the groups are considered not significantly
-different.</p>
-</div>
-</div>
-<div class="section level4">
-<h4 id="sidak-corrected-confidence-intervals">Sidak corrected confidence intervals<a class="anchor" aria-label="anchor" href="#sidak-corrected-confidence-intervals"></a>
-</h4>
-<p>Tukey’s HSD procedure is based on pairwise comparisons, the Sidak
-procedure, on the other hand, addresses the problems of a type I error
-by lowering the acceptable probability of a type I error for each
-comparison of the levels of the independent, categorical variable.</p>
-<p>The Sidak-corrected acceptable probability of error per test <span class="citation">(Šidák 1967)</span> is defined as $_{Sidak}=<span class="math inline">$1-`conf.int`$</span>)^{1/M}$, where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mfrac><mrow><mi>n</mi><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">M=\frac{n\cdot (n-1)}{2}</annotation></semantics></math>
-is the number of pairwise comparisons of the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-levels of the categorical variable <span class="citation">(Abdi
-2006)</span></p>
-<p>In the graphical display, <code><a href="../reference/visstat.html">visstat()</a></code> displays both the
-<code>conf.level</code>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⋅</mo><mspace width="0.278em"></mspace><mn>100</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\cdot\; 100 \%</annotation></semantics></math>-confidence
-intervals alongside the larger, Sidak-corrected
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>α</mi><mrow><mi>S</mi><mi>i</mi><mi>d</mi><mi>a</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mn>100</mn><mspace width="0.278em"></mspace><mi>%</mi></mrow><annotation encoding="application/x-tex">(1-\alpha_{Sidak})\cdot 100\;\%</annotation></semantics></math>-confidence
-intervals.</p>
-<p>Note that the current structure of <code><a href="../reference/visstat.html">visstat()</a></code> does not
-allow the study of interactions between the different levels of an
-independent variable.</p>
-<div class="section level5">
-<h5 class="unnumbered" id="section"></h5>
+<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> with Holm’s method <span class="citation">(Holm 1979)</span> as the default adjustment for
+multiple comparisons. Holm’s procedure is also much less stringent than
+the Šidák method.</p>
+<!-- #### Post-hoc test visualisation -->
+<!-- In the graphical output, green letters displayed below each group summarise the results of the relevant post-hoc test:  Two groups are considered significantly different if they are assigned different letters, indicating a Tukey HSD-adjusted or Holm's-adjusted pairwise Wilcoxon rank sum test are  -->
+<!--  p-value smaller than $\alpha$. -->
+<!-- If the Holm-adjusted p-value for a given pair of groups is smaller than the significance level $\alpha$, the green letters displayed below the corresponding box plots will differ. Otherwise, the groups are considered not significantly different. -->
 <!-- ### Graphical output -->
 <!-- ####  {.unnumbered} -->
 <!-- Depending on the p-value returned by `bartlett.test()`, the corresponding test is selected and its p-value is displayed in the figure title: -->
@@ -604,26 +643,65 @@ independent variable.</p>
 </div>
 </div>
 <div class="section level4">
+<h4 id="graphical-output-1">Graphical output<a class="anchor" aria-label="anchor" href="#graphical-output-1"></a>
+</h4>
+<p>The graphical output for all tests based on a numerical response and
+a categorical feature with more than two levels consists of two panels:
+the first focuses on the residual analysis, and the second on the actual
+test chosen by the decision logic.</p>
+<p>The residual panel addresses the assumption of normality, both
+graphically and through formal tests. It displays a scatter plot of the
+standardised residuals versus the fitted mean values, as well as a
+normal Q–Q plot comparing the sample quantiles to the theoretical
+quantiles. If the residuals are normally distributed, no more than
+approximately
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">5\%</annotation></semantics></math>
+of the standardised residuals should exceed
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">|</mo><mn>2</mn><mo stretchy="true" form="postfix">|</mo></mrow><annotation encoding="application/x-tex">|2|</annotation></semantics></math>
+and in the Q–Q plot the data points should approximately follow the red
+straight line.</p>
+<p>To assume normality of residuals, the formal tests for normality
+(Shapiro–Wilk and Anderson–Darling) should result in p-values greater
+than the user-defined
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.</p>
+<p>To assume homogeneity of variances, Bartlett’s test (shown in the
+first line of the panel title) should also result in a p-value greater
+than
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.</p>
+<p><code><a href="../reference/visstat.html">visstat()</a></code> then illustrates, in the subsequent graph,
+either the <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>, the <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>,
+or <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> result (see Section “Decision logic”).</p>
+<p>If neither normality of the residuals nor homogeneity of variances is
+given, the <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> is executed. The result is
+illustrated using box plots alongside jittered data points, with the
+title displaying the p-value from <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>.</p>
+<p>Above each box plot, the number of observations per level is shown.
+Different green letters below a pair of box plots indicate that the two
+groups are considered significantly different, based on Holm’s-adjusted
+pairwise Wilcoxon rank sum test p-values smaller than
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.</p>
+<p>If normality of the residuals can be assumed, a parametric test is
+chosen: either <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>, if homoscedasticity is also assumed,
+or <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> otherwise. <code><a href="../reference/visstat.html">visstat()</a></code> displays
+the name of the test and the corresponding
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
+in the title.</p>
+<p>The graph shows both the <code>conf.level</code>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⋅</mo><mspace width="0.167em"></mspace><mn>100</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\cdot\,100\%</annotation></semantics></math>
+confidence intervals and the wider Šidák-corrected
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mn>100</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">(1 - \alpha_{PT}) \cdot 100\%</annotation></semantics></math>
+confidence intervals, alongside jittered data points for each group.</p>
+<p>Different green letters below a pair of confidence intervals indicate
+that the two groups are considered significantly different, based on the
+results of the <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> procedure.</p>
+<p>The function returns a list containing the relevant test statistic
+along with the post-hoc-adjusted
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values
+for all pairwise comparisons.</p>
+</div>
+<div class="section level4">
 <h4 id="examples-1">Examples<a class="anchor" aria-label="anchor" href="#examples-1"></a>
 </h4>
-<div class="section level5">
-<h5 id="structure-of-the-graphical-output">Structure of the graphical output<a class="anchor" aria-label="anchor" href="#structure-of-the-graphical-output"></a>
-</h5>
-<p>Both: residual analysis</p>
-<p>Only aov and oneway</p>
-<p>In the graphical display, <code><a href="../reference/visstat.html">visstat()</a></code> displays both the
-<code>conf.level</code>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⋅</mo><mspace width="0.278em"></mspace><mn>100</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\cdot\; 100 \%</annotation></semantics></math>-confidence
-intervals alongside the larger, Sidak-corrected
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>α</mi><mrow><mi>S</mi><mi>i</mi><mi>d</mi><mi>a</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mn>100</mn><mspace width="0.278em"></mspace><mi>%</mi></mrow><annotation encoding="application/x-tex">(1-\alpha_{Sidak})\cdot 100\;\%</annotation></semantics></math>-confidence
-intervals.</p>
-<p>Kruskal Wallis Apart from the multiple comparison adjustment, the
-graphical representation of the Kruskal–Wallis result is similar to that
-used for the Wilcoxon rank sum test.</p>
-<p>The function returns a list containing the test statistic from the
-Kruskal–Wallis rank sum test, along with the Holm-adjusted p-values for
-all pairwise comparisons.</p>
-</div>
 <div class="section level5">
 <h5 class="unnumbered" id="one-way-test">One-way test<a class="anchor" aria-label="anchor" href="#one-way-test"></a>
 </h5>
@@ -695,25 +773,23 @@ labels (all green letters differ).</p>
 <div class="section level3">
 <h3 id="simple-linear-regression-lm">Simple linear regression (<code>lm()</code>)<a class="anchor" aria-label="anchor" href="#simple-linear-regression-lm"></a>
 </h3>
-<p>If the feature <code>varfactor</code> and the response
-<code>varsample</code> are both numerical and <em>contain only one level
-each</em> , <code><a href="../reference/visstat.html">visstat()</a></code> performs a simple linear
-regression.</p>
-<p>The resulting regression plot displays the point estimation of the
+<p>If both the feature <code>varfactor</code> and the response
+<code>varsample</code> are numerical and contain only one level each,
+<code><a href="../reference/visstat.html">visstat()</a></code> performs a simple linear regression.</p>
+<p>The resulting regression plot displays the point estimate of the
 regression line</p>
-<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>a</mi><mo>+</mo><mi>b</mi><mo>⋅</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">y=a +b \cdot x</annotation></semantics></math>,
-where where
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>a</mi><mo>+</mo><mi>b</mi><mo>⋅</mo><mi>x</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">
+y = a + b \cdot x,
+</annotation></semantics></math></p>
+<p>where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>
 is the response variable,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
 is the feature variable,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
-the intercept and
+is the intercept, and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
-the slope of the regression line</p>
-<p>Note that multiple linear regression is not implemented, as the main
-focus of <code><a href="../reference/visstat.html">visstat()</a></code> is on the visualisation of statistical
-tests.</p>
+is the slope of the regression line.</p>
 <div class="section level4">
 <h4 id="residual-analysis">Residual analysis<a class="anchor" aria-label="anchor" href="#residual-analysis"></a>
 </h4>
@@ -869,7 +945,7 @@ statistic:
 \frac{(|O_{ij} - E_{ij}| - 0.5)^2}{E_{ij}}.
 </annotation></semantics></math></p>
 <p>This reduced test statistic yields a larger p-value, thereby lowering
-the risk of a type I error.</p>
+the risk of a Type I error.</p>
 <!-- ## Fisher's exact test  -->
 <!-- Fisher's exact test [@Fisher:1935] is a non-parametric method that does not   -->
 <!-- rely on large-sample approximations. -->
@@ -895,11 +971,10 @@ approximation is considered reliable only if no expected cell count is
 less than 1 and no more than 20 percent of cells have expected counts
 below 5 <span class="citation">(Cochran 1954)</span>). If this condition
 is not met, Fisher’s exact test <span class="citation">(Fisher
-1935)</span> (<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>) is applied instead, as it is a
+1971)</span> (<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>) is applied instead, as it is a
 non-parametric method that does not rely on large-sample approximations.
-The test calculates an exact<br>
-p-value for testing independence by conditioning on the observed
-margins: the row totals
+The test calculates an exact p-value for testing independence by
+conditioning on the observed margins: the row totals
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>i</mi></msub><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>C</mi></msubsup><msub><mi>O</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">R_i = \sum_{j=1}^C O_{ij}</annotation></semantics></math>
 and the column totals
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mi>j</mi></msub><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>R</mi></msubsup><msub><mi>O</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">C_j = \sum_{i=1}^R O_{ij}</annotation></semantics></math>,
@@ -1136,9 +1211,10 @@ based on Cochran’s rule)</li>
 <h2 class="unnumbered" id="bibliography">Bibliography<a class="anchor" aria-label="anchor" href="#bibliography"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
-<div id="ref-Abdi2006TheBA" class="csl-entry">
-Abdi, Hervé. 2006. <span>“The Bonferonni and Id<span>á</span>k
-Corrections for Multiple Comparisons.”</span> In.
+<div id="ref-Abdi:2007" class="csl-entry">
+Abdi, Hervé. 2007. <span>“The Bonferonni and <span>Sidak</span>
+Corrections for Multiple Comparisons.”</span> <em>Encyclopedia of
+Measurement and Statistics</em>.
 </div>
 <div id="ref-Cochran:1954" class="csl-entry">
 Cochran, William G. 1954. <span>“The <span>Combination</span> of
@@ -1152,13 +1228,14 @@ t-Test <span>Instead</span> of <span>Student</span>’s t-Test.”</span>
 <em>International Review of Social Psychology</em> 30 (1): 92–101. <a href="https://doi.org/10.5334/irsp.82" class="external-link">https://doi.org/10.5334/irsp.82</a>.
 </div>
 <div id="ref-Fisher:1935" class="csl-entry">
-Fisher, R. a. 1935. <em><span>The Design Of Experiments</span></em>.
+Fisher, Roland A. 1971. <em>The Design of Experiments</em>. 9th ed.
+Macmillan.
 </div>
 <div id="ref-Hollander:2014" class="csl-entry">
 Hollander, Myles, Eric Chicken, and Douglas A. Wolfe. 2014.
-<em>Nonparametric Statistical Methods</em>. Third edition
-(Online-Ausg.). Wiley Series in Probability and Statistics. Hoboken, New
-Jersey: John Wiley &amp; Sons, Inc.
+<em>Nonparametric Statistical Methods</em>. Third edition. Wiley Series
+in Probability and Statistics. Hoboken, New Jersey: John Wiley &amp;
+Sons, Inc.
 </div>
 <div id="ref-Holm:1979" class="csl-entry">
 Holm, Sture. 1979. <span>“A <span>Simple Sequentially Rejective Multiple
