@@ -850,16 +850,7 @@ vis_anova <- function(samples,
     paste0(label_aov, "\nF = ", F_value, ", p = ", signif(p_aov, 2)),
     outer = TRUE)
   
-  #alpha_sidak_display = signif(alpha_sidak, 2)
-  # legend(
-  #   "topleft",
-  #   inset = 0.05,
-  #   horiz = F,
-  #   c(paste("Sidak corrected (1-", alpha_sidak_display," )=" ,round((1 - alpha_sidak) * 100, 2), "% conf. interval"), paste("mean with", conf.level * 100, "% conf. intervall ")),
-  #   col = c(colors()[131], colors()[552]),
-  #   bty = "n",
-  #   lwd = 3
-  # )
+ 
   
   legend(
     "topleft",

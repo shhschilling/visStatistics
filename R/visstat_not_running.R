@@ -18,8 +18,8 @@
 #' statistics, and include assumption checks and post hoc comparisons when
 #' applicable. The primary test results are returned as a list object.
 #'
-#' @details The decision logic for selecting a statistical test is described below.
-#' For more details, please refer to the package's \code{vignette("visStatistics")}.
+#' @details The decision logic for selecting a statistical test is described below. For
+#' more details, please refer to the package's \code{vignette("visStatistics")}.
 #' Throughout, data of class \code{numeric} or \code{integer} are referred to as
 #' numerical, while data of class \code{factor} are referred to as categorical.
 #' The significance level \code{alpha} is defined as one minus the confidence
