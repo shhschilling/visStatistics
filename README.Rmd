@@ -167,12 +167,14 @@ vignette("visStatistics")
 library(visStatistics)
 ```
 
+In this section, function names in parentheses in the headings indicate the
+statistical test selected by the decision logic of `visstat()`.
 
 ## Numerical response and categorical feature
 When the response is numerical and the feature is categorical, test of
 central tendencies are selected.
 
-### Welch two sample t-test
+### Welch's t-test (`t.test()`)
 
 #### InsectSprays dataset
 
@@ -191,7 +193,7 @@ mtcars$am <- as.factor(mtcars$am)
 t_test_statistics <- visstat(mtcars, "mpg", "am")
 #t_test_statistics
 ```
-### Wilcoxon rank sum test
+### Wilcoxon rank-sum test (`wilcox.test()`)
 
 ```{r sex-grades2-data}
 grades_gender <- data.frame(
@@ -207,7 +209,7 @@ grades_gender <- data.frame(
 wilcoxon_statistics <- visstat(grades_gender, "grade", "sex")
 ```
 
-### ANOVA
+###  Fisher's one-way ANOVA (`aov()`)
 
 ```{r insectprays-anova-data}
 insect_sprays_tr <- InsectSprays
@@ -215,13 +217,14 @@ insect_sprays_tr$count_sqrt <- sqrt(InsectSprays$count)
 visstat(insect_sprays_tr, "count_sqrt", "spray")
 ```
 
-### One-way test
+###  Welch’s heteroscedastic one-way ANOVA (`oneway.test()`)
 
 ```{r}
 one_way_npk <- visstat(npk, "yield", "block")
 ```
 
-### Kruskal-Wallis test
+### Kruskal–Wallis test (`kruskal.test()`)
+
 ```{r iris-kruskal}
 visstat(iris, "Petal.Width", "Species")
 ```
@@ -239,7 +242,7 @@ plotDirectory = tempdir()
 )
 ```
 
-## Numerical response and numerical feature: Linear Regression
+## Numerical response and numerical feature: Simple linear Regression (`lm()`)
 
 ```{r lin-reg-dist-speed}
 linreg_cars <- visstat(cars, "dist", "speed")
@@ -254,7 +257,7 @@ linreg_cars_99 <- visstat(cars, "dist", "speed", conf.level = 0.99)
 
 ## Categorical response and categorical feature
 
-### Pearson's Chi-squared test
+### Pearson’s $\chi^2$-test (`chisq.test()`)
 
 Count datasets are often presented as multidimensional arrays, so - called contingency tables, whereas `visstat()` requires a
 `data.frame` with a column structure. Arrays can be transformed to this
@@ -264,7 +267,7 @@ hair_eye_color_df <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(hair_eye_color_df, "Hair", "Eye")
 ```
 
-### Fisher's exact test
+### Fisher's exact test (`fisher.test()`)
 
 ```{r haireye-fisher}
 hair_eye_color_male <- HairEyeColor[, , 1]
@@ -295,7 +298,7 @@ Note that all test are implemented with  their default settings, with the except
 
 #### Post-hoc tests
 - `TukeyHSD()` (used following `aov()`and `oneway.test()`)
--  `pairwise.wilcox.test()` (used following `kruskal.test()`)
+- `pairwise.wilcox.test()` (used following `kruskal.test()`)
 
 
 ### Numerical response and numerical feature: 
