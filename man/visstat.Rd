@@ -56,7 +56,8 @@ Default is current working directory.}
 \description{
 \code{visstat()} provides automated selection and visualization 
 of a statistical hypothesis test between a response and a feature variable in
-a given \code{data.frame} named \code{dataframe} based on the data's type, distribution, sample size, and the
+a given \code{data.frame} named \code{dataframe} based on the data's type, 
+distribution, sample size, and the
 specified \code{conf.level}. The data in \code{dataframe} must be structured
 column-wise, where \code{varsample} and \code{varfactor} are \code{character}
 strings corresponding to the column names of the response and feature
@@ -66,74 +67,58 @@ statistics, and include assumption checks and post hoc comparisons when
 applicable. The primary test results are returned as a list object.
 }
 \details{
-Decision logic (for more details, please refer to the package's
-\code{vignette}).
-
+The decision logic for selecting a statistical test is described below. For
+more details, please refer to the package's \code{vignette("visStatistics")}.
 Throughout, data of class \code{numeric} or \code{integer} are referred to as
 numerical, while data of class \code{factor} are referred to as categorical.
-The significance level \eqn{\alpha} is defined as one minus the confidence
-level, given by the argument \code{conf.level}.' Assumptions of normality and
+The significance level \code{alpha} is defined as one minus the confidence
+level, given by the argument \code{conf.level}. Assumptions of normality and
 homoscedasticity are considered met when the corresponding test yields a
-p-value greater than alpha = 1 - 'conf.level'.
-
-The choice of statistical tests performed by the function \code{visstat()}
-depends on whether the data are numerical or categorical, the number of
-levels in the categorical variable, the distribution of the data, and the
-chosen \code{conf.level()}.
-
-The function prioritizes interpretable visual output and tests that remain
-valid under their assumptions, following the decision logic below:
-
+p-value greater than \code{alpha = 1 - conf.level}.
+The choice of statistical tests performed by \code{visstat()} depends on
+whether the data are numerical or categorical, the number of levels in the
+categorical variable, the distribution of the data, and the chosen
+\code{conf.level}. The function prioritises interpretable visual output and
+tests that remain valid under their assumptions, following the logic below:
 (1) When the response is numerical and the predictor is categorical, tests of
-central tendency are performed. If the categorical predictor has two levels:
-- Welch's t-test (\code{t.test()}) is used if both groups have more than 30
-observations (Lumley et al. (2002)
-<doi:10.1146/annurev.publhealth.23.100901.140546>).
-- For smaller samples, normality is assessed using \code{shapiro.test()}.
-If both groups return p-values greater than \eqn{\alpha}, Welch's t-test is
-applied; otherwise, the Wilcoxon rank-sum test (\code{wilcox.test()}) is
-used.
-
-For predictors with more than two levels:
-- An ANOVA model (\code{aov()}) is initially fitted.
-- Residual normality is tested with \code{shapiro.test()} and \code{ad.test()}.
-If \eqn{p > \alpha} for either test, normality is assumed.
-- Homogeneity of variance is tested with \code{bartlett.test()}:
-  - If \eqn{p > \alpha}, use ANOVA with \code{TukeyHSD()}.
-  - If \eqn{p \le \alpha}, use \code{oneway.test()} with \code{TukeyHSD()}.
-- If residuals are not normal, use \code{kruskal.test()} with
-\code{pairwise.wilcox.test()}.
-
+central tendency are performed. If the predictor has two levels:
+\code{t.test()} is used if both groups have more than 30 observations (Lumley
+et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). For smaller
+samples, normality is assessed using \code{shapiro.test()}. If both groups
+return p-values greater than \code{alpha}, \code{t.test()} is applied;
+otherwise, \code{wilcox.test()} is used.
+For predictors with more than two levels, \code{aov()} is initially fitted.
+Residual normality is tested with \code{shapiro.test()} and \code{ad.test()}.
+If \code{p > alpha} for either test, normality is assumed. Homogeneity of
+variance is tested with \code{bartlett.test()}. If \code{p > alpha},
+\code{aov()} with \code{TukeyHSD()} is used. If \code{p <= alpha},
+\code{oneway.test()} is applied with \code{TukeyHSD()}. If residuals are not
+normal, \code{kruskal.test()} with \code{pairwise.wilcox.test()} is used.
 (2) When both the response and predictor are numerical, a linear model
-(\code{lm()}) is fitted, with residual diagnostics and a confidence band
-plot.
-
+\code{lm()} is fitted, with residual diagnostics and a confidence band plot.
 (3) When both variables are categorical, \code{visstat()} uses
 \code{chisq.test()} or \code{fisher.test()} depending on expected counts,
 following Cochran's rule (Cochran (1954) <doi:10.2307/3001666>).
-
 Implemented main tests: \code{t.test()}, \code{wilcox.test()}, \code{aov()},
 \code{oneway.test()}, \code{lm()}, \code{kruskal.test()},
 \code{fisher.test()}, \code{chisq.test()}.
-
 Implemented tests for assumptions:
 \itemize{
-  \item Normality: \code{shapiro.test()} and \code{ad.test()}.
-  \item Heteroscedasticity: \code{bartlett.test()}.
+  \item Normality: \code{shapiro.test()} and \code{ad.test()}
+  \item Heteroscedasticity: \code{bartlett.test()}
 }
-
 Implemented post hoc tests:
 \itemize{
-  \item \code{TukeyHSD()} for \code{aov()} and \code{oneway.test()}.
-  \item \code{pairwise.wilcox.test()} for \code{kruskal.test()}.
+  \item \code{TukeyHSD()} for \code{aov()} and \code{oneway.test()}
+  \item \code{pairwise.wilcox.test()} for \code{kruskal.test()}
 }
 }
 \examples{
-
-## Welch Two Sample t-test (calling t.test())
+# Function names in parentheses in the headings indicate the
+# Welch Two Sample t-test (t.test())
 visstat(mtcars, "mpg", "am")
 
-## Wilcoxon rank sum test (calling wilcox.test())
+## Wilcoxon rank sum test (wilcox.test())
 grades_gender <- data.frame(
   Sex = as.factor(c(rep("Girl", 20), rep("Boy", 20))),
   Grade = c(
@@ -145,24 +130,23 @@ grades_gender <- data.frame(
 )
 visstat(grades_gender, "Grade", "Sex")
 
-## One-way analysis of means (oneway.test())
+## Welch's oneway ANOVA not assuming equal variances (oneway.test())
 anova_npk <- visstat(npk, "yield", "block")
 anova_npk # prints summary of tests
 
-## Kruskal-Wallis rank sum test (calling kruskal.test())
+## Kruskal-Wallis rank sum test (kruskal.test())
 visstat(iris, "Petal.Width", "Species")
 visstat(InsectSprays, "count", "spray")
 
-## Linear regression
+## Linear regression  (lm())
 visstat(trees, "Girth", "Height", conf.level = 0.99)
 
-## Pearson's Chi-squared test and mosaic plot with Pearson residuals
+## Pearson's Chi-squared test (chisq.test())
 ### Transform array to data.frame
 HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(HairEyeColorDataFrame, "Hair", "Eye")
 
-## 2x2 contingency tables with Fisher's exact test and mosaic plot
-## with Pearson residuals
+## Fisher's exact test (fisher.test())
 HairEyeColorMaleFisher <- HairEyeColor[, , 1]
 ### slicing out a 2 x2 contingency table
 blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
@@ -170,17 +154,15 @@ blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
 fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 fisher_stats # print out summary statistics
 
-
-
-## Saving the graphical output in directory plotDirectory
-## A) saving graphical output of type "png" in temporary directory tempdir()
+## Saving the graphical output in directory "plotDirectory"
+## A) Saving graphical output of type "png" in temporary directory tempdir()
 ##    with default naming convention:
 visstat(blackBrownHazelGreen, "Hair", "Eye",
   graphicsoutput = "png",
   plotDirectory = tempdir()
 )
 
-## remove graphical output from plotDirectory
+## Remove graphical output from plotDirectory
 file.remove(file.path(tempdir(), "chi_squared_or_fisher_Hair_Eye.png"))
 file.remove(file.path(tempdir(), "mosaic_complete_Hair_Eye.png"))
 
@@ -190,15 +172,15 @@ visstat(iris, "Petal.Width", "Species",
   plotDirectory = tempdir()
 )
 
-## remove graphical output from plotDirectory
+## Remove graphical output from plotDirectory
 file.remove(file.path(tempdir(), "kruskal_Petal_Width_Species.pdf"))
 
-## C) Specifiying plotName overwrites default naming convention
+## C) Specifying "plotName" overwrites default naming convention
 visstat(iris, "Petal.Width", "Species",
   graphicsoutput = "pdf",
   plotName = "kruskal_iris", plotDirectory = tempdir()
 )
-## remove graphical output from plotDirectory
+## Remove graphical output from plotDirectory
 file.remove(file.path(tempdir(), "kruskal_iris.pdf"))
 
 }

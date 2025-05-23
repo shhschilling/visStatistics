@@ -159,7 +159,7 @@ valid under their assumptions, following the decision logic below:</p>
 central tendency are performed. If the categorical predictor has two levels:
 - Welch's t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) is used if both groups have more than 30
 observations (Lumley et al. (2002)
-&lt;doi:10.1146/annurev.publheath.23.100901.140546&gt;).
+&lt;doi:10.1146/annurev.publhealth.23.100901.140546&gt;).
 - For smaller samples, normality is assessed using <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>.
 If both groups return p-values greater than \(\alpha\), Welch's t-test is
 applied; otherwise, the Wilcoxon rank-sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is
