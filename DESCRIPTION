@@ -1,6 +1,7 @@
 Package: visStatistics
 Type: Package
-Title: Automated Selection and Visualisation of Statistical Hypothesis Tests
+Title: Automated Selection and Visualisation of Statistical Hypothesis
+        Tests
 Version: 0.1.4
 Authors@R: c(
     person("Sabine", "Schilling", , "sabineschilling@gmx.ch", 
@@ -26,23 +27,16 @@ Description: Automatically selects and visualises appropriate statistical
     pairwise.wilcox.test().
 License: MIT + file LICENSE
 URL: https://github.com/shhschilling/visStatistics,
-    https://shhschilling.github.io/visStatistics/
+        https://shhschilling.github.io/visStatistics/
 BugReports: https://github.com/shhschilling/visStatistics/issues
-Imports: 
-    Cairo,
-    graphics,
-    grDevices,
-    grid,
-    multcompView,
-    nortest,
-    stats,
-    utils,
-    vcd
-Suggests: 
-    bookdown,
-    knitr,
-    rmarkdown
+Imports: Cairo, graphics, grDevices, grid, multcompView, nortest,
+        stats, utils, vcd
+Suggests: bookdown, knitr, rmarkdown
 VignetteBuilder: knitr, rmarkdown, bookdown
 Encoding: UTF-8
 NeedsCompilation: no
 RoxygenNote: 7.3.2
+Packaged: 2025-05-23 14:38:34 UTC; sschilli
+Author: Sabine Schilling [cre, aut, cph] (ORCID:
+    <https://orcid.org/0000-0002-8318-9421>, year: 2025),
+  Peter Kauf [ctb]

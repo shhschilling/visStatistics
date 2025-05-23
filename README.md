@@ -4,16 +4,19 @@
 
 # visStatistics: The right test, visualised
 
-The R package `visStatistics` allows for rapid **vis**ualisation and
+The R package `visStatistics` allows for rapid visualisation and
 statistical analysis of raw data. It automatically selects and
-visualises the most appropriate **statistic**al hypothesis test between
-a response (`varsample`) and a feature (`varfactor`) within a
-`data.frame`.
-
-This workflow is particularly suited for browser - based interfaces that
-rely on server -side R applications connected to secure databases, where
-users have no direct access, or for quick data visualisation, e.g. in
-statistical consulting projects.
+visualises the most appropriate statistical hypothesis test between a
+response (`varsample`) and a feature (`varfactor`) within a
+`data.frame`. The package focuses on visualising the selected test using
+appropriate plots - such as box plots, bar charts, regression lines with
+confidence bands, mosaic plots, residual plots and Q–Q plots. Each plot
+is annotated with relevant test statistics and, where applicable,
+assumption checks and post-hoc results. The scripted workflow is
+particularly well suited for interactive interfaces, where users access
+data only through a graphical front end backed by server-side R
+sessions, as well as for quick data exploration, for example, in
+statistical consulting contexts.
 
 # Getting Started
 
@@ -80,58 +83,64 @@ test results are returned as a list object.
 
     ? visstat
 
+1.  Study all the details of the package in its vignette:
+
+<!-- -->
+
+    vignette("visStatistics")
+
 # Decision logic
 
 Throughout the remainder, data of class `"numeric"` or `"integer"` are
-referred as numeric, while data of class `"factor"` are referred to as
-categorical.
+referred as numerical, while data of class `"factor"` are referred to as
+categorical. The choice of statistical tests performed by the function
+`visstat()` depends on whether the data are numerical or categorical,
+the number of levels in the categorical variable, and the distribution
+of the data. The function prioritizes interpretable visual output and
+tests that remain valid under the the following decision logic:
 
-The choice of statistical tests performed by the function `visstat()`
-depends on whether the data are numeric or categorical, the number of
-levels in the categorical variable, and the distribution of the data.
-The function prioritizes interpretable visual output and tests that
-remain valid under the the fowlloing decision logic:
-
-1.  When the response is numeric and the predictor is categorical, a
+1.  When the response is numerical and the predictor is categorical, a
     statistical hypothesis test of central tendencies is selected.
 
-- If the categorical predictor has exactly two levels, Welch’s t- test
-  (`t.test()`), is applied whenever both groups contain more than 30
+- If the categorical predictor has exactly two levels, Welch’s t-test
+  (`t.test()`) is applied whenever both groups contain more than 30
   observations, with the validity of the test supported by the
   approximate normality of the sampling distribution of the mean under
   the central limit theorem Lumley et al. (2002). For smaller samples,
   group - wise normality is assessed using the Shapiro - Wilk test
-  (`shapiro.test()`) at the significance level*α*. If both groups are
+  (`shapiro.test()`) at the significance level *α*. If both groups are
   found to be approximately normally distributed according to the
   Shapiro - Wilk test, Welch’s t-test is applied; otherwise, the
   Wilcoxon rank-sum test (`wilcox.test()`) is used.
 
-- For predictors with more than two levels, an ANOVA model (`aov()`) is
-  initially fitted. The normality of residuals is evaluated using both
-  the Shapiro-Wilk test (`shapiro.test()`) and the Anderson-Darling test
-  (`ad.test()`); residuals are considered approximately normal if at
-  least one of the two tests yields a result exceeding the significance
-  threshold *α*. If this condition is met, Bartlett’s test
-  (`bartlett.test()`) is then used to assess homoscedasticity. When
-  variances are homogeneous (*p* &gt; *α*), ANOVA is applied with
-  Tukey’s HSD (`TukeyHSD()`) for post-hoc comparison. If variances
-  differ significantly (*p* ≤ *α*), Welch’s one - way test
-  (`oneway.test()`) is used, also followed by Tukey’s HSD. If residuals
-  are not normally distributed according to both tests (*p* ≤ *α*), the
-  Kruskal-Wallis test (`kruskal.test()`) is selected, followed by
-  pairwise Wilcoxon tests (`pairwise.wilcox.test()`). A graphical
-  overview of the decision logic used is provided in below figure.
+- For predictors with more than two levels, a model of Fisher’s one-way
+  analysis of variables (ANOVA) (`aov()`) is initially fitted. The
+  normality of residuals is evaluated using both the Shapiro-Wilk test
+  (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`);
+  residuals are considered approximately normal if at least one of the
+  two tests yields a result exceeding the significance threshold *α*. If
+  this condition is met, Bartlett’s test (`bartlett.test()`) is then
+  used to assess homoscedasticity. When variances are homogeneous
+  (*p* &gt; *α*), Fisher’s one-way ANOVA (`aov()`) is applied with
+  Tukey’s Honestly Significant Differences (HSD) (`TukeyHSD()`) for
+  post-hoc comparison. If variances differ significantly (*p* ≤ *α*),
+  Welch’s heteroscedastic one-way ANOVA (`oneway.test()`) is used, also
+  followed by Tukey’s HSD. If residuals are not normally distributed
+  according to both tests (*p* ≤ *α*), the Kruskal-Wallis test
+  (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests
+  (`pairwise.wilcox.test()`). A graphical overview of the decision logic
+  used is provided in the figure below.
 
 <img src="man/figures/decision_tree.png" width="100%" 
      alt="Decision tree used to select the appropriate statistical test.">
 
 <p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
 Decision tree used to select the appropriate statistical test for a
-categorical predictor and numeric response, based on the number of
+categorical predictor and numerical response, based on the number of
 factor levels, normality, and homoscedasticity.
 </p>
 
-1.  When both the response and predictor are numeric, a simple linear
+1.  When both the response and predictor are numerical, a simple linear
     regression model (`lm()`) is fitted and analysed in detail,
     including residual diagnostics, formal tests, and the plotting of
     fitted values with confidence bands. Note that only one explanatory
@@ -142,13 +151,14 @@ factor levels, normality, and homoscedasticity.
 
 1.  In the case of two categorical variables, `visstat()` tests the null
     hypothesis that the predictor and response variables are independent
-    using either `chisq.test()` or `fisher.test()`. The choice of test
-    is based on Cochran’s rule (Cochran 1954), which advises that
-    the*χ*<sup>2</sup>approximation is reliable only if no expected cell
-    count is zero and no more than 20 percent of cells have expected
-    counts below 5.
+    using either Pearson’s *χ*<sup>2</sup>-test (`chisq.test()`) or
+    Fisher’s exact test (`fisher.test()`). The choice of test is based
+    on Cochran’s rule (Cochran 1954), which advises that the
+    *χ*<sup>2</sup>approximation is reliable only if no expected cell
+    count is less than 1 and no more than 20 percent of cells have
+    expected counts below 5.
 
-Note:Except for the user - adjustable `conf.level` parameter, all
+Note: Except for the user - adjustable `conf.level` parameter, all
 statistical tests are applied using their default settings from the
 corresponding base R functions (e.g., `t.test()`). As a consequence,
 paired tests are not currently supported. Furthermore, since the main
@@ -162,14 +172,17 @@ of the underlying decision logic see
 
     library(visStatistics)
 
+In this section, function names in parentheses in the headings indicate
+the statistical test selected by the decision logic of `visstat()`.
+
 ## Numerical response and categorical feature
 
 When the response is numerical and the feature is categorical, test of
 central tendencies are selected.
 
-### Welch two sample t-test
+### Welch’s t-test (`t.test()`)
 
-#### InsectSprays data set
+#### InsectSprays dataset
 
     insect_sprays_a_b <-
     InsectSprays[which(InsectSprays$spray == "A" |
@@ -179,7 +192,7 @@ central tendencies are selected.
 
 <img src="man/figures/README-insect-sprays-data-1.png" width="100%" />
 
-#### mtcars data set
+#### mtcars dataset
 
     mtcars$am <- as.factor(mtcars$am)
     t_test_statistics <- visstat(mtcars, "mpg", "am")
@@ -188,7 +201,7 @@ central tendencies are selected.
 
     #t_test_statistics
 
-### Wilcoxon rank sum test
+### Wilcoxon rank-sum test (`wilcox.test()`)
 
     grades_gender <- data.frame(
       sex = factor(rep(c("girl", "boy"), times = c(21, 23))),
@@ -204,7 +217,7 @@ central tendencies are selected.
 
 <img src="man/figures/README-sex-grades2-data-1.png" width="100%" />
 
-### ANOVA
+### Fisher’s one-way ANOVA (`aov()`)
 
     insect_sprays_tr <- InsectSprays
     insect_sprays_tr$count_sqrt <- sqrt(InsectSprays$count)
@@ -212,13 +225,13 @@ central tendencies are selected.
 
 <img src="man/figures/README-insectprays-anova-data-1.png" width="100%" /><img src="man/figures/README-insectprays-anova-data-2.png" width="100%" />
 
-### One-way test
+### Welch’s heteroscedastic one-way ANOVA (`oneway.test()`)
 
     one_way_npk <- visstat(npk, "yield", "block")
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" /><img src="man/figures/README-unnamed-chunk-2-2.png" width="100%" />
 
-### Kruskal-Wallis test
+### Kruskal–Wallis test (`kruskal.test()`)
 
     visstat(iris, "Petal.Width", "Species")
 
@@ -235,7 +248,9 @@ The generated graphs can be saved in all available formats of the
     plotDirectory = tempdir()
     )
 
-## Numerical response and numerical feature: Linear Regression
+## Numerical response and numerical feature:
+
+### Simple linear Regression (`lm()`)
 
     linreg_cars <- visstat(cars, "dist", "speed")
 
@@ -248,9 +263,9 @@ Increasing the confidence level `conf.level` from the default 0.95 to
 
 ## Categorical response and categorical feature
 
-### Pearson’s Chi-squared test
+### Pearson’s *χ*<sup>2</sup>-test (`chisq.test()`)
 
-Count data sets are often presented as multidimensional arrays, so -
+Count datasets are often presented as multidimensional arrays, so -
 called contingency tables, whereas `visstat()` requires a `data.frame`
 with a column structure. Arrays can be transformed to this column wise
 structure with the helper function `counts_to_cases()`:
@@ -260,7 +275,7 @@ structure with the helper function `counts_to_cases()`:
 
 <img src="man/figures/README-chihair-data-1.png" width="100%" /><img src="man/figures/README-chihair-data-2.png" width="100%" />
 
-### Fisher’s exact test
+### Fisher’s exact test (`fisher.test()`)
 
     hair_eye_color_male <- HairEyeColor[, , 1]
     # Slice out a 2 by 2 contingency table
@@ -314,7 +329,7 @@ package focuses on the visualisation of data, not model building.
 <!-- pkgdown::end -->
 
 Cochran, William G. 1954. “The Combination of Estimates from Different
-Experiments.” *Scandinavian Journal of Statistics* 10 (1): 101–20.
+Experiments.” *Biometrics* 10 (1): 101.
 <https://doi.org/10.2307/3001666>.
 
 Lumley, Thomas, Paula Diehr, Scott Emerson, and Lu Chen. 2002. “The

@@ -92,11 +92,14 @@ backed by server-side R sessions, as well as for quick data exploration
 e.g. in statistical consulting contexts.</p>
 <p>The remainder of this vignette is organised as follows:</p>
 <ul>
-<li><p>Section 2 summarises the decision logic of choosing a statistical
-test, whilst</p></li>
-<li><p>Sections 3 - 5 give background on the implemented tests and
-visualises the decision logic using examples,</p></li>
-<li><p>Section 6 gives an overview of the implemented tests.</p></li>
+<li><p>Section 2 summarises the decision logic used to select a
+statistical test.</p></li>
+<li><p>Sections 3–5 provide background on the implemented tests and
+illustrate the decision logic using examples. Function names in
+parentheses in the headings indicate the corresponding statistical
+hypothesis test function in R,</p></li>
+<li><p>Section 6 outlines the main limitations of the package.</p></li>
+<li><p>Section 7 provides an overview of the implemented tests.</p></li>
 </ul>
 </div>
 <div class="section level2">
@@ -592,62 +595,62 @@ level must be reduced when there are more than two groups.
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mrow><mi>P</mi><mi>F</mi></mrow></msub><annotation encoding="application/x-tex">\alpha_{PF}</annotation></semantics></math>
 to the user-defined
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">\alpha = 1 -</annotation></semantics></math><code>conf.level</code>, resulting in</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>−</mo><msup><mtext mathvariant="monospace">𝚌𝚘𝚗𝚏.𝚕𝚎𝚟𝚎𝚕</mtext><mrow><mn>1</mn><mi>/</mi><mi>M</mi></mrow></msup><mi>.</mi></mrow><annotation encoding="application/x-tex">
-\alpha_{PT} = 1 - \texttt{conf.level}^{1 / M}.
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mrow><mi>S</mi><mi>i</mi><mi>d</mi><mi>a</mi><mi>k</mi></mrow></msub><mo>=</mo><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><mo>=</mo><msub><mi>α</mi><mrow><mi>S</mi><mi>i</mi><mi>d</mi><mi>a</mi><mi>k</mi></mrow></msub><mo>=</mo><mn>1</mn><mo>−</mo><msup><mtext mathvariant="monospace">𝚌𝚘𝚗𝚏.𝚕𝚎𝚟𝚎𝚕</mtext><mrow><mn>1</mn><mi>/</mi><mi>M</mi></mrow></msup><mi>.</mi></mrow><annotation encoding="application/x-tex">\alpha_{Sidak}=\alpha_{PT} = \alpha_{Sidak}= 1 - \texttt{conf.level}^{1 / M}.
 </annotation></semantics></math></p>
-<p>The Šidák approach becomes very conservative when the number of
-comparisons is large or when the tests are not independent.</p>
+<p>The default settings result in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mrow><mi>P</mi><mi>F</mi></mrow></msub><mo>=</mo><mn>5</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\alpha_{PF} = 5\%</annotation></semantics></math>.
+For example, for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">n = 3</annotation></semantics></math>
+groups, this leads to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><mo>=</mo><mn>1.70</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\alpha_{PT} = 1.70\%</annotation></semantics></math>;
+for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">n = 6</annotation></semantics></math>
+groups to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><mo>=</mo><mn>0.34</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\alpha_{PT} = 0.34\%</annotation></semantics></math>;
+and for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">n = 10</annotation></semantics></math>
+groups already to the very small
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><mo>=</mo><mn>0.11</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\alpha_{PT} = 0.11\%</annotation></semantics></math>.</p>
+<p>These examples illustrate that the Šidák approach becomes
+increasingly conservative as the number of comparisons grows. Moreover,
+since the method assumes independence among tests, it may be overly
+conservative when this assumption is violated.</p>
 </div>
 <div class="section level5">
-<h5 id="post-hoc-test-following-following-an-anova-tukeyhsd">Post-hoc-test following following an ANOVA: <code class="unnumbered">TukeyHSD()</code><a class="anchor" aria-label="anchor" href="#post-hoc-test-following-following-an-anova-tukeyhsd"></a>
+<h5 class="unnumbered" id="post-hoc-test-following-an-anova-tukeyhsd">Post-hoc test following an ANOVA:
+<code>TukeyHSD()</code><a class="anchor" aria-label="anchor" href="#post-hoc-test-following-an-anova-tukeyhsd"></a>
 </h5>
-<p>The Šidák correction adjusts the significance level to control the
-family-wise error rate for any set of independent comparisons, while
-Tukey’s Honestly Significant Differences (the <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>
-procedure applies this control specifically to all pairwise mean
-comparisons after an ANOVA (either <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> or
-<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>), using a critical value derived from the
-studentised range distribution.</p>
+<p>In contrast to the general-purpose Šidák correction, Tukey’s Honestly
+Significant Differences procedure (<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>) is
+specifically designed for pairwise mean comparisons following an ANOVA
+(either <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> or <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>). It controls
+the family-wise error rate using a critical value from the studentised
+range distribution, which properly accounts for the correlated nature of
+pairwise comparisons sharing a common residual variance <span class="citation">(<strong>HochbergTamhane:1987?</strong>)</span>.</p>
 <p>Based on the user-specified confidence level
-(<code>conf.level</code>), confidence intervals are constructed for all
-pairwise differences between factor level means. A significant
-difference between two means is indicated when the corresponding
-confidence interval does not include zero. <code><a href="../reference/visstat.html">visstat()</a></code>
-returns both the HSD-adjusted p-values and the associated confidence
-intervals for all pairwise comparisons.</p>
+(<code>conf.level</code>), <code><a href="../reference/visstat.html">visstat()</a></code> constructs confidence
+intervals for all pairwise differences between factor level means. A
+significant difference between two means is indicated when the
+corresponding confidence interval does not include zero.
+<code><a href="../reference/visstat.html">visstat()</a></code> returns both the HSD-adjusted p-values and the
+associated confidence intervals for all pairwise comparisons.</p>
 </div>
 <div class="section level5">
-<h5 id="post-hoc-test-following-the-kruskalwallis-rank-sum-test">Post-hoc-test following the Kruskal–Wallis rank sum test:<a class="anchor" aria-label="anchor" href="#post-hoc-test-following-the-kruskalwallis-rank-sum-test"></a>
+<h5 class="unnumbered" id="post-hoc-test-following-the-kruskalwallis-rank-sum-test-pairwise-wilcox-test">Post-hoc test following the Kruskal–Wallis rank
+sum test: <code>pairwise.wilcox.test()</code><a class="anchor" aria-label="anchor" href="#post-hoc-test-following-the-kruskalwallis-rank-sum-test-pairwise-wilcox-test"></a>
 </h5>
-<p><code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> {.unnumbered}</p>
-<!-- If the p-value from the Shapiro--Wilk test (`shapiro.test()`) applied to
-the standardised residuals is smaller than the significance level $\alpha$,
-`visstat()` selects as non-parametric alternative: the Kruskal--Wallis rank sum
-test. -->
 <p>As a post-hoc analysis following the Kruskal–Wallis test,
 <code><a href="../reference/visstat.html">visstat()</a></code> applies the pairwise Wilcoxon rank sum test using
-<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> with Holm’s method <span class="citation">(Holm 1979)</span> as the default adjustment for
-multiple comparisons. Holm’s procedure is also much less stringent than
-the Šidák method.</p>
-<!-- #### Post-hoc test visualisation -->
-<!-- In the graphical output, green letters displayed below each group summarise
-the results of the relevant post-hoc test:  Two groups are considered
-significantly different if they are assigned different letters, indicating a
-Tukey HSD-adjusted or Holm's-adjusted pairwise Wilcoxon rank sum test are  -->
-<!--  p-value smaller than $\alpha$. -->
-<!-- If the Holm-adjusted p-value for a given pair of groups is smaller than the
-significance level $\alpha$, the green letters displayed below the corresponding
-box plots will differ. Otherwise, the groups are considered not significantly
-different. -->
-<!-- ### Graphical output -->
-<!-- ####  {.unnumbered} -->
-<!-- Depending on the p-value returned by `bartlett.test()`, the corresponding
-test is selected and its p-value is displayed in the figure title: -->
-<!-- -   If the p-value of `bartlett.test()` is greater than $\alpha$, we assume
-homogeneity of variances across groups and report the p-value from the analysis
-of variance (ANOVA) implemented as(`aov()`). -->
-<!-- -   Otherwise, homoscedasticity cannot be assumed, and the function reports
-the p-value from Welch's one-way test (`oneway.test()`). -->
+<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> to compare each pair of factor
+levels (see section “Wilcoxon rank-sum test
+(<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>)”).</p>
+<p>The resulting p-values from all pairwise comparisons are then
+adjusted for multiple testing using Holm’s method <span class="citation">(Holm 1979)</span>: These p-values are first sorted
+from smallest to largest and tested against thresholds that become less
+strict as their rank increases. This stepwise adjustment does not assume
+independence among tests and is typically less conservative than the
+Šidák method, while still ensuring strong control of the family-wise
+error rate.</p>
 </div>
 </div>
 <div class="section level4">
@@ -659,12 +662,11 @@ the first focuses on the residual analysis, and the second on the actual
 test chosen by the decision logic.</p>
 <p>The residual panel addresses the assumption of normality, both
 graphically and through formal tests. It displays a scatter plot of the
-standardised residuals versus the fitted mean values, as well as a
-normal Q–Q plot comparing the sample quantiles to the theoretical
-quantiles. If the residuals are normally distributed, no more than
-approximately
+standardised residuals versus the predicted values, as well as a normal
+Q–Q plot comparing the sample quantiles to the theoretical quantiles. If
+the residuals are normally distributed, no more than
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">5\%</annotation></semantics></math>
-of the standardised residuals should exceed
+of the standardised residuals should exceed approximately
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mn>2</mn><mo stretchy="false" form="prefix">|</mo></mrow><annotation encoding="application/x-tex">|2|</annotation></semantics></math>
 and in the Q–Q plot the data points should approximately follow the red
 straight line.</p>
@@ -678,7 +680,7 @@ than
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.</p>
 <p><code><a href="../reference/visstat.html">visstat()</a></code> then illustrates, in the subsequent graph,
 either the <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>, the <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>,
-or <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> result (see Section “Decision logic”).</p>
+or <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> result (see also Section “Decision logic”).</p>
 <p>If neither normality of the residuals nor homogeneity of variances is
 given, the <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> is executed. The result is
 illustrated using box plots alongside jittered data points, with the
@@ -692,17 +694,17 @@ pairwise Wilcoxon rank sum test p-values smaller than
 chosen: either <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>, if homoscedasticity is also assumed,
 or <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> otherwise. <code><a href="../reference/visstat.html">visstat()</a></code> displays
 the name of the test and the corresponding
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
-in the title.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>F</mi><annotation encoding="application/x-tex">F</annotation></semantics></math>
+and p-value in the title.</p>
 <p>The graph shows both the <code>conf.level</code>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>⋅</mi><mspace width="0.167em"></mspace><mn>100</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">\cdot\,100\%</annotation></semantics></math>
 confidence intervals and the wider Šidák-corrected
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>α</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>⋅</mo><mn>100</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">(1 - \alpha_{PT}) \cdot 100\%</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>α</mi><mrow><mi>S</mi><mi>i</mi><mi>d</mi><mi>a</mi><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>⋅</mo><mn>100</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">(1 - \alpha_{Sidak}) \cdot 100\%</annotation></semantics></math>
 confidence intervals, alongside jittered data points for each group.</p>
 <p>Different green letters below a pair of confidence intervals indicate
 that the two groups are considered significantly different, based on the
 results of the <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> procedure.</p>
-<p>The function returns a list containing the relevant test statistic
+<p>The function returns a list containing the relevant test statistics
 along with the post-hoc-adjusted
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values
 for all pairwise comparisons.</p>
@@ -720,7 +722,7 @@ experiment, the application of three different fertilisers – nitrogen
 block received either none, one, two, or all three of the
 fertilisers,</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">oneway_npk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span>, <span class="st">"yield"</span>, <span class="st">"block"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">oneway_npk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span>, <span class="st">"yield"</span>, <span class="st">"block"</span>,conf.level<span class="op">=</span><span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-5-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-5-2.png" width="100%"></p>
 <p>Normality of residuals is supported by graphical diagnostics (scatter
 plot of standardised residuals, Q-Q plot) and formal tests (Shapiro–Wilk
@@ -745,8 +747,52 @@ transformation to the response variable.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">insect_sprays_tr</span> <span class="op">&lt;-</span> <span class="va">InsectSprays</span></span>
 <span><span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">count_sqrt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">count</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">insect_sprays_tr</span>, <span class="st">"count_sqrt"</span>, <span class="st">"spray"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">test_statistic_anova</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">insect_sprays_tr</span>, <span class="st">"count_sqrt"</span>, <span class="st">"spray"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-6-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-6-2.png" width="100%"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">test_statistic_anova</span></span>
+<span><span class="co">#&gt; $`summary statistics of Fisher's one-way ANOVA`</span></span>
+<span><span class="co">#&gt;             Df Sum Sq Mean Sq F value Pr(&gt;F)    </span></span>
+<span><span class="co">#&gt; fact         5  88.44  17.688    44.8 &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; Residuals   66  26.06   0.395                   </span></span>
+<span><span class="co">#&gt; ---</span></span>
+<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $`summary statistics of Welch's one-way ANOVA (not assuming equal variances)`</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  One-way analysis of means (not assuming equal variances)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; data:  samples and fact</span></span>
+<span><span class="co">#&gt; F = 39.982, num df = 5.000, denom df = 30.668, p-value = 1.528e-12</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $`adjusted p values from`</span></span>
+<span><span class="co">#&gt;   Tukey multiple comparisons of means</span></span>
+<span><span class="co">#&gt;     95% family-wise confidence level</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Fit: aov(formula = samples ~ fact)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $fact</span></span>
+<span><span class="co">#&gt;           diff        lwr        upr     p adj</span></span>
+<span><span class="co">#&gt; B-A  0.1159530 -0.6369601  0.8688661 0.9975245</span></span>
+<span><span class="co">#&gt; C-A -2.5158217 -3.2687349 -1.7629086 0.0000000</span></span>
+<span><span class="co">#&gt; D-A -1.5963245 -2.3492377 -0.8434114 0.0000006</span></span>
+<span><span class="co">#&gt; E-A -1.9512174 -2.7041305 -1.1983042 0.0000000</span></span>
+<span><span class="co">#&gt; F-A  0.2579388 -0.4949744  1.0108519 0.9144964</span></span>
+<span><span class="co">#&gt; C-B -2.6317747 -3.3846879 -1.8788616 0.0000000</span></span>
+<span><span class="co">#&gt; D-B -1.7122775 -2.4651907 -0.9593644 0.0000001</span></span>
+<span><span class="co">#&gt; E-B -2.0671704 -2.8200835 -1.3142572 0.0000000</span></span>
+<span><span class="co">#&gt; F-B  0.1419858 -0.6109274  0.8948989 0.9935788</span></span>
+<span><span class="co">#&gt; D-C  0.9194972  0.1665841  1.6724103 0.0080813</span></span>
+<span><span class="co">#&gt; E-C  0.5646043 -0.1883088  1.3175175 0.2512638</span></span>
+<span><span class="co">#&gt; F-C  2.7737605  2.0208474  3.5266736 0.0000000</span></span>
+<span><span class="co">#&gt; E-D -0.3548928 -1.1078060  0.3980203 0.7366389</span></span>
+<span><span class="co">#&gt; F-D  1.8542633  1.1013502  2.6071764 0.0000000</span></span>
+<span><span class="co">#&gt; F-E  2.2091561  1.4562430  2.9620693 0.0000000</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $conf.level</span></span>
+<span><span class="co">#&gt; [1] 0.95</span></span></code></pre></div>
 <p>After the transformation, the homogeneity of variances can be assumed
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>&gt;</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">p&gt;
 \alpha</annotation></semantics></math> as calculated with the
@@ -758,7 +804,7 @@ is displayed.</p>
 </h5>
 <p>The <code>iris</code> dataset contains petal width measurements (in
 cm) for three different iris species.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span>, <span class="st">"Petal.Width"</span>, <span class="st">"Species"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-7-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-7-2.png" width="100%"></p>
 <p>In this example, scatter plots of the standardised residuals and the
@@ -833,20 +879,20 @@ bands.</p>
 <p>The <code>cars</code> dataset reports the speed of cars in miles per
 hour (<code>speed</code>) and the stopping distance in feet
 (<code>dist</code>).</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>, <span class="st">"dist"</span>, <span class="st">"speed"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-8-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-8-2.png" width="100%"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the
 default 0.95 to 0.99 results in wider confidence and prediction
 bands:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>, <span class="st">"dist"</span>, <span class="st">"speed"</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-9-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-9-2.png" width="100%"></p>
 <p>p-values greater than <code>conf.level</code> in both the
 Anderson-Darling normality test and the Shapiro–Wilk test of the
 standardised residuals indicate that the normality assumption of the
 residuals underlying the linear regression is met.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_trees</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span>, <span class="st">"Volume"</span>, <span class="st">"Girth"</span>, conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-10-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-10-2.png" width="100%"></p>
 </div>
@@ -858,7 +904,7 @@ residuals underlying the linear regression is met.</p>
 <code>Volume</code> (in cubic feet) of black cherry trees. In this
 example, we choose <code>Volume</code> as the response and
 <code>Girth</code> as the feature.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span>, <span class="st">"Volume"</span>, <span class="st">"Girth"</span>, conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-11-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-11-2.png" width="100%"></p>
 <p>Both the graphical analysis of the standardised residuals and
@@ -938,12 +984,11 @@ Pearson residuals:</p>
 the upper tail probability — that is, the probability of observing a
 value greater than or equal to the test statistic under the null
 hypothesis.</p>
-</div>
-<div class="section level3">
-<h3 id="pearsons-chi2-test-with-yates-continuity-correction">Pearson’s
+<div class="section level4">
+<h4 id="pearsons-chi2-test-with-yates-continuity-correction">Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
 test with Yates’ continuity correction<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test-with-yates-continuity-correction"></a>
-</h3>
+</h4>
 <p>Yates’ correction is applied to the Pearson
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
 statistic in
@@ -961,33 +1006,9 @@ statistic:
 </annotation></semantics></math></p>
 <p>This reduced test statistic yields a larger p-value, thereby lowering
 the risk of a Type I error.</p>
-<!-- ## Fisher's exact test  -->
-<!-- Fisher's exact test [@Fisher:1935] is a non-parametric method that does not
--->
-<!-- rely on large-sample approximations. -->
-<!-- When any expected frequency $E_{ij}$ is below 5, `visstat()` applies   -->
-<!-- Fisher’s exact test using `fisher.test()`. The test calculates an exact
--->
-<!-- p-value for testing independence by conditioning on the observed margins:
--->
-<!-- the row totals $R_i = \sum_{j=1}^C O_{ij}$ and the column totals   -->
-<!-- $C_j = \sum_{i=1}^R O_{ij}$. These margins define the structure of the
--->
-<!-- contingency table and remain fixed during the test. -->
-<!-- In the $2 \times 2$ case, the p-value is computed from the hypergeometric
--->
-<!-- distribution by summing the probabilities of all tables with the same
-margins   -->
-<!-- as the observed one, whose probabilities under the null are less than or
-equal   -->
-<!-- to that of the observed table. -->
-<!-- For general $R \times C$ tables, `fisher.test()` generalises this approach
--->
-<!-- using the multivariate hypergeometric distribution. -->
-</div>
-<div class="section level3">
-<h3 id="fishers-exact-test-fisher-test">Fisher’s exact test (<code>fisher.test()</code>)<a class="anchor" aria-label="anchor" href="#fishers-exact-test-fisher-test"></a>
-</h3>
+<p>Yates’ continuity correction is applied by default by the underlying
+routine <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code>. ## Fisher’s exact test
+(<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>)</p>
 <p>The
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
 approximation is considered reliable only if no expected cell count is
@@ -1046,6 +1067,7 @@ or equal to that of the observed table.</p>
 tables, <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> generalises this approach using the
 multivariate hypergeometric distribution.</p>
 </div>
+</div>
 <div class="section level3">
 <h3 id="test-choice-and-graphical-output">Test choice and graphical output<a class="anchor" aria-label="anchor" href="#test-choice-and-graphical-output"></a>
 </h3>
@@ -1075,7 +1097,7 @@ are all based on the <code>HairEyeColor</code> contingency table.</p>
 <code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code>. The function transforms the contingency
 table <code>HairEyeColor</code> into <code>data.frame</code> named
 <code>HairEyeColourDataFrame</code>.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">HairEyeColourDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -1085,11 +1107,11 @@ table <code>HairEyeColor</code> into <code>data.frame</code> named
 that hair colour (“Hair”) and eye colour (“Eye”) are independent of each
 other.</p>
 <div class="section level4">
-<h4 id="pearsons-chi2-test">Pearson’s
+<h4 id="pearsons-chi2-test-chisq-test-1">Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test
-(``)<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test"></a>
+(<code>chisq.test()</code>)<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test-chisq-test-1"></a>
 </h4>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_colour_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_colour_df</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-13-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-13-2.png" width="100%"></p>
@@ -1104,16 +1126,15 @@ the strongest deviations are due to over- representation of individuals
 with black hair and brown eyes, and of those with blond hair and blue
 eyes. In contrast, individuals with blond hair and brown eyes are the
 most under- represented.</p>
-</div>
-<div class="section level4">
-<h4 id="pearsons-chi2-test-with-yates-continuity-correction-1">Pearson’s
+<div class="section level5">
+<h5 id="pearsons-chi2-test-with-yates-continuity-correction-1">Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test
 with Yate’s continuity correction<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test-with-yates-continuity-correction-1"></a>
-</h4>
+</h5>
 <p>In the following example, we restrict the data to participants with
 either black or brown hair and either brown or blue eyes, resulting in a
 2-by-2 contingency table.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_black_brown_eyes_brown_blue</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></span>
 <span><span class="co"># Transform to data frame</span></span>
 <span><span class="va">hair_black_brown_eyes_brown_blue_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue</span><span class="op">)</span><span class="op">)</span></span>
@@ -1125,13 +1146,14 @@ independence of the hair colors “brown” and “black” from the eye colours
 “brown” and ” blue”. The mosaic plot shows that blue eyed persons with
 black hair are under- represented. Note the higher p-value of Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test
-with Yate’s continuity correction (p=0.00354) compared to the p-value of
-Pearson’s
+with Yate’s continuity correction (p = 0.00354) compared to the p-value
+of Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test
-(p=0.00229) shown in the mosaic plot.</p>
+(p = 0.00229) shown in the mosaic plot.</p>
+</div>
 </div>
 <div class="section level4">
-<h4 id="fishers-exact-test-fisher-test-1">Fisher’s exact test (<code>fisher.test()</code>)<a class="anchor" aria-label="anchor" href="#fishers-exact-test-fisher-test-1"></a>
+<h4 id="fishers-exact-test-fisher-test">Fisher’s exact test (<code>fisher.test()</code>)<a class="anchor" aria-label="anchor" href="#fishers-exact-test-fisher-test"></a>
 </h4>
 <p>Again, we extract a 2-by-2 contingency table from the full dataset,
 this time keeping only male participants with black or brown hair and
@@ -1144,7 +1166,7 @@ requirement that at least 80% of the expected frequencies must be 5 or
 greater <span class="citation">(Cochran 1954)</span>.</p>
 <p>Therefore, <code><a href="../reference/visstat.html">visstat()</a></code> automatically selects Fisher’s
 exact test instead.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_colour_male</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co"># Slice out a 2 by 2 contingency table</span></span>
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="va">hair_eye_colour_male</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
@@ -1164,7 +1186,7 @@ exact test instead.</p>
 following example, we store the graphics in <code>png</code> format in
 the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>. The file names
 reflect the statistical test used and the variable names involved.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Graphical output written to plotDirectory: In this example </span></span>
 <span><span class="co"># a bar chart to visualise the Chi-squared test and mosaic plot showing</span></span>
 <span><span class="co"># Pearson's residuals.</span></span>
@@ -1172,7 +1194,7 @@ reflect the statistical test used and the variable names involved.</p>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
 <span>  graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"chi_squared_or_fisher_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"mosaic_complete_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
