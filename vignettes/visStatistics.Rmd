@@ -1,6 +1,7 @@
 ---
 output:
   html_vignette:
+ #pdf_document:
     toc: true
     number_sections: true
     toc_depth: 3
@@ -370,7 +371,7 @@ Moreover, since the method assumes independence among tests, it may be overly co
 #### Post-hoc test following an ANOVA: `TukeyHSD()` {.unnumbered}
 
 In contrast to the general-purpose Šidák correction, Tukey's Honestly Significant Differences procedure (`TukeyHSD()`) is specifically designed for pairwise mean comparisons following an ANOVA (either `aov()` or `oneway.test()`).
-It controls the family-wise error rate using a critical value from the studentised range distribution, which properly accounts for the correlated nature of pairwise comparisons sharing a common residual variance [@HochbergTamhane:1987].
+It controls the family-wise error rate using a critical value from the studentised range distribution, which properly accounts for the correlated nature of pairwise comparisons sharing a common residual variance [@Hochberg:1987].
 
 Based on the user-specified confidence level (`conf.level`), `visstat()` constructs confidence intervals for all pairwise differences between factor level means.
 A significant difference between two means is indicated when the corresponding confidence interval does not include zero.
@@ -439,11 +440,11 @@ To stabilise the variance in counts, we apply a square root transformation to th
 insect_sprays_tr <- InsectSprays
 insect_sprays_tr$count_sqrt <- sqrt(InsectSprays$count)
 test_statistic_anova=visstat(insect_sprays_tr, "count_sqrt", "spray")
-test_statistic_anova
+# test_statistic_anova 
 ```
 
 After the transformation, the homogeneity of variances can be assumed ($p>
-\alpha$ as calculated with the `bartlett.test()`), and the p-value of the `aov()` is displayed.
+\alpha$ as calculated with the `bartlett.test()`), and the test statistic and p-value of the `aov()` is displayed.
 
 #### Kruskal--Wallis rank sum test {.unnumbered}
 

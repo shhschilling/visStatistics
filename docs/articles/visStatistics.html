@@ -626,7 +626,7 @@ specifically designed for pairwise mean comparisons following an ANOVA
 (either <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> or <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>). It controls
 the family-wise error rate using a critical value from the studentised
 range distribution, which properly accounts for the correlated nature of
-pairwise comparisons sharing a common residual variance <span class="citation">(<strong>HochbergTamhane:1987?</strong>)</span>.</p>
+pairwise comparisons sharing a common residual variance <span class="citation">(Hochberg and Tamhane 1987)</span>.</p>
 <p>Based on the user-specified confidence level
 (<code>conf.level</code>), <code><a href="../reference/visstat.html">visstat()</a></code> constructs confidence
 intervals for all pairwise differences between factor level means. A
@@ -750,54 +750,12 @@ transformation to the response variable.</p>
 <span><span class="va">test_statistic_anova</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">insect_sprays_tr</span>, <span class="st">"count_sqrt"</span>, <span class="st">"spray"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-6-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-6-2.png" width="100%"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">test_statistic_anova</span></span>
-<span><span class="co">#&gt; $`summary statistics of Fisher's one-way ANOVA`</span></span>
-<span><span class="co">#&gt;             Df Sum Sq Mean Sq F value Pr(&gt;F)    </span></span>
-<span><span class="co">#&gt; fact         5  88.44  17.688    44.8 &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; Residuals   66  26.06   0.395                   </span></span>
-<span><span class="co">#&gt; ---</span></span>
-<span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $`summary statistics of Welch's one-way ANOVA (not assuming equal variances)`</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  One-way analysis of means (not assuming equal variances)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; data:  samples and fact</span></span>
-<span><span class="co">#&gt; F = 39.982, num df = 5.000, denom df = 30.668, p-value = 1.528e-12</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $`adjusted p values from`</span></span>
-<span><span class="co">#&gt;   Tukey multiple comparisons of means</span></span>
-<span><span class="co">#&gt;     95% family-wise confidence level</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Fit: aov(formula = samples ~ fact)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $fact</span></span>
-<span><span class="co">#&gt;           diff        lwr        upr     p adj</span></span>
-<span><span class="co">#&gt; B-A  0.1159530 -0.6369601  0.8688661 0.9975245</span></span>
-<span><span class="co">#&gt; C-A -2.5158217 -3.2687349 -1.7629086 0.0000000</span></span>
-<span><span class="co">#&gt; D-A -1.5963245 -2.3492377 -0.8434114 0.0000006</span></span>
-<span><span class="co">#&gt; E-A -1.9512174 -2.7041305 -1.1983042 0.0000000</span></span>
-<span><span class="co">#&gt; F-A  0.2579388 -0.4949744  1.0108519 0.9144964</span></span>
-<span><span class="co">#&gt; C-B -2.6317747 -3.3846879 -1.8788616 0.0000000</span></span>
-<span><span class="co">#&gt; D-B -1.7122775 -2.4651907 -0.9593644 0.0000001</span></span>
-<span><span class="co">#&gt; E-B -2.0671704 -2.8200835 -1.3142572 0.0000000</span></span>
-<span><span class="co">#&gt; F-B  0.1419858 -0.6109274  0.8948989 0.9935788</span></span>
-<span><span class="co">#&gt; D-C  0.9194972  0.1665841  1.6724103 0.0080813</span></span>
-<span><span class="co">#&gt; E-C  0.5646043 -0.1883088  1.3175175 0.2512638</span></span>
-<span><span class="co">#&gt; F-C  2.7737605  2.0208474  3.5266736 0.0000000</span></span>
-<span><span class="co">#&gt; E-D -0.3548928 -1.1078060  0.3980203 0.7366389</span></span>
-<span><span class="co">#&gt; F-D  1.8542633  1.1013502  2.6071764 0.0000000</span></span>
-<span><span class="co">#&gt; F-E  2.2091561  1.4562430  2.9620693 0.0000000</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $conf.level</span></span>
-<span><span class="co">#&gt; [1] 0.95</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># test_statistic_anova </span></span></code></pre></div>
 <p>After the transformation, the homogeneity of variances can be assumed
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>&gt;</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">p&gt;
 \alpha</annotation></semantics></math> as calculated with the
-<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>), and the p-value of the <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>
-is displayed.</p>
+<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>), and the test statistic and p-value of the
+<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> is displayed.</p>
 </div>
 <div class="section level5">
 <h5 class="unnumbered" id="kruskalwallis-rank-sum-test">Kruskal–Wallis rank sum test<a class="anchor" aria-label="anchor" href="#kruskalwallis-rank-sum-test"></a>
@@ -1287,6 +1245,12 @@ t-Test <span>Instead</span> of <span>Student</span>’s t-Test.”</span>
 <div id="ref-Fisher:1935" class="csl-entry">
 Fisher, Roland A. 1971. <em>The Design of Experiments</em>. 9th ed.
 Macmillan.
+</div>
+<div id="ref-Hochberg:1987" class="csl-entry">
+Hochberg, Yosef, and Ajit C. Tamhane. 1987. <em>Multiple
+<span>Comparison Procedures</span></em>. 1st ed. Wiley
+<span>Series</span> in <span>Probability</span> and
+<span>Statistics</span>. Wiley. <a href="https://doi.org/10.1002/9780470316672" class="external-link">https://doi.org/10.1002/9780470316672</a>.
 </div>
 <div id="ref-Hollander:2014" class="csl-entry">
 Hollander, Myles, Eric Chicken, and Douglas A. Wolfe. 2014.
