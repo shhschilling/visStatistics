@@ -774,7 +774,7 @@ vis_anova <- function(samples,
   
   spread <- maximum - minimum
   
-  mi <- minimum - spread
+  mi <- minimum - 1.2 * spread
   ma <- maximum + 1.2 * spread
   par(mfrow = c(1, 1), oma = c(0, 0, 3, 0))
   
