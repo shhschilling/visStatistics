@@ -50,7 +50,7 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="visstatistics-the-right-test-visualised">visStatistics: The right test, visualised<a class="anchor" aria-label="anchor" href="#visstatistics-the-right-test-visualised"></a>
 </h1></div>
-<p>The R package <code>visStatistics</code> allows for rapid visualisation and statistical analysis of raw data. It automatically selects and visualises the most appropriate statistical hypothesis test between a response (<code>varsample</code>) and a feature (<code>varfactor</code>) within a <code>data.frame</code>. The package focuses on visualising the selected test using appropriate plots - such as box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots and Qâ“Q plots. Each plot is annotated with relevant test statistics and, where applicable, assumption checks and post-hoc results. The scripted workflow is particularly well suited for interactive interfaces, where users access data only through a graphical front end backed by server-side R sessions, as well as for quick data exploration, for example, in statistical consulting contexts.</p>
+<p>The R package <code>visStatistics</code> allows for rapid visualisation and statistical analysis of raw data. It automatically selects and visualises the most appropriate statistical hypothesis test between a response (<code>varsample</code>) and a feature (<code>varfactor</code>) within a <code>data.frame</code>. The package focuses on visualising the selected test using appropriate plots - such as box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots and Q–Q plots. Each plot is annotated with relevant test statistics and, where applicable, assumption checks and post-hoc results. The scripted workflow is particularly well suited for interactive interfaces, where users access data only through a graphical front end backed by server-side R sessions, as well as for quick data exploration, for example, in statistical consulting contexts.</p>
 </div>
 <div class="section level1">
 <h1 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
@@ -109,18 +109,17 @@
 <li>When the response is numerical and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.</li>
 </ol>
 <ul>
-<li><p>If the categorical predictor has exactly two levels, Welchâs t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) is applied whenever both groups contain more than 30 observations, with the validity of the test supported by the approximate normality of the sampling distribution of the mean under the central limit theorem Lumley et al. (2002). For smaller samples, group - wise normality is assessed using the Shapiro - Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) at the significance level <em>Î±</em>. If both groups are found to be approximately normally distributed according to the Shapiro - Wilk test, Welchâs t-test is applied; otherwise, the Wilcoxon rank-sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is used.</p></li>
-<li><p>For predictors with more than two levels, a model of Fisherâs one-way analysis of variables (ANOVA) (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) is initially fitted. The normality of residuals is evaluated using both the Shapiro-Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson-Darling test (<code>ad.test()</code>); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold <em>Î±</em>. If this condition is met, Bartlettâs test (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>) is then used to assess homoscedasticity. When variances are homogeneous (<em>p</em>â&gt;â<em>Î±</em>), Fisherâs one-way ANOVA (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) is applied with Tukeyâs Honestly Significant Differences (HSD) (<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>) for post-hoc comparison. If variances differ significantly (<em>p</em>ââ¤â<em>Î±</em>), Welchâs heteroscedastic one-way ANOVA (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) is used, also followed by Tukeyâs HSD. If residuals are not normally distributed according to both tests (<em>p</em>ââ¤â<em>Î±</em>), the Kruskal-Wallis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is selected, followed by pairwise Wilcoxon tests (<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>). A graphical overview of the decision logic used is provided in the figure below.</p></li>
+<li><p>If the categorical predictor has exactly two levels, Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) is applied whenever both groups contain more than 30 observations, with the validity of the test supported by the approximate normality of the sampling distribution of the mean under the central limit theorem Lumley et al. (2002). For smaller samples, group - wise normality is assessed using the Shapiro - Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) at the significance level <em>α</em>. If both groups are found to be approximately normally distributed according to the Shapiro - Wilk test, Welch’s t-test is applied; otherwise, the Wilcoxon rank-sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is used.</p></li>
+<li><p>For predictors with more than two levels, a model of Fisher’s one-way analysis of variables (ANOVA) (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) is initially fitted. The normality of residuals is evaluated using both the Shapiro-Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson-Darling test (<code>ad.test()</code>); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold <em>α</em>. If this condition is met, Bartlett’s test (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>) is then used to assess homoscedasticity. When variances are homogeneous (<em>p</em> &gt; <em>α</em>), Fisher’s one-way ANOVA (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) is applied with Tukey’s Honestly Significant Differences (HSD) (<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>) for post-hoc comparison. If variances differ significantly (<em>p</em> ≤ <em>α</em>), Welch’s heteroscedastic one-way ANOVA (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) is used, also followed by Tukey’s HSD. If residuals are not normally distributed according to both tests (<em>p</em> ≤ <em>α</em>), the Kruskal-Wallis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is selected, followed by pairwise Wilcoxon tests (<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>). A graphical overview of the decision logic used is provided in the figure below.</p></li>
 </ul>
 <p><img src="reference/figures/decision_tree.png" width="100%" alt="Decision tree used to select the appropriate statistical test."></p>
 <p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
 Decision tree used to select the appropriate statistical test for a categorical predictor and numerical response, based on the number of factor levels, normality, and homoscedasticity.
 </p>
 <ol style="list-style-type: decimal">
-<li>When both the response and predictor are numerical, a simple linear regression model (<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation.</li>
-</ol>
-<!-- (3) Categorical response and categorical predictor --><ol style="list-style-type: decimal">
-<li>In the case of two categorical variables, <code><a href="reference/visstat.html">visstat()</a></code> tests the null hypothesis that the predictor and response variables are independent using either Pearsonâs <em>Ï</em><sup>2</sup>-test (<code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code>) or Fisherâs exact test (<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>). The choice of test is based on Cochranâs rule (Cochran 1954), which advises that the <em>Ï</em><sup>2</sup>approximation is reliable only if no expected cell count is less than 1 and no more than 20 percent of cells have expected counts below 5.</li>
+<li>When both the response and predictor are numerical, a simple linear regression model (<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation. r<!-- (3) Categorical response and categoical predictor -->
+</li>
+<li>In the case of two categorical variables, <code><a href="reference/visstat.html">visstat()</a></code> tests the null hypothesis that the predictor and response variables are independent using either Pearson’s <em>χ</em><sup>2</sup>-test (<code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code>) or Fisher’s exact test (<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>). The choice of test is based on Cochran’s rule (Cochran 1954), which advises that the <em>χ</em><sup>2</sup>approximation is reliable only if no expected cell count is less than 1 and no more than 20 percent of cells have expected counts below 5.</li>
 </ol>
 <p>Note: Except for the user - adjustable <code>conf.level</code> parameter, all statistical tests are applied using their default settings from the corresponding base R functions (e.g., <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>). As a consequence, paired tests are not currently supported. Furthermore, since the main purpose of this package is to visualize statistical test results, only simple linear regression is implemented. For a more detailed description of the underlying decision logic see</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">vignette</span>(<span class="st">"visStatistics"</span>)</span></code></pre></div>
@@ -135,7 +134,7 @@ Decision tree used to select the appropriate statistical test for a categorical 
 </h2>
 <p>When the response is numerical and the feature is categorical, test of central tendencies are selected.</p>
 <div class="section level3">
-<h3 id="welchâs-t-test-ttest">Welchâs t-test (<code>t.test()</code>)<a class="anchor" aria-label="anchor" href="#welch%C3%A2s-t-test-ttest"></a>
+<h3 id="welchs-t-test-ttest">Welch’s t-test (<code>t.test()</code>)<a class="anchor" aria-label="anchor" href="#welchs-t-test-ttest"></a>
 </h3>
 <div class="section level4">
 <h4 id="insectsprays-dataset">InsectSprays dataset<a class="anchor" aria-label="anchor" href="#insectsprays-dataset"></a>
@@ -173,7 +172,7 @@ Decision tree used to select the appropriate statistical test for a categorical 
 <p><img src="reference/figures/README-sex-grades2-data-1.png" width="100%"></p>
 </div>
 <div class="section level3">
-<h3 id="fisherâs-one-way-anova-aov">Fisherâs one-way ANOVA (<code>aov()</code>)<a class="anchor" aria-label="anchor" href="#fisher%C3%A2s-one-way-anova-aov"></a>
+<h3 id="fishers-one-way-anova-aov">Fisher’s one-way ANOVA (<code>aov()</code>)<a class="anchor" aria-label="anchor" href="#fishers-one-way-anova-aov"></a>
 </h3>
 <div class="sourceCode" id="cb16"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>insect_sprays_tr <span class="ot">&lt;-</span> InsectSprays</span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>insect_sprays_tr<span class="sc">$</span>count_sqrt <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(InsectSprays<span class="sc">$</span>count)</span>
@@ -181,16 +180,16 @@ Decision tree used to select the appropriate statistical test for a categorical 
 <p><img src="reference/figures/README-insectprays-anova-data-1.png" width="100%"><img src="reference/figures/README-insectprays-anova-data-2.png" width="100%"></p>
 </div>
 <div class="section level3">
-<h3 id="welchâs-heteroscedastic-one-way-anova-onewaytest">Welchâs heteroscedastic one-way ANOVA (<code>oneway.test()</code>)<a class="anchor" aria-label="anchor" href="#welch%C3%A2s-heteroscedastic-one-way-anova-onewaytest"></a>
+<h3 id="welchs-heteroscedastic-one-way-anova-onewaytest">Welch’s heteroscedastic one-way ANOVA (<code>oneway.test()</code>)<a class="anchor" aria-label="anchor" href="#welchs-heteroscedastic-one-way-anova-onewaytest"></a>
 </h3>
 <div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>one_way_npk <span class="ot">&lt;-</span> <span class="fu">visstat</span>(npk, <span class="st">"yield"</span>, <span class="st">"block"</span>)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"><img src="reference/figures/README-unnamed-chunk-2-2.png" width="100%"></p>
 </div>
 <div class="section level3">
-<h3 id="kruskalâwallis-test-kruskaltest">Kruskalâ“Wallis test (<code>kruskal.test()</code>)<a class="anchor" aria-label="anchor" href="#kruskal%C3%A2wallis-test-kruskaltest"></a>
+<h3 id="kruskalwallis-test-kruskaltest">Kruskal–Wallis test (<code>kruskal.test()</code>)<a class="anchor" aria-label="anchor" href="#kruskalwallis-test-kruskaltest"></a>
 </h3>
 <div class="sourceCode" id="cb18"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">visstat</span>(iris, <span class="st">"Petal.Width"</span>, <span class="st">"Species"</span>)</span></code></pre></div>
-<p><img src="reference/figures/README-iris-kruskal-1.png" width="100%"><img src="reference/figures/README-iris-kruskal-2.png" width="100%"> The generated graphs can be saved in all available formats of the <code>Cairo</code> package. Here we save the graphical output of type âpdfâ in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>:</p>
+<p><img src="reference/figures/README-iris-kruskal-1.png" width="100%"><img src="reference/figures/README-iris-kruskal-2.png" width="100%"> The generated graphs can be saved in all available formats of the <code>Cairo</code> package. Here we save the graphical output of type “pdf” in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">visstat</span>(</span>
 <span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>iris,</span>
 <span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="st">"Petal.Width"</span>,</span>
@@ -216,7 +215,7 @@ Decision tree used to select the appropriate statistical test for a categorical 
 <h2 id="categorical-response-and-categorical-feature">Categorical response and categorical feature<a class="anchor" aria-label="anchor" href="#categorical-response-and-categorical-feature"></a>
 </h2>
 <div class="section level3">
-<h3 id="pearsonâs-ï2-test-chisqtest">Pearsonâs <em>Ï</em><sup>2</sup>-test (<code>chisq.test()</code>)<a class="anchor" aria-label="anchor" href="#pearson%C3%A2s-%C3%AF2-test-chisqtest"></a>
+<h3 id="pearsons-χ2-test-chisqtest">Pearson’s <em>χ</em><sup>2</sup>-test (<code>chisq.test()</code>)<a class="anchor" aria-label="anchor" href="#pearsons-%CF%872-test-chisqtest"></a>
 </h3>
 <p>Count datasets are often presented as multidimensional arrays, so - called contingency tables, whereas <code><a href="reference/visstat.html">visstat()</a></code> requires a <code>data.frame</code> with a column structure. Arrays can be transformed to this column wise structure with the helper function <code><a href="reference/counts_to_cases.html">counts_to_cases()</a></code>:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>hair_eye_color_df <span class="ot">&lt;-</span> <span class="fu">counts_to_cases</span>(<span class="fu">as.data.frame</span>(HairEyeColor))</span>
@@ -224,7 +223,7 @@ Decision tree used to select the appropriate statistical test for a categorical 
 <p><img src="reference/figures/README-chihair-data-1.png" width="100%"><img src="reference/figures/README-chihair-data-2.png" width="100%"></p>
 </div>
 <div class="section level3">
-<h3 id="fisherâs-exact-test-fishertest">Fisherâs exact test (<code>fisher.test()</code>)<a class="anchor" aria-label="anchor" href="#fisher%C3%A2s-exact-test-fishertest"></a>
+<h3 id="fishers-exact-test-fishertest">Fisher’s exact test (<code>fisher.test()</code>)<a class="anchor" aria-label="anchor" href="#fishers-exact-test-fishertest"></a>
 </h3>
 <div class="sourceCode" id="cb22"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>hair_eye_color_male <span class="ot">&lt;-</span> HairEyeColor[, , <span class="dv">1</span>]</span>
 <span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a><span class="co"># Slice out a 2 by 2 contingency table</span></span>
@@ -282,7 +281,7 @@ Decision tree used to select the appropriate statistical test for a categorical 
 <li>
 <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code> (default for larger samples)</li>
 <li>
-<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> (used for small expected cell counts based on Cochranâs rule (Cochran 1954))</li>
+<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> (used for small expected cell counts based on Cochran’s rule (Cochran 1954))</li>
 </ul>
 </div>
 </div>
@@ -290,9 +289,9 @@ Decision tree used to select the appropriate statistical test for a categorical 
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <!-- pkgdown::end -->
-<p>Cochran, William G. 1954. âThe Combination of Estimates from Different Experiments.â <em>Biometrics</em> 10 (1): 101. <a href="https://doi.org/10.2307/3001666" class="external-link uri">https://doi.org/10.2307/3001666</a>.</p>
-<p>Lumley, Thomas, Paula Diehr, Scott Emerson, and Lu Chen. 2002. âThe Importance of the Normality Assumption in Large Public Health Data Sets.â <em>Annual Review of Public Health</em> 23: 151â“69. <a href="https://doi.org/10.1146/annurev.publhealth.23.100901.140546" class="external-link uri">https://doi.org/10.1146/annurev.publhealth.23.100901.140546</a>.</p>
-<p>Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. âThe Two-Sample t Test: Pre-Testing Its Assumptions Does Not Pay Off.â <em>Statistical Papers</em> 52 (1): 219â“31. <a href="https://doi.org/10.1007/s00362-009-0224-x" class="external-link uri">https://doi.org/10.1007/s00362-009-0224-x</a>.</p>
+<p>Cochran, William G. 1954. “The Combination of Estimates from Different Experiments.” <em>Biometrics</em> 10 (1): 101. <a href="https://doi.org/10.2307/3001666" class="external-link uri">https://doi.org/10.2307/3001666</a>.</p>
+<p>Lumley, Thomas, Paula Diehr, Scott Emerson, and Lu Chen. 2002. “The Importance of the Normality Assumption in Large Public Health Data Sets.” <em>Annual Review of Public Health</em> 23: 151–69. <a href="https://doi.org/10.1146/annurev.publhealth.23.100901.140546" class="external-link uri">https://doi.org/10.1146/annurev.publhealth.23.100901.140546</a>.</p>
+<p>Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. “The Two-Sample t Test: Pre-Testing Its Assumptions Does Not Pay Off.” <em>Statistical Papers</em> 52 (1): 219–31. <a href="https://doi.org/10.1007/s00362-009-0224-x" class="external-link uri">https://doi.org/10.1007/s00362-009-0224-x</a>.</p>
 </div>
 </div>
 
