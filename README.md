@@ -39,47 +39,33 @@ test results are returned as a list object.
 
 # Installation of latest stable version from CRAN
 
-1.  Install the package
-
-<!-- -->
+**1.** Install the package
 
     install.packages("visStatistics")
 
-1.  Load the package
-
-<!-- -->
+**2.** Load the package
 
     library(visStatistics)
 
 # Installation of the development version from GitHub
 
-1.  Install **devtools** from CRAN if not already installed:
-
-<!-- -->
+**1.** Install **devtools** from CRAN if not already installed:
 
     install.packages("devtools")
 
-1.  Load the **devtools** package:
-
-<!-- -->
+**2.** Load the **devtools** package:
 
     library(devtools)
 
-1.  Install the `visStatistics` package from GitHub:
-
-<!-- -->
+**3.** Install the `visStatistics` package from GitHub:
 
     install_github("shhschilling/visStatistics")
 
-1.  Load the `visStatistics` package:
-
-<!-- -->
+**6.** Load the `visStatistics` package:
 
     library(visStatistics)
 
-1.  View help for the main function:
-
-<!-- -->
+**7.** View help for the main function:
 
     ? visstat
 
