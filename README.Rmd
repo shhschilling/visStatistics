@@ -63,51 +63,35 @@ test results are returned as a list object.
 # Installation of latest stable version from CRAN
 
 1. Install the package
-
 ``` {r install, eval = FALSE}
 install.packages("visStatistics")
 ```
-
 2. Load the package
-
 ```{r load, eval = FALSE}
 library(visStatistics)
 ```
-
 # Installation of the development version from GitHub
-
 1. Install **devtools** from CRAN if not already installed:
-
 ``` {r install-devtools, eval = FALSE}
 install.packages("devtools")
 ```
-
 2. Load the **devtools** package:
-
 ``` {r load-devtools, eval = FALSE}
 library(devtools)
 ```
-
 3. Install the `visStatistics` package from GitHub:
-
 ``` {r install-github, eval = FALSE}
 install_github("shhschilling/visStatistics")
 ```
-
 4. Load the `visStatistics` package:
-
 ``` {r load-library, eval = FALSE}
 library(visStatistics)
 ```
-
 5. View help for the main function:
-
 ``` {r load-visstat, eval = FALSE}
 ? visstat
 ```
-
 6. Study all the details of the package in its vignette:
-
 ``` {r visstat-vignette, eval = FALSE}
 vignette("visStatistics")
 ```
@@ -126,8 +110,6 @@ Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank-sum test (`wi
 If this condition is met, Bartlett's test (`bartlett.test()`) is then used to assess homoscedasticity. When variances are homogeneous ($p > \alpha$), Fisher's one-way ANOVA (`aov()`) is applied with Tukey's Honestly Significant Differences (HSD) (`TukeyHSD()`) for post-hoc comparison. If variances differ significantly ($p \le \alpha$), Welch's heteroscedastic one-way ANOVA (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal-Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
 A graphical overview of the decision logic used is provided in the figure below.
 
-
-
 <div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: left;">
 
 <img src="man/figures/decision_tree.png" width="100%" 
@@ -138,16 +120,10 @@ Decision tree used to select the appropriate statistical test for a categorical
 predictor and numerical response, based on the number of factor levels, normality,
 and homoscedasticity.
 </p>
-
 </div>
-
-
-
-
 (2)
 When both the response and predictor are numerical, a simple linear regression model (`lm()`) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation.
-
-<!-- (3) Categorical response and categorical predictor -->
+r<!-- (3) Categorical response and categoical predictor -->
 (3)
 In the case of two categorical variables, `visstat()` tests the null hypothesis that the predictor and response variables are independent using either Pearson’s \( \chi^2 \)-test (`chisq.test()`) or Fisher's exact test (`fisher.test()`). The choice of test is based on Cochran's rule [@Cochran:1954], which advises that the $\chi^2$approximation is reliable only if no expected cell count is less than 1 and no more than 20 percent of cells have expected counts below 5.
 
