@@ -102,7 +102,7 @@ tests that remain valid under the the following decision logic:
 1.  When the response is numerical and the predictor is categorical, a
     statistical hypothesis test of central tendencies is selected.
 
-- If the categorical predictor has exactly two levels, Welch�s t-test
+- If the categorical predictor has exactly two levels, Welch’s t-test
   (`t.test()`) is applied whenever both groups contain more than 30
   observations, with the validity of the test supported by the
   approximate normality of the sampling distribution of the mean under
@@ -146,10 +146,8 @@ factor levels, normality, and homoscedasticity.
     fitted values with confidence bands. Note that only one explanatory
     variable is allowed, as the function is designed for two-dimensional
     visualisation.
-
-<!-- (3) Categorical response and categorical predictor -->
-
-1.  In the case of two categorical variables, `visstat()` tests the null
+    r<!-- (3) Categorical response and categoical predictor -->
+2.  In the case of two categorical variables, `visstat()` tests the null
     hypothesis that the predictor and response variables are independent
     using either Pearson’s *χ*<sup>2</sup>-test (`chisq.test()`) or
     Fisher’s exact test (`fisher.test()`). The choice of test is based
