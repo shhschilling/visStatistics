@@ -61,17 +61,15 @@ test results are returned as a list object.
 
     install_github("shhschilling/visStatistics")
 
-**6.** Load the `visStatistics` package:
+**4.** Load the `visStatistics` package:
 
     library(visStatistics)
 
-**7.** View help for the main function:
+**5.** View help for the main function:
 
     ? visstat
 
-1.  Study all the details of the package in its vignette:
-
-<!-- -->
+**6.** Study all the details of the package in its vignette:
 
     vignette("visStatistics")
 
