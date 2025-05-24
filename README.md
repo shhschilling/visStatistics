@@ -102,7 +102,7 @@ tests that remain valid under the the following decision logic:
 1.  When the response is numerical and the predictor is categorical, a
     statistical hypothesis test of central tendencies is selected.
 
-- If the categorical predictor has exactly two levels, Welchâ€™s t-test
+- If the categorical predictor has exactly two levels, Welchâs t-test
   (`t.test()`) is applied whenever both groups contain more than 30
   observations, with the validity of the test supported by the
   approximate normality of the sampling distribution of the mean under
