@@ -905,7 +905,7 @@ vis_Kruskal_Wallis_clusters <- function(samples,
   samples <- samples3
   n_classes <- length(unique(fact))
   # define color scheme dependent on number of classes
-  
+
   mc <- rainbow(n_classes, alpha = 1)
   # mc=ColorPalette(n_classes)
   
@@ -992,7 +992,12 @@ vis_Kruskal_Wallis_clusters <- function(samples,
     lwd = 2
   )
   
-  title(paste(kk$method, ": p =", signif(kk$p.value, digits = 3)), outer = TRUE)
+  
+  kk_value <- round(as.numeric(kk$statistic),2)
+  
+  title(paste(kk$method,
+               "\n H = ",kk_value,
+              ", p = ", signif(kk$p.value, digits = 3)), outer = TRUE)
   my_list <-
     list("kruskal_wallis" = kk,
          "adjusted_p_values_wilcoxon" = tuk)

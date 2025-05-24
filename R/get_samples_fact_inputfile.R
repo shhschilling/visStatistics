@@ -1,4 +1,4 @@
-# Helper function in visstat----
+# Internal helper function in visstat----
 #' Selects columns defined by characters varsample and varfactor from
 #' a data.frame
 #'
@@ -17,8 +17,8 @@
 #'
 #' @examples
 #' get_samples_fact_inputfile(trees, "Girth", "Height")
-#'
-#' @export
+#' @noRd
+
 get_samples_fact_inputfile <- function(dataframe, varsample, varfactor) {
   # json input------
   if (is.null(dim(dataframe)))

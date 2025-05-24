@@ -195,13 +195,10 @@ visstat <- function(dataframe,
   stopifnot(varsample %in% names(dataframe))
   stopifnot(varfactor %in% names(dataframe))
   
-  
-  
   # store default graphical parameters------
   oldparvisstat <- par(no.readonly = TRUE)
   oldparvisstat$new <- FALSE # reset the default value
   on.exit(par(oldparvisstat))
-  
   
   # Set default values---------------------------
   alpha <- 1 - conf.level
