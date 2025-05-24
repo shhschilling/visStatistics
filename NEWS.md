@@ -1,3 +1,10 @@
+# visStatistics 0.1.5
+
+## News
+
+Following internal helper functions are not longer exported to NAMESPACE:
+get_samples_fact_inputfile.R
+
 # visStatistics 0.1.4
 
 ## News
