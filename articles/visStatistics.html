@@ -78,10 +78,11 @@ graphs (box plots, bar charts, regression lines with confidence bands,
 mosaic plots, residual plots, Q-Q plots), annotated with the main test
 results, including any assumption checks and post-hoc analyses. A
 minimal function call looks like:</p>
-<p><code>visstat(dataframe, varsample = "response", varfactor = "predictor")</code></p>
-<p>The input <code>data.frame</code> must be column-based.
-<code>varsample</code> and <code>varfactor</code> must be character
-strings naming columns of the <code>data.frame</code>.</p>
+<p><code>visstat(dataframe,  "response",  "predictor")</code></p>
+<p><code>dataframe</code> must be a column-based
+<code>data.frame</code>. Both <code>response</code> and
+<code>predictor</code> are character strings that must match column
+names in the <code>dataframe</code>.</p>
 <p>This scripted workflow is particularly suited for browser-based
 interfaces that rely on server-side R applications connected to secure
 databases, where users have no direct access, or for quick data
