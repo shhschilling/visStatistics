@@ -422,7 +422,7 @@ In this experiment, the application of three different fertilisers -- nitrogen (
 Each block received either none, one, two, or all three of the fertilisers,
 
 ```{r}
-oneway_npk <- visstat(npk, "yield", "block",conf.level=0.99)
+oneway_npk <- visstat(npk, "yield", "block",conf.level=0.90)
 ```
 
 Normality of residuals is supported by graphical diagnostics (scatter plot of standardised residuals, Q-Q plot) and formal tests (Shapiro--Wilk and Anderson- Darling, both with $p > \alpha$).
