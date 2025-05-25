@@ -79,11 +79,11 @@
 #'
 #' @param dataframe \code{data.frame} with at least two columns.
 #' @param varsample \code{character} string matching a column name in 
-#'   \code{dataframe}. interpreted as the response if the referenced column is 
+#'   \code{dataframe}. Interpreted as the response if the referenced column is 
 #'   of class \code{numeric} or \code{integer} and the column named by 
 #'   \code{varfactor} is of class \code{factor}.
 #' @param varfactor \code{character} string matching a column name in 
-#'   \code{dataframe}. interpreted as the grouping variable if the referenced 
+#'   \code{dataframe}. Interpreted as the grouping variable if the referenced 
 #'   column is of class \code{factor} and the column named by \code{varsample} 
 #'   is of class \code{numeric} or \code{integer}.
 #' @param conf.level Confidence level
