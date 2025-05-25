@@ -1,20 +1,13 @@
 ---
 output: rmarkdown::html_document
-bibliography: vignettes/visstat.bib
-#csl: apa.csl  # optional, if you want citation styling
-editor_options: 
-  markdown: 
-    wrap: 72
 ---
-
-<!-- README.md is automatically generated from README.Rmd. Please only edit this Rmd file! -->
-
-<!-- knitr before every resubmission -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
+  eval = TRUE,
   collapse = TRUE,
+  warning = FALSE,
   comment = "#>",
   fig.width = 8,
   fig.height = 5,
@@ -23,21 +16,18 @@ knitr::opts_chunk$set(
 )
 ```
 <!-- pkgdown::start -->
-# visStatistics: The right test, visualised
+# visStatistics: The right test, visualised.
 
-The R package `visStatistics` allows for rapid visualisation and statistical
+The R package `visStatistics` allows for rapid **vis**ualisation and statistical
 analysis of raw data. It automatically selects and visualises the most
-appropriate statistical hypothesis test between a
+appropriate **statistic**al hypothesis test between a
 response (`varsample`) and a feature (`varfactor`) within a
 `data.frame`.
-The package focuses on visualising the selected test using appropriate plots -
-such as box plots, bar charts, regression lines with confidence bands, 
-mosaic plots, residual plots and Q--Q plots. Each plot is annotated with relevant
-test statistics and, where applicable, assumption checks and post-hoc results.
-The scripted workflow is particularly well suited for interactive interfaces,
-where users access data only through a graphical front end backed by server-side
-R sessions, as well as for quick data exploration, for example, in statistical
-consulting contexts.
+
+This workflow is particularly suited for browser - based interfaces 
+that rely on server -side R applications connected to secure databases, 
+where users have no direct access, or for quick data visualisation,
+e.g. in statistical consulting projects.
 
 # Getting Started
 A minimal function call looks of its main function `visstat()` looks
@@ -62,79 +52,91 @@ test results are returned as a list object.
 
 # Installation of latest stable version from CRAN
 
-**1.** Install the package
+1. Install the package
+
 ``` {r install, eval = FALSE}
 install.packages("visStatistics")
 ```
-**2.** Load the package
+
+2. Load the package
+
 ```{r load, eval = FALSE}
 library(visStatistics)
 ```
+
 # Installation of the development version from GitHub
-**1.** Install **devtools** from CRAN if not already installed:
+
+1. Install **devtools** from CRAN if not already installed:
+
 ``` {r install-devtools, eval = FALSE}
 install.packages("devtools")
 ```
-**2.** Load the **devtools** package:
+
+2. Load the **devtools** package:
+
 ``` {r load-devtools, eval = FALSE}
 library(devtools)
 ```
-**3.** Install the `visStatistics` package from GitHub:
+
+3. Install the `visStatistics` package from GitHub:
+
 ``` {r install-github, eval = FALSE}
 install_github("shhschilling/visStatistics")
 ```
-**4.** Load the `visStatistics` package:
+
+4. Load the `visStatistics` package:
+
 ``` {r load-library, eval = FALSE}
 library(visStatistics)
 ```
-**5.** View help for the main function:
+
+5. View help for the main function:
+
 ``` {r load-visstat, eval = FALSE}
 ? visstat
 ```
-**6.** Study all the details of the package in its vignette:
-``` {r visstat-vignette, eval = FALSE}
-vignette("visStatistics")
-```
+
 # Decision logic
 
-Throughout the remainder, data of class `"numeric"` or `"integer"` are referred as numerical, while data of class `"factor"` are referred to as categorical. The choice of statistical tests performed by the function `visstat()` depends on whether the data are numerical or categorical, the number of levels in the categorical variable, and the distribution of the data. The function prioritizes interpretable visual output and tests that remain valid under the the following decision logic:
+Throughout the remainder, data of class `"numeric"` or `"integer"` are referred as numeric, while data of class `"factor"` are referred to as categorical.
 
-<br>
-**(1)** When the response is numerical and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.
- 
-- If the categorical predictor has exactly two levels, Welch's t-test (`t.test()`) is applied whenever both groups contain more than 30 observations, with the validity of the test supported by the approximate normality of the sampling distribution of the mean under the central limit theorem
-[@Rasch:2011, @Lumley:2002]. For smaller samples, group - wise normality is assessed using the Shapiro -
-Wilk test (`shapiro.test()`) at the significance level $\alpha$. If both groups are found to be approximately normally distributed according to the Shapiro -
+The choice of statistical tests performed by the function `visstat()` depends on whether the data are numeric or categorical, the number of levels in the categorical variable, and the distribution of the data. The function prioritizes interpretable visual output and tests that remain valid under the the fowlloing decision logic:
+
+
+When the response is numeric and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.
+- If the categorical predictor has exactly two levels, Welch’s t - test (`t.test()`), is applied whenever both groups contain more than 30 observations, with the validity of the test supported by the approximate normality of the sampling distribution of the mean under the central limit theorem
+[@Rasch:2011vl
+@Lumley2002dsa]. For smaller samples, group - wise normality is assessed using the Shapiro -
+Wilk test (`shapiro.test()`) at the significance level$\alpha$. If both groups are found to be approximately normally distributed according to the Shapiro -
 Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank-sum test (`wilcox.test()`) is used.
 
-- For predictors with more than two levels, a model of Fisher's one-way analysis of variables (ANOVA) (`aov()`) is initially fitted. The normality of residuals is evaluated using both the Shapiro-Wilk test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.
-If this condition is met, Bartlett's test (`bartlett.test()`) is then used to assess homoscedasticity. When variances are homogeneous ($p > \alpha$), Fisher's one-way ANOVA (`aov()`) is applied with Tukey's Honestly Significant Differences (HSD) (`TukeyHSD()`) for post-hoc comparison. If variances differ significantly ($p \le \alpha$), Welch's heteroscedastic one-way ANOVA (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal-Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
-A graphical overview of the decision logic used is provided in the figure below.
+- For predictors with more than two levels, an ANOVA model (`aov()`) is initially fitted. The normality of residuals is evaluated using both the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.
+If this condition is met, Bartlett's test (`bartlett.test()`) is then used to assess homoscedasticity. When variances are homogeneous ($p > \alpha$), ANOVA is applied with Tukey's HSD (`TukeyHSD()`) for post-hoc comparison. If variances differ significantly ($p \le \alpha$), Welch's one -
+way test (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal-Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
+A graphical overview of the decision logic used is provided in below figure.
 
-<br>
-</p>
 <div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: left;">
 
-<img src="inst/figures/decision_tree.png" width="100%" 
+<img src="man/figures/decision_tree.png" width="100%" 
      alt="Decision tree used to select the appropriate statistical test.">
 
 <p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
-<br>
 Decision tree used to select the appropriate statistical test for a categorical
-predictor and numerical response, based on the number of factor levels, normality,
+predictor and numeric response, based on the number of factor levels, normality,
 and homoscedasticity.
 </p>
+
 </div>
-<p>
-<br>
-**(2)** When both the response and predictor are numerical, a simple linear regression model (`lm()`) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation.
 
-<br>
-**(3)** In the case of two categorical variables, `visstat()` tests the null hypothesis that the predictor and response variables are independent using either Pearson’s \( \chi^2 \)-test (`chisq.test()`) or Fisher's exact test (`fisher.test()`). The choice of test is based on Cochran's rule [@Cochran:1954], which advises that the $\chi^2$approximation is reliable only if no expected cell count is less than 1 and no more than 20 percent of cells have expected counts below 5.
 
-Note: Except for the user - adjustable `conf.level` parameter, all statistical tests are applied using their default settings from the corresponding base R functions (e.g., `t.test()`). As a consequence, paired tests are not currently supported. Furthermore, since the main purpose of this package is to visualize statistical test results, only simple linear regression is implemented.
+
+When both the response and predictor are numeric, a simple linear regression model (`lm()`) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation.
+
+<!-- (3) Categorical response and categorical predictor -->
+When both variables are categorical, `visstat()` tests the null hypothesis that the predictor and response variables are independent using either `chisq.test()` or `fisher.test()`. The choice of test is based on Cochran's rule [@Cochran], which advises that the$\chi^2$approximation is reliable only if no expected cell count is zero and no more than 20 percent of cells have expected counts below 5.
+
+Note:Except for the user - adjustable `conf.level` parameter, all statistical tests are applied using their default settings from the corresponding base R functions (e.g., `t.test()`). As a consequence, paired tests are not currently supported. Furthermore, since the main purpose of this package is to visualize statistical test results, only simple linear regression is implemented.
 For a more detailed description of the underlying decision logic see
-<p>
 
 ``` {r vignette,eval=FALSE}
 vignette("visStatistics")
@@ -149,18 +151,16 @@ vignette("visStatistics")
 library(visStatistics)
 ```
 
-In this section, function names in parentheses in the headings indicate the
-statistical test selected by the decision logic of `visstat()`.
 
-## Numerical response and categorical feature
+## Numerical response ~ categorical feature
 When the response is numerical and the feature is categorical, test of
 central tendencies are selected.
 
-### Welch's t-test (`t.test()`)
+### Welch two sample t-test
 
-#### InsectSprays dataset
+#### InsectSprays data set
 
-```{r insect-sprays-data, eval = TRUE}
+```{r insect-sprays, eval = TRUE}
 insect_sprays_a_b <-
 InsectSprays[which(InsectSprays$spray == "A" |
 InsectSprays$spray == "B"), ]
@@ -168,16 +168,17 @@ insect_sprays_a_b$spray <- factor(insect_sprays_a_b$spray)
 visstat(insect_sprays_a_b, "count", "spray")
 ```
 
-#### mtcars dataset
+#### mtcars data set
 
-```{r mtcars-data}
+```{r mtcars}
 mtcars$am <- as.factor(mtcars$am)
 t_test_statistics <- visstat(mtcars, "mpg", "am")
-#t_test_statistics
+t_test_statistics
 ```
-### Wilcoxon rank-sum test (`wilcox.test()`)
+### Wilcoxon rank sum test
 
-```{r sex-grades2-data}
+
+```{r sex-grades2}
 grades_gender <- data.frame(
   sex = factor(rep(c("girl", "boy"), times = c(21, 23))),
   grade = c(
@@ -191,22 +192,21 @@ grades_gender <- data.frame(
 wilcoxon_statistics <- visstat(grades_gender, "grade", "sex")
 ```
 
-###  Fisher's one-way ANOVA (`aov()`)
+### ANOVA
 
-```{r insectprays-anova-data}
+```{r}
 insect_sprays_tr <- InsectSprays
 insect_sprays_tr$count_sqrt <- sqrt(InsectSprays$count)
 visstat(insect_sprays_tr, "count_sqrt", "spray")
 ```
 
-###  Welch’s heteroscedastic one-way ANOVA (`oneway.test()`)
+### One-way test
 
 ```{r}
 one_way_npk <- visstat(npk, "yield", "block")
 ```
 
-### Kruskal–Wallis test (`kruskal.test()`)
-
+### Kruskal-Wallis test
 ```{r iris-kruskal}
 visstat(iris, "Petal.Width", "Species")
 ```
@@ -224,9 +224,7 @@ plotDirectory = tempdir()
 )
 ```
 
-## Numerical response and numerical feature: 
-
-### Simple linear Regression (`lm()`)
+## Numerical response ~ numerical feature: Linear Regression
 
 ```{r lin-reg-dist-speed}
 linreg_cars <- visstat(cars, "dist", "speed")
@@ -239,19 +237,20 @@ Increasing the confidence level `conf.level` from the default 0.95 to
 linreg_cars_99 <- visstat(cars, "dist", "speed", conf.level = 0.99)
 ```
 
-## Categorical response and categorical feature
+## Categorical response ~ categorical feature
 
-### Pearson’s $\chi^2$-test (`chisq.test()`)
+### Pearson's Chi-squared test
 
-Count datasets are often presented as multidimensional arrays, so - called contingency tables, whereas `visstat()` requires a
+Count data sets are often presented as multidimensional arrays, so - called contingency tables, whereas `visstat()` requires a
 `data.frame` with a column structure. Arrays can be transformed to this
-column wise structure with the helper function `counts_to_cases()`:
-```{r chihair-data}
+column wise structure with the helper function `counts_to_cases()`:```{
+r
+}
 hair_eye_color_df <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(hair_eye_color_df, "Hair", "Eye")
 ```
 
-### Fisher's exact test (`fisher.test()`)
+### Fisher's exact test
 
 ```{r haireye-fisher}
 hair_eye_color_male <- HairEyeColor[, , 1]
@@ -264,7 +263,6 @@ fisher_stats <- visstat(black_brown_hazel_green_male, "Hair", "Eye")
 ```
 
 ## Implemented tests
-Note that all test are implemented with  their default settings, with the exception of the user-adjustable  `conf.level`.
 
 ### Numerical response and categorical feature
 
@@ -280,23 +278,21 @@ Note that all test are implemented with  their default settings, with the except
 
 `bartlett.test()`
 
-#### Post-hoc tests
-- `TukeyHSD()` (used following `aov()`and `oneway.test()`)
-- `pairwise.wilcox.test()` (used following `kruskal.test()`)
+#### Post-hoc tests-`TukeyHSD()` (used following `aov()`and `oneway.test()`)
+-  `pairwise.wilcox.test()` (used following `kruskal.test()`)
 
 
-### Numerical response and numerical feature: 
-Simple linear regression:
-`lm()`
+### Numerical response and numerical feature
+
+When both the response and feature are numerical, a simple linear
+regression model is fitted:`lm()`
 
 Note that multiple linear regression models are not implemented, as the package focuses
 on the visualisation of data, not model building.
+### Categorical response and categorical predictor
 
-
-### Categorical response and categorical feature
-- `chisq.test()` (default for larger samples)
-- `fisher.test()` (used for small expected cell counts based on
-Cochran's rule [@Cochran:1954])
-
-## References
+When both variables are categorical, `visstat()` tests the null
+hypothesis of independence using one of the following:-`chisq.test()` (default for larger samples)
+-  `fisher.test()` (used for small expected cell counts based on
+Cochran's rule)
 <!-- pkgdown::end -->
