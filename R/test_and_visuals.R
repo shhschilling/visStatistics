@@ -386,7 +386,7 @@ two_sample_wilcoxon_test <- function(samples,
   )
   # text(1:length(b$n), b$stats[5,]+1, paste("n=", b$n))
   text(1:length(b$n), c(ma, ma), paste("N =", b$n))
-  t <- wilcox.test(samples ~ fact, alternative = alternative, na.action = na.omit)
+  t <- suppressWarnings(wilcox.test(samples ~ fact, alternative = alternative, na.action = na.omit))
   p_value <- t$p.value
   p_value <- formatC(signif(p_value, digits = 2))
   

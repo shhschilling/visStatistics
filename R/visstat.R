@@ -225,9 +225,8 @@ visstat <- function(dataframe,
   typefactor <-
     class(fact) # type of independent variable returned as a character vector
   
-  if 
-  (typefactor == "numeric" | typefactor == "integer" & typesample == "factor")
-  { warning("Using a numerical feature with a factor response will be ignored.")
+  if ((typefactor == "numeric" || typefactor == "integer") && typesample == "factor") {
+    warning("A numeric or integer predictor with a factor response is ignored.")
   }
   
   # transform independent variable "fact" of class "character" to factor
