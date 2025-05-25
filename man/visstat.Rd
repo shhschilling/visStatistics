@@ -17,18 +17,19 @@ visstat(
 )
 }
 \arguments{
-\item{dataframe}{\code{data.frame} containing at least two columns. Data must
-be column wise ordered.}
+\item{dataframe}{\code{data.frame} with at least two columns.}
 
-\item{varsample}{column name of the dependent variable (response) in
-\code{dataframe}, datatype \code{character}. \code{varsample} must be one
-entry of the list \code{names(dataframe)}.}
+\item{varsample}{\code{character} string matching a column name in 
+\code{dataframe}. interpreted as the response if the referenced column is 
+of class \code{numeric} or \code{integer} and the column named by 
+\code{varfactor} is of class \code{factor}.}
 
-\item{varfactor}{column name of the independent variable (feature) in
-\code{dataframe}, datatype \code{character}.\code{varsample} must be one
-entry of the list \code{names(dataframe)}.}
+\item{varfactor}{\code{character} string matching a column name in 
+\code{dataframe}. interpreted as the grouping variable if the referenced 
+column is of class \code{factor} and the column named by \code{varsample} 
+is of class \code{numeric} or \code{integer}.}
 
-\item{conf.level}{confidence level}
+\item{conf.level}{Confidence level}
 
 \item{numbers}{a logical indicating whether to show numbers in mosaic count
 plots.}
@@ -80,8 +81,8 @@ whether the data are numerical or categorical, the number of levels in the
 categorical variable, the distribution of the data, and the chosen
 \code{conf.level}. The function prioritises interpretable visual output and
 tests that remain valid under their assumptions, following the logic below:
-1. 
-When the response is numerical and the predictor is categorical, tests of
+
+(1) When the response is numerical and the predictor is categorical, tests of
 central tendency are performed. If the predictor has two levels:
 \code{t.test()} is used if both groups have more than 30 observations (Lumley
 et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). For smaller
@@ -95,21 +96,26 @@ variance is tested with \code{bartlett.test()}. If \code{p > alpha},
 \code{aov()} with \code{TukeyHSD()} is used. If \code{p <= alpha},
 \code{oneway.test()} is applied with \code{TukeyHSD()}. If residuals are not
 normal, \code{kruskal.test()} with \code{pairwise.wilcox.test()} is used.
-2.:
-When both the response and predictor are numerical, a linear model
+
+(2): When both the response and predictor are numerical, a linear model
 \code{lm()} is fitted, with residual diagnostics and a confidence band plot.
-3.:
-When both variables are categorical, \code{visstat()} uses
+
+(3): When both variables are categorical, \code{visstat()} uses
 \code{chisq.test()} or \code{fisher.test()} depending on expected counts,
 following Cochran's rule (Cochran (1954) <doi:10.2307/3001666>).
-Implemented main tests: \code{t.test()}, \code{wilcox.test()}, \code{aov()},
+
+Implemented main tests: 
+
+\code{t.test()}, \code{wilcox.test()}, \code{aov()},
 \code{oneway.test()}, \code{lm()}, \code{kruskal.test()},
 \code{fisher.test()}, \code{chisq.test()}.
+
 Implemented tests for assumptions:
 \itemize{
   \item Normality: \code{shapiro.test()} and \code{ad.test()}
   \item Heteroscedasticity: \code{bartlett.test()}
 }
+
 Implemented post hoc tests:
 \itemize{
   \item \code{TukeyHSD()} for \code{aov()} and \code{oneway.test()}
@@ -117,7 +123,6 @@ Implemented post hoc tests:
 }
 }
 \examples{
-# Function names in parentheses in the headings indicate the
 # Welch Two Sample t-test (t.test())
 visstat(mtcars, "mpg", "am")
 

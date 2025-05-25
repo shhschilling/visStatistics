@@ -4,7 +4,7 @@ This is a resubmission of the package after addressing the following issues:
   
   ### What was fixed
   
-  - Reduced the package tarball size from 5.3 MB to 3.1 MB by:
+  - Reduced the package tarball size from 5.3 MB to 4.3 MB by:
 - Excluding development artefacts via `.Rbuildignore`, such as:
   - `vignettes/*.html`
   - `vignettes/*.ppt`
