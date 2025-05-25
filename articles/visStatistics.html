@@ -70,7 +70,7 @@ Schilling</h4>
 </h2>
 <p><code>visStatistics</code> automatically selects and visualises
 appropriate statistical hypothesis tests between a response and a
-feature variable in a data frame. The choice of test depends on the
+predictor variable in a data frame. The choice of test depends on the
 <code>class</code>, distribution, and sample size of the input
 variables, as well as the user-defined ‘conf.level’. The main function
 <code><a href="../reference/visstat.html">visstat()</a></code> visualises the selected test with appropriate
@@ -78,18 +78,14 @@ graphs (box plots, bar charts, regression lines with confidence bands,
 mosaic plots, residual plots, Q-Q plots), annotated with the main test
 results, including any assumption checks and post-hoc analyses. A
 minimal function call looks like:</p>
-<p><code>visstat(dataframe, varsample = "response", varfactor = "feature")</code></p>
-<p>The input <code>data.frame</code> must be column-based, and the
-response <code>varsample</code> and feature <code>varfactor</code> must
-be character strings naming columns of the <code>data.frame</code>.</p>
+<p><code>visstat(dataframe, varsample = "response", varfactor = "predictor")</code></p>
+<p>The input <code>data.frame</code> must be column-based.
+<code>varsample</code> and <code>varfactor</code> must be character
+strings naming columns of the <code>data.frame</code>.</p>
 <p>This scripted workflow is particularly suited for browser-based
 interfaces that rely on server-side R applications connected to secure
 databases, where users have no direct access, or for quick data
 visualisations, e.g., in statistical consulting projects.</p>
-<p>This scripted workflow is particularly well suited for interactive
-interfaces where users access data only through a graphical front end
-backed by server-side R sessions, as well as for quick data exploration
-e.g. in statistical consulting contexts.</p>
 <p>The remainder of this vignette is organised as follows:</p>
 <ul>
 <li><p>Section 2 summarises the decision logic used to select a
@@ -171,7 +167,7 @@ factor levels, normality, and homoscedasticity.
 </div>
 </div>
 <div class="section level3">
-<h3 id="numerical-response-and-numerical-feature">Numerical response and numerical feature<a class="anchor" aria-label="anchor" href="#numerical-response-and-numerical-feature"></a>
+<h3 id="numerical-response-and-numerical-predictor">Numerical response and numerical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-numerical-predictor"></a>
 </h3>
 <p>When both the response and predictor are numeric, a simple linear
 regression model (<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>) is fitted and analysed in detail,
@@ -181,38 +177,40 @@ predictor variable is allowed, as the function is designed for
 two-dimensional visualisation.</p>
 </div>
 <div class="section level3">
-<h3 id="categorical-response-and-categorical-feature">Categorical response and categorical feature<a class="anchor" aria-label="anchor" href="#categorical-response-and-categorical-feature"></a>
+<h3 id="both-variables-categorical">Both variables categorical<a class="anchor" aria-label="anchor" href="#both-variables-categorical"></a>
 </h3>
-<p>In the case of two categorical variables, <code><a href="../reference/visstat.html">visstat()</a></code>
-tests the null hypothesis that the predictor and response variables are
-independent using either Pearson’s
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>-test
-(<code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code>) or Fisher’s exact test
-(<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>). The choice of test is based on Cochran’s
-rule <span class="citation">(Cochran 1954)</span>, which advises that
-the
+<p>When both variables are categorical, no direction is assumed; the
+order of variables in the function call does not affect the test
+statistic, but it does influence the graphical output. For consistency,
+we continue referring to the variables as <em>predictor</em> and
+<em>response</em>.</p>
+<p><code><a href="../reference/visstat.html">visstat()</a></code> tests the null hypothesis that the variables
+are independent using either Pearson’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
+test (<code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code>) or Fisher’s exact test
+(<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>), depending on expected cell counts. The
+choice of test is based on Cochran’s rule <span class="citation">(Cochran 1954)</span>, which advises that the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>approximation
 is reliable only if no expected cell count is less than 1 and no more
 than 20 percent of cells have expected counts below 5.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="numerical-response-and-categorical-feature">Numerical response and categorical feature<a class="anchor" aria-label="anchor" href="#numerical-response-and-categorical-feature"></a>
+<h2 id="numerical-response-and-categorical-predictor-1">Numerical response and categorical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-categorical-predictor-1"></a>
 </h2>
-<p>If the feature consists of <code>class</code> “<code>factor</code>”
-with two or more levels and the response is of <code>class</code>
-“<code>numeric</code>” or “<code>integer</code>” (both having mode
-“<code>numerical</code>”), statistical tests are applied to compare the
-central tendencies across groups. This section describes the conditions
-under which parametric and non-parametric tests are chosen, based on the
-response type, the number of factor levels, and the underlying
-distributional assumptions.</p>
+<p>When the predictor consists of <code>class</code>
+“<code>factor</code>” with two or more levels and the response is of
+<code>class</code> “<code>numeric</code>” or “<code>integer</code>”
+(both having mode “<code>numerical</code>”), statistical tests are
+applied to compare the central tendencies across groups. This section
+describes the conditions under which parametric and non-parametric tests
+are chosen, based on the response type, the number of factor levels, and
+the underlying distributional assumptions.</p>
 <div class="section level3">
-<h3 id="categorical-feature-with-two-levels-welchs-t-test-and-wilcoxon-rank-sum">Categorical feature with two levels: Welch’s t-test and Wilcoxon
-rank-sum<a class="anchor" aria-label="anchor" href="#categorical-feature-with-two-levels-welchs-t-test-and-wilcoxon-rank-sum"></a>
+<h3 id="categorical-predictor-with-two-levels-welchs-t-test-and-wilcoxon-rank-sum">Categorical predictor with two levels: Welch’s t-test and Wilcoxon
+rank-sum<a class="anchor" aria-label="anchor" href="#categorical-predictor-with-two-levels-welchs-t-test-and-wilcoxon-rank-sum"></a>
 </h3>
-<p>test</p>
-<p>When the feature variable has exactly two levels, Welch’s t-test or
+<p>When the predictor variable has exactly two levels, Welch’s t-test or
 the Wilcoxon rank-sum test is applied.</p>
 <div class="section level4">
 <h4 id="welchs-t-test-t-test">Welch’s t-test (<code>t.test()</code>)<a class="anchor" aria-label="anchor" href="#welchs-t-test-t-test"></a>
@@ -369,9 +367,9 @@ central tendencies of grades of “boys” and “girls” in a class:</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="categorical-feature-with-more-than-two-levels">Categorical feature with more than two levels<a class="anchor" aria-label="anchor" href="#categorical-feature-with-more-than-two-levels"></a>
+<h3 id="categorical-predictor-with-more-than-two-levels">Categorical predictor with more than two levels<a class="anchor" aria-label="anchor" href="#categorical-predictor-with-more-than-two-levels"></a>
 </h3>
-<p>If the feature is of <code>class</code> “<code>factor</code>” with
+<p>If the predictor is of <code>class</code> “<code>factor</code>” with
 <strong>more than two levels</strong> and the response is of
 <code>mode</code> “<code>numerical</code>”, <code><a href="../reference/visstat.html">visstat()</a></code>
 either performs Fisher’s one- way ANOVA <span class="citation">(Fisher
@@ -504,7 +502,7 @@ the two tests yields a p-value greater than
 <p>The function generates two diagnostic plots:</p>
 <ul>
 <li>a scatter plot of the standardised residuals against the fitted
-means of the linear model for each level of the feature
+means of the linear model for each level of the predictor
 (<code>varfactor</code>), and</li>
 <li>a Q–Q plot of the standardised residuals.</li>
 </ul>
@@ -657,9 +655,9 @@ error rate.</p>
 <h4 id="graphical-output-1">Graphical output<a class="anchor" aria-label="anchor" href="#graphical-output-1"></a>
 </h4>
 <p>The graphical output for all tests based on a numerical response and
-a categorical feature with more than two levels consists of two panels:
-the first focuses on the residual analysis, and the second on the actual
-test chosen by the decision logic.</p>
+a categorical predictor with more than two levels consists of two
+panels: the first focuses on the residual analysis, and the second on
+the actual test chosen by the decision logic.</p>
 <p>The residual panel addresses the assumption of normality, both
 graphically and through formal tests. It displays a scatter plot of the
 standardised residuals versus the predicted values, as well as a normal
@@ -781,12 +779,12 @@ labels (all green letters differ).</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="numerical-response-and-numerical-feature-1">Numerical response and numerical feature<a class="anchor" aria-label="anchor" href="#numerical-response-and-numerical-feature-1"></a>
+<h2 id="numerical-response-and-numerical-predictor-1">Numerical response and numerical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-numerical-predictor-1"></a>
 </h2>
 <div class="section level3">
 <h3 id="simple-linear-regression-lm">Simple linear regression (<code>lm()</code>)<a class="anchor" aria-label="anchor" href="#simple-linear-regression-lm"></a>
 </h3>
-<p>If both the feature <code>varfactor</code> and the response
+<p>If both the predictor <code>varfactor</code> and the response
 <code>varsample</code> are numerical and contain only one level each,
 <code><a href="../reference/visstat.html">visstat()</a></code> performs a simple linear regression.</p>
 <p>The resulting regression plot displays the point estimate of the
@@ -798,7 +796,7 @@ y = a + b \cdot x,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>
 is the response variable,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
-is the feature variable,
+is the predictor variable,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
 is the intercept, and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
@@ -861,7 +859,7 @@ residuals underlying the linear regression is met.</p>
 (<code>Girth</code>, in inches), <code>Height</code> (in feet), and
 <code>Volume</code> (in cubic feet) of black cherry trees. In this
 example, we choose <code>Volume</code> as the response and
-<code>Girth</code> as the feature.</p>
+<code>Girth</code> as the predictor.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span>, <span class="st">"Volume"</span>, <span class="st">"Girth"</span>, conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-11-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-11-2.png" width="100%"></p>
@@ -877,24 +875,23 @@ response variable <code>Volume</code>.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="categorical-response-and-categorical-feature-1">Categorical response and categorical feature<a class="anchor" aria-label="anchor" href="#categorical-response-and-categorical-feature-1"></a>
+<h2 id="both-variables-categorical-1">Both variables categorical<a class="anchor" aria-label="anchor" href="#both-variables-categorical-1"></a>
 </h2>
-<!-- When both the feature `varfactor` and the response `varsample` are
+<!-- When both the predictor `varfactor` and the response `varsample` are
 categorical variables (i.e., of type `factor`), `visstat()` tests the null
 hypothesis that the two variables are independent. Categorical data are
 typically represented as contingency tables, which cross-tabulate the observed
 frequencies for each combination of factor levels. Based on these observed
 frequencies, `visstat()` computes the expected frequencies under the null
 hypothesis of independence.  -->
-<p>When both <code>varfactor</code> and <code>varsample</code> are
-categorical (i.e., of class <code>factor</code>), <code><a href="../reference/visstat.html">visstat()</a></code>
-tests the null hypothesis that the two variables are independent.
-Observed frequencies are typically arranged in a contingency table,
-where rows index the levels
+<p>When both variables are categorical (i.e., of class
+<code>factor</code>), <code><a href="../reference/visstat.html">visstat()</a></code> tests the null hypothesis
+that the two variables are independent. Observed frequencies are
+typically arranged in a contingency table, where rows index the levels
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
 of the response variable and columns index the levels
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
-of the feature variable.</p>
+of the predictor variable.</p>
 <div class="section level3">
 <h3 id="pearsons-residuals-and-mosaic-plots">Pearson’s residuals and mosaic plots<a class="anchor" aria-label="anchor" href="#pearsons-residuals-and-mosaic-plots"></a>
 </h3>
@@ -1048,8 +1045,9 @@ and the p-value of Pearson’s
 <div class="section level3">
 <h3 id="transforming-a-contingency-table-to-a-data-frame">Transforming a contingency table to a data frame<a class="anchor" aria-label="anchor" href="#transforming-a-contingency-table-to-a-data-frame"></a>
 </h3>
-<p>The following examples for tests of categorical feature and response
-are all based on the <code>HairEyeColor</code> contingency table.</p>
+<p>The following examples for tests of categorical predictor and
+response are all based on the <code>HairEyeColor</code> contingency
+table.</p>
 <p>Contingency tables must be converted to the required column-based
 <code>data.frame</code> using the helper function
 <code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code>. The function transforms the contingency
@@ -1171,9 +1169,9 @@ of variance. Focusing on the graphical representation of tests, only
 simple linear regression is implemented, as multiple linear regressions
 cannot be visualised. # Implemented tests</p>
 <div class="section level3">
-<h3 id="numerical-response-and-categorical-feature-1">Numerical response and categorical feature<a class="anchor" aria-label="anchor" href="#numerical-response-and-categorical-feature-1"></a>
+<h3 id="numerical-response-and-categorical-predictor-2">Numerical response and categorical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-categorical-predictor-2"></a>
 </h3>
-<p>When the response is numerical and the feature is categorical, test
+<p>When the response is numerical and the predictor is categorical, test
 of central tendencies are selected:</p>
 <p><code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>,
 <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>,
@@ -1202,14 +1200,14 @@ of central tendencies are selected:</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="numerical-response-and-numerical-feature-2">Numerical response and numerical feature<a class="anchor" aria-label="anchor" href="#numerical-response-and-numerical-feature-2"></a>
+<h3 id="numerical-response-and-numerical-predictor-2">Numerical response and numerical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-numerical-predictor-2"></a>
 </h3>
-<p>When both the response and feature are numerical, a simple linear
+<p>When both the response and predictor are numerical, a simple linear
 regression model is fitted:</p>
 <p><code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p>
 </div>
 <div class="section level3">
-<h3 id="categorical-response-and-categorical-feature-2">Categorical response and categorical feature<a class="anchor" aria-label="anchor" href="#categorical-response-and-categorical-feature-2"></a>
+<h3 id="both-variables-cagegorical">Both variables cagegorical<a class="anchor" aria-label="anchor" href="#both-variables-cagegorical"></a>
 </h3>
 <p>When both variables are categorical, <code><a href="../reference/visstat.html">visstat()</a></code> tests the
 null hypothesis of independence using one of the following:</p>
