@@ -99,8 +99,8 @@ vignette("visStatistics")
 
 Throughout the remainder, data of class `"numeric"` or `"integer"` are referred as numerical, while data of class `"factor"` are referred to as categorical. The choice of statistical tests performed by the function `visstat()` depends on whether the data are numerical or categorical, the number of levels in the categorical variable, and the distribution of the data. The function prioritizes interpretable visual output and tests that remain valid under the the following decision logic:
 
-<p>
- When the response is numerical and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.
+<br>
+(1) When the response is numerical and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.
  
 - If the categorical predictor has exactly two levels, Welch's t-test (`t.test()`) is applied whenever both groups contain more than 30 observations, with the validity of the test supported by the approximate normality of the sampling distribution of the mean under the central limit theorem
 [@Rasch:2011, @Lumley:2002]. For smaller samples, group - wise normality is assessed using the Shapiro -
@@ -110,6 +110,8 @@ Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank-sum test (`wi
 - For predictors with more than two levels, a model of Fisher's one-way analysis of variables (ANOVA) (`aov()`) is initially fitted. The normality of residuals is evaluated using both the Shapiro-Wilk test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.
 If this condition is met, Bartlett's test (`bartlett.test()`) is then used to assess homoscedasticity. When variances are homogeneous ($p > \alpha$), Fisher's one-way ANOVA (`aov()`) is applied with Tukey's Honestly Significant Differences (HSD) (`TukeyHSD()`) for post-hoc comparison. If variances differ significantly ($p \le \alpha$), Welch's heteroscedastic one-way ANOVA (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal-Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
 A graphical overview of the decision logic used is provided in the figure below.
+
+<br>
 </p>
 <div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: left;">
 
@@ -117,17 +119,17 @@ A graphical overview of the decision logic used is provided in the figure below.
      alt="Decision tree used to select the appropriate statistical test.">
 
 <p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
+<br>
 Decision tree used to select the appropriate statistical test for a categorical
 predictor and numerical response, based on the number of factor levels, normality,
 and homoscedasticity.
 </p>
 </div>
 <p>
-When both the response and predictor are numerical, a simple linear regression model (`lm()`) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation.
-<!-- (3) Categorical response and categoical predictor -->
-</p>
-<p>
-In the case of two categorical variables, `visstat()` tests the null hypothesis that the predictor and response variables are independent using either Pearson’s \( \chi^2 \)-test (`chisq.test()`) or Fisher's exact test (`fisher.test()`). The choice of test is based on Cochran's rule [@Cochran:1954], which advises that the $\chi^2$approximation is reliable only if no expected cell count is less than 1 and no more than 20 percent of cells have expected counts below 5.
+<br>
+(2) When both the response and predictor are numerical, a simple linear regression model (`lm()`) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation.
+<br>
+(3) In the case of two categorical variables, `visstat()` tests the null hypothesis that the predictor and response variables are independent using either Pearson’s \( \chi^2 \)-test (`chisq.test()`) or Fisher's exact test (`fisher.test()`). The choice of test is based on Cochran's rule [@Cochran:1954], which advises that the $\chi^2$approximation is reliable only if no expected cell count is less than 1 and no more than 20 percent of cells have expected counts below 5.
 
 Note: Except for the user - adjustable `conf.level` parameter, all statistical tests are applied using their default settings from the corresponding base R functions (e.g., `t.test()`). As a consequence, paired tests are not currently supported. Furthermore, since the main purpose of this package is to visualize statistical test results, only simple linear regression is implemented.
 For a more detailed description of the underlying decision logic see
