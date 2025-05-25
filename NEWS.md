@@ -2,16 +2,12 @@
 
 ## News
 
-Following internal helper functions are not longer exported to NAMESPACE:
-get_samples_fact_inputfile.R
-
-# visStatistics 0.1.4
-
-## News
-
 - Extended vignette: all implemented tests are explained in greater detail.
 - Graphical output displays the corresponding test statistics, in addition
   to p-values, where appropriate.
+- Internal helper function 
+  `get_samples_fact_inputfile()` no longer exported to NAMESPACE.
+  
 
 ## Bug fixes
 

@@ -31,8 +31,8 @@
 #' categorical variable, the distribution of the data, and the chosen
 #' \code{conf.level}. The function prioritises interpretable visual output and
 #' tests that remain valid under their assumptions, following the logic below:
-#' 1. 
-#' When the response is numerical and the predictor is categorical, tests of
+#' 
+#' (1) When the response is numerical and the predictor is categorical, tests of
 #' central tendency are performed. If the predictor has two levels:
 #' \code{t.test()} is used if both groups have more than 30 observations (Lumley
 #' et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). For smaller
@@ -46,21 +46,26 @@
 #' \code{aov()} with \code{TukeyHSD()} is used. If \code{p <= alpha},
 #' \code{oneway.test()} is applied with \code{TukeyHSD()}. If residuals are not
 #' normal, \code{kruskal.test()} with \code{pairwise.wilcox.test()} is used.
-#' 2.:
-#' When both the response and predictor are numerical, a linear model
+#' 
+#' (2): When both the response and predictor are numerical, a linear model
 #' \code{lm()} is fitted, with residual diagnostics and a confidence band plot.
-#' 3.:
-#' When both variables are categorical, \code{visstat()} uses
+#' 
+#' (3): When both variables are categorical, \code{visstat()} uses
 #' \code{chisq.test()} or \code{fisher.test()} depending on expected counts,
 #' following Cochran's rule (Cochran (1954) <doi:10.2307/3001666>).
-#' Implemented main tests: \code{t.test()}, \code{wilcox.test()}, \code{aov()},
+#' 
+#' Implemented main tests: 
+#' 
+#' \code{t.test()}, \code{wilcox.test()}, \code{aov()},
 #' \code{oneway.test()}, \code{lm()}, \code{kruskal.test()},
 #' \code{fisher.test()}, \code{chisq.test()}.
+#' 
 #' Implemented tests for assumptions:
 #' \itemize{
 #'   \item Normality: \code{shapiro.test()} and \code{ad.test()}
 #'   \item Heteroscedasticity: \code{bartlett.test()}
 #' }
+#' 
 #' Implemented post hoc tests:
 #' \itemize{
 #'   \item \code{TukeyHSD()} for \code{aov()} and \code{oneway.test()}
@@ -72,16 +77,17 @@
 #' and the accompanying webpage
 #' \url{https://shhschilling.github.io/visStatistics/}.
 #'
-#' @param dataframe \code{data.frame} containing at least two columns. Data must
-#'   be column wise ordered.
-#' @param varsample column name of the dependent variable (response) in
-#'   \code{dataframe}, datatype \code{character}. \code{varsample} must be one
-#'   entry of the list \code{names(dataframe)}.
-#' @param varfactor column name of the independent variable (feature) in
-#'   \code{dataframe}, datatype \code{character}.\code{varsample} must be one
-#'   entry of the list \code{names(dataframe)}.
-#' @param conf.level confidence level
-#' @param numbers	a logical indicating whether to show numbers in mosaic count
+#' @param dataframe \code{data.frame} with at least two columns.
+#' @param varsample \code{character} string matching a column name in 
+#'   \code{dataframe}. interpreted as the response if the referenced column is 
+#'   of class \code{numeric} or \code{integer} and the column named by 
+#'   \code{varfactor} is of class \code{factor}.
+#' @param varfactor \code{character} string matching a column name in 
+#'   \code{dataframe}. interpreted as the grouping variable if the referenced 
+#'   column is of class \code{factor} and the column named by \code{varsample} 
+#'   is of class \code{numeric} or \code{integer}.
+#' @param conf.level Confidence level
+#' @param numbers a logical indicating whether to show numbers in mosaic count
 #'   plots.
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total
 #'   count data of a category to be displayed	in mosaic count plots.
@@ -99,8 +105,6 @@
 #'   Values can be accessed by assigning a return value to \code{visstat}.
 
 #' @examples
-#' # Function names in parentheses in the headings indicate the
-#  # statistical test selected by the decision logic of `visstat()`.
 #' # Welch Two Sample t-test (t.test())
 #' visstat(mtcars, "mpg", "am")
 #'
@@ -195,6 +199,8 @@ visstat <- function(dataframe,
   stopifnot(varsample %in% names(dataframe))
   stopifnot(varfactor %in% names(dataframe))
   
+  
+  
   # store default graphical parameters------
   oldparvisstat <- par(no.readonly = TRUE)
   oldparvisstat$new <- FALSE # reset the default value
@@ -219,6 +225,10 @@ visstat <- function(dataframe,
   typefactor <-
     class(fact) # type of independent variable returned as a character vector
   
+  if 
+  (typefactor == "numeric" | typefactor == "integer" & typesample == "factor")
+  { warning("Using a numerical feature with a factor response will be ignored.")
+  }
   
   # transform independent variable "fact" of class "character" to factor
   if (typefactor == "character") {
@@ -245,7 +255,7 @@ visstat <- function(dataframe,
       create_two_samples_vector(samples, fact) # returns list with three entries
     if (length(twosamples) < 3) {
       vis_sample_fact <-
-        warning("In each group must be at least one member ")
+        warning("In each group must be at least one member.")
     } else {
       # t-Test -----
       x1 <- twosamples$sample1
