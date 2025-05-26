@@ -1,4 +1,4 @@
-#' Flexible Wrapper for Automated Statistical Visualisation
+#' Wrapper for vistat_core allwoing two different input styles
 #'
 #' A wrapper around the core function \code{\link{visstat_core}} defining the
 #' decision logic for statistical hypothesis testing and visualisation between
