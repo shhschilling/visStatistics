@@ -66,44 +66,78 @@ Schilling</h4>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/shhschilling/visStatistics" class="external-link">visStatistics</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+<h2 id="abstract">Abstract<a class="anchor" aria-label="anchor" href="#abstract"></a>
 </h2>
 <p><code>visStatistics</code> automatically selects and visualises
-appropriate statistical hypothesis tests between a response and a
-predictor variable in a data frame. The choice of test depends on the
-<code>class</code>, distribution, and sample size of the input
-variables, as well as the user-defined ‘conf.level’. The main function
+appropriate statistical hypothesis tests between two column vectors of
+type of class <code>"numeric"</code>, <code>"integer"</code>, or
+<code>"factor"</code>. The choice of test depends on the
+<code>class</code>, distribution, and sample size of the vectors, as
+well as the user-defined ‘conf.level’. The main function
 <code><a href="../reference/visstat.html">visstat()</a></code> visualises the selected test with appropriate
 graphs (box plots, bar charts, regression lines with confidence bands,
 mosaic plots, residual plots, Q-Q plots), annotated with the main test
-results, including any assumption checks and post-hoc analyses. A
-minimal function call looks like:</p>
-<p><code>visstat(dataframe, varsample = "response", varfactor = "feature")</code></p>
-<p><code>dataframe</code> must be a column-based
-<code>data.frame</code>. Both <code>"response"</code> and
-<code>"feature"</code> must be character strings that match column names
-in the <code>dataframe</code>.</p>
-<p>This scripted workflow is particularly suited for browser-based
-interfaces that rely on server-side R applications connected to secure
-databases, where users have no direct access, or for quick data
-visualisations, e.g., in statistical consulting projects.</p>
+results, including any assumption checks and post-hoc analyses. This
+scripted workflow is particularly suited for browser-based interfaces
+that rely on server-side R applications connected to secure databases,
+where users have no direct access, or for quick data visualisations,
+e.g., in statistical consulting projects.</p>
+</div>
+<div class="section level2">
+<h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h2>
+<div class="section level5">
+<h5 class="unnumbered" id="install-the-latest-development-version-from-github">1. Install the latest development version from
+GITHUB<a class="anchor" aria-label="anchor" href="#install-the-latest-development-version-from-github"></a>
+</h5>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">install_github</span><span class="op">(</span><span class="st">"shhschilling/visStatistics"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level5">
+<h5 class="unnumbered" id="load-the-package">2. Load the package<a class="anchor" aria-label="anchor" href="#load-the-package"></a>
+</h5>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/shhschilling/visStatistics" class="external-link">visStatistics</a></span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level5">
+<h5 class="unnumbered" id="minimal-function-call">3. Minimal function call<a class="anchor" aria-label="anchor" href="#minimal-function-call"></a>
+</h5>
+<p>The function <code><a href="../reference/visstat.html">visstat()</a></code> accepts input in two ways:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Standardised form (recommended):</span></span>
+<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Backward-compatible form:</span></span>
+<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">dataframe</span>, <span class="st">"name_of_y"</span>, <span class="st">"name_of_x"</span><span class="op">)</span></span></code></pre></div>
+<p>In the standardised form, <code>x</code> and <code>y</code> must be
+vectors of class <code>"numeric"</code>, <code>"integer"</code>, or
+<code>"factor"</code>.</p>
+<p>In the backward-compatible form, <code>"name_of_x"</code> and
+<code>"name_of_y"</code> must be character strings naming columns in
+<code>dataframe</code>, which must themselves be of class
+<code>"numeric"</code>, <code>"integer"</code>, or
+<code>"factor"</code>. This is equivalent to writing:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">dataframe</span><span class="op">[[</span><span class="st">"name_of_x"</span><span class="op">]</span><span class="op">]</span>, <span class="va">dataframe</span><span class="op">[[</span><span class="st">"name_of_y"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <p>The remainder of this vignette is organised as follows:</p>
 <ul>
-<li><p>Section 2 summarises the decision logic used to select a
+<li><p>Section 3 summarises the decision logic used to select a
 statistical test.</p></li>
-<li><p>Sections 3–5 provide background on the implemented tests and
+<li><p>Sections 4–6 provide background on the implemented tests and
 illustrate the decision logic using examples. Function names in
 parentheses in the headings indicate the corresponding statistical
 hypothesis test function in R,</p></li>
-<li><p>Section 6 outlines the main limitations of the package.</p></li>
-<li><p>Section 7 provides an overview of the implemented tests.</p></li>
+<li><p>Section 7 outlines the main limitations of the package.</p></li>
+<li><p>Section 8 provides an overview of the implemented tests.</p></li>
 </ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="decision-logic">Decision logic<a class="anchor" aria-label="anchor" href="#decision-logic"></a>
 </h2>
 <p>Throughout the remainder, data of class <code>"numeric"</code> or
-<code>"integer"</code> are referred as numerical, while data of class
+<code>"integer"</code> are referred to bei their common
+<code>mode</code> <code>numeric</code>, while data of class
 <code>"factor"</code> are referred to as categorical. The significance
 level
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>,
@@ -111,15 +145,15 @@ used throughout for hypothesis testing, is defined as
 <code>1 - conf.level</code>, where <code>conf.level</code> is a
 user-controllable argument (defaulting to <code>0.95</code>).</p>
 <p>The choice of statistical tests performed by the function
-<code><a href="../reference/visstat.html">visstat()</a></code> depends on whether the data are numerical or
+<code><a href="../reference/visstat.html">visstat()</a></code> depends on whether the data are numeric or
 categorical, the number of levels in the categorical variable, the
 distribution of the data, as well as the user-defined ‘conf.level’.</p>
 <p>The function prioritizes interpretable visual output and tests that
 remain valid under the following decision logic:</p>
 <div class="section level3">
-<h3 id="numerical-response-and-categorical-predictor">Numerical response and categorical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-categorical-predictor"></a>
+<h3 id="numeric-response-and-categorical-predictor">Numeric response and categorical predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor"></a>
 </h3>
-<p>When the response is numerical and the predictor is categorical, a
+<p>When the response is numeric and the predictor is categorical, a
 statistical hypothesis test of central tendencies is selected.</p>
 <ul>
 <li><p>If the categorical predictor has exactly two levels, Welch’s
@@ -162,13 +196,13 @@ decision logic used is provided in the figure below.</p></li>
 <div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: center;">
 <img src="figures/decision_tree.png" width="100%" alt="Decision tree used to select the appropriate statistical test."><p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
 Decision tree used to select the appropriate statistical test for a
-categorical predictor and numerical response, based on the number of
+categorical predictor and numeric response, based on the number of
 factor levels, normality, and homoscedasticity.
 </p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="numerical-response-and-numerical-predictor">Numerical response and numerical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-numerical-predictor"></a>
+<h3 id="numeric-response-and-numeric-predictor">Numeric response and numeric predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-numeric-predictor"></a>
 </h3>
 <p>When both the response and predictor are numeric, a simple linear
 regression model (<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>) is fitted and analysed in detail,
@@ -197,16 +231,16 @@ than 20 percent of cells have expected counts below 5.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="numerical-response-and-categorical-predictor-1">Numerical response and categorical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-categorical-predictor-1"></a>
+<h2 id="numeric-response-and-categorical-predictor-1">Numeric response and categorical predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor-1"></a>
 </h2>
 <p>When the predictor consists of <code>class</code>
 “<code>factor</code>” with two or more levels and the response is of
 <code>class</code> “<code>numeric</code>” or “<code>integer</code>”
-(both having mode “<code>numerical</code>”), statistical tests are
-applied to compare the central tendencies across groups. This section
-describes the conditions under which parametric and non-parametric tests
-are chosen, based on the response type, the number of factor levels, and
-the underlying distributional assumptions.</p>
+(both having mode “<code>numeric</code>”), statistical tests are applied
+to compare the central tendencies across groups. This section describes
+the conditions under which parametric and non-parametric tests are
+chosen, based on the response type, the number of factor levels, and the
+underlying distributional assumptions.</p>
 <div class="section level3">
 <h3 id="categorical-predictor-with-two-levels-welchs-t-test-and-wilcoxon-rank-sum">Categorical predictor with two levels: Welch’s t-test and Wilcoxon
 rank-sum<a class="anchor" aria-label="anchor" href="#categorical-predictor-with-two-levels-welchs-t-test-and-wilcoxon-rank-sum"></a>
@@ -269,8 +303,8 @@ tests for a difference in location between two independent distributions
 the two groups have distributions that are sufficiently similar in shape
 and scale, the Wilcoxon rank-sum test can be interpreted as testing
 whether the medians of the two populations are equal <span class="citation">(Hollander, Chicken, and Wolfe 2014)</span>.</p>
-<p>The two-level factor variable <code>varfactor</code> defines two
-groups, with sample sizes
+<p>The two-level factor variable <code>x</code> defines two groups, with
+sample sizes
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mn>1</mn></msub><annotation encoding="application/x-tex">n_1</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mn>2</mn></msub><annotation encoding="application/x-tex">n_2</annotation></semantics></math>.
@@ -283,7 +317,7 @@ to
 n_2</annotation></semantics></math>. Let
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>W</mi><mtext mathvariant="normal">Wilcoxon</mtext></msub><annotation encoding="application/x-tex">W_{\text{Wilcoxon}}</annotation></semantics></math>
 denote the sum of the ranks assigned to the group corresponding to the
-first level of <code>varfactor</code> containing
+first level of <code>x</code> containing
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mn>1</mn></msub><annotation encoding="application/x-tex">n_1</annotation></semantics></math>
 observations. The test statistic returned by <code><a href="../reference/visstat.html">visstat()</a></code> is
 then computed as</p>
@@ -332,15 +366,15 @@ test and the summary statistics used to construct the plot.</p>
 contains 32 observations, where <code>mpg</code> denotes miles per (US)
 gallon, and <code>am</code> represents the transmission type
 (<code>0</code> = automatic, <code>1</code> = manual).</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
-<span><span class="va">t_test_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">t_test_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span>, <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the
 default 0.95 to 0.99 results in wider confidence intervals, as a higher
 confidence level requires more conservative bounds to ensure that the
 interval includes the true parameter value with greater certainty.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
 <span><span class="va">t_test_statistics_99</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="100%"></p>
@@ -350,7 +384,7 @@ interval includes the true parameter value with greater certainty.</p>
 </h5>
 <p>The Wilcoxon rank sum test is exemplified on differences between the
 central tendencies of grades of “boys” and “girls” in a class:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grades_gender</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"girl"</span>, <span class="fl">21</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"boy"</span>, <span class="fl">23</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -361,7 +395,7 @@ central tendencies of grades of “boys” and “girls” in a class:</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">wilcoxon_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">grades_gender</span>, <span class="st">"grade"</span>, <span class="st">"sex"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">wilcoxon_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">grades_gender</span><span class="op">$</span><span class="va">sex</span>, <span class="va">grades_gender</span><span class="op">$</span><span class="va">grade</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-4-1.png" width="100%"></p>
 </div>
 </div>
@@ -371,8 +405,8 @@ central tendencies of grades of “boys” and “girls” in a class:</p>
 </h3>
 <p>If the predictor is of <code>class</code> “<code>factor</code>” with
 <strong>more than two levels</strong> and the response is of
-<code>mode</code> “<code>numerical</code>”, <code><a href="../reference/visstat.html">visstat()</a></code>
-either performs Fisher’s one- way ANOVA <span class="citation">(Fisher
+<code>mode</code> “<code>numeric</code>”, <code><a href="../reference/visstat.html">visstat()</a></code> either
+performs Fisher’s one- way ANOVA <span class="citation">(Fisher
 1971)</span> (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>), Welch’s heteroscedastic one-way ANOVA
 <span class="citation">(Welch 1951)</span> (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>)
 or, as a non-parametric alternative, the Kruskal –Wallis test <span class="citation">(Kruskal and Wallis 1952)</span>
@@ -503,7 +537,7 @@ the two tests yields a p-value greater than
 <ul>
 <li>a scatter plot of the standardised residuals against the fitted
 means of the linear model for each level of the predictor
-(<code>varfactor</code>), and</li>
+(<code>x</code>), and</li>
 <li>a Q–Q plot of the standardised residuals.</li>
 </ul>
 </div>
@@ -654,10 +688,10 @@ error rate.</p>
 <div class="section level4">
 <h4 id="graphical-output-1">Graphical output<a class="anchor" aria-label="anchor" href="#graphical-output-1"></a>
 </h4>
-<p>The graphical output for all tests based on a numerical response and
-a categorical predictor with more than two levels consists of two
-panels: the first focuses on the residual analysis, and the second on
-the actual test chosen by the decision logic.</p>
+<p>The graphical output for all tests based on a numeric response and a
+categorical predictor with more than two levels consists of two panels:
+the first focuses on the residual analysis, and the second on the actual
+test chosen by the decision logic.</p>
 <p>The residual panel addresses the assumption of normality, both
 graphically and through formal tests. It displays a scatter plot of the
 standardised residuals versus the predicted values, as well as a normal
@@ -719,7 +753,7 @@ experiment, the application of three different fertilisers – nitrogen
 (N), phosphate (P), and potassium (K) – was varied systematically. Each
 block received either none, one, two, or all three of the
 fertilisers,</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">oneway_npk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span>, <span class="st">"yield"</span>, <span class="st">"block"</span>,conf.level<span class="op">=</span><span class="fl">0.90</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-5-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-5-2.png" width="100%"></p>
 <p>Normality of residuals is supported by graphical diagnostics (scatter
@@ -742,12 +776,12 @@ blocks, as all share the same group label (e.g., all green letters).</p>
 agricultural experimental units treated with six different insecticides.
 To stabilise the variance in counts, we apply a square root
 transformation to the response variable.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">insect_sprays_tr</span> <span class="op">&lt;-</span> <span class="va">InsectSprays</span></span>
 <span><span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">count_sqrt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">count</span><span class="op">)</span></span>
-<span><span class="va">test_statistic_anova</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">insect_sprays_tr</span>, <span class="st">"count_sqrt"</span>, <span class="st">"spray"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">test_statistic_anova</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">spray</span>, <span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">count_sqrt</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-6-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-6-2.png" width="100%"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># test_statistic_anova </span></span></code></pre></div>
 <p>After the transformation, the homogeneity of variances can be assumed
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>&gt;</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">p&gt;
@@ -760,8 +794,8 @@ transformation to the response variable.</p>
 </h5>
 <p>The <code>iris</code> dataset contains petal width measurements (in
 cm) for three different iris species.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span>, <span class="st">"Petal.Width"</span>, <span class="st">"Species"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Width</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-7-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-7-2.png" width="100%"></p>
 <p>In this example, scatter plots of the standardised residuals and the
 Q-Q plot suggest that the residuals are not normally distributed. This
@@ -779,12 +813,12 @@ labels (all green letters differ).</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="numerical-response-and-numerical-predictor-1">Numerical response and numerical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-numerical-predictor-1"></a>
+<h2 id="numeric-response-and-numeric-predictor-1">Numeric response and numeric predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-numeric-predictor-1"></a>
 </h2>
 <div class="section level3">
 <h3 id="simple-linear-regression-lm">Simple linear regression (<code>lm()</code>)<a class="anchor" aria-label="anchor" href="#simple-linear-regression-lm"></a>
 </h3>
-<p>If both the predictor and the response are numerical and contain only
+<p>If both the predictor and the response are numeric and contain only
 one level each, <code><a href="../reference/visstat.html">visstat()</a></code> performs a simple linear
 regression.</p>
 <p>The resulting regression plot displays the point estimate of the
@@ -835,20 +869,20 @@ bands.</p>
 <p>The <code>cars</code> dataset reports the speed of cars in miles per
 hour (<code>speed</code>) and the stopping distance in feet
 (<code>dist</code>).</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>, <span class="st">"dist"</span>, <span class="st">"speed"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span><span class="op">$</span><span class="va">speed</span>, <span class="va">cars</span><span class="op">$</span><span class="va">dist</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-8-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-8-2.png" width="100%"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the
 default 0.95 to 0.99 results in wider confidence and prediction
 bands:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span>, <span class="st">"dist"</span>, <span class="st">"speed"</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-9-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-9-2.png" width="100%"></p>
 <p>p-values greater than <code>conf.level</code> in both the
 Anderson-Darling normality test and the Shapiro–Wilk test of the
 standardised residuals indicate that the normality assumption of the
 residuals underlying the linear regression is met.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_trees</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span>, <span class="st">"Volume"</span>, <span class="st">"Girth"</span>, conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-10-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-10-2.png" width="100%"></p>
 </div>
@@ -860,7 +894,7 @@ residuals underlying the linear regression is met.</p>
 <code>Volume</code> (in cubic feet) of black cherry trees. In this
 example, we choose <code>Volume</code> as the response and
 <code>Girth</code> as the predictor.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span>, <span class="st">"Volume"</span>, <span class="st">"Girth"</span>, conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-11-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-11-2.png" width="100%"></p>
 <p>Both the graphical analysis of the standardised residuals and
@@ -1046,7 +1080,7 @@ table.</p>
 <code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code>. The function transforms the contingency
 table <code>HairEyeColor</code> into <code>data.frame</code> named
 <code>HairEyeColourDataFrame</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">HairEyeColourDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -1060,9 +1094,9 @@ other.</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test
 (<code>chisq.test()</code>)<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test-chisq-test-1"></a>
 </h4>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_colour_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_colour_df</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_colour_df</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">hair_eye_colour_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-13-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-13-2.png" width="100%"></p>
 <p>The graphical output shows that the null hypothesis of Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
@@ -1083,12 +1117,12 @@ with Yate’s continuity correction<a class="anchor" aria-label="anchor" href="#
 <p>In the following example, we restrict the data to participants with
 either black or brown hair and either brown or blue eyes, resulting in a
 2-by-2 contingency table.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_black_brown_eyes_brown_blue</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></span>
 <span><span class="co"># Transform to data frame</span></span>
 <span><span class="va">hair_black_brown_eyes_brown_blue_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Chi-squared test</span></span>
-<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue_df</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-14-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-14-2.png" width="100%"></p>
 <p>Also in this reduced dataset we reject the null hypothesis of
 independence of the hair colors “brown” and “black” from the eye colours
@@ -1115,14 +1149,14 @@ requirement that at least 80% of the expected frequencies must be 5 or
 greater <span class="citation">(Cochran 1954)</span>.</p>
 <p>Therefore, <code><a href="../reference/visstat.html">visstat()</a></code> automatically selects Fisher’s
 exact test instead.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_colour_male</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co"># Slice out a 2 by 2 contingency table</span></span>
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="va">hair_eye_colour_male</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
 <span><span class="co"># Transform to data frame</span></span>
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Fisher test</span></span>
-<span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-15-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-15-2.png" width="100%"></p>
 </div>
 </div>
@@ -1135,15 +1169,15 @@ exact test instead.</p>
 following example, we store the graphics in <code>png</code> format in
 the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>. The file names
 reflect the statistical test used and the variable names involved.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Graphical output written to plotDirectory: In this example </span></span>
 <span><span class="co"># a bar chart to visualise the Chi-squared test and mosaic plot showing</span></span>
 <span><span class="co"># Pearson's residuals.</span></span>
 <span><span class="co">#chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
-<span>  graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>        graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"chi_squared_or_fisher_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"mosaic_complete_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -1160,11 +1194,15 @@ and <code><a href="../reference/visstat.html">visstat()</a></code> does not allo
 between the different levels of an independent variable in an analysis
 of variance. Focusing on the graphical representation of tests, only
 simple linear regression is implemented, as multiple linear regressions
-cannot be visualised. # Implemented tests</p>
+cannot be visualised.</p>
+</div>
+<div class="section level2">
+<h2 id="implemented-tests">Implemented tests<a class="anchor" aria-label="anchor" href="#implemented-tests"></a>
+</h2>
 <div class="section level3">
-<h3 id="numerical-response-and-categorical-predictor-2">Numerical response and categorical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-categorical-predictor-2"></a>
+<h3 id="numeric-response-and-categorical-predictor-2">Numeric response and categorical predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor-2"></a>
 </h3>
-<p>When the response is numerical and the predictor is categorical, test
+<p>When the response is numeric and the predictor is categorical, test
 of central tendencies are selected:</p>
 <p><code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>,
 <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>,
@@ -1193,9 +1231,9 @@ of central tendencies are selected:</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="numerical-response-and-numerical-predictor-2">Numerical response and numerical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-numerical-predictor-2"></a>
+<h3 id="numeric-response-and-numeric-predictor-2">Numeric response and numeric predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-numeric-predictor-2"></a>
 </h3>
-<p>When both the response and predictor are numerical, a simple linear
+<p>When both the response and predictor are numeric, a simple linear
 regression model is fitted:</p>
 <p><code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p>
 </div>
