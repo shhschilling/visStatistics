@@ -73,9 +73,9 @@
 #' }
 #' @seealso
 #' See also the package's vignette
-#' \code{vignette("visstat_coreistics")} for the overview,
+#' \code{vignette("visStatistics")} for the overview,
 #' and the accompanying webpage
-#' \url{https://shhschilling.github.io/visstat_coreistics/}.
+#' \url{https://shhschilling.github.io/visStatistics/}.
 #'
 #' @param dataframe \code{data.frame} with at least two columns.
 #' @param varsample \code{character} string matching a column name in 
