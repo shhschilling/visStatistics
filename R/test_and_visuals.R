@@ -995,9 +995,9 @@ vis_Kruskal_Wallis_clusters <- function(samples,
   
   kk_value <- round(as.numeric(kk$statistic),2)
   
-  title(paste(kk$method,
+  title(paste0(kk$method,
                "\n H = ",kk_value,
-              ", p = ", signif(kk$p.value, digits = 3)), outer = TRUE)
+              ", p = ", signif(kk$p.value, digits = 3)))
   my_list <-
     list("kruskal_wallis" = kk,
          "adjusted_p_values_wilcoxon" = tuk)

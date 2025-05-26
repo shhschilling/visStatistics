@@ -1,0 +1,38 @@
+## Getting Started
+
+The function `visstat()` accepts input in two ways:
+
+```r
+# Standardised form (recommended):
+visstat(x, y)
+
+# Backward-compatible form:
+visstat(dataframe, "name_of_x", "name_of_y")
+```
+
+In the standardised form, `x` and `y` must be vectors of class `"numeric"`,
+`"integer"`, or `"factor"`.
+
+In the backward-compatible form, `"name_of_x"` and `"name_of_y"` must be
+character strings naming columns in `dataframe`, which must themselves be of
+class `"numeric"`, `"integer"`, or `"factor"`. This is equivalent to writing:
+
+```r
+visstat(dataframe[["name_of_x"]], dataframe[["name_of_y"]])
+```
+
+The interpretation of `x` and `y` depends on their classes:
+
+- If one is numeric and the other is a factor, the numeric must be passed as `y`
+  and the factor as `x`. This supports tests for group differences (e.g., t-test,
+  ANOVA, Wilcoxon).
+
+- If both are numeric, a linear model is fitted with `y` as the response and
+  `x` as the predictor.
+
+- If both are factors, a test of association is performed (Chi-squared or
+  Fisher’s exact). The test is symmetric, but the plot layout depends on which
+  variable is supplied as `x`.
+
+The wrapper standardises the input and forwards it to `visstat_core()`, which
+selects the appropriate test and generates visual and numerical output.

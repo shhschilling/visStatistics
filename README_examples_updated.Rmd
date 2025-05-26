@@ -16,49 +16,31 @@ knitr::opts_chunk$set(
 )
 ```
 <!-- pkgdown::start -->
+# visStatistics: The right test, visualised.
 
+The R package `visStatistics` allows for rapid **vis**ualisation and statistical
+analysis of raw data. It automatically selects and visualises the most
+appropriate **statistic**al hypothesis test between a response (`varsample`) and
+a predictor (`varfactor`) within a `data.frame`.
 
-<!-- pkgdown::start -->
+Both `varsample` and `varfactor` must be character strings corresponding to
+column names of the response and feature variables, respectively.
 
+This workflow is particularly suited for browser-based interfaces that rely on
+server-side R applications connected to secure databases, where users have no
+direct access, or for quick data visualisation, e.g. in statistical consulting
+projects.
 
 # Getting Started
 
-The function `visstat()` accepts input in two ways:
+A minimal function call of the main function `visstat()` looks like:
 
 ```r
-# Standardised form (recommended):
-visstat(x, y)
-
-# Backward-compatible form:
-visstat(dataframe, "name_of_y", "name_of_x")
+visstat(dataframe, varsample = "response", varfactor = "feature")
 ```
 
-In the standardised form, `x` and `y` must be vectors of class `"numeric"`,
-`"integer"`, or `"factor"`.
-
-In the backward-compatible form, `"name_of_x"` and `"name_of_y"` must be
-character strings naming columns in `dataframe`, which must themselves be of
-class `"numeric"`, `"integer"`, or `"factor"`. This is equivalent to writing:
-
-```r
-visstat(dataframe[["name_of_x"]], dataframe[["name_of_y"]])
-```
-
-The interpretation of `x` and `y` depends on their classes:
-
-- If one is numeric and the other is a factor, the numeric must be passed as 
-response `y`
-  and the factor as predictor `x`. This supports tests for central tendencies.
-
-- If both are numeric, a simple linear regression model is fitted with `y` 
-as the response and `x` as the predictor.
-
-- If both are factors, a test of association is performed (Chi-squared or
-  Fisher’s exact). The test is symmetric, but the plot layout depends on which
-  variable is supplied as `x`.
-
-The wrapper function `visstat()` standardises the input and forwards it to the core function  `visstat_core()`, which
-selects the appropriate test and generates visual and numerical output.
+The function selects a statistical test based on the class of the corresponding response and predictor variables, the number of levels in categorical
+variables, and conditions such as normality and homoscedasticity.
 
 The automatically generated output figures illustrate the selected
 statistical test, display the main test statistics, and include
@@ -111,118 +93,6 @@ library(visStatistics)
 
 ``` {r load-visstat, eval = FALSE}
 ? visstat
-```
-
-
-
-# Examples
-
-
-```{r load-library-real, eval = TRUE}
-library(visStatistics)
-```
-
-
-## Numerical response and categorical predictor
-When the response is numerical and the predictor is categorical, test of
-central tendencies are selected.
-
-### Welch two sample t-test 
-
-#### InsectSprays data set — both input forms
-
-```{r insect-sprays, eval = TRUE}
-insect_sprays_ab <- InsectSprays[InsectSprays$spray %in% c("A", "B"), ]
-insect_sprays_ab$spray <- factor(insect_sprays_ab$spray)
-
-# Standardised
-visstat(insect_sprays_ab$spray, insect_sprays_ab$count)
-
-
-# Backward-compatible function call resulting in same output
-# visstat(insect_sprays_ab,"count", "spray")
-```
-#### mtcars data set
-
-```{r mtcars}
-mtcars$am <- as.factor(mtcars$am)
-t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
-# t_test_statistics
-```
-### Wilcoxon rank sum test
-
-
-```{r sex-grades2}
-grades_gender <- data.frame(
-  sex = factor(rep(c("girl", "boy"), times = c(21, 23))),
-  grade = c(
-    19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4, 20.3, 9.3, 11.3,
-    18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.0, 16.5, 5.1,
-    15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0, 17.4, 7.3, 14.3,
-    13.5, 8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6, 17.3, 19.9, 4.4, 2.1
-  )
-)
-
-wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
-```
-
-
-### One-way test
-
-```{r npk-onewy}
-one_way_npk <- visstat(npk$block,npk$yield)
-```
-
-### Kruskal-Wallis test
-```{r iris-kruskal}
-visstat(iris$Species, iris$Petal.Width)
-```
-The generated graphs can be saved in all available formats of the
-`Cairo` package. Here we save the graphical output of type "pdf" in the
-`plotDirectory` `tempdir()`:
-
-```{r graphical-output}
-visstat(
-iris$Species,iris$Petal.Width,graphicsoutput = "pdf",plotDirectory = tempdir()
-)
-```
-
-## Numerical response and numerical predictor: Linear Regression
-
-```{r lin-reg-dist-speed}
-linreg_cars <- visstat(cars$speed ,cars$dist)
-```
-
-Increasing the confidence level `conf.level` from the default 0.95 to
-0.99 leads two wider confidence and prediction bands:
-
-```{r pressure, echo = FALSE}
-linreg_cars_99 <- visstat(cars$speed ,cars$dist, conf.level = 0.99)
-```
-
-## Both varibles categorical
-
-### Pearson's Chi-squared test
-
-Count data sets are often presented as multidimensional arrays, so - called contingency tables, whereas `visstat()` requires a
-`data.frame` with a column structure. Arrays can be transformed to this
-column wise structure with the helper function `counts_to_cases()`:
-
-```{r pearson}
-hair_eye_color_df <- counts_to_cases(as.data.frame(HairEyeColor))
-visstat(hair_eye_color_df$Eye, hair_eye_color_df$Hair)
-```
-
-### Fisher's exact test
-
-```{r haireye-fisher}
-hair_eye_color_male <- HairEyeColor[, , 1]
-# Slice out a 2 by 2 contingency table
-black_brown_hazel_green_male <- hair_eye_color_male[1:2, 3:4]
-# Transform to data frame
-black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_green_male))
-# Fisher test
-fisher_stats <- visstat(black_brown_hazel_green_male$Eye,black_brown_hazel_green_male$Hair)
 ```
 
 # Decision logic
@@ -279,14 +149,49 @@ Therefore, except for the user-adjustable `conf.level` parameter, all statistica
 As a consequence, paired tests are currently not supported and `visstat()` does not allow to study interactions terms between the different levels of an independent variable in an analysis of variance.
 Focusing on the graphical representation of tests, only simple linear regression is implemented, as multiple linear regressions cannot be visualised.
 
+# Examples
 
+```r
+library(visStatistics)
+```
 
+## Standardised usage with vectors
 
+```r
+# Numeric response, categorical predictor (t-test or Wilcoxon)
+visstat(grades_gender$sex, grades_gender$grade)
 
+# Numeric response, multi-level factor (ANOVA or nonparametric)
+visstat(npk$block, npk$yield)
 
+# Both numeric (linear regression)
+visstat(trees$Girth, trees$Height)
 
+# Both factors (Chi-squared or Fisher's test)
+hair_eye <- counts_to_cases(as.data.frame(HairEyeColor))
+visstat(hair_eye$Hair, hair_eye$Eye)
+```
 
-## Implemented tests
+## Example showing both forms
+
+```r
+# These are equivalent
+visstat(iris$Species, iris$Petal.Width)
+visstat(iris, "Species", "Petal.Width")
+```
+
+## Saving output
+
+```r
+visstat(
+  iris$Species,
+  iris$Petal.Width,
+  graphicsoutput = "pdf",
+  plotDirectory = tempdir()
+)
+```
+
+# Implemented tests
 
 ### Numerical response and categorical predictor
 
