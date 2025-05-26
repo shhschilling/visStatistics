@@ -20,24 +20,24 @@ knitr::opts_chunk$set(
 
 The R package `visStatistics` allows for rapid **vis**ualisation and statistical
 analysis of raw data. It automatically selects and visualises the most
-appropriate **statistic**al hypothesis test between a
-response (`varsample`) and a predictor (`varfactor`) within a
-`data.frame`.
+appropriate **statistic**al hypothesis test between a response (`varsample`) and
+a predictor (`varfactor`) within a `data.frame`.
 
-This workflow is particularly suited for browser - based interfaces 
-that rely on server -side R applications connected to secure databases, 
-where users have no direct access, or for quick data visualisation,
-e.g. in statistical consulting projects.
+Both `varsample` and `varfactor` must be character strings corresponding to
+column names of the response and feature variables, respectively.
+
+This workflow is particularly suited for browser-based interfaces that rely on
+server-side R applications connected to secure databases, where users have no
+direct access, or for quick data visualisation, e.g. in statistical consulting
+projects.
 
 # Getting Started
-A minimal function call looks of its main function `visstat()` looks
-like:
-``` r
-visstat(dataframe,"response","predictor")
-```
 
-`dataframe` must be a column-based `data.frame`. Both `response` and
-`predictor` are character strings that must match column names in the `dataframe`.
+A minimal function call of the main function `visstat()` looks like:
+
+```r
+visstat(dataframe, varsample = "response", varfactor = "feature")
+```
 
 The function selects a statistical test based on the class of the corresponding response and predictor variables, the number of levels in categorical
 variables, and conditions such as normality and homoscedasticity.
@@ -99,7 +99,7 @@ library(visStatistics)
 
 Throughout the remainder, data of class `"numeric"` or `"integer"` are referred as numeric, while data of class `"factor"` are referred to as categorical.
 
-The choice of statistical tests performed by the function `visstat()` depends on whether the data are numeric or categorical, the number of levels in the categorical variable, and the distribution of the data. The function prioritizes interpretable visual output and tests that remain valid under the the fowlloing decision logic:
+The choice of statistical tests depends on whether the data of the selected columns are numeric or categorical, the number of levels in the categorical variable, and the distribution of the data. The function prioritizes interpretable visual output and tests that remain valid under the the following decision logic:
 
 ## Numerical response and categorical predictor
 When the response is numeric and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.
