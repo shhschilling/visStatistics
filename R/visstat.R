@@ -27,18 +27,21 @@
 #'         \code{"integer"}, or \code{"factor"}.
 #'
 #'   \item \strong{Backward-compatible form:}
-#'         \code{visstat(dataframe, "name_of_x", "name_of_y")}, where both
+#'         \code{visstat(dataframe, "name_of_y", "name_of_x")}, where both
 #'         character strings refer to column names in \code{dataframe}.
 #'         This is equivalent to:
 #'         \code{visstat(dataframe[["name_of_x"]], dataframe[["name_of_y"]])}.
 #' }
 #'
 #' The interpretation of \code{x} and \code{y} depends on the variable classes:
+#' In the following,  data of class \code{numeric}  or
+#' \code{integer} are both referred to by their common mode \code{numeric}
+
 #'
 #' \itemize{
 #'   \item If one variable is numeric and the other a factor, the numeric
 #'         vector must be passed as \code{y} and the factor as \code{x}.
-#'         This supports group comparisons (e.g., t-test, ANOVA, Wilcoxon).
+#'         This supports tests of central tendencies (e.g., t-test, ANOVA, Wilcoxon).
 #'
 #'   \item If both variables are numeric, a linear model is fitted with
 #'         \code{y} as the response and \code{x} as the predictor.
@@ -54,7 +57,10 @@
 #' assumption diagnostics.
 #' @return A list as returned by \code{\link{visstat_core}}, containing statistical results and graphical outputs.
 #'
-#' @seealso \code{\link{visstat_core}}
+#' @seealso the core function \code{\link{visstat_core}},  the package's vignette
+#' \code{vignette("visStatistics")} for the overview,
+#' and the accompanying webpage
+#' \url{https://shhschilling.github.io/visStatistics/}.
 #'
 #' @examples
 
@@ -76,13 +82,13 @@
 #' )
 #' visstat(grades_gender$Sex, grades_gender$Grade)
 #'
-#' ## ANOVA
+#' ## Welch's one-way ANOVA
 #' visstat(npk$block, npk$yield)
 #'
 #' ## Kruskal-Wallis
 #' visstat(iris$Species, iris$Petal.Width)
 #'
-#' ## Linear regression
+#' ## Simple linear regression
 #' visstat(trees$Height, trees$Girth, conf.level = 0.99)
 #'
 #' ## Chi-squared
@@ -100,11 +106,11 @@
 #'         graphicsoutput = "png", plotDirectory = tempdir())
 #'
 #' ## Save PDF
-#' visstat(iris$Petal.Width, iris$Species,
-#'         graphicsoutput = "pdf", plotDirectory = tempdir())
+#' visstat(iris$Species, iris$Petal.Width, graphicsoutput = "pdf",
+#'           plotDirectory = tempdir())
 #'
 #' ## Custom plot name
-#' visstat(iris$Petal.Width, iris$Species,
+#' visstat(iris$Species, iris$Petal.Width,
 #'         graphicsoutput = "pdf", plotName = "kruskal_iris", plotDirectory = tempdir())
 #'
 

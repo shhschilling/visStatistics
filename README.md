@@ -1,6 +1,50 @@
 <!-- pkgdown::start -->
 <!-- pkgdown::start -->
 
+# visStatistics: The right test, visualised.
+
+The R package `visStatistics` allows for rapid **vis**ualisation and
+statistical analysis of raw data. It automatically selects and
+visualises the most appropriate **statistic**al hypothesis test between
+two vectors of class `integer`, `numeric` or `factor`.
+
+This workflow is particularly suited for browser-based interfaces that
+rely on server-side R applications connected to secure databases, where
+users have no direct access, or for quick data visualisation, e.g. in
+statistical consulting projects.
+
+# Installation of latest stable version from CRAN
+
+#### 1. Install the package
+
+    install.packages("visStatistics")
+
+#### 2. Load the package
+
+    library(visStatistics)
+
+# Installation of the development version from GitHub
+
+#### 1.Install `devtools` from CRAN if not already installed:
+
+    install.packages("devtools")
+
+#### 2. Load the `devtools` package:
+
+    library(devtools)
+
+#### 3. Install the `visStatistics` package from GitHub:
+
+    install_github("shhschilling/visStatistics")
+
+#### 4. Load the `visStatistics` package:
+
+    library(visStatistics)
+
+#### 5. View help for the main function:
+
+    ? visstat
+
 # Getting Started
 
 The function `visstat()` accepts input in two ways:
@@ -15,11 +59,16 @@ In the standardised form, `x` and `y` must be vectors of class
 `"numeric"`, `"integer"`, or `"factor"`.
 
 In the backward-compatible form, `"name_of_x"` and `"name_of_y"` must be
-character strings naming columns in `dataframe`, which must themselves
-be of class `"numeric"`, `"integer"`, or `"factor"`. This is equivalent
-to writing:
+character strings naming columns in a `data.frame` named `dataframe`.
+These column must be of class `"numeric"`, `"integer"`, or `"factor"`.
+This is equivalent to writing:
 
     visstat(dataframe[["name_of_x"]], dataframe[["name_of_y"]])
+
+To simplify the notation, throughout the remainder, data of class
+`numeric` or `integer` are both referred to by their common `mode`
+**`numeric`**, while data of class `factor` are referred to as
+**`categorical`**.
 
 The interpretation of `x` and `y` depends on their classes:
 
@@ -34,60 +83,8 @@ The interpretation of `x` and `y` depends on their classes:
   or Fisher’s exact). The test is symmetric, but the plot layout depends
   on which variable is supplied as `x`.
 
-The wrapper function `visstat()` standardises the input and forwards it
-to the core function `visstat_core()`, which selects the appropriate
-test and generates visual and numerical output.
-
-The automatically generated output figures illustrate the selected
-statistical test, display the main test statistics, and include
-assumption checks and post hoc comparisons when applicable. The primary
-test results are returned as a list object.
-
-# Installation of latest stable version from CRAN
-
-1.  Install the package
-
-<!-- -->
-
-    install.packages("visStatistics")
-
-1.  Load the package
-
-<!-- -->
-
-    library(visStatistics)
-
-# Installation of the development version from GitHub
-
-1.  Install **devtools** from CRAN if not already installed:
-
-<!-- -->
-
-    install.packages("devtools")
-
-1.  Load the **devtools** package:
-
-<!-- -->
-
-    library(devtools)
-
-1.  Install the `visStatistics` package from GitHub:
-
-<!-- -->
-
-    install_github("shhschilling/visStatistics")
-
-1.  Load the `visStatistics` package:
-
-<!-- -->
-
-    library(visStatistics)
-
-1.  View help for the main function:
-
-<!-- -->
-
-    ? visstat
+`visstat()` selects the appropriate statistical test and generates
+visualisations accompanied by the main test statistics.
 
 # Examples
 
@@ -197,10 +194,6 @@ structure with the helper function `counts_to_cases()`:
 <img src="man/figures/README-haireye-fisher-1.png" width="100%" /><img src="man/figures/README-haireye-fisher-2.png" width="100%" />
 
 # Decision logic
-
-Throughout the remainder, data of class `"numeric"` or `"integer"` are
-referred as numeric, while data of class `"factor"` are referred to as
-categorical.
 
 The choice of statistical tests depends on whether the data of the
 selected columns are numeric or categorical, the number of levels in the
