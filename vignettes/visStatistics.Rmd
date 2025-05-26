@@ -41,10 +41,12 @@ The choice of test depends on the `class`, distribution, and sample size of the 
 The main function `visstat()` visualises the selected test with appropriate graphs (box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots, Q-Q plots), annotated with the main test results, including any assumption checks and post-hoc analyses.
 A minimal function call looks like:
 
-`visstat(dataframe,  "response",  "predictor")`
+`visstat(dataframe, varsample = "response", varfactor = "feature")`
 
-`dataframe` must be a column-based `data.frame`. Both `response` and
-`predictor` are character strings that must match column names in the `dataframe`.
+`dataframe` must be a column-based `data.frame`. Both `"response"` and
+`"feature"` must be  character strings that match column names in the `dataframe`.
+
+
 
 This scripted workflow is particularly suited for browser-based interfaces that rely on server-side R applications connected to secure databases, where users have no direct access, or for quick data visualisations, e.g., in statistical consulting projects.
 
@@ -208,7 +210,7 @@ The title is structured as follows:
 
 -   First line: Test name and chosen significance level $\alpha$.
 
--   Second line: Null hypotheses automatically adapted based on the user- specified `varsample` and `varfactor`.
+-   Second line: Null hypotheses automatically adapted based on the user- specified response  and grouping variable.
 
 -   Third line: Test statistic, p-value and automated comparison with $\alpha$
 
@@ -469,7 +471,7 @@ Post-hoc analysis using `pairwise.wilcox.test()` shows significant differences i
 
 ## Simple linear regression (`lm()`)
 
-If both the predictor `varfactor` and the response `varsample` are numerical and contain only one level each, `visstat()` performs a simple linear regression.
+If both the predictor and the response are numerical and contain only one level each, `visstat()` performs a simple linear regression.
 
 The resulting regression plot displays the point estimate of the regression line
 
@@ -526,15 +528,6 @@ Furthermore, the linear regression model explains 93% of the total variance in t
 
 # Both variables categorical
 
-```{=html}
-<!-- When both the predictor `varfactor` and the response `varsample` are
-categorical variables (i.e., of type `factor`), `visstat()` tests the null
-hypothesis that the two variables are independent. Categorical data are
-typically represented as contingency tables, which cross-tabulate the observed
-frequencies for each combination of factor levels. Based on these observed
-frequencies, `visstat()` computes the expected frequencies under the null
-hypothesis of independence.  -->
-```
 
 When both variables are categorical (i.e., of class `factor`), `visstat()` tests the null hypothesis that the two variables are independent.
 Observed frequencies are typically arranged in a contingency table, where rows index the levels $i$ of the response variable and columns index the levels $j$ of the predictor variable.
