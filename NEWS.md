@@ -1,3 +1,40 @@
+# visStatistics 0.1.6
+
+# visStatistics 0.1.6
+
+## Major changes
+
+* The `visstat()` function interface has been updated to accept two vectors 
+  directly, enabling a more concise and idiomatic usage. For example:
+
+    visstat(trees$Girth, trees$Height)
+
+  yields the same result as the original form:
+
+    visstat(trees, "Height", "Girth")
+
+  This change improves clarity and aligns with standard R conventions. Both 
+  calling styles remain supported for backwards compatibility.
+
+  See `?visstat`, the README, or `vignette("visStatistics")` for details.
+
+* The `visstat()` function interface has been updated to accept two vectors 
+  directly, enabling a more concise and idiomatic usage. For example:
+
+    visstat(trees$Girth, trees$Height)
+
+  yields the same result as the original form:
+
+    visstat(trees, "Height", "Girth")
+
+  This change improves clarity and aligns with standard R conventions. Both 
+  calling styles remain supported for backwards compatibility.
+
+  See `?visstat`, the README, or `vignette("visStatistics")` for details.
+
+
+
+
 # visStatistics 0.1.5
 
 ## News
