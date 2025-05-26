@@ -55,7 +55,7 @@
                         <h4 data-toc-skip class="author">Sabine
 Schilling</h4>
             
-            <h4 data-toc-skip class="date">2025-05-25</h4>
+            <h4 data-toc-skip class="date">2025-05-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -78,11 +78,11 @@ graphs (box plots, bar charts, regression lines with confidence bands,
 mosaic plots, residual plots, Q-Q plots), annotated with the main test
 results, including any assumption checks and post-hoc analyses. A
 minimal function call looks like:</p>
-<p><code>visstat(dataframe,  "response",  "predictor")</code></p>
+<p><code>visstat(dataframe, varsample = "response", varfactor = "feature")</code></p>
 <p><code>dataframe</code> must be a column-based
-<code>data.frame</code>. Both <code>response</code> and
-<code>predictor</code> are character strings that must match column
-names in the <code>dataframe</code>.</p>
+<code>data.frame</code>. Both <code>"response"</code> and
+<code>"feature"</code> must be character strings that match column names
+in the <code>dataframe</code>.</p>
 <p>This scripted workflow is particularly suited for browser-based
 interfaces that rely on server-side R applications connected to secure
 databases, where users have no direct access, or for quick data
@@ -315,8 +315,7 @@ user-specified <code>conf.level</code>.</p>
 <li><p>First line: Test name and chosen significance level
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.</p></li>
 <li><p>Second line: Null hypotheses automatically adapted based on the
-user- specified <code>varsample</code> and
-<code>varfactor</code>.</p></li>
+user- specified response and grouping variable.</p></li>
 <li><p>Third line: Test statistic, p-value and automated comparison with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math></p></li>
 </ul>
@@ -785,9 +784,9 @@ labels (all green letters differ).</p>
 <div class="section level3">
 <h3 id="simple-linear-regression-lm">Simple linear regression (<code>lm()</code>)<a class="anchor" aria-label="anchor" href="#simple-linear-regression-lm"></a>
 </h3>
-<p>If both the predictor <code>varfactor</code> and the response
-<code>varsample</code> are numerical and contain only one level each,
-<code><a href="../reference/visstat.html">visstat()</a></code> performs a simple linear regression.</p>
+<p>If both the predictor and the response are numerical and contain only
+one level each, <code><a href="../reference/visstat.html">visstat()</a></code> performs a simple linear
+regression.</p>
 <p>The resulting regression plot displays the point estimate of the
 regression line</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>a</mi><mo>+</mo><mi>b</mi><mo>⋅</mo><mi>x</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">
@@ -878,13 +877,6 @@ response variable <code>Volume</code>.</p>
 <div class="section level2">
 <h2 id="both-variables-categorical-1">Both variables categorical<a class="anchor" aria-label="anchor" href="#both-variables-categorical-1"></a>
 </h2>
-<!-- When both the predictor `varfactor` and the response `varsample` are
-categorical variables (i.e., of type `factor`), `visstat()` tests the null
-hypothesis that the two variables are independent. Categorical data are
-typically represented as contingency tables, which cross-tabulate the observed
-frequencies for each combination of factor levels. Based on these observed
-frequencies, `visstat()` computes the expected frequencies under the null
-hypothesis of independence.  -->
 <p>When both variables are categorical (i.e., of class
 <code>factor</code>), <code><a href="../reference/visstat.html">visstat()</a></code> tests the null hypothesis
 that the two variables are independent. Observed frequencies are
