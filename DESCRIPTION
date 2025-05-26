@@ -32,8 +32,9 @@ URL: https://github.com/shhschilling/visStatistics,
 BugReports: https://github.com/shhschilling/visStatistics/issues
 Imports: Cairo, graphics, grDevices, grid, multcompView, nortest,
         stats, utils, vcd
-Suggests: bookdown, knitr, rmarkdown
-VignetteBuilder: knitr, rmarkdown, bookdown
+Suggests:  knitr, rmarkdown
+VignetteBuilder: knitr
+BuildVignettes: true
 Encoding: UTF-8
 NeedsCompilation: no
 RoxygenNote: 7.3.2
