@@ -124,15 +124,20 @@ visstat <- function(x,
                     graphicsoutput = NULL,
                     plotName = NULL,
                     plotDirectory = getwd()) {
-  # Case 1: backward-compatible — x is data.frame, y is character, third arg must be character too
+  
+  clean_name <- function(expr) {
+    sub(".*\\$", "", deparse(expr))
+  }
+  
+  # Case 1: legacy form: visstat(data, "Girth", "Height")
   if (is.data.frame(x) && is.character(y) && length(y) == 1) {
     mc <- match.call()
     args <- as.list(mc)[-1]
     if (length(args) < 3 || !is.character(eval(args[[3]], parent.frame()))) {
       stop("When using the backward-compatible form, provide two column names as character strings.")
     }
-    varsample <- y
-    varfactor <- eval(args[[3]], parent.frame())
+    varsample <- y                     # first string: sample
+    varfactor <- eval(args[[3]], parent.frame())  # second string: factor
     dataframe <- x
     return(visstat_core(
       dataframe = dataframe,
@@ -146,26 +151,29 @@ visstat <- function(x,
       plotDirectory = plotDirectory
     ))
   }
-
-  # Case 2: standardised — x and y are both vectors
-  if (is.atomic(x) && is.atomic(y)) {
-    if (!inherits(x, c("numeric", "integer", "factor"))) {
-      stop("Invalid input: x must be of class 'numeric', 'integer' or 'factor'.")
-    }
-    if (!inherits(y, c("numeric", "integer", "factor"))) {
-      stop("Invalid input: y must be of class 'numeric', 'integer' or 'factor'.")
-    }
-
-    return(visstat_core(data.frame(x = x, y = y),
-      varsample = "y", varfactor = "x",
-      conf.level = conf.level,
-      numbers = numbers,
-      minpercent = minpercent,
-      graphicsoutput = graphicsoutput,
-      plotName = plotName,
-      plotDirectory = plotDirectory
-    ))
-  }
-
-  stop("Invalid input. Use either: visstat(x, y) with vectors x and y, or visstat(dataframe, \"y\", \"x\") with column names as character strings")
+  
+  # Case 2: new syntax: visstat(trees$Height, trees$Girth)
+  factor_expr <- substitute(x)  # first argument = factor
+  sample_expr <- substitute(y)  # second argument = sample
+  
+  factor_val <- eval(factor_expr, parent.frame())
+  sample_val <- eval(sample_expr, parent.frame())
+  
+  factor_name <- clean_name(factor_expr)
+  sample_name <- clean_name(sample_expr)
+  
+  dataframe <- data.frame(factor_val, sample_val)
+  names(dataframe) <- c(factor_name, sample_name)
+  
+  return(visstat_core(
+    dataframe = dataframe,
+    varsample = sample_name,   # second argument
+    varfactor = factor_name,   # first argument
+    conf.level = conf.level,
+    numbers = numbers,
+    minpercent = minpercent,
+    graphicsoutput = graphicsoutput,
+    plotName = plotName,
+    plotDirectory = plotDirectory
+  ))
 }
