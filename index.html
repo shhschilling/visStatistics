@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Automated Selection and Visualisation of Statistical Hypothesis Tests • visStatistics</title>
+<title>visStatistics • visStatistics</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Automated Selection and Visualisation of Statistical Hypothesis Tests">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="visStatistics">
 <meta name="description" content="Automatically selects and visualises appropriate statistical hypothesis tests between a response and a feature variable in a data frame. The choice of test depends on the class, distribution, and sample size of the input variables, as well as the user-defined conf.level. The package focuses on visualising the selected test using appropriate plots— such as box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots and Q–Q plots. Each plot is annotated with relevant test statistics and, where applicable, assumption checks and post-hoc results. The scripted workflow is particularly well suited for interactive interfaces where users access data only through a graphical front end backed by server-side R sessions, as well as for quick data exploration, for example, in statistical consulting contexts. Implemented tests: t.test(), wilcox.test(), aov(), oneway.test(), kruskal.test(), lm(), fisher.test(), chisq.test(). Tests for normality: shapiro.test(), ad.test(). Tests for equal variances: bartlett.test(). Post-hoc tests: TukeyHSD(), pairwise.wilcox.test().">
 <meta property="og:description" content="Automatically selects and visualises appropriate statistical hypothesis tests between a response and a feature variable in a data frame. The choice of test depends on the class, distribution, and sample size of the input variables, as well as the user-defined conf.level. The package focuses on visualising the selected test using appropriate plots— such as box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots and Q–Q plots. Each plot is annotated with relevant test statistics and, where applicable, assumption checks and post-hoc results. The scripted workflow is particularly well suited for interactive interfaces where users access data only through a graphical front end backed by server-side R sessions, as well as for quick data exploration, for example, in statistical consulting contexts. Implemented tests: t.test(), wilcox.test(), aov(), oneway.test(), kruskal.test(), lm(), fisher.test(), chisq.test(). Tests for normality: shapiro.test(), ad.test(). Tests for equal variances: bartlett.test(). Post-hoc tests: TukeyHSD(), pairwise.wilcox.test().">
 </head>
@@ -47,45 +47,243 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9">
-Automatically selects and visualises appropriate statistical hypothesis tests between a response and a feature variable in a data frame. The choice of test depends on the class, distribution, and sample size of the input variables, as well as the user-defined 'conf.level'. The package focuses on visualising the selected test using appropriate plots— such as box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots and Q–Q plots. Each plot is annotated with relevant test statistics and, where applicable, assumption checks and post-hoc results. The scripted workflow is particularly well suited for interactive interfaces where users access data only through a graphical front end backed by server-side R sessions, as well as for quick data exploration, for example, in statistical consulting contexts. Implemented tests: t.test(), wilcox.test(), aov(), oneway.test(), kruskal.test(), lm(), fisher.test(), chisq.test(). Tests for normality: shapiro.test(), ad.test(). Tests for equal variances: bartlett.test(). Post-hoc tests: TukeyHSD(), pairwise.wilcox.test().
-  </main><aside class="col-md-3"><div class="links">
-<h2 data-toc-skip>Links</h2>
-<ul class="list-unstyled">
-<li><a href="https://cloud.r-project.org/package=visStatistics" class="external-link">View on CRAN</a></li>
-<li><a href="https://github.com/shhschilling/visStatistics/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/shhschilling/visStatistics/issues" class="external-link">Report a bug</a></li>
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header"><h1 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h1></div>
+<p>The function <code><a href="reference/visstat.html">visstat()</a></code> accepts input in two ways:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Standardised form (recommended):</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">visstat</span>(x, y)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># Backward-compatible form:</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">visstat</span>(dataframe, <span class="st">"name_of_y"</span>, <span class="st">"name_of_x"</span>)</span></code></pre></div>
+<p>In the standardised form, <code>x</code> and <code>y</code> must be vectors of class <code>"numeric"</code>, <code>"integer"</code>, or <code>"factor"</code>.</p>
+<p>In the backward-compatible form, <code>"name_of_x"</code> and <code>"name_of_y"</code> must be character strings naming columns in <code>dataframe</code>, which must themselves be of class <code>"numeric"</code>, <code>"integer"</code>, or <code>"factor"</code>. This is equivalent to writing:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">visstat</span>(dataframe[[<span class="st">"name_of_x"</span>]], dataframe[[<span class="st">"name_of_y"</span>]])</span></code></pre></div>
+<p>The interpretation of <code>x</code> and <code>y</code> depends on their classes:</p>
+<ul>
+<li><p>If one is numeric and the other is a factor, the numeric must be passed as response <code>y</code> and the factor as predictor <code>x</code>. This supports tests for central tendencies.</p></li>
+<li><p>If both are numeric, a simple linear regression model is fitted with <code>y</code> as the response and <code>x</code> as the predictor.</p></li>
+<li><p>If both are factors, a test of association is performed (Chi-squared or Fisher’s exact). The test is symmetric, but the plot layout depends on which variable is supplied as <code>x</code>.</p></li>
 </ul>
+<p>The wrapper function <code><a href="reference/visstat.html">visstat()</a></code> standardises the input and forwards it to the core function <code>visstat_core()</code>, which selects the appropriate test and generates visual and numerical output.</p>
+<p>The automatically generated output figures illustrate the selected statistical test, display the main test statistics, and include assumption checks and post hoc comparisons when applicable. The primary test results are returned as a list object.</p>
 </div>
-
-<div class="license">
-<h2 data-toc-skip>License</h2>
-<ul class="list-unstyled">
+<div class="section level1">
+<h1 id="installation-of-latest-stable-version-from-cran">Installation of latest stable version from CRAN<a class="anchor" aria-label="anchor" href="#installation-of-latest-stable-version-from-cran"></a>
+</h1>
+<div class="section level4">
+<h4 id="id_1-install-the-package">1. Install the package<a class="anchor" aria-label="anchor" href="#id_1-install-the-package"></a>
+</h4>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"visStatistics"</span>)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="id_2-load-the-package">2. Load the package<a class="anchor" aria-label="anchor" href="#id_2-load-the-package"></a>
+</h4>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(visStatistics)</span></code></pre></div>
+</div>
+</div>
+<div class="section level1">
+<h1 id="installation-of-the-development-version-from-github">Installation of the development version from GitHub<a class="anchor" aria-label="anchor" href="#installation-of-the-development-version-from-github"></a>
+</h1>
+<div class="section level4">
+<h4 id="id_1install-devtools-from-cran-if-not-already-installed">1.Install <strong>devtools</strong> from CRAN if not already installed:<a class="anchor" aria-label="anchor" href="#id_1install-devtools-from-cran-if-not-already-installed"></a>
+</h4>
+<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"devtools"</span>)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="id_2-load-the-devtools-package">2. Load the <strong>devtools</strong> package:<a class="anchor" aria-label="anchor" href="#id_2-load-the-devtools-package"></a>
+</h4>
+<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(devtools)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="id_3-install-the-visstatistics-package-from-github">3. Install the <code>visStatistics</code> package from GitHub:<a class="anchor" aria-label="anchor" href="#id_3-install-the-visstatistics-package-from-github"></a>
+</h4>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">install_github</span>(<span class="st">"shhschilling/visStatistics"</span>)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="id_4-load-the-visstatistics-package">4. Load the <code>visStatistics</code> package:<a class="anchor" aria-label="anchor" href="#id_4-load-the-visstatistics-package"></a>
+</h4>
+<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">library</span>(visStatistics)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="id_5-view-help-for-the-main-function">5. View help for the main function:<a class="anchor" aria-label="anchor" href="#id_5-view-help-for-the-main-function"></a>
+</h4>
+<div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>? visstat</span></code></pre></div>
+</div>
+</div>
+<div class="section level1">
+<h1 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+</h1>
+<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">library</span>(visStatistics)</span></code></pre></div>
+<div class="section level2">
+<h2 id="numerical-response-and-categorical-predictor">Numerical response and categorical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-categorical-predictor"></a>
+</h2>
+<p>When the response is numerical and the predictor is categorical, test of central tendencies are selected.</p>
+<div class="section level3">
+<h3 id="welch-two-sample-t-test">Welch two sample t-test<a class="anchor" aria-label="anchor" href="#welch-two-sample-t-test"></a>
+</h3>
+<div class="section level4">
+<h4 id="insectsprays-data-set--both-input-forms">InsectSprays data set — both input forms<a class="anchor" aria-label="anchor" href="#insectsprays-data-set--both-input-forms"></a>
+</h4>
+<div class="sourceCode" id="cb11"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>insect_sprays_ab <span class="ot">&lt;-</span> InsectSprays[InsectSprays<span class="sc">$</span>spray <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>), ]</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>insect_sprays_ab<span class="sc">$</span>spray <span class="ot">&lt;-</span> <span class="fu">factor</span>(insect_sprays_ab<span class="sc">$</span>spray)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co"># Standardised</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="fu">visstat</span>(insect_sprays_ab<span class="sc">$</span>spray, insect_sprays_ab<span class="sc">$</span>count)</span></code></pre></div>
+<p><img src="reference/figures/README-insect-sprays-1.png" width="100%"></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Backward-compatible function call resulting in same output</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co"># visstat(insect_sprays_ab,"count", "spray")</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="mtcars-data-set">mtcars data set<a class="anchor" aria-label="anchor" href="#mtcars-data-set"></a>
+</h4>
+<div class="sourceCode" id="cb13"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>mtcars<span class="sc">$</span>am <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(mtcars<span class="sc">$</span>am)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>t_test_statistics <span class="ot">&lt;-</span> <span class="fu">visstat</span>(mtcars<span class="sc">$</span>am, mtcars<span class="sc">$</span>mpg)</span></code></pre></div>
+<p><img src="reference/figures/README-mtcars-1.png" width="100%"></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># t_test_statistics</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="wilcoxon-rank-sum-test">Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test"></a>
+</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>grades_gender <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>  <span class="at">sex =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"girl"</span>, <span class="st">"boy"</span>), <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">21</span>, <span class="dv">23</span>))),</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="at">grade =</span> <span class="fu">c</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>    <span class="fl">19.3</span>, <span class="fl">18.1</span>, <span class="fl">15.2</span>, <span class="fl">18.3</span>, <span class="fl">7.9</span>, <span class="fl">6.2</span>, <span class="fl">19.4</span>, <span class="fl">20.3</span>, <span class="fl">9.3</span>, <span class="fl">11.3</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>    <span class="fl">18.2</span>, <span class="fl">17.5</span>, <span class="fl">10.2</span>, <span class="fl">20.1</span>, <span class="fl">13.3</span>, <span class="fl">17.2</span>, <span class="fl">15.1</span>, <span class="fl">16.2</span>, <span class="fl">17.0</span>, <span class="fl">16.5</span>, <span class="fl">5.1</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>    <span class="fl">15.3</span>, <span class="fl">17.1</span>, <span class="fl">14.8</span>, <span class="fl">15.4</span>, <span class="fl">14.4</span>, <span class="fl">7.5</span>, <span class="fl">15.5</span>, <span class="fl">6.0</span>, <span class="fl">17.4</span>, <span class="fl">7.3</span>, <span class="fl">14.3</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>    <span class="fl">13.5</span>, <span class="fl">8.0</span>, <span class="fl">19.5</span>, <span class="fl">13.4</span>, <span class="fl">17.9</span>, <span class="fl">17.7</span>, <span class="fl">16.4</span>, <span class="fl">15.6</span>, <span class="fl">17.3</span>, <span class="fl">19.9</span>, <span class="fl">4.4</span>, <span class="fl">2.1</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>  )</span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>)</span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>wilcoxon_statistics <span class="ot">&lt;-</span> <span class="fu">visstat</span>(grades_gender<span class="sc">$</span>sex, grades_gender<span class="sc">$</span>grade)</span></code></pre></div>
+<p><img src="reference/figures/README-sex-grades2-1.png" width="100%"></p>
+</div>
+<div class="section level3">
+<h3 id="one-way-test">One-way test<a class="anchor" aria-label="anchor" href="#one-way-test"></a>
+</h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>one_way_npk <span class="ot">&lt;-</span> <span class="fu">visstat</span>(npk<span class="sc">$</span>block,npk<span class="sc">$</span>yield)</span></code></pre></div>
+<p><img src="reference/figures/README-npk-onewy-1.png" width="100%"><img src="reference/figures/README-npk-onewy-2.png" width="100%"></p>
+</div>
+<div class="section level3">
+<h3 id="kruskal-wallis-test">Kruskal-Wallis test<a class="anchor" aria-label="anchor" href="#kruskal-wallis-test"></a>
+</h3>
+<div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">visstat</span>(iris<span class="sc">$</span>Species, iris<span class="sc">$</span>Petal.Width)</span></code></pre></div>
+<p><img src="reference/figures/README-iris-kruskal-1.png" width="100%"><img src="reference/figures/README-iris-kruskal-2.png" width="100%"> The generated graphs can be saved in all available formats of the <code>Cairo</code> package. Here we save the graphical output of type “pdf” in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">visstat</span>(</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>iris<span class="sc">$</span>Species,iris<span class="sc">$</span>Petal.Width,<span class="at">graphicsoutput =</span> <span class="st">"pdf"</span>,<span class="at">plotDirectory =</span> <span class="fu">tempdir</span>()</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="numerical-response-and-numerical-predictor-linear-regression">Numerical response and numerical predictor: Linear Regression<a class="anchor" aria-label="anchor" href="#numerical-response-and-numerical-predictor-linear-regression"></a>
+</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>linreg_cars <span class="ot">&lt;-</span> <span class="fu">visstat</span>(cars<span class="sc">$</span>speed ,cars<span class="sc">$</span>dist)</span></code></pre></div>
+<p><img src="reference/figures/README-lin-reg-dist-speed-1.png" width="100%"><img src="reference/figures/README-lin-reg-dist-speed-2.png" width="100%"></p>
+<p>Increasing the confidence level <code>conf.level</code> from the default 0.95 to 0.99 leads two wider confidence and prediction bands:</p>
+<p><img src="reference/figures/README-pressure-1.png" width="100%"><img src="reference/figures/README-pressure-2.png" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="both-varibles-categorical">Both varibles categorical<a class="anchor" aria-label="anchor" href="#both-varibles-categorical"></a>
+</h2>
+<div class="section level3">
+<h3 id="pearsons-chi-squared-test">Pearson’s Chi-squared test<a class="anchor" aria-label="anchor" href="#pearsons-chi-squared-test"></a>
+</h3>
+<p>Count data sets are often presented as multidimensional arrays, so - called contingency tables, whereas <code><a href="reference/visstat.html">visstat()</a></code> requires a <code>data.frame</code> with a column structure. Arrays can be transformed to this column wise structure with the helper function <code><a href="reference/counts_to_cases.html">counts_to_cases()</a></code>:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>hair_eye_color_df <span class="ot">&lt;-</span> <span class="fu">counts_to_cases</span>(<span class="fu">as.data.frame</span>(HairEyeColor))</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">visstat</span>(hair_eye_color_df<span class="sc">$</span>Eye, hair_eye_color_df<span class="sc">$</span>Hair)</span></code></pre></div>
+<p><img src="reference/figures/README-pearson-1.png" width="100%"><img src="reference/figures/README-pearson-2.png" width="100%"></p>
+</div>
+<div class="section level3">
+<h3 id="fishers-exact-test">Fisher’s exact test<a class="anchor" aria-label="anchor" href="#fishers-exact-test"></a>
+</h3>
+<div class="sourceCode" id="cb21"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>hair_eye_color_male <span class="ot">&lt;-</span> HairEyeColor[, , <span class="dv">1</span>]</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="co"># Slice out a 2 by 2 contingency table</span></span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>black_brown_hazel_green_male <span class="ot">&lt;-</span> hair_eye_color_male[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>]</span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a><span class="co"># Transform to data frame</span></span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>black_brown_hazel_green_male <span class="ot">&lt;-</span> <span class="fu">counts_to_cases</span>(<span class="fu">as.data.frame</span>(black_brown_hazel_green_male))</span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a><span class="co"># Fisher test</span></span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>fisher_stats <span class="ot">&lt;-</span> <span class="fu">visstat</span>(black_brown_hazel_green_male<span class="sc">$</span>Eye,black_brown_hazel_green_male<span class="sc">$</span>Hair)</span></code></pre></div>
+<p><img src="reference/figures/README-haireye-fisher-1.png" width="100%"><img src="reference/figures/README-haireye-fisher-2.png" width="100%"></p>
+</div>
+</div>
+</div>
+<div class="section level1">
+<h1 id="decision-logic">Decision logic<a class="anchor" aria-label="anchor" href="#decision-logic"></a>
+</h1>
+<p>Throughout the remainder, data of class <code>"numeric"</code> or <code>"integer"</code> are referred as numeric, while data of class <code>"factor"</code> are referred to as categorical.</p>
+<p>The choice of statistical tests depends on whether the data of the selected columns are numeric or categorical, the number of levels in the categorical variable, and the distribution of the data. The function prioritizes interpretable visual output and tests that remain valid under the the following decision logic:</p>
+<div class="section level2">
+<h2 id="numerical-response-and-categorical-predictor-1">Numerical response and categorical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-categorical-predictor-1"></a>
+</h2>
+<p>When the response is numeric and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.</p>
+<ul>
+<li><p>If the categorical predictor has exactly two levels, Welch’s t - test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>), is applied whenever both groups contain more than 30 observations, with the validity of the test supported by the approximate normality of the sampling distribution of the mean under the central limit theorem [@Rasch:2011vl @Lumley2002dsa]. For smaller samples, group - wise normality is assessed using the Shapiro - Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) at the significance level<em>α</em>. If both groups are found to be approximately normally distributed according to the Shapiro - Wilk test, Welch’s t-test is applied; otherwise, the Wilcoxon rank-sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is used.</p></li>
+<li><p>For predictors with more than two levels, an ANOVA model (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) is initially fitted. The normality of residuals is evaluated using both the Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson–Darling test (<code>ad.test()</code>); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold <em>α</em>. If this condition is met, Bartlett’s test (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>) is then used to assess homoscedasticity. When variances are homogeneous (<em>p</em> &gt; <em>α</em>), ANOVA is applied with Tukey’s HSD (<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>) for post-hoc comparison. If variances differ significantly (<em>p</em> ≤ <em>α</em>), Welch’s one - way test (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) is used, also followed by Tukey’s HSD. If residuals are not normally distributed according to both tests (<em>p</em> ≤ <em>α</em>), the Kruskal-Wallis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is selected, followed by pairwise Wilcoxon tests (<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>). A graphical overview of the decision logic used is provided in below figure.</p></li>
+</ul>
+<p><img src="reference/figures/decision_tree.png" width="100%" alt="Decision tree used to select the appropriate statistical test."></p>
+<p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
+Decision tree used to select the appropriate statistical test for a categorical predictor and numeric response, based on the number of factor levels, normality, and homoscedasticity.
+</p>
+</div>
+<div class="section level2">
+<h2 id="numerical-response-and-numerical-predictor-linear-regression-1">Numerical response and numerical predictor: Linear Regression<a class="anchor" aria-label="anchor" href="#numerical-response-and-numerical-predictor-linear-regression-1"></a>
+</h2>
+<p>When both the response and predictor are numeric, a simple linear regression model (<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands. Note that only one explanatory variable is allowed, as the function is designed for two-dimensional visualisation.</p>
+</div>
+<div class="section level2">
+<h2 id="both-variables-categorical">Both variables categorical<a class="anchor" aria-label="anchor" href="#both-variables-categorical"></a>
+</h2>
+<p>When both variables are categorical, no direction is assumed (though one is still referred to as the for consistency). <code><a href="reference/visstat.html">visstat()</a></code> tests the null hypothesis that both variables are independent using either <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code> or <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>. The choice of test is based on Cochran’s rule [@Cochran], which advises that the<em>χ</em><sup>2</sup>approximation is reliable only if no expected cell count is zero and no more than 20 percent of cells have expected counts below 5.</p>
+<p>For a more detailed description of the underlying decision logic see</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">vignette</span>(<span class="st">"visStatistics"</span>)</span></code></pre></div>
+</div>
+</div>
+<div class="section level1">
+<h1 id="limitations">Limitations<a class="anchor" aria-label="anchor" href="#limitations"></a>
+</h1>
+<p>The main purpose of this package is a decision-logic based automatic visualisation of statistical test results. Therefore, except for the user-adjustable <code>conf.level</code> parameter, all statistical tests are applied using their default settings from the corresponding base R functions. As a consequence, paired tests are currently not supported and <code><a href="reference/visstat.html">visstat()</a></code> does not allow to study interactions terms between the different levels of an independent variable in an analysis of variance. Focusing on the graphical representation of tests, only simple linear regression is implemented, as multiple linear regressions cannot be visualised.</p>
+<div class="section level2">
+<h2 id="implemented-tests">Implemented tests<a class="anchor" aria-label="anchor" href="#implemented-tests"></a>
+</h2>
+<div class="section level3">
+<h3 id="numerical-response-and-categorical-predictor-2">Numerical response and categorical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-categorical-predictor-2"></a>
+</h3>
+<div class="section level4">
+<h4 id="main-tests">Main tests<a class="anchor" aria-label="anchor" href="#main-tests"></a>
+</h4>
+<p><code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>, <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>, <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code></p>
+</div>
+<div class="section level4">
+<h4 id="normality-assumption-check">Normality assumption check<a class="anchor" aria-label="anchor" href="#normality-assumption-check"></a>
+</h4>
+<p><code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and <code>ad.test()</code></p>
+</div>
+<div class="section level4">
+<h4 id="homoscedasticity-assumption-check">Homoscedasticity assumption check<a class="anchor" aria-label="anchor" href="#homoscedasticity-assumption-check"></a>
+</h4>
+<p><code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code></p>
+</div>
+<div class="section level4">
+<h4 id="post-hoc-tests-tukeyhsd-used-following-aovand-onewaytest">Post-hoc tests-<code>TukeyHSD()</code> (used following <code>aov()</code>and <code>oneway.test()</code>)<a class="anchor" aria-label="anchor" href="#post-hoc-tests-tukeyhsd-used-following-aovand-onewaytest"></a>
+</h4>
+<ul>
 <li>
-<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
-</li>
+<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> (used following <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>)</li>
 </ul>
 </div>
-
-
-<div class="citation">
-<h2 data-toc-skip>Citation</h2>
-<ul class="list-unstyled">
-<li><a href="authors.html#citation">Citing visStatistics</a></li>
-</ul>
+</div>
+<div class="section level3">
+<h3 id="numerical-response-and-numerical-predictor">Numerical response and numerical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-numerical-predictor"></a>
+</h3>
+<p>When both the response and predictor are numerical, a simple linear regression model is fitted:<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p>
+<p>Note that multiple linear regression models are not implemented, as the package focuses on the visualisation of data, not model building. ### Categorical response and categorical predictor</p>
+<p>When both variables are categorical, <code><a href="reference/visstat.html">visstat()</a></code> tests the null hypothesis of independence using one of the following:-<code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code> (default for larger samples) - <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> (used for small expected cell counts based on Cochran’s rule) <!-- pkgdown::end --></p>
+</div>
+</div>
 </div>
 
-<div class="developers">
-<h2 data-toc-skip>Developers</h2>
-<ul class="list-unstyled">
-<li>Sabine Schilling <br><small class="roles"> Maintainer, author, copyright holder </small> <a href="https://orcid.org/0000-0002-8318-9421" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
-<li><a href="authors.html">More about authors...</a></li>
-</ul>
-</div>
-
-
-
-  </aside>
+  </main><aside class="col-md-3"></aside>
 </div>
 
 
