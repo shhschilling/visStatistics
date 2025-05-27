@@ -368,8 +368,7 @@ gallon, and <code>am</code> represents the transmission type
 (<code>0</code> = automatic, <code>1</code> = manual).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
-<span><span class="va">t_test_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span>, <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span><span class="op">)</span></span>
-<span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span></code></pre></div>
+<span><span class="va">t_test_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span>, <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the
 default 0.95 to 0.99 results in wider confidence intervals, as a higher
@@ -377,8 +376,7 @@ confidence level requires more conservative bounds to ensure that the
 interval includes the true parameter value with greater certainty.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
-<span><span class="va">t_test_statistics_99</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span>, <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span>
-<span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span></code></pre></div>
+<span><span class="va">t_test_statistics_99</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span>, <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="100%"></p>
 </div>
 <div class="section level5">
@@ -397,8 +395,7 @@ central tendencies of grades of “boys” and “girls” in a class:</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">wilcoxon_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">grades_gender</span><span class="op">$</span><span class="va">sex</span>, <span class="va">grades_gender</span><span class="op">$</span><span class="va">grade</span><span class="op">)</span></span>
-<span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span></code></pre></div>
+<span><span class="va">wilcoxon_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">grades_gender</span><span class="op">$</span><span class="va">sex</span>, <span class="va">grades_gender</span><span class="op">$</span><span class="va">grade</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-4-1.png" width="100%"></p>
 </div>
 </div>
@@ -759,18 +756,6 @@ fertilisers,</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">oneway_npk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span><span class="op">$</span><span class="va">block</span>,<span class="va">npk</span><span class="op">$</span><span class="va">yield</span>,conf.level<span class="op">=</span><span class="fl">0.90</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-5-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-5-2.png" width="100%"></p>
-<pre><code><span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span>
-<span><span class="co">#&gt; $names</span></span>
-<span><span class="co">#&gt; [1] "summary statistics of Fisher's one-way ANOVA"                              </span></span>
-<span><span class="co">#&gt; [2] "summary statistics of Welch's one-way ANOVA (not assuming equal variances)"</span></span>
-<span><span class="co">#&gt; [3] "adjusted p values from"                                                    </span></span>
-<span><span class="co">#&gt; [4] "conf.level"                                                                </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $plot_paths</span></span>
-<span><span class="co">#&gt; character(0)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $class</span></span>
-<span><span class="co">#&gt; [1] "visstat"</span></span></code></pre>
 <p>Normality of residuals is supported by graphical diagnostics (scatter
 plot of standardised residuals, Q-Q plot) and formal tests (Shapiro–Wilk
 and Anderson- Darling, both with
@@ -791,24 +776,13 @@ blocks, as all share the same group label (e.g., all green letters).</p>
 agricultural experimental units treated with six different insecticides.
 To stabilise the variance in counts, we apply a square root
 transformation to the response variable.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">insect_sprays_tr</span> <span class="op">&lt;-</span> <span class="va">InsectSprays</span></span>
 <span><span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">count_sqrt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">count</span><span class="op">)</span></span>
 <span><span class="va">test_statistic_anova</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">spray</span>, <span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">count_sqrt</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-6-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-6-2.png" width="100%"></p>
-<pre><code><span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span>
-<span><span class="co">#&gt; $names</span></span>
-<span><span class="co">#&gt; [1] "summary statistics of Fisher's one-way ANOVA"                              </span></span>
-<span><span class="co">#&gt; [2] "summary statistics of Welch's one-way ANOVA (not assuming equal variances)"</span></span>
-<span><span class="co">#&gt; [3] "adjusted p values from"                                                    </span></span>
-<span><span class="co">#&gt; [4] "conf.level"                                                                </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $plot_paths</span></span>
-<span><span class="co">#&gt; character(0)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $class</span></span>
-<span><span class="co">#&gt; [1] "visstat"</span></span>
-<span><span class="co"># test_statistic_anova </span></span></code></pre>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># test_statistic_anova </span></span></code></pre></div>
 <p>After the transformation, the homogeneity of variances can be assumed
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>&gt;</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">p&gt;
 \alpha</annotation></semantics></math> as calculated with the
@@ -820,18 +794,9 @@ transformation to the response variable.</p>
 </h5>
 <p>The <code>iris</code> dataset contains petal width measurements (in
 cm) for three different iris species.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Width</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-7-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-7-2.png" width="100%"></p>
-<pre><code><span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span>
-<span><span class="co">#&gt; $names</span></span>
-<span><span class="co">#&gt; [1] "kruskal_wallis"             "adjusted_p_values_wilcoxon"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $plot_paths</span></span>
-<span><span class="co">#&gt; character(0)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $class</span></span>
-<span><span class="co">#&gt; [1] "visstat"</span></span></code></pre>
 <p>In this example, scatter plots of the standardised residuals and the
 Q-Q plot suggest that the residuals are not normally distributed. This
 is confirmed by very small p-values from both the Shapiro–Wilk and
@@ -904,55 +869,22 @@ bands.</p>
 <p>The <code>cars</code> dataset reports the speed of cars in miles per
 hour (<code>speed</code>) and the stopping distance in feet
 (<code>dist</code>).</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span><span class="op">$</span><span class="va">speed</span>, <span class="va">cars</span><span class="op">$</span><span class="va">dist</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-8-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-8-2.png" width="100%"></p>
-<pre><code><span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span>
-<span><span class="co">#&gt; $names</span></span>
-<span><span class="co">#&gt; [1] "independent variable x"          "dependent variable y"           </span></span>
-<span><span class="co">#&gt; [3] "summary_regression"              "shapiro_test_residuals"         </span></span>
-<span><span class="co">#&gt; [5] "anderson_darling_test_residuals" "error_bands"                    </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $plot_paths</span></span>
-<span><span class="co">#&gt; character(0)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $class</span></span>
-<span><span class="co">#&gt; [1] "visstat"</span></span></code></pre>
 <p>Increasing the confidence level <code>conf.level</code> from the
 default 0.95 to 0.99 results in wider confidence and prediction
 bands:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span><span class="op">$</span><span class="va">speed</span>,<span class="va">cars</span><span class="op">$</span><span class="va">dist</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-9-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-9-2.png" width="100%"></p>
-<pre><code><span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span>
-<span><span class="co">#&gt; $names</span></span>
-<span><span class="co">#&gt; [1] "independent variable x"          "dependent variable y"           </span></span>
-<span><span class="co">#&gt; [3] "summary_regression"              "shapiro_test_residuals"         </span></span>
-<span><span class="co">#&gt; [5] "anderson_darling_test_residuals" "error_bands"                    </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $plot_paths</span></span>
-<span><span class="co">#&gt; character(0)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $class</span></span>
-<span><span class="co">#&gt; [1] "visstat"</span></span></code></pre>
 <p>p-values greater than <code>conf.level</code> in both the
 Anderson-Darling normality test and the Shapiro–Wilk test of the
 standardised residuals indicate that the normality assumption of the
 residuals underlying the linear regression is met.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_trees</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span><span class="op">$</span><span class="va">Girth</span>, <span class="va">trees</span><span class="op">$</span><span class="va">Volume</span>,conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-10-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-10-2.png" width="100%"></p>
-<pre><code><span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span>
-<span><span class="co">#&gt; $names</span></span>
-<span><span class="co">#&gt; [1] "independent variable x"          "dependent variable y"           </span></span>
-<span><span class="co">#&gt; [3] "summary_regression"              "shapiro_test_residuals"         </span></span>
-<span><span class="co">#&gt; [5] "anderson_darling_test_residuals" "error_bands"                    </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $plot_paths</span></span>
-<span><span class="co">#&gt; character(0)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $class</span></span>
-<span><span class="co">#&gt; [1] "visstat"</span></span></code></pre>
 </div>
 <div class="section level5">
 <h5 id="dataset-trees">dataset: <code class="unnumbered">trees</code><a class="anchor" aria-label="anchor" href="#dataset-trees"></a>
@@ -962,20 +894,9 @@ residuals underlying the linear regression is met.</p>
 <code>Volume</code> (in cubic feet) of black cherry trees. In this
 example, we choose <code>Volume</code> as the response and
 <code>Girth</code> as the predictor.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span><span class="op">$</span><span class="va">Girth</span>, <span class="va">trees</span><span class="op">$</span><span class="va">Volume</span>, conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-11-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-11-2.png" width="100%"></p>
-<pre><code><span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span>
-<span><span class="co">#&gt; $names</span></span>
-<span><span class="co">#&gt; [1] "independent variable x"          "dependent variable y"           </span></span>
-<span><span class="co">#&gt; [3] "summary_regression"              "shapiro_test_residuals"         </span></span>
-<span><span class="co">#&gt; [5] "anderson_darling_test_residuals" "error_bands"                    </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $plot_paths</span></span>
-<span><span class="co">#&gt; character(0)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $class</span></span>
-<span><span class="co">#&gt; [1] "visstat"</span></span></code></pre>
 <p>Both the graphical analysis of the standardised residuals and
 p-values greater than
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>
@@ -1159,7 +1080,7 @@ table.</p>
 <code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code>. The function transforms the contingency
 table <code>HairEyeColor</code> into <code>data.frame</code> named
 <code>HairEyeColourDataFrame</code>.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">HairEyeColourDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -1173,21 +1094,10 @@ other.</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test
 (<code>chisq.test()</code>)<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test-chisq-test-1"></a>
 </h4>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_colour_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_colour_df</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">hair_eye_colour_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span>
-<span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_colour_df</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">hair_eye_colour_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-13-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-13-2.png" width="100%"></p>
-<pre><code><span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span>
-<span><span class="co">#&gt; $names</span></span>
-<span><span class="co">#&gt;  [1] "statistic"    "parameter"    "p.value"      "method"       "data.name"   </span></span>
-<span><span class="co">#&gt;  [6] "observed"     "expected"     "residuals"    "stdres"       "mosaic_stats"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $plot_paths</span></span>
-<span><span class="co">#&gt; character(0)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $class</span></span>
-<span><span class="co">#&gt; [1] "visstat"</span></span></code></pre>
 <p>The graphical output shows that the null hypothesis of Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
 test – namely, that hair colour and eye colour are independent – must be
@@ -1207,24 +1117,13 @@ with Yate’s continuity correction<a class="anchor" aria-label="anchor" href="#
 <p>In the following example, we restrict the data to participants with
 either black or brown hair and either brown or blue eyes, resulting in a
 2-by-2 contingency table.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_black_brown_eyes_brown_blue</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></span>
 <span><span class="co"># Transform to data frame</span></span>
 <span><span class="va">hair_black_brown_eyes_brown_blue_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Chi-squared test</span></span>
-<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span>
-<span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-14-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-14-2.png" width="100%"></p>
-<pre><code><span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span>
-<span><span class="co">#&gt; $names</span></span>
-<span><span class="co">#&gt;  [1] "statistic"    "parameter"    "p.value"      "method"       "data.name"   </span></span>
-<span><span class="co">#&gt;  [6] "observed"     "expected"     "residuals"    "stdres"       "mosaic_stats"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $plot_paths</span></span>
-<span><span class="co">#&gt; character(0)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $class</span></span>
-<span><span class="co">#&gt; [1] "visstat"</span></span></code></pre>
 <p>Also in this reduced dataset we reject the null hypothesis of
 independence of the hair colors “brown” and “black” from the eye colours
 “brown” and ” blue”. The mosaic plot shows that blue eyed persons with
@@ -1250,26 +1149,15 @@ requirement that at least 80% of the expected frequencies must be 5 or
 greater <span class="citation">(Cochran 1954)</span>.</p>
 <p>Therefore, <code><a href="../reference/visstat.html">visstat()</a></code> automatically selects Fisher’s
 exact test instead.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_colour_male</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co"># Slice out a 2 by 2 contingency table</span></span>
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="va">hair_eye_colour_male</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
 <span><span class="co"># Transform to data frame</span></span>
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Fisher test</span></span>
-<span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span>
-<span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span></code></pre></div>
+<span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-15-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-15-2.png" width="100%"></p>
-<pre><code><span><span class="co">#&gt; saveGraphVisstat() returns NULL if type=NULL</span></span>
-<span><span class="co">#&gt; $names</span></span>
-<span><span class="co">#&gt; [1] "p.value"      "conf.int"     "estimate"     "null.value"   "alternative" </span></span>
-<span><span class="co">#&gt; [6] "method"       "data.name"    "mosaic_stats"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $plot_paths</span></span>
-<span><span class="co">#&gt; character(0)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $class</span></span>
-<span><span class="co">#&gt; [1] "visstat"</span></span></code></pre>
 </div>
 </div>
 <div class="section level3">
@@ -1281,25 +1169,15 @@ exact test instead.</p>
 following example, we store the graphics in <code>png</code> format in
 the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>. The file names
 reflect the statistical test used and the variable names involved.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Graphical output written to plotDirectory: In this example </span></span>
 <span><span class="co"># a bar chart to visualise the Chi-squared test and mosaic plot showing</span></span>
 <span><span class="co"># Pearson's residuals.</span></span>
 <span><span class="co">#chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
-<span>        graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $names</span></span>
-<span><span class="co">#&gt; [1] "p.value"      "conf.int"     "estimate"     "null.value"   "alternative" </span></span>
-<span><span class="co">#&gt; [6] "method"       "data.name"    "mosaic_stats"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $plot_paths</span></span>
-<span><span class="co">#&gt; [1] "/tmp/Rtmp9fyCT4/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/Rtmp9fyCT4/mosaic_complete_Hair_Eye.png"      </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $class</span></span>
-<span><span class="co">#&gt; [1] "visstat"</span></span></code></pre></div>
+<span>        graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"chi_squared_or_fisher_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"mosaic_complete_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
