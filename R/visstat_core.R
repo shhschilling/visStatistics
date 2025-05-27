@@ -206,6 +206,9 @@ visstat_core <- function(dataframe,
   oldparvisstat_core$new <- FALSE # reset the default value
   on.exit(par(oldparvisstat_core))
   
+  # Collect plot paths from plot_paths <- c(plot_paths, saveGraphVisstat())
+  plot_paths <- character(0)
+   
   # Set default values---------------------------
   alpha <- 1 - conf.level
   
@@ -309,7 +312,7 @@ visstat_core <- function(dataframe,
         } else {
           filename <- plotName
         }
-        saveGraphVisstat(filename, type = graphicsoutput, fileDirectory = plotDirectory)
+        plot_paths <- c(plot_paths, saveGraphVisstat(filename, type = graphicsoutput, fileDirectory = plotDirectory))
       }
       # 2. If assumptions of t-test are not met: Wilcoxon, else t-test
       else if (!exists("p1") |
@@ -351,9 +354,9 @@ visstat_core <- function(dataframe,
         }
         
         
-        saveGraphVisstat(fileName = filename,
+        plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                          type = graphicsoutput,
-                         fileDirectory = plotDirectory)
+                         fileDirectory = plotDirectory))
       } else {
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
         
@@ -375,9 +378,9 @@ visstat_core <- function(dataframe,
           filename <- plotName
         }
         
-        saveGraphVisstat(fileName = filename,
+        plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                          type = graphicsoutput,
-                         fileDirectory = plotDirectory)
+                         fileDirectory = plotDirectory))
       }
       
       return(invisible(vis_sample_fact))
@@ -410,9 +413,9 @@ visstat_core <- function(dataframe,
         filename <- paste(plotName, "_", "chi_squared_or_fisher", sep = "")
       }
       
-      saveGraphVisstat(fileName = filename,
+      plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                        type = graphicsoutput,
-                       fileDirectory = plotDirectory)
+                       fileDirectory = plotDirectory))
       # Mosaic plots -----
       # a) complete labeled mosaic graph
       
@@ -447,7 +450,7 @@ visstat_core <- function(dataframe,
       
       
       
-      saveGraphVisstat(filename, type = graphicsoutput, fileDirectory = plotDirectory)
+      plot_paths <- c(plot_paths, saveGraphVisstat(filename, type = graphicsoutput, fileDirectory = plotDirectory))
       
       # b) reduced plots if number of of levels>7
       # Display only categories with at least minpercent of entries
@@ -463,14 +466,14 @@ visstat_core <- function(dataframe,
           minperc = minpercent,
           numbers = T
         )
-        saveGraphVisstat(
+        plot_paths <- c(plot_paths, saveGraphVisstat(
           paste(
             "mosaic_reduced_",
             name_of_sample,
             "_",
             name_of_factor,
             sep = ""
-          ),
+          )),
           type = graphicsoutput,
           fileDirectory = plotDirectory
         )
@@ -514,9 +517,9 @@ visstat_core <- function(dataframe,
     
     
     
-    saveGraphVisstat(fileName = filename,
+    plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                      type = graphicsoutput,
-                     fileDirectory = plotDirectory)
+                     fileDirectory = plotDirectory))
   }
   
   # D) more than two comparisons-----
@@ -559,9 +562,9 @@ visstat_core <- function(dataframe,
       }
       
       
-      saveGraphVisstat(fileName = filename,
+      plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                        type = graphicsoutput,
-                       fileDirectory = plotDirectory)
+                       fileDirectory = plotDirectory))
       
       
       
@@ -588,12 +591,20 @@ visstat_core <- function(dataframe,
       }
       
       
-      saveGraphVisstat(fileName = filename,
+      plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                        type = graphicsoutput,
-                       fileDirectory = plotDirectory)
+                       fileDirectory = plotDirectory))
     }
   }
   
+  
+  
+  # At the very end:
+  attr(vis_sample_fact, "plot_paths") <- plot_paths
+  class(vis_sample_fact) <- "visstat"
+  print(attributes(vis_sample_fact))
   return(invisible(vis_sample_fact))
+  
+  
 }
 # End of visstat_core function -------

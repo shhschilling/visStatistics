@@ -21,41 +21,42 @@
 #' saveGraphVisstat("norm", type = "png", fileDirectory = tempdir())
 #' file.remove(file.path(tempdir(), "norm.png")) # remove file 'norm.png'
 #'
-#' @export saveGraphVisstat
-#'
+#' @export
 saveGraphVisstat <- function(fileName = NULL,
                              type = NULL,
                              fileDirectory = getwd(),
                              oldfile = NULL) {
   # return if no fileName is provided
-
+  
   if (is.null(fileName)) {
-    # message('saveGraphVisstat() returns NULL if file=NULL')
+    message('saveGraphVisstat() returns NULL if fileName=NULL')
     return()
   } else if (is.null(type)) {
-    # message('saveGraphVisstat() returns NULL if type=NULL')
+    message('saveGraphVisstat() returns NULL if type=NULL')
     return()
   } else if (is.null(oldfile)) {
     dummy_name <- "visstat_plot"
     oldPlotName <- paste(dummy_name, ".", type, sep = "")
     oldfile <- file.path(fileDirectory, oldPlotName)
   }
-
-
+  
+  
   while (!is.null(dev.list())) {
     dev.off()
   } # closes all devices
-
+  
   # overwrite existing files
   file2 <- gsub("[^[:alnum:]]", "_", fileName) # replaces numbers and '^' with
   # underscore
   file3 <- gsub("_{2,}", "_", file2)
-
+  
   newFileName <- paste0(file3, ".", type)
   Cairofile <- file.path(fileDirectory, newFileName)
   file.copy(oldfile, Cairofile, overwrite = T)
-
+  
   if (file.exists(oldfile)) {
     file.remove(oldfile)
   }
+  
+  return(invisible(Cairofile))
 }

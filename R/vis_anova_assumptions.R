@@ -50,12 +50,7 @@ vis_anova_assumptions <- function(samples,
   samples <- samples3
   anova <- aov(samples ~ fact)
   summary_anova <- summary(anova)
-  par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
-  plot(anova$fitted, rstandard(anova), main = "std. Residuals vs. Fitted")
-  abline(h = 0, col = 1, lwd = 2)
-  qqnorm(rstandard(anova))
-  qqline(rstandard(anova), col = "red", lwd = 2)
-  par(mfrow = c(1, 1))
+  
   # check for normality of standardised residuals
   if (length(anova) > 7) {
     ad_test <- ad.test(rstandard(anova))
@@ -68,6 +63,22 @@ vis_anova_assumptions <- function(samples,
   p_SH <- shapiro_test$p.value
   bartlett_test <- bartlett.test(samples ~ fact)
   p_bart <- bartlett_test$p.value
+  
+  
+  
+  #Plotting standardized residuals (left) and QQ-Plot right
+  #
+  # Plot  Residual analysis 
+  par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
+  #Plot 1: Residual analysis 
+  plot(anova$fitted, rstandard(anova), main = "std. Residuals vs. Fitted")
+  
+  
+  abline(h = 0, col = 1, lwd = 2)
+  #Plot 2
+  qqnorm(rstandard(anova))
+  qqline(rstandard(anova), col = "red", lwd = 2)
+  par(mfrow = c(1, 1))
   mtext(
     paste(
       "Check for homogeneity of variances: Bartlett: p = ",
@@ -80,9 +91,12 @@ vis_anova_assumptions <- function(samples,
     ),
     outer = TRUE
   )
-
-
-
+ 
+  #assumption_plot <- recordPlot()
+  #return plot 
+  #return(invisible(assumption_plot))
+  
+  # return statistic list 
   list_aov <- list(
     summary_anova = summary_anova,
     shapiro_test = shapiro_test,

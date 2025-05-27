@@ -34,8 +34,7 @@
 #' # ## remove the plot from fileDirectory
 #' file.remove(file.path(tempdir(), "normal_dist.pdf"))
 #' @import Cairo
-#'
-#' @export openGraphCairo
+#' @export
 
 openGraphCairo <- function(width = 640,
                            height = 480,
