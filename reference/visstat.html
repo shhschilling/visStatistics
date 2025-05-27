@@ -148,11 +148,35 @@ and the accompanying webpage
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span>, <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-1.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="visstat-2.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> saveGraphVisstat() returns NULL if type=NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $names</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "independent variable x"          "dependent variable y"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "summary_regression"              "shapiro_test_residuals"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "anderson_darling_test_residuals" "error_bands"                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot_paths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "visstat"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Backward-compatible usage (same result):</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mpg"</span>, <span class="st">"am"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-3.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="visstat-4.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> saveGraphVisstat() returns NULL if type=NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $names</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "independent variable x"          "dependent variable y"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "summary_regression"              "shapiro_test_residuals"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "anderson_darling_test_residuals" "error_bands"                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot_paths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "visstat"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Wilcoxon rank sum test</span></span></span>
 <span class="r-in"><span><span class="va">grades_gender</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
@@ -166,27 +190,75 @@ and the accompanying webpage
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">grades_gender</span><span class="op">$</span><span class="va">Sex</span>, <span class="va">grades_gender</span><span class="op">$</span><span class="va">Grade</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-5.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> saveGraphVisstat() returns NULL if type=NULL</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Welch's one-way ANOVA</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">npk</span><span class="op">$</span><span class="va">block</span>, <span class="va">npk</span><span class="op">$</span><span class="va">yield</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-6.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="visstat-7.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> saveGraphVisstat() returns NULL if type=NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $names</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "summary statistics of Fisher's one-way ANOVA"                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "summary statistics of Welch's one-way ANOVA (not assuming equal variances)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "adjusted p values from"                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "conf.level"                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot_paths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "visstat"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Kruskal-Wallis</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Width</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-8.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="visstat-9.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> saveGraphVisstat() returns NULL if type=NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $names</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "kruskal_wallis"             "adjusted_p_values_wilcoxon"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot_paths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "visstat"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Simple linear regression</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">trees</span><span class="op">$</span><span class="va">Height</span>, <span class="va">trees</span><span class="op">$</span><span class="va">Girth</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-10.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="visstat-11.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> saveGraphVisstat() returns NULL if type=NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $names</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "independent variable x"          "dependent variable y"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "summary_regression"              "shapiro_test_residuals"         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "anderson_darling_test_residuals" "error_bands"                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot_paths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "visstat"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Chi-squared</span></span></span>
 <span class="r-in"><span><span class="va">HairEyeColorDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">HairEyeColorDataFrame</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">HairEyeColorDataFrame</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-12.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> saveGraphVisstat() returns NULL if type=NULL</span>
 <span class="r-plt img"><img src="visstat-13.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> saveGraphVisstat() returns NULL if type=NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $names</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "statistic"    "parameter"    "p.value"      "method"       "data.name"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "observed"     "expected"     "residuals"    "stdres"       "mosaic_stats"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot_paths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "visstat"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Fisher's test</span></span></span>
 <span class="r-in"><span><span class="va">HairEyeColorMaleFisher</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span></span>
@@ -194,19 +266,60 @@ and the accompanying webpage
 <span class="r-in"><span><span class="va">blackBrownHazelGreen</span> <span class="op">&lt;-</span> <span class="fu"><a href="counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">blackBrownHazelGreen</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">blackBrownHazelGreen</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">blackBrownHazelGreen</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-14.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> saveGraphVisstat() returns NULL if type=NULL</span>
 <span class="r-plt img"><img src="visstat-15.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> saveGraphVisstat() returns NULL if type=NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $names</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "p.value"      "conf.int"     "estimate"     "null.value"   "alternative" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6] "method"       "data.name"    "mosaic_stats"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot_paths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "visstat"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Save PNG</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">blackBrownHazelGreen</span><span class="op">$</span><span class="va">Hair</span>, <span class="va">blackBrownHazelGreen</span><span class="op">$</span><span class="va">Eye</span>,</span></span>
 <span class="r-in"><span>        graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $names</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "p.value"      "conf.int"     "estimate"     "null.value"   "alternative" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6] "method"       "data.name"    "mosaic_stats"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot_paths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/Rtmp01RgHg/chi_squared_or_fisher_Eye_Hair.png"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "/tmp/Rtmp01RgHg/mosaic_complete_Eye_Hair.png"      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "visstat"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Save PDF</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Width</span>, graphicsoutput <span class="op">=</span> <span class="st">"pdf"</span>,</span></span>
 <span class="r-in"><span>          plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $names</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "kruskal_wallis"             "adjusted_p_values_wilcoxon"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot_paths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/Rtmp01RgHg/kruskal_Petal_Width_Species.pdf"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "visstat"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Custom plot name</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Width</span>,</span></span>
 <span class="r-in"><span>        graphicsoutput <span class="op">=</span> <span class="st">"pdf"</span>, plotName <span class="op">=</span> <span class="st">"kruskal_iris"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $names</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "kruskal_wallis"             "adjusted_p_values_wilcoxon"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $plot_paths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/Rtmp01RgHg/kruskal_iris.pdf"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $class</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "visstat"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
