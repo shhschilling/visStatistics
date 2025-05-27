@@ -29,10 +29,10 @@ saveGraphVisstat <- function(fileName = NULL,
   # return if no fileName is provided
   
   if (is.null(fileName)) {
-    message('saveGraphVisstat() returns NULL if fileName=NULL')
+   # message('saveGraphVisstat() returns NULL if fileName=NULL')
     return()
   } else if (is.null(type)) {
-    message('saveGraphVisstat() returns NULL if type=NULL')
+    #message('saveGraphVisstat() returns NULL if type=NULL')
     return()
   } else if (is.null(oldfile)) {
     dummy_name <- "visstat_plot"

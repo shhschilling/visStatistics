@@ -125,6 +125,18 @@ visstat <- function(x,
                     plotName = NULL,
                     plotDirectory = getwd()) {
   
+  
+  check_visstat_input(x, y, ...)
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   clean_name <- function(expr) {
     sub(".*\\$", "", deparse(expr))
   }
@@ -165,7 +177,7 @@ visstat <- function(x,
   dataframe <- data.frame(factor_val, sample_val)
   names(dataframe) <- c(factor_name, sample_name)
   
-  return(visstat_core(
+  return(invisible(visstat_core(
     dataframe = dataframe,
     varsample = sample_name,   # second argument
     varfactor = factor_name,   # first argument
@@ -175,5 +187,5 @@ visstat <- function(x,
     graphicsoutput = graphicsoutput,
     plotName = plotName,
     plotDirectory = plotDirectory
-  ))
+  )))
 }
