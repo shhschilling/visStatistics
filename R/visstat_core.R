@@ -7,13 +7,14 @@
 #' Automated Visualization of Statistical Hypothesis Testing
 #'
 #' @description \code{visstat_core()} provides automated selection and visualization 
-#' of a statistical hypothesis test between a response and a feature variable in
+#' of a statistical hypothesis test between a two vectors in
 #' a given \code{data.frame} named \code{dataframe} based on the data's type, 
 #' distribution, sample size, and the
-#' specified \code{conf.level}. The data in \code{dataframe} must be structured
-#' column-wise, where \code{varsample} and \code{varfactor} are \code{character}
-#' strings corresponding to the column names of the response and feature
-#' variables, respectively. The automatically generated output figures
+#' specified \code{conf.level}.
+#' \code{varsample} and \code{varfactor} are \code{character}
+#' strings corresponding to the column names of the chosen vectors in \code{dataframe}. 
+#' These vectors must be of type \code{integer}, \code{numeric} or \code{factor}.
+#' The automatically generated output figures
 #' illustrate the selected statistical hypothesis test, display the main test
 #' statistics, and include assumption checks and post hoc comparisons when
 #' applicable. The primary test results are returned as a list object.
@@ -21,13 +22,13 @@
 #' @details The decision logic for selecting a statistical test is described below.
 #' For more details, please refer to the package's \code{vignette("visstat_coreistics")}.
 #' Throughout, data of class \code{numeric} or \code{integer} are referred to as
-#' numerical, while data of class \code{factor} are referred to as categorical.
+#' numeric, while data of class \code{factor} are referred to as categorical.
 #' The significance level \code{alpha} is defined as one minus the confidence
 #' level, given by the argument \code{conf.level}. Assumptions of normality and
 #' homoscedasticity are considered met when the corresponding test yields a
 #' p-value greater than \code{alpha = 1 - conf.level}.
 #' The choice of statistical tests performed by \code{visstat_core()} depends on
-#' whether the data are numerical or categorical, the number of levels in the
+#' whether the data are numeric or categorical, the number of levels in the
 #' categorical variable, the distribution of the data, and the chosen
 #' \code{conf.level}. The function prioritises interpretable visual output and
 #' tests that remain valid under their assumptions, following the logic below:
@@ -228,16 +229,18 @@ visstat_core <- function(dataframe,
   typefactor <-
     class(fact) # type of independent variable returned as a character vector
   
-  if ((typefactor == "numeric" || typefactor == "integer") && typesample == "factor") {
-    warning("A numeric or integer predictor with a factor response is ignored.")
-    return(invisible(NULL))
-  }
   
   # transform independent variable "fact" of class "character" to factor
   if (typefactor == "character") {
     fact <-
       as.factor(fact) # transform  "fact" of class "character" to factor
     typefactor <- class(fact) # store the class of type "factor"
+  }
+  
+  #  Check order 
+  
+  if ((typefactor == "numeric" || typefactor == "integer") && typesample == "factor") {
+    stop("A numeric or integer predictor with a factor response is ignored.")
   }
   
   maxlabels <- length(levels(samples))
@@ -602,7 +605,7 @@ visstat_core <- function(dataframe,
   # At the very end:
   attr(vis_sample_fact, "plot_paths") <- plot_paths
   class(vis_sample_fact) <- "visstat"
-  print(attributes(vis_sample_fact))
+  
   return(invisible(vis_sample_fact))
   
   
