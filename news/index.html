@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">visStatistics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,9 +35,6 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.6" id="visstatistics-016">visStatistics 0.1.6<a class="anchor" aria-label="anchor" href="#visstatistics-016"></a></h2>
-</div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.6" id="visstatistics-016-1">visStatistics 0.1.6<a class="anchor" aria-label="anchor" href="#visstatistics-016-1"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-0-1-6">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-0-1-6"></a></h3>
 <ul><li>
@@ -45,15 +42,7 @@
 <p>visstat(trees<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>i</mi><mi>r</mi><mi>t</mi><mi>h</mi><mo>,</mo><mi>t</mi><mi>r</mi><mi>e</mi><mi>e</mi><mi>s</mi></mrow><annotation encoding="application/x-tex">Girth, trees</annotation></semantics></math>Height)</p>
 <p>yields the same result as the original form:</p>
 <p>visstat(trees, “Height”, “Girth”)</p>
-<p>This change improves clarity and aligns with standard R conventions. Both calling styles remain supported for backwards compatibility.</p>
-<p>See <code><a href="../reference/visstat.html">?visstat</a></code>, the README, or <code><a href="../articles/visStatistics.html">vignette("visStatistics")</a></code> for details.</p>
-</li>
-<li>
-<p>The <code><a href="../reference/visstat.html">visstat()</a></code> function interface has been updated to accept two vectors directly, enabling a more concise and idiomatic usage. For example:</p>
-<p>visstat(trees<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mi>i</mi><mi>r</mi><mi>t</mi><mi>h</mi><mo>,</mo><mi>t</mi><mi>r</mi><mi>e</mi><mi>e</mi><mi>s</mi></mrow><annotation encoding="application/x-tex">Girth, trees</annotation></semantics></math>Height)</p>
-<p>yields the same result as the original form:</p>
-<p>visstat(trees, “Height”, “Girth”)</p>
-<p>This change improves clarity and aligns with standard R conventions. Both calling styles remain supported for backwards compatibility.</p>
+<p>This change aligns with standard R conventions. Both calling styles remain supported for backwards compatibility.</p>
 <p>See <code><a href="../reference/visstat.html">?visstat</a></code>, the README, or <code><a href="../articles/visStatistics.html">vignette("visStatistics")</a></code> for details.</p>
 </li>
 </ul><p>.</p>
@@ -63,7 +52,7 @@
 <ul><li>The <code><a href="../reference/visstat.html">visstat()</a></code> function now returns an object of class <code>"visstat"</code>, enabling consistent method dispatch.</li>
 <li>New S3 methods added:
 <ul><li>
-<code>print.visstat()</code> – shows a concise summary, including test type and p-value.</li>
+<code>print.visstat()</code> – shows a concise summary,</li>
 <li>
 <code>summary.visstat()</code> – prints the full test and post hoc summaries.</li>
 </ul></li>
