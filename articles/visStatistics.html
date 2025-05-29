@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">visStatistics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,7 +55,7 @@
                         <h4 data-toc-skip class="author">Sabine
 Schilling</h4>
             
-            <h4 data-toc-skip class="date">2025-05-27</h4>
+            <h4 data-toc-skip class="date">2025-05-29</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -136,10 +136,9 @@ hypothesis test function in R,</p></li>
 <h2 id="decision-logic">Decision logic<a class="anchor" aria-label="anchor" href="#decision-logic"></a>
 </h2>
 <p>Throughout the remainder, data of class <code>"numeric"</code> or
-<code>"integer"</code> are referred to bei their common
-<code>mode</code> <code>numeric</code>, while data of class
-<code>"factor"</code> are referred to as categorical. The significance
-level
+<code>"integer"</code> are referred to by their common <code>mode</code>
+<code>numeric</code>, while data of class <code>"factor"</code> are
+referred to as categorical. The significance level
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>,
 used throughout for hypothesis testing, is defined as
 <code>1 - conf.level</code>, where <code>conf.level</code> is a
@@ -406,11 +405,12 @@ central tendencies of grades of “boys” and “girls” in a class:</p>
 <p>If the predictor is of <code>class</code> “<code>factor</code>” with
 <strong>more than two levels</strong> and the response is of
 <code>mode</code> “<code>numeric</code>”, <code><a href="../reference/visstat.html">visstat()</a></code> either
-performs Fisher’s one- way ANOVA <span class="citation">(Fisher
-1971)</span> (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>), Welch’s heteroscedastic one-way ANOVA
-<span class="citation">(Welch 1951)</span> (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>)
-or, as a non-parametric alternative, the Kruskal –Wallis test <span class="citation">(Kruskal and Wallis 1952)</span>
-(<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>).</p>
+performs Fisher’s one- way ANOVA <span class="citation">(Roland A.
+Fisher 1971)</span> (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>), Welch’s heteroscedastic
+one-way ANOVA <span class="citation">(Welch 1951)</span>
+(<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) or, as a non-parametric alternative, the
+Kruskal –Wallis test <span class="citation">(Kruskal and Wallis
+1952)</span> (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>).</p>
 <p>In the remainder of this section, we briefly introduce the tests
 themselves, the assumption checks, and the post-hoc procedures, and
 illustrate each test with an example.</p>
@@ -422,7 +422,7 @@ that the means of multiple groups are equal. It assumes independent
 observations, normally distributed residuals, and
 <strong>homogeneous</strong> variances across groups. The test statistic
 is the ratio of the variance explained by differences among group means
-(between-group variance) to the unexplained variance within groups:</p>
+(between-group variance) to the unexplained variance within groups <span class="citation">(Ronald A. Fisher and Yates 1990)</span></p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mfrac><mtext mathvariant="normal">between-group variance</mtext><mtext mathvariant="normal">within-group variance</mtext></mfrac><mo>=</mo><mfrac><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></munderover><msub><mi>n</mi><mi>i</mi></msub><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>x</mi><mo accent="true">‾</mo></mover><mi>i</mi></msub><mo>−</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow></mfrac><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></munderover><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>n</mi><mi>i</mi></msub></munderover><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><msub><mover><mi>x</mi><mo accent="true">‾</mo></mover><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><mrow><mi>N</mi><mo>−</mo><mi>k</mi></mrow></mfrac></mfrac><mo>,</mo></mrow><annotation encoding="application/x-tex">
 F = \frac{\text{between-group variance}}{\text{within-group variance}}
 = \frac{\frac{\sum_{i=1}^{k} n_i (\bar{x}_i - \bar{x})^2}{k - 1}}
@@ -529,15 +529,26 @@ violated, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="exter
 <p>The <code>visAnovaAssumptions()</code> function assesses the
 normality of standardised residuals from the ANOVA fit using both the
 Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson–Darling
-test (<code>ad.test()</code>). Normality is assumed if at least one of
-the two tests yields a p-value greater than
+test (<code>ad.test()</code>). The decision logic assumes normality if
+at least one of the two tests yields a p-value greater than
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.
-<!-- (see Figure @ref(fig:fig-decision-tree)). --></p>
-<p>The function generates two diagnostic plots:</p>
+This approach leverages their complementary strengths: Shapiro-Wilk
+generally demonstrates superior power for diverse non-normal
+distributions in smaller samples, while Anderson-Darling is highly
+sensitive to tail deviations and performs robustly with larger sample
+sizes <span class="citation">(Razali and Wah 2011; Yap and Sim
+2011)</span></p>
+<p>This strategy increases tolerance to minor deviations from normality
+and reduces the risk of false positives (Type I errors for non-normality
+detection), but may increase the risk of false negatives (Type II
+errors), potentially overlooking meaningful departures from
+normality<span class="citation">(Ghasemi and Zahediasl 2012)</span>.</p>
+<p>Assessment for normality should never solely rely on p-values, but
+should be complimented by visual inspections. Therefore the function
+generates two diagnostic plots:</p>
 <ul>
 <li>a scatter plot of the standardised residuals against the fitted
-means of the linear model for each level of the predictor
-(<code>x</code>), and</li>
+means of the linear model for each level of the predictor , and</li>
 <li>a Q–Q plot of the standardised residuals.</li>
 </ul>
 </div>
@@ -996,7 +1007,7 @@ routine <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-
 approximation is considered reliable only if no expected cell count is
 less than 1 and no more than 20 percent of cells have expected counts
 below 5 <span class="citation">(Cochran 1954)</span>). If this condition
-is not met, Fisher’s exact test <span class="citation">(Fisher
+is not met, Fisher’s exact test <span class="citation">(Roland A. Fisher
 1971)</span> (<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>) is applied instead, as it is a
 non-parametric method that does not rely on large-sample approximations.
 The test calculates an exact p-value for testing independence by
@@ -1238,7 +1249,7 @@ regression model is fitted:</p>
 <p><code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p>
 </div>
 <div class="section level3">
-<h3 id="both-variables-cagegorical">Both variables cagegorical<a class="anchor" aria-label="anchor" href="#both-variables-cagegorical"></a>
+<h3 id="both-variables-categorical-2">Both variables categorical<a class="anchor" aria-label="anchor" href="#both-variables-categorical-2"></a>
 </h3>
 <p>When both variables are categorical, <code><a href="../reference/visstat.html">visstat()</a></code> tests the
 null hypothesis of independence using one of the following:</p>
@@ -1267,13 +1278,29 @@ Cochran, William G. 1954. <span>“The <span>Combination</span> of
 </div>
 <div id="ref-Delacre:2017" class="csl-entry">
 Delacre, Marie, Daniël Lakens, and Christophe Leys. 2017. <span>“Why
-<span>Psychologists Should</span> by <span>Default Use Welch</span>’s
-t-Test <span>Instead</span> of <span>Student</span>’s t-Test.”</span>
-<em>International Review of Social Psychology</em> 30 (1): 92–101. <a href="https://doi.org/10.5334/irsp.82" class="external-link">https://doi.org/10.5334/irsp.82</a>.
+Psychologists Should by Default Use <span>Welch</span>’s t-Test Instead
+of <span>Student</span>’s t-Test.”</span> <em>International Review of
+Social Psychology</em> 30 (1): 92–101. <a href="https://doi.org/10.5334/irsp.82" class="external-link">https://doi.org/10.5334/irsp.82</a>.
 </div>
 <div id="ref-Fisher:1935" class="csl-entry">
 Fisher, Roland A. 1971. <em>The Design of Experiments</em>. 9th ed.
 Macmillan.
+</div>
+<div id="ref-Fisher:1990" class="csl-entry">
+Fisher, Ronald A., and F Yates. 1990. <em>Statistical
+<span>Methods</span>, <span>Experimental Design</span>, and
+<span>Scientific Inference</span>: <span class="nocase">A
+Re-issue</span> of <span>Statistical Methods</span> for <span>Research
+Workers</span>, the <span>Design</span> of <span>Experiments</span> and
+<span>Statistical Methods</span> and <span>Scientific
+Inference</span></em>. Edited by J H Bennett. Oxford University
+PressOxford. <a href="https://doi.org/10.1093/oso/9780198522294.001.0001" class="external-link">https://doi.org/10.1093/oso/9780198522294.001.0001</a>.
+</div>
+<div id="ref-Ghasemi:2012" class="csl-entry">
+Ghasemi, Asghar, and Saleh Zahediasl. 2012. <span>“Normality
+<span>Tests</span> for <span>Statistical Analysis</span>: <span>A
+Guide</span> for <span>Non-Statisticians</span>.”</span> <em>Int J
+Endocrinol Metab</em> 10 (2): 486–89. <a href="https://doi.org/10.5812/ijem.3505" class="external-link">https://doi.org/10.5812/ijem.3505</a>.
 </div>
 <div id="ref-Hochberg:1987" class="csl-entry">
 Hochberg, Yosef, and Ajit C. Tamhane. 1987. <em>Multiple
@@ -1327,6 +1354,12 @@ Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. <span>“The
 Two-Sample t Test: Pre-Testing Its Assumptions Does Not Pay Off.”</span>
 <em>Stat Papers</em> 52 (1): 219–31. <a href="https://doi.org/10.1007/s00362-009-0224-x" class="external-link">https://doi.org/10.1007/s00362-009-0224-x</a>.
 </div>
+<div id="ref-Razali:2011" class="csl-entry">
+Razali, Nornadiah Mohd, and Yap Bee Wah. 2011. <span>“Power Comparisons
+of Shapiro-Wilk, Kolmogorov-Smirnov, Lilliefors and Anderson-Darling
+Tests.”</span> <em>Journal of Statistical Modeling and Analytics</em> 2
+(1): 21–33.
+</div>
 <div id="ref-Satterthwaite:1946" class="csl-entry">
 Satterthwaite, F. E. 1946. <span>“An <span>Approximate
 Distribution</span> of <span>Estimates</span> of <span>Variance
@@ -1351,6 +1384,11 @@ Values</span>: <span>An Alternative Approach</span>.”</span>
 <div id="ref-Wilcoxon:1945" class="csl-entry">
 Wilcoxon, Frank. 1945. <span>“Individual Comparisons by Ranking
 Methods.”</span> <em>Biometrics Bulletin</em> 1 (6): 80–83. <a href="https://doi.org/10.2307/3001968" class="external-link">https://doi.org/10.2307/3001968</a>.
+</div>
+<div id="ref-Yap:2011" class="csl-entry">
+Yap, B. W., and C. H. Sim. 2011. <span>“Comparisons of Various Types of
+Normality Tests.”</span> <em>Journal of Statistical Computation and
+Simulation</em> 81 (12): 2141–55. <a href="https://doi.org/10.1080/00949655.2010.520163" class="external-link">https://doi.org/10.1080/00949655.2010.520163</a>.
 </div>
 <div id="ref-Yates:1934" class="csl-entry">
 Yates, F. 1934. <span>“Contingency <span>Tables Involving Small
