@@ -19,5 +19,6 @@ check_visstat_input <- function(x, y, ...) {
     return(invisible(TRUE))  # valid data.frame input
   }
 
-  stop("Invalid input. Use visstat(x, y, ...) or visstat(data, 'y', 'x', ...), with x and y of class numeric, integer or factor.")
+  stop("Invalid input. Use visstat(x, y, ...) or visstat(data, 'y', 'x', ...), 
+       with x and y of class numeric, integer,  factor or character")
 }

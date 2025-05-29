@@ -1,4 +1,4 @@
-#' Wrapper for vistat_core allwoing two different input styles
+#' Wrapper for visstat_core allowing two different input styles
 #'
 #' A wrapper around the core function \code{\link{visstat_core}} defining the
 #' decision logic for statistical hypothesis testing and visualisation between

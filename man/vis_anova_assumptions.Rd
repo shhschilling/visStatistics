@@ -20,10 +20,10 @@ vis_anova_assumptions(
 
 \item{conf.level}{confidence level, 0.95=default}
 
-\item{samplename}{name of sample used in graphical output, dataype character
+\item{samplename}{name of sample used in graphical output, datatype character
 , ''=default}
 
-\item{factorname}{name of sample used in graphical output, dataype character,
+\item{factorname}{name of sample used in graphical output, datatypecharacter,
 ''=default}
 
 \item{cex}{number indicating the amount by which plotting text and symbols
