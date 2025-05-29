@@ -183,7 +183,6 @@
 #' @import stats
 #' @import utils
 #' @importFrom nortest ad.test
-
 #' @export visstat_core
 
 
@@ -345,6 +344,8 @@ visstat_core <- function(dataframe,
           factorname = varfactor,
           cex = 1
         )
+        
+        
         if (is.null(plotName)) {
           filename <-
             paste("wilcoxon-test_",
@@ -386,7 +387,9 @@ visstat_core <- function(dataframe,
                          fileDirectory = plotDirectory))
       }
       
-      return(invisible(vis_sample_fact))
+      # attr(vis_sample_fact, "plot_paths") <- plot_paths
+      # class(vis_sample_fact) <- "visstat"
+      # return(invisible(vis_sample_fact))
     }
   }
   

@@ -128,7 +128,7 @@ plot.visstat <- function(x, ...) {
 
 
 
-# old functtion
+# old function
 # plot.visstat <- function(x, ...) {
 #   message("Plotting is managed by visstat(), not via plot().")
 #   invisible(x)

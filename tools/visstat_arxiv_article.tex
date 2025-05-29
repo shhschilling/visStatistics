@@ -1,0 +1,101 @@
+
+\documentclass[11pt]{article}
+\usepackage{amsmath,amsfonts,graphicx,natbib,url}
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{authblk}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\title{visstat: A Visual Approach to Hypothesis Testing for Introductory Statistics}
+\author{Sabine Schilling}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The R package \texttt{visStatistics} provides an accessible, automated, and visual approach to statistical hypothesis testing tailored to undergraduate students in introductory statistics courses. The main function \texttt{visstat()} selects and visualises the appropriate statistical test based on the class, distribution, and sample size of two input vectors, along with user-defined parameters. Tests are chosen based on a decision tree encompassing t-tests, ANOVA, linear regression, and contingency table analyses. Outputs include annotated plots such as box plots, bar charts, regression lines, and mosaic plots. The package aims to support conceptual understanding by highlighting assumptions, results, and interpretations visually. It is particularly suited for integration into browser-based teaching platforms and introductory-level data analysis workflows.
+\end{abstract}
+
+\section{Introduction}
+Introductory statistics students often struggle with choosing and interpreting the right statistical test for a given dataset. While numerous R packages provide statistical testing functionality, few are designed with pedagogical accessibility as a primary concern. \texttt{visStatistics} addresses this gap by automating the test selection process and presenting results using annotated, publication-ready visualisations. This helps students focus on interpretation rather than technical execution.
+
+\section{Package Design and Functionality}
+The main function \texttt{visstat(x, y)} accepts two vectors of type \texttt{numeric}, \texttt{integer}, or \texttt{factor}. Alternatively, a data frame with column names can be passed for backward compatibility. Based on the class of the variables, sample size, and normality assumptions, \texttt{visstat()} selects an appropriate statistical test. Visual outputs are customised accordingly and include Q-Q plots, residual diagnostics, post-hoc test results, and summary annotations.
+
+\section{Decision Logic for Test Selection}
+
+The core feature of \texttt{visStatistics} is its automated selection of a suitable hypothesis test
+based on the data type and statistical properties of the input vectors. The selection follows a
+comprehensive decision tree, which is outlined here.
+
+When the response variable is numeric and the predictor is categorical, the type of test depends
+first on the number of levels in the categorical variable. If the predictor has exactly two levels,
+the function initially checks whether both groups contain more than 30 observations. If so,
+Welch's two-sample \textit{t}-test is applied, assuming the sampling distribution of the mean is
+approximately normal by the central limit theorem. If either group contains fewer than 30
+observations, group-wise normality is assessed using the Shapiro–Wilk test. If both groups pass
+this test, Welch's \textit{t}-test is used; otherwise, the non-parametric Wilcoxon rank-sum test
+is selected.
+
+For categorical predictors with more than two levels, the function initially fits a one-way ANOVA
+model using the \texttt{aov()} function. The normality of residuals is tested with both the
+Shapiro–Wilk test and the Anderson–Darling test. If at least one test supports approximate
+normality at the user-specified significance level $\alpha = 1 - \texttt{conf.level}$, then
+homogeneity of variances is assessed via Bartlett’s test. If Bartlett’s test confirms homoscedasticity,
+the classical ANOVA model is retained, followed by Tukey’s Honest Significant Difference
+procedure for post-hoc comparison. In case of unequal variances, Welch’s ANOVA
+(\texttt{oneway.test()}) is employed with the same post-hoc procedure. If both normality
+tests fail, the Kruskal–Wallis test is selected, followed by pairwise Wilcoxon tests.
+
+When both variables are numeric, a simple linear regression model is fitted using \texttt{lm()}.
+This model is accompanied by residual plots, Q–Q plots, and tests for normality of residuals.
+The visualisation includes the fitted line with confidence bands to support interpretation.
+
+If both variables are categorical, \texttt{visstat()} applies Pearson’s chi-squared test of independence
+if the expected frequencies satisfy Cochran’s conditions. Specifically, the approximation is used if
+no expected frequency is below 1, and no more than 20\% of cells have expected counts below 5.
+Otherwise, Fisher’s exact test is performed. Mosaic plots are generated to visualise the association.
+
+This logic ensures that each statistical conclusion is grounded in valid assumptions, and that the
+user is informed via diagnostic plots and annotations.
+
+\section{Visual Output and Pedagogical Design}
+
+The package prioritises graphical output that supports student understanding.
+For numeric comparisons, box plots and regression plots illustrate differences in central
+tendency or linear relationships. Mosaic plots and bar plots visualise frequency data.
+Accompanying diagnostics include Q–Q plots, residual plots, and test annotations.
+These visualisations guide interpretation and help students understand how
+assumptions affect test choice.
+
+\section{Integration into Teaching}
+
+\texttt{visStatistics} is well-suited for browser-based teaching environments, including platforms
+where students interact with R through graphical user interfaces. It has been used in coursework
+to help students focus on interpreting test results. Instructors can embed plots in teaching
+materials, assignments, or presentations.
+
+\section{Availability and Installation}
+
+The package is available from GitHub at:
+\begin{verbatim}
+install_github("shhschilling/visStatistics")
+\end{verbatim}
+
+It is released under the MIT License and includes documentation, examples, and a vignette.
+A CRAN submission is planned.
+
+\section{Conclusion}
+
+\texttt{visStatistics} enables intuitive statistical analysis through automated test
+selection and pedagogically-informed visualisation. It fills a gap in educational
+resources by combining accessibility with rigour, and is ideally suited for teaching
+introductory statistics using R.
+
+\section*{References}
+\bibliographystyle{plainnat}
+\bibliography{visstat}
+
+\end{document}

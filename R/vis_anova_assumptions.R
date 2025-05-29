@@ -15,9 +15,9 @@
 #' @param samples vector containing dependent variable, datatype numeric
 #' @param fact vector containing independent variable, datatype factor
 #' @param conf.level confidence level, 0.95=default
-#' @param samplename name of sample used in graphical output, dataype character
+#' @param samplename name of sample used in graphical output, datatype character
 #'   , ''=default
-#' @param factorname name of sample used in graphical output, dataype character,
+#' @param factorname name of sample used in graphical output, datatypecharacter,
 #'   ''=default
 #' @param cex number indicating the amount by which plotting text and symbols
 #'   should be scaled relative to the default. 1=default, 1.5 is 50\% larger,

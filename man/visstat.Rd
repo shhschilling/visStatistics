@@ -2,7 +2,7 @@
 % Please edit documentation in R/visstat.R
 \name{visstat}
 \alias{visstat}
-\title{Wrapper for vistat_core allwoing two different input styles}
+\title{Wrapper for visstat_core allowing two different input styles}
 \usage{
 visstat(
   x,

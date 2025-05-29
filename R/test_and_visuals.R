@@ -461,7 +461,7 @@ two_sample_wilcoxon_test <- function(samples,
   my_list <-
     list(
       "dependent variable (response)" = samplename,
-      "indepedent variables (parameters)" = unique(fact),
+      "indepedent variables (features)" = unique(fact),
       "statsWilcoxon" = t,
       "statsBoxplot" = b
     )
@@ -873,7 +873,7 @@ vis_anova <- function(samples,
         "summary statistics of Fisher's one-way ANOVA" = summaryAnova,
         "summary statistics of Welch's one-way ANOVA (not assuming equal variances)" = oneway,
       #"summary statistics" =summarystat,
-      "adjusted p values from" = tuk,
+      "post-hoc analysis of TuckeyHSD" = tuk,
       "conf.level" = conf.level
     )
   
@@ -999,8 +999,8 @@ vis_Kruskal_Wallis_clusters <- function(samples,
                "\n H = ",kk_value,
               ", p = ", signif(kk$p.value, digits = 3)))
   my_list <-
-    list("kruskal_wallis" = kk,
-         "adjusted_p_values_wilcoxon" = tuk)
+    list("Kruskal Wallis rank sum test" = kk,
+         "post-hoc by pairwise Wilcoxon rank sum test " = tuk)
   return(my_list)
 }
 
@@ -1877,7 +1877,7 @@ check_assumption_sample_size_t_test <- function(x1, x2, minimum_size) {
 #'
 #' @param colorcode selects color scheme. parameters NULL: list of all available color schemes, 1: colortuple, 2, colortuple2, 3, ColorPalette
 #' @return selected color scheme, colors are given with their Hex Code #RRGGBB names
-
+#' @noRd
 
 colorscheme <- function(colorcode = NULL) {
   browserLightGreen <- "#B8E0B8" # matched part group0

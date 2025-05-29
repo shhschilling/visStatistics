@@ -6,8 +6,6 @@ editor_options:
 
 # visStatistics 0.1.6
 
-# visStatistics 0.1.6
-
 ## Major changes
 
 -   The `visstat()` function interface has been updated to accept two vectors
@@ -19,21 +17,7 @@ editor_options:
 
     visstat(trees, "Height", "Girth")
 
-    This change improves clarity and aligns with standard R conventions. Both
-    calling styles remain supported for backwards compatibility.
-
-    See `?visstat`, the README, or `vignette("visStatistics")` for details.
-
--   The `visstat()` function interface has been updated to accept two vectors
-    directly, enabling a more concise and idiomatic usage. For example:
-
-    visstat(trees$Girth, trees$Height)
-
-    yields the same result as the original form:
-
-    visstat(trees, "Height", "Girth")
-
-    This change improves clarity and aligns with standard R conventions. Both
+    This change aligns with standard R conventions. Both
     calling styles remain supported for backwards compatibility.
 
     See `?visstat`, the README, or `vignette("visStatistics")` for details.
@@ -45,8 +29,7 @@ editor_options:
 -   The `visstat()` function now returns an object of class `"visstat"`,
     enabling consistent method dispatch.
 -   New S3 methods added:
-    -   `print.visstat()` – shows a concise summary, including test type and
-        p-value.
+    -   `print.visstat()` – shows a concise summary,
     -   `summary.visstat()` – prints the full test and post hoc summaries.
 
 # visStatistics 0.1.5

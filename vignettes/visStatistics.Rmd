@@ -88,7 +88,8 @@ The remainder of this vignette is organised as follows:
 
 # Decision logic
 
-Throughout the remainder, data of class `"numeric"` or `"integer"` are referred to bei their common `mode` `numeric`, while data of class `"factor"` are referred to as categorical.
+Throughout the remainder, data of class `"numeric"` or `"integer"` are referred 
+to by their common `mode` `numeric`, while data of class `"factor"` are referred to as categorical.
 The significance level $\alpha$, used throughout for hypothesis testing, is defined as `1 - conf.level`, where `conf.level` is a user-controllable argument (defaulting to `0.95`).
 
 The choice of statistical tests performed by the function `visstat()` depends on whether the data are numeric or categorical, the number of levels in the categorical variable, the distribution of the data, as well as the user-defined 'conf.level'.
@@ -284,7 +285,7 @@ In the remainder of this section, we briefly introduce the tests themselves, the
 
 Fisher's one-way ANOVA (`aov()`) tests the null hypothesis that the means of multiple groups are equal.
 It assumes independent observations, normally distributed residuals, and **homogeneous** variances across groups.
-The test statistic is the ratio of the variance explained by differences among group means (between-group variance) to the unexplained variance within groups:
+The test statistic is the ratio of the variance explained by differences among group means (between-group variance) to the unexplained variance within groups [@Fisher:1990]
 
 $$
 F = \frac{\text{between-group variance}}{\text{within-group variance}}
@@ -335,12 +336,15 @@ These assumptions are tested using the `visAnovaAssumptions()` function.
 #### Normality of residuals (`shapiro.test()` and `ad.test()`)
 
 The `visAnovaAssumptions()` function assesses the normality of standardised residuals from the ANOVA fit using both the Shapiro--Wilk test (`shapiro.test()`) and the Anderson--Darling test (`ad.test()`).
-Normality is assumed if at least one of the two tests yields a p-value greater than $\alpha$.
-<!-- (see Figure @ref(fig:fig-decision-tree)). -->
+The decision logic assumes normality if at least one of the two tests yields a p-value greater than $\alpha$.
+This approach leverages their complementary strengths: Shapiro-Wilk generally demonstrates superior power for diverse non-normal distributions in smaller samples, while Anderson-Darling is highly sensitive to tail deviations and performs robustly with larger sample sizes [@Razali:2011; @Yap:2011]
 
-The function generates two diagnostic plots:
+This strategy increases tolerance to minor deviations from normality and reduces the risk of false positives (Type I errors for non-normality detection), but may increase the risk of false negatives (Type II errors), potentially overlooking meaningful departures from normality[@Ghasemi:2012].
 
--   a scatter plot of the standardised residuals against the fitted means of the linear model for each level of the predictor (`x`), and
+
+Assessment for normality should never solely rely on p-values, but should be complimented by visual inspections. Therefore  the function generates two diagnostic plots:
+
+-   a scatter plot of the standardised residuals against the fitted means of the linear model for each level of the predictor , and
 -   a Q--Q plot of the standardised residuals.
 
 #### Equal variances across groups (`bartlett.test()`)
@@ -770,7 +774,7 @@ When both the response and predictor are numeric, a simple linear regression mod
 
 `lm()`
 
-## Both variables cagegorical
+## Both variables categorical
 
 When both variables are categorical, `visstat()` tests the null hypothesis of independence using one of the following:
 
