@@ -3,7 +3,9 @@ title: "visStatistics: The right test, visualised"
 author: "Sabine Schilling"
 date: "`r Sys.Date()`"
 output:
-  html_vignette:
+ #html_vignette: #for CRAN
+ #html_document: 
+ bookdown::html_document2:
     toc: true
     number_sections: true
     toc_depth: 3
@@ -335,7 +337,7 @@ These assumptions are tested using the `visAnovaAssumptions()` function.
 
 #### Normality of residuals (`shapiro.test()` and `ad.test()`)
 
-The `visAnovaAssumptions()` function assesses the normality of standardised residuals from the ANOVA fit using both the Shapiro--Wilk test (`shapiro.test()`) and the Anderson--Darling test (`ad.test()`).
+The `visAnovaAssumptions()` function assesses the normality of standardised residuals from the the ANOVA fit using both the Shapiro--Wilk test (`shapiro.test()`) and the Anderson--Darling test (`ad.test()`).
 The decision logic assumes normality if at least one of the two tests yields a p-value greater than $\alpha$.
 This approach leverages their complementary strengths: Shapiro-Wilk generally demonstrates superior power for diverse non-normal distributions in smaller samples, while Anderson-Darling is highly sensitive to tail deviations and performs robustly with larger sample sizes [@Razali:2011; @Yap:2011]
 
@@ -356,7 +358,8 @@ Homoscedasticity is assessed using Bartlett's test (`bartlett.test()`), which te
 
 ### Controlling the family-wise error rate
 
-After a significant test result, we would like to identify which specific groups differ significantly from each other.
+ANOVA is an omnibus test that evaluates a single null hypothesis: all group means are equal.
+If the null hypothesis gets rejected, we would like to identify which specific groups differ significantly from each other.
 However, simple pairwise comparisons of group means or medians following an ANOVA or Kruskal--Wallis test increase the probability of incorrectly declaring a significant difference when, in fact, there is none.
 
 This error is quantified by the family-wise error rate $\alpha_{PF}$ (pronounced “alpha per family of tests”), which refers to the probability of making at least one Type I error, that is, falsely rejecting the null hypothesis across all pairwise comparisons.
@@ -367,7 +370,7 @@ $$
 M = \frac{n \cdot (n - 1)}{2}
 $$
 
-pairwise comparisons possible, defining a *family of tests* [@Abdi:2007].
+pairwise comparisons possible, defining a *family of tests* [@Abdi:2007].  $M$ corresponds to the number of null hypotheses in the post hoc tests, each testing whether the means of two specific groups are equal.
 
 #### Šidák correction {.unnumbered}
 
@@ -381,7 +384,7 @@ $$
 \alpha_{PF} = 1 - (1 - \alpha_{PT})^M.
 $$
 
-Let us illustrate the inflation of the family-wise error rate with increasing group number $n$ (equal to the number of `levels` in the categorical variable)) by the following examples: With $\alpha_{PT}=0.05$ comparing $n=3$ groups results in a family-wise error rate of $\alpha_{PF} \approx 14\%$, whereas comparing $n=6$ groups (as in the examples below) already leads to the probability of at least one time falsely rejecting the null hypothesis of $\alpha_{PF} \approx 54\%$.
+<!-- Let us illustrate the inflation of the family-wise error rate with increasing group number $n$ (equal to the number of `levels` in the categorical variable)) by the following examples: With $\alpha_{PT}=0.05$ pairwise comparison of  $n=3$ groups results in a family-wise error rate of $\alpha_{PF} \approx 14\%$, whereas pairwise comparing of $n=6$ groups (as in the examples below) already leads to the probability of at least one time falsely rejecting the null hypothesis of $\alpha_{PF} \approx 54\%$. -->
 
 Solving the last equation defining $\alpha_{PF}$ for $\alpha_{PT}$ yields the Šidák equation [@Sidak:1967]:
 
@@ -392,11 +395,15 @@ $$ This shows that, in order to achieve a given family-wise error rate, the corr
 
 `visstat()` sets $\alpha_{PF}$ to the user-defined $\alpha = 1 -$ `conf.level`, resulting in
 
-$$\alpha_{Sidak}=\alpha_{PT} = \alpha_{Sidak}= 1 - \texttt{conf.level}^{1 / M}.
+$$\alpha_{PT} = 1 - \texttt{conf.level}^{1 / M}.
 $$
 
-The default settings result in $\alpha_{PF} = 5\%$.
-For example, for $n = 3$ groups, this leads to $\alpha_{PT} = 1.70\%$; for $n = 6$ groups to $\alpha_{PT} = 0.34\%$; and for $n = 10$ groups already to the very small $\alpha_{PT} = 0.11\%$.
+With the default setting `conf.level = 0.95`, this leads to:
+
+- $n = 3$ groups: $\alpha_{PT} = 1.70\%$
+- $n = 6$ groups: $\alpha_{PT} = 0.34\%$
+- $n = 10$ groups: $\alpha_{PT} = 0.11\%$
+
 
 These examples illustrate that the Šidák approach becomes increasingly conservative as the number of comparisons grows.
 Moreover, since the method assumes independence among tests, it may be overly conservative when this assumption is violated.
@@ -406,20 +413,25 @@ Moreover, since the method assumes independence among tests, it may be overly co
 In contrast to the general-purpose Šidák correction, Tukey's Honestly Significant Differences procedure (`TukeyHSD()`) is specifically designed for pairwise mean comparisons following an ANOVA (either `aov()` or `oneway.test()`).
 It controls the family-wise error rate using a critical value from the studentised range distribution, which properly accounts for the correlated nature of pairwise comparisons sharing a common residual variance [@Hochberg:1987].
 
-Based on the user-specified confidence level (`conf.level`), `visstat()` constructs confidence intervals for all pairwise differences between factor level means.
+Based on the user-specified confidence level (`conf.level`), `visstat()` constructs confidence intervals for all pairwise **differences** between factor level means.
 A significant difference between two means is indicated when the corresponding confidence interval does not include zero.
 `visstat()` returns both the HSD-adjusted p-values and the associated confidence intervals for all pairwise comparisons.
+
+For graphical display, `visstat()` uses a dual approach: `TukeyHSD()` provides the statistical test results and significance determinations, while Šidák-corrected confidence intervals around individual group means are shown for visualisation purposes. This separation allows for optimal statistical testing while maintaining clear, interpretable graphics.
+
+
 
 #### Post-hoc test following the Kruskal--Wallis rank sum test: `pairwise.wilcox.test()` {.unnumbered}
 
 As a post-hoc analysis following the Kruskal--Wallis test, `visstat()` applies the pairwise Wilcoxon rank sum test using `pairwise.wilcox.test()` to compare each pair of factor levels (see section “Wilcoxon rank-sum test (`wilcox.test()`)”).
 
-The resulting p-values from all pairwise comparisons are then adjusted for multiple testing using Holm's method [@Holm:1979]: These p-values are first sorted from smallest to largest and tested against thresholds that become less strict as their rank increases.
+The resulting p-values from all pairwise comparisons are then adjusted for multiple testing using Holm's method [@Holm:1979]: The p-values are first sorted from smallest to largest and tested against thresholds that become less strict as their rank increases.
 This stepwise adjustment does not assume independence among tests and is typically less conservative than the Šidák method, while still ensuring strong control of the family-wise error rate.
 
+The function returns a list containing the relevant test statistics along with the post-hoc-adjusted $p$-values for all pairwise comparisons.
 ### Graphical output
 
-The graphical output for all tests based on a numeric response and a categorical predictor with more than two levels consists of two panels: the first focuses on the residual analysis, and the second on the actual test chosen by the decision logic.
+The graphical output for all tests based on a numeric response and a categorical predictor with more than two levels consists of two panels: the first focuses on the residual analysis, the second on the actual test chosen by the decision logic.
 
 The residual panel addresses the assumption of normality, both graphically and through formal tests.
 It displays a scatter plot of the standardised residuals versus the predicted values, as well as a normal Q--Q plot comparing the sample quantiles to the theoretical quantiles.
@@ -440,11 +452,19 @@ Different green letters below a pair of box plots indicate that the two groups a
 If normality of the residuals can be assumed, a parametric test is chosen: either `aov()`, if homoscedasticity is also assumed, or `oneway.test()` otherwise.
 `visstat()` displays the name of the test and the corresponding $F$ and p-value in the title.
 
-The graph shows both the `conf.level` $\cdot\,100\%$ confidence intervals and the wider Šidák-corrected $(1 - \alpha_{Sidak}) \cdot 100\%$ confidence intervals, alongside jittered data points for each group.
 
-Different green letters below a pair of confidence intervals indicate that the two groups are considered significantly different, based on the results of the `TukeyHSD()` procedure.
+The graph shows both the `conf.level` $\cdot\,100\%$ confidence intervals
+corresponding to the null hypothesis of ANOVA (all group means are equal) and the
+Šidák-corrected $(1 - \alpha_{PT}) \cdot 100\%$ confidence intervals used in the
+post hoc analysis.
 
-The function returns a list containing the relevant test statistics along with the post-hoc-adjusted $p$-values for all pairwise comparisons.
+In `visstat()`, the Šidák intervals are used only for visualisation, as the
+underlying method assumes independent comparisons and can become overly
+conservative when this assumption is violated.
+
+The actual post hoc analysis should be based on `TukeyHSD()`. A significant test
+result between two groups is graphically represented by different green letters
+below a pair of group means.
 
 ### Examples
 
