@@ -1,6 +1,9 @@
 ---
 title: "visStatistics: The right test, visualised"
-author: "Sabine Schilling"
+author: 
+  - name: "Sabine Schilling"
+    affiliation: "Institue of Tourism and Mobility, Lucerne Unviersity of Applied Sciences and Arts"
+    email: "sabine.schillingg@protonmail.com"
 date: "`r Sys.Date()`"
 output:
  #html_vignette: #for CRAN, much more lightweight 
@@ -340,14 +343,13 @@ These assumptions are tested using the `visAnovaAssumptions()` function.
 
 #### Normality of residuals (`shapiro.test()` and `ad.test()`)
 
-The `visAnovaAssumptions()` function assesses the normality of standardised residuals from the the ANOVA fit using both the Shapiro--Wilk test (`shapiro.test()`) and the Anderson--Darling test (`ad.test()`).
-The decision logic assumes normality if at least one of the two tests yields a p-value greater than $\alpha$.
-This approach leverages their complementary strengths: Shapiro-Wilk generally demonstrates superior power for diverse non-normal distributions in smaller samples, while Anderson-Darling is highly sensitive to tail deviations and performs robustly with larger sample sizes [@Razali:2011; @Yap:2011]
+The `visAnovaAssumptions()` function assesses the normality of standardised residuals from the the ANOVA fit using both the Shapiro--Wilk test (`shapiro.test()`) and the Anderson--Darling test (`ad.test()`). This approach leverages their complementary strengths: Shapiro-Wilk generally demonstrates superior power for diverse non-normal distributions in smaller samples, while Anderson-Darling is highly sensitive to tail deviations and performs robustly with larger sample sizes [@Razali:2011; @Yap:2011].
+The decision logic assumes normality if the Shapiro--Wilk test yields a p-value greater than $\alpha$, as, for a majority distributions, it is the most powerful test [@Razali:2011].
 
-This strategy increases tolerance to minor deviations from normality and reduces the risk of false positives (Type I errors for non-normality detection), but may increase the risk of false negatives (Type II errors), potentially overlooking meaningful departures from normality[@Ghasemi:2012].
+<!-- This strategy increases tolerance to minor deviations from normality and reduces the risk of false positives (Type I errors for non-normality detection), but may increase the risk of false negatives (Type II errors), potentially overlooking meaningful departures from normality[@Ghasemi:2012]. -->
 
 
-Assessment for normality should never solely rely on p-values, but should be complimented by visual inspections. Therefore  the function generates two diagnostic plots:
+But assessment for normality should never solely rely on p-values, but should be complimented by visual inspections. Therefore  the function generates two diagnostic plots:
 
 -   a scatter plot of the standardised residuals against the fitted means of the linear model for each level of the predictor , and
 -   a Q--Q plot of the standardised residuals.
