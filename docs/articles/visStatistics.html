@@ -51,7 +51,10 @@
 
       <h1>visStatistics: The right test, visualised</h1>
                         <h4 data-toc-skip class="author">Sabine Schilling</h4>
-            
+            <address class="author_afil">
+      Institue of Tourism and Mobility, Lucerne Unviersity of Applied Sciences and Arts<br><a class="author_email" href="mailto:#"></a><a href="mailto:sabine.schillingg@protonmail.com" class="email">sabine.schillingg@protonmail.com</a>
+      </address>
+                  
             <h4 data-toc-skip class="date">2025-06-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/HEAD/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
@@ -339,11 +342,10 @@ If the normality assumption is violated, <code><a href="https://rdrr.io/r/stats/
 <h5 id="normality-of-residuals-shapiro-test-and-ad-test">
 <span class="header-section-number">4.2.5.1</span> Normality of residuals (<code>shapiro.test()</code> and <code>ad.test()</code>)<a class="anchor" aria-label="anchor" href="#normality-of-residuals-shapiro-test-and-ad-test"></a>
 </h5>
-<p>The <code>visAnovaAssumptions()</code> function assesses the normality of standardised residuals from the the ANOVA fit using both the Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson–Darling test (<code>ad.test()</code>).
-The decision logic assumes normality if at least one of the two tests yields a p-value greater than <span class="math inline">\(\alpha\)</span>.
-This approach leverages their complementary strengths: Shapiro-Wilk generally demonstrates superior power for diverse non-normal distributions in smaller samples, while Anderson-Darling is highly sensitive to tail deviations and performs robustly with larger sample sizes <span class="citation">(<a href="#ref-Razali:2011">Razali and Wah 2011</a>; <a href="#ref-Yap:2011">Yap and Sim 2011</a>)</span></p>
-<p>This strategy increases tolerance to minor deviations from normality and reduces the risk of false positives (Type I errors for non-normality detection), but may increase the risk of false negatives (Type II errors), potentially overlooking meaningful departures from normality<span class="citation">(<a href="#ref-Ghasemi:2012">Ghasemi and Zahediasl 2012</a>)</span>.</p>
-<p>Assessment for normality should never solely rely on p-values, but should be complimented by visual inspections. Therefore the function generates two diagnostic plots:</p>
+<p>The <code>visAnovaAssumptions()</code> function assesses the normality of standardised residuals from the the ANOVA fit using both the Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson–Darling test (<code>ad.test()</code>). This approach leverages their complementary strengths: Shapiro-Wilk generally demonstrates superior power for diverse non-normal distributions in smaller samples, while Anderson-Darling is highly sensitive to tail deviations and performs robustly with larger sample sizes <span class="citation">(<a href="#ref-Razali:2011">Razali and Wah 2011</a>; <a href="#ref-Yap:2011">Yap and Sim 2011</a>)</span>.
+The decision logic assumes normality if the Shapiro–Wilk test yields a p-value greater than <span class="math inline">\(\alpha\)</span>, as, for a majority distributions, it is the most powerful test <span class="citation">(<a href="#ref-Razali:2011">Razali and Wah 2011</a>)</span>.</p>
+<!-- This strategy increases tolerance to minor deviations from normality and reduces the risk of false positives (Type I errors for non-normality detection), but may increase the risk of false negatives (Type II errors), potentially overlooking meaningful departures from normality[@Ghasemi:2012]. -->
+<p>But assessment for normality should never solely rely on p-values, but should be complimented by visual inspections. Therefore the function generates two diagnostic plots:</p>
 <ul>
 <li>a scatter plot of the standardised residuals against the fitted means of the linear model for each level of the predictor , and</li>
 <li>a Q–Q plot of the standardised residuals.</li>
@@ -813,9 +815,6 @@ Fisher, Roland A. 1971. <em>The Design of Experiments</em>. 9th ed. Macmillan.
 </div>
 <div id="ref-Fisher:1990" class="csl-entry">
 Fisher, Ronald A., and F Yates. 1990. <em>Statistical <span>Methods</span>, <span>Experimental Design</span>, and <span>Scientific Inference</span>: <span class="nocase">A Re-issue</span> of <span>Statistical Methods</span> for <span>Research Workers</span>, the <span>Design</span> of <span>Experiments</span> and <span>Statistical Methods</span> and <span>Scientific Inference</span></em>. Edited by J H Bennett. Oxford University PressOxford. <a href="https://doi.org/10.1093/oso/9780198522294.001.0001" class="external-link">https://doi.org/10.1093/oso/9780198522294.001.0001</a>.
-</div>
-<div id="ref-Ghasemi:2012" class="csl-entry">
-Ghasemi, Asghar, and Saleh Zahediasl. 2012. <span>“Normality <span>Tests</span> for <span>Statistical Analysis</span>: <span>A Guide</span> for <span>Non-Statisticians</span>.”</span> <em>Int J Endocrinol Metab</em> 10 (2): 486–89. <a href="https://doi.org/10.5812/ijem.3505" class="external-link">https://doi.org/10.5812/ijem.3505</a>.
 </div>
 <div id="ref-Hochberg:1987" class="csl-entry">
 Hochberg, Yosef, and Ajit C. Tamhane. 1987. <em>Multiple <span>Comparison Procedures</span></em>. 1st ed. Wiley <span>Series</span> in <span>Probability</span> and <span>Statistics</span>. Wiley. <a href="https://doi.org/10.1002/9780470316672" class="external-link">https://doi.org/10.1002/9780470316672</a>.
