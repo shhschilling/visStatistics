@@ -6,12 +6,21 @@
 The R package `visStatistics` allows for rapid **vis**ualisation and
 statistical analysis of raw data. It automatically selects and
 visualises the most appropriate **statistic**al hypothesis test between
-two vectors of class `integer`, `numeric` or `factor`.
+two vectors of class `integer`, `numeric` or `factor`(An input vector of
+class `character` will be internally transformed to class `factor`).
 
-This workflow is particularly suited for browser-based interfaces that
-rely on server-side R applications connected to secure databases, where
-users have no direct access, or for quick data visualisation, e.g. in
-statistical consulting projects.
+While numerous R packages provide statistical testing functionality, few
+are designed with pedagogical accessibility as a primary concern.
+`visStatistics` addresses this gap by automating the test selection
+process and presenting results using annotated, publication-ready
+visualisations. This helps the user to focus on interpretation rather
+than technical execution.
+
+The automated workflow is particularly suited for browser-based
+interfaces that rely on server-side R applications connected to secure
+databases, where users have no direct access, or for quick data
+visualisation, e.g. in statistical consulting projects or educational
+settings.
 
 # Installation of latest stable version from CRAN
 
@@ -167,7 +176,7 @@ Increasing the confidence level `conf.level` from the default 0.95 to
 
 <img src="man/figures/README-pressure-1.png" width="100%" /><img src="man/figures/README-pressure-2.png" width="100%" />
 
-## Both varibles categorical
+## Both variables categorical
 
 ### Pearson’s Chi-squared test
 
@@ -210,28 +219,32 @@ statistical hypothesis test of central tendencies is selected.
   (`t.test()`), is applied whenever both groups contain more than 30
   observations, with the validity of the test supported by the
   approximate normality of the sampling distribution of the mean under
-  the central limit theorem \[@Rasch:2011vl @Lumley2002dsa\]. For
-  smaller samples, group - wise normality is assessed using the
-  Shapiro - Wilk test (`shapiro.test()`) at the significance level*α*.
-  If both groups are found to be approximately normally distributed
-  according to the Shapiro - Wilk test, Welch’s t-test is applied;
-  otherwise, the Wilcoxon rank-sum test (`wilcox.test()`) is used.
+  the central limit theorem \[@Rasch:2011, @Lumley:2002\]. For smaller
+  samples, group - wise normality is assessed using the Shapiro - Wilk
+  test (`shapiro.test()`) at the significance level*α*. If both groups
+  are found to be approximately normally distributed according to the
+  Shapiro - Wilk test, Welch’s t-test is applied; otherwise, the
+  Wilcoxon rank-sum test (`wilcox.test()`) is used.
 
 - For predictors with more than two levels, an ANOVA model (`aov()`) is
   initially fitted. The normality of residuals is evaluated using both
   the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test
-  (`ad.test()`); residuals are considered approximately normal if at
-  least one of the two tests yields a result exceeding the significance
-  threshold *α*. If this condition is met, Bartlett’s test
-  (`bartlett.test()`) is then used to assess homoscedasticity. When
-  variances are homogeneous (*p* &gt; *α*), ANOVA is applied with
-  Tukey’s HSD (`TukeyHSD()`) for post-hoc comparison. If variances
-  differ significantly (*p* ≤ *α*), Welch’s one - way test
-  (`oneway.test()`) is used, also followed by Tukey’s HSD. If residuals
-  are not normally distributed according to both tests (*p* ≤ *α*), the
-  Kruskal-Wallis test (`kruskal.test()`) is selected, followed by
-  pairwise Wilcoxon tests (`pairwise.wilcox.test()`). A graphical
-  overview of the decision logic used is provided in below figure.
+  (`ad.test()`); the algorithm considers residuals approximately normal
+  if the Shapiro–Wilk test yields a result exceeding the significance
+  threshold *α* \[@Razali:2011\]:
+  <!-- if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.  -->
+  If this condition is met, Bartlett’s test (`bartlett.test()`) is then
+  used to assess homoscedasticity. When variances are homogeneous
+  (*p* &gt; *α*), ANOVA is applied with Tukey’s HSD (`TukeyHSD()`) for
+  post-hoc comparison. If variances differ significantly (*p* ≤ *α*),
+  Welch’s one - way test (`oneway.test()`) is used, also followed by
+  Tukey’s HSD. If residuals are not normally distributed according to
+  both tests (*p* ≤ *α*), the Kruskal-Wallis test (`kruskal.test()`) is
+  selected, followed by pairwise Wilcoxon tests
+  (`pairwise.wilcox.test()`).
+
+A graphical overview of the decision logic used is provided in below
+figure.
 
 <img src="man/figures/decision_tree.png" width="100%" 
      alt="Decision tree used to select the appropriate statistical test.">
@@ -245,18 +258,19 @@ factor levels, normality, and homoscedasticity.
 ## Numerical response and numerical predictor: Linear Regression
 
 When both the response and predictor are numeric, a simple linear
-regression model (`lm()`) is fitted and analysed in detail, including
-residual diagnostics, formal tests, and the plotting of fitted values
-with confidence bands. Note that only one explanatory variable is
-allowed, as the function is designed for two-dimensional visualisation.
+regression model (`lm()`) is fitted. The resulting plots shows the
+regression line, confidence and prognosis bands. Residual analysis is
+performed both graphically (Tukey-Anscombe residual plot and QQ-plot)
+and via tests for normality `shapiro.test()` and `ad.test()`. Note that
+only one explanatory variable is allowed, as the function is designed
+for two-dimensional visualisation.
 
 ## Both variables categorical
 
-When both variables are categorical, no direction is assumed (though one
-is still referred to as the for consistency). `visstat()` tests the null
+When both variables are categorical, `visstat()` tests the null
 hypothesis that both variables are independent using either
 `chisq.test()` or `fisher.test()`. The choice of test is based on
-Cochran’s rule \[@Cochran\], which advises that
+Cochran’s rule \[@Cochran:1954\], which advises that
 the*χ*<sup>2</sup>approximation is reliable only if no expected cell
 count is zero and no more than 20 percent of cells have expected counts
 below 5.
@@ -301,7 +315,9 @@ visualised.
 ### Numerical response and numerical predictor
 
 When both the response and predictor are numerical, a simple linear
-regression model is fitted:`lm()`
+regression model is fitted:`lm()`. Normality of residuals is assesed
+both graphically(Tukey-Anscombe plot and Q-Q plot) as well as with
+`shapiro.test()` and `ad.test()`
 
 Note that multiple linear regression models are not implemented, as the
 package focuses on the visualisation of data, not model building. \###
@@ -310,4 +326,24 @@ Categorical response and categorical predictor
 When both variables are categorical, `visstat()` tests the null
 hypothesis of independence using one of the following:-`chisq.test()`
 (default for larger samples) - `fisher.test()` (used for small expected
-cell counts based on Cochran’s rule) <!-- pkgdown::end -->
+cell counts based on Cochran’s rule)
+
+## References
+
+- Rasch, D., Kubinger, K. D., & Moder, K. (2011). *The two-sample t
+  test: pre-testing  
+  its assumptions does not pay off*. *Methods of Information in
+  Medicine*, 50(4),  
+  419–426.
+
+- Lumley, T., Diehr, P., Emerson, S., & Chen, L. (2002). *The importance
+  of the  
+  normality assumption in large public health data sets*. *Annual Review
+  of Public  
+  Health*, 23, 151–169.
+
+- Cochran, W. G. (1954). *Some methods for strengthening the common
+  chi-squared  
+  tests*. *Biometrics*, 10(4), 417–451.
+
+<!-- pkgdown::end -->
