@@ -547,8 +547,9 @@ visstat_core <- function(dataframe,
     )
     
     
-    if (visanova$shapiro_test$p.value > alpha |
-        visanova$ad_test$p.value > alpha) {
+    if (visanova$shapiro_test$p.value > alpha 
+#        |visanova$ad_test$p.value > alpha)  #only demand that shapiro wilk is non -signifcant
+       ) {
       openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
       
       vis_sample_fact <- vis_anova(

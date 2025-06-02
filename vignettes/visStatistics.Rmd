@@ -3,14 +3,13 @@ title: "visStatistics: The right test, visualised"
 author: "Sabine Schilling"
 date: "`r Sys.Date()`"
 output:
- #html_vignette: #for CRAN
- #html_document: 
- bookdown::html_document2:
+ #html_vignette: #for CRAN, much more lightweight 
+ bookdown::html_document2:  #for correct disply in pkdown of section numbering
     toc: true
     number_sections: true
     toc_depth: 3
 link-citations: yes
-pkgdown:
+pkgdown:         #these two lines are needed for building the package site correctly
   as_is: true
 bibliography: visstat.bib
 vignette: >
@@ -110,7 +109,8 @@ When the response is numeric and the predictor is categorical, a statistical hyp
     If both groups are found to be approximately normally distributed according to the Shapiro--Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank- sum test (`wilcox.test()`) is used.
 
 -   For predictors with more than two levels, a model of Fisher's one-way analysis of variables (ANOVA) (`aov()`) is initially fitted.
-    The normality of residuals is evaluated using both the Shapiro--Wilk test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.
+    <!-- The normality of residuals is evaluated by the  the Shapiro--Wilk test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$. -->
+     The normality of residuals is evaluated by the  the Shapiro--Wilk test (`shapiro.test()`); residuals are considered approximately normal if it yields a result exceeding the significance threshold $\alpha$.
     If this condition is met, Bartlett's test (`bartlett.test()`) assesses homoscedasticity.
     When variances are homogeneous ($p > \alpha$), Fisher's one-way ANOVA (`aov()`) is applied with Tukey's Honestly Significant Differences (HSD) (`TukeyHSD()`) for post-hoc comparison.
     If variances differ significantly ($p \le \alpha$), Welch's heteroscedastic one- way ANOVA (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal--Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
