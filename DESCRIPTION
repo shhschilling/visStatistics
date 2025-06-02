@@ -1,63 +1,73 @@
-Package: visStatistics
 Type: Package
+Package: visStatistics
 Title: Automated Selection and Visualisation of Statistical Hypothesis
-        Tests
+    Tests
 Version: 0.1.8
 Authors@R: c(
-    person("Sabine", "Schilling", , "sabineschilling@gmx.ch", 
-    role = c("cre", "aut", "cph"),comment = c(ORCID = "0000-0002-8318-9421", year = "2025")),
-    person("Peter", "Kauf", , "peter.kauf@zhaw.ch", role = "ctb") )
+    person("Sabine", "Schilling", , "sabineschilling@gmx.ch", role = c("cre", "aut", "cph"),
+           comment = c(ORCID = "0000-0002-8318-9421", year = "2025")),
+    person("Peter", "Kauf", , "peter.kauf@zhaw.ch", role = "ctb")
+  )
+Author: Sabine Schilling [cre, aut, cph] (ORCID:
+    <https://orcid.org/0000-0002-8318-9421>, year: 2025), Peter Kauf [ctb]
 Maintainer: Sabine Schilling <sabineschilling@gmx.ch>
-Description: The right test - visualised. 'visStatistics' automatically selects
-    and visualises statistical hypothesis tests between two vectors,
-    based on their class, distribution, sample size, and a user-defined
-    confidence level (conf.level). Visual outputs - including box plots, bar charts,
-    regression lines with confidence bands, mosaic plots,
-    residual plots, and Q-Q plots - are annotated with relevant test statistics,
-    assumption checks, and post-hoc analyses where applicable. 
-    The algorithmic workflow helps the user focus on the interpretation of test
-    results rather than test selection. It is particularly suited for quick data
-    analysis, e.g., in statistical consulting projects or educational settings. 
-    The test selection algorithm proceeds as follows:   
-    Input vectors of class numeric or integer are
-    considered numerical; those of class factor are considered categorical.
-    Assumptions of residual normality and homogeneity of variances are 
-    considered met if the corresponding test yields a p-value greater than the 
-    significance level alpha = 1 - conf.level. 
-    (1) When the response vector is numerical and the
-    predictor vector is categorical, a test of central tendencies is selected.
-    If the categorical predictor has exactly two levels, 
-    t.test() is applied when group sizes exceed 30
-    (Lumley et al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). 
-    For smaller samples, normality of residuals is tested using shapiro.test(); 
-    if met, t.test() is used; otherwise, wilcox.test(). 
-    If the predictor is categorical with more than two levels, an
-    aov() is initially fitted. Residual normality is evaluated using both
-    shapiro.test() and ad.test(); residuals are considered approximately normal
-    if at least one test yields a p-value above alpha. If this assumption is met, 
-    bartlett.test() assesses variance homogeneity. 
-    If variances are homogeneous, aov() is used; otherwise oneway.test(). 
-    Both tests are followed by TukeyHSD().
-    If residual normality cannot be assumed, kruskal.test() is followed by 
-    pairwise.wilcox.test().
-    (2) When both the response and predictor vectors are numerical, 
-    a simple linear regression model is fitted using lm(). 
-    (3) When both vectors are categorical, Cochran's rule 
-    (Cochran (1954) <doi:10.2307/3001666>)
-    is applied to test independence either by chisq.test() or fisher.test(). 
+Description: The right test - visualised. 'visStatistics' automatically
+    selects and visualises statistical hypothesis tests between two
+    vectors, based on their class, distribution, sample size, and a
+    user-defined confidence level (conf.level). Visual outputs - including
+    box plots, bar charts, regression lines with confidence bands, mosaic
+    plots, residual plots, and Q-Q plots - are annotated with relevant
+    test statistics, assumption checks, and post-hoc analyses where
+    applicable.  The algorithmic workflow helps the user focus on the
+    interpretation of test results rather than test selection. It is
+    particularly suited for quick data analysis, e.g., in statistical
+    consulting projects or educational settings.  The test selection
+    algorithm proceeds as follows: Input vectors of class numeric or
+    integer are considered numerical; those of class factor are considered
+    categorical.  Assumptions of residual normality and homogeneity of
+    variances are considered met if the corresponding test yields a
+    p-value greater than the significance level alpha = 1 - conf.level.
+    (1) When the response vector is numerical and the predictor vector is
+    categorical, a test of central tendencies is selected.  If the
+    categorical predictor has exactly two levels, t.test() is applied when
+    group sizes exceed 30 (Lumley et al. (2002)
+    <doi:10.1146/annurev.publhealth.23.100901.140546>).  For smaller
+    samples, normality of residuals is tested using shapiro.test(); if
+    met, t.test() is used; otherwise, wilcox.test().  If the predictor is
+    categorical with more than two levels, an aov() is initially fitted.
+    Residual normality is evaluated using both shapiro.test() and
+    ad.test(); residuals are considered approximately normal if at least
+    one test yields a p-value above alpha. If this assumption is met,
+    bartlett.test() assesses variance homogeneity.  If variances are
+    homogeneous, aov() is used; otherwise oneway.test().  Both tests are
+    followed by TukeyHSD().  If residual normality cannot be assumed,
+    kruskal.test() is followed by pairwise.wilcox.test().  (2) When both
+    the response and predictor vectors are numerical, a simple linear
+    regression model is fitted using lm().  (3) When both vectors are
+    categorical, Cochran's rule (Cochran (1954) <doi:10.2307/3001666>) is
+    applied to test independence either by chisq.test() or fisher.test().
 License: MIT + file LICENSE
 URL: https://github.com/shhschilling/visStatistics,
-        https://shhschilling.github.io/visStatistics/
+    https://shhschilling.github.io/visStatistics/
 BugReports: https://github.com/shhschilling/visStatistics/issues
-Imports: Cairo, graphics, grDevices, grid, multcompView, nortest,
-        stats, utils, vcd
-Suggests:  knitr, rmarkdown
-VignetteBuilder: knitr
+Imports: 
+    Cairo,
+    graphics,
+    grDevices,
+    grid,
+    multcompView,
+    nortest,
+    stats,
+    utils,
+    vcd
+Suggests: 
+    bookdown,
+    knitr,
+    rmarkdown
+VignetteBuilder: 
+    knitr
 BuildVignettes: true
 Encoding: UTF-8
 NeedsCompilation: no
-RoxygenNote: 7.3.2
 Packaged: 2025-05-23 14:38:34 UTC; sschilli
-Author: Sabine Schilling [cre, aut, cph] (ORCID:
-    <https://orcid.org/0000-0002-8318-9421>, year: 2025),
-  Peter Kauf [ctb]
+RoxygenNote: 7.3.2

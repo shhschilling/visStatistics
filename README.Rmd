@@ -249,11 +249,13 @@ When the response is numeric and the predictor is categorical, a statistical hyp
 
 - If the categorical predictor has exactly two levels, Welch’s t - test (`t.test()`), is applied whenever both groups contain more than 30 observations, with the validity of the test supported by the approximate normality of the sampling distribution of the mean under the central limit theorem
 [@Rasch:2011,
-@Lumley2002]. For smaller samples, group - wise normality is assessed using the Shapiro -
+@Lumley:2002]. For smaller samples, group - wise normality is assessed using the Shapiro -
 Wilk test (`shapiro.test()`) at the significance level$\alpha$. If both groups are found to be approximately normally distributed according to the Shapiro -
 Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank-sum test (`wilcox.test()`) is used.
 
-- For predictors with more than two levels, an ANOVA model (`aov()`) is initially fitted. The normality of residuals is evaluated using both the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$. 
+- For predictors with more than two levels, an ANOVA model (`aov()`) is initially fitted. The normality of residuals is evaluated using both the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test (`ad.test()`); 
+the algorithm considers residuals approximately normal if the Shapiro–Wilk test yields a result exceeding the significance threshold $\alpha$ [@Razali:2011]: 
+<!-- if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.  -->
 If this condition is met, Bartlett's test (`bartlett.test()`) is then used to assess homoscedasticity. When variances are homogeneous ($p > \alpha$), ANOVA is applied with Tukey's HSD (`TukeyHSD()`) for post-hoc comparison. If variances differ significantly ($p \le \alpha$), Welch's one -
 way test (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal-Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
 
