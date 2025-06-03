@@ -6,8 +6,8 @@ author:
     email: "sabine.schillingg@protonmail.com"
 date: "`r Sys.Date()`"
 output:
- #html_vignette: #for CRAN, much more lightweight 
- bookdown::html_document2:  #for correct disply in pkdown of section numbering
+ html_vignette: #for CRAN, much more lightweight 
+ #bookdown::html_document2:  #for correct disply in pkdown of section numbering
     toc: true
     number_sections: true
     toc_depth: 3
@@ -46,6 +46,9 @@ library(visStatistics)
 The choice of test depends on the `class`, distribution, and sample size of the vectors, as well as the user-defined 'conf.level'.
 The main function `visstat()` visualises the selected test with appropriate graphs (box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots, Q-Q plots), annotated with the main test results, including any assumption checks and post-hoc analyses.
 This scripted workflow is particularly suited for browser-based interfaces that rely on server-side R applications connected to secure databases, where users have no direct access, or for quick data visualisations, e.g., in statistical consulting projects.
+
+
+
 
 # Getting started
 
@@ -107,8 +110,17 @@ The function prioritizes interpretable visual output and tests that remain valid
 
 When the response is numeric and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.
 
--   If the categorical predictor has exactly two levels, Welch's t-test (`t.test()`) is applied whenever both groups contain more than 30 observations, with the validity of the test supported by the approximate normality of the sampling distribution of the mean under the central limit theorem [@Rasch:2011, @Lumley:2002].
-    For smaller samples, group - wise normality is assessed using the Shapiro - Wilk test (`shapiro.test()`) at the significance level $\alpha$.
+
+ - If the categorical predictor has exactly two levels, Welch's t-test (`t.test()`)
+is applied when both groups contain more than 30 observations. This heuristic is
+based on the central limit theorem, which ensures approximate normality of the
+sampling distribution of the mean [@Rasch:2011; @Lumley:2002]. Welch's t-test is
+the default method in R for comparing means and is generally
+preferred over Student's t-test because it does not assume equal variances.
+It maintains comparable power even when variances are equal and outperforms
+Student's test when variances differ [@Moser:1992; @Delacre:2017].
+
+ -  For smaller samples, group - wise normality is assessed using the Shapiro - Wilk test (`shapiro.test()`) at the significance level $\alpha$.
     If both groups are found to be approximately normally distributed according to the Shapiro--Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank- sum test (`wilcox.test()`) is used.
 
 -   For predictors with more than two levels, a model of Fisher's one-way analysis of variables (ANOVA) (`aov()`) is initially fitted.
@@ -173,11 +185,11 @@ When the predictor variable has exactly two levels, Welch's t-test or the Wilcox
 ### Welch's t-test (`t.test()`)
 
 Welch's t-test (`t.test()`) assumes that the observations are independent and that the response variable is approximately normally distributed within each group.
-In contrast to Student's t-test, it does not require the assumption of equal variances (homoscedasticity) between groups.
-Welch's t-test remains valid and exhibits only minimal loss of efficiency even when the assumptions of Student's t-test -- namely, normality and equal variances of the response variable across groups -- are satisfied [@Moser:1992; @Delacre:2017].
-Therefore, Student's t-test is not implemented.
+<!-- In contrast to Student's t-test, it does not require the assumption of equal variances (homoscedasticity) between groups. -->
+<!-- Welch's t-test remains valid and exhibits only minimal loss of efficiency even when the assumptions of Student's t-test -- namely, normality and equal variances of the response variable across groups -- are satisfied [@Moser:1992; @Delacre:2017]. -->
+<!-- Therefore, Student's t-test is not implemented. -->
 
-Welch's t-test evaluates the null hypothesis that the means of two groups are equal without assuming equal variances.
+It evaluates the null hypothesis that the means of two groups are equal without assuming equal variances.
 The test statistic is given by [@Welch:1947; @Satterthwaite:1946]
 
 $$
@@ -195,10 +207,12 @@ $$
 
 The resulting p-value is computed from the *t*-distribution with $\nu$ degrees of freedom.
 
+Welch's t-test remains valid and exhibits only minimal loss of power even when the assumptions of Student's t-test -- namely, normality and equal variances of the response variable across groups -- are satisfied [@Moser:1992; @Delacre:2017].
+
 ### Wilcoxon rank-sum test (`wilcox.test()`)
 
 The two-sample Wilcoxon rank-sum test (also known as the Mann-Whitney test) is a non-parametric alternative that does not require the response variable to be approximately normally distributed within each group.
-It tests for a difference in location between two independent distributions [@Wilcoxon:1945; @Mann:1947].
+It tests for a difference in location between two independent distributions [@Mann:1947].
 If the two groups have distributions that are sufficiently similar in shape and scale, the Wilcoxon rank-sum test can be interpreted as testing whether the medians of the two populations are equal [@Hollander:2014].
 
 The two-level factor variable `x` defines two groups, with sample sizes $n_1$ and $n_2$.
@@ -344,15 +358,19 @@ These assumptions are tested using the `visAnovaAssumptions()` function.
 #### Normality of residuals (`shapiro.test()` and `ad.test()`)
 
 The `visAnovaAssumptions()` function assesses the normality of standardised residuals from the the ANOVA fit using both the Shapiro--Wilk test (`shapiro.test()`) and the Anderson--Darling test (`ad.test()`). This approach leverages their complementary strengths: Shapiro-Wilk generally demonstrates superior power for diverse non-normal distributions in smaller samples, while Anderson-Darling is highly sensitive to tail deviations and performs robustly with larger sample sizes [@Razali:2011; @Yap:2011].
-The decision logic assumes normality if the Shapiro--Wilk test yields a p-value greater than $\alpha$, as, for a majority distributions, it is the most powerful test [@Razali:2011].
+
 
 <!-- This strategy increases tolerance to minor deviations from normality and reduces the risk of false positives (Type I errors for non-normality detection), but may increase the risk of false negatives (Type II errors), potentially overlooking meaningful departures from normality[@Ghasemi:2012]. -->
-
-
-But assessment for normality should never solely rely on p-values, but should be complimented by visual inspections. Therefore  the function generates two diagnostic plots:
-
--   a scatter plot of the standardised residuals against the fitted means of the linear model for each level of the predictor , and
+Assessment for normality should never solely rely on p-values, but should be complimented by visual inspections. Therefore the function generates two diagnostic plots:
+-   a scatter plot of the standardised residuals against the fitted means of the linear model for each level of the predictor, and
 -   a Q--Q plot of the standardised residuals.
+
+The algorithmic decision logic cannot replicate the combination of formal tests 
+and expert visual assessment of normality. It therefore assumes normality if the
+Shapiro–Wilk test yields a p-value greater than $\alpha$, as simulation studies
+have shown it to offer the highest power against a variety of non-normal
+distributions in small to moderate samples [@Razali:2011].
+
 
 #### Equal variances across groups (`bartlett.test()`)
 

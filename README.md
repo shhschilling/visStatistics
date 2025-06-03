@@ -6,8 +6,9 @@
 The R package `visStatistics` allows for rapid **vis**ualisation and
 statistical analysis of raw data. It automatically selects and
 visualises the most appropriate **statistic**al hypothesis test between
-two vectors of class `integer`, `numeric` or `factor`(An input vector of
-class `character` will be internally transformed to class `factor`).
+two vectors of class `integer`, `numeric` or `factor`.
+<!-- (an input vector of class -->
+<!-- `character` will be internally transformed to class `factor`). -->
 
 While numerous R packages provide statistical testing functionality, few
 are designed with pedagogical accessibility as a primary concern.
