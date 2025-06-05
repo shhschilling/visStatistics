@@ -50,6 +50,17 @@ The main function `visstat()` visualises the selected test with appropriate grap
 This scripted workflow is particularly suited for browser-based interfaces that rely on server-side R applications connected to secure databases, where users have no direct access, or for quick data visualisations, e.g., in statistical consulting projects.
 
 
+# Introduction 
+<!-- Introductory statistics courses typically cover a fixed set of hypothesis tests, but selecting the correct method in practice can be error-prone.  -->
+<!-- `visStatistics` addresses this by applying a deterministic, transparent test selection logic.  -->
+
+While numerous R packages provide statistical testing functionality, few are designed with pedagogical accessibility as a primary concern. The `visStatistics` package addresses this challenge by automating test selection based on deterministic decision logic, removing the burden of manual test selection. This automation enables users to directly engage with the interpretation of statistical outcomes rather than being bogged down in the test selection process. The tailored visual outputs, annotated with test results and, where appropriate assumption checks and post-hoc analysis  further aid comprehension and ensure that valid statistical conclusions are drawn from the outset. The package is particularly valuable in statistical consulting for student research projects, where time constraints make streamlined, assumption-aware output essential for focusing on interpretation rather than technical execution. The implemented tests cover the typical content of an introductory course in statistcs on undergraduate leve. 
+
+
+The package also suits server-based applications where users have limited interaction: they provide only input vectors, and the software returns valid, interpretable results without requiring further statistical knowledge. This supports reproducibility and correct inference even in constrained environments.
+
+
+
 
 
 # Getting started
@@ -89,14 +100,14 @@ visstat(dataframe[["name_of_x"]], dataframe[["name_of_y"]])
 
 The remainder of this vignette is organised as follows:
 
--   Section 3 summarises the decision logic used to select a statistical test.
+-   Section 4 summarises the decision logic used to select a statistical test.
 
--   Sections 4–6 provide background on the implemented tests and illustrate the decision logic using examples.
+-   Sections 5–7 provide background on the implemented tests and illustrate the decision logic using examples.
     Function names in parentheses in the headings indicate the corresponding statistical hypothesis test function in R,
 
--   Section 7 outlines the main limitations of the package.
+-   Section 8 outlines the main limitations of the package.
 
--   Section 8 provides an overview of the implemented tests.
+-   Section 9 provides an overview of the implemented tests.
 
 # Decision logic
 

@@ -10,9 +10,8 @@
 
 
 
-<meta name="date" content="2025-06-05" />
 
-<title>visStatistics: R package for automatic statistical hypothesis test selection and visualisation</title>
+<title>vis_statistics_paper.knit</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -252,29 +251,6 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-
-div.csl-bib-body { }
-div.csl-entry {
-clear: both;
-margin-bottom: 0em;
-}
-.hanging div.csl-entry {
-margin-left:2em;
-text-indent:-2em;
-}
-div.csl-left-margin {
-min-width:2em;
-float:left;
-}
-div.csl-right-inline {
-margin-left:2em;
-padding-left:1em;
-}
-div.csl-indent {
-margin-left: 2em;
-}
-</style>
 
 
 
@@ -372,60 +348,211 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">visStatistics: R package for automatic
-statistical hypothesis test selection and visualisation</h1>
-<h4 class="author">Sabine Schilling</h4>
-<address class="author_afil">
-1<br><h4 class="author">Lucerne School of Business, Institute of Tourism
-and Mobility, Rösslimatte 48, 6002 Lucerne, Switzerland</h4>
-<h4 class="date">2025-06-05</h4>
 
 </div>
 
 
-<div id="summary" class="section level1">
-<h1>Summary</h1>
-<p>The R <span class="citation">(<strong>Rcoreteam:2025?</strong>)</span> package
-<code>visStatistics</code> <span class="citation">(Schilling
-2025)</span> automates the selection and execution of statistical
-hypothesis tests based on the class, distribution, and sample size of
-two input vectors. The package presents results using annotated,
-publication-ready visualizations matched to the selected method, with
-relevant test statistics, assumption checks, and post-hoc comparisons
-where applicable.</p>
+<p>title: “Automated and Visualised Statistical Test Selection in R: The
+visStatistics Package” author: “[Your Name]” date: “2025-06-05” output:
+pdf_document: toc: true number_sections: true fig_caption: true
+keep_tex: true</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Statistical hypothesis testing is fundamental to data analysis but
+often suffers from inconsistencies and inefficiencies, particularly in
+server-based deployments and time-constrained settings like statistical
+consulting. In such contexts, users have limited interaction
+capabilities and require methods that are both reliable and
+streamlined.</p>
+<p>The <code>visStatistics</code> R package addresses this challenge
+with an automated and reproducible decision logic pipeline. Given two
+vectors and a user-defined confidence level, the function selects an
+appropriate test based on the type of data and its distribution,
+returning visual summaries annotated with the results. This eliminates
+manual selection errors and reduces analysis time.</p>
+<p>The package is particularly valuable for consulting workflows,
+automated reporting systems, and student research projects. It also
+serves a pedagogical function: statistical beginners are relieved from
+memorising test conditions, as the tool guarantees a valid method is
+used, along with clear visual output.</p>
 </div>
-<div id="statement-of-need" class="section level1">
-<h1>Statement of Need</h1>
-<p>Typical undergraduate introductory statistics courses introduce a
-core set of hypothesis tests; however, selecting the appropriate method
-requires users to evaluate variable types, sample sizes, and
-distributional assumptions. This complexity often leads users to make
-incorrect test choices or to skip statistical testing entirely when
-uncertain.</p>
-<p>While numerous R packages provide statistical testing functionality,
-few are designed with pedagogical accessibility as a primary concern.
-The <code>visStatistics</code> package addresses this challenge by
-automating test selection based on deterministic decision logic,
-removing the burden of manual test selection. This automation enables
-users to directly engage with the interpretation of statistical outcomes
-rather than being bogged down in test selection mechanics. The tailored
-visual outputs, annotated with test results and assumption checks,
-further aid comprehension and ensure that valid statistical conclusions
-are drawn from the outset.</p>
-<p>The package is particularly valuable in statistical consulting for
-student research projects, where time constraints make streamlined,
-assumption-aware output essential for focusing on interpretation rather
-than technical execution.</p>
-<p>Possible journals: Journal of Statistics Education (JSE) Technology
-Innovations in Statistics Education (TISE) Teaching Statistics The R
-Journal Journal of Statistical Software (JSS) # References</p>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
-<div id="ref-Schilling:2025" class="csl-entry">
-Schilling, Sabine. 2025. <span>“<span class="nocase">visStatistics</span>: <span>Automated</span> Selection
-and Visualisation of Statistical Hypothesis Tests.”</span> <a href="https://doi.org/DOI:%2010.32614/CRAN.package.visStatistics">https://doi.org/DOI:
-10.32614/CRAN.package.visStatistics</a>.
+<div id="new-version" class="section level1">
+<h1>new version</h1>
+<p>The R package visStatistics <span class="citation">[@Schilling:2025]</span> automates the selection and
+visualisation of statistical hypothesis tests between two variables,
+based on their type, distributional properties, and a user-defined
+confidence level. It returns visual outputs annotated with test
+statistics, assumption checks, and post-hoc comparisons where
+appropriate.</p>
+<p>Introductory statistics courses typically cover a fixed set of
+hypothesis tests, but selecting the correct method in practice can be
+error-prone. Users must evaluate data characteristics such as scale,
+shape, and sample size—an often overlooked or misapplied step,
+particularly in student research or teaching contexts.</p>
+<p>visStatistics addresses this by applying a deterministic, transparent
+test selection logic. The package also suits server-based applications
+where users have limited interaction: they provide only input vectors,
+and the software returns valid, interpretable results without requiring
+further statistical knowledge. This supports reproducibility and correct
+inference even in constrained environments.</p>
+</div>
+<div id="decision-logic" class="section level1">
+<h1>Decision logic</h1>
+<p>Throughout the remainder, data of class <code>&quot;numeric&quot;</code> or
+<code>&quot;integer&quot;</code> are referred to by their common <code>mode</code>
+<code>numeric</code>, while data of class <code>&quot;factor&quot;</code> are
+referred to as categorical. The significance level <span class="math inline">\(lpha\)</span>, used throughout for hypothesis
+testing, is defined as <code>1 - conf.level</code>, where
+<code>conf.level</code> is a user-controllable argument (defaulting to
+<code>0.95</code>).</p>
+<p>The choice of statistical tests performed by the function
+<code>visstat()</code> depends on whether the data are numeric or
+categorical, the number of levels in the categorical variable, the
+distribution of the data, as well as the user-defined ‘conf.level’.</p>
+<p>The function prioritizes interpretable visual output and tests that
+remain valid under the following decision logic:</p>
+<ul>
+<li><p>If both <code>x</code> and <code>y</code> are numeric, a simple
+linear regression model is fitted and analysed, including residual
+diagnostics and confidence bands.</p></li>
+<li><p>If <code>x</code> is categorical and <code>y</code> is
+numeric:</p>
+<ul>
+<li>If <code>x</code> has exactly two levels, the distribution of the
+numeric variable is tested for normality using
+<code>shapiro.test()</code>. If normality is rejected, the Wilcoxon
+rank-sum test (<code>wilcox.test()</code>) is applied; otherwise,
+Welch’s t-test (<code>t.test()</code>).</li>
+<li>If <code>x</code> has more than two levels, a one-way ANOVA
+(<code>aov()</code>) is initially fitted and tested for normality
+(Shapiro–Wilk test on residuals) and homoscedasticity (Bartlett test).
+Depending on the outcome, either Fisher’s ANOVA, Welch’s ANOVA
+(<code>oneway.test()</code>), or Kruskal–Wallis test
+(<code>kruskal.test()</code>) is applied. Post-hoc tests are added if
+required.</li>
+</ul></li>
+<li><p>If both <code>x</code> and <code>y</code> are categorical,
+Pearson’s Chi-squared test is applied if all expected cell counts are ≥
+5. Otherwise, Fisher’s exact test (<code>fisher.test()</code>) is
+used.</p></li>
+</ul>
+</div>
+<div id="using-visstat" class="section level1">
+<h1>Using visstat()</h1>
+<pre class="r"><code>visstat(x, y)
+
+visstat(dataframe, &quot;name_of_y&quot;, &quot;name_of_x&quot;)
+
+visstat(dataframe[[&quot;name_of_x&quot;]], dataframe[[&quot;name_of_y&quot;]])</code></pre>
+</div>
+<div id="examples" class="section level1">
+<h1>Examples</h1>
+<div id="welchs-t-test" class="section level4 unnumbered">
+<h4 class="unnumbered">Welch’s t-test</h4>
+<pre class="r"><code>mtcars$am &lt;- as.factor(mtcars$am)
+visstat(mtcars$am, mtcars$mpg)
+
+visstat(mtcars$am, mtcars$mpg, conf.level = 0.99)</code></pre>
+</div>
+<div id="wilcoxon-rank-sum-test" class="section level4 unnumbered">
+<h4 class="unnumbered">Wilcoxon rank sum test</h4>
+<pre class="r"><code>grades_gender &lt;- data.frame(
+  sex = as.factor(c(rep(&quot;girl&quot;, 21), rep(&quot;boy&quot;, 23))),
+  grade = c(
+    19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4,
+    20.3, 9.3, 11.3, 18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.0,
+    16.5, 5.1, 15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0, 17.4,
+    7.3, 14.3, 13.5, 8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6, 17.3, 19.9, 4.4, 2.1
+  )
+)
+
+visstat(grades_gender$sex, grades_gender$grade)</code></pre>
 </div>
 </div>
+<div id="benchmark-against-existing-packages" class="section level1">
+<h1>Benchmark against existing packages</h1>
+<p>A key differentiator among these packages is the intended target
+audience. <code>visStatistics</code> is tailored to users seeking a
+transparent introduction to statistical testing, particularly those
+following a standard undergraduate curriculum. It automates the correct
+application of the full range of tests typically taught in an
+undergraduate-level inferential statistics course, ensures
+reproducibility, and explains each decision via visual output.</p>
+<p>Several R packages implement automated statistical test selection
+with transparent decision logic. The table below compares
+<code>visStatistics</code> with three such tools: <code>finalfit</code>,
+<code>automatedtests</code>, and <code>STATom@ic</code>.</p>
+<table>
+<colgroup>
+<col width="48%" />
+<col width="15%" />
+<col width="16%" />
+<col width="11%" />
+<col width="10%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>visStatistics</th>
+<th>automatedtests</th>
+<th><a href="mailto:STATom@ic" class="email">STATom@ic</a></th>
+<th>finalfit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Automated test selection with transparent logic</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr class="even">
+<td>Visual output of test decisions and results</td>
+<td>✓</td>
+<td>✗</td>
+<td>✗</td>
+<td>✗</td>
+</tr>
+<tr class="odd">
+<td>Regression modeling support</td>
+<td>✗</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr class="even">
+<td>Omics data support</td>
+<td>✗</td>
+<td>✗</td>
+<td>✓</td>
+<td>✗</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>visStatistics</code> focuses on visualising statistical test
+results with clear, annotated output and supports decision logic for a
+broad range of test types.</li>
+<li><code>automatedtests</code> automates test selection with clear
+tabular results, but no plots or post-hoc visuals.</li>
+<li><code>STATom@ic</code> targets omics datasets and includes
+assumption checks and automated selection but is specialised.</li>
+<li><code>finalfit</code> offers test summaries and regression models
+but lacks support for pairwise test logic or visual diagnostics.</li>
+</ul>
+</div>
+<div id="conclusion-and-outlook" class="section level1">
+<h1>Conclusion and outlook</h1>
+<p><code>visStatistics</code> addresses a gap in exploratory statistical
+analysis in R: the transparent selection and presentation of hypothesis
+tests between variable pairs. It is designed for both teaching and
+practice, allowing analysts to quickly assess relationships with
+appropriate statistical justification.</p>
+</div>
+<div id="appendix" class="section level1">
+<h1>Appendix</h1>
+<pre class="r"><code>sessionInfo()</code></pre>
 </div>
 
 
