@@ -26,23 +26,15 @@ bibliography: visstat.bib
 
 
 # Summary
-
-The  R [@Rcoreteam:2025] package `visStatistics` [@Schilling:2025] package automates the selection and execution of statistical hypothesis tests based on the class, distribution, sample size of two input vectors. Its primary focus lies in generating tailored, publication-ready visualisations that foreground interpretation. Each output plot is matched to the selected method and annotated with relevant test statistics, assumption checks, and post-hoc comparisons where applicable, enabling direct visual interpretation.
-
-The package is particularly valuable in statistical consulting for student research projects, where limited time makes streamlined, assumption-aware output essential. 
-<!-- It has also proven useful in browser-based interfaces with restricted access, where automated analysis must be executed without manual scripting. -->
+The R [@Rcoreteam:2025] package `visStatistics` [@Schilling:2025] automates the selection and execution of statistical hypothesis tests based on the class, distribution, and sample size of two input vectors. The package presents results using annotated, publication-ready visualizations matched to the selected method, with relevant test statistics, assumption checks, and post-hoc comparisons where applicable.
 
 # Statement of Need
+Typical undergraduate introductory statistics courses introduce a core set of hypothesis tests; however, selecting the appropriate method requires users to evaluate variable types, sample sizes, and distributional assumptions. This complexity often leads users to make incorrect test choices or to skip statistical testing entirely when uncertain.
 
-Typical undergraduate introductory statistics courses cover a core set of hypothesis tests: parametric methods for comparing group means, such as Welch’s t-test and one-way ANOVA; non-parametric alternatives like the Wilcoxon rank-sum test and the Kruskal–Wallis test; simple linear regression for associations between numeric variables; and tests for categorical data such as Pearson’s Chi-squared test and Fisher’s exact test. Selecting the appropriate method requires users to evaluate variable types, sample sizes, and distributional assumptions. This complexity often leads users to make incorrect test choices or to skip statistical testing entirely when uncertain.
+While numerous R packages provide statistical testing functionality, few are designed with pedagogical accessibility as a primary concern. The `visStatistics` package addresses this challenge by automating test selection based on deterministic decision logic, removing the burden of manual test selection. This automation enables users to directly engage with the interpretation of statistical outcomes rather than being bogged down in test selection mechanics. The tailored visual outputs, annotated with test results and assumption checks, further aid comprehension and ensure that valid statistical conclusions are drawn from the outset.
 
-The `visStatistics` package addresses this challenge by automating test selection for two input vectors of class numeric, integer, or factor, based on a deterministic decision logic. Branching depends on the data type, distribution, and sample size of the vectors, as well as the user-defined significance level. Visual output is tailored to the data and method, ensuring that results are presented with appropriate, annotated plots that support immediate interpretation.
+The package is particularly valuable in statistical consulting for student research projects, where time constraints make streamlined, assumption-aware output essential for focusing on interpretation rather than technical execution.
 
-These visualisations direct attention to the structure and outcome of the data rather than the mechanics of test selection. This has proven particularly beneficial in statistical consulting for student research projects, where time constraints make it essential to focus on interpretation rather than manual statistical decision-making or custom figure generation. 
-
-
-From Gemini:
-Typical undergraduate introductory statistics courses introduce a core set of hypothesis tests; however, selecting the appropriate method requires users to evaluate variable types, sample sizes, and distributional assumptions. This complexity often leads users to make incorrect test choices or to avoid statistical testing entirely when uncertain. The visStatistics package addresses this challenge by automating test selection for two input vectors based on a deterministic decision logic, removing the burden of manual test selection. This automation enables users, particularly students, to directly engage with the interpretation of statistical outcomes and the implications of their data, rather than being bogged down in the intricacies of test selection mechanics. Tailored visual outputs, annotated with results and assumption checks, further aid comprehension and ensure that valid statistical conclusions are drawn from the outset.
 
 Possible journals: 
 Journal of Statistics Education (JSE)

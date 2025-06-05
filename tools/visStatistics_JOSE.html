@@ -389,7 +389,7 @@ and Mobility, Rösslimatte 48, 6002 Lucerne, Switzerland</h4>
 <code>visStatistics</code> <span class="citation">(Schilling
 2025)</span> package automates the selection and execution of
 statistical hypothesis tests based on the class, distribution, sample
-size of two input vectors. Its primary advantage lies in generating
+size of two input vectors. Its primary focus lies in generating
 tailored, publication-ready visualisations that foreground
 interpretation. Each output plot is matched to the selected method and
 annotated with relevant test statistics, assumption checks, and post-hoc
@@ -398,6 +398,22 @@ comparisons where applicable, enabling direct visual interpretation.</p>
 student research projects, where limited time makes streamlined,
 assumption-aware output essential.
 <!-- It has also proven useful in browser-based interfaces with restricted access, where automated analysis must be executed without manual scripting. --></p>
+<p>From vignette:</p>
+<p>The R package visStatistics allows for rapid visualisation and
+statistical analysis of raw data. It automatically selects and
+visualises the most appropriate statistical hypothesis test between two
+vectors of class integer, numeric or factor.</p>
+<p>While numerous R packages provide statistical testing functionality,
+few are designed with pedagogical accessibility as a primary concern.
+visStatistics addresses this gap by automating the test selection
+process and presenting results using annotated, publication-ready
+visualisations. This helps the user to focus on interpretation rather
+than technical execution.</p>
+<p>The automated workflow is particularly suited for browser-based
+interfaces that rely on server-side R applications connected to secure
+databases, where users have no direct access, or for quick data
+visualisation, e.g. in statistical consulting projects or educational
+setting</p>
 </div>
 <div id="statement-of-need" class="section level1">
 <h1>Statement of Need</h1>
@@ -425,9 +441,23 @@ particularly beneficial in statistical consulting for student research
 projects, where time constraints make it essential to focus on
 interpretation rather than manual statistical decision-making or custom
 figure generation.</p>
-</div>
-<div id="references" class="section level1 unnumbered">
-<h1 class="unnumbered">References</h1>
+<p>From Gemini: Typical undergraduate introductory statistics courses
+introduce a core set of hypothesis tests; however, selecting the
+appropriate method requires users to evaluate variable types, sample
+sizes, and distributional assumptions. This complexity often leads users
+to make incorrect test choices or to avoid statistical testing entirely
+when uncertain. The visStatistics package addresses this challenge by
+automating test selection for two input vectors based on a deterministic
+decision logic, removing the burden of manual test selection. This
+automation enables users, particularly students, to directly engage with
+the interpretation of statistical outcomes and the implications of their
+data, rather than being bogged down in the intricacies of test selection
+mechanics. Tailored visual outputs, annotated with results and
+assumption checks, further aid comprehension and ensure that valid
+statistical conclusions are drawn from the outset.</p>
+<p>Possible journals: Journal of Statistics Education (JSE) Technology
+Innovations in Statistics Education (TISE) Teaching Statistics The R
+Journal Journal of Statistical Software (JSS) # References</p>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-Schilling:2025" class="csl-entry">
 Schilling, Sabine. 2025. <span>“<span class="nocase">visStatistics</span>: <span>Automated</span> Selection
