@@ -257,7 +257,7 @@ is applied when both groups contain more than 30 observations. This heuristic is
 based on the central limit theorem, which ensures approximate normality of the
 sampling distribution of the mean [@Rasch:2011; @Lumley:2002].
 For smaller samples, group - wise normality is assessed using the Shapiro -
-Wilk test (`shapiro.test()`) at the significance level$\alpha$. If both groups are found to be approximately normally distributed according to the Shapiro -
+Wilk test (`shapiro.test()`) at the significance level $\alpha$ [@Razali:2011; @Ghasemi:2012]. If both groups are found to be approximately normally distributed according to the Shapiro -
 Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank-sum test (`wilcox.test()`) is used.
 
 - For predictors with more than two levels, an ANOVA model (`aov()`) is initially fitted. The normality of residuals is evaluated using both the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test (`ad.test()`); 
