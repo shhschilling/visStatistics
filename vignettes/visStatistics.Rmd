@@ -6,8 +6,9 @@ author:
     email: "sabine.schillingg@protonmail.com"
 date: "`r Sys.Date()`"
 output:
- html_vignette: #for CRAN, much more lightweight 
- #bookdown::html_document2:  #for correct disply in pkdown of section numbering
+ #html_vignette: #for CRAN, much more lightweight 
+ bookdown::html_document2:  #for correct disply in pkdown of section numbering
+ pdf_document:
     toc: true
     number_sections: true
     toc_depth: 3
@@ -15,6 +16,7 @@ link-citations: yes
 pkgdown:         #these two lines are needed for building the package site correctly
   as_is: true
 bibliography: visstat.bib
+csl: statistical-science.csl
 vignette: >
   %\VignetteIndexEntry{visStatistics}
   %\VignetteEngine{knitr::rmarkdown}
@@ -114,18 +116,21 @@ When the response is numeric and the predictor is categorical, a statistical hyp
  - If the categorical predictor has exactly two levels, Welch's t-test (`t.test()`)
 is applied when both groups contain more than 30 observations. This heuristic is
 based on the central limit theorem, which ensures approximate normality of the
-sampling distribution of the mean [@Rasch:2011; @Lumley:2002]. Welch's t-test is
+sampling distribution of the mean [@Rasch:2011; @Lumley:2002;@Kwak:2017]. Welch's t-test is
 the default method in R for comparing means and is generally
 preferred over Student's t-test because it does not assume equal variances.
 It maintains comparable power even when variances are equal and outperforms
-Student's test when variances differ [@Moser:1992; @Delacre:2017].
+Student's test when variances differ [@Moser:1992; @Fagerland:2009; @Delacre:2017].
 
- -  For smaller samples, group - wise normality is assessed using the Shapiro - Wilk test (`shapiro.test()`) at the significance level $\alpha$.
+ -  For smaller samples, group - wise normality is assessed using the Shapiro - Wilk test [@Shapiro:65 (`shapiro.test()`) at a significance level $\alpha$. Simulation studies consistently show that the Shapiro-Wilk test is the most powerful for detecting non-normality across most distributions, especially with smaller sample sizes.[@Razali:2011; @Ghasemi:2012]
+ 
+ 
+ 
     If both groups are found to be approximately normally distributed according to the Shapiro--Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank- sum test (`wilcox.test()`) is used.
 
 -   For predictors with more than two levels, a model of Fisher's one-way analysis of variables (ANOVA) (`aov()`) is initially fitted.
     <!-- The normality of residuals is evaluated by the  the Shapiro--Wilk test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$. -->
-     The normality of residuals is evaluated by the  the Shapiro--Wilk test (`shapiro.test()`); residuals are considered approximately normal if it yields a result exceeding the significance threshold $\alpha$.
+     The normality of residuals is evaluated by the the Shapiro--Wilk test (`shapiro.test()`); residuals are considered approximately normal if it yields a result exceeding the significance threshold $\alpha$.
     If this condition is met, Bartlett's test (`bartlett.test()`) assesses homoscedasticity.
     When variances are homogeneous ($p > \alpha$), Fisher's one-way ANOVA (`aov()`) is applied with Tukey's Honestly Significant Differences (HSD) (`TukeyHSD()`) for post-hoc comparison.
     If variances differ significantly ($p \le \alpha$), Welch's heteroscedastic one- way ANOVA (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal--Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
@@ -370,6 +375,9 @@ and expert visual assessment of normality. It therefore assumes normality if the
 Shapiro–Wilk test yields a p-value greater than $\alpha$, as simulation studies
 have shown it to offer the highest power against a variety of non-normal
 distributions in small to moderate samples [@Razali:2011].
+<!-- Note: While Welch’s t-test omits normality checks for n > 30 based on the Central Limit Theorem (CLT), this rationale does not apply to ANOVA. Residuals from a fitted model are not independent and are influenced by the estimated parameters. Therefore, the CLT cannot be used to justify skipping the normality check, which is always applied to ANOVA residuals [@Lumley:2002]. -->
+
+
 
 
 #### Equal variances across groups (`bartlett.test()`)

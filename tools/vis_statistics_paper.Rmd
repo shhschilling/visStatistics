@@ -1,0 +1,124 @@
+title: "Automated and Visualised Statistical Test Selection in R: The visStatistics Package"
+author: "[Your Name]"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: true
+    number_sections: true
+    fig_caption: true
+    keep_tex: true
+
+# Introduction
+
+Statistical hypothesis testing is fundamental to data analysis but often
+suffers from inconsistencies and inefficiencies, particularly in
+server-based deployments and time-constrained settings like statistical
+consulting. In such contexts, users have limited interaction capabilities and
+require methods that are both reliable and streamlined.
+
+The `visStatistics` R package addresses this challenge with an automated and
+reproducible decision logic pipeline. Given two vectors and a user-defined
+confidence level, the function selects an appropriate test based on the type
+of data and its distribution, returning visual summaries annotated with the
+results. This eliminates manual selection errors and reduces analysis time.
+
+The package is particularly valuable for consulting workflows, automated
+reporting systems, and student research projects. It also serves a pedagogical
+function: statistical beginners are relieved from memorising test conditions,
+as the tool guarantees a valid method is used, along with clear visual output.
+
+# Decision logic
+
+Throughout the remainder, data of class `"numeric"` or `"integer"` are referred 
+to by their common `mode` `numeric`, while data of class `"factor"` are referred to as categorical.
+The significance level $lpha$, used throughout for hypothesis testing, is defined as `1 - conf.level`, where `conf.level` is a user-controllable argument (defaulting to `0.95`).
+
+The choice of statistical tests performed by the function `visstat()` depends on whether the data are numeric or categorical, the number of levels in the categorical variable, the distribution of the data, as well as the user-defined 'conf.level'.
+
+The function prioritizes interpretable visual output and tests that remain valid under the following decision logic:
+
+- If both `x` and `y` are numeric, a simple linear regression model is fitted and analysed, including residual diagnostics and confidence bands.
+
+- If `x` is categorical and `y` is numeric:
+  - If `x` has exactly two levels, the distribution of the numeric variable is tested for normality using `shapiro.test()`. If normality is rejected, the Wilcoxon rank-sum test (`wilcox.test()`) is applied; otherwise, Welch's t-test (`t.test()`).
+  - If `x` has more than two levels, a one-way ANOVA (`aov()`) is initially fitted and tested for normality (Shapiro–Wilk test on residuals) and homoscedasticity (Bartlett test). Depending on the outcome, either Fisher's ANOVA, Welch's ANOVA (`oneway.test()`), or Kruskal–Wallis test (`kruskal.test()`) is applied. Post-hoc tests are added if required.
+
+- If both `x` and `y` are categorical, Pearson's Chi-squared test is applied if all expected cell counts are ≥ 5. Otherwise, Fisher's exact test (`fisher.test()`) is used.
+
+# Using visstat()
+
+```r
+visstat(x, y)
+
+visstat(dataframe, "name_of_y", "name_of_x")
+
+visstat(dataframe[["name_of_x"]], dataframe[["name_of_y"]])
+```
+
+# Examples
+
+#### Welch's t-test {.unnumbered}
+
+```r
+mtcars$am <- as.factor(mtcars$am)
+visstat(mtcars$am, mtcars$mpg)
+
+visstat(mtcars$am, mtcars$mpg, conf.level = 0.99)
+```
+
+#### Wilcoxon rank sum test {.unnumbered}
+
+```r
+grades_gender <- data.frame(
+  sex = as.factor(c(rep("girl", 21), rep("boy", 23))),
+  grade = c(
+    19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4,
+    20.3, 9.3, 11.3, 18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.0,
+    16.5, 5.1, 15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0, 17.4,
+    7.3, 14.3, 13.5, 8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6, 17.3, 19.9, 4.4, 2.1
+  )
+)
+
+visstat(grades_gender$sex, grades_gender$grade)
+```
+
+# Benchmark against existing packages
+
+A key differentiator among these packages is the intended target audience.
+`visStatistics` is tailored to users seeking a transparent introduction to
+statistical testing, particularly those following a standard undergraduate
+curriculum. It automates the correct application of the full range of tests typically taught in an undergraduate-level inferential statistics course,
+ensures reproducibility, and explains each decision via visual output.
+
+Several R packages implement automated statistical test selection with
+transparent decision logic. The table below compares `visStatistics` with
+three such tools: `finalfit`, `automatedtests`, and `STATom@ic`.
+
+| Feature                                        | visStatistics | automatedtests | STATom@ic | finalfit |
+|------------------------------------------------|---------------|----------------|-----------|----------|
+| Automated test selection with transparent logic| ✓             | ✓              | ✓         | ✓        |
+| Visual output of test decisions and results    | ✓             | ✗              | ✗         | ✗        |
+| Regression modeling support                    | ✗             | ✓              | ✓         | ✓        |
+| Omics data support                             | ✗             | ✗              | ✓         | ✗        |
+
+- `visStatistics` focuses on visualising statistical test results with clear,
+  annotated output and supports decision logic for a broad range of test types.
+- `automatedtests` automates test selection with clear tabular results, but no
+  plots or post-hoc visuals.
+- `STATom@ic` targets omics datasets and includes assumption checks and
+  automated selection but is specialised.
+- `finalfit` offers test summaries and regression models but lacks support for
+  pairwise test logic or visual diagnostics.
+
+# Conclusion and outlook
+
+`visStatistics` addresses a gap in exploratory statistical analysis in R: the
+transparent selection and presentation of hypothesis tests between variable
+pairs. It is designed for both teaching and practice, allowing analysts to
+quickly assess relationships with appropriate statistical justification.
+
+# Appendix
+
+```r
+sessionInfo()
+```
