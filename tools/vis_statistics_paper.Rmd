@@ -27,6 +27,17 @@ reporting systems, and student research projects. It also serves a pedagogical
 function: statistical beginners are relieved from memorising test conditions,
 as the tool guarantees a valid method is used, along with clear visual output.
 
+# new version
+
+The R package visStatistics [@Schilling:2025] automates the selection and visualisation of statistical hypothesis tests between two variables, based on their type, distributional properties, and a user-defined confidence level. It returns visual outputs annotated with test statistics, assumption checks, and post-hoc comparisons where appropriate.
+
+
+
+Introductory statistics courses typically cover a fixed set of hypothesis tests, but selecting the correct method in practice can be error-prone. Users must evaluate data characteristics such as scale, shape, and sample size—an often overlooked or misapplied step, particularly in student research or teaching contexts.
+
+visStatistics addresses this by applying a deterministic, transparent test selection logic. The package also suits server-based applications where users have limited interaction: they provide only input vectors, and the software returns valid, interpretable results without requiring further statistical knowledge. This supports reproducibility and correct inference even in constrained environments.
+
+
 # Decision logic
 
 Throughout the remainder, data of class `"numeric"` or `"integer"` are referred 
