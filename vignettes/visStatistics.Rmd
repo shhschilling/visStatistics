@@ -53,13 +53,11 @@ This scripted workflow is particularly suited for browser-based interfaces that 
 # Introduction 
 <!-- Introductory statistics courses typically cover a fixed set of hypothesis tests, but selecting the correct method in practice can be error-prone.  -->
 <!-- `visStatistics` addresses this by applying a deterministic, transparent test selection logic.  -->
+While numerous R packages provide statistical testing functionality, few are designed with pedagogical accessibility as a primary concern. The visStatistics package addresses this challenge by automating test selection using deterministic decision logic, removing the burden of manual test choice. This automation enables users to focus directly on interpreting statistical outcomes rather than navigating test selection.
 
-While numerous R packages provide statistical testing functionality, few are designed with pedagogical accessibility as a primary concern. The `visStatistics` package addresses this challenge by automating test selection based on deterministic decision logic, removing the burden of manual test selection. This automation enables users to directly engage with the interpretation of statistical outcomes rather than being bogged down in the test selection process. The tailored visual outputs, annotated with test results and, where appropriate assumption checks and post-hoc analysis  further aid comprehension and ensure that valid statistical conclusions are drawn from the outset. The package is particularly valuable in statistical consulting for student research projects, where time constraints make streamlined, assumption-aware output essential for focusing on interpretation rather than technical execution. The implemented tests cover the typical content of an introductory course in statistcs on undergraduate leve. 
+The tailored visual outputs—annotated with test results and, where appropriate, assumption checks and post-hoc analyses—further support comprehension and help ensure valid conclusions from the outset. The package is particularly valuable in statistical consulting for student research projects, where time constraints demand streamlined, assumption-aware output that prioritises interpretation over technical execution. The implemented tests cover the typical content of an introductory undergraduate course in statistics.
 
-
-The package also suits server-based applications where users have limited interaction: they provide only input vectors, and the software returns valid, interpretable results without requiring further statistical knowledge. This supports reproducibility and correct inference even in constrained environments.
-
-
+The package also suits server-based applications where users have limited interaction: they provide only two input vectors, and the software returns valid, interpretable results without requiring further statistical knowledge. This supports reproducibility and correct inference even in such constrained environments.
 
 
 
