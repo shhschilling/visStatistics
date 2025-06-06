@@ -1,16 +1,3 @@
-.print_nonempty_attributes <- function(obj) {
-  attrs <- attributes(obj)[setdiff(names(attributes(obj)), c("names", "class"))]
-  non_empty <- attrs[!vapply(attrs, function(a)
-    is.null(a) ||
-    (is.atomic(a) && length(a) == 0) ||
-    (is.list(a) && length(a) == 0),
-    logical(1)
-  )]
-  if (length(non_empty) > 0) {
-    cat("\n--- Attributes ---\n")
-    print(non_empty)
-  }
-}
 
 
 #' Print method for visstat objects
@@ -47,8 +34,6 @@ print.visstat <- function(x, ...) {
 }
 
 
-
-
 #' Summary method for visstat objects
 #'
 #' Displays the full statistical test results and, if available, 
@@ -65,25 +50,27 @@ print.visstat <- function(x, ...) {
 #' @seealso \code{\link{print.visstat}}, \code{\link{visstat}}
 #'
 #' @export
+
 summary.visstat <- function(object, ...) {
   cat("Summary of visstat object\n\n")
   
+  # Show available components
   cat("--- Named components ---\n")
   print(names(object))
   
+  # Print contents, with special handling for captured_plots
   cat("\n--- Contents ---\n")
   for (name in names(object)) {
     cat(paste0("\n$", name, ":\n"))
-    print(object[[name]])
+    if (name == "captured_plots") {
+      .print_captured_plots_summary(object[[name]])
+    } else {
+      print(object[[name]])
+    }
   }
   
-  # cat("\n--- Attributes ---\n")
-  # print(attributes(object)[setdiff(names(attributes(object)), c("names", "class"))])
-  # 
-  
+  # Filter and print non-empty, non-standard attributes
   attrs <- attributes(object)[setdiff(names(attributes(object)), c("names", "class"))]
-  
-  # Filter out empty or uninformative attributes
   non_empty_attrs <- attrs[!vapply(attrs, function(x)
     is.null(x) ||
       (is.atomic(x) && length(x) == 0) ||
@@ -96,72 +83,139 @@ summary.visstat <- function(object, ...) {
     print(non_empty_attrs)
   }
   
-  
-  
   invisible(object)
 }
 
-
-
-
-#' Report only saved plot files for visstat objects
-#'
-#' This method reports the file paths of plots that were saved to disk during
-#' the statistical analysis, if the user requested file output (e.g., PNG or PDF)
-#' via the \code{graphicsoutput} argument.
-#'
-#' Note that plots are shown during execution of \code{visstat()},
-#' even if no files are saved. This method does not re-render or replay those plots.
-#'
-#' All file-based plots in \code{visStatistics} are generated using the \code{Cairo()}
-#' device and their file paths are collected in the object's \code{"plot_paths"} attribute.
-#'
-#' In interactive sessions, this method prints the list of saved files.
-#' In non-interactive contexts, it suppresses output.
-#'
-#' @param x An object of class \code{"visstat"}, returned by \code{visstat()}.
-#' @param ... Currently unused. Included for S3 method compatibility.
-#'
-#' @return Invisibly returns \code{x}. Used for its side effect of reporting file paths.
-#'
-#' @details The \code{visstat()} function may produce several plots per test type
-#' (e.g., main effect, post hoc comparisons, assumption checks). These are saved to
-#' disk, and their file paths are collected in the object's \code{"plot_paths"} attribute.
-#'
-#' In an interactive session, \code{plot()} will print these paths to the console.
-#' In non-interactive sessions, it quietly lists them. No plots are shown or rendered
-#' within R.
-#'
-#' @seealso \code{\link{visstat}}, \code{\link[Cairo]{Cairo}}, \code{\link{print.visstat}}, \code{\link{summary.visstat}}
-#'
-#' @export
-plot.visstat <- function(x, ...) {
-  paths <- attr(x, "plot_paths")
-
-  if (is.null(paths) || length(paths) == 0) {
-    message("No plot files recorded in object.")
-    return(invisible(x))
+# Helper function for captured plots summary
+.print_captured_plots_summary <- function(plots) {
+  if (is.list(plots) && length(plots) > 0) {
+    cat(sprintf("List of %d plot object(s)\n", length(plots)))
+  } else {
+    print(plots)
   }
-
-  if (!interactive()) {
-    message("Plots saved (non-interactive session):")
-    for (p in paths) message("  ", p)
-    return(invisible(x))
-  }
-
-  message("Plots saved during visstat() execution:")
-  for (p in paths) {
-    message("  ", p)
-  }
-
-  invisible(x)
 }
 
 
-
-
-# old function
-# plot.visstat <- function(x, ...) {
-#   message("Plotting is managed by visstat(), not via plot().")
-#   invisible(x)
-# }
+#' Plot method for visstat objects
+#'
+#' This method can replay captured plots or report saved file paths.
+#' Preserves all existing functionality while adding plot replay capability.
+#'
+#' @param x An object of class \code{"visstat"}, returned by \code{visstat()}.
+#' @param replay Logical. If TRUE, attempts to replay captured plots. 
+#'   If FALSE (default), reports file paths (existing behavior).
+#' @param which Integer vector specifying which plots to display (by index).
+#'   If NULL (default), all plots are considered.
+#' @param ask Logical. If TRUE and multiple plots exist, asks user before 
+#'   displaying each plot. Only relevant when replay=TRUE.
+#' @param ... Currently unused. Included for S3 method compatibility.
+#'
+#' @return Invisibly returns \code{x}. Used for its side effect of displaying 
+#'   plots or reporting file paths.
+#' @method plot visstat
+#' @export
+plot.visstat <- function(x, replay = FALSE, which = NULL, ask = FALSE, ...) {
+  
+  paths <- attr(x, "plot_paths")
+  captured_plots <- attr(x, "captured_plots")
+  
+  if (!replay) {
+    if (is.null(paths) || length(paths) == 0) {
+      message("No plot files recorded in object.")
+      if (!is.null(captured_plots) && length(captured_plots) > 0) {
+        message("Tip: Use plot(object, replay=TRUE) to replay ", length(captured_plots), " captured plots.")
+      } else {
+        message("Tip: Use graphicsoutput parameter in visstat() to save plots.")
+      }
+      return(invisible(x))
+    }
+    
+    if (!is.null(which)) {
+      if (any(which < 1 || which > length(paths))) {
+        stop("'which' contains invalid indices. Valid range: 1 to ", length(paths))
+      }
+      paths <- paths[which]
+    }
+    
+    if (!interactive()) {
+      message("Plots saved (non-interactive session):")
+      for (i in seq_along(paths)) message("  [", i, "] ", paths[i])
+    } else {
+      message("Plots saved during visstat() execution:")
+      for (i in seq_along(paths)) message("  [", i, "] ", paths[i])
+      if (!is.null(captured_plots) && length(captured_plots) > 0) {
+        message("\nTip: Use plot(object, replay=TRUE) to replay captured plots.")
+      }
+    }
+    
+    return(invisible(x))
+  }
+  
+  if (is.null(captured_plots) || length(captured_plots) == 0) {
+    message("No captured plots found in visstat object.")
+    message("This may occur when plots were saved to files or capture failed.")
+    
+    if (!is.null(paths) && length(paths) > 0) {
+      message("\nSaved plot files are available:")
+      for (i in seq_along(paths)) {
+        exists_status <- if (file.exists(paths[i])) "" else 
+          message("  [", i, "] ", exists_status, " ", paths[i])
+      }
+    }
+    
+    return(invisible(x))
+  }
+  
+  if (!is.null(which)) {
+    if (any(which < 1 || which > length(captured_plots))) {
+      stop("'which' contains invalid indices. Valid range: 1 to ", length(captured_plots))
+    }
+    plots_to_replay <- captured_plots[which]
+    indices_to_show <- which
+  } else {
+    plots_to_replay <- captured_plots
+    indices_to_show <- seq_along(captured_plots)
+  }
+  
+  num_plots <- length(plots_to_replay)
+  message("Replaying ", num_plots, " captured plot(s)...")
+  
+  if (num_plots > 1) {
+    oldpar <- par(no.readonly = TRUE)
+    on.exit(par(oldpar))
+    
+    if (num_plots == 2) {
+      par(mfrow = c(1, 2))
+    } else if (num_plots <= 4) {
+      par(mfrow = c(2, 2))
+    }
+  }
+  
+  success_count <- 0
+  for (i in seq_along(plots_to_replay)) {
+    plot_index <- indices_to_show[i]
+    
+    if (ask && interactive() && i > 1) {
+      response <- readline(prompt = paste0("Replay plot ", plot_index, "? [y/n]: "))
+      if (tolower(substr(response, 1, 1)) != "y") next
+    }
+    
+    tryCatch({
+      replayPlot(plots_to_replay[[i]])
+      if (num_plots > 1) {
+        mtext(paste("Plot", plot_index, "of", length(captured_plots)), 
+              side = 3, line = 0.5, cex = 0.8, col = "darkgray")
+      }
+      success_count <- success_count + 1
+    }, error = function(e) {
+      warning("Could not replay plot ", plot_index, ": ", e$message)
+    })
+    
+    if (ask && interactive() && i < num_plots) {
+      readline("Press Enter to continue...")
+    }
+  }
+  
+  message("Successfully replayed ", success_count, " out of ", num_plots, " plots.")
+  invisible(x)
+}

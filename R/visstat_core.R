@@ -199,7 +199,9 @@ visstat_core <- function(dataframe,
   stopifnot(varsample %in% names(dataframe))
   stopifnot(varfactor %in% names(dataframe))
   
-  
+  capture_env <- new.env()
+  capture_env$captured_plots <- list()
+  capture_env$capture_next_plot <- FALSE
   
   # store default graphical parameters------
   oldparvisstat_core <- par(no.readonly = TRUE)
@@ -296,7 +298,7 @@ visstat_core <- function(dataframe,
       
       if (length(twosamples$sample1) > 30 &
           length(twosamples$sample2) > 30) {
-        openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
         vis_sample_fact <- two_sample_t_test(
           samples,
           fact,
@@ -314,7 +316,7 @@ visstat_core <- function(dataframe,
         } else {
           filename <- plotName
         }
-        plot_paths <- c(plot_paths, saveGraphVisstat(filename, type = graphicsoutput, fileDirectory = plotDirectory))
+        plot_paths <- c(plot_paths, saveGraphVisstat(filename, type = graphicsoutput, fileDirectory = plotDirectory,,capture_env = capture_env))
       }
       # 2. If assumptions of t-test are not met: Wilcoxon, else t-test
       else if (!exists("p1") |
@@ -331,7 +333,7 @@ visstat_core <- function(dataframe,
                })) {
         # case 1: Wilcoxon-Test:
         # normal distribution not given for n<limit
-        openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
         
         vis_sample_fact <- two_sample_wilcoxon_test(
           samples,
@@ -360,9 +362,9 @@ visstat_core <- function(dataframe,
         
         plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                          type = graphicsoutput,
-                         fileDirectory = plotDirectory))
+                         fileDirectory = plotDirectory,capture_env = capture_env))
       } else {
-        openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
         
         vis_sample_fact <- two_sample_t_test(
           samples,
@@ -384,7 +386,7 @@ visstat_core <- function(dataframe,
         
         plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                          type = graphicsoutput,
-                         fileDirectory = plotDirectory))
+                         fileDirectory = plotDirectory,capture_env = capture_env))
       }
       
       # attr(vis_sample_fact, "plot_paths") <- plot_paths
@@ -405,7 +407,7 @@ visstat_core <- function(dataframe,
         makeTable(samples, fact, name_of_sample, name_of_factor)
     } else {
       # Chi^2 Test-----
-      openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+   openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
       
       vis_chi <-
         vis_chi_squared_test(samples, fact, name_of_sample, "groups")
@@ -421,7 +423,7 @@ visstat_core <- function(dataframe,
       
       plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                        type = graphicsoutput,
-                       fileDirectory = plotDirectory))
+                       fileDirectory = plotDirectory,capture_env = capture_env))
       # Mosaic plots -----
       # a) complete labeled mosaic graph
       
@@ -431,7 +433,7 @@ visstat_core <- function(dataframe,
         numberflag <- T
       }
       
-      openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+   openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
       
       vis_mosaic_res <- vis_mosaic(
         samples,
@@ -456,13 +458,13 @@ visstat_core <- function(dataframe,
       
       
       
-      plot_paths <- c(plot_paths, saveGraphVisstat(filename, type = graphicsoutput, fileDirectory = plotDirectory))
+      plot_paths <- c(plot_paths, saveGraphVisstat(filename, type = graphicsoutput, fileDirectory = plotDirectory,capture_env = capture_env))
       
       # b) reduced plots if number of of levels>7
       # Display only categories with at least minpercent of entries
       
       if (maxlabels > 7) {
-        openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
         
         vis_mosaic_res <- vis_mosaic(
           samples,
@@ -481,7 +483,7 @@ visstat_core <- function(dataframe,
             sep = ""
           )),
           type = graphicsoutput,
-          fileDirectory = plotDirectory
+          fileDirectory = plotDirectory,capture_env = capture_env
         )
       }
       
@@ -502,7 +504,7 @@ visstat_core <- function(dataframe,
     normality_residual_assumptioon <-
       vis_normality_assumptions(samples, fact, conf.level = conf.level)
     
-    openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+ openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
     
     vis_sample_fact <- vis_regression(
       samples,
@@ -525,7 +527,7 @@ visstat_core <- function(dataframe,
     
     plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                      type = graphicsoutput,
-                     fileDirectory = plotDirectory))
+                     fileDirectory = plotDirectory,capture_env = capture_env))
   }
   
   # D) more than two comparisons-----
@@ -550,7 +552,7 @@ visstat_core <- function(dataframe,
     if (visanova$shapiro_test$p.value > alpha 
 #        |visanova$ad_test$p.value > alpha)  #only demand that shapiro wilk is non -signifcant
        ) {
-      openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+   openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
       
       vis_sample_fact <- vis_anova(
         samples,
@@ -571,15 +573,15 @@ visstat_core <- function(dataframe,
       
       plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                        type = graphicsoutput,
-                       fileDirectory = plotDirectory))
+                       fileDirectory = plotDirectory,capture_env = capture_env))
       
       
       
       
       # if p -values of both Shapiro-Wilk and Kruskall-Wallis-Test are smaller than 0.05, Kruskall-Wallis-Test
     } else {
-      openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-      
+     
+    openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
       vis_sample_fact <- vis_Kruskal_Wallis_clusters(
         samples,
         fact,
@@ -600,7 +602,7 @@ visstat_core <- function(dataframe,
       
       plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                        type = graphicsoutput,
-                       fileDirectory = plotDirectory))
+                       fileDirectory = plotDirectory,capture_env = capture_env))
     }
   }
   
@@ -608,6 +610,7 @@ visstat_core <- function(dataframe,
   
   # At the very end:
   attr(vis_sample_fact, "plot_paths") <- plot_paths
+  attr(vis_sample_fact, "captured_plots") <- capture_env$captured_plots
   class(vis_sample_fact) <- "visstat"
   
   return(invisible(vis_sample_fact))
