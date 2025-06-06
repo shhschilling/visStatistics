@@ -1,5 +1,3 @@
-
-
 #' Print method for visstat objects
 #'
 #' Displays a brief summary of the statistical test results and, if available, 
@@ -69,20 +67,20 @@ summary.visstat <- function(object, ...) {
     }
   }
   
-  # Filter and print non-empty, non-standard attributes
-  attrs <- attributes(object)[setdiff(names(attributes(object)), c("names", "class"))]
-  non_empty_attrs <- attrs[!vapply(attrs, function(x)
-    is.null(x) ||
-      (is.atomic(x) && length(x) == 0) ||
-      (is.list(x) && length(x) == 0),
-    logical(1)
-  )]
-  
-  if (length(non_empty_attrs) > 0) {
-    cat("\n--- Attributes ---\n")
-    print(non_empty_attrs)
-  }
-  
+  # # Filter and print non-empty, non-standard attributes
+  # attrs <- attributes(object)[setdiff(names(attributes(object)), c("names", "class"))]
+  # non_empty_attrs <- attrs[!vapply(attrs, function(x)
+  #   is.null(x) ||
+  #     (is.atomic(x) && length(x) == 0) ||
+  #     (is.list(x) && length(x) == 0),
+  #   logical(1)
+  # )]
+  # 
+  # if (length(non_empty_attrs) > 0) {
+  #   cat("\n--- Attributes ---\n")
+  #   print(non_empty_attrs)
+  # }
+  # 
   invisible(object)
 }
 
@@ -102,8 +100,8 @@ summary.visstat <- function(object, ...) {
 #' Preserves all existing functionality while adding plot replay capability.
 #'
 #' @param x An object of class \code{"visstat"}, returned by \code{visstat()}.
-#' @param replay Logical. If TRUE, attempts to replay captured plots. 
-#'   If FALSE (default), reports file paths (existing behavior).
+#' @param replay Logical. If TRUE (default), attempts to replay captured plots. 
+#'   If FALSE, reports file paths.
 #' @param which Integer vector specifying which plots to display (by index).
 #'   If NULL (default), all plots are considered.
 #' @param ask Logical. If TRUE and multiple plots exist, asks user before 
@@ -114,7 +112,7 @@ summary.visstat <- function(object, ...) {
 #'   plots or reporting file paths.
 #' @method plot visstat
 #' @export
-plot.visstat <- function(x, replay = FALSE, which = NULL, ask = FALSE, ...) {
+plot.visstat <- function(x, replay = TRUE, which = NULL, ask = FALSE, ...) {
   
   paths <- attr(x, "plot_paths")
   captured_plots <- attr(x, "captured_plots")
@@ -156,7 +154,8 @@ plot.visstat <- function(x, replay = FALSE, which = NULL, ask = FALSE, ...) {
     message("This may occur when plots were saved to files or capture failed.")
     
     if (!is.null(paths) && length(paths) > 0) {
-      message("\nSaved plot files are available:")
+      message("\nSaved plot files are available.")
+      message(" Set the replay parameter to FALSE to displays the  path to the saved plots.")
       for (i in seq_along(paths)) {
         exists_status <- if (file.exists(paths[i])) "" else 
           message("  [", i, "] ", exists_status, " ", paths[i])
