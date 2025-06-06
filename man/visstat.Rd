@@ -35,7 +35,12 @@ an additional character string must follow, naming the second column.}
 
 \item{graphicsoutput}{Optional. Output format for plots (e.g., \code{"pdf"}, \code{"png"}).}
 
-\item{plotName}{Optional. File name prefix for saving plot output.}
+\item{plotName}{Optional. File name prefix for saving plot output. By default, 
+it follows the pattern \code{"testname_namey_namex."}, 
+where \code{"testname"} specifies the selected test and \code{"namey"} and \code{"namex"} 
+are character strings naming the selected data vectors \code{y} and \code{x}, respectively.
+The suffix corresponding to the chosen \code{graphicsoutput} is then concatenated to
+form the complete figure file name.}
 
 \item{plotDirectory}{Directory in which to save plots; defaults to the current working directory.}
 }

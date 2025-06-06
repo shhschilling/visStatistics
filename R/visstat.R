@@ -15,7 +15,13 @@
 #' @param numbers Logical. Whether to annotate plots with numeric values.
 #' @param minpercent Minimum proportion (between 0 and 1) required to display a category in plots.
 #' @param graphicsoutput Optional. Output format for plots (e.g., \code{"pdf"}, \code{"png"}).
-#' @param plotName Optional. File name prefix for saving plot output.
+#' @param plotName Optional. File name prefix for saving plot output. By default, 
+#'  it follows the pattern \code{"testname_namey_namex."}, 
+#'  where \code{"testname"} specifies the selected test and \code{"namey"} and \code{"namex"} 
+#'  are character strings naming the selected data vectors \code{y} and \code{x}, respectively.
+#'  The suffix corresponding to the chosen \code{graphicsoutput} is then concatenated to
+#'  form the complete figure file name.
+
 #' @param plotDirectory Directory in which to save plots; defaults to the current working directory.
 #'
 #' @details
