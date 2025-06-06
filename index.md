@@ -66,12 +66,12 @@ The function `visstat()` accepts input in two ways:
     visstat(x, y)
 
     # Backward-compatible form:
-    visstat(dataframe, "name_of_y", "name_of_x")
+    visstat(dataframe, "namey", "namex")
 
 In the standardised form, `x` and `y` must be vectors of class
 `"numeric"`, `"integer"`, or `"factor"`.
 
-In the backward-compatible form, `"name_of_x"` and `"name_of_y"` must be
+In the backward-compatible form, `"namex"` and `"namey"` must be
 character strings naming columns in a `data.frame` named `dataframe`.
 These column must be of class `"numeric"`, `"integer"`, or `"factor"`.
 This is equivalent to writing:
@@ -209,23 +209,12 @@ central tendencies are selected.
     #> 
     #> $conf.level:
     #> [1] 0.95
-    #> 
-    #> --- Attributes ---
-    #> $plot_paths
-    #> character(0)
 
 ### Kruskal-Wallis test
 
     kruskal_iris=visstat(iris$Species, iris$Petal.Width)
 
 <img src="man/figures/README-iris-kruskal-1.png" width="100%" /><img src="man/figures/README-iris-kruskal-2.png" width="100%" />
-The generated graphs can be saved in all available formats of the
-`Cairo` package. Here we save the graphical output of type “pdf” in the
-`plotDirectory` `tempdir()`:
-
-    visstat(
-    iris$Species,iris$Petal.Width,graphicsoutput = "pdf",plotDirectory = tempdir()
-    )
 
 ## Numerical response and numerical predictor: Linear Regression
 
@@ -390,6 +379,34 @@ When both variables are categorical, `visstat()` tests the null
 hypothesis of independence using one of the following:-`chisq.test()`
 (default for larger samples) - `fisher.test()` (used for small expected
 cell counts based on Cochran’s rule)
+
+## Saving the graphical output
+
+The generated graphs can be saved in all available formats of the
+`Cairo` package. Here we save the graphical output of type “pdf” in the
+`plotDirectory` `tempdir()`:
+
+    save_kruskal=visstat(
+    iris$Species,iris$Petal.Width,graphicsoutput = "pdf",plotDirectory = tempdir()
+    )
+
+If the optional argument `plotName` is not given, the naming of the
+output follows the pattern `"testname_namey_namex."`, where `"testname"`
+specifies the selected test and `"namey"` and `"namex"` are character
+strings naming the selected data vectors `y` and `x`, respectively. The
+suffix corresponding to the chosen `graphicsoutput` (e.g., `"pdf"`,
+`"png"`) is then concatenated to form the complete output file name. The
+full file path of the generated graphic is stored as the attribute
+`"plot_paths"` on the returned object of class `visstat`.
+
+    paths <- attr(save_kruskal, "plot_paths")
+    print(paths)
+    #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpIi2y7g/kruskal_Petal_Width_Species.pdf"
+
+Remove the graphical output from `plotDirectory`:
+
+    file.remove(paths)
+    #> [1] TRUE
 
 ## References
 

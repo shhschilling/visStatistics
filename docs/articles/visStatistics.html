@@ -109,9 +109,9 @@ This scripted workflow is particularly suited for browser-based interfaces that 
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Backward-compatible form</span></span>
-<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">dataframe</span>, <span class="st">"name_of_y"</span>, <span class="st">"name_of_x"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">dataframe</span>, <span class="st">"namey"</span>, <span class="st">"namex"</span><span class="op">)</span></span></code></pre></div>
 <p>In the standardised form, <code>x</code> and <code>y</code> must be vectors of class <code>"numeric"</code>, <code>"integer"</code>, or <code>"factor"</code>.</p>
-<p>In the backward-compatible form, <code>"name_of_x"</code> and <code>"name_of_y"</code> must be character strings naming columns in <code>dataframe</code>, which must themselves be of class <code>"numeric"</code>, <code>"integer"</code>, or <code>"factor"</code>.
+<p>In the backward-compatible form, <code>"namex"</code> and <code>"namey"</code> must be character strings naming columns in <code>dataframe</code>, which must themselves be of class <code>"numeric"</code>, <code>"integer"</code>, or <code>"factor"</code>.
 This is equivalent to writing:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">dataframe</span><span class="op">[[</span><span class="st">"name_of_x"</span><span class="op">]</span><span class="op">]</span>, <span class="va">dataframe</span><span class="op">[[</span><span class="st">"name_of_y"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
@@ -737,60 +737,72 @@ Note the higher p-value of Pearson’s <span class="math inline">\({\chi}^2\)</s
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-15-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-15-2.png" width="100%"></p>
 </div>
 </div>
-<div class="section level3" number="7.6">
-<h3 id="saving-the-graphical-output">
-<span class="header-section-number">7.6</span> Saving the graphical output<a class="anchor" aria-label="anchor" href="#saving-the-graphical-output"></a>
-</h3>
-<p>All generated graphics can be saved in any file format supported by <code>Cairo()</code>, including “png”, “jpeg”, “pdf”, “svg”, “ps”, and “tiff” in the user specified <code>plotDirectory</code>.
-In the following example, we store the graphics in <code>png</code> format in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>.
-The file names reflect the statistical test used and the variable names involved.</p>
+</div>
+<div class="section level2" number="8">
+<h2 id="saving-the-graphical-output">
+<span class="header-section-number">8</span> Saving the graphical output<a class="anchor" aria-label="anchor" href="#saving-the-graphical-output"></a>
+</h2>
+<p>All generated graphics can be saved in any file format supported by <code>Cairo()</code>,
+including “png”, “jpeg”, “pdf”, “svg”, “ps”, and “tiff” in the user specified <code>plotDirectory</code>.</p>
+<p>If the optional argument <code>plotName</code> is not given, the naming of the output
+follows the pattern <code>"testname_namey_namex."</code>, where <code>"testname"</code> specifies
+the selected test and <code>"namey"</code> and <code>"namex"</code> are character strings naming the
+selected data vectors <code>y</code> and <code>x</code>, respectively. The suffix corresponding to
+the chosen <code>graphicsoutput</code> (e.g., <code>"pdf"</code>, <code>"png"</code>) is then concatenated to
+form the complete output file name.</p>
+<p>In the following example, we store the graphics in <code>png</code> format in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> with the default naming convention:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Graphical output written to plotDirectory: In this example </span></span>
 <span><span class="co"># a bar chart to visualise the Chi-squared test and mosaic plot showing</span></span>
 <span><span class="co"># Pearson's residuals.</span></span>
 <span><span class="co">#chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png</span></span>
-<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
+<span><span class="va">save_fisher</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
 <span>        graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Remove the graphical output from <code>plotDirectory</code>:</p>
+<p>The full file path of the generated graphicw qre stored as the attribute
+<code>"plot_paths"</code> on the returned object of class <code>"visstat"</code>.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"chi_squared_or_fisher_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"mosaic_complete_Hair_Eye.png"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpfFGUsN/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span><span class="co">#&gt; [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpfFGUsN/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
+<p>Remove the graphical output from <code>plotDirectory</code>:</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
 </div>
-</div>
-<div class="section level2" number="8">
+<div class="section level2" number="9">
 <h2 id="limitations">
-<span class="header-section-number">8</span> Limitations<a class="anchor" aria-label="anchor" href="#limitations"></a>
+<span class="header-section-number">9</span> Limitations<a class="anchor" aria-label="anchor" href="#limitations"></a>
 </h2>
 <p>The main purpose of this package is a decision-logic based automatic visualisation of statistical test results.
 Therefore, except for the user-adjustable <code>conf.level</code> parameter, all statistical tests are applied using their default settings from the corresponding base R functions.
 As a consequence, paired tests are currently not supported and <code><a href="../reference/visstat.html">visstat()</a></code> does not allow to study interactions terms between the different levels of an independent variable in an analysis of variance.
 Focusing on the graphical representation of tests, only simple linear regression is implemented, as multiple linear regressions cannot be visualised.</p>
 </div>
-<div class="section level2" number="9">
+<div class="section level2" number="10">
 <h2 id="implemented-tests">
-<span class="header-section-number">9</span> Implemented tests<a class="anchor" aria-label="anchor" href="#implemented-tests"></a>
+<span class="header-section-number">10</span> Implemented tests<a class="anchor" aria-label="anchor" href="#implemented-tests"></a>
 </h2>
-<div class="section level3" number="9.1">
+<div class="section level3" number="10.1">
 <h3 id="numeric-response-and-categorical-predictor-2">
-<span class="header-section-number">9.1</span> Numeric response and categorical predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor-2"></a>
+<span class="header-section-number">10.1</span> Numeric response and categorical predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor-2"></a>
 </h3>
 <p>When the response is numeric and the predictor is categorical, test of central tendencies are selected:</p>
 <p><code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>, <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>, <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>,<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code></p>
-<div class="section level4" number="9.1.1">
+<div class="section level4" number="10.1.1">
 <h4 id="normality-assumption-check">
-<span class="header-section-number">9.1.1</span> Normality assumption check<a class="anchor" aria-label="anchor" href="#normality-assumption-check"></a>
+<span class="header-section-number">10.1.1</span> Normality assumption check<a class="anchor" aria-label="anchor" href="#normality-assumption-check"></a>
 </h4>
 <p><code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and <code>ad.test()</code></p>
 </div>
-<div class="section level4" number="9.1.2">
+<div class="section level4" number="10.1.2">
 <h4 id="homoscedasticity-assumption-check">
-<span class="header-section-number">9.1.2</span> Homoscedasticity assumption check<a class="anchor" aria-label="anchor" href="#homoscedasticity-assumption-check"></a>
+<span class="header-section-number">10.1.2</span> Homoscedasticity assumption check<a class="anchor" aria-label="anchor" href="#homoscedasticity-assumption-check"></a>
 </h4>
 <p><code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code></p>
 </div>
-<div class="section level4" number="9.1.3">
+<div class="section level4" number="10.1.3">
 <h4 id="post-hoc-tests">
-<span class="header-section-number">9.1.3</span> Post-hoc tests<a class="anchor" aria-label="anchor" href="#post-hoc-tests"></a>
+<span class="header-section-number">10.1.3</span> Post-hoc tests<a class="anchor" aria-label="anchor" href="#post-hoc-tests"></a>
 </h4>
 <ul>
 <li>
@@ -800,16 +812,16 @@ Focusing on the graphical representation of tests, only simple linear regression
 </ul>
 </div>
 </div>
-<div class="section level3" number="9.2">
+<div class="section level3" number="10.2">
 <h3 id="numeric-response-and-numeric-predictor-2">
-<span class="header-section-number">9.2</span> Numeric response and numeric predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-numeric-predictor-2"></a>
+<span class="header-section-number">10.2</span> Numeric response and numeric predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-numeric-predictor-2"></a>
 </h3>
 <p>When both the response and predictor are numeric, a simple linear regression model is fitted:</p>
 <p><code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p>
 </div>
-<div class="section level3" number="9.3">
+<div class="section level3" number="10.3">
 <h3 id="both-variables-categorical-2">
-<span class="header-section-number">9.3</span> Both variables categorical<a class="anchor" aria-label="anchor" href="#both-variables-categorical-2"></a>
+<span class="header-section-number">10.3</span> Both variables categorical<a class="anchor" aria-label="anchor" href="#both-variables-categorical-2"></a>
 </h3>
 <p>When both variables are categorical, <code><a href="../reference/visstat.html">visstat()</a></code> tests the null hypothesis of independence using one of the following:</p>
 <ul>

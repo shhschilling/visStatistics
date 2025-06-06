@@ -1,3 +1,17 @@
+.print_nonempty_attributes <- function(obj) {
+  attrs <- attributes(obj)[setdiff(names(attributes(obj)), c("names", "class"))]
+  non_empty <- attrs[!vapply(attrs, function(a)
+    is.null(a) ||
+    (is.atomic(a) && length(a) == 0) ||
+    (is.list(a) && length(a) == 0),
+    logical(1)
+  )]
+  if (length(non_empty) > 0) {
+    cat("\n--- Attributes ---\n")
+    print(non_empty)
+  }
+}
+
 
 #' Print method for visstat objects
 #'

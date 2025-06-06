@@ -239,6 +239,46 @@ black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_
 fisher_stats <- visstat(black_brown_hazel_green_male$Eye,black_brown_hazel_green_male$Hair)
 ```
 
+
+
+#  Saving the graphical output
+
+All generated graphics can be saved in any file format supported by `Cairo()`, 
+including "png", "jpeg", "pdf", "svg", "ps", and "tiff" in the user specified `plotDirectory`.
+
+
+If the optional argument `plotName` is not given, the naming of the output
+follows the pattern `"testname_namey_namex."`, where `"testname"` specifies
+the selected test or visualisation and `"namey"` and `"namex"` are character strings naming the
+selected data vectors `y` and `x`, respectively. The suffix corresponding to
+the chosen `graphicsoutput` (e.g., `"pdf"`, `"png"`) is then concatenated to
+form the complete output file name.
+
+In the following example, we store the graphics in `png` format in the `plotDirectory` `tempdir()` with the default naming convention: 
+
+```{r}
+#Graphical output written to plotDirectory: In this example 
+# a bar chart to visualise the Chi-squared test and mosaic plot showing
+# Pearson's residuals named 
+#chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png resp. 
+save_fisher=visstat(black_brown_hazel_green_male, "Hair", "Eye",
+        graphicsoutput = "png", plotDirectory = tempdir())
+```
+
+The full file path of the generated graphicw qre stored as the attribute
+`"plot_paths"` on the returned object of class `"visstat"`.
+
+```{r show-path2}
+paths <- attr(save_fisher, "plot_paths")
+print(paths)
+```
+Remove the graphical output from `plotDirectory`:
+
+```{r, eval=TRUE}
+file.remove(paths)
+```
+
+
 # Decision logic
 
 
@@ -334,36 +374,7 @@ hypothesis of independence using one of the following:-`chisq.test()` (default f
 Cochran's rule)
 
 
-## Saving the graphical output
 
-The generated graphs can be saved in all available formats of the
-`Cairo` package. Here we save the graphical output of type "pdf" in the
-`plotDirectory` `tempdir()`:
-
-```{r graphical-output}
-save_kruskal=visstat(
-iris$Species,iris$Petal.Width,graphicsoutput = "pdf",plotDirectory = tempdir()
-)
-```
-If the optional argument `plotName` is not given, the naming of the output
-follows the pattern `"testname_namey_namex."`, where `"testname"` specifies
-the selected test and `"namey"` and `"namex"` are character strings naming the
-selected data vectors `y` and `x`, respectively. The suffix corresponding to
-the chosen `graphicsoutput` (e.g., `"pdf"`, `"png"`) is then concatenated to
-form the complete output file name.
-The full file path of the generated graphic is stored as the attribute
-`"plot_paths"` on the returned object of class `"visstat"`.
-
-```{r show-path}
-paths <- attr(save_kruskal, "plot_paths")
-print(paths)
-```
-
-Remove the graphical output from `plotDirectory`:
-
-```{r, eval=TRUE}
-file.remove(paths)
-```
 
 ## References
 
