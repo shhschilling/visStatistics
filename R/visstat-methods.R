@@ -63,8 +63,26 @@ summary.visstat <- function(object, ...) {
     print(object[[name]])
   }
   
-  cat("\n--- Attributes ---\n")
-  print(attributes(object)[setdiff(names(attributes(object)), c("names", "class"))])
+  # cat("\n--- Attributes ---\n")
+  # print(attributes(object)[setdiff(names(attributes(object)), c("names", "class"))])
+  # 
+  
+  attrs <- attributes(object)[setdiff(names(attributes(object)), c("names", "class"))]
+  
+  # Filter out empty or uninformative attributes
+  non_empty_attrs <- attrs[!vapply(attrs, function(x)
+    is.null(x) ||
+      (is.atomic(x) && length(x) == 0) ||
+      (is.list(x) && length(x) == 0),
+    logical(1)
+  )]
+  
+  if (length(non_empty_attrs) > 0) {
+    cat("\n--- Attributes ---\n")
+    print(non_empty_attrs)
+  }
+  
+  
   
   invisible(object)
 }

@@ -84,12 +84,12 @@ The function `visstat()` accepts input in two ways:
 visstat(x, y)
 
 # Backward-compatible form
-visstat(dataframe, "name_of_y", "name_of_x")
+visstat(dataframe, "namey", "namex")
 ```
 
 In the standardised form, `x` and `y` must be vectors of class `"numeric"`, `"integer"`, or `"factor"`.
 
-In the backward-compatible form, `"name_of_x"` and `"name_of_y"` must be character strings naming columns in `dataframe`, which must themselves be of class `"numeric"`, `"integer"`, or `"factor"`.
+In the backward-compatible form, `"namex"` and `"namey"` must be character strings naming columns in `dataframe`, which must themselves be of class `"numeric"`, `"integer"`, or `"factor"`.
 This is equivalent to writing:
 
 ``` r
@@ -781,26 +781,41 @@ black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_
 fisher_stats <- visstat(black_brown_hazel_green_male$Eye, black_brown_hazel_green_male$Hair)
 ```
 
-## Saving the graphical output
+#  Saving the graphical output
 
-All generated graphics can be saved in any file format supported by `Cairo()`, including "png", "jpeg", "pdf", "svg", "ps", and "tiff" in the user specified `plotDirectory`.
-In the following example, we store the graphics in `png` format in the `plotDirectory` `tempdir()`.
-The file names reflect the statistical test used and the variable names involved.
+All generated graphics can be saved in any file format supported by `Cairo()`, 
+including "png", "jpeg", "pdf", "svg", "ps", and "tiff" in the user specified `plotDirectory`.
+
+
+If the optional argument `plotName` is not given, the naming of the output
+follows the pattern `"testname_namey_namex."`, where `"testname"` specifies
+the selected test and `"namey"` and `"namex"` are character strings naming the
+selected data vectors `y` and `x`, respectively. The suffix corresponding to
+the chosen `graphicsoutput` (e.g., `"pdf"`, `"png"`) is then concatenated to
+form the complete output file name.
+
+In the following example, we store the graphics in `png` format in the `plotDirectory` `tempdir()` with the default naming convention: 
 
 ```{r}
 #Graphical output written to plotDirectory: In this example 
 # a bar chart to visualise the Chi-squared test and mosaic plot showing
 # Pearson's residuals.
 #chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png
-visstat(black_brown_hazel_green_male, "Hair", "Eye",
+save_fisher=visstat(black_brown_hazel_green_male, "Hair", "Eye",
         graphicsoutput = "png", plotDirectory = tempdir())
 ```
 
+The full file path of the generated graphicw qre stored as the attribute
+`"plot_paths"` on the returned object of class `"visstat"`.
+
+```{r show-path}
+paths <- attr(save_fisher, "plot_paths")
+print(paths)
+```
 Remove the graphical output from `plotDirectory`:
 
 ```{r, eval=FALSE}
-file.remove(file.path(tempdir(), "chi_squared_or_fisher_Hair_Eye.png"))
-file.remove(file.path(tempdir(), "mosaic_complete_Hair_Eye.png"))
+file.remove(paths)
 ```
 
 # Limitations
