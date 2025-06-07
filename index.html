@@ -113,7 +113,7 @@
 <span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="fu">visstat</span>(dataframe, <span class="st">"namey"</span>, <span class="st">"namex"</span>)</span></code></pre></div>
 <p>In the standardised form, <code>x</code> and <code>y</code> must be vectors of class <code>"numeric"</code>, <code>"integer"</code>, or <code>"factor"</code>.</p>
 <p>In the backward-compatible form, <code>"namex"</code> and <code>"namey"</code> must be character strings naming columns in a <code>data.frame</code> named <code>dataframe</code>. These column must be of class <code>"numeric"</code>, <code>"integer"</code>, or <code>"factor"</code>. This is equivalent to writing:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">visstat</span>(dataframe[[<span class="st">"name_of_x"</span>]], dataframe[[<span class="st">"name_of_y"</span>]])</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">visstat</span>(dataframe[[<span class="st">"namex"</span>]], dataframe[[<span class="st">"namey"</span>]])</span></code></pre></div>
 <p>To simplify the notation, throughout the remainder, data of class <code>numeric</code> or <code>integer</code> are both referred to by their common <code>mode</code> <strong><code>numeric</code></strong>, while data of class <code>factor</code> are referred to as <strong><code>categorical</code></strong>.</p>
 <p>The interpretation of <code>x</code> and <code>y</code> depends on their classes:</p>
 <ul>
@@ -271,16 +271,37 @@
 </div>
 </div>
 <div class="section level1">
+<h1 id="saving-the-graphical-output">Saving the graphical output<a class="anchor" aria-label="anchor" href="#saving-the-graphical-output"></a>
+</h1>
+<p>All generated graphics can be saved in any file format supported by <code>Cairo()</code>, including “png”, “jpeg”, “pdf”, “svg”, “ps”, and “tiff” in the user specified <code>plotDirectory</code>.</p>
+<p>If the optional argument <code>plotName</code> is not given, the naming of the output follows the pattern <code>"testname_namey_namex."</code>, where <code>"testname"</code> specifies the selected test or visualisation and <code>"namey"</code> and <code>"namex"</code> are character strings naming the selected data vectors <code>y</code> and <code>x</code>, respectively. The suffix corresponding to the chosen <code>graphicsoutput</code> (e.g., <code>"pdf"</code>, <code>"png"</code>) is then concatenated to form the complete output file name.</p>
+<p>In the following example, we store the graphics in <code>png</code> format in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> with the default naming convention:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co">#Graphical output written to plotDirectory: In this example </span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="co"># a bar chart to visualise the Chi-squared test and mosaic plot showing</span></span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a><span class="co"># Pearson's residuals named </span></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a><span class="co">#chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png resp. </span></span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>save_fisher<span class="ot">=</span><span class="fu">visstat</span>(black_brown_hazel_green_male, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>        <span class="at">graphicsoutput =</span> <span class="st">"png"</span>, <span class="at">plotDirectory =</span> <span class="fu">tempdir</span>())</span></code></pre></div>
+<p>The full file path of the generated graphics are stored as the attribute <code>"plot_paths"</code> on the returned object of class <code>"visstat"</code>.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">attr</span>(save_fisher, <span class="st">"plot_paths"</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="fu">print</span>(paths)</span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a><span class="co">#&gt; [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpPXM1z1/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a><span class="co">#&gt; [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpPXM1z1/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
+<p>Remove the graphical output from <code>plotDirectory</code>:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">file.remove</span>(paths)</span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="co">#&gt; [1] TRUE TRUE</span></span></code></pre></div>
+</div>
+<div class="section level1">
 <h1 id="decision-logic">Decision logic<a class="anchor" aria-label="anchor" href="#decision-logic"></a>
 </h1>
-<p>The choice of statistical tests depends on whether the data of the selected columns are numeric or categorical, the number of levels in the categorical variable, and the distribution of the data. The function prioritizes interpretable visual output and tests that remain valid under the the following decision logic:</p>
+<p>The choice of statistical tests depends on whether the data of the selected columns are numeric or categorical, the number of levels in the categorical variable, and the distribution of the data. The function prioritizes interpretable visual output and tests that remain valid under the decision logic given below. The rationale for the test choices are given in the packages’ <code>vignette</code>.</p>
 <div class="section level2">
 <h2 id="numerical-response-and-categorical-predictor-1">Numerical response and categorical predictor<a class="anchor" aria-label="anchor" href="#numerical-response-and-categorical-predictor-1"></a>
 </h2>
 <p>When the response is numeric and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.</p>
 <ul>
-<li><p>If the categorical predictor has exactly two levels, Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) is applied when both groups contain more than 30 observations. This heuristic is based on the central limit theorem, which ensures approximate normality of the sampling distribution of the mean [@Rasch:2011; @Lumley:2002]. For smaller samples, group - wise normality is assessed using the Shapiro - Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) at the significance level <em>α</em> [@Razali:2011; @Ghasemi:2012]. If both groups are found to be approximately normally distributed according to the Shapiro - Wilk test, Welch’s t-test is applied; otherwise, the Wilcoxon rank-sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is used.</p></li>
-<li><p>For predictors with more than two levels, an ANOVA model (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) is initially fitted. The normality of residuals is evaluated using both the Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson–Darling test (<code>ad.test()</code>); the algorithm considers residuals approximately normal if the Shapiro–Wilk test yields a result exceeding the significance threshold <em>α</em> [@Razali:2011]: <!-- if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.  --> If this condition is met, Bartlett’s test (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>) is then used to assess homoscedasticity. When variances are homogeneous (<em>p</em> &gt; <em>α</em>), ANOVA is applied with Tukey’s HSD (<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>) for post-hoc comparison. If variances differ significantly (<em>p</em> ≤ <em>α</em>), Welch’s one - way test (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) is used, also followed by Tukey’s HSD. If residuals are not normally distributed according to both tests (<em>p</em> ≤ <em>α</em>), the Kruskal-Wallis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is selected, followed by pairwise Wilcoxon tests (<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>).</p></li>
+<li><p>If the categorical predictor has exactly two levels, Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) is applied when both groups contain more than 30 observations. This heuristic is based on the central limit theorem, which ensures approximate normality of the sampling distribution of the mean (Rasch, Kubinger, and Moder 2011; Lumley et al. 2002). For smaller samples, group - wise normality is assessed using the Shapiro - Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) at the significance level <em>α</em> (Razali and Wah 2011; Ghasemi and Zahediasl 2012). If both groups are found to be approximately normally distributed according to the Shapiro - Wilk test, Welch’s t-test is applied; otherwise, the Wilcoxon rank-sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is used.</p></li>
+<li><p>For predictors with more than two levels, an ANOVA model (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) is initially fitted. The normality of residuals is evaluated using both the Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson–Darling test (<code>ad.test()</code>); the algorithm considers residuals approximately normal if the Shapiro–Wilk test yields a result exceeding the significance threshold <em>α</em> (Razali and Wah 2011): <!-- if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.  --> If this condition is met, Bartlett’s test (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>) is then used to assess homoscedasticity. When variances are homogeneous (<em>p</em> &gt; <em>α</em>), ANOVA is applied with Tukey’s HSD (<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>) for post-hoc comparison. If variances differ significantly (<em>p</em> ≤ <em>α</em>), Welch’s one - way test (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) is used, also followed by Tukey’s HSD. If residuals are not normally distributed according to both tests (<em>p</em> ≤ <em>α</em>), the Kruskal-Wallis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is selected, followed by pairwise Wilcoxon tests (<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>).</p></li>
 </ul>
 <p>A graphical overview of the decision logic used is provided in below figure.</p>
 <p><img src="reference/figures/decision_tree.png" width="100%" alt="Decision tree used to select the appropriate statistical test."></p>
@@ -296,9 +317,9 @@ Decision tree used to select the appropriate statistical test for a categorical 
 <div class="section level2">
 <h2 id="both-variables-categorical-1">Both variables categorical<a class="anchor" aria-label="anchor" href="#both-variables-categorical-1"></a>
 </h2>
-<p>When both variables are categorical, <code><a href="reference/visstat.html">visstat()</a></code> tests the null hypothesis that both variables are independent using either <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code> or <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>. The choice of test is based on Cochran’s rule [@Cochran:1954], which advises that the<em>χ</em><sup>2</sup>approximation is reliable only if no expected cell count is zero and no more than 20 percent of cells have expected counts below 5.</p>
+<p>When both variables are categorical, <code><a href="reference/visstat.html">visstat()</a></code> tests the null hypothesis that both variables are independent using either <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code> or <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>. The choice of test is based on Cochran’s rule (Cochran 1954), which advises that the<em>χ</em><sup>2</sup>approximation is reliable only if no expected cell count is zero and no more than 20 percent of cells have expected counts below 5.</p>
 <p>For a more detailed description of the underlying decision logic see</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">vignette</span>(<span class="st">"visStatistics"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">vignette</span>(<span class="st">"visStatistics"</span>)</span></code></pre></div>
 </div>
 </div>
 <div class="section level1">
@@ -344,34 +365,22 @@ Decision tree used to select the appropriate statistical test for a categorical 
 </div>
 </div>
 <div class="section level2">
-<h2 id="saving-the-graphical-output">Saving the graphical output<a class="anchor" aria-label="anchor" href="#saving-the-graphical-output"></a>
-</h2>
-<p>The generated graphs can be saved in all available formats of the <code>Cairo</code> package. Here we save the graphical output of type “pdf” in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>save_kruskal<span class="ot">=</span><span class="fu">visstat</span>(</span>
-<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>iris<span class="sc">$</span>Species,iris<span class="sc">$</span>Petal.Width,<span class="at">graphicsoutput =</span> <span class="st">"pdf"</span>,<span class="at">plotDirectory =</span> <span class="fu">tempdir</span>()</span>
-<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>)</span></code></pre></div>
-<p>If the optional argument <code>plotName</code> is not given, the naming of the output follows the pattern <code>"testname_namey_namex."</code>, where <code>"testname"</code> specifies the selected test and <code>"namey"</code> and <code>"namex"</code> are character strings naming the selected data vectors <code>y</code> and <code>x</code>, respectively. The suffix corresponding to the chosen <code>graphicsoutput</code> (e.g., <code>"pdf"</code>, <code>"png"</code>) is then concatenated to form the complete output file name. The full file path of the generated graphic is stored as the attribute <code>"plot_paths"</code> on the returned object of class <code>visstat</code>.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">attr</span>(save_kruskal, <span class="st">"plot_paths"</span>)</span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="fu">print</span>(paths)</span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="co">#&gt; [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpIi2y7g/kruskal_Petal_Width_Species.pdf"</span></span></code></pre></div>
-<p>Remove the graphical output from <code>plotDirectory</code>:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">file.remove</span>(paths)</span>
-<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-</div>
-<div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<ul>
-<li><p>Rasch, D., Kubinger, K. D., &amp; Moder, K. (2011). <em>The two-sample t test: pre-testing<br>
-its assumptions does not pay off</em>. <em>Methods of Information in Medicine</em>, 50(4),<br>
-419–426.</p></li>
-<li><p>Lumley, T., Diehr, P., Emerson, S., &amp; Chen, L. (2002). <em>The importance of the<br>
-normality assumption in large public health data sets</em>. <em>Annual Review of Public<br>
-Health</em>, 23, 151–169.</p></li>
-<li><p>Cochran, W. G. (1954). <em>Some methods for strengthening the common chi-squared<br>
-tests</em>. <em>Biometrics</em>, 10(4), 417–451.</p></li>
-</ul>
+<!-- - Rasch, D., Kubinger, K. D., & Moder, K. (2011). *The two-sample t test: pre-testing   -->
+<!--   its assumptions does not pay off*. _Methods of Information in Medicine_, 50(4),   -->
+<!--   419–426. -->
+<!-- - Lumley, T., Diehr, P., Emerson, S., & Chen, L. (2002). *The importance of the   -->
+<!--   normality assumption in large public health data sets*. _Annual Review of Public   -->
+<!--   Health_, 23, 151–169. -->
+<!-- - Cochran, W. G. (1954). *Some methods for strengthening the common chi-squared   -->
+<!--   tests*. _Biometrics_, 10(4), 417–451. -->
 <!-- pkgdown::end -->
+<p>Cochran, William G. 1954. “The Combination of Estimates from Different Experiments.” <em>Biometrics</em> 10 (1): 101. <a href="https://doi.org/10.2307/3001666" class="external-link uri">https://doi.org/10.2307/3001666</a>.</p>
+<p>Ghasemi, Asghar, and Saleh Zahediasl. 2012. “Normality Tests for Statistical Analysis: A Guide for Non-Statisticians.” <em>Int J Endocrinol Metab</em> 10 (2): 486–89. <a href="https://doi.org/10.5812/ijem.3505" class="external-link uri">https://doi.org/10.5812/ijem.3505</a>.</p>
+<p>Lumley, Thomas, Paula Diehr, Scott Emerson, and Lu Chen. 2002. “The Importance of the Normality Assumption in Large Public Health Data Sets.” <em>Annu. Rev. Public Health</em> 23 (1): 151–69. <a href="https://doi.org/10.1146/annurev.publhealth.23.100901.140546" class="external-link uri">https://doi.org/10.1146/annurev.publhealth.23.100901.140546</a>.</p>
+<p>Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. “The Two-Sample t Test: Pre-Testing Its Assumptions Does Not Pay Off.” <em>Stat Papers</em> 52 (1): 219–31. <a href="https://doi.org/10.1007/s00362-009-0224-x" class="external-link uri">https://doi.org/10.1007/s00362-009-0224-x</a>.</p>
+<p>Razali, Nornadiah Mohd, and Yap Bee Wah. 2011. “Power Comparisons of Shapiro-Wilk, Kolmogorov-Smirnov, Lilliefors and Anderson-Darling Tests.” <em>Journal of Statistical Modeling and Analytics</em> 2 (1): 21–33.</p>
 </div>
 </div>
 
