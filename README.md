@@ -1,5 +1,4 @@
 <!-- pkgdown::start -->
-<!-- pkgdown::start -->
 
 # visStatistics: The right test, visualised.
 
@@ -55,6 +54,10 @@ settings.
 
     ? visstat
 
+#### 6. Study all the details in the packages’ vignette:
+
+    vignette("visStatistics")
+
 # Getting Started
 
 The function `visstat()` accepts input in two ways:
@@ -63,17 +66,17 @@ The function `visstat()` accepts input in two ways:
     visstat(x, y)
 
     # Backward-compatible form:
-    visstat(dataframe, "name_of_y", "name_of_x")
+    visstat(dataframe, "namey", "namex")
 
 In the standardised form, `x` and `y` must be vectors of class
 `"numeric"`, `"integer"`, or `"factor"`.
 
-In the backward-compatible form, `"name_of_x"` and `"name_of_y"` must be
+In the backward-compatible form, `"namex"` and `"namey"` must be
 character strings naming columns in a `data.frame` named `dataframe`.
 These column must be of class `"numeric"`, `"integer"`, or `"factor"`.
 This is equivalent to writing:
 
-    visstat(dataframe[["name_of_x"]], dataframe[["name_of_y"]])
+    visstat(dataframe[["namex"]], dataframe[["namey"]])
 
 To simplify the notation, throughout the remainder, data of class
 `numeric` or `integer` are both referred to by their common `mode`
@@ -129,7 +132,7 @@ central tendencies are selected.
 
 <img src="man/figures/README-mtcars-1.png" width="100%" />
 
-    # t_test_statistics
+    #summary(t_test_statistics)
 
 ### Wilcoxon rank sum test
 
@@ -153,18 +156,65 @@ central tendencies are selected.
 
 <img src="man/figures/README-npk-onewy-1.png" width="100%" /><img src="man/figures/README-npk-onewy-2.png" width="100%" />
 
+    summary(one_way_npk)
+    #> Summary of visstat object
+    #> 
+    #> --- Named components ---
+    #> [1] "summary statistics of Fisher's one-way ANOVA"                              
+    #> [2] "summary statistics of Welch's one-way ANOVA (not assuming equal variances)"
+    #> [3] "post-hoc analysis of TuckeyHSD"                                            
+    #> [4] "conf.level"                                                                
+    #> 
+    #> --- Contents ---
+    #> 
+    #> $summary statistics of Fisher's one-way ANOVA:
+    #>             Df Sum Sq Mean Sq F value Pr(>F)  
+    #> fact         5  343.3   68.66   2.318 0.0861 .
+    #> Residuals   18  533.1   29.62                 
+    #> ---
+    #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    #> 
+    #> $summary statistics of Welch's one-way ANOVA (not assuming equal variances):
+    #> 
+    #>  One-way analysis of means (not assuming equal variances)
+    #> 
+    #> data:  samples and fact
+    #> F = 6.2463, num df = 5.0000, denom df = 8.0508, p-value = 0.01178
+    #> 
+    #> 
+    #> $post-hoc analysis of TuckeyHSD:
+    #>   Tukey multiple comparisons of means
+    #>     95% family-wise confidence level
+    #> 
+    #> Fit: aov(formula = samples ~ fact)
+    #> 
+    #> $fact
+    #>        diff        lwr       upr     p adj
+    #> 2-1   3.425  -8.804242 15.654242 0.9440575
+    #> 3-1   6.750  -5.479242 18.979242 0.5166401
+    #> 4-1  -3.900 -16.129242  8.329242 0.9074049
+    #> 5-1  -3.500 -15.729242  8.729242 0.9390165
+    #> 6-1   2.325  -9.904242 14.554242 0.9893559
+    #> 3-2   3.325  -8.904242 15.554242 0.9503518
+    #> 4-2  -7.325 -19.554242  4.904242 0.4312574
+    #> 5-2  -6.925 -19.154242  5.304242 0.4900643
+    #> 6-2  -1.100 -13.329242 11.129242 0.9996936
+    #> 4-3 -10.650 -22.879242  1.579242 0.1094850
+    #> 5-3 -10.250 -22.479242  1.979242 0.1321421
+    #> 6-3  -4.425 -16.654242  7.804242 0.8539828
+    #> 5-4   0.400 -11.829242 12.629242 0.9999980
+    #> 6-4   6.225  -6.004242 18.454242 0.5981409
+    #> 6-5   5.825  -6.404242 18.054242 0.6604328
+    #> 
+    #> 
+    #> $conf.level:
+    #> [1] 0.95
+
 ### Kruskal-Wallis test
 
-    visstat(iris$Species, iris$Petal.Width)
+    kruskal_iris=visstat(iris$Species, iris$Petal.Width)
 
 <img src="man/figures/README-iris-kruskal-1.png" width="100%" /><img src="man/figures/README-iris-kruskal-2.png" width="100%" />
-The generated graphs can be saved in all available formats of the
-`Cairo` package. Here we save the graphical output of type “pdf” in the
-`plotDirectory` `tempdir()`:
-
-    visstat(
-    iris$Species,iris$Petal.Width,graphicsoutput = "pdf",plotDirectory = tempdir()
-    )
 
 ## Numerical response and numerical predictor: Linear Regression
 
@@ -203,27 +253,66 @@ structure with the helper function `counts_to_cases()`:
 
 <img src="man/figures/README-haireye-fisher-1.png" width="100%" /><img src="man/figures/README-haireye-fisher-2.png" width="100%" />
 
+# Saving the graphical output
+
+All generated graphics can be saved in any file format supported by
+`Cairo()`, including “png”, “jpeg”, “pdf”, “svg”, “ps”, and “tiff” in
+the user specified `plotDirectory`.
+
+If the optional argument `plotName` is not given, the naming of the
+output follows the pattern `"testname_namey_namex."`, where `"testname"`
+specifies the selected test or visualisation and `"namey"` and `"namex"`
+are character strings naming the selected data vectors `y` and `x`,
+respectively. The suffix corresponding to the chosen `graphicsoutput`
+(e.g., `"pdf"`, `"png"`) is then concatenated to form the complete
+output file name.
+
+In the following example, we store the graphics in `png` format in the
+`plotDirectory` `tempdir()` with the default naming convention:
+
+    #Graphical output written to plotDirectory: In this example 
+    # a bar chart to visualise the Chi-squared test and mosaic plot showing
+    # Pearson's residuals named 
+    #chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png resp. 
+    save_fisher=visstat(black_brown_hazel_green_male, "Hair", "Eye",
+            graphicsoutput = "png", plotDirectory = tempdir())
+
+The full file path of the generated graphics are stored as the attribute
+`"plot_paths"` on the returned object of class `"visstat"`.
+
+    paths <- attr(save_fisher, "plot_paths")
+    print(paths)
+    #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpPXM1z1/chi_squared_or_fisher_Hair_Eye.png"
+    #> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpPXM1z1/mosaic_complete_Hair_Eye.png"
+
+Remove the graphical output from `plotDirectory`:
+
+    file.remove(paths)
+    #> [1] TRUE TRUE
+
 # Decision logic
 
 The choice of statistical tests depends on whether the data of the
 selected columns are numeric or categorical, the number of levels in the
 categorical variable, and the distribution of the data. The function
 prioritizes interpretable visual output and tests that remain valid
-under the the following decision logic:
+under the decision logic given below. The rationale for the test choices
+are given in the packages’ `vignette`.
 
 ## Numerical response and categorical predictor
 
 When the response is numeric and the predictor is categorical, a
 statistical hypothesis test of central tendencies is selected.
 
-- If the categorical predictor has exactly two levels, Welch’s t - test
-  (`t.test()`), is applied whenever both groups contain more than 30
-  observations, with the validity of the test supported by the
-  approximate normality of the sampling distribution of the mean under
-  the central limit theorem \[@Rasch:2011, @Lumley:2002\]. For smaller
-  samples, group - wise normality is assessed using the Shapiro - Wilk
-  test (`shapiro.test()`) at the significance level*α*. If both groups
-  are found to be approximately normally distributed according to the
+- If the categorical predictor has exactly two levels, Welch’s t-test
+  (`t.test()`) is applied when both groups contain more than 30
+  observations. This heuristic is based on the central limit theorem,
+  which ensures approximate normality of the sampling distribution of
+  the mean (Rasch, Kubinger, and Moder 2011; Lumley et al. 2002). For
+  smaller samples, group - wise normality is assessed using the
+  Shapiro - Wilk test (`shapiro.test()`) at the significance level *α*
+  (Razali and Wah 2011; Ghasemi and Zahediasl 2012). If both groups are
+  found to be approximately normally distributed according to the
   Shapiro - Wilk test, Welch’s t-test is applied; otherwise, the
   Wilcoxon rank-sum test (`wilcox.test()`) is used.
 
@@ -232,7 +321,7 @@ statistical hypothesis test of central tendencies is selected.
   the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test
   (`ad.test()`); the algorithm considers residuals approximately normal
   if the Shapiro–Wilk test yields a result exceeding the significance
-  threshold *α* \[@Razali:2011\]:
+  threshold *α* (Razali and Wah 2011):
   <!-- if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.  -->
   If this condition is met, Bartlett’s test (`bartlett.test()`) is then
   used to assess homoscedasticity. When variances are homogeneous
@@ -271,7 +360,7 @@ for two-dimensional visualisation.
 When both variables are categorical, `visstat()` tests the null
 hypothesis that both variables are independent using either
 `chisq.test()` or `fisher.test()`. The choice of test is based on
-Cochran’s rule \[@Cochran:1954\], which advises that
+Cochran’s rule (Cochran 1954), which advises that
 the*χ*<sup>2</sup>approximation is reliable only if no expected cell
 count is zero and no more than 20 percent of cells have expected counts
 below 5.
@@ -331,20 +420,33 @@ cell counts based on Cochran’s rule)
 
 ## References
 
-- Rasch, D., Kubinger, K. D., & Moder, K. (2011). *The two-sample t
-  test: pre-testing  
-  its assumptions does not pay off*. *Methods of Information in
-  Medicine*, 50(4),  
-  419–426.
-
-- Lumley, T., Diehr, P., Emerson, S., & Chen, L. (2002). *The importance
-  of the  
-  normality assumption in large public health data sets*. *Annual Review
-  of Public  
-  Health*, 23, 151–169.
-
-- Cochran, W. G. (1954). *Some methods for strengthening the common
-  chi-squared  
-  tests*. *Biometrics*, 10(4), 417–451.
-
+<!-- - Rasch, D., Kubinger, K. D., & Moder, K. (2011). *The two-sample t test: pre-testing   -->
+<!--   its assumptions does not pay off*. _Methods of Information in Medicine_, 50(4),   -->
+<!--   419–426. -->
+<!-- - Lumley, T., Diehr, P., Emerson, S., & Chen, L. (2002). *The importance of the   -->
+<!--   normality assumption in large public health data sets*. _Annual Review of Public   -->
+<!--   Health_, 23, 151–169. -->
+<!-- - Cochran, W. G. (1954). *Some methods for strengthening the common chi-squared   -->
+<!--   tests*. _Biometrics_, 10(4), 417–451. -->
 <!-- pkgdown::end -->
+
+Cochran, William G. 1954. “The Combination of Estimates from Different
+Experiments.” *Biometrics* 10 (1): 101.
+<https://doi.org/10.2307/3001666>.
+
+Ghasemi, Asghar, and Saleh Zahediasl. 2012. “Normality Tests for
+Statistical Analysis: A Guide for Non-Statisticians.” *Int J Endocrinol
+Metab* 10 (2): 486–89. <https://doi.org/10.5812/ijem.3505>.
+
+Lumley, Thomas, Paula Diehr, Scott Emerson, and Lu Chen. 2002. “The
+Importance of the Normality Assumption in Large Public Health Data
+Sets.” *Annu. Rev. Public Health* 23 (1): 151–69.
+<https://doi.org/10.1146/annurev.publhealth.23.100901.140546>.
+
+Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. “The Two-Sample
+t Test: Pre-Testing Its Assumptions Does Not Pay Off.” *Stat Papers* 52
+(1): 219–31. <https://doi.org/10.1007/s00362-009-0224-x>.
+
+Razali, Nornadiah Mohd, and Yap Bee Wah. 2011. “Power Comparisons of
+Shapiro-Wilk, Kolmogorov-Smirnov, Lilliefors and Anderson-Darling
+Tests.” *Journal of Statistical Modeling and Analytics* 2 (1): 21–33.

@@ -119,8 +119,8 @@
 #' visstat(iris$Species, iris$Petal.Width,
 #'         graphicsoutput = "pdf", plotName = "kruskal_iris", plotDirectory = tempdir())
 #'
-
 #' @export
+#' 
 visstat <- function(x,
                     y,
                     ...,
