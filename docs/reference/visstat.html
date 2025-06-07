@@ -96,7 +96,12 @@ an additional character string must follow, naming the second column.</p></dd>
 
 
 <dt id="arg-plotname">plotName<a class="anchor" aria-label="anchor" href="#arg-plotname"></a></dt>
-<dd><p>Optional. File name prefix for saving plot output.</p></dd>
+<dd><p>Optional. File name prefix for saving plot output. By default,
+it follows the pattern <code>"testname_namey_namex."</code>,
+where <code>"testname"</code> specifies the selected test and <code>"namey"</code> and <code>"namex"</code>
+are character strings naming the selected data vectors <code>y</code> and <code>x</code>, respectively.
+The suffix corresponding to the chosen <code>graphicsoutput</code> is then concatenated to
+form the complete figure file name.</p></dd>
 
 
 <dt id="arg-plotdirectory">plotDirectory<a class="anchor" aria-label="anchor" href="#arg-plotdirectory"></a></dt>
@@ -219,7 +224,7 @@ and the accompanying webpage
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
