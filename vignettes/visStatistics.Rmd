@@ -527,13 +527,13 @@ After the transformation, the homogeneity of variances can be assumed ($p>
 \alpha$ as calculated with the `bartlett.test()`), and the test statistic and p-value of Fisher's one-way ANOVA`aov()` is displayed.
 
 
-The `ToothGrowth` data set studies the effect of vitamin C dosage C (0.5, 1, and 2 mg/day) on the the tooth growth of 60 guinea pigs.
-```{r}
-visstat(ToothGrowth$dose, ToothGrowth$len)
-```
+<!-- The `ToothGrowth` data set studies the effect of vitamin C dosage C (0.5, 1, and 2 mg/day) on the the tooth growth of 60 guinea pigs. -->
+<!-- ```{r} -->
+<!-- visstat(ToothGrowth$dose, ToothGrowth$len) -->
+<!-- ``` -->
 
-Again, the homogeneity of variances can be assumed ($p>
-\alpha$ as calculated with the `bartlett.test()`) and the test statistic and p-value of Fisher's one-way ANOVA`aov()` is displayed.
+<!-- Again, the homogeneity of variances can be assumed ($p> -->
+<!-- \alpha$ as calculated with the `bartlett.test()`) and the test statistic and p-value of Fisher's one-way ANOVA`aov()` is displayed. -->
 
 
 
@@ -569,7 +569,6 @@ where $y$ is the response variable, $x$ is the predictor variable, $a$ is the in
 
 `visstat()` checks the normality of the standardised residuals from `lm()` both graphically and using the Shapiro--Wilk and Anderson-Darling tests.
 If the p-values for the null hypothesis of normally distributed residuals from both tests are smaller than $1 -$`conf.int`, the title of the residual plot will display the message: "Requirement of normally distributed residuals not met".
-
 Regardless of the result of the residual analysis, `visstat()` proceeds to perform the regression.
 The title of the graphical output indicates the chosen confidence level (`conf.level`), the estimated regression parameters with their confidence intervals and p-values, and the adjusted $R^2$.
 The plot displays the raw data, the fitted regression line, and both the confidence and prediction bands corresponding to the specified `conf.level`.
@@ -613,7 +612,7 @@ plot(linreg_trees_99,which=2)
 
 #### dataset: `cars`{.unnumbered}
 
-The `cars` dataset reports the speed of 50 cars in miles per hour (`speed`) and the stopping distance in feet (`dist`) recorded in  the 1920s. In this example the assuptions of normally distributed residuals in not met
+The `cars` dataset reports the speed of 50 cars in miles per hour (`speed`) and the stopping distance in feet (`dist`) recorded in  the 1920s. In this example the assuptions of normally distributed residuals is not met.
 
 ```{r}
 linreg_cars <- visstat(cars$speed, cars$dist)
