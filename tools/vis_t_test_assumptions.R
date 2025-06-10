@@ -45,28 +45,28 @@ vis_anova_assumptions <- function(samples,
                                   cex = 1) {
   oldparanovassum <- par(no.readonly = TRUE)
   on.exit(par(oldparanovassum))
+  
   samples3 <- na.omit(samples)
   fact <- subset(fact, !is.na(samples))
-  samples <- samples3
-  anova <- aov(samples ~ fact)
-  summary_anova <- summary(anova)
   
-  # check for normality of standardised residuals
-  if (length(anova) > 7) {
-    ad_test <- ad.test(rstandard(anova))
+  samples <- samples3
+  
+# check for normality of  residuals-----
+  if (length(samples) > 7) {
+    ad_test <- ad.test(rstandard(samples))
     p_AD <- signif(ad_test$p.value, 3)
   } else {
     ad_test <- "Anderson-Darling test requires sample size of at lest 7."
     p_AD <- NA
   }
-  shapiro_test <- shapiro.test(rstandard(anova))
+  shapiro_test <- shapiro.test(samples)
   p_SH <- shapiro_test$p.value
   bartlett_test <- bartlett.test(samples ~ fact)
   p_bart <- bartlett_test$p.value
   
   
   
-  #Plotting standardized residuals (left) and QQ-Plot right
+  #Plotting  residuals (left) and QQ-Plot right
   #
   # Plot  Residual analysis 
   # 
