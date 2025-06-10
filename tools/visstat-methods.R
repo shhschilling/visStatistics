@@ -96,35 +96,26 @@ summary.visstat <- function(object, ...) {
 #' Displays captured plots or reports saved plot file paths.
 #' 
 #' @param x An object of class "visstat".
-#' @param which Which plot to display (1, 2, 3, etc.). If NULL, shows all plots.
 #' @param ... Currently unused.
 #'
 #' @return Invisibly returns x. Used for its side effect.
 #' @export
-plot.visstat <- function(x, which = NULL, ...) {
+plot.visstat <- function(x, ...) {
   path <- attr(x, "plot_paths")
   capture <- attr(x, "captured_plots")
   
   if (!is.null(path) && length(path) > 0) {
-    if (!is.null(which)) {
-      message("Plot [", which, "] stored in ", path[[which]])
-    } else {
-      for (i in seq_along(path)) {
-        message("Plot [", i, "] stored in ", path[[i]])
-      }
+    for (i in seq_along(path)) {
+      message("Plot [", i, "] stored in ", path[[i]])
     }
     return(invisible(x))
   }
   
   if (!is.null(capture) && length(capture) > 0) {
-    if (!is.null(which)) {
-      replayPlot(capture[[which]])
-    } else {
-      for (i in seq_along(capture)) {
-        replayPlot(capture[[i]])
-        Sys.sleep(0.5)
-      } 
-    }
+    for (i in seq_along(capture)) {
+      replayPlot(capture[[i]])
+      Sys.sleep(0.5)  # Small delay to ensure RStudio registers the plot in its history
+    } 
     return(invisible(x))
   }
   

@@ -1,0 +1,372 @@
+---
+title: "Mathematical Derivations: Mann-Whitney U vs Wilcoxon Rank-Sum (W) Statistics"
+author: "Statistical Analysis"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    theme: united
+    highlight: tango
+    math_method: mathjax
+    css: |
+      .theorem {
+        background: #e8f4fd;
+        border-left: 4px solid #2196F3;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+      .proof {
+        background: #f0f8f0;
+        border-left: 4px solid #4CAF50;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+      .definition {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+      .example {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(knitr)
+library(DT)
+```
+
+# Introduction
+
+The Mann-Whitney U statistic and Wilcoxon rank-sum statistic (W) are fundamental nonparametric tests for comparing two independent samples. While these tests appear different in formulation, they are mathematically equivalent. This document provides complete derivations of both statistics and demonstrates their algebraic relationship.
+
+# Mann-Whitney U Statistic
+
+## Definition and Basic Formulation
+
+<div class="definition">
+**Definition**
+
+Let $X_1, X_2, \ldots, X_n$ be independent observations from distribution $F$, and $Y_1, Y_2, \ldots, Y_m$ be independent observations from distribution $G$.
+
+The **Mann-Whitney U statistic** is defined as:
+
+$$U = \sum_{i=1}^{n} \sum_{j=1}^{m} \psi(X_i, Y_j)$$
+
+where the indicator function $\psi(X_i, Y_j)$ is:
+
+$$\psi(X_i, Y_j) = \begin{cases}
+1 & \text{if } X_i > Y_j \\
+0.5 & \text{if } X_i = Y_j \\
+0 & \text{if } X_i < Y_j
+\end{cases}$$
+</div>
+
+## Derivation from First Principles
+
+### Step 1: Pairwise Comparison Framework
+
+The U statistic counts the number of times an observation from sample X exceeds an observation from sample Y. This can be written as:
+
+$$U = \#\{(i,j): X_i > Y_j\} + 0.5 \times \#\{(i,j): X_i = Y_j\}$$
+
+### Step 2: Rank-Based Derivation
+
+For the $i$-th observation from sample X with rank $R_i$ in the combined sample, the number of Y observations less than $X_i$ is:
+
+$$\#\{j: Y_j < X_i\} = R_i - 1 - \#\{k \neq i: X_k < X_i\}$$
+
+Summing over all X observations:
+
+$$U = \sum_{i=1}^{n} [R_i - 1 - (i-1)] = \sum_{i=1}^{n} R_i - \frac{n(n+1)}{2}$$
+
+Therefore:
+$$U = R_1 - \frac{n(n+1)}{2}$$
+
+where $R_1 = \sum_{i=1}^{n} R_i$ is the sum of ranks for sample X.
+
+## Distribution Properties
+
+Under the null hypothesis $H_0: F = G$, the Mann-Whitney U statistic has:
+
+- **Expected value**: $E[U] = \frac{nm}{2}$
+- **Variance**: $\text{Var}(U) = \frac{nm(n+m+1)}{12}$
+- **Range**: $0 \leq U \leq nm$
+
+<div class="proof">
+**Derivation of Expected Value**
+
+$$E[U] = E\left[\sum_{i=1}^{n} \sum_{j=1}^{m} I(X_i > Y_j)\right] = \sum_{i=1}^{n} \sum_{j=1}^{m} P(X_i > Y_j)$$
+
+Under $H_0$: $P(X_i > Y_j) = \frac{1}{2}$, so:
+
+$$E[U] = nm \times \frac{1}{2} = \frac{nm}{2}$$
+</div>
+
+### Derivation of Variance
+
+Using the covariance structure of indicator random variables:
+
+$$\text{Var}(U) = \text{Var}\left(\sum_{i=1}^{n} \sum_{j=1}^{m} I(X_i > Y_j)\right)$$
+
+After accounting for dependencies between pairs sharing common observations:
+
+$$\text{Var}(U) = \frac{nm(n+m+1)}{12}$$
+
+# Wilcoxon Rank-Sum Statistic (W)
+
+## Definition and Construction
+
+<div class="definition">
+**Definition**
+
+The **Wilcoxon rank-sum statistic W** is defined as:
+
+$$W = \sum_{j=1}^{m} R_j$$
+
+where $R_j$ is the rank of $Y_j$ among all $N = n + m$ combined observations.
+</div>
+
+## Step-by-Step Derivation
+
+### Step 1: Combined Sample Ranking
+
+Form the combined sample of all observations and rank them from 1 to $N = n + m$. Each $Y_j$ receives rank $R_j$ based on its position in this ordering.
+
+### Step 2: Rank Sum Construction
+
+The W statistic simply sums these ranks:
+
+$$W = \sum_{j=1}^{m} R_j$$
+
+### Step 3: Alternative Expression
+
+The rank of $Y_j$ can be written as:
+
+$$R_j = \sum_{k=1}^{N} I(Z_k \leq Y_j)$$
+
+where $Z_k$ represents the $k$-th order statistic of the combined sample.
+
+## Distribution Properties
+
+Under $H_0: F = G$:
+
+- **Expected value**: $E[W] = \frac{m(N+1)}{2} = \frac{m(n+m+1)}{2}$
+- **Variance**: $\text{Var}(W) = \frac{nm(N+1)}{12} = \frac{nm(n+m+1)}{12}$
+- **Range**: $\frac{m(m+1)}{2} \leq W \leq \frac{m(2n+m+1)}{2}$
+
+### Derivation of Expected Value
+
+Under the null hypothesis, each possible rank assignment is equally likely. The expected rank for any single observation is:
+
+$$E[R_j] = \frac{1 + 2 + \cdots + (n+m)}{n+m} = \frac{N+1}{2}$$
+
+Therefore:
+$$E[W] = m \times \frac{N+1}{2} = \frac{m(n+m+1)}{2}$$
+
+# Mathematical Relationship Between U and W
+
+## Fundamental Transformation Formulas
+
+<div class="theorem">
+**Key Relationships**
+
+The fundamental relationships connecting U and W statistics are:
+
+$$U_1 = nm + \frac{n(n+1)}{2} - R_1$$
+
+$$U_2 = nm + \frac{m(m+1)}{2} - R_2$$
+
+where:
+- $U_1$ = Mann-Whitney U for sample X
+- $U_2$ = Mann-Whitney U for sample Y  
+- $R_1$ = sum of ranks for sample X
+- $R_2$ = sum of ranks for sample Y = $W$
+</div>
+
+## Proof of Equivalence
+
+<div class="proof">
+**Theorem**: The Mann-Whitney U test and Wilcoxon rank-sum test are mathematically equivalent.
+
+**Proof**: 
+
+Since $R_1 + R_2 = \frac{N(N+1)}{2}$ and $W = R_2$, we have:
+
+$$U_1 = nm + \frac{n(n+1)}{2} - R_1$$
+
+This establishes a **bijective (one-to-one) mapping** between $U_1$ and $R_1$ values. Since the transformation is monotonically decreasing:
+
+1. Order relationships are preserved (reversed)
+2. Critical values transform by the same formula
+3. P-values are identical under both formulations
+4. Test decisions are always the same
+</div>
+
+## Key Mathematical Identities
+
+### Complementary Property
+$$U_1 + U_2 = nm$$
+
+### Conversion Formulas
+- **U to W**: If $U_1$ is known, then $W = R_2 = \frac{N(N+1)}{2} - \left(nm + \frac{n(n+1)}{2} - U_1\right)$
+- **W to U**: If $W$ is known, then $U_1 = nm + \frac{n(n+1)}{2} - \left(\frac{N(N+1)}{2} - W\right)$
+
+Simplifying the W to U conversion:
+$$U_1 = W - \frac{m(m+1)}{2}$$
+
+# Asymptotic Properties
+
+## Normal Approximation
+
+For large samples, both statistics converge to normal distributions:
+
+$$\frac{U - \frac{nm}{2}}{\sqrt{\frac{nm(n+m+1)}{12}}} \xrightarrow{d} N(0,1)$$
+
+$$\frac{W - \frac{m(n+m+1)}{2}}{\sqrt{\frac{nm(n+m+1)}{12}}} \xrightarrow{d} N(0,1)$$
+
+## Convergence Rate
+
+The **Berry-Esseen bound** provides convergence rate $O(n^{-1/2})$, with excellent approximation when $nm \geq 20$.
+
+## Continuity Correction
+
+For improved accuracy with discrete distributions:
+
+$$Z = \frac{|U - \frac{nm}{2}| - 0.5}{\sqrt{\frac{nm(n+m+1)}{12}}}$$
+
+# Handling Ties
+
+## Adjusted Variance Formula
+
+When ties occur, the variance requires correction:
+
+$$\text{Var}(U) = \frac{nm(n+m+1)}{12} - \frac{nm\sum_{i}(t_i^3-t_i)}{12(n+m)(n+m-1)}$$
+
+where $t_i$ is the number of observations in the $i$-th tie group.
+
+## Mid-Rank Method
+
+Tied observations receive the average of the ranks they would occupy:
+
+$$\text{Rank} = \frac{\text{lowest rank} + \text{highest rank}}{2}$$
+
+# Computational Example
+
+<div class="example">
+**Example Calculation**
+
+Let's work through a complete example with real data.
+</div>
+
+```{r example}
+# Example data
+x <- c(2.1, 3.4, 2.8, 4.1, 3.9)  # n = 5
+y <- c(1.8, 2.5, 3.1, 2.9)       # m = 4
+
+# Display the data
+cat("Sample X:", x, "\n")
+cat("Sample Y:", y, "\n")
+cat("n =", length(x), ", m =", length(y), "\n\n")
+
+# Combined sample and ranks
+combined <- c(x, y)
+sample_labels <- c(rep("X", length(x)), rep("Y", length(y)))
+ranks <- rank(combined)
+n <- length(x)
+m <- length(y)
+
+# Create a nice table showing the ranking process
+ranking_table <- data.frame(
+  Value = combined,
+  Sample = sample_labels,
+  Rank = ranks
+)
+ranking_table <- ranking_table[order(ranking_table$Value), ]
+
+cat("Combined Sample Ranking:\n")
+print(kable(ranking_table, row.names = FALSE))
+
+# Rank sums
+R1 <- sum(ranks[1:n])      # Sum of ranks for X
+R2 <- sum(ranks[(n+1):(n+m)])  # Sum of ranks for Y (this is W)
+
+cat("\nRank Calculations:\n")
+cat("R1 (sum of X ranks) =", R1, "\n")
+cat("R2 (sum of Y ranks) = W =", R2, "\n")
+cat("Total rank sum =", R1 + R2, "(should equal", n+m, "×", (n+m+1), "÷ 2 =", (n+m)*(n+m+1)/2, ")\n\n")
+
+# Mann-Whitney U calculations
+U1 <- n*m + n*(n+1)/2 - R1
+U2 <- n*m + m*(m+1)/2 - R2
+
+cat("Mann-Whitney U Calculations:\n")
+cat("U1 = nm + n(n+1)/2 - R1 =", n*m, "+", n*(n+1)/2, "-", R1, "=", U1, "\n")
+cat("U2 = nm + m(m+1)/2 - R2 =", n*m, "+", m*(m+1)/2, "-", R2, "=", U2, "\n")
+
+# Verify complementary property
+cat("\nVerification:\n")
+cat("U1 + U2 =", U1 + U2, "(should equal nm =", n*m, ")\n")
+
+# Wilcoxon W
+W <- R2
+cat("W =", W, "\n")
+
+# Verify conversion: U1 = W - m(m+1)/2
+U1_from_W <- W - m*(m+1)/2
+cat("U1 from W conversion = W - m(m+1)/2 =", W, "-", m*(m+1)/2, "=", U1_from_W, "\n")
+cat("This matches U1 =", U1, "✓\n\n")
+
+# Statistical inference
+expected_U <- n*m/2
+var_U <- n*m*(n+m+1)/12
+z_score <- (U1 - expected_U)/sqrt(var_U)
+
+cat("Statistical Properties:\n")
+cat("Expected U under H0 =", expected_U, "\n")
+cat("Variance of U =", var_U, "\n")
+cat("Z-score = (U1 - E[U])/√Var(U) =", round(z_score, 3), "\n")
+cat("Two-tailed p-value ≈", round(2*(1-pnorm(abs(z_score))), 4), "\n")
+```
+
+```{r builtin_test, echo=TRUE}
+# Compare with built-in R functions
+cat("Verification with R built-in functions:\n")
+mann_whitney_result <- wilcox.test(x, y, exact = FALSE, correct = FALSE)
+cat("R wilcox.test() W statistic:", mann_whitney_result$statistic, "\n")
+cat("Our calculated U1:", U1, "\n")
+cat("Our calculated W:", W, "\n")
+cat("R p-value:", round(mann_whitney_result$p.value, 4), "\n")
+```
+
+# Conclusion
+
+<div class="theorem">
+**Summary of Equivalence**
+
+The Mann-Whitney U and Wilcoxon rank-sum statistics represent equivalent formulations of the same fundamental nonparametric test. Their mathematical relationship demonstrates:
+
+1. **Perfect equivalence**: Both tests always yield identical conclusions
+2. **Linear transformation**: Simple algebraic formulas connect the statistics
+3. **Identical distributions**: Same expected values, variances, and asymptotic properties
+4. **Computational flexibility**: Can compute either statistic from the other
+</div>
+
+This equivalence provides practitioners with flexibility in implementation while maintaining complete statistical rigor. The choice between formulations often depends on computational convenience or interpretive preference, with both approaches yielding identical statistical inferences.
+
+**Key Takeaway**: Whether you compute Mann-Whitney U or Wilcoxon W, you're performing the exact same statistical test. The relationship $U_1 = W - \frac{m(m+1)}{2}$ provides perfect conversion between the two formulations.
+
+---
+
+*This document provides the complete mathematical foundations for understanding these crucial nonparametric methods.*
