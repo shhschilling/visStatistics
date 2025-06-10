@@ -55,7 +55,7 @@
       Institue of Tourism and Mobility, Lucerne Unviersity of Applied Sciences and Arts<br><a class="author_email" href="mailto:#"></a><a href="mailto:sabine.schillingg@protonmail.com" class="email">sabine.schillingg@protonmail.com</a>
       </address>
                   
-            <h4 data-toc-skip class="date">2025-06-07</h4>
+            <h4 data-toc-skip class="date">2025-06-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -80,9 +80,14 @@ This scripted workflow is particularly suited for browser-based interfaces that 
 </h2>
 <!-- Introductory statistics courses typically cover a fixed set of hypothesis tests, but selecting the correct method in practice can be error-prone.  -->
 <!-- `visStatistics` addresses this by applying a deterministic, transparent test selection logic.  -->
-<p>While numerous R packages provide statistical testing functionality, few are designed with pedagogical accessibility as a primary concern. The visStatistics package addresses this challenge by automating test selection using deterministic decision logic, removing the burden of manual test choice. This automation enables users to focus directly on interpreting statistical outcomes rather than navigating test selection.</p>
-<p>The tailored visual outputs—annotated with test results and, where appropriate, assumption checks and post-hoc analyses—further support comprehension and help ensure valid conclusions from the outset. The package is particularly valuable in statistical consulting for student research projects, where time constraints demand streamlined, assumption-aware output that prioritises interpretation over technical execution. The implemented tests cover the typical content of an introductory undergraduate course in statistics.</p>
-<p>The package also suits server-based applications where users have limited interaction: they provide only two input vectors, and the software returns valid, interpretable results without requiring further statistical knowledge. This supports reproducibility and correct inference even in such constrained environments.</p>
+<p>While numerous R packages provide statistical testing functionality, few are designed with pedagogical accessibility as a primary concern.
+The visStatistics package addresses this challenge by automating test selection using deterministic decision logic, removing the burden of manual test choice.
+This automation enables users to focus directly on interpreting statistical outcomes rather than navigating test selection.</p>
+<p>The tailored visual outputs—annotated with test results and, where appropriate, assumption checks and post-hoc analyses—further support comprehension and help ensure valid conclusions from the outset.
+The package is particularly valuable in statistical consulting for student research projects, where time constraints demand streamlined, assumption-aware output that prioritises interpretation over technical execution.
+The implemented tests cover the typical content of an introductory undergraduate course in statistics.</p>
+<p>The package also suits server-based applications where users have limited interaction: they provide only two input vectors, and the software returns valid, interpretable results without requiring further statistical knowledge.
+This supports reproducibility and correct inference even in such constrained environments.</p>
 <p>The remainder of this vignette is organised as follows:</p>
 <ul>
 <li><p>Section 3 focues on the installation and the main function call,</p></li>
@@ -130,32 +135,27 @@ This is equivalent to writing:</p>
 <h2 id="decision-logic">
 <span class="header-section-number">4</span> Decision logic<a class="anchor" aria-label="anchor" href="#decision-logic"></a>
 </h2>
-<p>Throughout the remainder, data of class <code>"numeric"</code> or <code>"integer"</code> are referred
-to by their common <code>mode</code> <code>numeric</code>, while data of class <code>"factor"</code> are referred to as categorical.
+<p>Throughout the remainder, data of class <code>"numeric"</code> or <code>"integer"</code> are referred to by their common <code>mode</code> <code>numeric</code>, while data of class <code>"factor"</code> are referred to as categorical.
 The significance level <span class="math inline">\(\alpha\)</span>, used throughout for hypothesis testing, is defined as <code>1 - conf.level</code>, where <code>conf.level</code> is a user-controllable argument (defaulting to <code>0.95</code>).</p>
 <p>The choice of statistical tests performed by the function <code><a href="../reference/visstat.html">visstat()</a></code> depends on whether the data are numeric or categorical, the number of levels in the categorical variable, the distribution of the data, as well as the user-defined ‘conf.level’.</p>
 <p>The function prioritizes interpretable visual output and tests that remain valid under the following decision logic:</p>
 <div class="section level3" number="4.1">
-<h3 id="numeric-response-and-categorical-predictor">
-<span class="header-section-number">4.1</span> Numeric response and categorical predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor"></a>
+<h3 id="numeric-response-and-categorical-predictor-comparing-central-tendencies">
+<span class="header-section-number">4.1</span> Numeric response and categorical predictor: Comparing central tendencies<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor-comparing-central-tendencies"></a>
 </h3>
 <p>When the response is numeric and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.</p>
 <ul>
-<li><p>If the categorical predictor has exactly two levels, Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>)
-is applied when both groups contain more than 30 observations. This heuristic is
-based on the central limit theorem, which ensures approximate normality of the
-sampling distribution of the mean <span class="citation">[<a href="#ref-Rasch:2011">1</a>–<a href="#ref-Kwak:2017">3</a>]</span>. Welch’s t-test is
-the default method in R for comparing means and is generally
-preferred over Student’s t-test because it does not assume equal variances.
-It maintains comparable power even when variances are equal and outperforms
-Student’s test when variances differ <span class="citation">[<a href="#ref-Moser:1992">4</a>–<a href="#ref-Delacre:2017">6</a>]</span>.</p></li>
+<li><p>If the categorical predictor has exactly two levels, Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) is applied when both groups contain more than 30 observations.
+This heuristic is based on the central limit theorem, which ensures approximate normality of the sampling distribution of the mean <span class="citation">[<a href="#ref-Rasch:2011">1</a>–<a href="#ref-Kwak:2017">3</a>]</span>.
+Welch’s t-test is the default method in R for comparing means and is generally preferred over Student’s t-test because it does not assume equal variances.
+It maintains comparable power even when variances are equal and outperforms Student’s test when variances differ <span class="citation">[<a href="#ref-Moser:1992">4</a>–<a href="#ref-Delacre:2017">6</a>]</span>.</p></li>
 <li>
-<p>For smaller samples, group - wise normality is assessed using the Shapiro - Wilk test [<span class="citation">[<a href="#ref-Shapiro:1965">7</a>]</span> (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) at a significance level <span class="math inline">\(\alpha\)</span>. Simulation studies consistently show that the Shapiro-Wilk test is the most powerful for detecting non-normality across most distributions, especially with smaller sample sizes.<span class="citation">[<a href="#ref-Razali:2011">8</a>, <a href="#ref-Ghasemi:2012">9</a>]</span></p>
+<p>For smaller samples, group - wise normality is assessed using the Shapiro - Wilk test [<span class="citation">[<a href="#ref-Shapiro:1965">7</a>]</span> (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) at a significance level <span class="math inline">\(\alpha\)</span>.
+Simulation studies consistently show that the Shapiro-Wilk test is the most powerful for detecting non-normality across most distributions, especially with smaller sample sizes.<span class="citation">[<a href="#ref-Razali:2011">8</a>, <a href="#ref-Ghasemi:2012">9</a>]</span></p>
 <p>If both groups are found to be approximately normally distributed according to the Shapiro–Wilk test, Welch’s t-test is applied; otherwise, the Wilcoxon rank- sum test (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) is used.</p>
 </li>
 <li><p>For predictors with more than two levels, a model of Fisher’s one-way analysis of variables (ANOVA) (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) is initially fitted.
-<!-- The normality of residuals is evaluated by the  the Shapiro--Wilk test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$. -->
-The normality of residuals is evaluated by the the Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>); residuals are considered approximately normal if it yields a result exceeding the significance threshold <span class="math inline">\(\alpha\)</span>.
+<!-- The normality of residuals is evaluated by the  the Shapiro--Wilk test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$. --> The normality of residuals is evaluated by the the Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>); residuals are considered approximately normal if it yields a result exceeding the significance threshold <span class="math inline">\(\alpha\)</span>.
 If this condition is met, Bartlett’s test (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>) assesses homoscedasticity.
 When variances are homogeneous (<span class="math inline">\(p &gt; \alpha\)</span>), Fisher’s one-way ANOVA (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) is applied with Tukey’s Honestly Significant Differences (HSD) (<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>) for post-hoc comparison.
 If variances differ significantly (<span class="math inline">\(p \le \alpha\)</span>), Welch’s heteroscedastic one- way ANOVA (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) is used, also followed by Tukey’s HSD. If residuals are not normally distributed according to both tests (<span class="math inline">\(p \le \alpha\)</span>), the Kruskal–Wallis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is selected, followed by pairwise Wilcoxon tests (<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>).
@@ -170,15 +170,15 @@ and homoscedasticity.
 </div>
 </div>
 <div class="section level3" number="4.2">
-<h3 id="numeric-response-and-numeric-predictor">
-<span class="header-section-number">4.2</span> Numeric response and numeric predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-numeric-predictor"></a>
+<h3 id="numeric-response-and-numeric-predictor-simple-linear-regression">
+<span class="header-section-number">4.2</span> Numeric response and numeric predictor: Simple linear regression<a class="anchor" aria-label="anchor" href="#numeric-response-and-numeric-predictor-simple-linear-regression"></a>
 </h3>
 <p>When both the response and predictor are numeric, a simple linear regression model (<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>) is fitted and analysed in detail, including residual diagnostics, formal tests, and the plotting of fitted values with confidence bands.
 Note that <strong>only one</strong> predictor variable is allowed, as the function is designed for two-dimensional visualisation.</p>
 </div>
 <div class="section level3" number="4.3">
-<h3 id="both-variables-categorical">
-<span class="header-section-number">4.3</span> Both variables categorical<a class="anchor" aria-label="anchor" href="#both-variables-categorical"></a>
+<h3 id="both-variables-categorical-comparing-proportions">
+<span class="header-section-number">4.3</span> Both variables categorical: Comparing proportions<a class="anchor" aria-label="anchor" href="#both-variables-categorical-comparing-proportions"></a>
 </h3>
 <p>When both variables are categorical, no direction is assumed; the order of variables in the function call does not affect the test statistic, but it does influence the graphical output.
 For consistency, we continue referring to the variables as <em>predictor</em> and <em>response</em>.</p>
@@ -187,8 +187,8 @@ The choice of test is based on Cochran’s rule <span class="citation">[<a href=
 </div>
 </div>
 <div class="section level2" number="5">
-<h2 id="numeric-response-and-categorical-predictor-1">
-<span class="header-section-number">5</span> Numeric response and categorical predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor-1"></a>
+<h2 id="numeric-response-and-categorical-predictor-comparing-central-tendencies-1">
+<span class="header-section-number">5</span> Numeric response and categorical predictor: Comparing central tendencies<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor-comparing-central-tendencies-1"></a>
 </h2>
 <p>When the predictor consists of <code>class</code> “<code>factor</code>” with two or more levels and the response is of <code>class</code> “<code>numeric</code>” or “<code>integer</code>” (both having mode “<code>numeric</code>”), statistical tests are applied to compare the central tendencies across groups.
 This section describes the conditions under which parametric and non-parametric tests are chosen, based on the response type, the number of factor levels, and the underlying distributional assumptions.</p>
@@ -202,9 +202,7 @@ This section describes the conditions under which parametric and non-parametric 
 <span class="header-section-number">5.1.1</span> Welch’s t-test (<code>t.test()</code>)<a class="anchor" aria-label="anchor" href="#welchs-t-test-t-test"></a>
 </h4>
 <p>Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) assumes that the observations are independent and that the response variable is approximately normally distributed within each group.
-<!-- In contrast to Student's t-test, it does not require the assumption of equal variances (homoscedasticity) between groups. -->
-<!-- Welch's t-test remains valid and exhibits only minimal loss of efficiency even when the assumptions of Student's t-test -- namely, normality and equal variances of the response variable across groups -- are satisfied [@Moser:1992; @Delacre:2017]. -->
-<!-- Therefore, Student's t-test is not implemented. --></p>
+<!-- In contrast to Student's t-test, it does not require the assumption of equal variances (homoscedasticity) between groups. --> <!-- Welch's t-test remains valid and exhibits only minimal loss of efficiency even when the assumptions of Student's t-test -- namely, normality and equal variances of the response variable across groups -- are satisfied [@Moser:1992; @Delacre:2017]. --> <!-- Therefore, Student's t-test is not implemented. --></p>
 <p>It evaluates the null hypothesis that the means of two groups are equal without assuming equal variances.
 The test statistic is given by <span class="citation">[<a href="#ref-Welch:1947">11</a>, <a href="#ref-Satterthwaite:1946">12</a>]</span></p>
 <p><span class="math display">\[
@@ -229,13 +227,15 @@ The statistic follows a <em>t</em>-distribution with degrees of freedom approxim
 It tests for a difference in location between two independent distributions <span class="citation">[<a href="#ref-Mann:1947">13</a>]</span>.
 If the two groups have distributions that are sufficiently similar in shape and scale, the Wilcoxon rank-sum test can be interpreted as testing whether the medians of the two populations are equal <span class="citation">[<a href="#ref-Hollander:2014">14</a>]</span>.</p>
 <p>The two-level factor variable <code>x</code> defines two groups, with sample sizes <span class="math inline">\(n_1\)</span> and <span class="math inline">\(n_2\)</span>.
-All <span class="math inline">\(n_1 + n_2\)</span> observations are pooled and assigned ranks from <span class="math inline">\(1\)</span> to <span class="math inline">\(n_1 +
-n_2\)</span>.
-Let <span class="math inline">\(W_{\text{Wilcoxon}}\)</span> denote the sum of the ranks assigned to the group corresponding to the first level of <code>x</code> containing <span class="math inline">\(n_1\)</span> observations.
-The test statistic returned by <code><a href="../reference/visstat.html">visstat()</a></code> is then computed as</p>
+All <span class="math inline">\(N=n_1 + n_2\)</span> observations are pooled and assigned ranks from <span class="math inline">\(1\)</span> to <span class="math inline">\(N\)</span>.
+Let <span class="math inline">\(W_1\)</span> denote the sum of the ranks assigned to the group <span class="math inline">\(x_1\)</span> corresponding to the first level of <code>x</code> containing <span class="math inline">\(n_1\)</span> observations:</p>
 <p><span class="math display">\[
-W = W_{\text{Wilcoxon}} - \frac{n_1(n_1 + 1)}{2}.
-\]</span></p>
+W_{1}= \sum_{i=1}^{n_1} R(x_{1,i})\]</span>,</p>
+<p>where <span class="math inline">\(R(x_{1,i})\)</span> is the rank of observation <span class="math inline">\(x_{1,i}\)</span> in the pooled sample.</p>
+<p>The test statistic <span class="math inline">\(W\)</span> returned by <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> is then computed as</p>
+<p><span class="math display">\[
+W =U_{1}=W_{1} - \frac{n_1(n_1 + 1)}{2}.
+\]</span> It corresponds to the Mann-Whitney <span class="citation">[<a href="#ref-Mann:1947">13</a>]</span> <span class="math inline">\(U\)</span> statistic of the first group.</p>
 <p>If both groups contain fewer than 50 observations and the data contain no ties, the <em>p</em>-value is computed exactly.
 Otherwise, a normal approximation with continuity correction is used.</p>
 </div>
@@ -363,16 +363,13 @@ If the normality assumption is violated, <code><a href="https://rdrr.io/r/stats/
 <h5 id="normality-of-residuals-shapiro-test-and-ad-test">
 <span class="header-section-number">5.2.5.1</span> Normality of residuals (<code>shapiro.test()</code> and <code>ad.test()</code>)<a class="anchor" aria-label="anchor" href="#normality-of-residuals-shapiro-test-and-ad-test"></a>
 </h5>
-<p>The <code>visAnovaAssumptions()</code> function assesses the normality of standardised residuals from the the ANOVA fit using both the Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson–Darling test (<code>ad.test()</code>). This approach leverages their complementary strengths: Shapiro-Wilk generally demonstrates superior power for diverse non-normal distributions in smaller samples, while Anderson-Darling is highly sensitive to tail deviations and performs robustly with larger sample sizes <span class="citation">[<a href="#ref-Razali:2011">8</a>, <a href="#ref-Yap:2011">19</a>]</span>.</p>
+<p>The <code>visAnovaAssumptions()</code> function assesses the normality of standardised residuals from the the ANOVA fit using both the Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson–Darling test (<code>ad.test()</code>).
+This approach leverages their complementary strengths: Shapiro-Wilk generally demonstrates superior power for diverse non-normal distributions in smaller samples, while Anderson-Darling is highly sensitive to tail deviations and performs robustly with larger sample sizes <span class="citation">[<a href="#ref-Razali:2011">8</a>, <a href="#ref-Yap:2011">19</a>]</span>.</p>
 <!-- This strategy increases tolerance to minor deviations from normality and reduces the risk of false positives (Type I errors for non-normality detection), but may increase the risk of false negatives (Type II errors), potentially overlooking meaningful departures from normality[@Ghasemi:2012]. -->
-<p>Assessment for normality should never solely rely on p-values, but should be complimented by visual inspections. Therefore the function generates two diagnostic plots:
-- a scatter plot of the standardised residuals against the fitted means of the linear model for each level of the predictor, and
-- a Q–Q plot of the standardised residuals.</p>
-<p>The algorithmic decision logic cannot replicate the combination of formal tests
-and expert visual assessment of normality. It therefore assumes normality if the
-Shapiro–Wilk test yields a p-value greater than <span class="math inline">\(\alpha\)</span>, as simulation studies
-have shown it to offer the highest power against a variety of non-normal
-distributions in small to moderate samples <span class="citation">[<a href="#ref-Razali:2011">8</a>]</span>.
+<p>Assessment for normality should never solely rely on p-values, but should be complimented by visual inspections.
+Therefore the function generates two diagnostic plots: - a scatter plot of the standardised residuals against the fitted means of the linear model for each level of the predictor, and - a Q–Q plot of the standardised residuals.</p>
+<p>The algorithmic decision logic cannot replicate the combination of formal tests and expert visual assessment of normality.
+It therefore assumes normality if the Shapiro–Wilk test yields a p-value greater than <span class="math inline">\(\alpha\)</span>, as simulation studies have shown it to offer the highest power against a variety of non-normal distributions in small to moderate samples <span class="citation">[<a href="#ref-Razali:2011">8</a>]</span>.
 <!-- Note: While Welch’s t-test omits normality checks for n > 30 based on the Central Limit Theorem (CLT), this rationale does not apply to ANOVA. Residuals from a fitted model are not independent and are influenced by the estimated parameters. Therefore, the CLT cannot be used to justify skipping the normality check, which is always applied to ANOVA residuals [@Lumley:2002]. --></p>
 </div>
 <div class="section level5" number="5.2.5.2">
@@ -396,7 +393,8 @@ However, simple pairwise comparisons of group means following an ANOVA the proba
 <p><span class="math display">\[
 M = \frac{n \cdot (n - 1)}{2}
 \]</span></p>
-<p>pairwise comparisons possible, defining a <em>family of tests</em> <span class="citation">[<a href="#ref-Abdi:2007">20</a>]</span>. <span class="math inline">\(M\)</span> corresponds to the number of null hypotheses in the post hoc tests, each testing whether the means of two specific groups are equal.</p>
+<p>pairwise comparisons possible, defining a <em>family of tests</em> <span class="citation">[<a href="#ref-Abdi:2007">20</a>]</span>.
+<span class="math inline">\(M\)</span> corresponds to the number of null hypotheses in the post hoc tests, each testing whether the means of two specific groups are equal.</p>
 <div class="section level5">
 <h5 id="šidák-correction">Šidák correction<a class="anchor" aria-label="anchor" href="#%C5%A1id%C3%A1k-correction"></a>
 </h5>
@@ -439,7 +437,8 @@ It controls the family-wise error rate using a critical value from the studentis
 <p>Based on the user-specified confidence level (<code>conf.level</code>), <code><a href="../reference/visstat.html">visstat()</a></code> constructs confidence intervals for all pairwise <strong>differences</strong> between factor level means.
 A significant difference between two means is indicated when the corresponding confidence interval does not include zero.
 <code><a href="../reference/visstat.html">visstat()</a></code> returns both the HSD-adjusted p-values and the associated confidence intervals for all pairwise comparisons.</p>
-<p>For graphical display, <code><a href="../reference/visstat.html">visstat()</a></code> uses a dual approach: <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> provides the statistical test results and significance determinations, while Šidák-corrected confidence intervals around individual group means are shown for visualisation purposes. This separation allows for optimal statistical testing while maintaining clear, interpretable graphics.</p>
+<p>For graphical display, <code><a href="../reference/visstat.html">visstat()</a></code> uses a dual approach: <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> provides the statistical test results and significance determinations, while Šidák-corrected confidence intervals around individual group means are shown for visualisation purposes.
+This separation allows for optimal statistical testing while maintaining clear, interpretable graphics.</p>
 </div>
 <div class="section level5">
 <h5 id="post-hoc-test-following-the-kruskalwallis-rank-sum-test-pairwise-wilcox-test">Post-hoc test following the Kruskal–Wallis rank sum test: <code>pairwise.wilcox.test()</code><a class="anchor" aria-label="anchor" href="#post-hoc-test-following-the-kruskalwallis-rank-sum-test-pairwise-wilcox-test"></a>
@@ -466,16 +465,10 @@ The result is illustrated using box plots alongside jittered data points, with t
 Different green letters below a pair of box plots indicate that the two groups are considered significantly different, based on Holm’s-adjusted pairwise Wilcoxon rank sum test p-values smaller than <span class="math inline">\(\alpha\)</span>.</p>
 <p>If normality of the residuals can be assumed, a parametric test is chosen: either <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>, if homoscedasticity is also assumed, or <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> otherwise.
 <code><a href="../reference/visstat.html">visstat()</a></code> displays the name of the test and the corresponding <span class="math inline">\(F\)</span> and p-value in the title.</p>
-<p>The graph shows both the <code>conf.level</code> <span class="math inline">\(\cdot\,100\%\)</span> confidence intervals
-corresponding to the null hypothesis of ANOVA (all group means are equal) and the
-Šidák-corrected <span class="math inline">\((1 - \alpha_{PT}) \cdot 100\%\)</span> confidence intervals used in the
-post hoc analysis.</p>
-<p>In <code><a href="../reference/visstat.html">visstat()</a></code>, the Šidák intervals are used only for visualisation, as the
-underlying method assumes independent comparisons and can become overly
-conservative when this assumption is violated.</p>
-<p>The actual post hoc analysis should be based on <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>. A significant test
-result between two groups is graphically represented by different green letters
-below a pair of group means.</p>
+<p>The graph shows both the <code>conf.level</code> <span class="math inline">\(\cdot\,100\%\)</span> confidence intervals corresponding to the null hypothesis of ANOVA (all group means are equal) and the Šidák-corrected <span class="math inline">\((1 - \alpha_{PT}) \cdot 100\%\)</span> confidence intervals used in the post hoc analysis.</p>
+<p>In <code><a href="../reference/visstat.html">visstat()</a></code>, the Šidák intervals are used only for visualisation, as the underlying method assumes independent comparisons and can become overly conservative when this assumption is violated.</p>
+<p>The actual post hoc analysis should be based on <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>.
+A significant test result between two groups is graphically represented by different green letters below a pair of group means.</p>
 <p>Besides the graphical output, <code><a href="../reference/visstat.html">visstat()</a></code> returns a list containing the relevant test statistics along with the corresponding post-hoc-adjusted <span class="math inline">\(p\)</span>-values for all pairwise comparisons.</p>
 </div>
 <div class="section level4" number="5.2.8">
@@ -509,7 +502,13 @@ To stabilise the variance in counts, we apply a square root transformation to th
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># test_statistic_anova </span></span></code></pre></div>
 <p>After the transformation, the homogeneity of variances can be assumed (<span class="math inline">\(p&gt;
-\alpha\)</span> as calculated with the <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>), and the test statistic and p-value of the <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> is displayed.</p>
+\alpha\)</span> as calculated with the <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>), and the test statistic and p-value of Fisher’s one-way ANOVA<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> is displayed.</p>
+<!-- The `ToothGrowth` data set studies the effect of vitamin C dosage C (0.5, 1, and 2 mg/day) on the the tooth growth of 60 guinea pigs. -->
+<!-- ```{r} -->
+<!-- visstat(ToothGrowth$dose, ToothGrowth$len) -->
+<!-- ``` -->
+<!-- Again, the homogeneity of variances can be assumed ($p> -->
+<!-- \alpha$ as calculated with the `bartlett.test()`) and the test statistic and p-value of Fisher's one-way ANOVA`aov()` is displayed. -->
 </div>
 <div class="section level5">
 <h5 id="kruskalwallis-rank-sum-test">Kruskal–Wallis rank sum test<a class="anchor" aria-label="anchor" href="#kruskalwallis-rank-sum-test"></a>
@@ -527,8 +526,8 @@ Post-hoc analysis using <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.t
 </div>
 </div>
 <div class="section level2" number="6">
-<h2 id="numeric-response-and-numeric-predictor-1">
-<span class="header-section-number">6</span> Numeric response and numeric predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-numeric-predictor-1"></a>
+<h2 id="numeric-response-and-numeric-predictor-simple-linear-regression-1">
+<span class="header-section-number">6</span> Numeric response and numeric predictor: Simple linear regression<a class="anchor" aria-label="anchor" href="#numeric-response-and-numeric-predictor-simple-linear-regression-1"></a>
 </h2>
 <div class="section level3" number="6.1">
 <h3 id="simple-linear-regression-lm">
@@ -545,8 +544,8 @@ y = a + b \cdot x,
 <span class="header-section-number">6.1.1</span> Residual analysis<a class="anchor" aria-label="anchor" href="#residual-analysis"></a>
 </h4>
 <p><code><a href="../reference/visstat.html">visstat()</a></code> checks the normality of the standardised residuals from <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> both graphically and using the Shapiro–Wilk and Anderson-Darling tests.
-If the p-values for the null hypothesis of normally distributed residuals from both tests are smaller than <span class="math inline">\(1 -\)</span><code>conf.int</code>, the title of the residual plot will display the message: “Requirement of normally distributed residuals not met”.</p>
-<p>Regardless of the result of the residual analysis, <code><a href="../reference/visstat.html">visstat()</a></code> proceeds to perform the regression.
+If the p-values for the null hypothesis of normally distributed residuals from both tests are smaller than <span class="math inline">\(1 -\)</span><code>conf.int</code>, the title of the residual plot will display the message: “Requirement of normally distributed residuals not met”.
+Regardless of the result of the residual analysis, <code><a href="../reference/visstat.html">visstat()</a></code> proceeds to perform the regression.
 The title of the graphical output indicates the chosen confidence level (<code>conf.level</code>), the estimated regression parameters with their confidence intervals and p-values, and the adjusted <span class="math inline">\(R^2\)</span>.
 The plot displays the raw data, the fitted regression line, and both the confidence and prediction bands corresponding to the specified <code>conf.level</code>.</p>
 <p><code><a href="../reference/visstat.html">visstat()</a></code> returns a list containing the regression test statistics, the p-values from the normality tests of the standardised residuals, and the pointwise estimates of the confidence and prediction bands.</p>
@@ -555,41 +554,41 @@ The plot displays the raw data, the fitted regression line, and both the confide
 <h4 id="examples-2">
 <span class="header-section-number">6.1.2</span> Examples<a class="anchor" aria-label="anchor" href="#examples-2"></a>
 </h4>
+<!-- The `women` reports the  average height in inches and weights in pounds (lbs) for American women aged 30–39.  -->
+<!-- ```{r} -->
+<!-- linreg_women <- visstat(women$height, women$weight) -->
+<!-- ``` -->
+<div class="section level5">
+<h5 id="dataset-trees">dataset: `trees``<a class="anchor" aria-label="anchor" href="#dataset-trees"></a>
+</h5>
+<p>The <code>trees</code> data set contains the diameter <code>Girth</code> in inches and <code>Volume</code> in cubic ft of 31 black cherry trees.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">linreg_trees</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span><span class="op">$</span><span class="va">Girth</span>, <span class="va">trees</span><span class="op">$</span><span class="va">Volume</span>,conf.level<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-8-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-8-2.png" width="100%"></p>
+<p>p-values greater than <code>conf.level</code> in both the Anderson-Darling normality test and the Shapiro–Wilk test of the standardised residuals indicate that the normality assumption of the residuals underlying the linear regression is met.</p>
+<p>Increasing the confidence level <code>conf.level</code> from the default 0.9 to 0.99 results in wider confidence intervalls of the regression paramters as well as wider confidence and prediction bands</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">linreg_trees_99</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span><span class="op">$</span><span class="va">Girth</span>, <span class="va">trees</span><span class="op">$</span><span class="va">Volume</span>,conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
+<p>Use <code>visStatistics</code> plot method to only display again the seond generated plot (the assumption plot is unchanged):</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">linreg_trees_99</span>,which<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-10-1.png" width="100%"></p>
+</div>
 <div class="section level5" number="6.1.2.1">
 <h5 id="dataset-cars">
 <span class="header-section-number">6.1.2.1</span> dataset: <code class="unnumbered">cars</code><a class="anchor" aria-label="anchor" href="#dataset-cars"></a>
 </h5>
-<p>The <code>cars</code> dataset reports the speed of cars in miles per hour (<code>speed</code>) and the stopping distance in feet (<code>dist</code>).</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span><span class="op">$</span><span class="va">speed</span>, <span class="va">cars</span><span class="op">$</span><span class="va">dist</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-8-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-8-2.png" width="100%"></p>
-<p>Increasing the confidence level <code>conf.level</code> from the default 0.95 to 0.99 results in wider confidence and prediction bands:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span><span class="op">$</span><span class="va">speed</span>,<span class="va">cars</span><span class="op">$</span><span class="va">dist</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-9-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-9-2.png" width="100%"></p>
-<p>p-values greater than <code>conf.level</code> in both the Anderson-Darling normality test and the Shapiro–Wilk test of the standardised residuals indicate that the normality assumption of the residuals underlying the linear regression is met.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">linreg_trees</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span><span class="op">$</span><span class="va">Girth</span>, <span class="va">trees</span><span class="op">$</span><span class="va">Volume</span>,conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-10-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-10-2.png" width="100%"></p>
-</div>
-<div class="section level5" number="6.1.2.2">
-<h5 id="dataset-trees">
-<span class="header-section-number">6.1.2.2</span> dataset: <code class="unnumbered">trees</code><a class="anchor" aria-label="anchor" href="#dataset-trees"></a>
-</h5>
-<p>The <code>trees</code> dataset provides measurements of the diameter (<code>Girth</code>, in inches), <code>Height</code> (in feet), and <code>Volume</code> (in cubic feet) of black cherry trees.
-In this example, we choose <code>Volume</code> as the response and <code>Girth</code> as the predictor.</p>
+<p>The <code>cars</code> dataset reports the speed of 50 cars in miles per hour (<code>speed</code>) and the stopping distance in feet (<code>dist</code>) recorded in the 1920s. In this example the assuptions of normally distributed residuals is not met.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span><span class="op">$</span><span class="va">Girth</span>, <span class="va">trees</span><span class="op">$</span><span class="va">Volume</span>, conf.level <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span><span class="op">$</span><span class="va">speed</span>, <span class="va">cars</span><span class="op">$</span><span class="va">dist</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-11-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-11-2.png" width="100%"></p>
-<p>Both the graphical analysis of the standardised residuals and p-values greater than <span class="math inline">\(\alpha\)</span> in the Anderson-Darling and Shapiro–Wilk tests suggest that the assumption of normally distributed residuals is met.
-Furthermore, the linear regression model explains 93% of the total variance in the response variable <code>Volume</code>.</p>
 </div>
 </div>
 </div>
 </div>
 <div class="section level2" number="7">
-<h2 id="both-variables-categorical-1">
-<span class="header-section-number">7</span> Both variables categorical<a class="anchor" aria-label="anchor" href="#both-variables-categorical-1"></a>
+<h2 id="both-variables-categorical-comparing-proportions-1">
+<span class="header-section-number">7</span> Both variables categorical: Comparing proportions<a class="anchor" aria-label="anchor" href="#both-variables-categorical-comparing-proportions-1"></a>
 </h2>
 <p>When both variables are categorical (i.e., of class <code>factor</code>), <code><a href="../reference/visstat.html">visstat()</a></code> tests the null hypothesis that the two variables are independent.
 Observed frequencies are typically arranged in a contingency table, where rows index the levels <span class="math inline">\(i\)</span> of the response variable and columns index the levels <span class="math inline">\(j\)</span> of the predictor variable.</p>
@@ -743,14 +742,9 @@ Note the higher p-value of Pearson’s <span class="math inline">\({\chi}^2\)</s
 <h2 id="saving-the-graphical-output">
 <span class="header-section-number">8</span> Saving the graphical output<a class="anchor" aria-label="anchor" href="#saving-the-graphical-output"></a>
 </h2>
-<p>All generated graphics can be saved in any file format supported by <code>Cairo()</code>,
-including “png”, “jpeg”, “pdf”, “svg”, “ps”, and “tiff” in the user specified <code>plotDirectory</code>.</p>
-<p>If the optional argument <code>plotName</code> is not given, the naming of the output
-follows the pattern <code>"testname_namey_namex."</code>, where <code>"testname"</code> specifies
-the selected test and <code>"namey"</code> and <code>"namex"</code> are character strings naming the
-selected data vectors <code>y</code> and <code>x</code>, respectively. The suffix corresponding to
-the chosen <code>graphicsoutput</code> (e.g., <code>"pdf"</code>, <code>"png"</code>) is then concatenated to
-form the complete output file name.</p>
+<p>All generated graphics can be saved in any file format supported by <code>Cairo()</code>, including “png”, “jpeg”, “pdf”, “svg”, “ps”, and “tiff” in the user specified <code>plotDirectory</code>.</p>
+<p>If the optional argument <code>plotName</code> is not given, the naming of the output follows the pattern <code>"testname_namey_namex."</code>, where <code>"testname"</code> specifies the selected test and <code>"namey"</code> and <code>"namex"</code> are character strings naming the selected data vectors <code>y</code> and <code>x</code>, respectively.
+The suffix corresponding to the chosen <code>graphicsoutput</code> (e.g., <code>"pdf"</code>, <code>"png"</code>) is then concatenated to form the complete output file name.</p>
 <p>In the following example, we store the graphics in <code>png</code> format in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> with the default naming convention:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Graphical output written to plotDirectory: In this example </span></span>
@@ -759,16 +753,17 @@ form the complete output file name.</p>
 <span><span class="co">#chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png</span></span>
 <span><span class="va">save_fisher</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
 <span>        graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>The full file path of the generated graphics are stored as the attribute
-<code>"plot_paths"</code> on the returned object of class <code>"visstat"</code>.</p>
+<p>The full file path of the generated graphics are stored as the attribute <code>"plot_paths"</code> on the returned object of class <code>"visstat"</code>.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpG5eA6B/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/RtmpG5eA6B/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmpxLaZCI/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/RtmpxLaZCI/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE TRUE</span></span></code></pre></div>
+<p>When assumptions plots (residual and Q-Q plot) are generated, the corresponding plot has the prefix <code>"assumption_</code>.</p>
 </div>
 <div class="section level2" number="9">
 <h2 id="limitations">
@@ -784,8 +779,8 @@ Focusing on the graphical representation of tests, only simple linear regression
 <span class="header-section-number">10</span> Implemented tests<a class="anchor" aria-label="anchor" href="#implemented-tests"></a>
 </h2>
 <div class="section level3" number="10.1">
-<h3 id="numeric-response-and-categorical-predictor-2">
-<span class="header-section-number">10.1</span> Numeric response and categorical predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor-2"></a>
+<h3 id="numeric-response-and-categorical-predictor">
+<span class="header-section-number">10.1</span> Numeric response and categorical predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor"></a>
 </h3>
 <p>When the response is numeric and the predictor is categorical, test of central tendencies are selected:</p>
 <p><code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>, <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>, <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>,<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code></p>
@@ -814,15 +809,15 @@ Focusing on the graphical representation of tests, only simple linear regression
 </div>
 </div>
 <div class="section level3" number="10.2">
-<h3 id="numeric-response-and-numeric-predictor-2">
-<span class="header-section-number">10.2</span> Numeric response and numeric predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-numeric-predictor-2"></a>
+<h3 id="numeric-response-and-numeric-predictor">
+<span class="header-section-number">10.2</span> Numeric response and numeric predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-numeric-predictor"></a>
 </h3>
 <p>When both the response and predictor are numeric, a simple linear regression model is fitted:</p>
 <p><code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></p>
 </div>
 <div class="section level3" number="10.3">
-<h3 id="both-variables-categorical-2">
-<span class="header-section-number">10.3</span> Both variables categorical<a class="anchor" aria-label="anchor" href="#both-variables-categorical-2"></a>
+<h3 id="both-variables-categorical">
+<span class="header-section-number">10.3</span> Both variables categorical<a class="anchor" aria-label="anchor" href="#both-variables-categorical"></a>
 </h3>
 <p>When both variables are categorical, <code><a href="../reference/visstat.html">visstat()</a></code> tests the null hypothesis of independence using one of the following:</p>
 <ul>
