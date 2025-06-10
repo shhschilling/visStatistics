@@ -817,7 +817,6 @@ vis_anova <- function(samples,
       # m[[i]] + qt(1 - alpha_sidak/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
       i,
       m[[i]] - qt(1 - alpha / 2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
-      # m[[i]] - qt(1 - alpha_sidak/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
       angle = 90,
       code = 3,
       col = colors()[552],
@@ -870,9 +869,9 @@ vis_anova <- function(samples,
   
   my_list <-
     list(
-        "summary statistics of Fisher's one-way ANOVA" = summaryAnova,
-        "summary statistics of Welch's one-way ANOVA (not assuming equal variances)" = oneway,
-      #"summary statistics" =summarystat,
+      # "summary statistics of Fisher's one-way ANOVA" = summaryAnova,
+      # "summary statistics of Welch's one-way ANOVA (not assuming equal  variances)" = oneway,
+      "summary statistics of ANOVA" = summarystat,
       "post-hoc analysis of TuckeyHSD" = tuk,
       "conf.level" = conf.level
     )
