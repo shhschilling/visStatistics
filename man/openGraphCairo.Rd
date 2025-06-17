@@ -50,7 +50,6 @@ NULL, if no \code{type} is specified. Otherwise see \code{Cairo()}
 }
 \description{
 Cairo wrapper function returning NULL if not \code{type} is specified.
-Enhanced version that can capture plots for later replay.
 }
 \details{
 \code{openGraphCairo()} \code{Cairo()} wrapper function. Differences to
