@@ -203,10 +203,22 @@ visstat_core <- function(dataframe,
   capture_env$captured_plots <- list()
   capture_env$capture_next_plot <- FALSE
   
-  # store default graphical parameters------
+  # # store default graphical parameters------
+  # oldparvisstat_core <- par(no.readonly = TRUE)
+  # oldparvisstat_core$new <- FALSE # reset the default value
+  # on.exit(par(oldparvisstat_core))
+  # 
+  
+  # Store and safely restore graphical parameters ------
   oldparvisstat_core <- par(no.readonly = TRUE)
-  oldparvisstat_core$new <- FALSE # reset the default value
-  on.exit(par(oldparvisstat_core))
+  on.exit({
+    safe <- setdiff(names(oldparvisstat_core),
+                    c("pin", "plt", "fig", "fin", "din", "page", "new"))
+    par(oldparvisstat_core[safe])
+  })
+  
+  
+  
   
   # Collect plot paths from plot_paths <- c(plot_paths, saveGraphVisstat())
   plot_paths <- character(0)
@@ -505,8 +517,12 @@ visstat_core <- function(dataframe,
     # 
     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory,
                     capture_env = capture_env) 
+    # normality_residual_assumptioon <-
+    #   vis_normality_assumptions(samples, fact, conf.level = conf.level)
+    
     normality_residual_assumptioon <-
-      vis_normality_assumptions(samples, fact, conf.level = conf.level)
+      vis_anova_assumptions(samples, fact, conf.level = conf.level,regression=TRUE)
+    
     
     if (is.null(plotName)) {
       filename <-
