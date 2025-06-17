@@ -274,12 +274,12 @@ When Welch’s t-test is applied, the function includes confidence intervals bas
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
 <span><span class="va">t_test_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span>, <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-2-2.png" width="100%"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the default 0.95 to 0.99 results in wider confidence intervals, as a higher confidence level requires more conservative bounds to ensure that the interval includes the true parameter value with greater certainty.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
 <span><span class="va">t_test_statistics_99</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span>, <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-3-2.png" width="100%"></p>
 </div>
 <div class="section level5">
 <h5 id="wilcoxon-rank-sum-test">Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test"></a>
@@ -297,7 +297,7 @@ When Welch’s t-test is applied, the function includes confidence intervals bas
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">wilcoxon_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">grades_gender</span><span class="op">$</span><span class="va">sex</span>, <span class="va">grades_gender</span><span class="op">$</span><span class="va">grade</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-4-1.png" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-4-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-4-2.png" width="100%"></p>
 </div>
 </div>
 </div>
@@ -770,8 +770,8 @@ The suffix corresponding to the chosen <code>graphicsoutput</code> (e.g., <code>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpCIBBVF/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/RtmpCIBBVF/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/Rtmp87PTFu/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/Rtmp87PTFu/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
