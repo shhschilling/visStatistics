@@ -16,7 +16,8 @@ link-citations: yes
 pkgdown:         #these two lines are needed for building the package site correctly
   as_is: true
 bibliography: visstat.bib
-csl: statistical-science.csl
+#csl: statistical-science.csl
+csl: ims.csl
 vignette: >
   %\VignetteIndexEntry{visStatistics}
   %\VignetteEngine{knitr::rmarkdown}
@@ -139,7 +140,8 @@ When the response is numeric and the predictor is categorical, a statistical hyp
 
 -   For predictors with more than two levels, a model of Fisher's one-way analysis of variables (ANOVA) (`aov()`) is initially fitted.
     <!-- The normality of residuals is evaluated by the  the Shapiro--Wilk test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$. --> The normality of residuals is evaluated by the the Shapiro--Wilk test (`shapiro.test()`); residuals are considered approximately normal if it yields a result exceeding the significance threshold $\alpha$.
-    If this condition is met, Bartlett's test (`bartlett.test()`) assesses homoscedasticity.
+    If this condition is met, the Levene–Brown–Forsythe
+test (implemented as `levene.test()`) [@Brown:1974]  assesses homoscedasticity. 
     When variances are homogeneous ($p > \alpha$), Fisher's one-way ANOVA (`aov()`) is applied with Tukey's Honestly Significant Differences (HSD) (`TukeyHSD()`) for post-hoc comparison.
     If variances differ significantly ($p \le \alpha$), Welch's heteroscedastic one- way ANOVA (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal--Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
     A graphical overview of the decision logic used is provided in the figure below.
@@ -218,7 +220,7 @@ $$
 
 The resulting p-value is computed from the *t*-distribution with $\nu$ degrees of freedom.
 
-Welch's t-test remains valid and exhibits only minimal loss of power even when the assumptions of Student's t-test -- namely, normality and equal variances of the response variable across groups -- are satisfied [@Moser:1992; @Delacre:2017].
+Welch's t-test remains valid and exhibits only minimal loss of power even when the assumptions of Student's t-test -- namely, normality and equal variances of the response variable across groups -- are satisfied [@Moser:1992; @Delacre:2017]. It is therefore the default implementation of the t-test in R. be .
 
 ### Wilcoxon rank-sum test (`wilcox.test()`)
 
@@ -375,21 +377,33 @@ The `visAnovaAssumptions()` function assesses the normality of standardised resi
 This approach leverages their complementary strengths: Shapiro-Wilk generally demonstrates superior power for diverse non-normal distributions in smaller samples, while Anderson-Darling is highly sensitive to tail deviations and performs robustly with larger sample sizes [@Razali:2011; @Yap:2011].
 
 <!-- This strategy increases tolerance to minor deviations from normality and reduces the risk of false positives (Type I errors for non-normality detection), but may increase the risk of false negatives (Type II errors), potentially overlooking meaningful departures from normality[@Ghasemi:2012]. -->
-§ §§§§§§
+Statistical tests on assumptions are generally not
+very reliable, sometimes breaking down in both small and large samples - the Shapiro-Wilk-tests breaks down on large samples ($N>5000$), the Anderson-Darling tests requires a minimum of 7 test cases. 
 
-Assessment for normality should never solely rely on p-values, but should be complemented by visual inspections. Therefore the function generates diagnostic plots: standardised residuals overlaid by the standard normal distribution, a scatter plot of the standardised residuals against the fitted means of the linear model for each level of the predictor, and a Q-Q plot of the standardised residuals.
+Assessment for normality should never solely rely on p-values, but should be complemented by visual inspections
+
+Therefore the function generates diagnostic plots: standardised residuals overlaid by the standard normal distribution, a scatter plot of the standardised residuals against the fitted means of the linear model for each level of the predictor, and a Q-Q plot of the standardised residuals.
 
 
 The algorithmic decision logic cannot replicate the combination of formal tests and expert visual assessment of normality.
 It therefore assumes normality if the Shapiro–Wilk test yields a p-value greater than $\alpha$, as simulation studies have shown it to offer the highest power against a variety of non-normal distributions in small to moderate samples [@Razali:2011].
 <!-- Note: While Welch’s t-test omits normality checks for n > 30 based on the Central Limit Theorem (CLT), this rationale does not apply to ANOVA. Residuals from a fitted model are not independent and are influenced by the estimated parameters. Therefore, the CLT cannot be used to justify skipping the normality check, which is always applied to ANOVA residuals [@Lumley:2002]. -->
 
-#### Equal variances across groups (`bartlett.test()`)
+#### Equal variances across groups (`levene.test() and bartlett.test()`)
 
-Both `aov()` and `oneway.test()` assess whether two or more samples drawn from normal distributions have the same mean.
-While `aov()` assumes homogeneity of variances across groups, `oneway.test()` does not require the variances to be equal.
+Both `aov()` and `oneway.test()` assess whether two or more samples drawn from normal 
+distributions have the same mean. While `aov()` assumes homogeneity of variances across 
+groups, `oneway.test()` does not require equal variances.
 
-Homoscedasticity is assessed using Bartlett's test (`bartlett.test()`), which tests the null hypothesis that the variances across all levels of the grouping variable are equal.
+The decision logic of `visStatistics` assumes homogeneity of variances if the Levene–Brown–Forsythe 
+test (implemented as `levene.test()`) [@Brown:1974] yields a p-value greater than $\alpha$.  
+The Levene–Brown–Forsythe test improves upon Levene’s original test [@Levene:1960] by using the median 
+instead of the mean to centre the data. This makes it more robust to non-normal data, 
+providing more reliable results in many practical situations.
+
+Additionally, homoscedasticity is assessed via Bartlett's test (`bartlett.test()`), which has more power 
+than the Brown–Forsythe version of Levene’s test [@Brown:1974] when the normality assumption is met,  
+but is not robust to deviations from normality.
 
 ### Controlling the family-wise error rate
 
@@ -468,11 +482,14 @@ The graphical output for all tests based on a numeric response and a categorical
 
 The residual panel addresses the assumption of normality, both graphically and through formal tests.
 It displays a scatter plot of the standardised residuals versus the predicted values, as well as a normal Q--Q plot comparing the sample quantiles to the theoretical quantiles.
-If the residuals are normally distributed, no more than $5\%$ of the standardised residuals should exceed approximately $|2|$ and in the Q--Q plot the data points should approximately follow the red straight line.
+If the residuals are normally distributed, no more than $5\%$ of the standardised residuals should exceed approximately $|2|$; in the Q--Q plot the data points should approximately follow the red straight line.
 
-To assume normality of residuals, the formal tests for normality (Shapiro--Wilk and Anderson--Darling) should result in p-values greater than the user-defined $\alpha$.
+The p-values of the formal tests for normality (Shapiro--Wilk and Anderson--Darling) as wel as the tests for homoscedasticiy (Bartlett's  and Levene Brown–Forsythe) are given in the title. 
+<!-- To assume normality of residuals, the formal tests for normality (Shapiro--Wilk and Anderson--Darling) should result in p-values greater than the user-defined $\alpha$. -->
 
-To assume homogeneity of variances, Bartlett's test (shown in the first line of the panel title) should also result in a p-value greater than $\alpha$.
+<!-- If normality of the residuals can beassumed, Bartlett's test can be assesed to check for homogenity of variances. Otherwise, the Levene Brown–Forsythe is a more robust test for homoscedasticiy given deviations from the normality assumption of residuals  The p-values of the beforementioned tests are displayed in the title of the residual panel. -->
+
+
 
 `visstat()` then illustrates, in the subsequent graph, either the `kruskal.test()`, the `oneway.test()`, or `aov()` result (see also Section "Decision logic").
 
@@ -821,10 +838,36 @@ When assumptions plots (residual and Q-Q plot) are generated, the corresponding 
 
 # Limitations
 
+## Limitations by default settings 
 The main purpose of this package is a decision-logic based automatic visualisation of statistical test results.
 Therefore, except for the user-adjustable `conf.level` parameter, all statistical tests are applied using their default settings from the corresponding base R functions.
 As a consequence, paired tests are currently not supported and `visstat()` does not allow to study interactions terms between the different levels of an independent variable in an analysis of variance.
 Focusing on the graphical representation of tests, only simple linear regression is implemented, as multiple linear regressions cannot be visualised.
+
+## Limitationof of decision-logic based on p-values
+
+The decision logic of the main function `visstat()` is based on the Shapiro-Wilk
+test for normality and the Levene-Brown-Forsythe test for variance homogeneity.
+However, no single test maintains optimal Type I error rates and statistical
+power across all distributions [@Olejnik:1987], and p-values obtained from these
+tests may be unreliable if their assumptions are violated.
+
+Combining multiple tests with differing assumptions using simple majority voting
+inflates the overall Type I error rate, making such an approach inadequate.
+Therefore, automated test selection based solely on p-values cannot replace the
+visual inspection of sample distributions provided by `visstat()`. Based on these plots, it may be necessary to a override the automated choice of test in individual cases.
+
+In contrast, bootstrapping methods [@Wilcox:2021] make minimal distributional assumptions and can
+provide confidence intervals for nearly any statistic. However, bootstrapping is
+computationally intensive, often requiring thousands of resamples, and may perform
+poorly with very small sample sizes. This runs counter to the purpose of the
+`visStatistics` package, which is designed to offer a rapid overview of the data,
+laying the groundwork for deeper analysis in subsequent steps.
+
+The package targets users with basic statistical literacy, such as non-specialist professionals and students in applied fields. It covers topics typically included in an undergraduate course on applied statistics, intentionally excluding more advanced methods like bootstrapping to keep the focus on foundational concepts.
+
+
+A
 
 # Implemented tests
 
@@ -840,7 +883,7 @@ When the response is numeric and the predictor is categorical, test of central t
 
 ### Homoscedasticity assumption check
 
-`bartlett.test()`
+`bartlett.test()` and `levene.test()`
 
 ### Post-hoc tests
 
