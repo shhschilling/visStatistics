@@ -107,5 +107,7 @@ vis_anova_assumptions <- function(samples, fact, conf.level = 0.95,
     levene_test = if (!regression) levene_test else NULL,
     bartlett_test = if (!regression) bartlett_test else NULL
   )
+  class(result) <- "vis_anova_assumptions"
   return(result)
+  
 }
