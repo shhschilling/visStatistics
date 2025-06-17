@@ -270,6 +270,36 @@ visstat_core <- function(dataframe,
   ) &&
   (typefactor == "factor") && nlevels(fact) == 2) {
     # check if there is at least one entry in each group, if not return empty
+    # 
+  
+    
+    
+    openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory,
+                  capture_env = capture_env) 
+  
+    ttest_assumptions=vis_ttest_assumptions(samples,fact)
+    
+    
+    if (is.null(plotName)) {
+      filename <-
+        paste("assumptions_", varsample, "_", varfactor, sep = "")
+    } else {
+      filename <-  paste("assumptions_",plotName)
+    }
+    
+    plot_paths <- c(
+      plot_paths,
+      saveGraphVisstat(
+        fileName = filename,
+        type = graphicsoutput,
+        fileDirectory = plotDirectory,
+        capture_env = capture_env
+      )
+    )
+    
+    
+    
+    
     twosamples <-
       create_two_samples_vector(samples, fact) # returns list with three entries
     if (length(twosamples) < 3) {

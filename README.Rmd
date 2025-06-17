@@ -161,6 +161,7 @@ visstat(insect_sprays_ab$spray, insect_sprays_ab$count)
 # Backward-compatible function call resulting in same output
 # visstat(insect_sprays_ab,"count", "spray")
 ```
+
 #### mtcars data set
 
 ```{r mtcars}
@@ -168,6 +169,7 @@ mtcars$am <- as.factor(mtcars$am)
 t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
 #summary(t_test_statistics)
 ```
+
 ### Wilcoxon rank sum test
 
 
@@ -190,7 +192,6 @@ wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
 
 ```{r npk-onewy}
 one_way_npk <- visstat(npk$block,npk$yield)
-summary(one_way_npk)
 ```
 
 ### Kruskal-Wallis test

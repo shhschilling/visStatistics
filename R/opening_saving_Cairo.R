@@ -1,7 +1,6 @@
 #' Cairo wrapper function with plot capture capability
 #'
 #' Cairo wrapper function returning NULL if not \code{type} is specified.
-#' Enhanced version that can capture plots for later replay.
 #'
 #' \code{openGraphCairo()} \code{Cairo()} wrapper function. Differences to
 #' \code{Cairo:} a) prematurely ends the function call to \code{Cairo()}
@@ -140,9 +139,18 @@ saveGraphVisstat <- function(fileName = NULL,
     oldfile <- file.path(fileDirectory, oldPlotName)
   }
   
-  while (!is.null(dev.list())) {
-    dev.off()
+  # while (!is.null(dev.list())) {
+  #   dev.off()
+  # }
+  
+  
+  if (!is.null(type) && !is.null(fileName)) {
+    # Only close devices when actually saving files
+    while (!is.null(dev.list())) {
+      dev.off()
+    }
   }
+  
   
   file2 <- gsub("[^[:alnum:]]", "_", fileName)
   file3 <- gsub("_{2,}", "_", file2)

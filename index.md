@@ -125,6 +125,8 @@ central tendencies are selected.
     # Backward-compatible function call resulting in same output
     # visstat(insect_sprays_ab,"count", "spray")
 
+<img src="man/figures/README-insect-sprays-2.png" width="100%" />
+
 #### mtcars data set
 
     mtcars$am <- as.factor(mtcars$am)
@@ -133,6 +135,8 @@ central tendencies are selected.
 <img src="man/figures/README-mtcars-1.png" width="100%" />
 
     #summary(t_test_statistics)
+
+<img src="man/figures/README-mtcars-2.png" width="100%" />
 
 ### Wilcoxon rank sum test
 
@@ -148,57 +152,13 @@ central tendencies are selected.
 
     wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
 
-<img src="man/figures/README-sex-grades2-1.png" width="100%" />
+<img src="man/figures/README-sex-grades2-1.png" width="100%" /><img src="man/figures/README-sex-grades2-2.png" width="100%" />
 
 ### One-way test
 
     one_way_npk <- visstat(npk$block,npk$yield)
 
 <img src="man/figures/README-npk-onewy-1.png" width="100%" /><img src="man/figures/README-npk-onewy-2.png" width="100%" />
-
-    summary(one_way_npk)
-    #> Summary of visstat object
-    #> 
-    #> --- Named components ---
-    #> [1] "summary statistics of ANOVA"    "post-hoc analysis of TuckeyHSD" "conf.level"                    
-    #> 
-    #> --- Contents ---
-    #> 
-    #> $summary statistics of ANOVA:
-    #> 
-    #>  One-way analysis of means (not assuming equal variances)
-    #> 
-    #> data:  samples and fact
-    #> F = 6.2463, num df = 5.0000, denom df = 8.0508, p-value = 0.01178
-    #> 
-    #> 
-    #> $post-hoc analysis of TuckeyHSD:
-    #>   Tukey multiple comparisons of means
-    #>     95% family-wise confidence level
-    #> 
-    #> Fit: aov(formula = samples ~ fact)
-    #> 
-    #> $fact
-    #>        diff        lwr       upr     p adj
-    #> 2-1   3.425  -8.804242 15.654242 0.9440575
-    #> 3-1   6.750  -5.479242 18.979242 0.5166401
-    #> 4-1  -3.900 -16.129242  8.329242 0.9074049
-    #> 5-1  -3.500 -15.729242  8.729242 0.9390165
-    #> 6-1   2.325  -9.904242 14.554242 0.9893559
-    #> 3-2   3.325  -8.904242 15.554242 0.9503518
-    #> 4-2  -7.325 -19.554242  4.904242 0.4312574
-    #> 5-2  -6.925 -19.154242  5.304242 0.4900643
-    #> 6-2  -1.100 -13.329242 11.129242 0.9996936
-    #> 4-3 -10.650 -22.879242  1.579242 0.1094850
-    #> 5-3 -10.250 -22.479242  1.979242 0.1321421
-    #> 6-3  -4.425 -16.654242  7.804242 0.8539828
-    #> 5-4   0.400 -11.829242 12.629242 0.9999980
-    #> 6-4   6.225  -6.004242 18.454242 0.5981409
-    #> 6-5   5.825  -6.404242 18.054242 0.6604328
-    #> 
-    #> 
-    #> $conf.level:
-    #> [1] 0.95
 
 ### Kruskal-Wallis test
 
@@ -272,8 +232,8 @@ The full file path of the generated graphics are stored as the attribute
 
     paths <- attr(save_fisher, "plot_paths")
     print(paths)
-    #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpo5NT1P/chi_squared_or_fisher_Hair_Eye.png"
-    #> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpo5NT1P/mosaic_complete_Hair_Eye.png"
+    #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpNcgccU/chi_squared_or_fisher_Hair_Eye.png"
+    #> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpNcgccU/mosaic_complete_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -313,15 +273,15 @@ statistical hypothesis test of central tendencies is selected.
   if the Shapiro–Wilk test yields a result exceeding the significance
   threshold *α* (Razali and Wah 2011):
   <!-- if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.  -->
-  If this condition is met, Bartlett’s test (`bartlett.test()`) is then
-  used to assess homoscedasticity. When variances are homogeneous
-  (*p* &gt; *α*), ANOVA is applied with Tukey’s HSD (`TukeyHSD()`) for
-  post-hoc comparison. If variances differ significantly (*p* ≤ *α*),
-  Welch’s one - way test (`oneway.test()`) is used, also followed by
-  Tukey’s HSD. If residuals are not normally distributed according to
-  both tests (*p* ≤ *α*), the Kruskal-Wallis test (`kruskal.test()`) is
-  selected, followed by pairwise Wilcoxon tests
-  (`pairwise.wilcox.test()`).
+  If this condition is met, the Levene-Brown–Forsythe-test (Brown and
+  Forsythe 1974) (`levene.test()`) is then used to assess
+  homoscedasticity. When variances are homogeneous (*p* &gt; *α*), ANOVA
+  is applied with Tukey’s HSD (`TukeyHSD()`) for post-hoc comparison. If
+  variances differ significantly (*p* ≤ *α*), Welch’s one - way test
+  (`oneway.test()`) is used, also followed by Tukey’s HSD. If residuals
+  are not normally distributed according to both tests (*p* ≤ *α*), the
+  Kruskal-Wallis test (`kruskal.test()`) is selected, followed by
+  pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
 
 A graphical overview of the decision logic used is provided in below
 figure.
@@ -386,7 +346,7 @@ visualised.
 
 #### Homoscedasticity assumption check
 
-`bartlett.test()`
+`levene.test()` and `bartlett.test()`
 
 #### Post-hoc tests-`TukeyHSD()` (used following `aov()`and `oneway.test()`)
 
@@ -419,6 +379,11 @@ cell counts based on Cochran’s rule)
 <!-- - Cochran, W. G. (1954). *Some methods for strengthening the common chi-squared   -->
 <!--   tests*. _Biometrics_, 10(4), 417–451. -->
 <!-- pkgdown::end -->
+
+Brown, Morton B., and Alan B. Forsythe. 1974. “Robust Tests for the
+Equality of Variances.” *Journal of the American Statistical
+Association* 69 (346): 364–67.
+<https://doi.org/10.1080/01621459.1974.10482955>.
 
 Cochran, William G. 1954. “The Combination of Estimates from Different
 Experiments.” *Biometrics* 10 (1): 101.
