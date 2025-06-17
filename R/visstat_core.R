@@ -585,12 +585,12 @@ visstat_core <- function(dataframe,
     
     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
     
+    
+    
     visanova <- vis_anova_assumptions(
       samples,
       fact,
-      conf.level = conf.level,
-      samplename = varsample,
-      factorname = varfactor
+      conf.level = conf.level
     )
     
     

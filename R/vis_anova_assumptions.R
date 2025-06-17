@@ -2,15 +2,13 @@
 #'
 #' Checks for normality of the standardised residuals in ANOVA or regression.
 #' Performs the Shapiro-Wilk test and Anderson-Darling test for normality and,
-#' if not a regression, also Bartlett's test for homogeneity of variances.
+#' if not a regression, also the Levene-Brown-Forsythe and the Bartlett's test for homogeneity of variances.
 #' It produces a histogram with normal overlay, a residuals vs fitted plot,
 #' and a normal Q-Q plot.
 #'
 #' @param samples Numeric vector; the dependent variable.
 #' @param fact Factor; the independent variable.
 #' @param conf.level Numeric; confidence level for the tests (default: 0.95).
-#' @param samplename Character; optional name of the sample for plots (default: "").
-#' @param factorname Character; optional name of the factor for plots (default: "").
 #' @param cex Numeric; scaling factor for plot text and symbols (default: 1).
 #' @param regression Logical; if TRUE, skips Bartlett's test (for regression diagnostics). Default is FALSE.
 #'
@@ -19,7 +17,7 @@
 #'   \item{summary_anova}{Summary of the ANOVA model.}
 #'   \item{shapiro_test}{Result from \code{shapiro.test()}.}
 #'   \item{ad_test}{Result from \code{nortest::ad.test()} or a character message if n < 7.}
-#'   \item{levene_test}{Result from \code{lawstat::levene.test()} (only if \code{regression = FALSE}).}
+#'   \item{levene_test}{Result from \code{levene.test()} (only if \code{regression = FALSE}).}
 #'   \item{bartlett_test}{Result from \code{bartlett.test()} (only if \code{regression = FALSE}).}
 #' }
 #'
@@ -30,7 +28,7 @@
 #' @export
 
 vis_anova_assumptions <- function(samples, fact, conf.level = 0.95, 
-                                  samplename = "", factorname = "", cex = 1, regression = FALSE) {
+                                  cex = 1, regression = FALSE) {
   old_par <- par(no.readonly = TRUE)
   on.exit(par(old_par))
   
@@ -42,7 +40,7 @@ vis_anova_assumptions <- function(samples, fact, conf.level = 0.95,
   if (n_residuals >= 3 && n_residuals <= 5000) {
     shapiro_test <- shapiro.test(std_residuals)
   } else if (n_residuals < 3) {
-    shapiro_test <- list(statistic = NA, p.value = NA, method = paste("Shapiro-Wilk test requires requires sample size of at least 3. (n =", n_residuals, ")"))
+    shapiro_test <- list(statistic = NA, p.value = NA, method = paste("Shapiro-Wilk test requires sample size of at least 3. (n =", n_residuals, ")"))
   } else {
     shapiro_test <- list(statistic = NA, p.value = NA, method = paste("Shapiro-Wilk test allows maximal sample size of 5000 (n =", n_residuals, ")"))
   }
@@ -55,7 +53,7 @@ vis_anova_assumptions <- function(samples, fact, conf.level = 0.95,
   
   if (!regression) {
     bartlett_test <- bartlett.test(samples ~ fact)
-    levene_test <- levene.test(samples,fact)
+    levene_test <- levene.test(samples, fact)
   } 
   
   # Create plots
@@ -80,20 +78,19 @@ vis_anova_assumptions <- function(samples, fact, conf.level = 0.95,
   
   # Title
   p_shapiro <- if (!is.na(shapiro_test$p.value)) signif(shapiro_test$p.value, 3) else "N/A"
-  p_AD <- if (is.list(ad_test)) signif(ad_test$p.value, 3) else "N/A"
+  
+  p_AD <- if (is.list(ad_test) && !is.null(ad_test$p.value)) signif(ad_test$p.value, 3) else "N/A"
+  
   
   if (regression) {
     mtext(text = paste("Shapiro p =", p_shapiro, "| Anderson-Darling p =", p_AD), 
           side = 3, outer = TRUE, cex = 0.8)
   } else {
-    # mtext(text = paste("Shapiro p =", p_shapiro, "| Anderson-Darling p =", p_AD, 
-    #                    "brown p =", signif(brown_test$p.value, 3),         
-    # "| Bartlett p =", signif(bartlett_test$p.value, 3)), 
-    #       side = 3, outer = TRUE, cex = 0.8)
     mtext(
       text = paste(
         "Shapiro p =", signif(p_shapiro, 3),
-        "| Anderson-Darling p =", signif(p_AD, 3), "\n",
+    #    "| Anderson-Darling p =", signif(p_AD, 3), "\n",
+        "| Anderson-Darling p =", if(is.numeric(p_AD)) signif(p_AD, 3) else p_AD, "\n",
         "Levene-Brown-Forsythe p =", signif(levene_test$p.value, 3),
         "| Bartlett p =", signif(bartlett_test$p.value, 3)
       ),
@@ -101,9 +98,8 @@ vis_anova_assumptions <- function(samples, fact, conf.level = 0.95,
       outer = TRUE,
       cex = 0.8
     )
-    
-    
   }
+  
   result <- list(
     summary_anova = summary(anova_model),
     shapiro_test = shapiro_test,

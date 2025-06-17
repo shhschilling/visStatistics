@@ -8,8 +8,6 @@ vis_anova_assumptions(
   samples,
   fact,
   conf.level = 0.95,
-  samplename = "",
-  factorname = "",
   cex = 1,
   regression = FALSE
 )
@@ -21,10 +19,6 @@ vis_anova_assumptions(
 
 \item{conf.level}{Numeric; confidence level for the tests (default: 0.95).}
 
-\item{samplename}{Character; optional name of the sample for plots (default: "").}
-
-\item{factorname}{Character; optional name of the factor for plots (default: "").}
-
 \item{cex}{Numeric; scaling factor for plot text and symbols (default: 1).}
 
 \item{regression}{Logical; if TRUE, skips Bartlett's test (for regression diagnostics). Default is FALSE.}
@@ -35,14 +29,14 @@ A list with elements:
   \item{summary_anova}{Summary of the ANOVA model.}
   \item{shapiro_test}{Result from \code{shapiro.test()}.}
   \item{ad_test}{Result from \code{nortest::ad.test()} or a character message if n < 7.}
-  \item{levene_test}{Result from \code{lawstat::levene.test()} (only if \code{regression = FALSE}).}
+  \item{levene_test}{Result from \code{levene.test()} (only if \code{regression = FALSE}).}
   \item{bartlett_test}{Result from \code{bartlett.test()} (only if \code{regression = FALSE}).}
 }
 }
 \description{
 Checks for normality of the standardised residuals in ANOVA or regression.
 Performs the Shapiro-Wilk test and Anderson-Darling test for normality and,
-if not a regression, also Bartlett's test for homogeneity of variances.
+if not a regression, also the Levene-Brown-Forsythe and the Bartlett's test for homogeneity of variances.
 It produces a histogram with normal overlay, a residuals vs fitted plot,
 and a normal Q-Q plot.
 }
