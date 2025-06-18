@@ -359,7 +359,7 @@ visstat_core <- function(dataframe,
           filename <- plotName
         }
         
-        plot_paths <- c(plot_paths, saveGraphVisstat(filename, type = graphicsoutput, fileDirectory = plotDirectory,,capture_env = capture_env))
+        plot_paths <- c(plot_paths, saveGraphVisstat(filename, type = graphicsoutput, fileDirectory = plotDirectory,capture_env = capture_env))
       }
       # 2. If assumptions of t-test are not met: Wilcoxon, else t-test
       else if (!exists("p1") |
@@ -701,6 +701,14 @@ visstat_core <- function(dataframe,
   attr(vis_sample_fact, "plot_paths") <- plot_paths
   attr(vis_sample_fact, "captured_plots") <- capture_env$captured_plots
   class(vis_sample_fact) <- "visstat"
+  
+  # FORCE ALL CAIRO OPERATIONS TO COMPLETE
+  if (!is.null(graphicsoutput)) {
+    while (!is.null(dev.list())) {
+      dev.off()
+    }
+  }
+  
   
   return(invisible(vis_sample_fact))
   
