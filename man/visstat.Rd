@@ -94,7 +94,7 @@ assumption diagnostics.
 visstat(mtcars$am, mtcars$mpg)
 
 ## Backward-compatible usage (same result):
-visstat(mtcars, "mpg", "am")
+# visstat(mtcars, "mpg", "am")
 
 ## Wilcoxon rank sum test
 grades_gender <- data.frame(

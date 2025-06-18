@@ -50,6 +50,7 @@ openGraphCairo <- function(width = 640,
                            capture_env = NULL) {
   oldparCairo <- par(no.readonly = TRUE)
   oldparCairo$new <- FALSE
+  oldparCairo$pin <- NULL
   on.exit(par(oldparCairo))
   
   if (is.null(type)) {
@@ -139,18 +140,13 @@ saveGraphVisstat <- function(fileName = NULL,
     oldfile <- file.path(fileDirectory, oldPlotName)
   }
   
-  # while (!is.null(dev.list())) {
-  #   dev.off()
-  # }
-  
-  
-  if (!is.null(type) && !is.null(fileName)) {
-    # Only close devices when actually saving files
-    while (!is.null(dev.list())) {
-      dev.off()
-    }
+  while (!is.null(dev.list())) {
+    dev.off()
   }
   
+  dev.flush() #new line
+  
+
   
   file2 <- gsub("[^[:alnum:]]", "_", fileName)
   file3 <- gsub("_{2,}", "_", file2)
@@ -158,10 +154,13 @@ saveGraphVisstat <- function(fileName = NULL,
   newFileName <- paste0(file3, ".", type)
   Cairofile <- file.path(fileDirectory, newFileName)
   file.copy(oldfile, Cairofile, overwrite = T)
+  file.info(Cairofile)  # Force file system sync #new line
   
   if (file.exists(oldfile)) {
     file.remove(oldfile)
   }
+  
+  
   
   return(invisible(Cairofile))
 }

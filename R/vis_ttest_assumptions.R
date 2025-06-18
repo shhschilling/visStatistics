@@ -42,6 +42,10 @@ vis_ttest_assumptions <- function(samples,
   
   # Store original par settings
   oldpar <- par(no.readonly = TRUE)
+
+  oldpar$pin <- NULL  # Add this line
+  oldpar$new <- FALSE  # Add this line too (removes the "new" warning)
+  
   on.exit(par(oldpar))
   
   # Clean data - remove NAs

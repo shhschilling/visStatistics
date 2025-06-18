@@ -154,20 +154,19 @@ central tendencies are selected.
 insect_sprays_ab <- InsectSprays[InsectSprays$spray %in% c("A", "B"), ]
 insect_sprays_ab$spray <- factor(insect_sprays_ab$spray)
 
-# Standardised
+# Standardised input fom
 visstat(insect_sprays_ab$spray, insect_sprays_ab$count)
-
-
-# Backward-compatible function call resulting in same output
-# visstat(insect_sprays_ab,"count", "spray")
 ```
+
+
+
 
 #### mtcars data set
 
 ```{r mtcars}
 mtcars$am <- as.factor(mtcars$am)
 t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
-#summary(t_test_statistics)
+
 ```
 
 ### Wilcoxon rank sum test
@@ -213,7 +212,7 @@ Increasing the confidence level `conf.level` from the default 0.95 to
 0.99 leads two wider confidence and prediction bands:
 
 ```{r pressure, echo = FALSE}
-linreg_cars_99 <- visstat(cars$speed ,cars$dist, conf.level = 0.99)
+linreg_cars_99 <- invisible(visstat(cars$speed ,cars$dist, conf.level = 0.99))
 ```
 
 ## Both variables categorical

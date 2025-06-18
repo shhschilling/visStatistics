@@ -115,28 +115,17 @@ central tendencies are selected.
     insect_sprays_ab <- InsectSprays[InsectSprays$spray %in% c("A", "B"), ]
     insect_sprays_ab$spray <- factor(insect_sprays_ab$spray)
 
-    # Standardised
+    # Standardised input fom
     visstat(insect_sprays_ab$spray, insect_sprays_ab$count)
 
-<img src="man/figures/README-insect-sprays-1.png" width="100%" />
-
-
-
-    # Backward-compatible function call resulting in same output
-    # visstat(insect_sprays_ab,"count", "spray")
-
-<img src="man/figures/README-insect-sprays-2.png" width="100%" />
+<img src="man/figures/README-insect-sprays-1.png" width="100%" /><img src="man/figures/README-insect-sprays-2.png" width="100%" />
 
 #### mtcars data set
 
     mtcars$am <- as.factor(mtcars$am)
     t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
 
-<img src="man/figures/README-mtcars-1.png" width="100%" />
-
-    #summary(t_test_statistics)
-
-<img src="man/figures/README-mtcars-2.png" width="100%" />
+<img src="man/figures/README-mtcars-1.png" width="100%" /><img src="man/figures/README-mtcars-2.png" width="100%" />
 
 ### Wilcoxon rank sum test
 
@@ -232,8 +221,8 @@ The full file path of the generated graphics are stored as the attribute
 
     paths <- attr(save_fisher, "plot_paths")
     print(paths)
-    #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpNcgccU/chi_squared_or_fisher_Hair_Eye.png"
-    #> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpNcgccU/mosaic_complete_Hair_Eye.png"
+    #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpI8AGJC/chi_squared_or_fisher_Hair_Eye.png"
+    #> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpI8AGJC/mosaic_complete_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
