@@ -136,13 +136,6 @@ visstat <- function(x,
   
   
   
-  
-  
-  
-  
-  
-  
-  
   clean_name <- function(expr) {
     sub(".*\\$", "", deparse(expr))
   }

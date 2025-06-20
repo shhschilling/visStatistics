@@ -30,6 +30,10 @@
 vis_anova_assumptions <- function(samples, fact, conf.level = 0.95, 
                                   cex = 1, regression = FALSE) {
   old_par <- par(no.readonly = TRUE)
+  old_par$pin <- NULL
+  old_par$new <- FALSE
+  old_par$fig <- NULL
+  old_par$mfg <- NULL
   on.exit(par(old_par))
   
   anova_model <- aov(samples ~ fact)

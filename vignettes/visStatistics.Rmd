@@ -2,12 +2,12 @@
 title: "visStatistics: The right test, visualised"
 author: 
   - name: "Sabine Schilling"
-    affiliation: "Institue of Tourism and Mobility, Lucerne Unviersity of Applied Sciences and Arts"
-    email: "sabine.schillingg@protonmail.com"
+    affiliation: "Institute of Tourism and Mobility, Lucerne Unviversity of Applied Sciences and Arts"
+    email: "sabine.schilling@protonmail.com"
 date: "`r Sys.Date()`"
 output:
  #html_vignette: #for CRAN, much more lightweight 
- bookdown::html_document2:  #for correct disply in pkdown of section numbering
+ bookdown::html_document2:  #for correct display in pkdown of section numbering
 # pdf_document:
     toc: true
     number_sections: true
@@ -69,12 +69,12 @@ This supports reproducibility and correct inference even in such constrained env
 
 The remainder of this vignette is organised as follows:
 
--   Section 3 focues on the installation and the main function call,
+-   Section 3 focuses on the installation and the main function call,
 
 -   Section 4 summarises the decision logic used to select a statistical test.
 
 -   Sections 5–7 provide background on the implemented tests and illustrate the decision logic using examples.
-    Function names in parentheses in the headings indicate the corresponding statistical hypothesis test function in R,
+    Function names in parentheses in the headings indicate the corresponding statistical hypothesis test function in R.
 
 -   Section 8 outlines the main limitations of the package.
 
@@ -133,17 +133,17 @@ When the response is numeric and the predictor is categorical, a statistical hyp
     Welch's t-test is the default method in R for comparing means and is generally preferred over Student's t-test because it does not assume equal variances.
     It maintains comparable power even when variances are equal and outperforms Student's test when variances differ [@Moser:1992; @Fagerland:2009; @Delacre:2017].
 
--   For smaller samples, group - wise normality is assessed using the Shapiro - Wilk test [@Shapiro:1965 (`shapiro.test()`) at a significance level $\alpha$.
+-   For smaller samples, group-wise normality is assessed using the Shapiro-Wilk test [@Shapiro:1965 (`shapiro.test()`) at a significance level $\alpha$.
     Simulation studies consistently show that the Shapiro-Wilk test is the most powerful for detecting non-normality across most distributions, especially with smaller sample sizes.[@Razali:2011; @Ghasemi:2012]
 
-    If both groups are found to be approximately normally distributed according to the Shapiro--Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank- sum test (`wilcox.test()`) is used.
+    If both groups are found to be approximately normally distributed according to the Shapiro--Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank-sum test (`wilcox.test()`) is used.
 
 -   For predictors with more than two levels, a model of Fisher's one-way analysis of variables (ANOVA) (`aov()`) is initially fitted.
-    <!-- The normality of residuals is evaluated by the  the Shapiro--Wilk test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$. --> The normality of residuals is evaluated by the the Shapiro--Wilk test (`shapiro.test()`); residuals are considered approximately normal if it yields a result exceeding the significance threshold $\alpha$.
+    <!-- The normality of residuals is evaluated by the  the Shapiro--Wilk test (`shapiro.test()`) and the Anderson-Darling test (`ad.test()`); residuals are considered approximately normal if at least one of the two tests yields a result exceeding the significance threshold $\alpha$. --> The normality of residuals is evaluated by the Shapiro-Wilk test (`shapiro.test()`); residuals are considered approximately normal if it yields a result exceeding the significance threshold $\alpha$.
     If this condition is met, the Levene–Brown–Forsythe
 test (implemented as `levene.test()`) [@Brown:1974]  assesses homoscedasticity. 
     When variances are homogeneous ($p > \alpha$), Fisher's one-way ANOVA (`aov()`) is applied with Tukey's Honestly Significant Differences (HSD) (`TukeyHSD()`) for post-hoc comparison.
-    If variances differ significantly ($p \le \alpha$), Welch's heteroscedastic one- way ANOVA (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal--Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
+    If variances differ significantly ($p \le \alpha$), Welch's heteroscedastic one-way ANOVA (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal--Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
     A graphical overview of the decision logic used is provided in the figure below.
 
 ```{r fig-decision-switch, echo=FALSE, results='asis'}
@@ -186,7 +186,7 @@ When both variables are categorical, no direction is assumed; the order of varia
 For consistency, we continue referring to the variables as *predictor* and *response*.
 
 `visstat()` tests the null hypothesis that the variables are independent using either Pearson’s $\chi^2$ test (`chisq.test()`) or Fisher’s exact test (`fisher.test()`), depending on expected cell counts.
-The choice of test is based on Cochran's rule [@Cochran:1954], which advises that the $\chi^2$approximation is reliable only if no expected cell count is less than 1 and no more than 20 percent of cells have expected counts below 5.
+The choice of test is based on Cochran's rule [@Cochran:1954], which advises that the $\chi^2$ approximation is reliable only if no expected cell count is less than 1 and no more than 20 percent of cells have expected counts below 5.
 
 # Numeric response and categorical predictor: Comparing central tendencies
 
@@ -220,7 +220,7 @@ $$
 
 The resulting p-value is computed from the *t*-distribution with $\nu$ degrees of freedom.
 
-Welch's t-test remains valid and exhibits only minimal loss of power even when the assumptions of Student's t-test -- namely, normality and equal variances of the response variable across groups -- are satisfied [@Moser:1992; @Delacre:2017]. It is therefore the default implementation of the t-test in R. be .
+Welch's t-test remains valid and exhibits only minimal loss of power even when the assumptions of Student's t-test -- namely, normality and equal variances of the response variable across groups -- are satisfied [@Moser:1992; @Delacre:2017]. It is therefore the default implementation of the t-test in R. 
 
 ### Wilcoxon rank-sum test (`wilcox.test()`)
 
@@ -248,7 +248,7 @@ Otherwise, a normal approximation with continuity correction is used.
 
 ### Graphical output
 
-<!-- The below paragph is a repetition of the decision logic:  -->
+
 
 ```{=html}
 <!-- `visstat()` selects between Welch's t-test and the Wilcoxon rank-sum test
@@ -271,7 +271,7 @@ The title is structured as follows:
 
 -   First line: Test name and chosen significance level $\alpha$.
 
--   Second line: Null hypotheses automatically adapted based on the user- specified response and grouping variable.
+-   Second line: Null hypotheses automatically adapted based on the user-specified response and grouping variable.
 
 -   Third line: Test statistic, p-value and automated comparison with $\alpha$
 
@@ -290,7 +290,7 @@ t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
 
 Increasing the confidence level `conf.level` from the default 0.95 to 0.99 results in wider confidence intervals, as a higher confidence level requires more conservative bounds to ensure that the interval includes the true parameter value with greater certainty.
 
-```{r}
+```{r,echo = FALSE, fig.show = 'hide'}
 mtcars$am <- as.factor(mtcars$am)
 t_test_statistics_99 <- visstat(mtcars$am, mtcars$mpg, conf.level = 0.99)
 ```
@@ -315,7 +315,7 @@ wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
 
 ## Categorical predictor with more than two levels
 
-If the predictor is of `class` "`factor`" with **more than two levels** and the response is of `mode` "`numeric`", `visstat()` either performs Fisher’s one- way ANOVA [@Fisher:1935] (`aov()`), Welch’s heteroscedastic one-way ANOVA [@Welch:1951] (`oneway.test()`) or, as a non-parametric alternative, the Kruskal --Wallis test [@Kruskal:1952] (`kruskal.test()`).
+If the predictor is of `class` "`factor`" with **more than two levels** and the response is of `mode` "`numeric`", `visstat()` either performs Fisher’s one- way ANOVA [@Fisher:1935] (`aov()`), Welch’s heteroscedastic one-way ANOVA [@Welch:1951] (`oneway.test()`) or, as a non-parametric alternative, the Kruskal -Wallis test [@Kruskal:1952] (`kruskal.test()`).
 
 In the remainder of this section, we briefly introduce the tests themselves, the assumption checks, and the post-hoc procedures, and illustrate each test with an example.
 
@@ -364,7 +364,7 @@ Under the null hypothesis, $H$ approximately follows a $\chi^2$ distribution wit
 The test logic for `aov()` and `oneway.test()` follows from their respective assumptions.
 `visstat()` initially models the data using `aov()` and analyses the residuals.
 
-If both of the following conditions are met: (1) the standardised residuals follow the standard  normal distribution, and (2) the residuals exhibit homoscedasticity (equal variances across groups), then the test statistic from `aov()` is returned.
+If both of the following conditions are met: (1) the standardised residuals follow the standard normal distribution, and (2) the residuals exhibit homoscedasticity (equal variances across groups), then the test statistic from `aov()` is returned.
 
 If only the normality assumption is satisfied, `visstat()` applies `oneway.test()`.
 If the normality assumption is violated, `kruskal.test()` is used instead.
@@ -373,21 +373,42 @@ These assumptions are tested using the `visAnovaAssumptions()` function.
 
 #### Normality of residuals (`shapiro.test()` and `ad.test()`)
 
-The `visAnovaAssumptions()` function assesses the normality of standardised residuals from the the ANOVA fit using both the Shapiro--Wilk test (`shapiro.test()`) and the Anderson--Darling test (`ad.test()`).
-This approach leverages their complementary strengths: Shapiro-Wilk generally demonstrates superior power for diverse non-normal distributions in smaller samples, while Anderson-Darling is highly sensitive to tail deviations and performs robustly with larger sample sizes [@Razali:2011; @Yap:2011].
+The `visAnovaAssumptions()` function evaluates the normality of standardised  
+residuals from the ANOVA model using both the Shapiro–Wilk test  
+(`shapiro.test()`) and the Anderson–Darling test (`ad.test()`). These tests  
+offer complementary strengths: Shapiro–Wilk generally exhibits greater power  
+across a range of non-normal distributions in small samples, whereas  
+Anderson–Darling is highly sensitive to tail deviations and performs reliably  
+in larger samples [@Razali:2011; @Yap:2011].  
 
-<!-- This strategy increases tolerance to minor deviations from normality and reduces the risk of false positives (Type I errors for non-normality detection), but may increase the risk of false negatives (Type II errors), potentially overlooking meaningful departures from normality[@Ghasemi:2012]. -->
-Statistical tests on assumptions are generally not
-very reliable, sometimes breaking down in both small and large samples - the Shapiro-Wilk-tests breaks down on large samples ($N>5000$), the Anderson-Darling tests requires a minimum of 7 test cases. 
+Assessing assumptions solely through p-values can lead to both type I errors  
+(false positives) and type II errors (false negatives). In large samples, even  
+minor, random deviations from the null hypothesis—such as the assumption of  
+normality—can result in statistically significant p-values, leading to type I  
+errors. Conversely, in small samples, substantial violations of the assumption  
+may not reach statistical significance, resulting in type II errors  
+[@Kozak:2018].  
 
-Assessment for normality should never solely rely on p-values, but should be complemented by visual inspections
+Thus, the robustness of statistical tests depends on both the sample size and  
+the shape of the underlying distribution. This is evident in the limitations  
+of the normality tests used: for instance, the Shapiro–Wilk test is unreliable  
+for large samples ($N > 5000$), while the Anderson–Darling test requires at  
+least 7 observations.  
 
-Therefore the function generates diagnostic plots: standardised residuals overlaid by the standard normal distribution, a scatter plot of the standardised residuals against the fitted means of the linear model for each level of the predictor, and a Q-Q plot of the standardised residuals.
+Moreover, assumption tests provide no information on the nature of deviations  
+from the expected distribution [@Shatz:2024]. Therefore, the assessment of  
+normality should not rely solely on p-values but should be complemented by  
+visual inspection. `visstat()` produces diagnostic plots including: (1) a  
+histogram of the standardised residuals overlaid with the standard normal  
+distribution, (2) a scatter plot of the standardised residuals versus the  
+fitted values for each predictor level, and (3) a Q–Q plot of the residuals.  
 
+Since algorithmic logic cannot replace the combination of formal tests and  
+expert visual judgement, the function defaults to assuming normality if the  
+Shapiro–Wilk test yields a p-value greater than alpha. Simulation studies  
+suggest that Shapiro–Wilk has the highest power among normality tests in  
+small to moderate samples [@Razali:2011].  
 
-The algorithmic decision logic cannot replicate the combination of formal tests and expert visual assessment of normality.
-It therefore assumes normality if the Shapiro–Wilk test yields a p-value greater than $\alpha$, as simulation studies have shown it to offer the highest power against a variety of non-normal distributions in small to moderate samples [@Razali:2011].
-<!-- Note: While Welch’s t-test omits normality checks for n > 30 based on the Central Limit Theorem (CLT), this rationale does not apply to ANOVA. Residuals from a fitted model are not independent and are influenced by the estimated parameters. Therefore, the CLT cannot be used to justify skipping the normality check, which is always applied to ANOVA residuals [@Lumley:2002]. -->
 
 #### Equal variances across groups (`levene.test() and bartlett.test()`)
 
@@ -409,7 +430,7 @@ but is not robust to deviations from normality.
 
 ANOVA is an omnibus test that evaluates a single null hypothesis: all group means are equal.
 If the null hypothesis gets rejected, we would like to identify which specific groups differ significantly from each other.
-However, simple pairwise comparisons of group means following an ANOVA the probability of incorrectly declaring a significant difference when, in fact, there is none.
+However, simple pairwise comparisons of group means following an ANOVA increases the probability of incorrectly declaring a significant difference when, in fact, there is none.
 
 This error is quantified by the family-wise error rate $\alpha_{PF}$ (pronounced “alpha per family of tests”), which refers to the probability of making at least one Type I error, that is, falsely rejecting the null hypothesis across all pairwise comparisons.
 
@@ -616,25 +637,25 @@ linreg_trees <- visstat(trees$Girth, trees$Volume,conf.level=0.9)
 
 p-values greater than `conf.level` in both the Anderson-Darling normality test and the Shapiro--Wilk test of the standardised residuals indicate that the normality assumption of the residuals underlying the linear regression is met.
 
-Increasing the confidence level `conf.level` from the default 0.9 to 0.99 results in wider confidence intervalls of the regression paramters as well as wider confidence and prediction bands
+Increasing the confidence level `conf.level` from the default 0.9 to 0.99 results in wider confidence intervals of the regression parameters as well as wider confidence and prediction bands
 
 ```{r,fig.show='hide'}
 linreg_trees_99 <- visstat(trees$Girth, trees$Volume,conf.level = 0.99)
 ```
 
-Use `visStatistics` plot method to only display again the seond generated plot (the assumption plot is unchanged):
+The  `visStatistics` plot allows to  display only  the second generated plot (the assumption plot is unchanged):
 
 ```{r} 
 plot(linreg_trees_99,which=2)
 ```
 
-#### dataset: `cars`{.unnumbered}
+<!-- #### dataset: `cars`{.unnumbered} -->
 
-The `cars` dataset reports the speed of 50 cars in miles per hour (`speed`) and the stopping distance in feet (`dist`) recorded in  the 1920s. In this example the assuptions of normally distributed residuals is not met.
+<!-- The `cars` dataset reports the speed of 50 cars in miles per hour (`speed`) and the stopping distance in feet (`dist`) recorded in  the 1920s. In this example the assuptions of normally distributed residuals is not met. -->
 
-```{r}
-linreg_cars <- visstat(cars$speed, cars$dist)
-```
+<!-- ```{r} -->
+<!-- linreg_cars <- visstat(cars$speed, cars$dist) -->
+<!-- ``` -->
 
 
 # Both variables categorical: Comparing proportions
@@ -645,7 +666,7 @@ Observed frequencies are typically arranged in a contingency table, where rows i
 ## Pearson's residuals and mosaic plots
 
 Mosaic plots provide a graphical representation of contingency tables, where the area of each tile is proportional to the observed cell frequency.
-To aid interpretation, tiles are coloured based on Pearson residuals from a chi- squared test of independence.
+To aid interpretation, tiles are coloured based on Pearson residuals from a chi-squared test of independence.
 These residuals measure the standardised deviation of observed from expected counts under the null hypothesis of independence.
 
 Let $O_{ij}$ and $E_{ij}$ denote the observed and expected frequencies in row $i$ and column $j$ of an $R \times C$ contingency table.
@@ -766,8 +787,8 @@ visstat(hair_eye_colour_df$Eye, hair_eye_colour_df$Hair)
 
 The graphical output shows that the null hypothesis of Pearson's $\chi^2$ test -- namely, that hair colour and eye colour are independent -- must be rejected at the default significance level $\alpha=0.05$ ($p = 2.33 \cdot 10^{-25} <
 \alpha$).
-The mosaic plot indicates that the strongest deviations are due to over- representation of individuals with black hair and brown eyes, and of those with blond hair and blue eyes.
-In contrast, individuals with blond hair and brown eyes are the most under- represented.
+The mosaic plot indicates that the strongest deviations are due to over-representation of individuals with black hair and brown eyes, and of those with blond hair and blue eyes.
+In contrast, individuals with blond hair and brown eyes are the most under-represented.
 
 #### Pearson's ${\chi}^2$-test with Yate's continuity correction
 
@@ -782,7 +803,7 @@ visstat(hair_black_brown_eyes_brown_blue_df$Eye, hair_black_brown_eyes_brown_blu
 ```
 
 Also in this reduced dataset we reject the null hypothesis of independence of the hair colors "brown" and "black" from the eye colours "brown" and " blue".
-The mosaic plot shows that blue eyed persons with black hair are under- represented.
+The mosaic plot shows that blue-eyed persons with black hair are under- represented.
 Note the higher p-value of Pearson's ${\chi}^2$-test with Yate's continuity correction (p = 0.00354) compared to the p-value of Pearson's ${\chi}^2$-test (p = 0.00229) shown in the mosaic plot.
 
 ### Fisher's exact test (`fisher.test()`)
@@ -844,7 +865,7 @@ Therefore, except for the user-adjustable `conf.level` parameter, all statistica
 As a consequence, paired tests are currently not supported and `visstat()` does not allow to study interactions terms between the different levels of an independent variable in an analysis of variance.
 Focusing on the graphical representation of tests, only simple linear regression is implemented, as multiple linear regressions cannot be visualised.
 
-## Limitationof of decision-logic based on p-values
+## Limitations of of decision-logic based on p-values
 
 The decision logic of the main function `visstat()` is based on the Shapiro-Wilk
 test for normality and the Levene-Brown-Forsythe test for variance homogeneity.
@@ -855,7 +876,7 @@ tests may be unreliable if their assumptions are violated.
 Combining multiple tests with differing assumptions using simple majority voting
 inflates the overall Type I error rate, making such an approach inadequate.
 Therefore, automated test selection based solely on p-values cannot replace the
-visual inspection of sample distributions provided by `visstat()`. Based on these plots, it may be necessary to a override the automated choice of test in individual cases.
+visual inspection of sample distributions provided by `visstat()`. Based on these plots, it may be necessary to override the automated choice of test in individual cases.
 
 In contrast, bootstrapping methods [@Wilcox:2021] make minimal distributional assumptions and can
 provide confidence intervals for nearly any statistic. However, bootstrapping is
@@ -867,13 +888,13 @@ laying the groundwork for deeper analysis in subsequent steps.
 The package targets users with basic statistical literacy, such as non-specialist professionals and students in applied fields. It covers topics typically included in an undergraduate course on applied statistics, intentionally excluding more advanced methods like bootstrapping to keep the focus on foundational concepts.
 
 
-A
+
 
 # Implemented tests
 
 ## Numeric response and categorical predictor
 
-When the response is numeric and the predictor is categorical, test of central tendencies are selected:
+When the response is numeric and the predictor is categorical, a test of central tendency is selected:
 
 `t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`,`kruskal.test()`
 

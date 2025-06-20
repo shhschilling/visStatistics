@@ -4,6 +4,19 @@ editor_options:
     wrap: 80
 ---
 
+# visStatistics 0.1.8
+
+## Major changes
+ -  Included new function `levene.test()` implementing the Levene-Brown-Forsythe Test for Homogeneity of Variance (center = median). It mimicks the default behaviour of `leveneTest` in the `car` - package 
+ -  Decision test logic now based on `shapiro,test()` and `leven.test()
+
+## Structural Improvements
+
+-   The class `"visstat"` now includes a plot-method: `plot.visstat()`.
+-   Tests for comparing central tendencies now all show plots for testing the normaliy       assumption.
+-   All assumption plots are now safed with the prefix "assumption" followed by 
+    plot name 
+
 # visStatistics 0.1.6
 
 ## Major changes
