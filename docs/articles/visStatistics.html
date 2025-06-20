@@ -276,16 +276,12 @@ When Welch’s t-test is applied, the function includes confidence intervals bas
 <span><span class="va">t_test_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span>, <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-2-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-2-2.png" width="100%"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the default 0.95 to 0.99 results in wider confidence intervals, as a higher confidence level requires more conservative bounds to ensure that the interval includes the true parameter value with greater certainty.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
-<span><span class="va">t_test_statistics_99</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span>, <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-3-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-3-2.png" width="100%"></p>
 </div>
 <div class="section level5">
 <h5 id="wilcoxon-rank-sum-test">Wilcoxon rank sum test<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test"></a>
 </h5>
 <p>The Wilcoxon rank sum test is exemplified on differences between the central tendencies of grades of “boys” and “girls” in a class:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grades_gender</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  sex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"girl"</span>, <span class="fl">21</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"boy"</span>, <span class="fl">23</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  grade <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -364,16 +360,31 @@ If the normality assumption is violated, <code><a href="https://rdrr.io/r/stats/
 <h5 id="normality-of-residuals-shapiro-test-and-ad-test">
 <span class="header-section-number">5.2.5.1</span> Normality of residuals (<code>shapiro.test()</code> and <code>ad.test()</code>)<a class="anchor" aria-label="anchor" href="#normality-of-residuals-shapiro-test-and-ad-test"></a>
 </h5>
-<p>The <code>visAnovaAssumptions()</code> function assesses the normality of standardised residuals from the the ANOVA fit using both the Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson–Darling test (<code>ad.test()</code>).
-This approach leverages their complementary strengths: Shapiro-Wilk generally demonstrates superior power for diverse non-normal distributions in smaller samples, while Anderson-Darling is highly sensitive to tail deviations and performs robustly with larger sample sizes <span class="citation">[<a href="#ref-Razali:2011">8</a>, <a href="#ref-Yap:2011">20</a>]</span>.</p>
-<!-- This strategy increases tolerance to minor deviations from normality and reduces the risk of false positives (Type I errors for non-normality detection), but may increase the risk of false negatives (Type II errors), potentially overlooking meaningful departures from normality[@Ghasemi:2012]. -->
-<p>Statistical tests on assumptions are generally not
-very reliable, sometimes breaking down in both small and large samples - the Shapiro-Wilk-tests breaks down on large samples (<span class="math inline">\(N&gt;5000\)</span>), the Anderson-Darling tests requires a minimum of 7 test cases.</p>
-<p>Assessment for normality should never solely rely on p-values, but should be complemented by visual inspections</p>
-<p>Therefore the function generates diagnostic plots: standardised residuals overlaid by the standard normal distribution, a scatter plot of the standardised residuals against the fitted means of the linear model for each level of the predictor, and a Q-Q plot of the standardised residuals.</p>
-<p>The algorithmic decision logic cannot replicate the combination of formal tests and expert visual assessment of normality.
-It therefore assumes normality if the Shapiro–Wilk test yields a p-value greater than <span class="math inline">\(\alpha\)</span>, as simulation studies have shown it to offer the highest power against a variety of non-normal distributions in small to moderate samples <span class="citation">[<a href="#ref-Razali:2011">8</a>]</span>.
-<!-- Note: While Welch’s t-test omits normality checks for n > 30 based on the Central Limit Theorem (CLT), this rationale does not apply to ANOVA. Residuals from a fitted model are not independent and are influenced by the estimated parameters. Therefore, the CLT cannot be used to justify skipping the normality check, which is always applied to ANOVA residuals [@Lumley:2002]. --></p>
+<!-- Note: While Welch’s t-test omits normality checks for n > 30 based on the Central Limit Theorem (CLT), this rationale does not apply to ANOVA. Residuals from a fitted model are not independent and are influenced by the estimated parameters. Therefore, the CLT cannot be used to justify skipping the normality check, which is always applied to ANOVA residuals [@Lumley:2002]. -->
+<p>The <code>visAnovaAssumptions()</code> function assesses the normality of
+standardised residuals from the ANOVA fit using both the Shapiro-Wilk
+test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson-Darling test (<code>ad.test()</code>).
+This approach leverages their complementary strengths: Shapiro-Wilk
+generally demonstrates superior power for diverse non-normal
+distributions in smaller samples, while Anderson-Darling is highly
+sensitive to tail deviations and performs robustly with larger sample
+sizes <span class="citation">[<a href="#ref-Razali:2011">8</a>, <a href="#ref-Yap:2011">20</a>]</span>.</p>
+<p>The robustness of statistical tests depend on the size and shape of the
+underlying distributions. E.g., the Shapiro-Wilk test breaks down on large
+samples (<span class="math inline">\(N&gt;5000\)</span>), whereas the Anderson-Darling test requires a minimum
+of 7 test cases.</p>
+<p>Therefore, the assessment for normality should never solely rely on
+p-values, but should be complemented by visual inspections of diagnostic
+plots: <code><a href="../reference/visstat.html">visstat()</a></code>generats a plot of standardised residuals overlaid by the standard normal
+distribution, a scatter plot of the standardised residuals against the
+fitted means of the linear model for each level of the predictor, and a
+Q-Q plot of the standardised residuals.
+The algorithmic decision logic cannot replicate the combination of formal
+tests and expert visual assessment of normality. It therefore assumes
+normality if the Shapiro-Wilk test yields a p-value greater than alpha,
+as simulation studies have shown the Shapiro-Wilk test offers the highest power against a
+variety of non-normal distributions in small to moderate samples
+<span class="citation">[<a href="#ref-Razali:2011">8</a>]</span>.</p>
 </div>
 <div class="section level5" number="5.2.5.2">
 <h5 id="equal-variances-across-groups-levene-test-and-bartlett-test">
@@ -493,7 +504,7 @@ A significant test result between two groups is graphically represented by diffe
 <p>The <code>npk</code> dataset reports the yield of peas (in pounds per block) from an agricultural experiment conducted on six blocks.
 In this experiment, the application of three different fertilisers – nitrogen (N), phosphate (P), and potassium (K) – was varied systematically.
 Each block received either none, one, two, or all three of the fertilisers,</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">oneway_npk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span><span class="op">$</span><span class="va">block</span>,<span class="va">npk</span><span class="op">$</span><span class="va">yield</span>,conf.level<span class="op">=</span><span class="fl">0.90</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-5-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-5-2.png" width="100%"></p>
 <p>Normality of residuals is supported by graphical diagnostics (scatter plot of standardised residuals, Q-Q plot) and formal tests (Shapiro–Wilk and Anderson- Darling, both with <span class="math inline">\(p &gt; \alpha\)</span>).
@@ -506,12 +517,12 @@ Post-hoc analysis with <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" cla
 <!-- {.unnumbered} -->
 <p>The <code>InsectSprays</code> dataset reports insect counts from agricultural experimental units treated with six different insecticides.
 To stabilise the variance in counts, we apply a square root transformation to the response variable.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">insect_sprays_tr</span> <span class="op">&lt;-</span> <span class="va">InsectSprays</span></span>
 <span><span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">count_sqrt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">count</span><span class="op">)</span></span>
 <span><span class="va">test_statistic_anova</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">spray</span>, <span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">count_sqrt</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-6-1.png" width="100%"></p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># test_statistic_anova </span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-6-2.png" width="100%"></p>
 <p>After the transformation, the homogeneity of variances can be assumed (<span class="math inline">\(p&gt;
@@ -527,7 +538,7 @@ To stabilise the variance in counts, we apply a square root transformation to th
 <h5 id="kruskalwallis-rank-sum-test">Kruskal–Wallis rank sum test<a class="anchor" aria-label="anchor" href="#kruskalwallis-rank-sum-test"></a>
 </h5>
 <p>The <code>iris</code> dataset contains petal width measurements (in cm) for three different iris species.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Width</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-7-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-7-2.png" width="100%"></p>
 <p>In this example, scatter plots of the standardised residuals and the Q-Q plot suggest that the residuals are not normally distributed.
@@ -575,26 +586,22 @@ The plot displays the raw data, the fitted regression line, and both the confide
 <h5 id="dataset-trees">dataset: `trees``<a class="anchor" aria-label="anchor" href="#dataset-trees"></a>
 </h5>
 <p>The <code>trees</code> data set contains the diameter <code>Girth</code> in inches and <code>Volume</code> in cubic ft of 31 black cherry trees.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_trees</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span><span class="op">$</span><span class="va">Girth</span>, <span class="va">trees</span><span class="op">$</span><span class="va">Volume</span>,conf.level<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-8-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-8-2.png" width="100%"></p>
 <p>p-values greater than <code>conf.level</code> in both the Anderson-Darling normality test and the Shapiro–Wilk test of the standardised residuals indicate that the normality assumption of the residuals underlying the linear regression is met.</p>
 <p>Increasing the confidence level <code>conf.level</code> from the default 0.9 to 0.99 results in wider confidence intervalls of the regression paramters as well as wider confidence and prediction bands</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_trees_99</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span><span class="op">$</span><span class="va">Girth</span>, <span class="va">trees</span><span class="op">$</span><span class="va">Volume</span>,conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
-<p>Use <code>visStatistics</code> plot method to only display again the seond generated plot (the assumption plot is unchanged):</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<p>The <code>visStatistics</code> plot allows to display only the seond generated plot (the assumption plot is unchanged):</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">linreg_trees_99</span>,which<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-10-1.png" width="100%"></p>
-</div>
-<div class="section level5" number="6.1.2.1">
-<h5 id="dataset-cars">
-<span class="header-section-number">6.1.2.1</span> dataset: <code class="unnumbered">cars</code><a class="anchor" aria-label="anchor" href="#dataset-cars"></a>
-</h5>
-<p>The <code>cars</code> dataset reports the speed of 50 cars in miles per hour (<code>speed</code>) and the stopping distance in feet (<code>dist</code>) recorded in the 1920s. In this example the assuptions of normally distributed residuals is not met.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">linreg_cars</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">cars</span><span class="op">$</span><span class="va">speed</span>, <span class="va">cars</span><span class="op">$</span><span class="va">dist</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-11-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-11-2.png" width="100%"></p>
+<!-- #### dataset: `cars`{.unnumbered} -->
+<!-- The `cars` dataset reports the speed of 50 cars in miles per hour (`speed`) and the stopping distance in feet (`dist`) recorded in  the 1920s. In this example the assuptions of normally distributed residuals is not met. -->
+<!-- ```{r} -->
+<!-- linreg_cars <- visstat(cars$speed, cars$dist) -->
+<!-- ``` -->
 </div>
 </div>
 </div>
@@ -695,7 +702,7 @@ R_1, R_2, C_1, C_2) =
 <p>The following examples for tests of categorical predictor and response are all based on the <code>HairEyeColor</code> contingency table.</p>
 <p>Contingency tables must be converted to the required column-based <code>data.frame</code> using the helper function <code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code>.
 The function transforms the contingency table <code>HairEyeColor</code> into <code>data.frame</code> named <code>HairEyeColourDataFrame</code>.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">HairEyeColourDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3" number="7.5">
@@ -707,10 +714,10 @@ The function transforms the contingency table <code>HairEyeColor</code> into <co
 <h4 id="pearsons-chi2-test-chisq-test-1">
 <span class="header-section-number">7.5.1</span> Pearson’s <span class="math inline">\({\chi}^2\)</span>-test (<code>chisq.test()</code>)<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test-chisq-test-1"></a>
 </h4>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_colour_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_colour_df</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">hair_eye_colour_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-13-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-13-2.png" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-12-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-12-2.png" width="100%"></p>
 <p>The graphical output shows that the null hypothesis of Pearson’s <span class="math inline">\(\chi^2\)</span> test – namely, that hair colour and eye colour are independent – must be rejected at the default significance level <span class="math inline">\(\alpha=0.05\)</span> (<span class="math inline">\(p = 2.33 \cdot 10^{-25} &lt;
 \alpha\)</span>).
 The mosaic plot indicates that the strongest deviations are due to over- representation of individuals with black hair and brown eyes, and of those with blond hair and blue eyes.
@@ -720,13 +727,13 @@ In contrast, individuals with blond hair and brown eyes are the most under- repr
 <span class="header-section-number">7.5.1.1</span> Pearson’s <span class="math inline">\({\chi}^2\)</span>-test with Yate’s continuity correction<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test-with-yates-continuity-correction-1"></a>
 </h5>
 <p>In the following example, we restrict the data to participants with either black or brown hair and either brown or blue eyes, resulting in a 2-by-2 contingency table.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_black_brown_eyes_brown_blue</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></span>
 <span><span class="co"># Transform to data frame</span></span>
 <span><span class="va">hair_black_brown_eyes_brown_blue_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Chi-squared test</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-14-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-14-2.png" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-13-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-13-2.png" width="100%"></p>
 <p>Also in this reduced dataset we reject the null hypothesis of independence of the hair colors “brown” and “black” from the eye colours “brown” and ” blue”.
 The mosaic plot shows that blue eyed persons with black hair are under- represented.
 Note the higher p-value of Pearson’s <span class="math inline">\({\chi}^2\)</span>-test with Yate’s continuity correction (p = 0.00354) compared to the p-value of Pearson’s <span class="math inline">\({\chi}^2\)</span>-test (p = 0.00229) shown in the mosaic plot.</p>
@@ -739,7 +746,7 @@ Note the higher p-value of Pearson’s <span class="math inline">\({\chi}^2\)</s
 <p>Again, we extract a 2-by-2 contingency table from the full dataset, this time keeping only male participants with black or brown hair and hazel or green eyes.</p>
 <p>Pearson’s <span class="math inline">\({\chi}^2\)</span> test applied to this table would yield an expected frequency less than 5 in one of the four cells (25% of all cells), which violates the requirement that at least 80% of the expected frequencies must be 5 or greater <span class="citation">[<a href="#ref-Cochran:1954">11</a>]</span>.</p>
 <p>Therefore, <code><a href="../reference/visstat.html">visstat()</a></code> automatically selects Fisher’s exact test instead.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_colour_male</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co"># Slice out a 2 by 2 contingency table</span></span>
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="va">hair_eye_colour_male</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
@@ -747,7 +754,7 @@ Note the higher p-value of Pearson’s <span class="math inline">\({\chi}^2\)</s
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Fisher test</span></span>
 <span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-15-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-15-2.png" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-14-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-14-2.png" width="100%"></p>
 </div>
 </div>
 </div>
@@ -759,7 +766,7 @@ Note the higher p-value of Pearson’s <span class="math inline">\({\chi}^2\)</s
 <p>If the optional argument <code>plotName</code> is not given, the naming of the output follows the pattern <code>"testname_namey_namex."</code>, where <code>"testname"</code> specifies the selected test and <code>"namey"</code> and <code>"namex"</code> are character strings naming the selected data vectors <code>y</code> and <code>x</code>, respectively.
 The suffix corresponding to the chosen <code>graphicsoutput</code> (e.g., <code>"pdf"</code>, <code>"png"</code>) is then concatenated to form the complete output file name.</p>
 <p>In the following example, we store the graphics in <code>png</code> format in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> with the default naming convention:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Graphical output written to plotDirectory: In this example </span></span>
 <span><span class="co"># a bar chart to visualise the Chi-squared test and mosaic plot showing</span></span>
 <span><span class="co"># Pearson's residuals.</span></span>
@@ -767,13 +774,13 @@ The suffix corresponding to the chosen <code>graphicsoutput</code> (e.g., <code>
 <span><span class="va">save_fisher</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
 <span>        graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The full file path of the generated graphics are stored as the attribute <code>"plot_paths"</code> on the returned object of class <code>"visstat"</code>.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpKNWCr9/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span><span class="co">#&gt; [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpKNWCr9/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpbZg2Os/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span><span class="co">#&gt; [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpbZg2Os/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE TRUE</span></span></code></pre></div>
 <p>When assumptions plots (residual and Q-Q plot) are generated, the corresponding plot has the prefix <code>"assumption_</code>.</p>

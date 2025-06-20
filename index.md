@@ -120,15 +120,22 @@ central tendencies are selected.
 
 <img src="man/figures/README-insect-sprays-1.png" width="100%" /><img src="man/figures/README-insect-sprays-2.png" width="100%" />
 
-#### mtcars data set
+# \#### mtcars data set
 
-    mtcars$am <- as.factor(mtcars$am)
-    t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
+# 
 
-<img src="man/figures/README-mtcars-1.png" width="100%" /><img src="man/figures/README-mtcars-2.png" width="100%" />
+# \`\`\`{r mtcars}
 
-### Wilcoxon rank sum test
+# mtcars*a**m* &lt; −*a**s*.*f**a**c**t**o**r*(*m**t**c**a**r**s*am)
 
+# t\_test\_statistics &lt;- visstat(mtcars*a**m*, *m**t**c**a**r**s*mpg)
+
+
+    ### Wilcoxon rank sum test
+
+
+
+    ``` r
     grades_gender <- data.frame(
       sex = factor(rep(c("girl", "boy"), times = c(21, 23))),
       grade = c(
@@ -221,8 +228,8 @@ The full file path of the generated graphics are stored as the attribute
 
     paths <- attr(save_fisher, "plot_paths")
     print(paths)
-    #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpI8AGJC/chi_squared_or_fisher_Hair_Eye.png"
-    #> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpI8AGJC/mosaic_complete_Hair_Eye.png"
+    #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp151X7n/chi_squared_or_fisher_Hair_Eye.png"
+    #> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp151X7n/mosaic_complete_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 

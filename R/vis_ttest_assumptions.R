@@ -45,7 +45,10 @@ vis_ttest_assumptions <- function(samples,
 
   oldpar$pin <- NULL  # Add this line
   oldpar$new <- FALSE  # Add this line too (removes the "new" warning)
-  
+  oldpar$fig <- NULL
+  oldpar$mfg <- NULL
+  oldpar$mai <- NULL
+  oldpar$mar <- NULL
   on.exit(par(oldpar))
   
   # Clean data - remove NAs
@@ -82,7 +85,10 @@ vis_ttest_assumptions <- function(samples,
   }
   
   # Create plots - 2x2 design
-  par(mfrow = c(2, 2), oma = c(0, 0, 3, 0))
+  #par(mfrow = c(2, 2), oma = c(0, 0, 3, 0))
+  
+  # Create plots - 2x2 design with explicit margins
+  par(mar = c(4, 4, 2, 1), mfrow = c(2, 2), oma = c(0, 0, 3, 0))
   
   # Plot 1: Histogram with normal overlay for group 1
   hist(group1_data, 
