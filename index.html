@@ -143,28 +143,11 @@
 <span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co"># Standardised input fom</span></span>
 <span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="fu">visstat</span>(insect_sprays_ab<span class="sc">$</span>spray, insect_sprays_ab<span class="sc">$</span>count)</span></code></pre></div>
 <p><img src="reference/figures/README-insect-sprays-1.png" width="100%"><img src="reference/figures/README-insect-sprays-2.png" width="100%"></p>
-</div>
-</div>
-</div>
-</div>
-<div class="section level1">
-<h1 id="id_-mtcars-data-set">#### mtcars data set<a class="anchor" aria-label="anchor" href="#id_-mtcars-data-set"></a>
-</h1>
-</div>
-<div class="section level1">
-<h1 id="section"></h1>
-</div>
-<div class="section level1">
-<h1 id="r-mtcars">```{r mtcars}<a class="anchor" aria-label="anchor" href="#r-mtcars"></a>
-</h1>
-</div>
-<div class="section level1">
-<h1 id="mtcarsam--asfactormtcarsam">mtcars<em>a<strong>m<em> &lt; −</em>a</strong>s</em>.<em>f<strong>a</strong>c<strong>t</strong>o<strong>r<em>(</em>m</strong>t<strong>c</strong>a<strong>r</strong>s</em>am)<a class="anchor" aria-label="anchor" href="#mtcarsam--asfactormtcarsam"></a>
-</h1>
-</div>
-<div class="section level1">
-<h1 id="t_test_statistics---visstatmtcarsam-mtcarsmpg">t_test_statistics &lt;- visstat(mtcars<em>a<strong>m<em>, </em>m</strong>t<strong>c</strong>a<strong>r</strong>s</em>mpg)<a class="anchor" aria-label="anchor" href="#t_test_statistics---visstatmtcarsam-mtcarsmpg"></a>
-</h1>
+<!-- # #### mtcars data set -->
+<!-- #  -->
+<!-- # ```{r mtcars} -->
+<!-- # mtcars$am <- as.factor(mtcars$am) -->
+<!-- # t_test_statistics <- visstat(mtcars$am, mtcars$mpg) -->
 <div class="sourceCode" id="cb13"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="do">### Wilcoxon rank sum test</span></span>
 <span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a></span>
@@ -182,6 +165,8 @@
 <span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a></span>
 <span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="at">wilcoxon_statistics &lt;- visstat(grades_gender$sex, grades_gender$grade)</span></span></code></pre></div>
 <p><img src="reference/figures/README-sex-grades2-1.png" width="100%"><img src="reference/figures/README-sex-grades2-2.png" width="100%"></p>
+</div>
+</div>
 <div class="section level3">
 <h3 id="one-way-test">One-way test<a class="anchor" aria-label="anchor" href="#one-way-test"></a>
 </h3>
@@ -193,6 +178,7 @@
 </h3>
 <div class="sourceCode" id="cb15"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>kruskal_iris<span class="ot">=</span><span class="fu">visstat</span>(iris<span class="sc">$</span>Species, iris<span class="sc">$</span>Petal.Width)</span></code></pre></div>
 <p><img src="reference/figures/README-iris-kruskal-1.png" width="100%"><img src="reference/figures/README-iris-kruskal-2.png" width="100%"></p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="numerical-response-and-numerical-predictor-linear-regression">Numerical response and numerical predictor: Linear Regression<a class="anchor" aria-label="anchor" href="#numerical-response-and-numerical-predictor-linear-regression"></a>
@@ -237,13 +223,13 @@
 <span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="co"># a bar chart to visualise the Chi-squared test and mosaic plot showing</span></span>
 <span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="co"># Pearson's residuals named </span></span>
 <span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a><span class="co">#chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png resp. </span></span>
-<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>save_fisher<span class="ot">=</span><span class="fu">visstat</span>(black_brown_hazel_green_male, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>save_fisher <span class="ot">&lt;-</span> <span class="fu">visstat</span>(black_brown_hazel_green_male, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
 <span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>        <span class="at">graphicsoutput =</span> <span class="st">"png"</span>, <span class="at">plotDirectory =</span> <span class="fu">tempdir</span>())</span></code></pre></div>
 <p>The full file path of the generated graphics are stored as the attribute <code>"plot_paths"</code> on the returned object of class <code>"visstat"</code>.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">attr</span>(save_fisher, <span class="st">"plot_paths"</span>)</span>
 <span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">print</span>(paths)</span>
-<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co">#&gt; [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp151X7n/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co">#&gt; [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp151X7n/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co">#&gt; [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpbf87ya/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co">#&gt; [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpbf87ya/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">file.remove</span>(paths)</span>
 <span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="co">#&gt; [1] TRUE TRUE</span></span></code></pre></div>
@@ -261,7 +247,7 @@
 <li><p>For predictors with more than two levels, an ANOVA model (<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>) is initially fitted. The normality of residuals is evaluated using both the Shapiro–Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and the Anderson–Darling test (<code>ad.test()</code>); the algorithm considers residuals approximately normal if the Shapiro–Wilk test yields a result exceeding the significance threshold <em>α</em> (Razali and Wah 2011): <!-- if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.  --> If this condition is met, the Levene-Brown–Forsythe-test (Brown and Forsythe 1974) (<code>levene.test()</code>) is then used to assess homoscedasticity. When variances are homogeneous (<em>p</em> &gt; <em>α</em>), ANOVA is applied with Tukey’s HSD (<code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>) for post-hoc comparison. If variances differ significantly (<em>p</em> ≤ <em>α</em>), Welch’s one - way test (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) is used, also followed by Tukey’s HSD. If residuals are not normally distributed according to both tests (<em>p</em> ≤ <em>α</em>), the Kruskal-Wallis test (<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>) is selected, followed by pairwise Wilcoxon tests (<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>).</p></li>
 </ul>
 <p>A graphical overview of the decision logic used is provided in below figure.</p>
-<p><img src="reference/figures/decision_tree.png" width="100%" alt="Decision tree used to select the appropriate statistical test."></p>
+<p><img src="articles/figures/decision_tree.png" width="100%" alt="Decision tree used to select the appropriate statistical test."></p>
 <p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
 Decision tree used to select the appropriate statistical test for a categorical predictor and numeric response, based on the number of factor levels, normality, and homoscedasticity.
 </p>
