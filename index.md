@@ -261,9 +261,9 @@ statistical hypothesis test of central tendencies is selected.
 - For predictors with more than two levels, an ANOVA model (`aov()`) is
   initially fitted. The normality of residuals is evaluated using both
   the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test
-  (`ad.test()`); the algorithm considers residuals approximately normal
-  if the Shapiro–Wilk test yields a result exceeding the significance
-  threshold *α* (Razali and Wah 2011):
+  (`ad.test()`) (Gross and Ligges 2015); the algorithm considers
+  residuals approximately normal if the Shapiro–Wilk test yields a
+  result exceeding the significance threshold *α* (Razali and Wah 2011):
   <!-- if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.  -->
   If this condition is met, the Levene-Brown–Forsythe-test (Brown and
   Forsythe 1974) (`levene.test()`) is then used to assess
@@ -334,15 +334,17 @@ visualised.
 
 #### Normality assumption check
 
-`shapiro.test()` and `ad.test()`
+`shapiro.test()` and `ad.test()`(Gross and Ligges 2015)
 
 #### Homoscedasticity assumption check
 
 `levene.test()` and `bartlett.test()`
 
-#### Post-hoc tests-`TukeyHSD()` (used following `aov()`and `oneway.test()`)
+#### Post-hoc tests
 
-- `pairwise.wilcox.test()` (used following `kruskal.test()`)
+\-`TukeyHSD()` (used following `aov()`and `oneway.test()`)
+
+\-`pairwise.wilcox.test()` (used following `kruskal.test()`)
 
 ### Numerical response and numerical predictor
 
@@ -384,6 +386,9 @@ Experiments.” *Biometrics* 10 (1): 101.
 Ghasemi, Asghar, and Saleh Zahediasl. 2012. “Normality Tests for
 Statistical Analysis: A Guide for Non-Statisticians.” *Int J Endocrinol
 Metab* 10 (2): 486–89. <https://doi.org/10.5812/ijem.3505>.
+
+Gross, Juergen, and Uwe Ligges. 2015. *Nortest: Tests for Normality*.
+Manual. <https://doi.org/10.32614/CRAN.package.nortest>.
 
 Lumley, Thomas, Paula Diehr, Scott Emerson, and Lu Chen. 2002. “The
 Importance of the Normality Assumption in Large Public Health Data

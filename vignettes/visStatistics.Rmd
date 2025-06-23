@@ -1,27 +1,24 @@
 ---
-title: "visStatistics: The right test, visualised"
-author: 
-  - name: "Sabine Schilling"
-    affiliation: "Institute of Tourism and Mobility, Lucerne Unviversity of Applied Sciences and Arts"
-    email: "sabine.schilling@protonmail.com"
+title: 'visStatistics: The right test, visualised'
+author:
+- name: Sabine Schilling
+  affiliation: Institute of Tourism and Mobility, Lucerne Unviversity of Applied Sciences
+    and Arts
+  email: sabine.schilling@protonmail.com
 date: "`r Sys.Date()`"
 output:
- #html_vignette: #for CRAN, much more lightweight 
- bookdown::html_document2:  #for correct display in pkdown of section numbering
-# pdf_document:
+  bookdown::html_document2: default
+  html_vignette:
     toc: true
     number_sections: true
     toc_depth: 3
-link-citations: yes
-pkgdown:         #these two lines are needed for building the package site correctly
-  as_is: true
+link-citations: true
+#pkgdown:
+#  as_is: true
 bibliography: visstat.bib
-#csl: statistical-science.csl
 csl: ims.csl
-vignette: >
-  %\VignetteIndexEntry{visStatistics}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+vignette: "%\\VignetteIndexEntry{visStatistics} %\\VignetteEngine{knitr::rmarkdown}
+  %\\VignetteEncoding{UTF-8}\n"
 editor_options:
   markdown:
     wrap: sentence
@@ -374,7 +371,7 @@ These assumptions are tested using the `visAnovaAssumptions()` function.
 #### Normality of residuals (`shapiro.test()` and `ad.test()`)
 The `visAnovaAssumptions()` function evaluates the normality of standardised residuals from the
 ANOVA model using both the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test
-(`ad.test()`). These tests offer complementary strengths: Shapiro–Wilk generally exhibits greater
+(`ad.test()`)[@Gross:2015]. These tests offer complementary strengths: Shapiro–Wilk generally exhibits greater
 power across a range of non-normal distributions in small samples, whereas Anderson–Darling is
 highly sensitive to tail deviations and performs reliably in larger samples [@Razali:2011; @Yap:2011].
 
@@ -413,7 +410,7 @@ The decision logic of `visStatistics` assumes homogeneity of variances if the Le
 test (implemented as `levene.test()`) [@Brown:1974] yields a p-value greater than $\alpha$.  
 The Levene–Brown–Forsythe test improves upon Levene’s original test [@Levene:1960] by using the median 
 instead of the mean to centre the data. This makes it more robust to non-normal data, 
-providing more reliable results in many practical situations.
+providing more reliable results in many practical situations. Note that `levene.test()` mimicks the default behaviour of `levenTest()` in the `car` package [@Fox:2019].
 
 Additionally, homoscedasticity is assessed via Bartlett's test (`bartlett.test()`), which has more power 
 than the Brown–Forsythe version of Levene’s test [@Brown:1974] when the normality assumption is met,  
@@ -425,7 +422,7 @@ ANOVA is an omnibus test that evaluates a single null hypothesis: all group mean
 If the null hypothesis gets rejected, we would like to identify which specific groups differ significantly from each other.
 However, simple pairwise comparisons of group means following an ANOVA increases the probability of incorrectly declaring a significant difference when, in fact, there is none.
 
-This error is quantified by the family-wise error rate $\alpha_{PF}$ (pronounced “alpha per family of tests”), which refers to the probability of making at least one Type I error, that is, falsely rejecting the null hypothesis across all pairwise comparisons.
+This error is quantified by the family-wise error rate “alpha per family of tests” $\alpha_{PF}$, which refers to the probability of making at least one Type I error, that is, falsely rejecting the null hypothesis across all pairwise comparisons.
 
 Given $n$ levels of the categorical variable, there are
 
@@ -438,7 +435,7 @@ $M$ corresponds to the number of null hypotheses in the post hoc tests, each tes
 
 #### Šidák correction {.unnumbered}
 
-If $\alpha_{PT}$ (pronounced “alpha per test”) is the probability of making a Type I error in one comparison, then $1 - \alpha_{PT}$ is the probability of not making a Type I error in one comparison.
+If $\alpha_{PT}$ (“alpha per test”) is the probability of making a Type I error in one comparison, then $1 - \alpha_{PT}$ is the probability of not making a Type I error in one comparison.
 
 If all $M$ comparisons are **independent** of each other, the probability of making no Type I error across the entire family of pairwise comparisons is $(1 -
 \alpha_{PT})^M$.
@@ -698,7 +695,7 @@ Yates' continuity correction is applied by default by the underlying routine `ch
 ## Fisher's exact test (`fisher.test()`)
 
 The $\chi^2$ approximation is considered reliable only if no expected cell count is less than 1 and no more than 20 percent of cells have expected counts below 5 [@Cochran:1954]).
-If this condition is not met, Fisher's exact test [@Fisher:1935] (`fisher.test()`) is applied instead, as it is a non-parametric method that does not rely on large-sample approximations.
+If this condition is not met, Fisher's exact test [ @Fisher:1970] (`fisher.test()`) is applied instead, as it is a non-parametric method that does not rely on large-sample approximations.
 The test calculates an exact p-value for testing independence by conditioning on the observed margins: the row totals $R_i = \sum_{j=1}^C O_{ij}$ and the column totals $C_j = \sum_{i=1}^R O_{ij}$, defining the structure of the contingency table.
 
 In the $2 \times 2$ case, the observed table can be written as:
@@ -887,13 +884,13 @@ The package targets users with basic statistical literacy, such as non-specialis
 
 ## Numeric response and categorical predictor
 
-When the response is numeric and the predictor is categorical, a test of central tendency is selected:
+When the response is numeric and the predictor is categorical, a test of central tendenacy is selected:
 
 `t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`,`kruskal.test()`
 
 ### Normality assumption check
 
-`shapiro.test()` and `ad.test()`
+`shapiro.test()` and `ad.test()` [@Gross:2015]
 
 ### Homoscedasticity assumption check
 
