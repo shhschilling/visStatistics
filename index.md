@@ -120,15 +120,11 @@ central tendencies are selected.
 
 <img src="man/figures/README-insect-sprays-1.png" width="100%" /><img src="man/figures/README-insect-sprays-2.png" width="100%" />
 
-# \#### mtcars data set
-
-# 
-
-# \`\`\`{r mtcars}
-
-# mtcars*a**m* &lt; −*a**s*.*f**a**c**t**o**r*(*m**t**c**a**r**s*am)
-
-# t\_test\_statistics &lt;- visstat(mtcars*a**m*, *m**t**c**a**r**s*mpg)
+<!-- # #### mtcars data set -->
+<!-- #  -->
+<!-- # ```{r mtcars} -->
+<!-- # mtcars$am <- as.factor(mtcars$am) -->
+<!-- # t_test_statistics <- visstat(mtcars$am, mtcars$mpg) -->
 
 
     ### Wilcoxon rank sum test
@@ -220,7 +216,7 @@ In the following example, we store the graphics in `png` format in the
     # a bar chart to visualise the Chi-squared test and mosaic plot showing
     # Pearson's residuals named 
     #chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png resp. 
-    save_fisher=visstat(black_brown_hazel_green_male, "Hair", "Eye",
+    save_fisher <- visstat(black_brown_hazel_green_male, "Hair", "Eye",
             graphicsoutput = "png", plotDirectory = tempdir())
 
 The full file path of the generated graphics are stored as the attribute
@@ -228,8 +224,8 @@ The full file path of the generated graphics are stored as the attribute
 
     paths <- attr(save_fisher, "plot_paths")
     print(paths)
-    #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp151X7n/chi_squared_or_fisher_Hair_Eye.png"
-    #> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp151X7n/mosaic_complete_Hair_Eye.png"
+    #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpbf87ya/chi_squared_or_fisher_Hair_Eye.png"
+    #> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpbf87ya/mosaic_complete_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -282,7 +278,7 @@ statistical hypothesis test of central tendencies is selected.
 A graphical overview of the decision logic used is provided in below
 figure.
 
-<img src="man/figures/decision_tree.png" width="100%" 
+<img src="vignettes/figures/decision_tree.png" width="100%" 
      alt="Decision tree used to select the appropriate statistical test.">
 
 <p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">

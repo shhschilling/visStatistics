@@ -8,9 +8,12 @@
 #'
 #' @return The object \code{x}, invisibly.
 #'
-#' @details This function is automatically called when a \code{visstat} object is printed
-#' to the console. It provides a quick overview of the statistical analysis results.
-#'
+#' @details Quick overview of the statistical analysis results.
+#' 
+#' @examples 
+#' anova=visstat(npk$block, npk$yield)
+#' print(anova)
+#' 
 #' @seealso \code{\link{summary.visstat}}, \code{\link{plot.visstat}}, \code{\link{visstat}}
 #'
 #' @export
@@ -46,7 +49,10 @@ print.visstat <- function(x, ...) {
 #' returned by \code{visstat()}, and prints the contents of \code{posthoc_summary} if present.
 #'
 #' @seealso \code{\link{print.visstat}}, \code{\link{visstat}}
-#'
+#' 
+#' @examples 
+#' anova=visstat(npk$block, npk$yield)
+#' summary(anova)
 #' @export
 
 summary.visstat <- function(object, ...) {
@@ -100,7 +106,13 @@ summary.visstat <- function(object, ...) {
 #' @param ... Currently unused.
 #'
 #' @return Invisibly returns x. Used for its side effect.
+#' 
+#' @examples 
+#' anova_path=visstat(npk$block, npk$yield,graphicsoutput = "png", plotDirectory = tempdir()) 
+#' plot(anova_path) #plots paths to graphics files 
+#' 
 #' @export
+#' 
 plot.visstat <- function(x, which = NULL, ...) {
   path <- attr(x, "plot_paths")
   capture <- attr(x, "captured_plots")
