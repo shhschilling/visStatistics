@@ -74,9 +74,10 @@
 #'   \item \code{pairwise.wilcox.test()} for \code{kruskal.test()}
 #' }
 #' @seealso
-#' See also the package's vignette
-#' \code{vignette("visStatistics")} for the overview,
-#' and the accompanying webpage
+#' The package's vignette
+#' \code{vignette("visStatistics")} for a more detailed description of the 
+#' decision logic, illustrated with numerous examples. The package is accompanied 
+#' by its webpage
 #' \url{https://shhschilling.github.io/visStatistics/}.
 #'
 #' @param dataframe \code{data.frame} with at least two columns.
@@ -183,13 +184,6 @@ visstat_core <- function(dataframe,
   oldparvisstat_core$new <- FALSE # reset the default value
   on.exit(par(oldparvisstat_core))
   
-  # Store and safely restore graphical parameters ------
-  # oldparvisstat_core <- par(no.readonly = TRUE)
-  # on.exit({
-  #   safe <- setdiff(names(oldparvisstat_core),
-  #                   c("pin", "plt", "fig", "fin", "din", "page", "new"))
-  #   par(oldparvisstat_core[safe])
-  # })
   
   # Collect plot paths from plot_paths <- c(plot_paths, saveGraphVisstat())
   plot_paths <- character(0)
@@ -206,6 +200,8 @@ visstat_core <- function(dataframe,
   name_of_sample <- input$name_of_sample
   name_of_factor <- input$name_of_factor
   matchingCriteria <- input$matchingCriteria
+  
+  vis_sample_fact <- list()
   
   # dependent on samples, fact, name_of_sample, name_of_factor, conf.level,
   
@@ -275,8 +271,23 @@ visstat_core <- function(dataframe,
     twosamples <-
       create_two_samples_vector(samples, fact) # returns list with three entries
     if (length(twosamples) < 3) {
-      vis_sample_fact <-
         warning("In each group must be at least one member.")
+      # Create a minimal visstat object and return early
+      vis_sample_fact <- list(
+        error = "Insufficient data: each group must have at least one member",
+        input_summary = list(
+          sample_name = name_of_sample,
+          factor_name = name_of_factor,
+          n_groups = nlevels(fact),
+          total_n = length(samples)
+        )
+      )
+      attr(vis_sample_fact, "plot_paths") <- plot_paths
+      attr(vis_sample_fact, "captured_plots") <- capture_env$captured_plots
+      class(vis_sample_fact) <- "visstat"
+      return(invisible(vis_sample_fact))
+      
+      
     } else {
       # t-Test -----
       x1 <- twosamples$sample1

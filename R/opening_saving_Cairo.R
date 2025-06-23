@@ -47,10 +47,10 @@ openGraphCairo <- function(width = 640,
                            canvas = "white",
                            units = "px",
                            dpi = 150) {
-  oldparCairo <- par(no.readonly = TRUE)
-  oldparCairo$new <- FALSE
-  on.exit(par(oldparCairo))
-  
+  # oldparCairo <- par(no.readonly = TRUE)
+  # oldparCairo$new <- FALSE
+  # on.exit(par(oldparCairo))
+  # 
   
 
  
@@ -121,6 +121,9 @@ saveGraphVisstat <- function(fileName = NULL,
                              capture_env = NULL) {
   
   # logic to capture plots independent of type
+  
+ 
+  
   if (!is.null(capture_env)) {
     capture_env$captured_plots[[length(capture_env$captured_plots) + 1]] <- recordPlot()
   }

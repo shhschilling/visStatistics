@@ -9,13 +9,13 @@ covr::package_coverage()
 covr::report()
 
 # # Run tests
-# devtools::test()
-# testthat::test_dir("tests/testthat/")
+devtools::test()
+testthat::test_dir("tests/testthat/")
 
 # Run examples
 devtools::run_examples()
 
-# autotest::autotest_package(test = TRUE)
+
 
 # Check package as CRAN using the correct CRAN repo
 withr::with_options(list(repos = c(CRAN = "https://cloud.r-project.org/")), {
@@ -33,11 +33,11 @@ checkhelper::find_missing_tags()
 # Check that you let the house clean after the check, examples and tests
 # If you used parallel testing, you may need to avoid it for the next check with `Config/testthat/parallel: false` in DESCRIPTION
 all_files_remaining <- checkhelper::check_clean_userspace()
-all_files_remaining
+all_files_remaining 
 # If needed, set back parallel testing with `Config/testthat/parallel: true` in DESCRIPTION
 
 # Check spelling - No typo
-# usethis::use_spell_check()
+#usethis::use_spell_check()
 spelling::spell_check_package()
 
 hunspell::hunspell("colour", dict = hunspell::dictionary("en_GB"))

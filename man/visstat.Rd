@@ -141,7 +141,8 @@ visstat(iris$Species, iris$Petal.Width,
 }
 \seealso{
 \code{\link{visstat_core}} defining the decision logic,  the package's vignette
-\code{vignette("visStatistics")} for the overview,
+\code{vignette("visStatistics")} with a more  detailed  decision logic
+illustrated by many examples,
 and the accompanying webpage
 \url{https://shhschilling.github.io/visStatistics/}.
 }
