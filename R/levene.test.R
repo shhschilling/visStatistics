@@ -1,8 +1,12 @@
 #' Levene-Brown-Forsythe Test for Homogeneity of Variance (center = median)
 #'
 #' @description Performs Levene's test using the
-#'  Brown-Forsyth modification (median-centred). It reproduces th
-#'  default behaviour of the leveneTest() of the car-package. 
+#'  Brown-Forsythe modification (median-centred). 
+#'  It tests the null hypothesis that all groups 
+#' have equal variances by testing whether the absolute deviations
+#'  from group  medians are equal across groups
+#'  The function reproduces the default behaviour of the 
+#'  leveneTest(y,g,center=median,...) of the car-package. 
 #'
 #' @param y A numeric response vector.
 #' @param g A grouping factor.
@@ -15,6 +19,30 @@
 #' \item{method}{a character string indicating the test performed.}
 #' \item{data.name}{a character string giving the name(s) of the data.}
 #'
+#' @details 
+#' For each observation \eqn{y_{ij}} in group \eqn{i}, compute the absolute 
+#' deviation from the group median:
+#' 
+#' \deqn{z_{ij} = |y_{ij} - \tilde{y}_i|}
+#' 
+#' where \eqn{\tilde{y}_i} is the median of group \eqn{i}.
+#' 
+#' The test statistic is the F-statistic from a one-way ANOVA on the \eqn{z_{ij}} values:
+#' 
+#' \deqn{F = \frac{(n-k) \sum_{i=1}^{k} n_i (\bar{z}_i - \bar{z})^2}{(k-1) \sum_{i=1}^{k} \sum_{j=1}^{n_i} (z_{ij} - \bar{z}_i)^2}}
+#' 
+#' where:
+#' \itemize{
+#'   \item \eqn{k} = number of groups
+#'   \item \eqn{n} = total sample size
+#'   \item \eqn{n_i} = sample size of group \eqn{i}
+#'   \item \eqn{\bar{z}_i} = mean of absolute deviations in group \eqn{i}
+#'   \item \eqn{\bar{z}} = overall mean of all absolute deviations
+#' }
+#' 
+#' Under the null hypothesis of equal variances, the test statistic follows 
+#' an F-distribution: \eqn{F \sim F(k-1, n-k)}.
+#' 
 #' @references
 #' Brown, M. B., and Forsythe, A. B. (1974). Robust tests for the equality of
 #' variances. Journal of the American Statistical Association, 69(346), 364–367.
@@ -43,10 +71,6 @@ levene.test <- function(y, g, data = NULL) {
   
   
    # Error handling ----
-  
-  
- 
-  
   if (!is.null(data)) {
     y <- eval(substitute(y), data, parent.frame())
     g <- eval(substitute(g), data, parent.frame())
