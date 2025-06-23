@@ -297,7 +297,7 @@ For smaller samples, group - wise normality is assessed using the Shapiro -
 Wilk test (`shapiro.test()`) at the significance level $\alpha$ [@Razali:2011; @Ghasemi:2012]. If both groups are found to be approximately normally distributed according to the Shapiro -
 Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank-sum test (`wilcox.test()`) is used.
 
-- For predictors with more than two levels, an ANOVA model (`aov()`) is initially fitted. The normality of residuals is evaluated using both the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test (`ad.test()`); 
+- For predictors with more than two levels, an ANOVA model (`aov()`) is initially fitted. The normality of residuals is evaluated using both the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test (`ad.test()`) [@Gross:2015]; 
 the algorithm considers residuals approximately normal if the Shapiro–Wilk test yields a result exceeding the significance threshold $\alpha$ [@Razali:2011]: 
 <!-- if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.  -->
 If this condition is met, the Levene-Brown–Forsythe-test [@Brown:1974] (`levene.test()`) is then used to assess homoscedasticity. When variances are homogeneous ($p > \alpha$), ANOVA is applied with Tukey's HSD (`TukeyHSD()`) for post-hoc comparison. If variances differ significantly ($p \le \alpha$), Welch's one -
@@ -351,14 +351,17 @@ Focusing on the graphical representation of tests, only simple linear regression
 
 #### Normality assumption check
 
-`shapiro.test()` and `ad.test()`
+`shapiro.test()` and `ad.test()`[@Gross:2015]
 
 #### Homoscedasticity assumption check
 
 `levene.test()` and `bartlett.test()`
 
-#### Post-hoc tests-`TukeyHSD()` (used following `aov()`and `oneway.test()`)
--  `pairwise.wilcox.test()` (used following `kruskal.test()`)
+#### Post-hoc tests
+
+-`TukeyHSD()` (used following `aov()`and `oneway.test()`)
+
+-`pairwise.wilcox.test()` (used following `kruskal.test()`)
 
 
 ### Numerical response and numerical predictor
