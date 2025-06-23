@@ -55,7 +55,7 @@
       Institute of Tourism and Mobility, Lucerne Unviversity of Applied Sciences and Arts<br><a class="author_email" href="mailto:#"></a><a href="mailto:sabine.schilling@protonmail.com" class="email">sabine.schilling@protonmail.com</a>
       </address>
                   
-            <h4 data-toc-skip class="date">2025-06-20</h4>
+            <h4 data-toc-skip class="date">2025-06-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -525,10 +525,9 @@ To stabilise the variance in counts, we apply a square root transformation to th
 <code class="sourceCode R"><span><span class="va">insect_sprays_tr</span> <span class="op">&lt;-</span> <span class="va">InsectSprays</span></span>
 <span><span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">count_sqrt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">InsectSprays</span><span class="op">$</span><span class="va">count</span><span class="op">)</span></span>
 <span><span class="va">test_statistic_anova</span><span class="op">=</span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">spray</span>, <span class="va">insect_sprays_tr</span><span class="op">$</span><span class="va">count_sqrt</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-6-1.png" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-6-1.png" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-6-2.png" width="100%"></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># test_statistic_anova </span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-6-2.png" width="100%"></p>
 <p>After the transformation, the homogeneity of variances can be assumed (<span class="math inline">\(p&gt;
 \alpha\)</span> as calculated with the <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>), and the test statistic and p-value of Fisher’s one-way ANOVA<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> is displayed.</p>
 <!-- The `ToothGrowth` data set studies the effect of vitamin C dosage C (0.5, 1, and 2 mg/day) on the the tooth growth of 60 guinea pigs. -->
@@ -781,8 +780,8 @@ The suffix corresponding to the chosen <code>graphicsoutput</code> (e.g., <code>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/Rtmpd7rxJ8/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/Rtmpd7rxJ8/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmplfR1CM/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/RtmplfR1CM/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
