@@ -10,7 +10,7 @@
 #' of a statistical hypothesis test between a two vectors in
 #' a given \code{data.frame} named \code{dataframe} based on the data's type, 
 #' distribution, sample size, and the
-#' specified \code{conf.level}.
+#' specified \code{conf.level}. \code{visstat_core()} is called by the main wrapper function \code{visstat_core()}.
 #' \code{varsample} and \code{varfactor} are \code{character}
 #' strings corresponding to the column names of the chosen vectors in \code{dataframe}. 
 #' These vectors must be of type \code{integer}, \code{numeric} or \code{factor}.
@@ -20,7 +20,7 @@
 #' applicable. The primary test results are returned as a list object.
 #'
 #' @details The decision logic for selecting a statistical test is described below.
-#' For more details, please refer to the package's \code{vignette("visstat_coreistics")}.
+#' For more details, please refer to the package's \code{vignette("visStatistics")}.
 #' Throughout, data of class \code{numeric} or \code{integer} are referred to as
 #' numeric, while data of class \code{factor} are referred to as categorical.
 #' The significance level \code{alpha} is defined as one minus the confidence
@@ -200,25 +200,23 @@ visstat_core <- function(dataframe,
   stopifnot(varfactor %in% names(dataframe))
   
   capture_env <- new.env()
-  capture_env$captured_plots <- list()
-  capture_env$capture_next_plot <- FALSE
+  capture_env$captured_plots <- list() #restart list of caputre plots 
+  #capture_env$capture_next_plot <- FALSE
   
-  # # store default graphical parameters------
-  # oldparvisstat_core <- par(no.readonly = TRUE)
-  # oldparvisstat_core$new <- FALSE # reset the default value
-  # on.exit(par(oldparvisstat_core))
-  # 
+  
+  
+  # store default graphical parameters------
+  oldparvisstat_core <- par(no.readonly = TRUE)
+  oldparvisstat_core$new <- FALSE # reset the default value
+  on.exit(par(oldparvisstat_core))
   
   # Store and safely restore graphical parameters ------
-  oldparvisstat_core <- par(no.readonly = TRUE)
-  on.exit({
-    safe <- setdiff(names(oldparvisstat_core),
-                    c("pin", "plt", "fig", "fin", "din", "page", "new"))
-    par(oldparvisstat_core[safe])
-  })
-  
-  
-  
+  # oldparvisstat_core <- par(no.readonly = TRUE)
+  # on.exit({
+  #   safe <- setdiff(names(oldparvisstat_core),
+  #                   c("pin", "plt", "fig", "fin", "din", "page", "new"))
+  #   par(oldparvisstat_core[safe])
+  # })
   
   # Collect plot paths from plot_paths <- c(plot_paths, saveGraphVisstat())
   plot_paths <- character(0)
@@ -274,10 +272,11 @@ visstat_core <- function(dataframe,
   
     
     
-    openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory,
-                  capture_env = capture_env) 
+    openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory
+                 ) 
   
-    ttest_assumptions=vis_ttest_assumptions(samples,fact)
+    ttest_assumptions = vis_ttest_assumptions(samples,fact,samplename=name_of_sample,
+                                              groupname =name_of_factor)
     
     
     if (is.null(plotName)) {
@@ -286,7 +285,7 @@ visstat_core <- function(dataframe,
     } else {
       filename <-  paste("assumptions_",plotName)
     }
-    
+    #closing of figure
     plot_paths <- c(
       plot_paths,
       saveGraphVisstat(
@@ -340,7 +339,8 @@ visstat_core <- function(dataframe,
       
       if (length(twosamples$sample1) > 30 &
           length(twosamples$sample2) > 30) {
-        openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
+        
+        openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
         vis_sample_fact <- two_sample_t_test(
           samples,
           fact,
@@ -358,9 +358,13 @@ visstat_core <- function(dataframe,
         } else {
           filename <- plotName
         }
-        
+        #closing of figure
         plot_paths <- c(plot_paths, saveGraphVisstat(filename, type = graphicsoutput, fileDirectory = plotDirectory,capture_env = capture_env))
-      }
+    
+        
+        
+        
+          }
       # 2. If assumptions of t-test are not met: Wilcoxon, else t-test
       else if (!exists("p1") |
                (if (exists("p1")) {
@@ -376,7 +380,7 @@ visstat_core <- function(dataframe,
                })) {
         # case 1: Wilcoxon-Test:
         # normal distribution not given for n<limit
-        openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
+        openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
         
         vis_sample_fact <- two_sample_wilcoxon_test(
           samples,
@@ -407,7 +411,7 @@ visstat_core <- function(dataframe,
                                                      type = graphicsoutput,
                                                      fileDirectory = plotDirectory,capture_env = capture_env))
       } else {
-        openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
+        openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
         
         vis_sample_fact <- two_sample_t_test(
           samples,
@@ -450,7 +454,7 @@ visstat_core <- function(dataframe,
         makeTable(samples, fact, name_of_sample, name_of_factor)
     } else {
       # Chi^2 Test-----
-      openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
+      openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
       
       vis_chi <-
         vis_chi_squared_test(samples, fact, name_of_sample, "groups")
@@ -476,7 +480,7 @@ visstat_core <- function(dataframe,
         numberflag <- T
       }
       
-      openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
+      openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
       
       vis_mosaic_res <- vis_mosaic(
         samples,
@@ -507,7 +511,7 @@ visstat_core <- function(dataframe,
       # Display only categories with at least minpercent of entries
       
       if (maxlabels > 7) {
-        openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
+        openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
         
         vis_mosaic_res <- vis_mosaic(
           samples,
@@ -545,8 +549,8 @@ visstat_core <- function(dataframe,
     # samples: independent variable, factor: dependent   variable
     # check normality
     # 
-    openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory,
-                    capture_env = capture_env) 
+    openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory
+                    ) 
     # normality_residual_assumptioon <-
     #   vis_normality_assumptions(samples, fact, conf.level = conf.level)
     
@@ -575,7 +579,7 @@ visstat_core <- function(dataframe,
     
     
     
-    openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
+    openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
     
     vis_sample_fact <- vis_regression(
       samples,
@@ -613,7 +617,7 @@ visstat_core <- function(dataframe,
       nlevels(fact) > 2) {
     
     
-    openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
+    openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
     
     
     
@@ -641,7 +645,7 @@ visstat_core <- function(dataframe,
     if (visanova$shapiro_test$p.value > alpha 
         #        |visanova$ad_test$p.value > alpha)  #only demand that shapiro wilk is non -signifcant
     ) {
-      openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
+      openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
       
       vis_sample_fact <- vis_anova(
         samples,
@@ -670,7 +674,7 @@ visstat_core <- function(dataframe,
       # if p -values of both Shapiro-Wilk and Kruskall-Wallis-Test are smaller than 0.05, Kruskall-Wallis-Test
     } else {
       
-      openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory, capture_env = capture_env) 
+      openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
       vis_sample_fact <- vis_Kruskal_Wallis_clusters(
         samples,
         fact,

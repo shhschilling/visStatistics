@@ -1,6 +1,7 @@
 #' Cairo wrapper function with plot capture capability
 #'
 #' Cairo wrapper function returning NULL if not \code{type} is specified.
+#' Enhanced version that can capture plots for later replay.
 #'
 #' \code{openGraphCairo()} \code{Cairo()} wrapper function. Differences to
 #' \code{Cairo:} a) prematurely ends the function call to \code{Cairo()}
@@ -24,7 +25,6 @@
 #' @param canvas see \code{Cairo()}
 #' @param units see \code{Cairo()}
 #' @param dpi DPI used for the conversion of units to pixels. Default value 150.
-#' @param capture_env Environment to store plot capture state. If NULL, no capture occurs.
 #' @name openGraphCairo
 #' @return NULL, if no \code{type} is specified. Otherwise see \code{Cairo()}
 #' @examples
@@ -46,27 +46,25 @@ openGraphCairo <- function(width = 640,
                            bg = "transparent",
                            canvas = "white",
                            units = "px",
-                           dpi = 150,
-                           capture_env = NULL) {
+                           dpi = 150) {
   oldparCairo <- par(no.readonly = TRUE)
   oldparCairo$new <- FALSE
-  oldparCairo$pin <- NULL
   on.exit(par(oldparCairo))
   
+  
+
+ 
+      
   if (is.null(type)) {
-    if (!is.null(capture_env)) {
-      capture_env$capture_next_plot <- TRUE
-    }
     return()
-  } else {
-    if (!is.null(capture_env)) {
-      capture_env$capture_next_plot <- FALSE
-    }
+  }
     
     if (is.null(fileName)) {
       fileName <- "visstat_plot"
     }
     
+  
+  
     fullfilename <- paste(fileName, ".", type, sep = "")
     Cairofilename <- file.path(fileDirectory, fullfilename)
     
@@ -87,7 +85,7 @@ openGraphCairo <- function(width = 640,
       return()
     }
   }
-}
+
 
 
 #' Saves Graphical Output with plot capture capability
@@ -122,12 +120,9 @@ saveGraphVisstat <- function(fileName = NULL,
                              oldfile = NULL,
                              capture_env = NULL) {
   
-  if (!is.null(capture_env) && isTRUE(capture_env$capture_next_plot)) {
-    tryCatch({
-      captured_plot <- recordPlot()
-      capture_env$captured_plots <- c(capture_env$captured_plots, list(captured_plot))
-    }, error = function(e) {})
-    capture_env$capture_next_plot <- FALSE
+  # logic to capture plots independent of type
+  if (!is.null(capture_env)) {
+    capture_env$captured_plots[[length(capture_env$captured_plots) + 1]] <- recordPlot()
   }
   
   if (is.null(fileName)) {
@@ -144,23 +139,16 @@ saveGraphVisstat <- function(fileName = NULL,
     dev.off()
   }
   
-  dev.flush() #new line
-  
-
-  
   file2 <- gsub("[^[:alnum:]]", "_", fileName)
   file3 <- gsub("_{2,}", "_", file2)
   
   newFileName <- paste0(file3, ".", type)
   Cairofile <- file.path(fileDirectory, newFileName)
   file.copy(oldfile, Cairofile, overwrite = T)
-  file.info(Cairofile)  # Force file system sync #new line
   
   if (file.exists(oldfile)) {
     file.remove(oldfile)
   }
-  
-  
   
   return(invisible(Cairofile))
 }

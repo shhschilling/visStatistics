@@ -1,6 +1,7 @@
 #' Wrapper for visstat_core allowing two different input styles
 #'
-#' A wrapper around the core function \code{\link{visstat_core}} defining the
+#' A wrapper around the core function \code{\link{visstat_core}}. 
+#' \code{\link{visstat_core}} defines the
 #' decision logic for statistical hypothesis testing and visualisation between
 #' two variables of class \code{"numeric"}, \code{"integer"}, or \code{"factor"}.
 #'
@@ -69,12 +70,11 @@
 #' \url{https://shhschilling.github.io/visStatistics/}.
 #'
 #' @examples
-
 #' ## Standardised usage (preferred):
 #' visstat(mtcars$am, mtcars$mpg)
 #'
 #' ## Backward-compatible usage (same result):
-#' # visstat(mtcars, "mpg", "am")
+#' visstat(mtcars, "mpg", "am")
 #'
 #' ## Wilcoxon rank sum test
 #' grades_gender <- data.frame(
@@ -119,6 +119,8 @@
 #' visstat(iris$Species, iris$Petal.Width,
 #'         graphicsoutput = "pdf", plotName = "kruskal_iris", plotDirectory = tempdir())
 #'
+
+#'
 #' @export
 #' 
 visstat <- function(x,
@@ -131,9 +133,7 @@ visstat <- function(x,
                     plotName = NULL,
                     plotDirectory = getwd()) {
   
-  
   check_visstat_input(x, y, ...)
-  
   
   
   clean_name <- function(expr) {
