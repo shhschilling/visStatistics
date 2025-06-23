@@ -64,13 +64,14 @@
 #' assumption diagnostics.
 #' @return A list as returned by \code{\link{visstat_core}}, containing statistical results and graphical outputs.
 #'
-#' @seealso the core function \code{\link{visstat_core}},  the package's vignette
+#' @seealso  \code{\link{visstat_core}} defining the decision logic,  the package's vignette
 #' \code{vignette("visStatistics")} for the overview,
 #' and the accompanying webpage
 #' \url{https://shhschilling.github.io/visStatistics/}.
 #'
 #' @examples
 #' ## Standardised usage (preferred):
+#' mtcars$am=as.factor(mtcars$am)
 #' visstat(mtcars$am, mtcars$mpg)
 #'
 #' ## Backward-compatible usage (same result):
@@ -111,10 +112,6 @@
 #' visstat(blackBrownHazelGreen$Hair, blackBrownHazelGreen$Eye,
 #'         graphicsoutput = "png", plotDirectory = tempdir())
 #'
-#' ## Save PDF
-#' visstat(iris$Species, iris$Petal.Width, graphicsoutput = "pdf",
-#'           plotDirectory = tempdir())
-#'
 #' ## Custom plot name
 #' visstat(iris$Species, iris$Petal.Width,
 #'         graphicsoutput = "pdf", plotName = "kruskal_iris", plotDirectory = tempdir())
@@ -132,6 +129,11 @@ visstat <- function(x,
                     graphicsoutput = NULL,
                     plotName = NULL,
                     plotDirectory = getwd()) {
+  
+  # store default graphical parameters------
+  oldparvisstat <- par(no.readonly = TRUE)
+  oldparvisstat$new <- FALSE # reset the default value
+  on.exit(par(oldparvisstat))
   
   check_visstat_input(x, y, ...)
   

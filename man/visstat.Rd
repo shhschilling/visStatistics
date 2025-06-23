@@ -48,7 +48,8 @@ form the complete figure file name.}
 A list as returned by \code{\link{visstat_core}}, containing statistical results and graphical outputs.
 }
 \description{
-A wrapper around the core function \code{\link{visstat_core}} defining the
+A wrapper around the core function \code{\link{visstat_core}}. 
+\code{\link{visstat_core}} defines the
 decision logic for statistical hypothesis testing and visualisation between
 two variables of class \code{"numeric"}, \code{"integer"}, or \code{"factor"}.
 }
@@ -91,10 +92,11 @@ assumption diagnostics.
 }
 \examples{
 ## Standardised usage (preferred):
+mtcars$am=as.factor(mtcars$am)
 visstat(mtcars$am, mtcars$mpg)
 
 ## Backward-compatible usage (same result):
-# visstat(mtcars, "mpg", "am")
+visstat(mtcars, "mpg", "am")
 
 ## Wilcoxon rank sum test
 grades_gender <- data.frame(
@@ -131,17 +133,14 @@ visstat(blackBrownHazelGreen$Eye, blackBrownHazelGreen$Hair)
 visstat(blackBrownHazelGreen$Hair, blackBrownHazelGreen$Eye,
         graphicsoutput = "png", plotDirectory = tempdir())
 
-## Save PDF
-visstat(iris$Species, iris$Petal.Width, graphicsoutput = "pdf",
-          plotDirectory = tempdir())
-
 ## Custom plot name
 visstat(iris$Species, iris$Petal.Width,
         graphicsoutput = "pdf", plotName = "kruskal_iris", plotDirectory = tempdir())
 
+
 }
 \seealso{
-the core function \code{\link{visstat_core}},  the package's vignette
+\code{\link{visstat_core}} defining the decision logic,  the package's vignette
 \code{vignette("visStatistics")} for the overview,
 and the accompanying webpage
 \url{https://shhschilling.github.io/visStatistics/}.

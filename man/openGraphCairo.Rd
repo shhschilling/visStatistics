@@ -14,8 +14,7 @@ openGraphCairo(
   bg = "transparent",
   canvas = "white",
   units = "px",
-  dpi = 150,
-  capture_env = NULL
+  dpi = 150
 )
 }
 \arguments{
@@ -42,14 +41,13 @@ working directory.}
 \item{units}{see \code{Cairo()}}
 
 \item{dpi}{DPI used for the conversion of units to pixels. Default value 150.}
-
-\item{capture_env}{Environment to store plot capture state. If NULL, no capture occurs.}
 }
 \value{
 NULL, if no \code{type} is specified. Otherwise see \code{Cairo()}
 }
 \description{
 Cairo wrapper function returning NULL if not \code{type} is specified.
+Enhanced version that can capture plots for later replay.
 }
 \details{
 \code{openGraphCairo()} \code{Cairo()} wrapper function. Differences to

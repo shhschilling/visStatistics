@@ -262,7 +262,7 @@ In the following example, we store the graphics in `png` format in the `plotDire
 # a bar chart to visualise the Chi-squared test and mosaic plot showing
 # Pearson's residuals named 
 #chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png resp. 
-save_fisher=visstat(black_brown_hazel_green_male, "Hair", "Eye",
+save_fisher <- visstat(black_brown_hazel_green_male, "Hair", "Eye",
         graphicsoutput = "png", plotDirectory = tempdir())
 ```
 
@@ -273,6 +273,7 @@ The full file path of the generated graphics are stored as the attribute
 paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
+
 Remove the graphical output from `plotDirectory`:
 
 ```{r, eval=TRUE}
@@ -307,7 +308,7 @@ A graphical overview of the decision logic used is provided in below figure.
 
 <div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: left;">
 
-<img src="man/figures/decision_tree.png" width="100%" 
+<img src="vignettes/figures/decision_tree.png" width="100%" 
      alt="Decision tree used to select the appropriate statistical test.">
 
 <p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">

@@ -1,101 +1,23 @@
-## Examples------
+library(visStatistics)
+
+# Examples------
 while (!is.null(dev.list())) {
   dev.off()
 }
-library(visStatistics)
+
+
 options(warn = 0) # for debugging also warnings
-# only while developing, comment  when installed from CRAN
-# library(nortest)
-# library(vcd)
-# library(multcompView)
-# library(Cairo)
-
-# specify directory where plots will be stored. Without definition of plotDirectory: current working directory
 filedir <- tempdir()
-
-# If graphicsoutput parameter is set, all plots are stored in the directory specified in the parameter plotDirectory.
-# Default directory of plotDirectory is the working directory.
-# Graphical output is named following the naming convention
-# "statisticalTestName_varsample_varfactor.graphicsoutput"
-#
-linear_regression_trees <- visstat(trees, "Girth", "Height")
-linear_regression_trees <- visstat(trees,
-  "Girth",
-  "Height",
-  graphicsoutput = "png",
-  plotDirectory = filedir
-)
-linear_regression_trees <- visstat(
-  trees,
-  "Girth",
-  "Height",
-  graphicsoutput = "pdf",
-  plotName = "hugo",
-  plotDirectory = filedir
-)
-linear_regression_trees <- visstat(
-  trees,
-  "Girth",
-  "Height",
-  graphicsoutput = "svg", ,
-  plotName = "dante",
-  plotDirectory = filedir
-)
-# display stats of linear regression
-linear_regression_trees
-
-# Welch two sample t.test: mtcars data set ----
-mtcars$am <- as.factor(mtcars$am)
-welch_cars <- visstat(mtcars, "mpg", "am")
-# store graphical output in different formats in directory defined in argument plotDirectory
-welch_cars <- visstat(
-  mtcars,
-  "mpg",
-  "am",
-  graphicsoutput = "png",
-  plotName = "hans",
-  plotDirectory = filedir
-)
-# standard naming convention
-welch_cars <- visstat(mtcars,
-  "mpg",
-  "am",
-  graphicsoutput = "pdf",
-  plotDirectory = filedir
-)
-
-# ANOVA and oneway.test -----
-anova_npk <- visstat(npk, "yield", "block")
-anova_npk # print out results
-
-
-# Kruskal-Wallis test: iris----
-visstat(iris, "Petal.Width", "Species")
-visstat(
-  iris,
-  "Petal.Width",
-  "Species",
-  graphicsoutput = "pdf",
-  plotDirectory = filedir
-)
-visstat(
-  iris,
-  "Petal.Width",
-  "Species",
-  graphicsoutput = "pdf",
-  plotName = "iris_kruskal",
-  plotDirectory = filedir
-)
 
 
 # Welch two sample t.test: InsectSprays ----
 # select sprays A and B
 InsectSpraysAB <- InsectSprays[which(InsectSprays$spray == "A" |
-  InsectSprays$spray == "B"), ]
+                                       InsectSprays$spray == "B"), ]
 InsectSpraysAB$spray <- factor(InsectSpraysAB$spray)
-# Welcht-t-Test
-visstat(InsectSpraysAB, "count", "spray") # plots not saved
-visstat(
+
+
+insect_spray=visstat(
   InsectSpraysAB,
   "count",
   "spray",
@@ -104,7 +26,7 @@ visstat(
   plotDirectory = filedir
 )
 
-# Wilcoxon
+# Wilcoxon-----
 grades_gender <- data.frame(
   Sex = as.factor(c(rep("Girl", 20), rep("Boy", 20))),
   Grade = c(
@@ -150,22 +72,38 @@ grades_gender <- data.frame(
     15.6
   )
 )
-visstat(grades_gender, "Grade", "Sex")
+visstat(grades_gender$Sex,grades_gender$Grade)
+
+# ANOVA -----
+anova_npk <- visstat(npk$block, npk$yield) 
+
+
+# Kruskal-Wallis test: iris----
+iris_data=visstat(iris$Species, iris$Petal.Width)
+
+iris_data_stored=visstat(
+  iris$Species, iris$Petal.Width,
+  graphicsoutput = "pdf",
+  plotName = "iris_kruskal",
+  plotDirectory = filedir
+)
+
+# Linear regression: trees data set  ----
+linear_regression_trees <- visstat(trees$Height, trees$Girth)
+plot(linear_regression_trees, which=1) # replays assumption plot
 
 
 # Chi squared, mosaic plots with HairEyeColor----
 # HairEyeColor data set: Pearsons Chi squared, mosaic plot with Pearson's residuals
 HairEyeColorMale <- counts_to_cases(as.data.frame(HairEyeColor[, , 1]))
-visstat(HairEyeColorMale, "Hair", "Eye")
+visstat(HairEyeColorMale$Eye, HairEyeColorMale$Hair)
 HairEyeColorMaleFisher <- HairEyeColor[, , 1]
 # replace cells to smaller values to enforce Cochran's rule
 HairEyeColorMaleFisher[HairEyeColorMaleFisher < 10] <- 4
 HairEyeColorMaleFisher <- counts_to_cases(as.data.frame(HairEyeColorMaleFisher))
-res_chi <- visstat(HairEyeColorMaleFisher, "Hair", "Eye") # test statistics stored in res_chi
+
 res_chi <- visstat(
-  HairEyeColorMaleFisher,
-  "Hair",
-  "Eye",
+  HairEyeColorMaleFisher$Eye, HairEyeColorMaleFisher$Hair,
   graphicsoutput = "png",
   plotDirectory = filedir
 ) # stores two graphics outputs
@@ -175,15 +113,40 @@ HairEyeColorMaleFisher <- HairEyeColor[, , 1]
 # slicing out a 2 x2 contingency table
 blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
 fishertest <- blackBrownHazelGreen
+
 blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
 fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
-fisher_stats
 
 
-# remove output plots from directory filedir----
-# graphicaltypes=c(".png", ".pdf", ".svg", ".ps")
-# for (i in graphicaltypes) {
-#   plotname=dir(filedir,pattern=i)
-#  print(file.path(filedir,plotname))
-#   file.remove(file.path(filedir,plotname))
-# }
+# The visstat-methods -------
+summary.visstat(iris_data_stored)
+print.visstat(iris_data_stored)
+plot(iris_data_stored) #file paths
+plot(iris_data,which = 1) #replay plot 1
+
+
+# Replay plots  or file paths of stored graphics------
+plot(insect_spray,which = 1) # path of assumption plot
+plot(anova_npk)
+plot(linear_regression_trees)
+plot(res_chi)# paths two column plot and mosaic plot
+plot(fisher_stats,which = 2) #mosaic plot only
+
+
+# Saving the graphical output to a user specified plotDirectory in user specified graphicsouput format ----
+linear_regression_trees_paths <- visstat(
+  trees$Height, trees$Girth,
+  graphicsoutput = "svg", 
+  plotName = "trees",
+  plotDirectory = filedir
+)
+
+
+# Show all graphics  of type ".png", ".pdf", ".svg", ".ps" in filedir=tempdir()-----
+graphicaltypes <- c(".png", ".pdf", ".svg", ".ps")
+for (i in graphicaltypes) {
+  plotname <- dir(filedir, pattern = i)
+  print(file.path(filedir, plotname))
+  # file.remove(file.path(filedir, plotname)) # removes all files of type ".png", ".pdf", ".svg", ".ps" in filedir=tempdir()-
+}
+

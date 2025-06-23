@@ -10,7 +10,8 @@
 #' of a statistical hypothesis test between a two vectors in
 #' a given \code{data.frame} named \code{dataframe} based on the data's type, 
 #' distribution, sample size, and the
-#' specified \code{conf.level}. \code{visstat_core()} is called by the main wrapper function \code{visstat_core()}.
+#' specified \code{conf.level}. \code{visstat_core()} is called by the main
+#'  wrapper function \code{visstat()}.
 #' \code{varsample} and \code{varfactor} are \code{character}
 #' strings corresponding to the column names of the chosen vectors in \code{dataframe}. 
 #' These vectors must be of type \code{integer}, \code{numeric} or \code{factor}.
@@ -64,7 +65,7 @@
 #' Implemented tests for assumptions:
 #' \itemize{
 #'   \item Normality: \code{shapiro.test()} and \code{ad.test()}
-#'   \item Heteroscedasticity: \code{bartlett.test()}
+#'   \item Heteroscedasticity: \code{bartlett.test()} and \code{levene.test()}
 #' }
 #' 
 #' Implemented post hoc tests:
@@ -143,36 +144,8 @@
 #' blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
 #' blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
 #' fisher_stats <- visstat_core(blackBrownHazelGreen, "Hair", "Eye")
-#' fisher_stats # print out summary statistics
-#'
-#' ## Saving the graphical output in directory "plotDirectory"
-#' ## A) Saving graphical output of type "png" in temporary directory tempdir()
-#' ##    with default naming convention:
-#' visstat_core(blackBrownHazelGreen, "Hair", "Eye",
-#'   graphicsoutput = "png",
-#'   plotDirectory = tempdir()
-#' )
-#'
-#' ## Remove graphical output from plotDirectory
-#' file.remove(file.path(tempdir(), "chi_squared_or_fisher_Hair_Eye.png"))
-#' file.remove(file.path(tempdir(), "mosaic_complete_Hair_Eye.png"))
-#'
-#' ## B) Specifying pdf as output type:
-#' visstat_core(iris, "Petal.Width", "Species",
-#'   graphicsoutput = "pdf",
-#'   plotDirectory = tempdir()
-#' )
-#'
-#' ## Remove graphical output from plotDirectory
-#' file.remove(file.path(tempdir(), "kruskal_Petal_Width_Species.pdf"))
-#'
-#' ## C) Specifying "plotName" overwrites default naming convention
-#' visstat_core(iris, "Petal.Width", "Species",
-#'   graphicsoutput = "pdf",
-#'   plotName = "kruskal_iris", plotDirectory = tempdir()
-#' )
-#' ## Remove graphical output from plotDirectory
-#' file.remove(file.path(tempdir(), "kruskal_iris.pdf"))
+
+
 #'
 #' @import vcd
 #' @import Cairo

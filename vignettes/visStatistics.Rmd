@@ -372,42 +372,35 @@ If the normality assumption is violated, `kruskal.test()` is used instead.
 These assumptions are tested using the `visAnovaAssumptions()` function.
 
 #### Normality of residuals (`shapiro.test()` and `ad.test()`)
+The `visAnovaAssumptions()` function evaluates the normality of standardised residuals from the
+ANOVA model using both the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test
+(`ad.test()`). These tests offer complementary strengths: Shapiro–Wilk generally exhibits greater
+power across a range of non-normal distributions in small samples, whereas Anderson–Darling is
+highly sensitive to tail deviations and performs reliably in larger samples [@Razali:2011; @Yap:2011].
 
-The `visAnovaAssumptions()` function evaluates the normality of standardised  
-residuals from the ANOVA model using both the Shapiro–Wilk test  
-(`shapiro.test()`) and the Anderson–Darling test (`ad.test()`). These tests  
-offer complementary strengths: Shapiro–Wilk generally exhibits greater power  
-across a range of non-normal distributions in small samples, whereas  
-Anderson–Darling is highly sensitive to tail deviations and performs reliably  
-in larger samples [@Razali:2011; @Yap:2011].  
+Assessing assumptions solely through p-values can lead to both type I errors (false positives) and
+type II errors (false negatives). In large samples, even minor, random deviations from the null
+hypothesis—such as the assumption of normality—can result in statistically significant p-values,
+leading to type I errors. Conversely, in small samples, substantial violations of the assumption may
+not reach statistical significance, resulting in type II errors [@Kozak:2018].
 
-Assessing assumptions solely through p-values can lead to both type I errors  
-(false positives) and type II errors (false negatives). In large samples, even  
-minor, random deviations from the null hypothesis—such as the assumption of  
-normality—can result in statistically significant p-values, leading to type I  
-errors. Conversely, in small samples, substantial violations of the assumption  
-may not reach statistical significance, resulting in type II errors  
-[@Kozak:2018].  
+Thus, the robustness of statistical tests depends on both the sample size and the shape of the
+underlying distribution. This is evident in the limitations of the normality tests used: for instance,
+the Shapiro–Wilk test is unreliable for large samples ($N > 5000$), while the Anderson–Darling test
+requires at least 7 observations.
 
-Thus, the robustness of statistical tests depends on both the sample size and  
-the shape of the underlying distribution. This is evident in the limitations  
-of the normality tests used: for instance, the Shapiro–Wilk test is unreliable  
-for large samples ($N > 5000$), while the Anderson–Darling test requires at  
-least 7 observations.  
+Moreover, assumption tests provide no information on the nature of deviations from the expected
+distribution [@Shatz:2024]. Therefore, the assessment of normality should not rely solely on
+p-values but should be complemented by visual inspection. `visstat()` produces diagnostic plots
+including: (1) a histogram of the standardised residuals overlaid with the standard normal
+distribution, (2) a scatter plot of the standardised residuals versus the fitted values for each
+predictor level, and (3) a Q–Q plot of the residuals.
 
-Moreover, assumption tests provide no information on the nature of deviations  
-from the expected distribution [@Shatz:2024]. Therefore, the assessment of  
-normality should not rely solely on p-values but should be complemented by  
-visual inspection. `visstat()` produces diagnostic plots including: (1) a  
-histogram of the standardised residuals overlaid with the standard normal  
-distribution, (2) a scatter plot of the standardised residuals versus the  
-fitted values for each predictor level, and (3) a Q–Q plot of the residuals.  
-
-Since algorithmic logic cannot replace the combination of formal tests and  
-expert visual judgement, the function defaults to assuming normality if the  
-Shapiro–Wilk test yields a p-value greater than alpha. Simulation studies  
-suggest that Shapiro–Wilk has the highest power among normality tests in  
-small to moderate samples [@Razali:2011].  
+Since algorithmic logic cannot replace the combination of formal tests and expert visual judgement,
+the function defaults to assuming normality if the Shapiro–Wilk test yields a p-value greater than
+alpha. Simulation studies suggest that Shapiro–Wilk has the highest power among normality tests in
+small to moderate samples [@Razali:2011].
+  
 
 
 #### Equal variances across groups (`levene.test() and bartlett.test()`)

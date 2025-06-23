@@ -39,10 +39,11 @@ saveGraphVisstat(
 
 
 
-# remove output  plots
+# remove output  plots in filedir
 graphicaltypes <- c(".png", ".pdf", ".svg", ".ps")
 for (i in graphicaltypes) {
   plotname <- dir(filedir, pattern = i)
   print(file.path(filedir, plotname))
   file.remove(file.path(filedir, plotname))
 }
+
