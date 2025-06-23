@@ -29,12 +29,22 @@
 
 vis_anova_assumptions <- function(samples, fact, conf.level = 0.95, 
                                   cex = 1, regression = FALSE) {
-  old_par <- par(no.readonly = TRUE)
-  old_par$pin <- NULL
-  old_par$new <- FALSE
-  old_par$fig <- NULL
-  old_par$mfg <- NULL
-  on.exit(par(old_par))
+  # old_par <- par(no.readonly = TRUE)
+  # old_par$pin <- NULL
+  # old_par$new <- FALSE
+  # old_par$fig <- NULL
+  # old_par$mfg <- NULL
+  # on.exit(par(old_par))
+  
+  oldparanovassum <- par(no.readonly = TRUE)
+  on.exit(par(oldparanovassum))
+  
+  #cleaning the input
+  samples3 <- na.omit(samples)
+  fact <- subset(fact, !is.na(samples))
+  samples <- samples3
+  
+  
   
   anova_model <- aov(samples ~ fact)
   std_residuals <- rstandard(anova_model)

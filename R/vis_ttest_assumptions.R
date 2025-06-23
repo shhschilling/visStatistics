@@ -42,13 +42,6 @@ vis_ttest_assumptions <- function(samples,
   
   # Store original par settings
   oldpar <- par(no.readonly = TRUE)
-
-  oldpar$pin <- NULL  # Add this line
-  oldpar$new <- FALSE  # Add this line too (removes the "new" warning)
-  oldpar$fig <- NULL
-  oldpar$mfg <- NULL
-  oldpar$mai <- NULL
-  oldpar$mar <- NULL
   on.exit(par(oldpar))
   
   # Clean data - remove NAs
@@ -65,6 +58,13 @@ vis_ttest_assumptions <- function(samples,
   # Split data by groups
   group1_data <- samples_clean[groups_clean == group_levels[1]]
   group2_data <- samples_clean[groups_clean == group_levels[2]]
+  
+  
+  # mean and sd for both groups
+  mean1 <- mean(group1_data)
+  sd1 <- sd(group1_data)
+  mean2 <- mean(group2_data)
+  sd2 <- sd(group2_data)
   
   # Normality tests for group 1
   if (length(group1_data) >= 3) {
@@ -88,14 +88,30 @@ vis_ttest_assumptions <- function(samples,
   #par(mfrow = c(2, 2), oma = c(0, 0, 3, 0))
   
   # Create plots - 2x2 design with explicit margins
-  par(mar = c(4, 4, 2, 1), mfrow = c(2, 2), oma = c(0, 0, 3, 0))
+  par(mar = c(4, 4, 2, 1), mfrow = c(2, 2), oma = c(0, 0, 2, 0))
+  
+  
+  
+  
+  
   
   # Plot 1: Histogram with normal overlay for group 1
+  # 
+  # 
+  # Find maximum y-range: 
+  hist_data <- hist(group1_data, plot = FALSE)
+  max_hist_density <- max(hist_data$density)
+  max_normal_peak <- max(dnorm(mean1, mean = mean1, sd = sd1))
+  y_max <- max(max_hist_density, max_normal_peak) * 1.1
+  
+  
   hist(group1_data, 
        freq = FALSE, 
        main = paste("Histogram -", group_levels[1]),
        xlab = ifelse(samplename == "", "Values", samplename),
        ylab = "Density",
+       ylim = c(0, y_max),
+       col = "lightblue", border = "black",
        cex.main = cex, cex.lab = cex, cex.axis = cex)
   
   # Overlay normal distribution - find proper range for full curve
@@ -109,21 +125,31 @@ vis_ttest_assumptions <- function(samples,
   normal_curve1 <- dnorm(x_seq1, mean = mean1, sd = sd1)
   lines(x_seq1, normal_curve1, col = "red", lwd = 2)
   
-  # Plot 2: Q-Q plot for group 1
+  # Plot 2: Q-Q plot for group 1------
   qqnorm(group1_data, main = paste("Q-Q Plot -", group_levels[1]), cex.main = cex)
   qqline(group1_data, col = "red", lwd = 2)
   
-  # Plot 3: Histogram with normal overlay for group 2
+  # Plot 3: Histogram with normal overlay for group 2-----
+  # Find maximum y-range: 
+  hist_data2 <- hist(group2_data, plot = FALSE)
+  max_hist_density2 <- max(hist_data2$density)
+  max_normal_peak2 <- max(dnorm(mean2, mean = mean2, sd = sd2))
+  y_max2 <- max(max_hist_density2, max_normal_peak2) * 1.1
+  
+  
+  
+  
   hist(group2_data, 
        freq = FALSE, 
        main = paste("Histogram -", group_levels[2]),
        xlab = ifelse(samplename == "", "Values", samplename),
        ylab = "Density",
+       ylim = c(0, y_max2),
+       col = "lightblue", border = "black",
        cex.main = cex, cex.lab = cex, cex.axis = cex)
   
   # Overlay normal distribution - find proper range for full curve
-  mean2 <- mean(group2_data)
-  sd2 <- sd(group2_data)
+  
   data_range2 <- range(group2_data)
   # Use 3 standard deviations or data range, whichever is wider
   normal_range2 <- c(mean2 - 3*sd2, mean2 + 3*sd2)
@@ -143,6 +169,7 @@ vis_ttest_assumptions <- function(samples,
   mtext(
     paste(
       "Check for normality of groups:",
+      #groupname,
       "\n", group_levels[1], " - Shapiro-Wilk: p = ",
       signif(p_SH_group1, 2),
       ", ", group_levels[2], " - Shapiro-Wilk: p = ",
