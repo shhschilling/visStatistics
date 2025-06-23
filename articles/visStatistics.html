@@ -499,10 +499,11 @@ is the number of groups, and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
 is the total number of observations.</p>
 <p>Under the null hypothesis, this statistic follows an F-distribution
-with two parameters for degrees of freedom: the numerator
+with two parameters for degrees of freedom:
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k - 1</annotation></semantics></math>)
-and the denominator
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>−</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">N - k</annotation></semantics></math>).
+and
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>−</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">N - k</annotation></semantics></math>):
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>∼</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>N</mi><mo>−</mo><mi>k</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">F \sim F(k-1, N-k)</annotation></semantics></math>
 The resulting p-value is computed from this distribution.</p>
 </div>
 <div class="section level4">
@@ -623,13 +624,47 @@ While <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov
 <p>The decision logic of <code>visStatistics</code> assumes homogeneity
 of variances if the Levene–Brown–Forsythe test (implemented as
 <code>levene.test()</code>) <span class="citation">[<a href="#ref-Brown:1974">10</a>]</span> yields a p-value greater than
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.<br>
-The Levene–Brown–Forsythe test improves upon Levene’s original test
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.</p>
+<p>The Levene–Brown–Forsythe test evaluates the null hypothesis that all
+groups have equal variances by testing whether the absolute deviations
+from group medians are equal across groups.</p>
+<p>For each observation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">y_{ij}</annotation></semantics></math>
+in group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>,
+it computes the absolute deviation from the group median:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">|</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><mover><msub><mi>y</mi><mi>i</mi></msub><mo accent="true">̃</mo></mover><mo stretchy="true" form="postfix">|</mo></mrow></mrow><annotation encoding="application/x-tex">z_{ij} = |y_{ij} - \tilde{y_i}|</annotation></semantics></math>,</p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><msub><mi>y</mi><mi>i</mi></msub><mo accent="true">̃</mo></mover><annotation encoding="application/x-tex">\tilde{y_i}</annotation></semantics></math>
+is the median of group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>.</p>
+<p>The test statistic is the F-statistic from a one-way ANOVA on the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">z_{ij}</annotation></semantics></math>
+values:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mfrac><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></munderover><msub><mi>n</mi><mi>i</mi></msub><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>z</mi><mo accent="true">‾</mo></mover><mi>i</mi></msub><mo>−</mo><mover><mi>z</mi><mo accent="true">‾</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow></mfrac><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></munderover><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>n</mi><mi>i</mi></msub></munderover><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><msub><mover><mi>z</mi><mo accent="true">‾</mo></mover><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><mrow><mi>N</mi><mo>−</mo><mi>k</mi></mrow></mfrac></mfrac></mrow><annotation encoding="application/x-tex">F = \frac{\frac{\sum_{i=1}^{k} n_i (\bar{z}_i - \bar{z})^2}{k-1}}{\frac{\sum_{i=1}^{k} \sum_{j=1}^{n_i} (z_{ij} - \bar{z}_i)^2}{N-k}}</annotation></semantics></math></p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+is the number of groups,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+is the total sample size,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mi>i</mi></msub><annotation encoding="application/x-tex">n_i</annotation></semantics></math>
+is the sample size of group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>z</mi><mo accent="true">‾</mo></mover><mi>i</mi></msub><annotation encoding="application/x-tex">\bar{z}_i</annotation></semantics></math>
+is the mean of absolute deviations from the median in group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>,
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>z</mi><mo accent="true">‾</mo></mover><annotation encoding="application/x-tex">\bar{z}</annotation></semantics></math>
+is the overall mean of all absolute deviations.</p>
+<p>Under the null hypothesis of equal variances, the test statistic
+follows an F-distribution:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>∼</mo><mi>F</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>N</mi><mo>−</mo><mi>k</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">F \sim F(k-1, N-k)</annotation></semantics></math>.</p>
+<p>The Levene–Brown–Forsythe test improves upon Levene’s original test
 <span class="citation">[<a href="#ref-Levene:1960">24</a>]</span> by
 using the median instead of the mean to centre the data. This makes it
 more robust to non-normal data, providing more reliable results in many
-practical situations. Note that <code>levene.test()</code> mimicks the
-default behaviour of <code>levenTest()</code> in the <code>car</code>
+practical situations. Note that <code>levene.test()</code> mimics the
+default behaviour of <code>leveneTest()</code> in the <code>car</code>
 package <span class="citation">[<a href="#ref-Fox:2019">25</a>]</span>.</p>
 <p>Additionally, homoscedasticity is assessed via Bartlett’s test
 (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>), which has more power than the
@@ -787,10 +822,10 @@ of the standardised residuals should exceed approximately
 in the Q–Q plot the data points should approximately follow the red
 straight line.</p>
 <p>The p-values of the formal tests for normality (Shapiro–Wilk and
-Anderson–Darling) as wel as the tests for homoscedasticiy (Bartlett’s
+Anderson–Darling) as well as the tests for homoscedasticity (Bartlett’s
 and Levene Brown–Forsythe) are given in the title.
 <!-- To assume normality of residuals, the formal tests for normality (Shapiro--Wilk and Anderson--Darling) should result in p-values greater than the user-defined $\alpha$. --></p>
-<!-- If normality of the residuals can beassumed, Bartlett's test can be assesed to check for homogenity of variances. Otherwise, the Levene Brown–Forsythe is a more robust test for homoscedasticiy given deviations from the normality assumption of residuals  The p-values of the beforementioned tests are displayed in the title of the residual panel. -->
+<!-- If normality of the residuals can beassumed, Bartlett's test can be assesed to check for homogenity of variances. Otherwise, the Levene Brown–Forsythe is a more robust test for homoscedasticity given deviations from the normality assumption of residuals  The p-values of the beforementioned tests are displayed in the title of the residual panel. -->
 <p><code><a href="../reference/visstat.html">visstat()</a></code> then illustrates, in the subsequent graph,
 either the <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>, the <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>,
 or <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> result (see also Section “Decision logic”).</p>
@@ -800,9 +835,12 @@ illustrated using box plots alongside jittered data points, with the
 title displaying the p-value from <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>.</p>
 <p>Above each box plot, the number of observations per level is shown.
 Different green letters below a pair of box plots indicate that the two
-groups are considered significantly different, based on Holm’s-adjusted
+groups are considered significantly different based on Holm’s-adjusted
 pairwise Wilcoxon rank sum test p-values smaller than
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>.
+The letters are generated with the help of the function
+<code>multcompLetters()</code> from the <code>multcompView</code>
+package <span class="citation">[<a href="#ref-Graves:2024">30</a>]</span>).</p>
 <p>If normality of the residuals can be assumed, a parametric test is
 chosen: either <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>, if homoscedasticity is also assumed,
 or <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> otherwise. <code><a href="../reference/visstat.html">visstat()</a></code> displays
@@ -1041,7 +1079,7 @@ the overall association.</p>
 </h3>
 <p>The test statistic of Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>-test
-<span class="citation">[<a href="#ref-Pearson:1900">30</a>]</span> is
+<span class="citation">[<a href="#ref-Pearson:1900">31</a>]</span> is
 the sum of squared Pearson residuals:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>χ</mi><mn>2</mn></msup><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>R</mi></munderover><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>C</mi></munderover><msubsup><mi>r</mi><mrow><mi>i</mi><mi>j</mi></mrow><mn>2</mn></msubsup><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>R</mi></munderover><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>C</mi></munderover><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>O</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><msub><mi>E</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><msub><mi>E</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
 \chi^2 = \sum_{i=1}^{R} \sum_{j=1}^{C} r_{ij}^2 =
@@ -1066,7 +1104,7 @@ approximation of the discrete sampling distribution by the continuous
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
 distribution tends to overestimate the significance level of the test.
 To correct for this, Yates proposed subtracting 0.5 from each absolute
-difference between observed and expected counts <span class="citation">[<a href="#ref-Yates:1934">31</a>]</span>, resulting in
+difference between observed and expected counts <span class="citation">[<a href="#ref-Yates:1934">32</a>]</span>, resulting in
 a smaller test statistic:
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>χ</mi><mtext mathvariant="normal">Yates</mtext><mn>2</mn></msubsup><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mn>2</mn></munderover><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mn>2</mn></munderover><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mrow><mo stretchy="true" form="prefix">|</mo><msub><mi>O</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><msub><mi>E</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">|</mo></mrow><mo>−</mo><mn>0.5</mn><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><msub><mi>E</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
 \chi^2_{\text{Yates}} = \sum_{i=1}^{2} \sum_{j=1}^{2}
@@ -1082,7 +1120,7 @@ routine <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-
 approximation is considered reliable only if no expected cell count is
 less than 1 and no more than 20 percent of cells have expected counts
 below 5 <span class="citation">[<a href="#ref-Cochran:1954">11</a>]</span>). If this condition is not met,
-Fisher’s exact test <span class="citation">[<a href="#ref-Fisher:1970">32</a>]</span> (<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>) is
+Fisher’s exact test <span class="citation">[<a href="#ref-Fisher:1970">33</a>]</span> (<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>) is
 applied instead, as it is a non-parametric method that does not rely on
 large-sample approximations. The test calculates an exact p-value for
 testing independence by conditioning on the observed margins: the row
@@ -1146,7 +1184,7 @@ expected count is smaller than 1, the function uses Pearson’s
 (<code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code>).</p>
 <p>Otherwise, it switches to Fisher’s exact test
 (<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>) <span class="citation">[<a href="#ref-Cochran:1954">11</a>]</span>.</p>
-<p>For 2-by-2 contingency tables, Yates’ continuity correction <span class="citation">[<a href="#ref-Yates:1934">31</a>]</span> is always
+<p>For 2-by-2 contingency tables, Yates’ continuity correction <span class="citation">[<a href="#ref-Yates:1934">32</a>]</span> is always
 applied to Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test.</p>
 <p>For all tests of independence <code><a href="../reference/visstat.html">visstat()</a></code> displays a
@@ -1278,8 +1316,8 @@ attribute <code>"plot_paths"</code> on the returned object of class
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpWFJY8I/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/RtmpWFJY8I/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmphPJglH/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/RtmphPJglH/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
@@ -1311,7 +1349,7 @@ cannot be visualised.</p>
 based on the Shapiro-Wilk test for normality and the
 Levene-Brown-Forsythe test for variance homogeneity. However, no single
 test maintains optimal Type I error rates and statistical power across
-all distributions <span class="citation">[<a href="#ref-Olejnik:1987">33</a>]</span>, and p-values obtained from
+all distributions <span class="citation">[<a href="#ref-Olejnik:1987">34</a>]</span>, and p-values obtained from
 these tests may be unreliable if their assumptions are violated.</p>
 <p>Combining multiple tests with differing assumptions using simple
 majority voting inflates the overall Type I error rate, making such an
@@ -1320,7 +1358,7 @@ p-values cannot replace the visual inspection of sample distributions
 provided by <code><a href="../reference/visstat.html">visstat()</a></code>. Based on these plots, it may be
 necessary to override the automated choice of test in individual
 cases.</p>
-<p>In contrast, bootstrapping methods <span class="citation">[<a href="#ref-Wilcox:2021">34</a>]</span> make minimal distributional
+<p>In contrast, bootstrapping methods <span class="citation">[<a href="#ref-Wilcox:2021">35</a>]</span> make minimal distributional
 assumptions and can provide confidence intervals for nearly any
 statistic. However, bootstrapping is computationally intensive, often
 requiring thousands of resamples, and may perform poorly with very small
@@ -1342,7 +1380,7 @@ bootstrapping to keep the focus on foundational concepts.</p>
 <h3 id="numeric-response-and-categorical-predictor">Numeric response and categorical predictor<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor"></a>
 </h3>
 <p>When the response is numeric and the predictor is categorical, a test
-of central tendenacy is selected:</p>
+of central tendency is selected:</p>
 <p><code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>,
 <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>,
 <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>,<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code></p>
@@ -1643,8 +1681,16 @@ Sequentially Rejective Multiple Test Procedure</span></a>.
 <em>Scandinavian Journal of Statistics</em> <strong>6</strong>
 65–70.</div>
 </div>
-<div id="ref-Pearson:1900" class="csl-entry">
+<div id="ref-Graves:2024" class="csl-entry">
 <div class="csl-left-margin">[30] </div>
+<div class="csl-right-inline">
+<span class="smallcaps">Graves</span>, S.,
+<span class="smallcaps">Piepho</span>, H.-P. and <span class="smallcaps">with help from Sundar Dorai-Raj</span>, L. S. (2024).
+<em><a href="https://doi.org/10.32614/CRAN.package.multcompView" class="external-link"><span class="nocase">multcompView</span>: <span>Visualizations</span> of
+paired comparisons</a></em>.</div>
+</div>
+<div id="ref-Pearson:1900" class="csl-entry">
+<div class="csl-left-margin">[31] </div>
 <div class="csl-right-inline">
 <span class="smallcaps">Pearson</span>, K.
 (1900). <a href="https://doi.org/10.1080/14786440009463897" class="external-link">On the
@@ -1655,7 +1701,7 @@ London, Edinburgh, and Dublin Philosophical Magazine and Journal of
 Science</em> <strong>50</strong> 157–75.</div>
 </div>
 <div id="ref-Yates:1934" class="csl-entry">
-<div class="csl-left-margin">[31] </div>
+<div class="csl-left-margin">[32] </div>
 <div class="csl-right-inline">
 <span class="smallcaps">Yates</span>, F.
 (1934). <a href="https://doi.org/10.2307/2983604" class="external-link">Contingency
@@ -1665,14 +1711,14 @@ Science</em> <strong>50</strong> 157–75.</div>
 Series B: Statistical Methodology</em> <strong>1</strong> 217–35.</div>
 </div>
 <div id="ref-Fisher:1970" class="csl-entry">
-<div class="csl-left-margin">[32] </div>
+<div class="csl-left-margin">[33] </div>
 <div class="csl-right-inline">
 <span class="smallcaps">Fisher</span>, R. A.
 (1970). <em>Statistical methods for research workers</em>. <span>Oliver
 and Boyd</span>, Edinburgh.</div>
 </div>
 <div id="ref-Olejnik:1987" class="csl-entry">
-<div class="csl-left-margin">[33] </div>
+<div class="csl-left-margin">[34] </div>
 <div class="csl-right-inline">
 <span class="smallcaps">Olejnik</span>, S. F.
 and <span class="smallcaps">Algina</span>, J. (1987). <a href="https://doi.org/10.2307/1164627" class="external-link">Type <span>I Error Rates</span>
@@ -1681,7 +1727,7 @@ and <span>Power Estimates</span> of <span>Selected Parametric</span> and
 of Educational Statistics</em> <strong>12</strong> 45.</div>
 </div>
 <div id="ref-Wilcox:2021" class="csl-entry">
-<div class="csl-left-margin">[34] </div>
+<div class="csl-left-margin">[35] </div>
 <div class="csl-right-inline">
 <span class="smallcaps">Wilcox</span>, R. R.
 (2021). <em>Introduction to <span>Robust Estimation</span> and
