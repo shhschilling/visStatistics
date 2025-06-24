@@ -434,8 +434,15 @@ visstat_core <- function(dataframe,
   
   if (typefactor == "factor" && typesample == "factor") {
     if (check_assumptions_count_data(samples, fact) == FALSE) {
-      vis_sample_fact <-
+      # vis_sample_fact <-
+      #   makeTable(samples, fact, name_of_sample, name_of_factor)
+      vis_sample_fact <- tryCatch({
         makeTable(samples, fact, name_of_sample, name_of_factor)
+      }, error = function(e) {
+        list(error = paste("Failed to create contingency table:", e$message))
+      })
+      
+      
     } else {
       # Chi^2 Test-----
       openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
@@ -530,16 +537,16 @@ visstat_core <- function(dataframe,
   if ((typefactor == "integer" |
        typefactor == "numeric") &&
       (typesample == "integer" | typesample == "numeric")) {
+    
     # samples: independent variable, factor: dependent   variable
     # check normality
     # 
     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory
                     ) 
-    # normality_residual_assumptioon <-
-    #   vis_normality_assumptions(samples, fact, conf.level = conf.level)
+   
     
     normality_residual_assumptioon <-
-      vis_anova_assumptions(samples, fact, conf.level = conf.level,regression=TRUE)
+      vis_anova_assumptions(samples, fact, conf.level = conf.level,regression = TRUE)
     
     
     if (is.null(plotName)) {
@@ -559,10 +566,6 @@ visstat_core <- function(dataframe,
       )
     )
     
-    
-    
-    
-    
     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
     
     vis_sample_fact <- vis_regression(
@@ -581,9 +584,6 @@ visstat_core <- function(dataframe,
       filename <- paste(plotName)
     }
     
-    
-    
-    
     plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                                                  type = graphicsoutput,
                                                  fileDirectory = plotDirectory,capture_env = capture_env))
@@ -591,19 +591,14 @@ visstat_core <- function(dataframe,
   
   # D) more than two comparisons-----
   # A) sample is numeric or integer: ANOVA or Kruskal/Wallis
-  
   # excellent tutorial
   # https://www.scribbr.com/statistics/anova-in-r/
-  
   
   if (typefactor == "factor" &&
       (typesample == "integer" | typesample == "numeric") &&
       nlevels(fact) > 2) {
     
-    
-    openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
-    
-    
+    openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory)
     
     visanova <- vis_anova_assumptions(
       samples,
@@ -623,9 +618,6 @@ visstat_core <- function(dataframe,
       c(plot_paths, saveGraphVisstat(filename, type = graphicsoutput, fileDirectory = plotDirectory,capture_env = capture_env))
     
     
-    
-    
-    
     if (visanova$shapiro_test$p.value > alpha 
         #        |visanova$ad_test$p.value > alpha)  #only demand that shapiro wilk is non -signifcant
     ) {
@@ -638,24 +630,17 @@ visstat_core <- function(dataframe,
         factorname = varfactor,
         conf.level = conf.level
       )
-      
-      
       if (is.null(plotName)) {
         filename <-
           paste("anova_", name_of_sample, "_", name_of_factor, sep = "")
       } else {
         filename <- paste(plotName)
       }
-      
-      
       plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                                                    type = graphicsoutput,
                                                    fileDirectory = plotDirectory,capture_env = capture_env))
       
-      
-      
-      
-      # if p -values of both Shapiro-Wilk and Kruskall-Wallis-Test are smaller than 0.05, Kruskall-Wallis-Test
+      # if p -values of both Shapiro-Wilk and Kruskall-Wallis-Test are smaller than alpha, Kruskall-Wallis-Test
     } else {
       
       openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
@@ -682,9 +667,6 @@ visstat_core <- function(dataframe,
                                                    fileDirectory = plotDirectory,capture_env = capture_env))
     }
   }
-  
-  
-  
   # At the very end:
   attr(vis_sample_fact, "plot_paths") <- plot_paths
   attr(vis_sample_fact, "captured_plots") <- capture_env$captured_plots
@@ -697,9 +679,10 @@ visstat_core <- function(dataframe,
     }
   }
   
+  if (!exists("vis_sample_fact") || is.null(vis_sample_fact)) {
+    vis_sample_fact <- list(error = "Analysis completed but no results were generated")
+  }
   
   return(invisible(vis_sample_fact))
-  
-  
 }
 # End of visstat_core function -------
