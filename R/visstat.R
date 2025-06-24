@@ -62,7 +62,41 @@
 #' This wrapper standardises the input and calls \code{\link{visstat_core}},
 #' which selects and executes the appropriate test with visual output and
 #' assumption diagnostics.
-#' @return A list as returned by \code{\link{visstat_core}}, containing statistical results and graphical outputs.
+#' @return An object of class \code{"visstat"} containing the results of 
+#' the automatically selected statistical test. The specific contents depend on
+#' which test was performed:
+#'
+#' \itemize{
+#'   \item t-test: Elements named \code{"dependent variable (response)"}, 
+#'     \code{"independent variables (features)"}, \code{"t-test-statistics"}, 
+#'     \code{"Shapiro-Wilk-test_sample1"}, and \code{"Shapiro-Wilk-test_sample2"}
+#'   \item Wilcoxon: Elements named \code{"dependent variable (response)"}, 
+#'     \code{"indepedent variables (features)"}, \code{"statsWilcoxon"}, and 
+#'     \code{"statsBoxplot"}
+#'   \item ANOVA: Elements named \code{"summary statistics of ANOVA"}, 
+#'     \code{"post-hoc analysis of TuckeyHSD"}, and \code{"conf.level"}
+#'   \item Kruskal-Wallis: Elements named \code{"Kruskal Wallis rank sum test"}
+#'     and \code{"post-hoc by pairwise Wilcoxon rank sum test"}
+#'   \item Regression: Elements named \code{"independent variable x"}, 
+#'     \code{"dependent variable y"}, \code{"summary_regression"}, 
+#'     \code{"shapiro_test_residuals"}, \code{"anderson_darling_test_residuals"}, 
+#'     and \code{"error_bands"}
+#'   \item Chi-squared/Fisher's test: Elements from \code{chisq.test()} or 
+#'     \code{fisher.test()} combined with an element named \code{"mosaic_stats"} 
+#'     containing mosaic plot results
+#' }
+#'
+#' The returned object includes two attributes:
+#' \itemize{
+#'   \item \code{plot_paths}: Character vector of file paths where plots were 
+#'     saved (if \code{graphicsoutput} was specified)
+#'   \item \code{captured_plots}: List of captured plot objects for programmatic 
+#'     access
+#' }
+#'
+#' In case of insufficient data, returns a list with an \code{error} element and 
+#' basic input summary information.
+#
 #' @note For best visualization, ensure the RStudio Plots pane is adequately sized. 
 #' If you get "figure margins too large" errors, try:
 #' \itemize{

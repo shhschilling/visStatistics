@@ -80,7 +80,7 @@
 #' \code{vignette("visStatistics")} for a more detailed description of the 
 #' decision logic, illustrated with numerous examples. The package is accompanied 
 #' by its webpage
-#' \url{https://shhschilling.github.io/visStatistics/}.
+#' \url{https://shhschilling.github.io/visStatistics/}. The main function \code{\link{visstat}} for a detailed description of the return value.  
 #'
 #' @param dataframe \code{data.frame} with at least two columns.
 #' @param varsample \code{character} string matching a column name in 
@@ -105,10 +105,16 @@
 #'   "statisticalTestName_varsample_varfactor".
 #' @param plotDirectory specifies directory, where generated plots are stored.
 #'   Default is current working directory.
-#' @return \code{list} containing statistics of automatically selected test
-#'   meeting assumptions. All values are returned as invisible copies.
-#'   Values can be accessed by assigning a return value to \code{visstat_core}.
-
+#' @return An object of class \code{"visstat"} containing the results of 
+#' the automatically selected statistical test. The specific contents depend on
+#'  which test was performed.
+#' Additionally, the returned object includes two attributes:
+#' \itemize{
+#'   \item \code{plot_paths}: Character vector of file paths where plots were 
+#'     saved (if \code{graphicsoutput} was specified)
+#'   \item \code{captured_plots}: List of captured plot objects for programmatic 
+#'     access
+#' }
 #' @examples
 #' # Welch Two Sample t-test (t.test())
 #' visstat_core(mtcars, "mpg", "am")

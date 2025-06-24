@@ -224,8 +224,8 @@ The full file path of the generated graphics are stored as the attribute
 
     paths <- attr(save_fisher, "plot_paths")
     print(paths)
-    #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpZl7V7P/chi_squared_or_fisher_Hair_Eye.png"
-    #> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpZl7V7P/mosaic_complete_Hair_Eye.png"
+    #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpcb7CAi/chi_squared_or_fisher_Hair_Eye.png"
+    #> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpcb7CAi/mosaic_complete_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
