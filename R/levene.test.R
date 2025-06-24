@@ -14,7 +14,8 @@
 #'
 #' @return An object of class \code{"htest"} with components:
 #' \item{statistic}{the value of the F-statistic.}
-#' \item{parameter}{degrees of freedom of the numerator and denominator.}
+#' \item{parameter}{degrees of freedom: df1=k-1, 
+#' df3=N-k, where k is the number of groups and N the total sample size }
 #' \item{p.value}{the p-value of the test.}
 #' \item{method}{a character string indicating the test performed.}
 #' \item{data.name}{a character string giving the name(s) of the data.}
@@ -29,19 +30,19 @@
 #' 
 #' The test statistic is the F-statistic from a one-way ANOVA on the \eqn{z_{ij}} values:
 #' 
-#' \deqn{F = \frac{(n-k) \sum_{i=1}^{k} n_i (\bar{z}_i - \bar{z})^2}{(k-1) \sum_{i=1}^{k} \sum_{j=1}^{n_i} (z_{ij} - \bar{z}_i)^2}}
+#' \deqn{F = \frac{(N-k) \sum_{i=1}^{k} n_i (\bar{z}_i - \bar{z})^2}{(k-1) \sum_{i=1}^{k} \sum_{j=1}^{n_i} (z_{ij} - \bar{z}_i)^2}}
 #' 
 #' where:
 #' \itemize{
 #'   \item \eqn{k} = number of groups
-#'   \item \eqn{n} = total sample size
+#'   \item \eqn{N} = total sample size
 #'   \item \eqn{n_i} = sample size of group \eqn{i}
 #'   \item \eqn{\bar{z}_i} = mean of absolute deviations in group \eqn{i}
 #'   \item \eqn{\bar{z}} = overall mean of all absolute deviations
 #' }
 #' 
 #' Under the null hypothesis of equal variances, the test statistic follows 
-#' an F-distribution: \eqn{F \sim F(k-1, n-k)}.
+#' an F-distribution: \eqn{F \sim F(k-1, N-k)}.
 #' 
 #' @references
 #' Brown, M. B., and Forsythe, A. B. (1974). Robust tests for the equality of

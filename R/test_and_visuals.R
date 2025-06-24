@@ -469,7 +469,7 @@ two_sample_wilcoxon_test <- function(samples,
   my_list <-
     list(
       "dependent variable (response)" = samplename,
-      "indepedent variables (features)" = unique(fact),
+      "independent variables (features)" = unique(fact),
       "statsWilcoxon" = t,
       "statsBoxplot" = b
     )
