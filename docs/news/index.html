@@ -37,15 +37,20 @@
 <h2 class="pkg-version" data-toc-text="0.1.8" id="visstatistics-018">visStatistics 0.1.8<a class="anchor" aria-label="anchor" href="#visstatistics-018"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-0-1-8">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-0-1-8"></a></h3>
-<ul><li>Included new function <code><a href="../reference/levene.test.html">levene.test()</a></code> implementing the Levene-Brown-Forsythe Test for Homogeneity of Variance (center = median). It mimicks the default behaviour of <code>leveneTest</code> in the <code>car</code> - package</li>
-<li>Decision test logic now based on <code>shapiro,test()</code> and `leven.test()</li>
+<ul><li>Included new function <code><a href="../reference/levene.test.html">levene.test()</a></code> implementing the Levene-Brown-Forsythe Test for homogeneity of variance (center = median). It mimics the default behaviour of <code>leveneTest</code> in the <code>car</code> - package .</li>
+<li>Decision test logic now based on <code>shapiro,test()</code> and <code>levene.test(). Described     in detail in</code>vignette(“visStatistics”).</li>
 </ul></div>
 <div class="section level3">
 <h3 id="structural-improvements-0-1-8">Structural Improvements<a class="anchor" aria-label="anchor" href="#structural-improvements-0-1-8"></a></h3>
 <ul><li>The class <code>"visstat"</code> now includes a plot-method: <code><a href="../reference/plot.visstat.html">plot.visstat()</a></code>.</li>
-<li>Tests for comparing central tendencies now all show plots for testing the normaliy assumption.</li>
-<li>All assumption plots are now safed with the prefix “assumption” followed by plot name</li>
+<li>All tests for comparing central tendencies show plots for testing the normality assumption.</li>
+<li>Diagnostic plots for normality now include histogram overlaid by normal distribution.</li>
+<li>All assumption plots are now saved with the prefix “assumption” followed by plot name.</li>
 </ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-0-1-8">Minor Improvements<a class="anchor" aria-label="anchor" href="#minor-improvements-0-1-8"></a></h3>
+<p>In <code>vignette</code>: - Paragraph on the assumption checking, based on hypothesis tests and visual inspection, extended. - Complemented bibliography of <code>vignette</code>. - `</p>
+</div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.6" id="visstatistics-016">visStatistics 0.1.6<a class="anchor" aria-label="anchor" href="#visstatistics-016"></a></h2>

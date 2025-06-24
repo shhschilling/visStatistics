@@ -2,19 +2,19 @@
 title: 'visStatistics: The right test, visualised'
 author:
 - name: Sabine Schilling
-  affiliation: Institute of Tourism and Mobility, Lucerne Unviversity of Applied Sciences
+  affiliation: Institute of Tourism and Mobility, Lucerne University of Applied Sciences
     and Arts
   email: sabine.schilling@protonmail.com
 date: "`r Sys.Date()`"
 output:
-  #bookdown::html_document2: default
-  html_vignette:
+  #rmarkdown::html_vignette: 
+  bookdown::html_document2:
     toc: true
     number_sections: true
     toc_depth: 3
+pkgdown:
+  as_is: true  #only needed for building webste comment out for cran
 link-citations: true
-#pkgdown:
-#  as_is: true
 bibliography: visstat.bib
 csl: ims.csl
 vignette: >
@@ -330,8 +330,7 @@ $$
 
 where $\bar{x}_i$ is the mean of group $i$, $\bar{x}$ is the overall mean, $x_{ij}$ is the observation $j$ in group $i$, $n_i$ is the sample size in group $i$, $k$ is the number of groups, and $N$ is the total number of observations.
 
-Under the null hypothesis, this statistic follows an F-distribution with two parameters for degrees of freedom:  ($k - 1$) and  ($N - k$): $F \sim F(k-1, N-k)$
-The resulting p-value is computed from this distribution.
+Under the null hypothesis, this statistic follows an F-distribution with two parameters for degrees of freedom: ($k - 1$) and ($N - k$): $F \sim F(k-1, N-k)$ The resulting p-value is computed from this distribution.
 
 ### Welch’s heteroscedastic one-way ANOVA (`oneway.test()`)
 
@@ -394,9 +393,7 @@ While `aov()` assumes homogeneity of variances across groups, `oneway.test()` do
 
 The decision logic of `visStatistics` assumes homogeneity of variances if the Levene–Brown–Forsythe test (implemented as `levene.test()`) [@Brown:1974] yields a p-value greater than $\alpha$.
 
-The Levene–Brown–Forsythe test evaluates the null
-hypothesis that all groups have equal variances by testing whether the absolute deviations from
-group medians are equal across groups.
+The Levene–Brown–Forsythe test evaluates the null hypothesis that all groups have equal variances by testing whether the absolute deviations from group medians are equal across groups.
 
 For each observation $y_{ij}$ in group $i$, it computes the absolute deviation from the group median:
 
@@ -408,22 +405,13 @@ The test statistic is the F-statistic from a one-way ANOVA on the $z_{ij}$ value
 
 $$F = \frac{\frac{\sum_{i=1}^{k} n_i (\bar{z}_i - \bar{z})^2}{k-1}}{\frac{\sum_{i=1}^{k} \sum_{j=1}^{n_i} (z_{ij} - \bar{z}_i)^2}{N-k}}$$
 
-where $k$ is the number of groups, $N$ is the total sample size, $n_i$ is the sample size of group
-$i$, $\bar{z}_i$ is the mean of absolute deviations from the median in group $i$, and $\bar{z}$ is the overall
-mean of all absolute deviations.
+where $k$ is the number of groups, $N$ is the total sample size, $n_i$ is the sample size of group $i$, $\bar{z}_i$ is the mean of absolute deviations from the median in group $i$, and $\bar{z}$ is the overall mean of all absolute deviations.
 
-Under the null hypothesis of equal variances, the test statistic follows an F-distribution:
-$F \sim F(k-1, N-k)$.
+Under the null hypothesis of equal variances, the test statistic follows an F-distribution: $F \sim F(k-1, N-k)$.
 
-The Levene–Brown–Forsythe test improves upon Levene's original test [@Levene:1960] by using the
-median instead of the mean to centre the data. This makes it more robust to non-normal data,
-providing more reliable results in many practical situations. Note that `levene.test()` mimics
-the default behaviour of `leveneTest()` in the `car` package [@Fox:2019].
-
-
-
-
-
+The Levene–Brown–Forsythe test improves upon Levene's original test [@Levene:1960] by using the median instead of the mean to centre the data.
+This makes it more robust to non-normal data, providing more reliable results in many practical situations.
+Note that `levene.test()` mimics the default behaviour of `leveneTest()` in the `car` package [@Fox:2019].
 
 Additionally, homoscedasticity is assessed via Bartlett's test (`bartlett.test()`), which has more power than the Brown–Forsythe version of Levene’s test [@Brown:1974] when the normality assumption is met,\
 but is not robust to deviations from normality.

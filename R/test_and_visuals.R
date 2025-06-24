@@ -91,11 +91,19 @@ two_sample_t_test <- function(samples,
   alternative <- match.arg(alternative)
   
   
+  # if (!missing(conf.level) &&
+  #     (length(conf.level) != 1 || !is.finite(conf.level) ||
+  #      conf.level < 0 || conf.level > 1)) {
+  #   return(warning("'conf.level' must be a single number between 0 and 1"))
+  # }
+  
   if (!missing(conf.level) &&
       (length(conf.level) != 1 || !is.finite(conf.level) ||
        conf.level < 0 || conf.level > 1)) {
-    return(warning("'conf.level' must be a single number between 0 and 1"))
+    stop("'conf.level' must be a single number between 0 and 1")  
   }
+  
+  
   
   if (missing(conf.level)) {
     conf.level <- 0.95
