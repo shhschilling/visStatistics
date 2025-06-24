@@ -63,10 +63,17 @@
 #' which selects and executes the appropriate test with visual output and
 #' assumption diagnostics.
 #' @return A list as returned by \code{\link{visstat_core}}, containing statistical results and graphical outputs.
+#' @note For best visualization, ensure the RStudio Plots pane is adequately sized. 
+#' If you get "figure margins too large" errors, try:
+#' \itemize{
+#'   \item Expanding the Plots pane in RStudio
+#'   \item Using \code{dev.new(width=10, height=6)} for a larger plot window.
+#'   \item Reducing the \code{cex} parameter
+#' }
 #'
-#' @seealso  \code{\link{visstat_core}} defining the decision logic,  the package's vignette
-#' \code{vignette("visStatistics")} with a more  detailed  decision logic
-#' illustrated by many examples,
+#' @seealso  \code{\link{visstat_core}} defining the decision logic, 
+#' the package's vignette \code{vignette("visStatistics")} explaining the
+#'  decision logic accompanied by  illustrative examples,
 #' and the accompanying webpage
 #' \url{https://shhschilling.github.io/visStatistics/}.
 #'

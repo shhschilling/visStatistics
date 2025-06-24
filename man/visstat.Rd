@@ -90,6 +90,15 @@ This wrapper standardises the input and calls \code{\link{visstat_core}},
 which selects and executes the appropriate test with visual output and
 assumption diagnostics.
 }
+\note{
+For best visualization, ensure the RStudio Plots pane is adequately sized. 
+If you get "figure margins too large" errors, try:
+\itemize{
+  \item Expanding the Plots pane in RStudio
+  \item Using \code{dev.new(width=10, height=6)} for a larger plot window.
+  \item Reducing the \code{cex} parameter
+}
+}
 \examples{
 ## Standardised usage (preferred):
 mtcars$am=as.factor(mtcars$am)
@@ -140,9 +149,9 @@ visstat(iris$Species, iris$Petal.Width,
 
 }
 \seealso{
-\code{\link{visstat_core}} defining the decision logic,  the package's vignette
-\code{vignette("visStatistics")} with a more  detailed  decision logic
-illustrated by many examples,
+\code{\link{visstat_core}} defining the decision logic, 
+the package's vignette \code{vignette("visStatistics")} explaining the
+ decision logic accompanied by  illustrative examples,
 and the accompanying webpage
 \url{https://shhschilling.github.io/visStatistics/}.
 }

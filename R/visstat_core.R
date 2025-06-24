@@ -43,11 +43,13 @@
 #' otherwise, \code{wilcox.test()} is used.
 #' For predictors with more than two levels, \code{aov()} is initially fitted.
 #' Residual normality is tested with \code{shapiro.test()} and \code{ad.test()}.
-#' If \code{p > alpha} for either test, normality is assumed. Homogeneity of
-#' variance is tested with \code{bartlett.test()}. If \code{p > alpha},
-#' \code{aov()} with \code{TukeyHSD()} is used. If \code{p <= alpha},
-#' \code{oneway.test()} is applied with \code{TukeyHSD()}. If residuals are not
-#' normal, \code{kruskal.test()} with \code{pairwise.wilcox.test()} is used.
+#' If \code{p > alpha} for \code{shapiro.test()}, normality is assumed. Homogeneity of
+#' variance is tested with \code{bartlett.test()} and \code{levene.test()}. 
+#' If the \code{levene.test()} results in \code{p > alpha}, homogenity of 
+#' variance is assumed and \code{aov()} with \code{TukeyHSD()} is used. 
+#' If \code{p <= alpha},\code{oneway.test()} is applied with \code{TukeyHSD()}.
+#'  If residuals are not normal, \code{kruskal.test()} with
+#'   \code{pairwise.wilcox.test()} is used.
 #' 
 #' (2): When both the response and predictor are numerical, a linear model
 #' \code{lm()} is fitted, with residual diagnostics and a confidence band plot.

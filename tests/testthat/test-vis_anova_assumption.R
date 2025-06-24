@@ -3,6 +3,27 @@
 
 library(testthat)
 
+# Helper function to suppress graphics during tests
+suppress_graphics <- function(code) {
+  # Save current device state
+  old_dev <- dev.cur()
+  
+  # Open null device and ensure clean state
+  pdf(NULL)
+  on.exit({
+    # Clean up: close null device and restore state
+    if (dev.cur() != 1) dev.off()  # Only close if device is open
+    if (old_dev > 1 && old_dev %in% dev.list()) dev.set(old_dev)
+  })
+  
+  # Reset graphics parameters to default
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op), add = TRUE)
+  
+  # Execute the code
+  force(code)
+}
+
 # =============================================================================
 # Test 1: Basic functionality with normal data
 # =============================================================================
@@ -17,7 +38,9 @@ test_that("vis_anova_assumptions - Basic functionality with normal data", {
     group = factor(rep(c("A", "B", "C"), each = 20))
   )
   
-  result <- vis_anova_assumptions(normal_data$values, normal_data$group)
+  result <- suppress_graphics({
+    vis_anova_assumptions(normal_data$values, normal_data$group)
+  })
   
   # Basic structure tests
   expect_s3_class(result, "vis_anova_assumptions")
@@ -73,7 +96,9 @@ test_that("vis_anova_assumptions - Regression mode", {
     x = 1:30
   )
   
-  result <- vis_anova_assumptions(regression_data$y, regression_data$x, regression = TRUE)
+  result <- suppress_graphics({
+    vis_anova_assumptions(regression_data$y, regression_data$x, regression = TRUE)
+  })
   
   # Basic structure
   expect_s3_class(result, "vis_anova_assumptions")
@@ -105,7 +130,9 @@ test_that("vis_anova_assumptions - Sample size edge cases", {
   )
   
   result_tiny <- tryCatch({
-    vis_anova_assumptions(tiny_data$values, tiny_data$group)
+    suppress_graphics({
+      vis_anova_assumptions(tiny_data$values, tiny_data$group)
+    })
   }, error = function(e) e, warning = function(w) w)
   
   # Should either work or fail gracefully
@@ -124,7 +151,9 @@ test_that("vis_anova_assumptions - Sample size edge cases", {
     group = factor(rep(c("A", "B"), each = 3))
   )
   
-  result_small <- vis_anova_assumptions(small_data$values, small_data$group)
+  result_small <- suppress_graphics({
+    vis_anova_assumptions(small_data$values, small_data$group)
+  })
   expect_s3_class(result_small, "vis_anova_assumptions")
   
   # Anderson-Darling should be character message for n < 7
@@ -137,7 +166,9 @@ test_that("vis_anova_assumptions - Sample size edge cases", {
     group = factor(rep(c("A", "B", "C"), each = 7))
   )
   
-  result_medium <- vis_anova_assumptions(medium_data$values, medium_data$group)
+  result_medium <- suppress_graphics({
+    vis_anova_assumptions(medium_data$values, medium_data$group)
+  })
   expect_s3_class(result_medium, "vis_anova_assumptions")
   
   # Both tests should be available
@@ -161,7 +192,9 @@ test_that("vis_anova_assumptions - Missing values handling", {
     group = factor(rep(c("A", "B", "C"), c(14, 13, 13)))  # 40 group labels total
   )
   
-  result_na <- vis_anova_assumptions(na_data$values, na_data$group)
+  result_na <- suppress_graphics({
+    vis_anova_assumptions(na_data$values, na_data$group)
+  })
   expect_s3_class(result_na, "vis_anova_assumptions")
   
   # Should handle NA removal properly
@@ -179,7 +212,9 @@ test_that("vis_anova_assumptions - Missing values handling", {
   )
   
   result_unbalanced <- tryCatch({
-    vis_anova_assumptions(unbalanced_na$values, unbalanced_na$group)
+    suppress_graphics({
+      vis_anova_assumptions(unbalanced_na$values, unbalanced_na$group)
+    })
   }, error = function(e) e, warning = function(w) w)
   
   # Should either work or handle gracefully
@@ -201,13 +236,19 @@ test_that("vis_anova_assumptions - Different confidence levels", {
   )
   
   # Case 5.1: Different confidence levels
-  result_90 <- vis_anova_assumptions(test_data$values, test_data$group, conf.level = 0.90)
+  result_90 <- suppress_graphics({
+    vis_anova_assumptions(test_data$values, test_data$group, conf.level = 0.90)
+  })
   expect_s3_class(result_90, "vis_anova_assumptions")
   
-  result_95 <- vis_anova_assumptions(test_data$values, test_data$group, conf.level = 0.95)
+  result_95 <- suppress_graphics({
+    vis_anova_assumptions(test_data$values, test_data$group, conf.level = 0.95)
+  })
   expect_s3_class(result_95, "vis_anova_assumptions")
   
-  result_99 <- vis_anova_assumptions(test_data$values, test_data$group, conf.level = 0.99)
+  result_99 <- suppress_graphics({
+    vis_anova_assumptions(test_data$values, test_data$group, conf.level = 0.99)
+  })
   expect_s3_class(result_99, "vis_anova_assumptions")
   
   # All should have same structure
@@ -229,7 +270,9 @@ test_that("vis_anova_assumptions - Non-normal data detection", {
     group = factor(rep(c("A", "B", "C"), each = 30))
   )
   
-  result_nonnormal <- vis_anova_assumptions(nonnormal_data$values, nonnormal_data$group)
+  result_nonnormal <- suppress_graphics({
+    vis_anova_assumptions(nonnormal_data$values, nonnormal_data$group)
+  })
   expect_s3_class(result_nonnormal, "vis_anova_assumptions")
   
   # Should detect non-normality (low p-values)
@@ -246,7 +289,9 @@ test_that("vis_anova_assumptions - Non-normal data detection", {
     group = factor(rep(c("A", "B", "C"), each = 25))
   )
   
-  result_uniform <- vis_anova_assumptions(uniform_data$values, uniform_data$group)
+  result_uniform <- suppress_graphics({
+    vis_anova_assumptions(uniform_data$values, uniform_data$group)
+  })
   expect_s3_class(result_uniform, "vis_anova_assumptions")
   expect_true(length(result_uniform) >= 4)
 })
@@ -264,7 +309,9 @@ test_that("vis_anova_assumptions - Variance homogeneity testing", {
     group = factor(rep(c("A", "B", "C"), each = 20))
   )
   
-  result_equal <- vis_anova_assumptions(equal_var_data$values, equal_var_data$group)
+  result_equal <- suppress_graphics({
+    vis_anova_assumptions(equal_var_data$values, equal_var_data$group)
+  })
   expect_s3_class(result_equal, "vis_anova_assumptions")
   
   # Should have variance tests
@@ -279,7 +326,9 @@ test_that("vis_anova_assumptions - Variance homogeneity testing", {
     group = factor(rep(c("A", "B", "C"), each = 20))
   )
   
-  result_unequal <- vis_anova_assumptions(unequal_var_data$values, unequal_var_data$group)
+  result_unequal <- suppress_graphics({
+    vis_anova_assumptions(unequal_var_data$values, unequal_var_data$group)
+  })
   expect_s3_class(result_unequal, "vis_anova_assumptions")
   
   # Should still complete the analysis
@@ -298,18 +347,28 @@ test_that("vis_anova_assumptions - Data type handling", {
   
   skip_if_not(exists("vis_anova_assumptions"), "vis_anova_assumptions function not available")
   
-  # Case 8.1: Character grouping variable (should be converted to factor)
+  # Case 8.1: Character grouping variable (should be converted to factor or handled)
   char_group_data <- data.frame(
     values = rnorm(30),
     group = rep(c("Group1", "Group2", "Group3"), each = 10)
   )
   
-  # Function should handle character groups
+  # Function might not handle character groups directly, so test both scenarios
   result_char <- tryCatch({
-    vis_anova_assumptions(char_group_data$values, char_group_data$group)
-  }, error = function(e) e)
+    # Try with character vector
+    suppress_graphics({
+      vis_anova_assumptions(char_group_data$values, char_group_data$group)
+    })
+  }, error = function(e) {
+    # If character fails, try with factor conversion
+    tryCatch({
+      suppress_graphics({
+        vis_anova_assumptions(char_group_data$values, as.factor(char_group_data$group))
+      })
+    }, error = function(e2) e2)
+  })
   
-  # Should either work (auto-conversion) or provide meaningful error
+  # Should either work (auto-conversion or manual conversion) or provide meaningful error
   expect_true(inherits(result_char, "vis_anova_assumptions") || inherits(result_char, "error"))
   
   # Case 8.2: Integer values
@@ -318,7 +377,9 @@ test_that("vis_anova_assumptions - Data type handling", {
     group = factor(rep(c("A", "B", "C"), each = 10))
   )
   
-  result_int <- vis_anova_assumptions(int_data$values, int_data$group)
+  result_int <- suppress_graphics({
+    vis_anova_assumptions(int_data$values, int_data$group)
+  })
   expect_s3_class(result_int, "vis_anova_assumptions")
 })
 
@@ -336,16 +397,22 @@ test_that("vis_anova_assumptions - Plot generation", {
   
   # Should not error when generating plots
   expect_no_error({
-    result <- vis_anova_assumptions(test_data$values, test_data$group)
+    suppress_graphics({
+      result <- vis_anova_assumptions(test_data$values, test_data$group)
+    })
   })
   
   # Test with different cex values
   expect_no_error({
-    result_small <- vis_anova_assumptions(test_data$values, test_data$group, cex = 0.5)
+    suppress_graphics({
+      result_small <- vis_anova_assumptions(test_data$values, test_data$group, cex = 0.5)
+    })
   })
   
   expect_no_error({
-    result_large <- vis_anova_assumptions(test_data$values, test_data$group, cex = 1.5)
+    suppress_graphics({
+      result_large <- vis_anova_assumptions(test_data$values, test_data$group, cex = 1.5)
+    })
   })
 })
 
@@ -363,7 +430,9 @@ test_that("vis_anova_assumptions - Statistical correctness", {
     group = factor(rep(c("A", "B", "C"), each = 100))
   )
   
-  result_normal <- vis_anova_assumptions(very_normal_data$values, very_normal_data$group)
+  result_normal <- suppress_graphics({
+    vis_anova_assumptions(very_normal_data$values, very_normal_data$group)
+  })
   
   # With large normal samples, should typically pass normality tests
   if (is.list(result_normal$shapiro_test) && !is.na(result_normal$shapiro_test$p.value)) {
