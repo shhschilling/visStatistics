@@ -12,6 +12,7 @@ output:
     toc: true
     number_sections: true
     toc_depth: 3
+    fig_caption: true
 link-citations: true
 bibliography: visstat.bib
 #csl: ims.csl
@@ -146,16 +147,17 @@ and assumption checking - revealing the fundamental unity underlying seemingly d
 ## The assumptions of the GLM (vis_anova_assumptions())
 The key assumptions of the GLM are:
 
-1. **Independence of observations** - each observation is independent of others
-2. **Linearity** - the relationship between predictors and response is linear
-3. **Homoscedasticity** - constant variance of residuals ($\sigma^2$ is constant)
-4. **Normality of residuals** - $\boldsymbol{\varepsilon} \sim N(\mathbf{0}, \sigma^2\mathbf{I})$
+1. Independence of observations**: each observation is independent of others
+2. **Linearity**: the relationship between predictors and response is linear
+3. **Normality of residuals**: $\boldsymbol{\varepsilon} \sim N(\mathbf{0}, \sigma^2\mathbf{I})$
+4. **Homoscedasticity**: constant variance of residuals ($\sigma^2$ is constant)
 
 <!-- Importantly, it is the **residuals** (not the raw data in each group) that must be approximately normally distributed. -->
-The function `vis_anvaa_assumption() `checks these assumptions through the standardized residuals, which pool information from aall observations and have $N - k$ degrees of freedom (where $N$ is the total sample size and $k$ is the number of parameters or groups).
-
+The function `vis_anvaa_assumption()` checks the normality of the standardized residuals by providing 
 <!-- When sample sizes are large, the Central Limit Theorem suggests that mild to moderate violations of the normality assumption have minimal impact on Type I error rates, though statistical power may still be affected [@Blanca:2017]. -->
-It  provides diagnostic plots (Q-Q plots, residual vs. fitted values and histograms of residuals ) alongside formal tests (Shapiro-Wilk, Anderson-Darling for testing the normality of the residuals, Levene-Test and Bartlett test for testing homoscedacity) to help users assess whether the assumptions of the GLM are reasonably met. 
+ diagnostic plots (Q-Q plots, residual vs. fitted values and histograms of residuals ) alongside formal tests (Shapiro-Wilk, Anderson-Darling for testing the normality of the residuals.
+
+For testing homoscedacity), Levene-Test and Bartlett test or testing homoscedacity) help users assess whether the assumptions of the GLM are reasonably met. 
 
 
 
@@ -211,7 +213,7 @@ Bartlett’s test evaluates whether sample variances are equal across $k$
 normally distributed groups. The test statistic is
 
 $$
-B = \frac{(N - k) \ln s_p^2 - \sum_{i=1}^k (n_i - 1) \ln s_i^2}{
+K^2 = \frac{(N - k) \ln s_p^2 - \sum_{i=1}^k (n_i - 1) \ln s_i^2}{
             1 + \frac{1}{3(k - 1)} \left( \sum_{i=1}^k \frac{1}{n_i - 1} 
             - \frac{1}{N - k} \right)},
 $$
@@ -223,8 +225,7 @@ $$
 s_p^2 = \frac{1}{N - k} \sum_{i=1}^k (n_i - 1) s_i^2.
 $$
 
-Under the null hypothesis that all group variances are equal and the data are 
-normally distributed, the test statistic approximately follows a 
+Under the null hypothesis that all group variances are equal and the data are normally distributed, the test statistic approximately follows a 
 $\chi^2$-distribution with $k - 1$ degrees of freedom [@Bartlett:1937].
 
 
