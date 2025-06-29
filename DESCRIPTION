@@ -20,19 +20,17 @@ Description: The right test - visualised. 'visStatistics' automatically
     analysis in statistical consulting projects or educational settings.
     It also integrates well into browser-based interfaces with restricted
     access, where automated analysis must be executed without manual
-    scripting. 
-    The test selection algorithm proceeds as follows: Input
+    scripting.  The test selection algorithm proceeds as follows: Input
     vectors of class numeric or integer are considered numerical; those of
     class factor are considered categorical.  Assumptions of residual
     normality and homogeneity of variances are considered met if the
     corresponding test yields a p-value greater than the significance
-    level alpha = 1 - conf.level.  
-    (1) When the response vector is numerical and the predictor vector is
-    categorical, a test of central tendencies is selected. If the categorical
-    predictor has exactly two levels, t.test() is applied when group sizes
-    exceed 30 
-    (Lumley et al.(2002) <doi:10.1146/annurev.publhealth.23.100901.140546>). 
-    For smaller samples, normality of residuals is tested using
+    level alpha = 1 - conf.level.  (1) When the response vector is
+    numerical and the predictor vector is categorical, a test of central
+    tendencies is selected. If the categorical predictor has exactly two
+    levels, t.test() is applied when group sizes exceed 30 (Lumley et
+    al.(2002) <doi:10.1146/annurev.publhealth.23.100901.140546>).  For
+    smaller samples, normality of residuals is tested using
     shapiro.test(); if met, t.test() is used; otherwise, wilcox.test().
     If the predictor is categorical with more than two levels, an aov() is
     initially fitted.  Residual normality is evaluated using the both
@@ -40,11 +38,9 @@ Description: The right test - visualised. 'visStatistics' automatically
     variance homogeneity. If variances are homogeneous, aov() is used;
     otherwise oneway.test().  Both tests are followed by TukeyHSD(). If
     residual normality cannot be assumed, kruskal.test() is followed by
-    pairwise.wilcox.test().  
-    (2) When both the response and predictor
+    pairwise.wilcox.test().  (2) When both the response and predictor
     vectors are numerical, a simple linear regression model is fitted
-    using lm().  
-    (3) When both vectors are categorical, Cochran's rule
+    using lm().  (3) When both vectors are categorical, Cochran's rule
     (Cochran (1954) <doi:10.2307/3001666>) is applied to test independence
     either by chisq.test() or fisher.test().
 License: MIT + file LICENSE

@@ -760,8 +760,13 @@ vis_anova <- function(samples,
   # check for homogeneity
   bartlett_test <- bartlett.test(samples ~ fact)
   p_bart <- bartlett_test$p.value
+  levene_test <- levene.test(samples,fact)
+  p_levene <- levene_test$p.value
   
-  if (p_bart > 1 - conf.level) {
+  
+  
+  if (p_levene > 1 - conf.level) #changed logic
+    {
     p_aov <- summaryAnova[[1]][["Pr(>F)"]][1]
     F_value <- round(summaryAnova[[1]]$`F value`[1],2)
     label_aov <- "Fisher's one-way ANOVA"

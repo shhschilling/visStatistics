@@ -2,28 +2,24 @@ url: https://shhschilling.github.io/visStatistics/
 template:
   bootstrap: 3
   params:
-    number_sections: true
+    number_sections: yes
 encoding: UTF-8
-
 home:
   title: visStatistics
-  sidebar: false
+  sidebar: no
   contents: index.md
-  
 navbar:
   structure:
     left:
-      - home
-      - reference
-      - vignette
-      - articles
-
+    - home
+    - reference
+    - vignette
+    - articles
   components:
     vignette:
       text: Vignette
       href: articles/visStatistics.html
-
 articles:
-  - title: Vignette
-    contents:
-      - visStatistics
+- title: Vignette
+  contents: visStatistics
+
