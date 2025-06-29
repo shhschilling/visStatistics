@@ -250,8 +250,8 @@
 <p>The full file path of the generated graphics are stored as the attribute <code>"plot_paths"</code> on the returned object of class <code>"visstat"</code>.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">attr</span>(save_fisher, <span class="st">"plot_paths"</span>)</span>
 <span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">print</span>(paths)</span>
-<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co">#&gt; [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpe0lZBu/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co">#&gt; [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpe0lZBu/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co">#&gt; [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpcb7CAi/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co">#&gt; [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpcb7CAi/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">file.remove</span>(paths)</span>
 <span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="co">#&gt; [1] TRUE TRUE</span></span></code></pre></div>

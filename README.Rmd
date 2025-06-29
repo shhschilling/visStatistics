@@ -148,25 +148,20 @@ central tendencies are selected.
 
 ### Welch two sample t-test 
 
-#### InsectSprays data set — both input forms
+<!-- #### InsectSprays data set — both input forms -->
 
-```{r insect-sprays, eval = TRUE}
-insect_sprays_ab <- InsectSprays[InsectSprays$spray %in% c("A", "B"), ]
-insect_sprays_ab$spray <- factor(insect_sprays_ab$spray)
+<!-- ```{r insect-sprays, eval = TRUE} -->
+<!-- insect_sprays_ab <- InsectSprays[InsectSprays$spray %in% c("A", "B"), ] -->
+<!-- insect_sprays_ab$spray <- factor(insect_sprays_ab$spray) -->
 
-# Standardised input fom
-visstat(insect_sprays_ab$spray, insect_sprays_ab$count)
-```
+<!-- visstat(insect_sprays_ab$spray, insect_sprays_ab$count) -->
+<!-- ``` -->
 
-
-
-
-<!-- # #### mtcars data set -->
-<!-- #  -->
-<!-- # ```{r mtcars} -->
-<!-- # mtcars$am <- as.factor(mtcars$am) -->
-<!-- # t_test_statistics <- visstat(mtcars$am, mtcars$mpg) -->
-
+#### mtcars data set
+#
+```{r mtcars}
+ mtcars$am <- as.factor(mtcars$am)
+ t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
 ```
 
 ### Wilcoxon rank sum test
@@ -187,10 +182,10 @@ wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
 ```
 
 
-### One-way test
+### Fisher's on way test
 
 ```{r npk-onewy}
-one_way_npk <- visstat(npk$block,npk$yield)
+fisher_one_way_npk <- visstat(npk$block,npk$yield)
 ```
 
 ### Kruskal-Wallis test
@@ -300,7 +295,7 @@ Wilk test, Welch's t-test is applied; otherwise, the Wilcoxon rank-sum test (`wi
 - For predictors with more than two levels, an ANOVA model (`aov()`) is initially fitted. The normality of residuals is evaluated using both the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test (`ad.test()`) [@Gross:2015]; 
 the algorithm considers residuals approximately normal if the Shapiro–Wilk test yields a result exceeding the significance threshold $\alpha$ [@Razali:2011]: 
 <!-- if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.  -->
-If this condition is met, the Levene-Brown–Forsythe-test [@Brown:1974] (`levene.test()`) is then used to assess homoscedasticity. When variances are homogeneous ($p > \alpha$), ANOVA is applied with Tukey's HSD (`TukeyHSD()`) for post-hoc comparison. If variances differ significantly ($p \le \alpha$), Welch's one -
+If this condition is met, the Levene-Brown–Forsythe-test [@Brown:1974] (`levene.test()`) is then used to assess homoscedasticity. When variances are homogeneous ($p > \alpha$), `aov()` is applied with Tukey's HSD (`TukeyHSD()`) for post-hoc comparison. If variances differ significantly ($p \le \alpha$), Welch's one -
 way test (`oneway.test()`) is used, also followed by Tukey's HSD. If residuals are not normally distributed according to both tests ($p \le \alpha$), the Kruskal-Wallis test (`kruskal.test()`) is selected, followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`).
 
 
