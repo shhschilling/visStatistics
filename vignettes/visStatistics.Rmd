@@ -58,6 +58,7 @@ The remainder of this vignette is organised as follows:
 -   Section 3 focuses on the installation and the main function call.
 
 -   Section 4 briefly introduces the General Linear Model and the testing of its assumptions in `visstatistic`.
+
 -   Section 5 summarises the decision logic used to select a statistical test.
 
 -   Sections 6–8 provide background on the implemented tests and illustrate the decision logic using examples.
@@ -101,65 +102,105 @@ This is equivalent to writing:
 ``` r
 visstat(dataframe[["namex"]], dataframe[["namey"]])
 ```
-#  General linear model (GLM) 
 
-General Linear Models (GLM) [@Searle:1971] are linear regression models for a continuous response variable and given continuous and/or categorical predictors. They provide a unified mathematical framework underlying many common statistical tests like  t-tests, ANOVA, and  simple linear regression implemented in `visStatistics`. 
+# General Linear Model (GLM)
 
-<!-- The R-implementations of these tests,  `t.test(...var=equal)`, `aov()`, and `lm().` thus produce  mathematically equivalent results. -->
+General Linear Models (GLM) [@Searle:1971] provide a unified mathematical framework underlying many common statistical tests like t-tests, ANOVA, and simple linear regression implemented in `visStatistics`.
+These tests are not distinct statistical methods, but rather different implementations of the same underlying mathematical framework.
 
-<!-- As a consequence, all these thests have the same underlying assumptions. -->
+The GLM can be expressed as:
 
-
-<!-- The General Linear Model (GLM) provides a unified mathematical framework underlying many common statistical tests like Student's t-tests, ANOVA, and simple linear regression. -->
-
-These tests are not distinct statistical methods, but rather different implementations of the same underlying mathematical framework. 
-
-<!-- `t.test(..., var=equal)`, `aov()`, and `lm()` solve identical normal equations and produce mathematically equivalent results. - -->
-
-
-
-<!-- The General Linear Model (GLM)  [@Nelder:1972,@McCullagh:1989] \ provides a unified statistical framework encompassing linear  -->
-<!-- regression, analysis of variance (ANOVA), and t-tests within a single mathematical structure.  -->
-
-
-The GLM can be expressed in matrix form as:
-
-$\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}$
+$$Y_i = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_k x_{ik} + \varepsilon_i \quad \text{for } i = 1, \ldots, n, \quad \varepsilon_i \sim {N}(0, \sigma^2)$$
 
 where:
 
-- $\mathbf{Y}$ is an $n \times 1$ vector of observed responses
-- $\mathbf{X}$ is an $n \times p$ design matrix containing predictor variables  
-- $\boldsymbol{\beta}$ is a $p \times 1$ vector of unknown parameters
-- $\boldsymbol{\varepsilon} \sim N(\mathbf{0}, \sigma^2\mathbf{I})$ are independent
-   error (=residual) terms
+-   $n$ = number of observations
 
-The least squares solution minimizing the sum of squared residuals is:
+-   $k$ = number of predictors
 
-$\hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}$
+-   $Y_i$ are the model reandom variables
 
-All GLM variants assume the response vector follows $\mathbf{Y} \sim N(\boldsymbol{\mu}, 
-\sigma^2\mathbf{I})$, where the mean structure $\boldsymbol{\mu} = \mathbf{X}\boldsymbol{\beta}$ 
-connects predictors to response through different design matrices $\mathbf{X}$. Since these 
-methods share identical distributional assumptions, they require the same diagnostic procedures 
-and assumption checking - revealing the fundamental unity underlying seemingly distinct tests.
+-   $x_{ij}$ are the predictor values
 
-## The assumptions of the GLM (vis_anova_assumptions())
-The key assumptions of the GLM are:
+-   $\beta_0, \beta_1, \ldots, \beta_k$ are the $(k+1)$ parameters
 
-1. Independence of observations**: each observation is independent of others
-2. **Linearity**: the relationship between predictors and response is linear
-3. **Normality of residuals**: $\boldsymbol{\varepsilon} \sim N(\mathbf{0}, \sigma^2\mathbf{I})$
-4. **Homoscedasticity**: constant variance of residuals ($\sigma^2$ is constant)
+-   $\varepsilon_i$ are the normally distributed error terms with constant, 
+    unknwon variance $\sigma^2$
+
+In a more compact matrix for this can be expressed as:
+
+$$\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}$$
+
+where:
+
+-   $\mathbf{Y}$ is $n \times 1$ (response vector for $n$ observations)
+
+-   $\mathbf{X}$ is $n \times (k+1)$ (design matrix: $n$ observations, $k+1$ parameters)
+
+-   $\boldsymbol{\beta}$ is $(k+1) \times 1$ (parameter vector: $k$ predictors + intercept)
+
+-   $\boldsymbol{\varepsilon}$ is $n \times 1$ (error vector for $n$ observations)
+
+Both the paramater and error vector have to be estimated from data:
+
+We observe realisations $y_i$ of the response, and estimate the unknown parameters $\beta_0, \dots, \beta_k$ by minimising the residual sum of squares:
+
+$$\sum_{i=1}^{n} e_i^2 = \sum_{i=1}^{n} \left[y_i - (b_0 + b_1 x_{i1} + \cdots + b_k x_{ik})\right]^2$$
+
+where $b_0, \dots, b_k$ are the least-squares **estimators** of the true parameters $\beta_0, \dots, \beta_k$.
+<!-- Collectively, they form the estimate vector \( \mathbf{b} \) --> <!-- $${\boldsymbol{b}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}$$ -->
+
+The fitted value for observation $i$ is
+
+$$
+\hat{y}_i = b_0 + b_1 x_{i1} + \dots + b_k x_{ik},
+$$
+
+and the residual is defined as
+
+$$
+e_i = y_i - \hat{y}_i.
+$$
+
+The residuals are our estimators for the unknwon error terms $\epsilon_i$. 
+We estimate the unknown variance of the error term by the square standard error 
+
+$$s_E^2=1/(n-k-1)⋅\sum_{i=1}^n e_i^2 $$
+
+## GLM Assumptions and Testing (`vis_anova_assumptions()`)
+
+The GLM assumptions are:
+
+-   Linearity: The mean structure $E[\mathbf{Y}] = \mathbf{X}\boldsymbol{\beta}$ is linear in parameters; assessed by checking for systematic patterns in residual plots
+
+Error terms are:
+
+- independent: 
+    
+- normaliy distributed
+    
+- homoscedastic: Constant error variance $\sigma^2$
+
+### Assumption Testing in visStatistics
+The function `vis_anova_assumptions()` provides unified diagnostic tools for all GLM variants.
+Since t-tests, ANOVA, and linear regression share identical distributional assumptions, the same residual-based diagnostics apply universally.
+
+**Normality Assessment**: The function evaluates residual normality using both the Shapiro-Wilk test (`shapiro.test()`) and Anderson-Darling test (`ad.test()`) [@Gross:2015].
+These tests offer complementary strengths: Shapiro-Wilk generally exhibits greater power across non-normal distributions in small samples, while Anderson-Darling is highly sensitive to tail deviations in larger samples [@Razali:2011; @Yap:2011].
+
+**Homoscedasticity Assessment**: Variance equality is tested using the Levene-Brown-Forsythe test (`levene.test()`) [@Brown:1974] and Bartlett's test (`bartlett.test()`).
+The Levene-Brown-Forsythe test uses absolute deviations from group medians, making it robust to non-normality, while Bartlett's test has greater power when normality holds [@Allingham:2012].
+
+**Visual Diagnostics**: `visStatistics` produces diagnostic plots including: (1) histogram of standardized residuals with normal overlay, (2) residuals vs. fitted values plot, and (3) Q-Q plot.
+Since algorithmic logic cannot replace expert visual judgment, these plots complement formal tests for comprehensive assumption assessment.
+
+This unified approach eliminates the need to learn separate assumption-checking procedures for each statistical test - they are fundamentally the same method with different design matrices.
 
 <!-- Importantly, it is the **residuals** (not the raw data in each group) that must be approximately normally distributed. -->
-The function `vis_anvaa_assumption()` checks the normality of the standardized residuals by providing 
-<!-- When sample sizes are large, the Central Limit Theorem suggests that mild to moderate violations of the normality assumption have minimal impact on Type I error rates, though statistical power may still be affected [@Blanca:2017]. -->
- diagnostic plots (Q-Q plots, residual vs. fitted values and histograms of residuals ) alongside formal tests (Shapiro-Wilk, Anderson-Darling for testing the normality of the residuals.
 
-For testing homoscedacity), Levene-Test and Bartlett test or testing homoscedacity) help users assess whether the assumptions of the GLM are reasonably met. 
+The function `vis_anvaa_assumption()` checks the normality of the standardized residuals by providing <!-- When sample sizes are large, the Central Limit Theorem suggests that mild to moderate violations of the normality assumption have minimal impact on Type I error rates, though statistical power may still be affected [@Blanca:2017]. --> diagnostic plots (Q-Q plots, residual vs. fitted values and histograms of residuals ) alongside formal tests (Shapiro-Wilk, Anderson-Darling for testing the normality of the residuals.
 
-
+For testing homoscedacity), Levene-Test and Bartlett test or testing homoscedacity) help users assess whether the assumptions of the GLM are reasonably met.
 
 ### Normality of residuals (`shapiro.test()` and `ad.test()`)
 
@@ -180,7 +221,7 @@ Therefore, the assessment of normality should not rely solely on p-values but sh
 Since algorithmic logic cannot replace the combination of formal tests and expert visual judgement, the function defaults to assuming normality if the Shapiro–Wilk test yields a p-value greater than alpha.
 Simulation studies suggest that Shapiro–Wilk has the highest power among normality tests in small to moderate samples [@Razali:2011].
 
-### Equal variances across groups (`levene.test() and bartlett.test()`)
+### Equal variances across groups (`levene.test() and bartxt.test()`)
 
 Both `aov()` and `oneway.test()` assess whether two or more samples drawn from normal distributions have the same mean.
 While `aov()` assumes homogeneity of variances across groups, `oneway.test()` does not require equal variances.
@@ -209,8 +250,8 @@ Note that `levene.test()` mimics the default behaviour of `leveneTest()` in the 
 
 Additionally, homoscedasticity is assessed via Bartlett's test (`bartlett.test()`), which has more power than the Brown–Forsythe version of Levene’s test [@Brown:1974] when the normality assumption is met [@Allingham:2012]
 
-Bartlett’s test evaluates whether sample variances are equal across $k$ 
-normally distributed groups. The test statistic is
+Bartlett’s test evaluates whether sample variances are equal across $k$ normally distributed groups.
+The test statistic is
 
 $$
 K^2 = \frac{(N - k) \ln s_p^2 - \sum_{i=1}^k (n_i - 1) \ln s_i^2}{
@@ -218,16 +259,13 @@ K^2 = \frac{(N - k) \ln s_p^2 - \sum_{i=1}^k (n_i - 1) \ln s_i^2}{
             - \frac{1}{N - k} \right)},
 $$
 
-where $s_i^2$ is the sample variance of group $i$, and $s_p^2$ is the pooled 
-variance:
+where $s_i^2$ is the sample variance of group $i$, and $s_p^2$ is the pooled variance:
 
 $$
 s_p^2 = \frac{1}{N - k} \sum_{i=1}^k (n_i - 1) s_i^2.
 $$
 
-Under the null hypothesis that all group variances are equal and the data are normally distributed, the test statistic approximately follows a 
-$\chi^2$-distribution with $k - 1$ degrees of freedom [@Bartlett:1937].
-
+Under the null hypothesis that all group variances are equal and the data are normally distributed, the test statistic approximately follows a $\chi^2$-distribution with $k - 1$ degrees of freedom [@Bartlett:1937].
 
 # Decision logic
 
@@ -238,9 +276,9 @@ The choice of statistical tests performed by the function `visstat()` depends on
 
 The function prioritizes interpretable visual output and tests that remain valid under the following decision logic:
 
-## Numeric response and categorical predictor: Comparing central tendencies
+## Numeric response and categorical predictor: Comparing groups
 
-When the response is numeric and the predictor is categorical, a statistical hypothesis test of central tendencies is selected.
+When the response is numeric and the predictor is categorical, a statistical hypothesis test comparing groups is selected.
 
 -   If the categorical predictor has exactly two levels, Welch's t-test (`t.test()`) is applied when both groups contain more than 30 observations.
     This heuristic is based on the central limit theorem, which ensures approximate normality of the sampling distribution of the mean [@Rasch:2011; @Lumley:2002; @Kwak:2017].
@@ -484,11 +522,6 @@ If the normality assumption is violated, `kruskal.test()` is used instead.
 
 These assumptions are tested using the `vis_anova_assumptions()` function.
 
-
-
-
-
-
 ## Controlling the family-wise error rate
 
 ANOVA is an omnibus test that evaluates a single null hypothesis: all group means are equal.
@@ -634,19 +667,15 @@ Post-hoc analysis with `TukeyHSD()` shows no significant yield differences betwe
 
 <!-- <!-- The `ToothGrowth` data set studies the effect of vitamin C dosage C (0.5, 1, and 2 mg/day) on the the tooth growth of 60 guinea pigs. -->
 
-
 <!-- <!-- ```{r} -->
+
 <!-- <!-- visstat(ToothGrowth$dose, ToothGrowth$len) -->
+
 <!-- <!-- ``` -->
-
-
 
 <!-- <!-- Again, the homogeneity of variances can be assumed ($p> -->
 
-
 <!-- <!-- \alpha$ as calculated with the `bartlett.test()`) and the test statistic and p-value of Fisher's one-way ANOVA`aov()` is displayed. -->
-
-
 
 #### Kruskal--Wallis rank sum test {.unnumbered}
 
