@@ -765,15 +765,17 @@ vis_anova <- function(samples,
   
   
   
-  if (p_levene > 1 - conf.level) #changed logic
+  if (p_bart > 1 - conf.level) #changed logic
     {
     p_aov <- summaryAnova[[1]][["Pr(>F)"]][1]
     F_value <- round(summaryAnova[[1]]$`F value`[1],2)
     label_aov <- "Fisher's one-way ANOVA"
     summarystat <- summaryAnova
+    post_hoc_anova <- TukeyHSD(an, conf.level = conf.level)
   } else {
     p_aov <- oneway$p.value
     F_value=round(oneway$statistic,2)
+    post_hoc_anova <- TukeyHSD(an, conf.level = conf.level) #problematic
     label_aov <- "Welch's heteroscedastic one-way ANOVA"
     # label_aov <-oneway$method
     summarystat <- oneway
@@ -839,9 +841,9 @@ vis_anova <- function(samples,
     )
   }
   
-  tuk <- TukeyHSD(an, conf.level = conf.level)
   
-  s <- multcompLetters(tuk[[1]][, 4], threshold = alpha)
+  
+  s <- multcompLetters(post_hoc_anova[[1]][, 4], threshold = alpha)
   
   ord <- c()
   
@@ -885,7 +887,7 @@ vis_anova <- function(samples,
       # "summary statistics of Fisher's one-way ANOVA" = summaryAnova,
       # "summary statistics of Welch's one-way ANOVA (not assuming equal  variances)" = oneway,
       "summary statistics of ANOVA" = summarystat,
-      "post-hoc analysis of TuckeyHSD" = tuk,
+      "post-hoc analysis " = post_hoc_anova,
       "conf.level" = conf.level
     )
   
@@ -983,9 +985,9 @@ vis_Kruskal_Wallis_clusters <- function(samples,
   )
   
   mtext(c("N = ", b$n), at = c(0.7, seq(1, n_classes)), las = 1) # nmber of cases in each group
-  tuk <- sig_diffs_nongauss(samples, fact, conf.level = conf.level)
+  post_hoc_kruskal <- sig_diffs_nongauss(samples, fact, conf.level = conf.level)
   
-  s <- multcompLetters(tuk[[1]][, 4], threshold = alpha)
+  s <- multcompLetters(post_hoc_kruskal[[1]][, 4], threshold = alpha)
   
   ord <- c()
   
@@ -1012,7 +1014,7 @@ vis_Kruskal_Wallis_clusters <- function(samples,
               ", p = ", signif(kk$p.value, digits = 3)))
   my_list <-
     list("Kruskal Wallis rank sum test" = kk,
-         "post-hoc by pairwise Wilcoxon rank sum test " = tuk)
+         "post-hoc by pairwise Wilcoxon rank sum test " = post_hoc_kruskal)
   return(my_list)
 }
 
@@ -1198,8 +1200,8 @@ vis_normality_assumptions <- function(y, x, conf.level = 0.95) {
   qqnorm(rstandard(reg), ylab = "Sample Quantiles of Std. Residuals")
   qqline(rstandard(reg), col = "red", lwd = 2)
   
-  KS <- ad.test(rstandard(lm(y ~ x)))
-  p_KS <- signif(KS$p.value, 2)
+  AD <- ad.test(rstandard(lm(y ~ x)))
+  p_AD <- signif(AD$p.value, 2)
   SH <- shapiro.test(rstandard(lm(y ~ x)))
   p_SH <- signif(SH$p.value, 2)
   if (p_SH < alpha) {
@@ -1208,7 +1210,7 @@ vis_normality_assumptions <- function(y, x, conf.level = 0.95) {
         "Residual Analysis\n Shapiro-Wilk: p = ",
         p_SH,
         ", Anderson-Darling: p = ",
-        p_KS,
+        p_AD,
         "\n Requirement of normally distributed residuals not met "
       ),
       outer = TRUE
@@ -1219,7 +1221,7 @@ vis_normality_assumptions <- function(y, x, conf.level = 0.95) {
         "Residual Analysis\n Shapiro-Wilk: p = ",
         p_SH,
         ", Anderson-Darling: p = ",
-        p_KS
+        p_AD
       ),
       outer = TRUE
     )
@@ -1228,7 +1230,7 @@ vis_normality_assumptions <- function(y, x, conf.level = 0.95) {
   my_list <- list(
     "summary_regression" = resreg,
     "shapiro_test_residuals" = SH,
-    "ad_test_residuals" = KS
+    "ad_test_residuals" = AD
   )
   
   
@@ -1271,13 +1273,7 @@ vis_regression <- function(y,
   
   
   ## error bands:
-  
-  # #old cold-depreciated, replaced by predict function------
-  # y_conf_lowa = conf_band(x, reg, conf.level, -1)
-  # y_conf_upa = conf_band(x, reg, conf.level, 1)
-  # y_progn_lowa = progn_band(x, reg, conf.level, -1)
-  # y_progn_upa = progn_band(x, reg, conf.level, 1)
-  # #-------------------
+
   
   conf.int_prediction <- predict(reg, interval = "confidence", level = conf.level) # confidence band
   pred.int_prediction <- suppressWarnings(predict(reg, interval = "prediction", level = conf.level)) # prediction band

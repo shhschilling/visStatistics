@@ -196,7 +196,7 @@ kruskal_iris=visstat(iris$Species, iris$Petal.Width)
 
 
 
-## Numerical response and numerical predictor: Linear Regression
+## Numerical response and numerical predictor: Linear Regression or correlation
 
 ```{r lin-reg-dist-speed}
 linreg_cars <- visstat(cars$speed ,cars$dist)
@@ -311,7 +311,7 @@ and homoscedasticity.
 
 #### Main tests
 
-`t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`, `kruskal.test()`
+`lm()` , t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`, `kruskal.test()`
 
 #### Normality assumption check
 

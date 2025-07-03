@@ -13,6 +13,10 @@
 #' @param ... If \code{x} is a data frame and \code{y} is a character string,
 #'   an additional character string must follow, naming the second column.
 #' @param conf.level Confidence level for statistical inference; default is \code{0.95}.
+#' @param do_regression Logical. If TRUE (default), performs simple
+#' linear regression analysis with confidence and prediction bands.
+#' If FALSE, performs correlation analysis with trend line only
+#'  (no regression interpretation).
 #' @param numbers Logical. Whether to annotate plots with numeric values.
 #' @param minpercent Minimum proportion (between 0 and 1) required to display a category in plots.
 #' @param graphicsoutput Optional. Output format for plots (e.g., \code{"pdf"}, \code{"png"}).
@@ -166,6 +170,7 @@ visstat <- function(x,
                     y,
                     ...,
                     conf.level = 0.95,
+                    do_regression=TRUE,
                     numbers = TRUE,
                     minpercent = 0.05,
                     graphicsoutput = NULL,
@@ -198,6 +203,7 @@ visstat <- function(x,
       varsample = varsample,
       varfactor = varfactor,
       conf.level = conf.level,
+      do_regression = do_regression,
       numbers = numbers,
       minpercent = minpercent,
       graphicsoutput = graphicsoutput,
@@ -224,6 +230,7 @@ visstat <- function(x,
     varsample = sample_name,   # second argument
     varfactor = factor_name,   # first argument
     conf.level = conf.level,
+    do_regression = do_regression,
     numbers = numbers,
     minpercent = minpercent,
     graphicsoutput = graphicsoutput,

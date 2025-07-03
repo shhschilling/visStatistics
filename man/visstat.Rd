@@ -9,6 +9,7 @@ visstat(
   y,
   ...,
   conf.level = 0.95,
+  do_regression = TRUE,
   numbers = TRUE,
   minpercent = 0.05,
   graphicsoutput = NULL,
@@ -28,6 +29,11 @@ the name of a column in \code{x} (backward-compatible usage).}
 an additional character string must follow, naming the second column.}
 
 \item{conf.level}{Confidence level for statistical inference; default is \code{0.95}.}
+
+\item{do_regression}{Logical. If TRUE (default), performs simple
+linear regression analysis with confidence and prediction bands.
+If FALSE, performs correlation analysis with trend line only
+ (no regression interpretation).}
 
 \item{numbers}{Logical. Whether to annotate plots with numeric values.}
 

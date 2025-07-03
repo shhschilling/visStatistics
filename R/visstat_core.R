@@ -92,6 +92,10 @@
 #'   column is of class \code{factor} and the column named by \code{varsample} 
 #'   is of class \code{numeric} or \code{integer}.
 #' @param conf.level Confidence level
+#' @param do_regression Logical. If TRUE (default), performs simple
+#' linear regression analysis with confidence and prediction bands.
+#' If FALSE, performs correlation analysis with trend line only
+#'  (no regression interpretation).
 #' @param numbers a logical indicating whether to show numbers in mosaic count
 #'   plots.
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total
@@ -172,6 +176,7 @@ visstat_core <- function(dataframe,
                          varsample,
                          varfactor,
                          conf.level = 0.95,
+                         do_regression=TRUE,
                          numbers = TRUE,
                          minpercent = 0.05,
                          graphicsoutput = NULL,
@@ -180,6 +185,8 @@ visstat_core <- function(dataframe,
   stopifnot(is.data.frame(dataframe))
   stopifnot(varsample %in% names(dataframe))
   stopifnot(varfactor %in% names(dataframe))
+  
+  
   
   capture_env <- new.env()
   capture_env$captured_plots <- list() #restart list of caputre plots 
@@ -554,7 +561,7 @@ visstat_core <- function(dataframe,
    
     
     normality_residual_assumptioon <-
-      vis_anova_assumptions(samples, fact, conf.level = conf.level,regression = TRUE)
+      vis_glm_assumptions(samples, fact, conf.level = conf.level,regression = TRUE)
     
     
     if (is.null(plotName)) {
@@ -576,14 +583,15 @@ visstat_core <- function(dataframe,
     
     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
     
-    vis_sample_fact <- vis_regression(
+    vis_sample_fact <- vis_numeric(
       samples,
       # y: dependent
       fact,
       # x: independent
       name_of_factor = name_of_factor,
       name_of_sample = name_of_sample,
-      conf.level = conf.level
+      conf.level = conf.level,
+      do_regression=do_regression
     )
     if (is.null(plotName)) {
       filename <-
@@ -608,7 +616,7 @@ visstat_core <- function(dataframe,
     
     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory)
     
-    visanova <- vis_anova_assumptions(
+    visanova <- vis_glm_assumptions(
       samples,
       fact,
       conf.level = conf.level
