@@ -67,6 +67,7 @@ two variables of class <code>"numeric"</code>, <code>"integer"</code>, or <code>
 <span>  <span class="va">y</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  conf.level <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  do_regression <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  numbers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  minpercent <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  graphicsoutput <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -97,6 +98,13 @@ an additional character string must follow, naming the second column.</p></dd>
 
 <dt id="arg-conf-level">conf.level<a class="anchor" aria-label="anchor" href="#arg-conf-level"></a></dt>
 <dd><p>Confidence level for statistical inference; default is <code>0.95</code>.</p></dd>
+
+
+<dt id="arg-do-regression">do_regression<a class="anchor" aria-label="anchor" href="#arg-do-regression"></a></dt>
+<dd><p>Logical. If TRUE (default), performs simple
+linear regression analysis with confidence and prediction bands.
+If FALSE, performs correlation analysis with trend line only
+ (no regression interpretation).</p></dd>
 
 
 <dt id="arg-numbers">numbers<a class="anchor" aria-label="anchor" href="#arg-numbers"></a></dt>

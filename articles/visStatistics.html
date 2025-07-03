@@ -77,7 +77,7 @@ Sciences and
 Arts<br><a class="author_email" href="mailto:#"></a><a href="mailto:sabine.schilling@protonmail.com" class="email">sabine.schilling@protonmail.com</a>
       </address>
                   
-            <h4 data-toc-skip class="date">2025-06-29</h4>
+            <h4 data-toc-skip class="date">2025-07-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="hidden name"><code>visStatistics.Rmd</code></div>
@@ -187,79 +187,146 @@ vectors of class <code>"numeric"</code>, <code>"integer"</code>, or
 </div>
 </div>
 <div class="section level2">
-<h2 id="general-linear-model-glm">General linear model (GLM)<a class="anchor" aria-label="anchor" href="#general-linear-model-glm"></a>
+<h2 id="general-linear-model-glm">General Linear Model (GLM)<a class="anchor" aria-label="anchor" href="#general-linear-model-glm"></a>
 </h2>
-<p>General Linear Models (GLM) <span class="citation">(<a href="#ref-Searle:1971">Searle 1971</a>)</span> are linear regression
-models for a continuous response variable and given continuous and/or
-categorical predictors. They provide a unified mathematical framework
-underlying many common statistical tests like t-tests, ANOVA, and simple
-linear regression implemented in <code>visStatistics</code>.</p>
-<!-- The R-implementations of these tests,  `t.test(...var=equal)`, `aov()`, and `lm().` thus produce  mathematically equivalent results. -->
-<!-- As a consequence, all these thests have the same underlying assumptions. -->
-<!-- The General Linear Model (GLM) provides a unified mathematical framework underlying many common statistical tests like Student's t-tests, ANOVA, and simple linear regression. -->
-<p>These tests are not distinct statistical methods, but rather
-different implementations of the same underlying mathematical
-framework.</p>
-<!-- `t.test(..., var=equal)`, `aov()`, and `lm()` solve identical normal equations and produce mathematically equivalent results. - -->
-<!-- The General Linear Model (GLM)  [@Nelder:1972,@McCullagh:1989] \ provides a unified statistical framework encompassing linear  -->
-<!-- regression, analysis of variance (ANOVA), and t-tests within a single mathematical structure.  -->
-<p>The GLM can be expressed in matrix form as:</p>
-<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐘</mi><mo>=</mo><mi>𝐗</mi><mi>𝛃</mi><mo>+</mo><mi>𝛆</mi></mrow><annotation encoding="application/x-tex">\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}</annotation></semantics></math></p>
+<p>General Linear Models (GLM) <span class="citation">(<a href="#ref-Searle:1971">Searle 1971</a>)</span> provide a unified
+mathematical framework underlying many common statistical tests like
+t-tests, ANOVA, and simple linear regression implemented in
+<code>visStatistics</code>. These tests are not distinct statistical
+methods, but rather different implementations of the same underlying
+mathematical framework.</p>
+<p>The GLM can be expressed as:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mi>i</mi></msub><mo>=</mo><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msub><mi>β</mi><mn>1</mn></msub><msub><mi>x</mi><mrow><mi>i</mi><mn>1</mn></mrow></msub><mo>+</mo><mi>⋯</mi><mo>+</mo><msub><mi>β</mi><mi>k</mi></msub><msub><mi>x</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo>+</mo><msub><mi>ε</mi><mi>i</mi></msub><mspace width="1.0em"></mspace><mrow><mtext mathvariant="normal">for </mtext><mspace width="0.333em"></mspace></mrow><mi>i</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>n</mi><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>ε</mi><mi>i</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><msup><mi>σ</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">Y_i = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_k x_{ik} + \varepsilon_i \quad \text{for } i = 1, \ldots, n, \quad \varepsilon_i \sim {N}(0, \sigma^2)</annotation></semantics></math></p>
 <p>where:</p>
 <ul>
-<li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
-is an
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n \times 1</annotation></semantics></math>
-vector of observed responses</li>
-<li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
-is an
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">n \times p</annotation></semantics></math>
-design matrix containing predictor variables<br>
-</li>
-<li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛃</mi><annotation encoding="application/x-tex">\boldsymbol{\beta}</annotation></semantics></math>
-is a
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>×</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">p \times 1</annotation></semantics></math>
-vector of unknown parameters</li>
-<li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝛆</mi><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>𝟎</mn><mo>,</mo><msup><mi>σ</mi><mn>2</mn></msup><mi>𝐈</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\boldsymbol{\varepsilon} \sim N(\mathbf{0}, \sigma^2\mathbf{I})</annotation></semantics></math>
-are independent error (=residual) terms</li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+= number of observations</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+= number of predictors</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Y</mi><mi>i</mi></msub><annotation encoding="application/x-tex">Y_i</annotation></semantics></math>
+are the model reandom variables</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">x_{ij}</annotation></semantics></math>
+are the predictor values</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>β</mi><mn>0</mn></msub><mo>,</mo><msub><mi>β</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>β</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">\beta_0, \beta_1, \ldots, \beta_k</annotation></semantics></math>
+are the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(k+1)</annotation></semantics></math>
+parameters</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ε</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\varepsilon_i</annotation></semantics></math>
+are the normally distributed error terms with constant, unknwon variance
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>σ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\sigma^2</annotation></semantics></math></p></li>
 </ul>
-<p>The least squares solution minimizing the sum of squared residuals
-is:</p>
-<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>𝛃</mi><mo accent="true">̂</mo></mover><mo>=</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>𝐗</mi><mi>T</mi></msup><mi>𝐗</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup><msup><mi>𝐗</mi><mi>T</mi></msup><mi>𝐘</mi></mrow><annotation encoding="application/x-tex">\hat{\boldsymbol{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}</annotation></semantics></math></p>
-<p>All GLM variants assume the response vector follows
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐘</mi><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝛍</mi><mo>,</mo><msup><mi>σ</mi><mn>2</mn></msup><mi>𝐈</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mathbf{Y} \sim N(\boldsymbol{\mu},
-\sigma^2\mathbf{I})</annotation></semantics></math>, where the mean
-structure
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝛍</mi><mo>=</mo><mi>𝐗</mi><mi>𝛃</mi></mrow><annotation encoding="application/x-tex">\boldsymbol{\mu} = \mathbf{X}\boldsymbol{\beta}</annotation></semantics></math>
-connects predictors to response through different design matrices
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>.
-Since these methods share identical distributional assumptions, they
-require the same diagnostic procedures and assumption checking -
-revealing the fundamental unity underlying seemingly distinct tests.</p>
+<p>In a more compact matrix for this can be expressed as:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐘</mi><mo>=</mo><mi>𝐗</mi><mi>𝛃</mi><mo>+</mo><mi>𝛆</mi></mrow><annotation encoding="application/x-tex">\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}</annotation></semantics></math></p>
+<p>where:</p>
+<ul>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐘</mi><annotation encoding="application/x-tex">\mathbf{Y}</annotation></semantics></math>
+is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n \times 1</annotation></semantics></math>
+(response vector for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+observations)</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝐗</mi><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math>
+is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">n \times (k+1)</annotation></semantics></math>
+(design matrix:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+observations,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k+1</annotation></semantics></math>
+parameters)</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛃</mi><annotation encoding="application/x-tex">\boldsymbol{\beta}</annotation></semantics></math>
+is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>k</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>×</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">(k+1) \times 1</annotation></semantics></math>
+(parameter vector:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+predictors + intercept)</p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>𝛆</mi><annotation encoding="application/x-tex">\boldsymbol{\varepsilon}</annotation></semantics></math>
+is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>×</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n \times 1</annotation></semantics></math>
+(error vector for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+observations)</p></li>
+</ul>
+<p>Both the paramater and error vector have to be estimated from
+data:</p>
+<p>We observe realisations
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mi>i</mi></msub><annotation encoding="application/x-tex">y_i</annotation></semantics></math>
+of the response, and estimate the unknown parameters
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>β</mi><mn>0</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>β</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">\beta_0, \dots, \beta_k</annotation></semantics></math>
+by minimising the residual sum of squares:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msubsup><mi>e</mi><mi>i</mi><mn>2</mn></msubsup><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msup><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>b</mi><mn>0</mn></msub><mo>+</mo><msub><mi>b</mi><mn>1</mn></msub><msub><mi>x</mi><mrow><mi>i</mi><mn>1</mn></mrow></msub><mo>+</mo><mi>⋯</mi><mo>+</mo><msub><mi>b</mi><mi>k</mi></msub><msub><mi>x</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\sum_{i=1}^{n} e_i^2 = \sum_{i=1}^{n} \left[y_i - (b_0 + b_1 x_{i1} + \cdots + b_k x_{ik})\right]^2</annotation></semantics></math></p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>b</mi><mn>0</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>b</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">b_0, \dots, b_k</annotation></semantics></math>
+are the least-squares <strong>estimators</strong> of the true parameters
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>β</mi><mn>0</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>β</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">\beta_0, \dots, \beta_k</annotation></semantics></math>.
+<!-- Collectively, they form the estimate vector \( \mathbf{b} \) -->
+<!-- $${\boldsymbol{b}} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}$$ --></p>
+<p>The fitted value for observation
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+is</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mo>=</mo><msub><mi>b</mi><mn>0</mn></msub><mo>+</mo><msub><mi>b</mi><mn>1</mn></msub><msub><mi>x</mi><mrow><mi>i</mi><mn>1</mn></mrow></msub><mo>+</mo><mi>…</mi><mo>+</mo><msub><mi>b</mi><mi>k</mi></msub><msub><mi>x</mi><mrow><mi>i</mi><mi>k</mi></mrow></msub><mo>,</mo></mrow><annotation encoding="application/x-tex">
+\hat{y}_i = b_0 + b_1 x_{i1} + \dots + b_k x_{ik},
+</annotation></semantics></math></p>
+<p>and the residual is defined as</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mi>i</mi></msub><mo>=</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
+e_i = y_i - \hat{y}_i.
+</annotation></semantics></math></p>
+<p>The residuals are our estimators for the unknwon error terms
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ϵ</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\epsilon_i</annotation></semantics></math>.
+We estimate the unknown variance of the error term by the square
+standard error</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>s</mi><mi>E</mi><mn>2</mn></msubsup><mo>=</mo><mn>1</mn><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>−</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msubsup><mi>e</mi><mi>i</mi><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">s_E^2=1/(n-k-1)⋅\sum_{i=1}^n e_i^2 </annotation></semantics></math></p>
 <div class="section level3">
-<h3 id="the-assumptions-of-the-glm-vis_anova_assumptions">The assumptions of the GLM (vis_anova_assumptions())<a class="anchor" aria-label="anchor" href="#the-assumptions-of-the-glm-vis_anova_assumptions"></a>
+<h3 id="glm-assumptions-and-testing-vis_anova_assumptions">GLM Assumptions and Testing
+(<code>vis_anova_assumptions()</code>)<a class="anchor" aria-label="anchor" href="#glm-assumptions-and-testing-vis_anova_assumptions"></a>
 </h3>
-<p>The key assumptions of the GLM are:</p>
-<ol style="list-style-type: decimal">
-<li>Independence of observations**: each observation is independent of
-others</li>
-<li>
-<strong>Linearity</strong>: the relationship between predictors and
-response is linear</li>
-<li>
-<strong>Normality of residuals</strong>:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝛆</mi><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>𝟎</mn><mo>,</mo><msup><mi>σ</mi><mn>2</mn></msup><mi>𝐈</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\boldsymbol{\varepsilon} \sim N(\mathbf{0}, \sigma^2\mathbf{I})</annotation></semantics></math>
-</li>
-<li>
-<strong>Homoscedasticity</strong>: constant variance of residuals
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>σ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\sigma^2</annotation></semantics></math>
-is constant)</li>
-</ol>
-<!-- Importantly, it is the **residuals** (not the raw data in each group) that must be approximately normally distributed. --><p>The function <code>vis_anvaa_assumption()</code> checks the normality
+<p>The GLM assumptions are:</p>
+<ul>
+<li>Linearity: The mean structure
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mrow><mo stretchy="true" form="prefix">[</mo><mi>𝐘</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo>=</mo><mi>𝐗</mi><mi>𝛃</mi></mrow><annotation encoding="application/x-tex">E[\mathbf{Y}] = \mathbf{X}\boldsymbol{\beta}</annotation></semantics></math>
+is linear in parameters; assessed by checking for systematic patterns in
+residual plots</li>
+</ul>
+<p>Error terms are:</p>
+<ul>
+<li><p>independent:</p></li>
+<li><p>normaliy distributed</p></li>
+<li><p>homoscedastic: Constant error variance
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>σ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\sigma^2</annotation></semantics></math></p></li>
+</ul>
+<div class="section level4">
+<h4 id="assumption-testing-in-visstatistics">Assumption Testing in visStatistics<a class="anchor" aria-label="anchor" href="#assumption-testing-in-visstatistics"></a>
+</h4>
+<p>The function <code>vis_anova_assumptions()</code> provides unified
+diagnostic tools for all GLM variants. Since t-tests, ANOVA, and linear
+regression share identical distributional assumptions, the same
+residual-based diagnostics apply universally.</p>
+<p><strong>Normality Assessment</strong>: The function evaluates
+residual normality using both the Shapiro-Wilk test
+(<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and Anderson-Darling test
+(<code>ad.test()</code>) <span class="citation">(<a href="#ref-Gross:2015">Gross and Ligges 2015</a>)</span>. These tests
+offer complementary strengths: Shapiro-Wilk generally exhibits greater
+power across non-normal distributions in small samples, while
+Anderson-Darling is highly sensitive to tail deviations in larger
+samples <span class="citation">(<a href="#ref-Razali:2011">Razali and
+Wah 2011</a>; <a href="#ref-Yap:2011">Yap and Sim 2011</a>)</span>.</p>
+<p><strong>Homoscedasticity Assessment</strong>: Variance equality is
+tested using the Levene-Brown-Forsythe test (<code>levene.test()</code>)
+<span class="citation">(<a href="#ref-Brown:1974">Brown and Forsythe
+1974</a>)</span> and Bartlett’s test (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>). The
+Levene-Brown-Forsythe test uses absolute deviations from group medians,
+making it robust to non-normality, while Bartlett’s test has greater
+power when normality holds <span class="citation">(<a href="#ref-Allingham:2012">Allingham and Rayner 2012</a>)</span>.</p>
+<p><strong>Visual Diagnostics</strong>: <code>visStatistics</code>
+produces diagnostic plots including: (1) histogram of standardized
+residuals with normal overlay, (2) residuals vs. fitted values plot, and
+(3) Q-Q plot. Since algorithmic logic cannot replace expert visual
+judgment, these plots complement formal tests for comprehensive
+assumption assessment.</p>
+<p>This unified approach eliminates the need to learn separate
+assumption-checking procedures for each statistical test - they are
+fundamentally the same method with different design matrices.</p>
+<!-- Importantly, it is the **residuals** (not the raw data in each group) that must be approximately normally distributed. -->
+<p>The function <code>vis_anvaa_assumption()</code> checks the normality
 of the standardized residuals by providing
 <!-- When sample sizes are large, the Central Limit Theorem suggests that mild to moderate violations of the normality assumption have minimal impact on Type I error rates, though statistical power may still be affected [@Blanca:2017]. -->
 diagnostic plots (Q-Q plots, residual vs. fitted values and histograms
@@ -268,11 +335,12 @@ for testing the normality of the residuals.</p>
 <p>For testing homoscedacity), Levene-Test and Bartlett test or testing
 homoscedacity) help users assess whether the assumptions of the GLM are
 reasonably met.</p>
+</div>
 <div class="section level4">
 <h4 id="normality-of-residuals-shapiro-test-and-ad-test">Normality of residuals (<code>shapiro.test()</code> and
 <code>ad.test()</code>)<a class="anchor" aria-label="anchor" href="#normality-of-residuals-shapiro-test-and-ad-test"></a>
 </h4>
-<p>The <code><a href="../reference/vis_anova_assumptions.html">vis_anova_assumptions()</a></code> function evaluates the
+<p>The <code>vis_anova_assumptions()</code> function evaluates the
 normality of standardised residuals from the <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>-model
 (which itself is a wrapper function for categorical features around the
 <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> function) using both the Shapiro–Wilk test
@@ -310,8 +378,8 @@ Simulation studies suggest that Shapiro–Wilk has the highest power among
 normality tests in small to moderate samples <span class="citation">(<a href="#ref-Razali:2011">Razali and Wah 2011</a>)</span>.</p>
 </div>
 <div class="section level4">
-<h4 id="equal-variances-across-groups-levene-test-and-bartlett-test">Equal variances across groups
-(<code>levene.test() and bartlett.test()</code>)<a class="anchor" aria-label="anchor" href="#equal-variances-across-groups-levene-test-and-bartlett-test"></a>
+<h4 id="equal-variances-across-groups-levene-test-and-bartxt-test">Equal variances across groups
+(<code>levene.test() and bartxt.test()</code>)<a class="anchor" aria-label="anchor" href="#equal-variances-across-groups-levene-test-and-bartxt-test"></a>
 </h4>
 <p>Both <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> and <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> assess whether
 two or more samples drawn from normal distributions have the same mean.
@@ -414,11 +482,10 @@ distribution of the data, as well as the user-defined ‘conf.level’.</p>
 <p>The function prioritizes interpretable visual output and tests that
 remain valid under the following decision logic:</p>
 <div class="section level3">
-<h3 id="numeric-response-and-categorical-predictor-comparing-central-tendencies">Numeric response and categorical predictor: Comparing central
-tendencies<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor-comparing-central-tendencies"></a>
+<h3 id="numeric-response-and-categorical-predictor-comparing-groups">Numeric response and categorical predictor: Comparing groups<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor-comparing-groups"></a>
 </h3>
 <p>When the response is numeric and the predictor is categorical, a
-statistical hypothesis test of central tendencies is selected.</p>
+statistical hypothesis test comparing groups is selected.</p>
 <ul>
 <li><p>If the categorical predictor has exactly two levels, Welch’s
 t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>) is applied when both groups contain more
@@ -504,8 +571,8 @@ and no more than 20 percent of cells have expected counts below 5.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="numeric-response-and-categorical-predictor-comparing-central-tendencies-1">Numeric response and categorical predictor: Comparing central
-tendencies<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor-comparing-central-tendencies-1"></a>
+<h2 id="numeric-response-and-categorical-predictor-comparing-central-tendencies">Numeric response and categorical predictor: Comparing central
+tendencies<a class="anchor" aria-label="anchor" href="#numeric-response-and-categorical-predictor-comparing-central-tendencies"></a>
 </h2>
 <p>When the predictor consists of <code>class</code>
 “<code>factor</code>” with two or more levels and the response is of
@@ -820,7 +887,7 @@ statistic from <code><a href="https://rdrr.io/r/stats/aov.html" class="external-
 applies <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>. If the normality assumption is
 violated, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> is used instead.</p>
 <p>These assumptions are tested using the
-<code><a href="../reference/vis_anova_assumptions.html">vis_anova_assumptions()</a></code> function.</p>
+<code>vis_anova_assumptions()</code> function.</p>
 </div>
 <div class="section level3">
 <h3 id="controlling-the-family-wise-error-rate">Controlling the family-wise error rate<a class="anchor" aria-label="anchor" href="#controlling-the-family-wise-error-rate"></a>
@@ -1458,8 +1525,8 @@ attribute <code>"plot_paths"</code> on the returned object of class
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "/tmp/Rtmp9rwxnB/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span><span class="co">## [2] "/tmp/Rtmp9rwxnB/mosaic_complete_Hair_Eye.png"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "/tmp/RtmpbBQmX3/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span><span class="co">## [2] "/tmp/RtmpbBQmX3/mosaic_complete_Hair_Eye.png"</span></span></code></pre>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
