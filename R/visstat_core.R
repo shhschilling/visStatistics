@@ -559,9 +559,11 @@ visstat_core <- function(dataframe,
     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory
                     ) 
    
-    
-    normality_residual_assumptioon <-
+   
+    normality_residual_assumption <-
       vis_glm_assumptions(samples, fact, conf.level = conf.level,regression = TRUE)
+    
+        
     
     
     if (is.null(plotName)) {

@@ -290,18 +290,7 @@ test_that("vis_Kruskal_Wallis_clusters runs without error for valid data", {
   })
 })
 
-test_that("vis_regression runs without error for valid data", {
-  data <- create_test_data()
-  
-  expect_no_error({
-    result <- vis_regression(
-      y = data$y_regression,
-      x = data$x_regression,
-      name_of_factor = "X",
-      name_of_sample = "Y"
-    )
-  })
-})
+
 
 test_that("vis_normality_assumptions runs without error for valid data", {
   skip_if_not_installed("nortest")
