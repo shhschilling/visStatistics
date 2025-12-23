@@ -1,4 +1,4 @@
-#' Wrapper for visstat_core allowing two different input styles
+#' Wrapper for visstat_core allowing three different input styles
 #'
 #' A wrapper around the core function \code{\link{visstat_core}}. 
 #' \code{\link{visstat_core}} defines the
@@ -12,6 +12,8 @@
 #'   the name of a column in \code{x} (backward-compatible usage).
 #' @param ... If \code{x} is a data frame and \code{y} is a character string,
 #'   an additional character string must follow, naming the second column.
+#' @param data Data frame containing variables for formula interface. Required 
+#'   when using formula syntax like \code{mpg ~ am}. Not used for other input formats.
 #' @param conf.level Confidence level for statistical inference; default is \code{0.95}.
 #' @param do_regression Logical. If TRUE (default), performs simple
 #' linear regression analysis with confidence and prediction bands.
@@ -166,27 +168,66 @@
 #'
 #' @export
 #' 
+# visstat <- function(x,
+#                     y=NULL,
+#                     data = NULL, ..., conf.level = 0.95,
+#                     do_regression=TRUE,
+#                     numbers = TRUE,
+#                     minpercent = 0.05,
+#                     graphicsoutput = NULL,
+#                     plotName = NULL,
+#                     plotDirectory = getwd())
+#   
 visstat <- function(x,
                     y,
                     ...,
+                    data = NULL,
                     conf.level = 0.95,
                     do_regression=TRUE,
                     numbers = TRUE,
                     minpercent = 0.05,
                     graphicsoutput = NULL,
                     plotName = NULL,
-                    plotDirectory = getwd()) {
-  
+                    plotDirectory = getwd()) {  
   # store default graphical parameters------
   oldparvisstat <- par(no.readonly = TRUE)
   on.exit(par(oldparvisstat))
   
-  check_visstat_input(x, y, ...)
+  #check_visstat_input(x, y, ...)
   
-  
+  check_visstat_input(x, y, ..., data = data)
   clean_name <- function(expr) {
     sub(".*\\$", "", deparse(expr))
   }
+  
+  # Case 0: formula interface
+  if (inherits(x, "formula")) {
+    if (is.null(data)) {
+      stop("Formula input requires a 'data' argument.")
+    }
+    
+    vars <- all.vars(x)
+    if (length(vars) != 2) {
+      stop("Formula must be of the form 'y ~ x'.")
+    }
+    
+    yvar <- vars[1]
+    xvar <- vars[2]
+    
+    return(visstat_core(
+      dataframe = data,
+      varsample = yvar,
+      varfactor = xvar,
+      conf.level = conf.level,
+      do_regression = do_regression,
+      numbers = numbers,
+      minpercent = minpercent,
+      graphicsoutput = graphicsoutput,
+      plotName = plotName,
+      plotDirectory = plotDirectory
+    ))
+  }
+  
   
   # Case 1: legacy form: visstat(data, "Girth", "Height")
   if (is.data.frame(x) && is.character(y) && length(y) == 1) {

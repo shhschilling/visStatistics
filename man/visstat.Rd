@@ -2,12 +2,13 @@
 % Please edit documentation in R/visstat.R
 \name{visstat}
 \alias{visstat}
-\title{Wrapper for visstat_core allowing two different input styles}
+\title{Wrapper for visstat_core allowing three different input styles}
 \usage{
 visstat(
   x,
   y,
   ...,
+  data = NULL,
   conf.level = 0.95,
   do_regression = TRUE,
   numbers = TRUE,
@@ -27,6 +28,9 @@ the name of a column in \code{x} (backward-compatible usage).}
 
 \item{...}{If \code{x} is a data frame and \code{y} is a character string,
 an additional character string must follow, naming the second column.}
+
+\item{data}{Data frame containing variables for formula interface. Required 
+when using formula syntax like \code{mpg ~ am}. Not used for other input formats.}
 
 \item{conf.level}{Confidence level for statistical inference; default is \code{0.95}.}
 
