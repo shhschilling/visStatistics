@@ -259,7 +259,7 @@ visstat_core <- function(dataframe,
     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory
                  ) 
   
-    ttest_assumptions = vis_ttest_assumptions(samples,fact,samplename=name_of_sample,
+    ttest_assumptions = vis_welch_normality(samples,fact,samplename=name_of_sample,
                                               groupname =name_of_factor)
     
     

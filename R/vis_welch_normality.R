@@ -8,9 +8,11 @@
 #' with normal distribution overlays and Q-Q plots to visually assess normality.
 #' The layout automatically adapts based on the number of groups (k).
 #'
-#' @param y Numeric vector; the response variable.
-#' @param g Factor or vector; the grouping variable (2 to 20 groups).
+#' @param samples Numeric vector; the dependent variable.
+#' @param groups Factor or vector; the grouping variable (2 to 20 groups).
 #' @param conf.level Numeric; confidence level, 0.95=default (currently unused, for future extensions).
+#' @param samplename Character; label for the y-axis (default: "").
+#' @param groupname Character; label for the x-axis (default: "").
 #' @param cex Numeric; scaling factor for plot text and symbols (default: 1).
 #'
 #' @return A list containing:
@@ -41,28 +43,150 @@
 #'
 #' @export
 
-vis_welch_normality <- function(y, g, conf.level = 0.95, cex = 1) {
+vis_welch_normality <- function(samples, 
+                                groups, 
+                                conf.level = 0.95, 
+                                samplename = "", 
+                                groupname = "", 
+                                cex = 1) {
   
   # Store original par settings
   oldpar <- par(no.readonly = TRUE)
   on.exit(par(oldpar))
   
-  # Clean data - remove NAs
+  # Rename for internal consistency (legacy variable names)
+  y <- samples
+  g <- groups
+  
+  # Clean data
   complete_cases <- complete.cases(y, g)
   y <- y[complete_cases]
-  g <- factor(g[complete_cases])
+  g <- as.factor(g[complete_cases])
   
   # Get group information
   group_levels <- levels(g)
   k <- length(group_levels)
   
-  # Validate number of groups
+  # Check minimum requirements
   if (k < 2) {
     stop("At least 2 groups required")
   }
-  if (k > 20) {
-    stop("Maximum 20 groups supported. Consider using vis_normality_assumption() for pooled testing.")
+  
+  # Check if too many groups for meaningful visualization
+  if (k > 10) {
+    cat("\n")
+    cat("===============================================\n")
+    cat("  TOO MANY GROUPS FOR VISUAL DISPLAY (k = ", k, ")\n")
+    cat("===============================================\n\n")
+    cat("Visual plots are not meaningful with more than 10 groups.\n")
+    cat("Providing normality test results in tabular format instead.\n\n")
+    
+    # Calculate test results for all groups
+    shapiro_tests <- list()
+    ad_tests <- list()
+    
+    results_table <- data.frame(
+      Group = character(k),
+      n = integer(k),
+      Shapiro_W = numeric(k),
+      Shapiro_p = numeric(k),
+      AD_A = numeric(k),
+      AD_p = numeric(k),
+      stringsAsFactors = FALSE
+    )
+    
+    for (i in seq_along(group_levels)) {
+      gname <- group_levels[i]
+      gdata <- y[g == gname]
+      n <- length(gdata)
+      
+      # Shapiro-Wilk test
+      if (n >= 3 && n <= 5000) {
+        sh_test <- shapiro.test(gdata)
+        shapiro_tests[[gname]] <- sh_test
+        results_table$Shapiro_W[i] <- sh_test$statistic
+        results_table$Shapiro_p[i] <- sh_test$p.value
+      } else {
+        shapiro_tests[[gname]] <- list(
+          statistic = NA,
+          p.value = NA,
+          method = paste0("Shapiro-Wilk test requires n: 3-5000 (n = ", n, ")")
+        )
+        results_table$Shapiro_W[i] <- NA
+        results_table$Shapiro_p[i] <- NA
+      }
+      
+      # Anderson-Darling test
+      if (n >= 7) {
+        ad_test <- nortest::ad.test(gdata)
+        ad_tests[[gname]] <- ad_test
+        results_table$AD_A[i] <- ad_test$statistic
+        results_table$AD_p[i] <- ad_test$p.value
+      } else {
+        ad_tests[[gname]] <- list(
+          statistic = NA,
+          p.value = NA,
+          method = paste0("Anderson-Darling test requires n >= 7 (n = ", n, ")")
+        )
+        results_table$AD_A[i] <- NA
+        results_table$AD_p[i] <- NA
+      }
+      
+      results_table$Group[i] <- gname
+      results_table$n[i] <- n
+    }
+    
+    # Format and print table
+    results_table$Shapiro_W <- round(results_table$Shapiro_W, 4)
+    results_table$Shapiro_p <- format.pval(results_table$Shapiro_p, digits = 3, eps = 0.001)
+    results_table$AD_A <- round(results_table$AD_A, 4)
+    results_table$AD_p <- format.pval(results_table$AD_p, digits = 3, eps = 0.001)
+    
+    cat("Normality Test Results by Group:\n")
+    cat("================================\n\n")
+    print(results_table, row.names = FALSE)
+    
+    cat("\n")
+    cat("Interpretation:\n")
+    cat("  - p > 0.05: Data consistent with normality\n")
+    cat("  - p <= 0.05: Evidence against normality\n")
+    cat("\n")
+    
+    # Count how many groups fail normality
+    n_fail_shapiro <- sum(results_table$Shapiro_p != "NA" & 
+                            as.numeric(sub("<", "", results_table$Shapiro_p)) < 0.05, 
+                          na.rm = TRUE)
+    n_fail_ad <- sum(results_table$AD_p != "NA" & 
+                       as.numeric(sub("<", "", results_table$AD_p)) < 0.05, 
+                     na.rm = TRUE)
+    
+    cat("Summary:\n")
+    cat("  ", n_fail_shapiro, "out of", k, "groups fail Shapiro-Wilk test (p < 0.05)\n")
+    cat("  ", n_fail_ad, "out of", k, "groups fail Anderson-Darling test (p < 0.05)\n")
+    cat("\n")
+    
+    if (n_fail_shapiro > 0 || n_fail_ad > 0) {
+      cat("Recommendation: Consider using Kruskal-Wallis test (non-parametric)\n")
+    } else {
+      cat("Recommendation: Normality assumption appears reasonable for Welch ANOVA\n")
+    }
+    cat("\n")
+    
+    # Return results invisibly
+    result <- list(
+      shapiro_tests = shapiro_tests,
+      ad_tests = ad_tests,
+      n_groups = k,
+      group_names = group_levels,
+      results_table = results_table,
+      note = "Too many groups for visual display"
+    )
+    
+    class(result) <- "vis_welch_normality"
+    return(invisible(result))
   }
+  
+  # For k <= 10: Continue with visual plots
   
   # Split data by groups
   group_data <- lapply(group_levels, function(lev) y[g == lev])
