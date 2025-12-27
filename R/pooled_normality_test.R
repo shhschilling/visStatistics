@@ -9,71 +9,58 @@
 #' @param test Character, either "shapiro" or "ad" for Anderson-Darling
 #' @param min_n Minimum sample size per group required (default 3)
 #' @return A list with test results (statistic, p.value, method, data.name)
-#' @keywords internal
-#' @noRd
+
 pooled_normality_test <- function(y, g, 
                                   test = c("shapiro", "ad"),
                                   min_n = 3L) {
   test <- match.arg(test)
   g <- as.factor(g)
   
-  # Check minimum number of groups
-  k <- nlevels(g)
-  if (k < 2L) {
+  # Ensure y and g are the same length and handle NAs upfront
+  complete_cases <- !is.na(y) & !is.na(g)
+  y <- y[complete_cases]
+  g <- g[complete_cases]
+  
+  if (nlevels(g) < 2L) {
     stop("At least 2 groups required for normality test")
   }
   
   # Within-group standardization: z_ij = (y_ij - mean_i) / sd_i
-  z <- unlist(
-    tapply(y, g, function(x) {
-      n <- sum(!is.na(x))
-      if (n < min_n) {
-        return(rep(NA_real_, length(x)))
-      }
-      (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
-    })
+  # ave() keeps the original order and is more concise
+  z <- ave(y, g, FUN = function(x) {
+    n <- length(x)
+    if (n < min_n) return(rep(NA_real_, n))
+    # Scale center = TRUE, scale = TRUE performs (x - mean)/sd
+    as.vector(scale(x))
+  })
+  
+  # Remove NAs from groups that didn't meet min_n
+  z <- z[!is.na(z)]
+  
+  # Sample size checks
+  n_total <- length(z)
+  if (n_total < min_n) {
+    warning(sprintf("Insufficient data: only %d values available", n_total))
+    return(list(statistic = NA, p.value = NA, method = "Insufficient data", data.name = "z"))
+  }
+  
+  # Automated fallback for Shapiro-Wilk limit
+  if (test == "shapiro" && n_total > 5000L) {
+    warning("Sample size > 5000; falling back to Anderson-Darling")
+    test <- "ad"
+  }
+  
+  # Execute tests
+  res <- switch(test,
+                shapiro = shapiro.test(z),
+                ad = {
+                  if (!requireNamespace("nortest", quietly = TRUE)) {
+                    stop("Package 'nortest' required for Anderson-Darling test")
+                  }
+                  nortest::ad.test(z)
+                }
   )
   
-  # Remove non-finite values
-  z <- z[is.finite(z)]
-  
-  # Check if sufficient data remains
-  if (length(z) < min_n) {
-    warning(
-      sprintf(
-        "Insufficient data for normality test: only %d finite standardized values",
-        length(z)
-      )
-    )
-    return(list(
-      statistic = NA_real_, 
-      p.value = NA_real_, 
-      method = "Insufficient data for normality test",
-      data.name = "pooled standardized residuals"
-    ))
-  }
-  
-  # Handle Shapiro-Wilk sample size limits
-  if (test == "shapiro") {
-    if (length(z) > 5000L) {
-      warning("Sample size exceeds Shapiro-Wilk limit (5000); using Anderson-Darling")
-      test <- "ad"
-    }
-  }
-  
-  # Perform selected test
-  if (test == "shapiro") {
-    result <- shapiro.test(z)
-    result$data.name <- "pooled standardized residuals"
-    return(result)
-  }
-  
-  if (test == "ad") {
-    if (!requireNamespace("nortest", quietly = TRUE)) {
-      stop("Package 'nortest' required for Anderson-Darling test")
-    }
-    result <- nortest::ad.test(z)
-    result$data.name <- "pooled standardized residuals"
-    return(result)
-  }
+  res$data.name <- "pooled standardized residuals"
+  return(res)
 }
