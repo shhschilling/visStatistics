@@ -70,7 +70,15 @@ visstat(PlantGrowth$group, PlantGrowth$weight)
 
 
 # Welch ANOVA -----
-anova_npk <- visstat(npk$block, npk$yield) 
+set.seed(1)
+welch_anova_data <- data.frame(
+  group = factor(rep(c("A", "B", "C"), each = 20)),
+  value = c(rnorm(20, mean = 50, sd = 5),
+            rnorm(20, mean = 55, sd = 10),
+            rnorm(20, mean = 60, sd = 15))
+)
+welch_annova=visstat(welch_anova_data$group, welch_anova_data$value)
+
 
 
 # Kruskal-Wallis test: iris----
@@ -114,15 +122,15 @@ fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 
 
 # The visstat-methods -------
-summary.visstat(iris_data_stored)
-print.visstat(iris_data_stored)
+summary(iris_data_stored)
+print(iris_data_stored)
 plot(iris_data_stored) #file paths
 plot(iris_data,which = 1) #replay plot 1
 
 
 # Replay plots  or file paths of stored graphics------
 plot(insect_spray,which = 1) # path of assumption plot
-plot(anova_npk)
+plot(anova_npk,which = 2)
 plot(linear_regression_trees)
 plot(res_chi)# paths two column plot and mosaic plot
 plot(fisher_stats,which = 2) #mosaic plot only

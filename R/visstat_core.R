@@ -326,6 +326,20 @@ visstat_core <- function(dataframe,
                                                      fileDirectory = plotDirectory, capture_env = capture_env))
       } else {
         # ANOVA execution (Fisher/Welch and Post-hoc handled internally)
+        # 
+        if (var_p < alpha) {
+          # Unequal variances - will use Welch ANOVA, show normality per group
+          openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+          vis_welch_normality(samples, fact, conf.level = conf.level, cex = 0.8)
+          
+          if (is.null(plotName)) {
+            filename <- paste("anova_assumptions_", name_of_sample, "_", name_of_factor, sep = "")
+          } else {
+            filename <- paste("anova_assumptions_", plotName, sep = "")
+          }
+          plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename, type = graphicsoutput,
+                                                       fileDirectory = plotDirectory, capture_env = capture_env))
+        }
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 
         vis_sample_fact <- vis_anova(samples, fact, samplename = varsample, 
                                      factorname = varfactor, conf.level = conf.level)
