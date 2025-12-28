@@ -175,14 +175,7 @@ visstat(PlantGrowth$group, PlantGrowth$weight)
 ## Welch's one-way ANOVA (unequal variances, >2 groups)
 # When residuals are normally distributed but Levene's test indicates
 # heteroscedasticity, Welch's ANOVA with Games-Howell post-hoc is used
-set.seed(1)
-welch_anova_data <- data.frame(
-  group = factor(rep(c("A", "B", "C"), each = 20)),
-  value = c(rnorm(20, mean = 50, sd = 5),
-            rnorm(20, mean = 55, sd = 10),
-            rnorm(20, mean = 60, sd = 15))
-)
-visstat(welch_anova_data$group, welch_anova_data$value)
+visstat(npk$block, npk$yield) 
 
 ## Kruskal-Wallis (non-normal, >2 groups)
 # When residuals are not normally distributed

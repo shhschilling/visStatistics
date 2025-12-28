@@ -77,8 +77,8 @@ vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
     bp_test <- bp_test(anova_model)
   }
   
-  # Set up plotting area WITHOUT outer margin initially
-  par(mfrow = c(2, 2), cex = 0.7 * cex)
+  # Set up plotting area with outer margin for title
+  par(mfrow = c(2, 2), oma = c(0, 0, 3, 0), cex = 0.7 * cex)
   
   # Plot 1: Histogram with normal overlay
   x_min <- min(min(std_residuals), -3.2)
@@ -126,8 +126,6 @@ vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
                          "| Anderson-Darling p =", p_AD)
     title_line2 <- paste("Breusch-Pagan p =", p_bp)
     
-    # Set oma NOW (after all plots done) to prevent plot.lm from using it
-    par(oma = c(0, 0, 2, 0))
     mtext(title_line1, side = 3, outer = TRUE, line = 1, cex = 0.7)
     mtext(title_line2, side = 3, outer = TRUE, line = 0, cex = 0.7)
   } else {
@@ -137,8 +135,6 @@ vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
     title_line2 <- paste("Levene-Brown-Forsythe p =", signif(levene_test$p.value, 2),
                          "| Bartlett p =", signif(bartlett_test$p.value, 2))
     
-    # Set oma NOW (after all plots done) to prevent plot.lm from using it
-    par(oma = c(0, 0, 2, 0))
     mtext(title_line1, side = 3, outer = TRUE, line = 1, cex = 0.7)
     mtext(title_line2, side = 3, outer = TRUE, line = 0, cex = 0.7)
   }
