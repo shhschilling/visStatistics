@@ -122,7 +122,7 @@ vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
   if (regression) {
     # Regression title with Breusch-Pagan test - split into two rows
     p_bp <- signif(bp_test$p.value, 2)
-    title_line1 <- paste("GLM assumptions: Shapiro p =", p_shapiro, 
+    title_line1 <- paste("GLM assumptions: Shapiro-Wilk p =", p_shapiro, 
                          "| Anderson-Darling p =", p_AD)
     title_line2 <- paste("Breusch-Pagan p =", p_bp)
     
@@ -132,7 +132,7 @@ vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
     mtext(title_line2, side = 3, outer = TRUE, line = 0, cex = 0.7)
   } else {
     # ANOVA title with Levene and Bartlett - split into two rows
-    title_line1 <- paste("GLM assumptions: Shapiro p =", p_shapiro,
+    title_line1 <- paste("GLM assumptions: Shapiro-Wilk p =", p_shapiro,
                          "| Anderson-Darling p =", if(is.numeric(p_AD)) signif(p_AD, 2) else p_AD)
     title_line2 <- paste("Levene-Brown-Forsythe p =", signif(levene_test$p.value, 2),
                          "| Bartlett p =", signif(bartlett_test$p.value, 2))
