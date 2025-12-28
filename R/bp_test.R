@@ -50,7 +50,7 @@
 #' # Example with heteroscedastic errors (variance increases with x)
 #' set.seed(456)
 #' x <- runif(100)
-#' y <- 2 + 3*x + rnorm(100, sd = 0.5 + 2*x)
+#' y <- 2 + 3 *x + rnorm(100, sd = 0.5 + 2*x)
 #' model2 <- lm(y ~ x)
 #' bp_test(model2)  # Should reject (p < 0.05)
 #'

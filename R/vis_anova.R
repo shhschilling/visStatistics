@@ -26,8 +26,25 @@
 #' 
 #' The function produces a stripchart with means, confidence intervals, 
 #' and compact letter display showing which groups differ significantly.
+#' @examples
+#' # Example with equal variances (uses Fisher's ANOVA + TukeyHSD)
+#' data(PlantGrowth)
+#' result1 <- vis_anova(PlantGrowth$weight, PlantGrowth$group, 
+#'                      samplename = "Weight", factorname = "Group")
+#' 
+#' # Example with unequal variances (uses Welch's ANOVA + Games-Howell)
+#' # Create data with heterogeneous variances
+#' set.seed(123)
+#' group_a <- rnorm(20, mean = 10, sd = 1)
+#' group_b <- rnorm(20, mean = 15, sd = 5)  # Much larger variance
+#' group_c <- rnorm(20, mean = 12, sd = 2)
+#' values <- c(group_a, group_b, group_c)
+#' groups <- factor(rep(c("A", "B", "C"), each = 20))
+#' result2 <- vis_anova(values, groups, 
+#'                      samplename = "Value", factorname = "Group")
+#'
+#' @export
 
-#' @keywords internal
 vis_anova <- function(samples,
                       fact,
                       conf.level = conf.level,
@@ -77,7 +94,7 @@ vis_anova <- function(samples,
   
   
   
-  if (p_bart > 1 - conf.level) #changed logic
+  if (p_levene > 1 - conf.level)
   {
     p_aov <- summaryAnova[[1]][["Pr(>F)"]][1]
     F_value <- round(summaryAnova[[1]]$`F value`[1],2)

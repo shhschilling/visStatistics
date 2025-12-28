@@ -275,13 +275,13 @@ test_that("vis_anova runs without error for valid data", {
   })
 })
 
-test_that("vis_Kruskal_Wallis_clusters runs without error for valid data", {
+test_that("vis_Kruskal_Wallis runs without error for valid data", {
   skip_if_not_installed("multcompView")
   
   data <- create_test_data()
   
   expect_no_error({
-    result <- vis_Kruskal_Wallis_clusters(
+    result <- vis_Kruskal_Wallis(
       samples = data$numeric_data,
       fact = data$factor_data,
       samplename = "Values",

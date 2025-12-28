@@ -52,39 +52,45 @@ openGraphCairo <- function(width = 640,
   # on.exit(par(oldparCairo))
   # 
   
-
- 
-      
+  
+  
+  
   if (is.null(type)) {
     return()
   }
-    
-    if (is.null(fileName)) {
-      fileName <- "visstat_plot"
-    }
-    
   
-  
-    fullfilename <- paste(fileName, ".", type, sep = "")
-    Cairofilename <- file.path(fileDirectory, fullfilename)
-    
-    if (type == "png") {
-      CairoPNG(filename = Cairofilename)
-    } else if (type == "pdf") {
-      CairoPDF(file = Cairofilename)
-    } else if (type == "jpeg") {
-      CairoJPEG(filename = Cairofilename)
-    } else if (type == "tiff") {
-      CairoTIFF(filename = Cairofilename)
-    } else if (type == "svg") {
-      CairoSVG(file = Cairofilename)
-    } else if (type == "ps") {
-      CairoPS(file = Cairofilename, family = "Helvetica")
-    } else {
-      warning("Chosen output type not supported. No graphics saved.")
-      return()
-    }
+  if (is.null(fileName)) {
+    fileName <- "visstat_plot"
   }
+  
+  
+  
+  fullfilename <- paste(fileName, ".", type, sep = "")
+  Cairofilename <- file.path(fileDirectory, fullfilename)
+  
+  if (type == "png") {
+    CairoPNG(filename = Cairofilename, width = width, height = height, 
+             pointsize = pointsize, bg = bg, dpi = dpi)
+  } else if (type == "pdf") {
+    CairoPDF(file = Cairofilename, width = width, height = height, 
+             pointsize = pointsize, bg = bg)
+  } else if (type == "jpeg") {
+    CairoJPEG(filename = Cairofilename, width = width, height = height, 
+              pointsize = pointsize, bg = bg, dpi = dpi)
+  } else if (type == "tiff") {
+    CairoTIFF(filename = Cairofilename, width = width, height = height, 
+              pointsize = pointsize, bg = bg, dpi = dpi)
+  } else if (type == "svg") {
+    CairoSVG(file = Cairofilename, width = width, height = height, 
+             pointsize = pointsize, bg = bg)
+  } else if (type == "ps") {
+    CairoPS(file = Cairofilename, width = width, height = height, 
+            pointsize = pointsize, bg = bg, family = "Helvetica")
+  } else {
+    warning("Chosen output type not supported. No graphics saved.")
+    return()
+  }
+}
 
 
 
@@ -122,7 +128,7 @@ saveGraphVisstat <- function(fileName = NULL,
   
   # logic to capture plots independent of type
   
- 
+  
   
   if (!is.null(capture_env)) {
     capture_env$captured_plots[[length(capture_env$captured_plots) + 1]] <- recordPlot()
@@ -155,7 +161,3 @@ saveGraphVisstat <- function(fileName = NULL,
   
   return(invisible(Cairofile))
 }
-
-
-
-

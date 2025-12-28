@@ -209,7 +209,7 @@ two_sample_t_test <- function(samples,
     alternative = alternative,
     conf.level = conf.level,
     paired = FALSE,
-    var.equal = FALSE,
+    var.equal = var.equal,
     na.action = na.omit
   )
   # Legend
@@ -720,7 +720,7 @@ vis_chi_squared_test <- function(samples,
 ###### Visualize Kruskal_Wallis ###############################
 ## performs Kruskal Wallis and post-hoc Wilcoxon:
 
-vis_Kruskal_Wallis_clusters <- function(samples,
+vis_Kruskal_Wallis <- function(samples,
                                         fact,
                                         conf.level = conf.level,
                                         samplename = "",
