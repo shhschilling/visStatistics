@@ -77,7 +77,7 @@ Sciences and
 Arts<br><a class="author_email" href="mailto:#"></a><a href="mailto:sabine.schilling@protonmail.com" class="email">sabine.schilling@protonmail.com</a>
       </address>
                   
-            <h4 data-toc-skip class="date">2025-12-27</h4>
+            <h4 data-toc-skip class="date">2025-12-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="hidden name"><code>visStatistics.Rmd</code></div>
@@ -296,34 +296,65 @@ residual plots.</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="glm-assumption-testing-in-visstatistics-vis_glm_assumptions">GLM assumption testing in visStatistics:
-<code>vis_glm_assumptions()</code><a class="anchor" aria-label="anchor" href="#glm-assumption-testing-in-visstatistics-vis_glm_assumptions"></a>
+<h3 id="glm-diagnostics-and-assumption-testing-vis_glm_assumptions">GLM Diagnostics and Assumption Testing:
+<code>vis_glm_assumptions</code><a class="anchor" aria-label="anchor" href="#glm-diagnostics-and-assumption-testing-vis_glm_assumptions"></a>
 </h3>
-<p>The function <code>vis_glm_assumptions()</code> provides unified
-diagnostic tools for all GLM variants. Since t-tests, ANOVA, and linear
-regression share identical distributional assumptions, the same
-residual-based diagnostics apply universally.</p>
-<p><strong>Normality Assessment</strong>: The function evaluates
-residual normality using both the Shapiro-Wilk test
-(<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) and Anderson-Darling test
-(<code>ad.test()</code>) <span class="citation">(<a href="#ref-Gross:2015">Gross and Ligges 2015</a>)</span>. These tests
-offer complementary strengths: Shapiro-Wilk generally exhibits greater
-power across non-normal distributions in small samples, while
-Anderson-Darling is highly sensitive to tail deviations in larger
-samples <span class="citation">(<a href="#ref-Razali:2011">Razali and
-Wah 2011</a>; <a href="#ref-Yap:2011">Yap and Sim 2011</a>)</span>.</p>
+<p>The General Linear Model (GLM) provides an elegant unified framework
+for Student’s t-test, Fisher’s ANOVA, and simple linear regression.
+Under the GLM, these methods share identical mathematical foundations
+and rely on three key assumptions: independent observations, normally
+distributed residuals, and homogeneous variances across groups
+(homoscedasticity).</p>
+<p>The function <code>vis_glm_assumptions()</code> provides a unified
+visual and statistical framework for validating General Linear Models
+(GLM).</p>
+<div class="section level4">
+<h4 id="universal-diagnostic-plots">Universal Diagnostic Plots<a class="anchor" aria-label="anchor" href="#universal-diagnostic-plots"></a>
+</h4>
+<p>It fits a classical GLM model using <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> and provides
+four standard diagnostic plots: 1. <strong>Histogram and Normal
+Density</strong>: Displays the distribution of standardized residuals
+with a red normal density curve overlay to visually assess normality. 2.
+<strong>Std. Residuals vs. Fitted</strong>: It shows the standardized
+residuals against fitted values with a zero-line to detect non-linearity
+or heteroscedasticity. 3. <strong>Normal Q-Q Plot</strong>: A
+theoretical quantile-quantile plot using the standardized residuals to
+identify deviations from the Gaussian distribution. 4. If
+<code>regression = TRUE</code>, the <strong>Standardized Residuals
+vs. Leverage</strong> plot, if <code>regression = FALSE</code>, a
+<strong>Scale-Location</strong> plot.</p>
+<p>These diagnostics plots enable the user to assess whether classical
+GLM assumptions are met and manually override the automated test
+selection.</p>
+</div>
+<div class="section level4">
+<h4 id="test-statistics">Test statistics<a class="anchor" aria-label="anchor" href="#test-statistics"></a>
+</h4>
+<p>The automated test selection relies on p-values of tests for
+normality and homoscecadicity, shown in the title of the plot.
+<strong>Normality Assessment</strong>: The function evaluates residual
+normality using both the Shapiro-Wilk test (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>)
+and Anderson-Darling test (<code>ad.test()</code>) <span class="citation">(<a href="#ref-Gross:2015">Gross and Ligges
+2015</a>)</span>. These tests offer complementary strengths:
+Shapiro-Wilk generally exhibits greater power across non-normal
+distributions in small samples, while Anderson-Darling is highly
+sensitive to tail deviations in larger samples <span class="citation">(<a href="#ref-Razali:2011">Razali and Wah 2011</a>; <a href="#ref-Yap:2011">Yap and Sim 2011</a>)</span>.</p>
 <p><strong>Homoscedasticity Assessment</strong>: Variance equality is
 tested using the Levene-Brown-Forsythe test (<code>levene.test()</code>)
 <span class="citation">(<a href="#ref-Brown:1974">Brown and Forsythe
-1974</a>)</span> and Bartlett’s test (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>).
-<!-- The Levene-Brown-Forsythe test uses absolute deviations from group medians, making it robust to non-normality, while Bartlett's test has greater power when normality holds [@Allingham:2012]. --></p>
+1974</a>)</span> and Bartlett’s test (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>) in
+the ANOVA path. These tests compare the spread of data across different
+factor levels. In the regression path (<code>regression = TRUE</code>)
+the Breusch-Pagan test (<code>bp_test()</code>) is implemented. These
+three tests have standalone implementations in the package to avoid
+dependencies on external packages.</p>
 <p><strong><em>The Levene–Brown–Forsythe test
 <code>levene.test()</code></em></strong> The Levene–Brown–Forsythe test
 improves upon Levene’s original test <span class="citation">(<a href="#ref-Levene:1960">Levene 1960</a>)</span> by using the median
 instead of the mean to centre the data. This makes it more robust to
 skewed data or data with outliers providing more reliable results in
-many practical situations <span class="citation">(<a href="#ref-Allingham:2012">Allingham and Rayner 2012</a>)</span>. Note
-that <code>levene.test()</code> mimics the default behaviour of
+many practical situations <span class="citation">(<a href="#ref-Allingham:2012">Allingham and Rayner 2012</a>)</span>.
+<code>levene.test()</code> mimics the default behaviour of
 <code>leveneTest()</code> in the <code>car</code> package <span class="citation">(<a href="#ref-Fox:2019">Fox and Weisberg
 2019</a>)</span>.</p>
 <p>The Levene–Brown–Forsythe test evaluates the null hypothesis that all
@@ -334,7 +365,7 @@ from group medians are equal across groups.</p>
 in group
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>,
 it computes the absolute deviation from the group median:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">|</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><mover><msub><mi>y</mi><mi>i</mi></msub><mo accent="true">̃</mo></mover><mo stretchy="true" form="postfix">|</mo></mrow></mrow><annotation encoding="application/x-tex">z_{ij} = |y_{ij} - \tilde{y_i}|</annotation></semantics></math>,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">|</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><mover><msub><mi>y</mi><mi>i</mi></msub><mo accent="true">̃</mo></mover><mo stretchy="true" form="postfix">|</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">z_{ij} = |y_{ij} - \tilde{y_i}|,</annotation></semantics></math></p>
 <p>where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><msub><mi>y</mi><mi>i</mi></msub><mo accent="true">̃</mo></mover><annotation encoding="application/x-tex">\tilde{y_i}</annotation></semantics></math>
 is the median of group
@@ -391,121 +422,104 @@ a
 with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k - 1</annotation></semantics></math>
 degrees of freedom <span class="citation">(<a href="#ref-Bartlett:1937">Bartlett 1937</a>)</span>.</p>
-<p>Assessing assumptions solely through p-values can lead to both type I
-errors (false positives) and type II errors (false negatives). In large
-samples, even minor, random deviations from the null hypothesis—such as
-the assumption of normality—can result in statistically significant
-p-values, leading to type I errors. Conversely, in small samples,
-substantial violations of the assumption may not reach statistical
-significance, resulting in type II errors <span class="citation">(<a href="#ref-Kozak:2018">Kozak and Piepho 2018</a>)</span>.</p>
-<p>Thus, the robustness of statistical tests depends on both the sample
-size and the shape of the underlying distribution. This is evident in
-the limitations of the normality tests used: for instance, the
-Shapiro–Wilk test is unreliable for large samples
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>&gt;</mo><mn>5000</mn></mrow><annotation encoding="application/x-tex">N &gt; 5000</annotation></semantics></math>),
-while the Anderson–Darling test requires at least 7 observations.</p>
-<p>Moreover, assumption tests provide no information on the nature of
-deviations from the expected distribution <span class="citation">(<a href="#ref-Shatz:2024">Shatz 2024</a>)</span>. Therefore, the assessment
-of normality should not rely solely on p-values but should be
-complemented by visual inspection.</p>
-<p><strong>Diagnostic plots</strong></p>
-<p><code><a href="../reference/visstat.html">visstat()</a></code> produces diagnostic plots including: (1) a
-histogram of the standardised residuals overlaid with the standard
-normal distribution, (2) a scatter plot of the standardised residuals
-versus the fitted values for each predictor level, and (3) a Q–Q plot of
-the residuals.</p>
-<p>Since algorithmic logic cannot replace the combination of formal
-tests and expert visual judgement, the function defaults to assuming
-normality if the Shapiro–Wilk test yields a p-value greater than alpha.
-Simulation studies suggest that Shapiro–Wilk has the highest power among
-normality tests in small to moderate samples <span class="citation">(<a href="#ref-Razali:2011">Razali and Wah 2011</a>)</span>.</p>
+<p>*** Breusch-Pagan test <code>bp_test()</code> *<strong> For linear
+regression (<code>regression = TRUE</code>), group-based tests cannot be
+used. Instead, <code>bp_test()</code> implements the
+</strong>Breusch-Pagan test<strong>, which relies on an
+</strong>auxiliary regression model<strong>. or linear regression
+(<code>regression = TRUE</code>), group-based tests are replaced by the
+</strong>Breusch-Pagan test<strong> (<code>bp_test</code>). This test
+uses an </strong>auxiliary regression model** to see if the model’s
+errors follow a predictable pattern.</p>
+<p>The auxiliary model is defined as:
+<code>aux_model &lt;- lm(sq_std_residuals ~ fitted_values)</code></p>
+<ol style="list-style-type: decimal">
+<li><p><strong>The Response</strong>: It takes the <strong>squared
+standardized residuals</strong>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>e</mi><mi>i</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">e_i^2</annotation></semantics></math>)
+from your main model. Squaring the residuals makes all “errors” positive
+so we can measure their magnitude.</p></li>
+<li><p><strong>The Predictor</strong>: It regresses these squared errors
+against the <strong>fitted values</strong>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>y</mi><mo accent="true">̂</mo></mover><mi>i</mi></msub><annotation encoding="application/x-tex">\hat{y}_i</annotation></semantics></math>)
+of your primary model.</p></li>
+<li>
+<p><strong>The BP Statistic</strong>: The test calculates how much
+of the variance in the errors is explained by the predictions. The
+statistic is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mi>P</mi><mo>=</mo><mi>n</mi><mo>⋅</mo><msubsup><mi>R</mi><mrow><mi>a</mi><mi>u</mi><mi>x</mi></mrow><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">BP = n \cdot R^2_{aux}</annotation></semantics></math></p>
+<ul>
+<li>
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></strong>:
+The total number of observations (sample size).</li>
+<li>
+<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>R</mi><mrow><mi>a</mi><mi>u</mi><mi>x</mi></mrow><mn>2</mn></msubsup><annotation encoding="application/x-tex">R^2_{aux}</annotation></semantics></math></strong>:
+The coefficient of determination from the auxiliary regression.</li>
+</ul>
+</li>
+</ol>
+<p>A high
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>R</mi><mrow><mi>a</mi><mi>u</mi><mi>x</mi></mrow><mn>2</mn></msubsup><annotation encoding="application/x-tex">R^2_{aux}</annotation></semantics></math>
+results in a large BP statistic and a significant p-value, indicating
+that the error size is not random (heteroscedasticity).</p>
 <!-- ### Equal variances across groups (`levene.test() and bartlett.test()`) -->
 <!-- Both `aov()` and `oneway.test()` assess whether two or more samples drawn from normal distributions have the same mean. -->
 <!-- While `aov()` assumes homogeneity of variances across groups, `oneway.test()` does not require equal variances. -->
 <!-- The decision logic of `visStatistics` assumes homogeneity of variances if the Levene–Brown–Forsythe test (implemented as `levene.test()`) [@Brown:1974] yields a p-value greater than $\alpha$. -->
-</div>
-<div class="section level3">
-<h3 id="deviation-from-classical-glm-in-automated-test-selection">Deviation from classical GLM in automated test selection<a class="anchor" aria-label="anchor" href="#deviation-from-classical-glm-in-automated-test-selection"></a>
-</h3>
-<p>In the automated test selection, <code>visStatistics</code> defaults
-to Welch’s t-test and Welch’s ANOVA (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) for
-mean comparisons, which, in contrast to Student’s t-test and Fisher
-One-way ANOVA (both representations of the GLM) do not require
-homoscedasticity of the error terms. The Welch tests use separate
-variance estimates for each group rather than pooling variance.</p>
-<p>Welch methods avoid the inflated Type I error rates caused by
-preliminary variance testing <span class="citation">(<a href="#ref-Zimmerman:2004">Zimmerman 2004</a>)</span> while maintaining
-comparable power when variances are equal <span class="citation">(<a href="#ref-Delacre:2017">Delacre, Lakens, and Leys 2017</a>)</span>.</p>
-</div>
-<div class="section level3">
-<h3 id="testing-normality-in-welch-methods">Testing normality in Welch methods<a class="anchor" aria-label="anchor" href="#testing-normality-in-welch-methods"></a>
-</h3>
-<p>To assess the assumption of normality for the Welch’s t-test and
-ANOVA, standardized residuals are calculated for each group to account
-for heteroscedasticity These residuals are then pooled and subjected to
-a Shapiro-Wilk test. This approach ensures that differences in group
-variances do not confound the assessment of the underlying
-distributional shape.</p>
-</div>
-<div class="section level3">
-<h3 id="two-approaches-to-assumption-testing-classical-glm-vs--pooled-normality">Two Approaches to Assumption Testing: Classical GLM vs. Pooled
-Normality<a class="anchor" aria-label="anchor" href="#two-approaches-to-assumption-testing-classical-glm-vs--pooled-normality"></a>
-</h3>
-<p><code>visStatistics</code> provides two complementary approaches to
-assess statistical assumptions, each serving different purposes in the
-workflow.</p>
-<div class="section level4">
-<h4 id="classical-glm-diagnostics-vis_glm_assumptions">Classical GLM Diagnostics: <code>vis_glm_assumptions()</code><a class="anchor" aria-label="anchor" href="#classical-glm-diagnostics-vis_glm_assumptions"></a>
-</h4>
-<p>The General Linear Model (GLM) provides an elegant unified framework
-for Student’s t-test, Fisher’s ANOVA, and simple linear regression.
-Under the GLM, these methods share identical mathematical foundations
-and rely on three key assumptions: independent observations, normally
-distributed residuals, and homogeneous variances across groups
-(homoscedasticity).</p>
-<p>The function <code>vis_glm_assumptions()</code> fits a classical GLM
-model using <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> and provides comprehensive diagnostics: -
-Histogram of standardized residuals with normal overlay - Residuals
-vs. fitted values plot - Normal Q-Q plot - Shapiro-Wilk and
-Anderson-Darling normality tests (p-values) - Levene-Brown-Forsythe and
-Bartlett homoscedasticity tests (p-values)</p>
+<!-- ## Deviation from classical GLM in automated test selection -->
+<!-- In the automated test selection, `visStatistics` defaults to Welch's t-test and Welch's ANOVA (`oneway.test()`) for mean comparisons, which, in contrast to Student's t-test and Fisher One-way ANOVA  (both representations of the GLM)  do not require homoscedasticity of the error terms. -->
+<!-- The Welch tests use separate variance estimates for each group rather than pooling variance. -->
+<!-- Welch methods avoid the inflated Type I error rates caused by preliminary variance testing [@Zimmerman:2004] while maintaining comparable power when variances are equal [@Delacre:2017]. -->
+<!-- ## Testing normality in Welch methods -->
+<!-- To assess the assumption of normality for the Welch’s t-test and ANOVA, standardized residuals are calculated for each group to account for heteroscedasticity  -->
+<!-- These residuals are then pooled and subjected to a Shapiro-Wilk test. -->
+<!-- This approach ensures that differences in group variances do not confound the assessment of the underlying distributional shape. -->
+<!-- ## Two Approaches to Assumption Testing: Classical GLM vs. Pooled Normality -->
+<!-- `visStatistics` provides two complementary approaches to assess statistical  -->
+<!-- assumptions, each serving different purposes in the workflow. -->
+<!-- ### Classical GLM Diagnostics: `vis_glm_assumptions()` -->
+<!-- The General Linear Model (GLM) provides an elegant unified framework for  -->
+<!-- Student's t-test, Fisher's ANOVA, and simple linear regression. Under the  -->
+<!-- GLM, these methods share identical mathematical foundations and rely on  -->
+<!-- three key assumptions: independent observations, normally distributed  -->
+<!-- residuals, and homogeneous variances across groups (homoscedasticity). -->
+<!-- The function `vis_glm_assumptions()` fits a classical GLM model using  -->
+<!-- `aov()` and provides comprehensive diagnostics: -->
+<!-- - Histogram of standardized residuals with normal overlay -->
+<!-- - Residuals vs. fitted values plot -->
+<!-- - Normal Q-Q plot -->
+<!-- - Shapiro-Wilk and Anderson-Darling normality tests (p-values) -->
+<!-- - Levene-Brown-Forsythe and Bartlett homoscedasticity tests (p-values) -->
 <p><strong>These diagnostics enable users to assess whether classical
 GLM assumptions are met and manually override the automated test
 selection</strong> to use Student’s t-test or Fisher’s ANOVA when
 assumptions are demonstrably satisfied.</p>
-</div>
-<div class="section level4">
-<h4 id="pooled-normality-testing-for-automated-selection">Pooled Normality Testing for Automated Selection<a class="anchor" aria-label="anchor" href="#pooled-normality-testing-for-automated-selection"></a>
-</h4>
-<p>However, automated test selection based on preliminary assumption
-testing creates methodological problems. Testing homoscedasticity before
-selecting a parametric test inflates Type I error rates <span class="citation">(<a href="#ref-Zimmerman:2004">Zimmerman
-2004</a>)</span>, while testing normality separately in each group
-compounds this issue through multiple testing. Additionally, normality
-tests perform poorly at both small sample sizes (insufficient power) and
-large sample sizes (rejecting trivial departures) <span class="citation">(<a href="#ref-Ghasemi:2012">Ghasemi and Zahediasl
-2012</a>)</span>.</p>
-<p>For automated test selection, <code>visStatistics</code> uses a
-different approach that avoids multiple testing: <strong>pooled
-standardized normality testing</strong>. Observations within each group
-are standardized using that group’s own mean and standard deviation:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>z</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><msub><mover><mi>y</mi><mo accent="true">‾</mo></mover><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><msub><mi>s</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">z_{ij} = (y_{ij} - \bar{y}_i) / s_i</annotation></semantics></math>.
-These standardized values are then pooled across all groups, and a
-single normality test is applied to the pooled values. This tests the
-global null hypothesis that all groups are normally distributed while
-avoiding the multiple testing problem inherent in separate per-group
-tests.</p>
-<p>The function <code>vis_plot_pooled_normality()</code> visualizes this
-assessment: - Q-Q plot of pooled standardized residuals - Histogram of
-pooled standardized residuals with normal overlay - Boxplot of original
-data by group - Test results panel showing the single normality test
-decision</p>
-<p>Based on this single pooled normality test, the algorithm selects: -
-<strong>Parametric tests</strong> (Welch’s t-test / Welch’s ANOVA) if
-normality holds - <strong>Non-parametric tests</strong> (Wilcoxon /
-Kruskal-Wallis) if normality fails</p>
-<p>This approach protects against invalid inference through multiple
-testing while enabling statistically sound automation.</p>
+<!-- ### Pooled Normality Testing for Automated Selection -->
+<!-- However, automated test selection based on preliminary assumption testing  -->
+<!-- creates methodological problems. Testing homoscedasticity before selecting  -->
+<!-- a parametric test inflates Type I error rates [@Zimmerman:2004], while  -->
+<!-- testing normality separately in each group compounds this issue through  -->
+<!-- multiple testing. Additionally, normality tests perform poorly at both  -->
+<!-- small sample sizes (insufficient power) and large sample sizes (rejecting  -->
+<!-- trivial departures) [@Ghasemi:2012]. -->
+<!-- For automated test selection, `visStatistics` uses a different approach  -->
+<!-- that avoids multiple testing: **pooled standardized normality testing**.  -->
+<!-- Observations within each group are standardized using that group's own  -->
+<!-- mean and standard deviation: $z_{ij} = (y_{ij} - \bar{y}_i) / s_i$.  -->
+<!-- These standardized values are then pooled across all groups, and a single  -->
+<!-- normality test is applied to the pooled values. This tests the global  -->
+<!-- null hypothesis that all groups are normally distributed while avoiding  -->
+<!-- the multiple testing problem inherent in separate per-group tests. -->
+<!-- The function `vis_plot_pooled_normality()` visualizes this assessment: -->
+<!-- - Q-Q plot of pooled standardized residuals -->
+<!-- - Histogram of pooled standardized residuals with normal overlay -->
+<!-- - Boxplot of original data by group -->
+<!-- - Test results panel showing the single normality test decision -->
+<!-- Based on this single pooled normality test, the algorithm selects: -->
+<!-- - **Parametric tests** (Welch's t-test / Welch's ANOVA) if normality holds -->
+<!-- - **Non-parametric tests** (Wilcoxon / Kruskal-Wallis) if normality fails -->
+<!-- This approach protects against invalid inference through multiple testing  -->
+<!-- while enabling statistically sound automation. -->
 </div>
 </div>
 </div>
@@ -837,10 +851,10 @@ of normality in both groups, the second the actual data with the chosen
 test.</p>
 <p>Welch’s t-test does not fit a regression model, so there are no
 “residuals” in the regression sense. Therefore the function
-<code>vis_ttest_assumptions()</code>generates histograms overlaid with
-the normal distribution for both groups acompanied by the p-values of
+<code>vis_welch_normality()</code>generates histograms overlaid with the
+normal distribution for both groups acompanied by the p-values of
 <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and <code>ad.tset()</code>.</p>
-<p>The graphical output of the second pane consists of box plots
+<p>The graphical output of the second panel consists of box plots
 overlaid with jittered points to display individual observations. When
 Welch’s t-test is applied, the function includes confidence intervals
 based on the user-specified <code>conf.level</code>.</p>
@@ -865,7 +879,7 @@ gallon, and <code>am</code> represents the transmission type
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
 <span><span class="va">t_test_statistics</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span>, <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-1-1.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-1-2.png" class="r-plt" alt="" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-1-1.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-1-2.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-1-3.png" class="r-plt" alt="" width="100%"></p>
 <p>Increasing the confidence level <code>conf.level</code> from the
 default 0.95 to 0.99 results in wider confidence intervals, as a higher
 confidence level requires more conservative bounds to ensure that the
@@ -1424,6 +1438,10 @@ black cherry trees.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_trees</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span><span class="op">$</span><span class="va">Girth</span>, <span class="va">trees</span><span class="op">$</span><span class="va">Volume</span>,conf.level<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-6-2.png" class="r-plt" alt="" width="100%"></p>
+<pre><code><span><span class="co">## Warning: Statistical assumptions violated:</span></span>
+<span><span class="co">## Homoscedasticity violated (Breusch-Pagan p = 0.0178 )</span></span>
+<span><span class="co">## Analysis proceeded but interpret results cautiously.</span></span></code></pre>
+<pre><code><span><span class="co">## RECOMMENDATION: Consider using do_regression = FALSE for robust correlation analysis</span></span></code></pre>
 <p>p-values greater than <code>conf.level</code> in both the
 Anderson-Darling normality test and the Shapiro–Wilk test of the
 standardised residuals indicate that the normality assumption of the
@@ -1432,11 +1450,11 @@ residuals underlying the linear regression is met.</p>
 default 0.9 to 0.99 results in wider confidence intervals of the
 regression parameters as well as wider confidence and prediction
 bands</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_trees_99</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span><span class="op">$</span><span class="va">Girth</span>, <span class="va">trees</span><span class="op">$</span><span class="va">Volume</span>,conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>visStatistics</code> plot allows to display only the second
 generated plot (the assumption plot is unchanged):</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">linreg_trees_99</span>,which<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
@@ -1481,7 +1499,7 @@ values.</p>
 measure and socioeconomic indicators for each of 47 French-speaking
 provinces of Switzerland at about 1888. Both fertility and education
 level are given in percentage points.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result_swiss1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">swiss</span><span class="op">$</span><span class="va">Fertility</span>,</span>
 <span>                             <span class="va">swiss</span><span class="op">$</span><span class="va">Education</span>,do_regression<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-9-2.png" class="r-plt" alt="" width="100%"></p>
@@ -1668,7 +1686,7 @@ table.</p>
 <code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code>. The function transforms the contingency
 table <code>HairEyeColor</code> into <code>data.frame</code> named
 <code>HairEyeColourDataFrame</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">HairEyeColourDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -1682,7 +1700,7 @@ other.</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test
 (<code>chisq.test()</code>)<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test-chisq-test-1"></a>
 </h5>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_colour_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_colour_df</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">hair_eye_colour_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-11-2.png" class="r-plt" alt="" width="100%"></p>
@@ -1706,7 +1724,7 @@ with Yate’s continuity correction<a class="anchor" aria-label="anchor" href="#
 <p>In the following example, we restrict the data to participants with
 either black or brown hair and either brown or blue eyes, resulting in a
 2-by-2 contingency table.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_black_brown_eyes_brown_blue</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></span>
 <span><span class="co"># Transform to data frame</span></span>
 <span><span class="va">hair_black_brown_eyes_brown_blue_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue</span><span class="op">)</span><span class="op">)</span></span>
@@ -1738,7 +1756,7 @@ greater <span class="citation">(<a href="#ref-Cochran:1954">Cochran
 1954</a>)</span>.</p>
 <p>Therefore, <code><a href="../reference/visstat.html">visstat()</a></code> automatically selects Fisher’s
 exact test instead.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_colour_male</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co"># Slice out a 2 by 2 contingency table</span></span>
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="va">hair_eye_colour_male</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
@@ -1768,7 +1786,7 @@ complete output file name.</p>
 <p>In the following example, we store the graphics in <code>png</code>
 format in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> with the
 default naming convention:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Graphical output written to plotDirectory: In this example </span></span>
 <span><span class="co"># a bar chart to visualise the Chi-squared test and mosaic plot showing</span></span>
 <span><span class="co"># Pearson's residuals.</span></span>
@@ -1778,13 +1796,13 @@ default naming convention:</p>
 <p>The full file path of the generated graphics are stored as the
 attribute <code>"plot_paths"</code> on the returned object of class
 <code>"visstat"</code>.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "/tmp/Rtmpbdgm9V/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span><span class="co">## [2] "/tmp/Rtmpbdgm9V/mosaic_complete_Hair_Eye.png"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "/tmp/RtmprepLCT/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span><span class="co">## [2] "/tmp/RtmprepLCT/mosaic_complete_Hair_Eye.png"</span></span></code></pre>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] TRUE TRUE</span></span></code></pre>
 <p>When assumptions plots (residual and Q-Q plot) are generated, the
@@ -1820,37 +1838,34 @@ methods.</p>
 statistical power across all distributions <span class="citation">(<a href="#ref-Olejnik:1987">Olejnik and Algina 1987</a>)</span>, and
 p-values obtained from these tests may be unreliable if their
 assumptions are violated.</p>
-</div>
-<div class="section level3">
-<h3 id="limitations-of-defaulting-to-welch-tests">Limitations of defaulting to Welch tests<a class="anchor" aria-label="anchor" href="#limitations-of-defaulting-to-welch-tests"></a>
-</h3>
-<p>This package uses Welch’s t-test and Welch’s ANOVA (oneway.test) by
-default to avoid preliminary testing for homoscedasticity, which
-inflates Type I error rates <span class="citation">(<a href="#ref-Zimmerman:2004">Zimmerman 2004</a>)</span>. When variances
-are equal, Welch versions have minimal power loss compared to classical
-tests (Delacre et al., 2017; Delacre et al., 2019). For N &gt; 2 groups
-with n &lt; 30, normality must be assessed before selecting parametric
-versus non-parametric tests.</p>
-<p>However, Welch’s ANOVA does not produce residuals suitable for
-normality testing. Testing normality separately for each group inflates
-Type I error through multiple testing. This package instead extracts
-residuals from classical ANOVA (aov), tests their normality, then uses
-that result to select Welch’s ANOVA—a pragmatic but conceptually
-inconsistent approach. For
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>≥</mo><mn>30</mn></mrow><annotation encoding="application/x-tex">n \ge 30</annotation></semantics></math>,
-normality testing is omitted, assuming parametric tests are robust to
-moderate non-normality (Knief &amp; Forstmeier, 2021; Lumley et al.,
-2002).</p>
-<p>Heteroscedasticity violates a key assumption of the classical linear
-model: OLS estimators remain unbiased but the standard errors, test
-statistics and therefore all associated inference become invalid when
-error variances differ (Gelman and Hill 2007; Fox 2016). Importantly,
-this affects only inference, not the definition of residuals, which
-remain simply the observed deviations from the fitted group means and
-thus provide a useful empirical summary of within-group departures from
-normality. For this reason, residual-based normality checks can be
-employed even when subsequent inference uses heteroscedasticity-robust
-methods such as Welch-type tests.</p>
+<p>Assessing assumptions solely through p-values can lead to both type I
+errors (false positives) and type II errors (false negatives). In large
+samples, even minor, random deviations from the null hypothesis—such as
+the assumption of normality—can result in statistically significant
+p-values, leading to type I errors. Conversely, in small samples,
+substantial violations of the assumption may not reach statistical
+significance, resulting in type II errors <span class="citation">(<a href="#ref-Kozak:2018">Kozak and Piepho 2018</a>)</span>.</p>
+<p>Thus, the robustness of statistical tests depends on both the sample
+size and the shape of the underlying distribution. This is evident in
+the limitations of the normality tests used: for instance, the
+Shapiro–Wilk test is unreliable for large samples
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>&gt;</mo><mn>5000</mn></mrow><annotation encoding="application/x-tex">N &gt; 5000</annotation></semantics></math>),
+while the Anderson–Darling test requires at least 7 observations.</p>
+<p>Moreover, assumption tests provide no information on the nature of
+deviations from the expected distribution <span class="citation">(<a href="#ref-Shatz:2024">Shatz 2024</a>)</span>. Therefore, the assessment
+of normality should not rely solely on p-values but should be
+complemented by visual inspection.</p>
+<!-- ## Limitations of defaulting to Welch tests -->
+<!-- This package uses Welch's t-test and Welch's ANOVA (oneway.test) by default to avoid preliminary testing for homoscedasticity, which inflates Type I error rates [@Zimmerman:2004]. -->
+<!-- When variances are equal, Welch versions have minimal power loss compared to classical tests (Delacre et al., 2017; Delacre et al., 2019). -->
+<!-- For N \> 2 groups with n \< 30, normality must be assessed before selecting parametric versus non-parametric tests. -->
+<!-- However, Welch's ANOVA does not produce residuals suitable for normality testing. -->
+<!-- Testing normality separately for each group inflates Type I error through multiple testing. -->
+<!-- This package instead extracts residuals from classical ANOVA (aov), tests their normality, then uses that result to select Welch's ANOVA—a pragmatic but conceptually inconsistent approach. -->
+<!-- For $n \ge 30$, normality testing is omitted, assuming parametric tests are robust to moderate non-normality (Knief & Forstmeier, 2021; Lumley et al., 2002). -->
+<!-- Heteroscedasticity violates a key assumption of the classical linear model: OLS estimators remain unbiased but the standard errors, test statistics and therefore all associated inference become invalid when error variances differ (Gelman and Hill 2007; Fox 2016). -->
+<!-- Importantly, this affects only inference, not the definition of residuals, which remain simply the observed deviations from the fitted group means and thus provide a useful empirical summary of within-group departures from normality. -->
+<!-- For this reason, residual-based normality checks can be employed even when subsequent inference uses heteroscedasticity-robust methods such as Welch-type tests. -->
 <div class="section level4">
 <h4 id="limitations-of-normality-testing">Limitations of normality testing<a class="anchor" aria-label="anchor" href="#limitations-of-normality-testing"></a>
 </h4>
@@ -1861,13 +1876,17 @@ samples they flag negligible departures from normality as significant
 Zahediasl 2012</a>; <a href="#ref-Fagerland:2012">Fagerland 2012</a>; <a href="#ref-Franc:2025">Franc 2025</a>)</span>. Since visual Q–Q
 inspection cannot be implemented algorithmically, <code><a href="../reference/visstat.html">visstat()</a></code>
 cannot automate a more robust alternative. This package uses
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>≥</mo><mn>30</mn></mrow><annotation encoding="application/x-tex">n \ge 30</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>≥</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">n \ge 100</annotation></semantics></math>
 per group as a rule of thumb threshold to omit normality testing,
 assuming parametric tests become robust to non-normality at larger
 sample sizes based on the central limit theorem. In fact, the actual
 sample size needed for parametric test validity depends on the unknown
 shape of the underlying distribution <span class="citation">(<a href="#ref-Knief:2021">Knief and Forstmeier 2021</a>)</span>, with
 heavily skewed data potentially requiring much larger samples.</p>
+<p>For smaller samples, the function defaults to assuming normality if
+the Shapiro–Wilk test yields a p-value greater than alpha. Simulation
+studies suggest that Shapiro–Wilk has the highest power among normality
+tests in small to moderate samples <span class="citation">(<a href="#ref-Razali:2011">Razali and Wah 2011</a>)</span>.</p>
 </div>
 <div class="section level4">
 <h4 id="combining-tests-inflates-the-overall-type-i-error-rate">Combining tests inflates the overall Type I error rate<a class="anchor" aria-label="anchor" href="#combining-tests-inflates-the-overall-type-i-error-rate"></a>
