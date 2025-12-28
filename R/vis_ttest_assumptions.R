@@ -1,243 +1,188 @@
-### Header vis_welch_normality -----
+### Header vis_ttest_assumptions -----
 
-#' Visualisation of the normality assumption for Welch ANOVA/t-test
+#' Visualisation of the normality assumption for t-test analysis
 #'
-#' \code{vis_welch_normality} checks for normality of each group separately using 
-#' the Shapiro-Wilk and Anderson-Darling tests. The null hypothesis is that 
+#' \code{vis_ttest_assumptions} checks for normality of each group using 
+#' the Shapiro-Wilk test \code{shapiro.test()}. The null hypothesis is that 
 #' each group is normally distributed. The function generates histograms 
-#' with normal distribution overlays and Q-Q plots to visually assess normality.
-#' The layout automatically adapts based on the number of groups (k).
+#' with normal distribution overlays and a Q-Q plot to visually assess normality.
 #'
-#' @param y Numeric vector; the response variable.
-#' @param g Factor or vector; the grouping variable (2 to 20 groups).
-#' @param conf.level Numeric; confidence level, 0.95=default (currently unused, for future extensions).
-#' @param cex Numeric; scaling factor for plot text and symbols (default: 1).
+#' @param samples vector containing dependent variable, datatype numeric
+#' @param groups vector containing grouping variable, datatype factor (2 levels only)
+#' @param conf.level confidence level, 0.95=default
+#' @param samplename name of sample used in graphical output, datatype character
+#'   , ''=default
+#' @param groupname name of grouping variable used in graphical output, datatype character,
+#'   ''=default
+#' @param cex number indicating the amount by which plotting text and symbols
+#'   should be scaled relative to the default. 1=default, 1.5 is 50\% larger,
+#'   0.5 is 50\% smaller, etc.
 #'
-#' @return A list containing:
-#' \describe{
-#'   \item{shapiro_tests}{List of Shapiro-Wilk test results for each group}
-#'   \item{ad_tests}{List of Anderson-Darling test results for each group}
-#'   \item{n_groups}{Number of groups}
-#'   \item{group_names}{Names of the groups}
-#' }
-#'
-#' @details
-#' Panel layouts adapt to number of groups:
-#' \itemize{
-#'   \item k=2: 2×2 layout (histogram + Q-Q for each group)
-#'   \item k=3-4: 2×k layout (histogram + Q-Q for each group)
-#'   \item k=5-6: 3×4 layout (histogram + Q-Q side-by-side for each group)
-#'   \item k=7-12: 4×6 layout (histogram + Q-Q stacked for each group)
-#'   \item k=13-20: 5×8 layout (histogram + Q-Q stacked for each group)
-#' }
+#' @return \code{list} containing the Shapiro-Wilk test results for each group.
 #'
 #' @examples
-#' # Two groups (like t-test)
-#' vis_welch_normality(ToothGrowth$len, ToothGrowth$supp)
+#' # Using built-in datasets
+#' vis_ttest_assumptions(ToothGrowth$len, ToothGrowth$supp)
 #' 
-#' # Three groups
-#' ToothGrowth$dose <- as.factor(ToothGrowth$dose)
-#' vis_welch_normality(ToothGrowth$len, ToothGrowth$dose)
+#' # Create sample data
+#' group1 <- rnorm(30, mean = 10, sd = 2)
+#' group2 <- rnorm(25, mean = 12, sd = 2.5)
+#' groups <- factor(c(rep("A", 30), rep("B", 25)))
+#' samples <- c(group1, group2)
+#' vis_ttest_assumptions(samples, groups)
 #'
-#' @export
-
-vis_welch_normality <- function(y, g, conf.level = 0.95, cex = 1) {
+#' @export vis_ttest_assumptions
+#' 
+vis_ttest_assumptions <- function(samples,
+                                  groups,
+                                  conf.level = 0.95,
+                                  samplename = "",
+                                  groupname = "",
+                                  cex = 1) {
   
   # Store original par settings
   oldpar <- par(no.readonly = TRUE)
   on.exit(par(oldpar))
   
   # Clean data - remove NAs
-  complete_cases <- complete.cases(y, g)
-  y <- y[complete_cases]
-  g <- factor(g[complete_cases])
+  complete_cases <- complete.cases(samples, groups)
+  samples_clean <- samples[complete_cases]
+  groups_clean <- groups[complete_cases]
   
-  # Get group information
-  group_levels <- levels(g)
-  k <- length(group_levels)
-  
-  # Validate number of groups
-  if (k < 2) {
-    stop("At least 2 groups required")
-  }
-  if (k > 20) {
-    stop("Maximum 20 groups supported. Consider using vis_normality_assumption() for pooled testing.")
+  # Check if exactly 2 groups
+  group_levels <- levels(factor(groups_clean))
+  if (length(group_levels) != 2) {
+    stop("Exactly 2 groups required for t-test assumptions")
   }
   
   # Split data by groups
-  group_data <- lapply(group_levels, function(lev) y[g == lev])
-  names(group_data) <- group_levels
+  group1_data <- samples_clean[groups_clean == group_levels[1]]
+  group2_data <- samples_clean[groups_clean == group_levels[2]]
   
-  # Run normality tests for each group
-  shapiro_tests <- list()
-  ad_tests <- list()
   
-  for (i in seq_along(group_levels)) {
-    gname <- group_levels[i]
-    gdata <- group_data[[i]]
-    n <- length(gdata)
-    
-    # Shapiro-Wilk test
-    if (n >= 3 && n <= 5000) {
-      shapiro_tests[[gname]] <- shapiro.test(gdata)
-    } else if (n < 3) {
-      shapiro_tests[[gname]] <- list(
-        statistic = NA, 
-        p.value = NA,
-        method = paste0("Shapiro-Wilk test requires n >= 3 (n = ", n, ")")
-      )
-    } else {
-      shapiro_tests[[gname]] <- list(
-        statistic = NA,
-        p.value = NA,
-        method = paste0("Shapiro-Wilk test allows max n = 5000 (n = ", n, ")")
-      )
-    }
-    
-    # Anderson-Darling test
-    if (n >= 7) {
-      ad_tests[[gname]] <- nortest::ad.test(gdata)
-    } else {
-      ad_tests[[gname]] <- list(
-        statistic = NA,
-        p.value = NA,
-        method = paste0("Anderson-Darling test requires n >= 7 (n = ", n, ")")
-      )
-    }
-  }
+  # mean and sd for both groups
+  mean1 <- mean(group1_data)
+  sd1 <- sd(group1_data)
+  mean2 <- mean(group2_data)
+  sd2 <- sd(group2_data)
   
-  # Determine layout based on number of groups
-  # Design principle: All histograms in top row(s), all Q-Q plots in bottom row(s)
-  if (k == 2) {
-    # 2×2 layout: histograms on top, Q-Q plots on bottom
-    layout_rows <- 2
-    layout_cols <- 2
-    par(mfrow = c(layout_rows, layout_cols), 
-        mar = c(4, 4, 2, 1), 
-        oma = c(0, 0, 2.5, 0),
-        cex = 0.7 * cex)
-  } else if (k <= 4) {
-    # 2×k layout: top row = histograms, bottom row = Q-Q plots
-    layout_rows <- 2
-    layout_cols <- k
-    par(mfrow = c(layout_rows, layout_cols),
-        mar = c(4, 4, 2, 1),
-        oma = c(0, 0, 2.5, 0),
-        cex = 0.6 * cex)
-  } else if (k <= 8) {
-    # 2×8 layout: 5-8 groups fit in one row each
-    layout_rows <- 2
-    layout_cols <- 8
-    par(mfrow = c(layout_rows, layout_cols),
-        mar = c(3.5, 3.5, 2, 0.5),
-        oma = c(0, 0, 2.5, 0),
-        cex = 0.5 * cex)
-  } else if (k <= 16) {
-    # 4×8 layout: histograms in rows 1-2, Q-Q plots in rows 3-4
-    layout_rows <- 4
-    layout_cols <- 8
-    par(mfrow = c(layout_rows, layout_cols),
-        mar = c(3, 3, 1.5, 0.5),
-        oma = c(0, 0, 2.5, 0),
-        cex = 0.45 * cex)
+  # Normality tests for group 1
+  if (length(group1_data) >= 3) {
+    shapiro_group1 <- shapiro.test(group1_data)
+    p_SH_group1 <- shapiro_group1$p.value
   } else {
-    # 6×8 layout for 17-20 groups: histograms in rows 1-3, Q-Q in rows 4-6
-    layout_rows <- 6
-    layout_cols <- 8
-    par(mfrow = c(layout_rows, layout_cols),
-        mar = c(3, 3, 1.5, 0.5),
-        oma = c(0, 0, 2.5, 0),
-        cex = 0.4 * cex)
+    shapiro_group1 <- "Sample size too small for Shapiro-Wilk test"
+    p_SH_group1 <- NA
   }
   
-  # First pass: Plot all histograms
-  for (i in seq_along(group_levels)) {
-    gname <- group_levels[i]
-    gdata <- group_data[[i]]
-    
-    # Skip if no data
-    if (length(gdata) == 0) {
-      plot.new()
-      next
-    }
-    
-    # Calculate statistics
-    gmean <- mean(gdata, na.rm = TRUE)
-    gsd <- sd(gdata, na.rm = TRUE)
-    
-    # Get p-values for this group
-    p_s <- shapiro_tests[[gname]]$p.value
-    p_a <- ad_tests[[gname]]$p.value
-    
-    # --- Histogram with normal overlay ---
-    hist_data <- hist(gdata, plot = FALSE)
-    max_hist_density <- max(hist_data$density)
-    max_normal_peak <- dnorm(gmean, mean = gmean, sd = gsd)
-    y_max <- max(max_hist_density, max_normal_peak) * 1.1
-    
-    # Create title with p-values
-    p_s_text <- if (!is.na(p_s)) signif(p_s, 3) else "N/A"
-    p_a_text <- if (!is.na(p_a)) signif(p_a, 3) else "N/A"
-    main_text <- paste0("Hist. - ", gname, "\nSW p=", p_s_text, " | AD p=", p_a_text)
-    
-    hist(gdata, 
-         freq = FALSE,
-         main = main_text,
-         xlab = "Values",
-         ylab = "Density",
-         ylim = c(0, y_max),
-         col = "lightblue", 
-         border = "black")
-    
-    # Overlay normal distribution
-    data_range <- range(gdata)
-    normal_range <- c(gmean - 3*gsd, gmean + 3*gsd)
-    full_range <- c(min(data_range[1], normal_range[1]), 
-                    max(data_range[2], normal_range[2]))
-    x_seq <- seq(full_range[1], full_range[2], length = 200)
-    normal_curve <- dnorm(x_seq, mean = gmean, sd = gsd)
-    lines(x_seq, normal_curve, col = "red", lwd = 2)
+  # Normality tests for group 2
+  if (length(group2_data) >= 3) {
+    shapiro_group2 <- shapiro.test(group2_data)
+    p_SH_group2 <- shapiro_group2$p.value
+  } else {
+    shapiro_group2 <- "Sample size too small for Shapiro-Wilk test"
+    p_SH_group2 <- NA
   }
   
-  # Fill remaining histogram slots if k > 8
-  if (k > 8) {
-    n_hist_rows <- ceiling(k / layout_cols)
-    n_hist_slots <- n_hist_rows * layout_cols
-    for (i in (k + 1):n_hist_slots) {
-      plot.new()
-    }
-  }
+  # Create plots - 2x2 design
+  #par(mfrow = c(2, 2), oma = c(0, 0, 3, 0))
   
-  # Second pass: Plot all Q-Q plots
-  for (i in seq_along(group_levels)) {
-    gname <- group_levels[i]
-    gdata <- group_data[[i]]
-    
-    # Skip if no data
-    if (length(gdata) == 0) {
-      plot.new()
-      next
-    }
-    
-    # --- Q-Q plot ---
-    qqnorm(gdata, 
-           main = paste("Q-Q Plot -", gname),
-           xlab = "Theoretical Quantiles",
-           ylab = "Sample Quantiles")
-    qqline(gdata, col = "red", lwd = 2)
-  }
+  # Create plots - 2x2 design with explicit margins
+  par(mar = c(4, 4, 2, 1), mfrow = c(2, 2), oma = c(0, 0, 2, 0))
   
-  # Simple outer title
-  mtext("Normality by Group", outer = TRUE, cex = 0.9, line = 0.5)
   
-  # Return results
-  result <- list(
-    shapiro_tests = shapiro_tests,
-    ad_tests = ad_tests,
-    n_groups = k,
-    group_names = group_levels
+  
+  
+  
+  
+  # Plot 1: Histogram with normal overlay for group 1
+  # 
+  # 
+  # Find maximum y-range: 
+  hist_data <- hist(group1_data, plot = FALSE)
+  max_hist_density <- max(hist_data$density)
+  max_normal_peak <- max(dnorm(mean1, mean = mean1, sd = sd1))
+  y_max <- max(max_hist_density, max_normal_peak) * 1.1
+  
+  
+  hist(group1_data, 
+       freq = FALSE, 
+       main = paste("Histogram -", group_levels[1]),
+       xlab = ifelse(samplename == "", "Values", samplename),
+       ylab = "Density",
+       ylim = c(0, y_max),
+       col = "lightblue", border = "black",
+       cex.main = cex, cex.lab = cex, cex.axis = cex)
+  
+  # Overlay normal distribution - find proper range for full curve
+  mean1 <- mean(group1_data)
+  sd1 <- sd(group1_data)
+  data_range1 <- range(group1_data)
+  # Use 3 standard deviations or data range, whichever is wider
+  normal_range1 <- c(mean1 - 3*sd1, mean1 + 3*sd1)
+  full_range1 <- c(min(data_range1[1], normal_range1[1]), max(data_range1[2], normal_range1[2]))
+  x_seq1 <- seq(full_range1[1], full_range1[2], length = 300)
+  normal_curve1 <- dnorm(x_seq1, mean = mean1, sd = sd1)
+  lines(x_seq1, normal_curve1, col = "red", lwd = 2)
+  
+  # Plot 2: Q-Q plot for group 1------
+  qqnorm(group1_data, main = paste("Q-Q Plot -", group_levels[1]), cex.main = cex)
+  qqline(group1_data, col = "red", lwd = 2)
+  
+  # Plot 3: Histogram with normal overlay for group 2-----
+  # Find maximum y-range: 
+  hist_data2 <- hist(group2_data, plot = FALSE)
+  max_hist_density2 <- max(hist_data2$density)
+  max_normal_peak2 <- max(dnorm(mean2, mean = mean2, sd = sd2))
+  y_max2 <- max(max_hist_density2, max_normal_peak2) * 1.1
+  
+  
+  
+  
+  hist(group2_data, 
+       freq = FALSE, 
+       main = paste("Histogram -", group_levels[2]),
+       xlab = ifelse(samplename == "", "Values", samplename),
+       ylab = "Density",
+       ylim = c(0, y_max2),
+       col = "lightblue", border = "black",
+       cex.main = cex, cex.lab = cex, cex.axis = cex)
+  
+  # Overlay normal distribution - find proper range for full curve
+  
+  data_range2 <- range(group2_data)
+  # Use 3 standard deviations or data range, whichever is wider
+  normal_range2 <- c(mean2 - 3*sd2, mean2 + 3*sd2)
+  full_range2 <- c(min(data_range2[1], normal_range2[1]), max(data_range2[2], normal_range2[2]))
+  x_seq2 <- seq(full_range2[1], full_range2[2], length = 300)
+  normal_curve2 <- dnorm(x_seq2, mean = mean2, sd = sd2)
+  lines(x_seq2, normal_curve2, col = "red", lwd = 2)
+  
+  # Plot 4: Q-Q plot for group 2
+  qqnorm(group2_data, main = paste("Q-Q Plot -", group_levels[2]), cex.main = cex)
+  qqline(group2_data, col = "red", lwd = 2)
+  
+  # Reset plotting parameters
+  par(mfrow = c(1, 1))
+  
+  # Add main title with test results
+  mtext(
+    paste(
+      "Check for normality of groups:",
+      #groupname,
+      "\n", group_levels[1], " - Shapiro-Wilk: p = ",
+      signif(p_SH_group1, 2),
+      ", ", group_levels[2], " - Shapiro-Wilk: p = ",
+      signif(p_SH_group2, 2)
+    ),
+    outer = TRUE
   )
   
-  class(result) <- "vis_welch_normality"
-  return(invisible(result))
+  # Return results list
+  results_list <- list(
+    shapiro_group1 = shapiro_group1,
+    shapiro_group2 = shapiro_group2
+  )
+  
+  return(results_list)
 }

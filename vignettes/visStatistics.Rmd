@@ -7,8 +7,8 @@ author:
   email: sabine.schilling@protonmail.com
 date: "`r Sys.Date()`"
 output:
- #rmarkdown::html_vignette:
-  pdf_document:
+ rmarkdown::html_vignette:
+  #pdf_document:
     toc: true
     number_sections: true
     toc_depth: 3
@@ -190,29 +190,52 @@ Error terms are:
 
 -   homoscedastic: Constant error variance $\sigma^2$
 
-## GLM assumption testing in visStatistics: `vis_glm_assumptions()`
 
-The function `vis_glm_assumptions()` provides unified diagnostic tools for all GLM variants.
-Since t-tests, ANOVA, and linear regression share identical distributional assumptions, the same residual-based diagnostics apply universally.
 
+## GLM Diagnostics and Assumption Testing: `vis_glm_assumptions`
+The General Linear Model (GLM) provides an elegant unified framework for 
+Student's t-test, Fisher's ANOVA, and simple linear regression. Under the 
+GLM, these methods share identical mathematical foundations and rely on 
+three key assumptions: independent observations, normally distributed 
+residuals, and homogeneous variances across groups (homoscedasticity).
+
+The function `vis_glm_assumptions()` provides a unified visual and statistical 
+framework for validating General Linear Models (GLM). 
+
+### Universal Diagnostic Plots
+It fits a classical GLM model using `aov()` and provides four standard diagnostic plots:
+1. **Histogram and Normal Density**: Displays the distribution of standardized 
+   residuals with a red normal density curve overlay to visually assess
+   normality.
+2. **Std. Residuals vs. Fitted**: It shows the  standardized residuals 
+   against fitted values with a zero-line to detect non-linearity or 
+   heteroscedasticity.
+3. **Normal Q-Q Plot**: A theoretical quantile-quantile plot using the 
+   standardized residuals to identify deviations from the Gaussian distribution.
+4. If `regression = TRUE`, the  **Standardized Residuals vs. Leverage** plot, if `regression = FALSE`,  a **Scale-Location** plot.
+ 
+These diagnostics plots enable the user to assess whether classical GLM 
+assumptions are met and manually override the automated test selection.
+
+### Test statistics
+The automated test selection relies on p-values of tests for normality and homoscecadicity,  shown in the title of the plot. 
 **Normality Assessment**: The function evaluates residual normality using both the Shapiro-Wilk test (`shapiro.test()`) and Anderson-Darling test (`ad.test()`) [@Gross:2015].
 These tests offer complementary strengths: Shapiro-Wilk generally exhibits greater power across non-normal distributions in small samples, while Anderson-Darling is highly sensitive to tail deviations in larger samples [@Razali:2011; @Yap:2011].
 
-**Homoscedasticity Assessment**: Variance equality is tested using the Levene-Brown-Forsythe test (`levene.test()`) [@Brown:1974] and Bartlett's test (`bartlett.test()`).
-<!-- The Levene-Brown-Forsythe test uses absolute deviations from group medians, making it robust to non-normality, while Bartlett's test has greater power when normality holds [@Allingham:2012]. -->
+**Homoscedasticity Assessment**: Variance equality is tested using the Levene-Brown-Forsythe test (`levene.test()`) [@Brown:1974] and Bartlett's test (`bartlett.test()`) in the ANOVA path. These tests compare the spread of data across different factor levels. In the regression path (`regression = TRUE`) the Breusch-Pagan test (`bp_test()`) is implemented.  These three tests have standalone implementations in the package to avoid dependencies on external packages.
 
 
 ***The Levene–Brown–Forsythe test `levene.test()`*** 
 The Levene–Brown–Forsythe test improves upon Levene's original test [@Levene:1960] by using the median instead of the mean to centre the data.
 This makes it more robust to skewed data or data with outliers providing more reliable results in many practical situations [@Allingham:2012].
-Note that `levene.test()` mimics the default behaviour of `leveneTest()` in the `car` package [@Fox:2019].
+`levene.test()` mimics the default behaviour of `leveneTest()` in the `car` package [@Fox:2019].
 
 
 The Levene–Brown–Forsythe test evaluates the null hypothesis that all groups have equal variances by testing whether the absolute deviations from group medians are equal across groups.
 
 For each observation $y_{ij}$ in group $i$, it computes the absolute deviation from the group median:
 
-$$z_{ij} = |y_{ij} - \tilde{y_i}|$$,
+$$z_{ij} = |y_{ij} - \tilde{y_i}|,$$
 
 where $\tilde{y_i}$ is the median of group $i$.
 
@@ -245,22 +268,35 @@ $$
 
 Under the null hypothesis that all group variances are equal and the data are normally distributed, the test statistic approximately follows a $\chi^2$-distribution with $k - 1$ degrees of freedom [@Bartlett:1937].
 
-Assessing assumptions solely through p-values can lead to both type I errors (false positives) and type II errors (false negatives).
-In large samples, even minor, random deviations from the null hypothesis—such as the assumption of normality—can result in statistically significant p-values, leading to type I errors.
-Conversely, in small samples, substantial violations of the assumption may not reach statistical significance, resulting in type II errors [@Kozak:2018].
+*** Breusch-Pagan test `bp_test()` ***
+For linear regression (`regression = TRUE`), group-based tests cannot be used. 
+Instead, `bp_test()` implements the **Breusch-Pagan test**, which relies on 
+an **auxiliary regression model**.
+or linear regression (`regression = TRUE`), group-based tests are replaced by 
+the **Breusch-Pagan test** (`bp_test`). This test uses an **auxiliary 
+regression model** to see if the model's errors follow a predictable pattern.
 
-Thus, the robustness of statistical tests depends on both the sample size and the shape of the underlying distribution.
-This is evident in the limitations of the normality tests used: for instance, the Shapiro–Wilk test is unreliable for large samples ($N > 5000$), while the Anderson–Darling test requires at least 7 observations.
+The auxiliary model is defined as:
+`aux_model <- lm(sq_std_residuals ~ fitted_values)`
 
-Moreover, assumption tests provide no information on the nature of deviations from the expected distribution [@Shatz:2024].
-Therefore, the assessment of normality should not rely solely on p-values but should be complemented by visual inspection.
+1. **The Response**: It takes the **squared standardized residuals** ($e_i^2$) 
+   from your main model. Squaring the residuals makes all "errors" positive 
+   so we can measure their magnitude.
+2. **The Predictor**: It regresses these squared errors against the 
+   **fitted values** ($\hat{y}_i$) of your primary model.
+3. **The BP Statistic**: The test calculates how much of the variance in the 
+   errors is explained by the predictions. The statistic is:
+   
+   $$BP = n \cdot R^2_{aux}$$
+   
+   * **$n$**: The total number of observations (sample size).
+   * **$R^2_{aux}$**: The coefficient of determination from the auxiliary 
+     regression.
 
-**Diagnostic plots**
+A high $R^2_{aux}$ results in a large BP statistic and a significant p-value, 
+indicating that the error size is not random (heteroscedasticity).
 
-`visstat()` produces diagnostic plots including: (1) a histogram of the standardised residuals overlaid with the standard normal distribution, (2) a scatter plot of the standardised residuals versus the fitted values for each predictor level, and (3) a Q–Q plot of the residuals.
 
-Since algorithmic logic cannot replace the combination of formal tests and expert visual judgement, the function defaults to assuming normality if the Shapiro–Wilk test yields a p-value greater than alpha.
-Simulation studies suggest that Shapiro–Wilk has the highest power among normality tests in small to moderate samples [@Razali:2011].
 
 <!-- ### Equal variances across groups (`levene.test() and bartlett.test()`) -->
 
@@ -269,76 +305,76 @@ Simulation studies suggest that Shapiro–Wilk has the highest power among norma
 
 <!-- The decision logic of `visStatistics` assumes homogeneity of variances if the Levene–Brown–Forsythe test (implemented as `levene.test()`) [@Brown:1974] yields a p-value greater than $\alpha$. -->
 
-## Deviation from classical GLM in automated test selection
+<!-- ## Deviation from classical GLM in automated test selection -->
 
-In the automated test selection, `visStatistics` defaults to Welch's t-test and Welch's ANOVA (`oneway.test()`) for mean comparisons, which, in contrast to Student's t-test and Fisher One-way ANOVA  (both representations of the GLM)  do not require homoscedasticity of the error terms.
-The Welch tests use separate variance estimates for each group rather than pooling variance.
+<!-- In the automated test selection, `visStatistics` defaults to Welch's t-test and Welch's ANOVA (`oneway.test()`) for mean comparisons, which, in contrast to Student's t-test and Fisher One-way ANOVA  (both representations of the GLM)  do not require homoscedasticity of the error terms. -->
+<!-- The Welch tests use separate variance estimates for each group rather than pooling variance. -->
 
-Welch methods avoid the inflated Type I error rates caused by preliminary variance testing [@Zimmerman:2004] while maintaining comparable power when variances are equal [@Delacre:2017].
+<!-- Welch methods avoid the inflated Type I error rates caused by preliminary variance testing [@Zimmerman:2004] while maintaining comparable power when variances are equal [@Delacre:2017]. -->
 
-## Testing normality in Welch methods
+<!-- ## Testing normality in Welch methods -->
 
-To assess the assumption of normality for the Welch’s t-test and ANOVA, standardized residuals are calculated for each group to account for heteroscedasticity 
-These residuals are then pooled and subjected to a Shapiro-Wilk test.
-This approach ensures that differences in group variances do not confound the assessment of the underlying distributional shape.
+<!-- To assess the assumption of normality for the Welch’s t-test and ANOVA, standardized residuals are calculated for each group to account for heteroscedasticity  -->
+<!-- These residuals are then pooled and subjected to a Shapiro-Wilk test. -->
+<!-- This approach ensures that differences in group variances do not confound the assessment of the underlying distributional shape. -->
 
-## Two Approaches to Assumption Testing: Classical GLM vs. Pooled Normality
+<!-- ## Two Approaches to Assumption Testing: Classical GLM vs. Pooled Normality -->
 
-`visStatistics` provides two complementary approaches to assess statistical 
-assumptions, each serving different purposes in the workflow.
+<!-- `visStatistics` provides two complementary approaches to assess statistical  -->
+<!-- assumptions, each serving different purposes in the workflow. -->
 
-### Classical GLM Diagnostics: `vis_glm_assumptions()`
+<!-- ### Classical GLM Diagnostics: `vis_glm_assumptions()` -->
 
-The General Linear Model (GLM) provides an elegant unified framework for 
-Student's t-test, Fisher's ANOVA, and simple linear regression. Under the 
-GLM, these methods share identical mathematical foundations and rely on 
-three key assumptions: independent observations, normally distributed 
-residuals, and homogeneous variances across groups (homoscedasticity).
+<!-- The General Linear Model (GLM) provides an elegant unified framework for  -->
+<!-- Student's t-test, Fisher's ANOVA, and simple linear regression. Under the  -->
+<!-- GLM, these methods share identical mathematical foundations and rely on  -->
+<!-- three key assumptions: independent observations, normally distributed  -->
+<!-- residuals, and homogeneous variances across groups (homoscedasticity). -->
 
-The function `vis_glm_assumptions()` fits a classical GLM model using 
-`aov()` and provides comprehensive diagnostics:
-- Histogram of standardized residuals with normal overlay
-- Residuals vs. fitted values plot
-- Normal Q-Q plot
-- Shapiro-Wilk and Anderson-Darling normality tests (p-values)
-- Levene-Brown-Forsythe and Bartlett homoscedasticity tests (p-values)
+<!-- The function `vis_glm_assumptions()` fits a classical GLM model using  -->
+<!-- `aov()` and provides comprehensive diagnostics: -->
+<!-- - Histogram of standardized residuals with normal overlay -->
+<!-- - Residuals vs. fitted values plot -->
+<!-- - Normal Q-Q plot -->
+<!-- - Shapiro-Wilk and Anderson-Darling normality tests (p-values) -->
+<!-- - Levene-Brown-Forsythe and Bartlett homoscedasticity tests (p-values) -->
 
 **These diagnostics enable users to assess whether classical GLM 
 assumptions are met and manually override the automated test selection** 
 to use Student's t-test or Fisher's ANOVA when assumptions are 
 demonstrably satisfied.
 
-### Pooled Normality Testing for Automated Selection
+<!-- ### Pooled Normality Testing for Automated Selection -->
 
-However, automated test selection based on preliminary assumption testing 
-creates methodological problems. Testing homoscedasticity before selecting 
-a parametric test inflates Type I error rates [@Zimmerman:2004], while 
-testing normality separately in each group compounds this issue through 
-multiple testing. Additionally, normality tests perform poorly at both 
-small sample sizes (insufficient power) and large sample sizes (rejecting 
-trivial departures) [@Ghasemi:2012].
+<!-- However, automated test selection based on preliminary assumption testing  -->
+<!-- creates methodological problems. Testing homoscedasticity before selecting  -->
+<!-- a parametric test inflates Type I error rates [@Zimmerman:2004], while  -->
+<!-- testing normality separately in each group compounds this issue through  -->
+<!-- multiple testing. Additionally, normality tests perform poorly at both  -->
+<!-- small sample sizes (insufficient power) and large sample sizes (rejecting  -->
+<!-- trivial departures) [@Ghasemi:2012]. -->
 
-For automated test selection, `visStatistics` uses a different approach 
-that avoids multiple testing: **pooled standardized normality testing**. 
-Observations within each group are standardized using that group's own 
-mean and standard deviation: $z_{ij} = (y_{ij} - \bar{y}_i) / s_i$. 
-These standardized values are then pooled across all groups, and a single 
-normality test is applied to the pooled values. This tests the global 
-null hypothesis that all groups are normally distributed while avoiding 
-the multiple testing problem inherent in separate per-group tests.
+<!-- For automated test selection, `visStatistics` uses a different approach  -->
+<!-- that avoids multiple testing: **pooled standardized normality testing**.  -->
+<!-- Observations within each group are standardized using that group's own  -->
+<!-- mean and standard deviation: $z_{ij} = (y_{ij} - \bar{y}_i) / s_i$.  -->
+<!-- These standardized values are then pooled across all groups, and a single  -->
+<!-- normality test is applied to the pooled values. This tests the global  -->
+<!-- null hypothesis that all groups are normally distributed while avoiding  -->
+<!-- the multiple testing problem inherent in separate per-group tests. -->
 
-The function `vis_plot_pooled_normality()` visualizes this assessment:
-- Q-Q plot of pooled standardized residuals
-- Histogram of pooled standardized residuals with normal overlay
-- Boxplot of original data by group
-- Test results panel showing the single normality test decision
+<!-- The function `vis_plot_pooled_normality()` visualizes this assessment: -->
+<!-- - Q-Q plot of pooled standardized residuals -->
+<!-- - Histogram of pooled standardized residuals with normal overlay -->
+<!-- - Boxplot of original data by group -->
+<!-- - Test results panel showing the single normality test decision -->
 
-Based on this single pooled normality test, the algorithm selects:
-- **Parametric tests** (Welch's t-test / Welch's ANOVA) if normality holds
-- **Non-parametric tests** (Wilcoxon / Kruskal-Wallis) if normality fails
+<!-- Based on this single pooled normality test, the algorithm selects: -->
+<!-- - **Parametric tests** (Welch's t-test / Welch's ANOVA) if normality holds -->
+<!-- - **Non-parametric tests** (Wilcoxon / Kruskal-Wallis) if normality fails -->
 
-This approach protects against invalid inference through multiple testing 
-while enabling statistically sound automation.
+<!-- This approach protects against invalid inference through multiple testing  -->
+<!-- while enabling statistically sound automation. -->
 
 
 
@@ -536,9 +572,9 @@ otherwise, the Wilcoxon rank-sum test is applied. -->
 Both tests show two plot panes, the first for checking the assumption of normality in both groups, the second the actual data with the chosen test.
 
 Welch's t-test does not fit a regression model, so there are no "residuals" in the regression sense.
-Therefore the function `vis_ttest_assumptions()`generates histograms overlaid with the normal distribution for both groups acompanied by the p-values of `shapiro.test()` and `ad.tset()`.
+Therefore the function `vis_welch_normality()`generates histograms overlaid with the normal distribution for both groups acompanied by the p-values of `shapiro.test()` and `ad.tset()`.
 
-The graphical output of the second pane consists of box plots overlaid with jittered points to display individual observations.
+The graphical output of the second panel consists of box plots overlaid with jittered points to display individual observations.
 When Welch's t-test is applied, the function includes confidence intervals based on the user-specified `conf.level`.
 
 <!-- The title is structured as follows: -->
@@ -1142,27 +1178,51 @@ This package uses the Shapiro-Wilk test to select between parametric (ANOVA/Welc
 
 However, no single test maintains optimal Type I error rates and statistical power across all distributions [@Olejnik:1987], and p-values obtained from these tests may be unreliable if their assumptions are violated.
 
-## Limitations of defaulting to Welch tests
+Assessing assumptions solely through p-values can lead to both type I errors (false positives) and type II errors (false negatives).
+In large samples, even minor, random deviations from the null hypothesis—such as the assumption of normality—can result in statistically significant p-values, leading to type I errors.
+Conversely, in small samples, substantial violations of the assumption may not reach statistical significance, resulting in type II errors [@Kozak:2018].
 
-This package uses Welch's t-test and Welch's ANOVA (oneway.test) by default to avoid preliminary testing for homoscedasticity, which inflates Type I error rates [@Zimmerman:2004].
-When variances are equal, Welch versions have minimal power loss compared to classical tests (Delacre et al., 2017; Delacre et al., 2019).
-For N \> 2 groups with n \< 30, normality must be assessed before selecting parametric versus non-parametric tests.
+Thus, the robustness of statistical tests depends on both the sample size and the shape of the underlying distribution.
+This is evident in the limitations of the normality tests used: for instance, the Shapiro–Wilk test is unreliable for large samples ($N > 5000$), while the Anderson–Darling test requires at least 7 observations.
 
-However, Welch's ANOVA does not produce residuals suitable for normality testing.
-Testing normality separately for each group inflates Type I error through multiple testing.
-This package instead extracts residuals from classical ANOVA (aov), tests their normality, then uses that result to select Welch's ANOVA—a pragmatic but conceptually inconsistent approach.
-For $n \ge 30$, normality testing is omitted, assuming parametric tests are robust to moderate non-normality (Knief & Forstmeier, 2021; Lumley et al., 2002).
+Moreover, assumption tests provide no information on the nature of deviations from the expected distribution [@Shatz:2024].
+Therefore, the assessment of normality should not rely solely on p-values but should be complemented by visual inspection.
 
-Heteroscedasticity violates a key assumption of the classical linear model: OLS estimators remain unbiased but the standard errors, test statistics and therefore all associated inference become invalid when error variances differ (Gelman and Hill 2007; Fox 2016).
-Importantly, this affects only inference, not the definition of residuals, which remain simply the observed deviations from the fitted group means and thus provide a useful empirical summary of within-group departures from normality.
-For this reason, residual-based normality checks can be employed even when subsequent inference uses heteroscedasticity-robust methods such as Welch-type tests.
+
+
+
+
+
+
+<!-- ## Limitations of defaulting to Welch tests -->
+
+<!-- This package uses Welch's t-test and Welch's ANOVA (oneway.test) by default to avoid preliminary testing for homoscedasticity, which inflates Type I error rates [@Zimmerman:2004]. -->
+<!-- When variances are equal, Welch versions have minimal power loss compared to classical tests (Delacre et al., 2017; Delacre et al., 2019). -->
+<!-- For N \> 2 groups with n \< 30, normality must be assessed before selecting parametric versus non-parametric tests. -->
+
+<!-- However, Welch's ANOVA does not produce residuals suitable for normality testing. -->
+<!-- Testing normality separately for each group inflates Type I error through multiple testing. -->
+<!-- This package instead extracts residuals from classical ANOVA (aov), tests their normality, then uses that result to select Welch's ANOVA—a pragmatic but conceptually inconsistent approach. -->
+<!-- For $n \ge 30$, normality testing is omitted, assuming parametric tests are robust to moderate non-normality (Knief & Forstmeier, 2021; Lumley et al., 2002). -->
+
+<!-- Heteroscedasticity violates a key assumption of the classical linear model: OLS estimators remain unbiased but the standard errors, test statistics and therefore all associated inference become invalid when error variances differ (Gelman and Hill 2007; Fox 2016). -->
+<!-- Importantly, this affects only inference, not the definition of residuals, which remain simply the observed deviations from the fitted group means and thus provide a useful empirical summary of within-group departures from normality. -->
+<!-- For this reason, residual-based normality checks can be employed even when subsequent inference uses heteroscedasticity-robust methods such as Welch-type tests. -->
+
+
+
+
 
 ### Limitations of normality testing
 
 Normality tests behave poorly at both ends of the sample-size range: with small samples they fail to detect non-normality, and with large samples they flag negligible departures from normality as significant [@Ghasemi:2012; @Fagerland:2012; @Franc:2025].
 Since visual Q–Q inspection cannot be implemented algorithmically, `visstat()` cannot automate a more robust alternative.
-This package uses $n \ge 30$ per group as a rule of thumb threshold to omit normality testing, assuming parametric tests become robust to non-normality at larger sample sizes based on the central limit theorem.
+This package uses $n \ge 100$ per group as a rule of thumb threshold to omit normality testing, assuming parametric tests become robust to non-normality at larger sample sizes based on the central limit theorem.
 In fact, the actual sample size needed for parametric test validity depends on the unknown shape of the underlying distribution [@Knief:2021], with heavily skewed data potentially requiring much larger samples.
+
+For smaller samples, the function defaults to assuming normality if the Shapiro–Wilk test yields a p-value greater than alpha.
+Simulation studies suggest that Shapiro–Wilk has the highest power among normality tests in small to moderate samples [@Razali:2011].
+
 
 ### Combining tests inflates the overall Type I error rate
 

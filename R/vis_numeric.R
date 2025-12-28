@@ -28,7 +28,7 @@
 #' @details
 #' Statistical Assumptions Checked:
 #' Regression: Normality of residuals (Shapiro-Wilk test) and 
-#' homoscedasticity/equal variances (Bartlett test).
+#' homoscedasticity (Breusch-Pagan test).
 #' Correlation: When do_regression = FALSE, the function automatically selects between 
 #' Pearson correlation (if both variables are normally distributed) or Spearman correlation 
 #' (if normality assumptions are violated or sample size is outside valid range).
@@ -139,31 +139,19 @@ vis_numeric <- function(y,
                                             method = "Sample size outside valid range for Shapiro-Wilk test")
     }
     
-    # 2. Test for homoscedasticity using Levene test
-    if (n >= 6) {  # Minimum sample size for Levene test
-      residuals_std <- rstandard(reg)
-      fitted_vals <- reg$fitted.values
-      
-      # Create groups based on fitted values for Levene test
-      fitted_groups <- cut(fitted_vals, breaks = 2, labels = FALSE)
-      fitted_groups <- factor(fitted_groups)
-      
-      # Levene test for homoscedasticity using custom implementation
-      levene_result <- tryCatch({
-        levene.test(residuals_std, fitted_groups)
-      }, error = function(e) {
-        list(p.value = NA, method = paste("Levene test failed:", e$message))
-      })
-      
-      assumptions$levene_homoscedasticity <- levene_result
-      
-      if (!is.na(levene_result$p.value) && levene_result$p.value < alpha) {
-        warnings_list <- c(warnings_list, 
-                           paste("Homoscedasticity violated (Levene test p =", 
-                                 signif(levene_result$p.value, 3), ")"))
-      }
-    } else {
-      assumptions$levene_note <- "Sample size too small for homoscedasticity test (need n >= 6)"
+    # 2. Test for homoscedasticity using Breusch-Pagan test (correct for regression)
+    bp_result <- tryCatch({
+      bp_test(reg)
+    }, error = function(e) {
+      list(p.value = NA, method = paste("Breusch-Pagan test failed:", e$message))
+    })
+    
+    assumptions$bp_homoscedasticity <- bp_result
+    
+    if (!is.na(bp_result$p.value) && bp_result$p.value < alpha) {
+      warnings_list <- c(warnings_list, 
+                         paste("Homoscedasticity violated (Breusch-Pagan p =", 
+                               signif(bp_result$p.value, 3), ")"))
     }
     
     # Order data for plotting
@@ -186,8 +174,8 @@ vis_numeric <- function(y,
     mi <- min(y_sorted, y_pred_low, na.rm = TRUE)
     spread <- ma - mi
     
-    par(mfrow = c(1, 1), oma = c(0, 0, 5, 0))
-    
+    par(mfrow = c(1, 1), oma = c(0, 0, 2, 0))
+    #par(mfrow = c(1, 1))
     plot(x_sorted, y_sorted, 
          ylim = c(mi - 0.1 * spread, ma + 0.4 * spread),
          xlab = name_of_factor,
@@ -214,7 +202,7 @@ vis_numeric <- function(y,
            col = c(colorscheme(2)[1], colorscheme(1)[1], colorscheme(1)[2]),
            lty = c(1, 2, 3),
            bty = "n",
-           cex = 0.8)
+           cex = 0.7)
     
     # Create title
     conf_int_coeffs <- confint(reg, level = conf.level)
@@ -229,7 +217,7 @@ vis_numeric <- function(y,
                          ", ", signif(conf_int_coeffs[1, 2], 3), "]",
                          ", p = ", signif(reg_summary$coefficients[1, 4], 3))
     
-    mtext(title_text, outer = TRUE)
+    mtext(title_text, outer = TRUE,cex = 0.7)
     
     # Prepare return values
     result_list <- list(
@@ -346,7 +334,7 @@ vis_numeric <- function(y,
     mi <- min(y_sorted, na.rm = TRUE)
     spread <- ma - mi
     
-    par(mfrow = c(1, 1), oma = c(0, 0, 5, 0))
+    par(mfrow = c(1, 1), oma = c(0, 0, 2, 0))
     
     plot(x_sorted, y_sorted, 
          ylim = c(mi - 0.1 * spread, ma + 0.4 * spread),
@@ -363,7 +351,7 @@ vis_numeric <- function(y,
            col = colorscheme(2)[2],
            lty = 2,
            bty = "n",
-           cex = 0.8)
+           cex = 0.7)
     
     # Create title
     significance <- ifelse(p_value < alpha, "significant", "not significant")

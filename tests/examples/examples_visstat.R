@@ -9,22 +9,13 @@ while (!is.null(dev.list())) {
 options(warn = 0) # for debugging also warnings
 filedir <- tempdir()
 
-
-# Welch two sample t.test: InsectSprays ----
-# select sprays A and B
-InsectSpraysAB <- InsectSprays[which(InsectSprays$spray == "A" |
-                                       InsectSprays$spray == "B"), ]
-InsectSpraysAB$spray <- factor(InsectSpraysAB$spray)
+# Student's t-test (equal variances, two groups)
+visstat(sleep$group, sleep$extra)
 
 
-insect_spray=visstat(
-  InsectSpraysAB,
-  "count",
-  "spray",
-  graphicsoutput = "png",
-  plotName = "insect_count_spray",
-  plotDirectory = filedir
-)
+# Welch's t-test (unequal variances, two groups)
+visstat(mtcars$am, mtcars$mpg)
+
 
 # Wilcoxon-----
 grades_gender <- data.frame(
@@ -74,7 +65,11 @@ grades_gender <- data.frame(
 )
 visstat(grades_gender$Sex,grades_gender$Grade)
 
-# ANOVA -----
+# Fisher's ANOVA (equal variances, >2 groups)
+visstat(PlantGrowth$group, PlantGrowth$weight)
+
+
+# Welch ANOVA -----
 anova_npk <- visstat(npk$block, npk$yield) 
 
 

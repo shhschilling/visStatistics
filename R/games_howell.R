@@ -37,7 +37,6 @@
 #' print(result)
 #'
 #' @export
-
 games_howell <- function(samples, groups, conf.level = 0.95) {
   
   # Input validation
@@ -146,9 +145,8 @@ games_howell <- function(samples, groups, conf.level = 0.95) {
 #'
 #' @param x A games_howell object
 #' @param digits Number of digits to display (default: 4)
-#' @param ... Additional arguments (ignored)
+#' @param ... Additional arguments (passed to print.data.frame)
 #' @export
-
 print.games_howell <- function(x, digits = 4, ...) {
   cat("\nGames-Howell Post-Hoc Test\n")
   cat("==========================\n\n")
@@ -170,7 +168,7 @@ print.games_howell <- function(x, digits = 4, ...) {
                               ifelse(x$p_adj < 0.05, "*",
                                      ifelse(x$p_adj < 0.1, ".", ""))))
   
-  print(as.data.frame(output), row.names = FALSE)
+  print(as.data.frame(output), row.names = FALSE, ...)
   
   cat("\n---\n")
   cat("Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n")
@@ -190,13 +188,13 @@ print.games_howell <- function(x, digits = 4, ...) {
 #' @return A named vector with group names and their letter codes
 #'
 #' @examples
+#' # Convert dose to factor
 #' ToothGrowth$dose <- as.factor(ToothGrowth$dose)
 #' result <- games_howell(ToothGrowth$len, ToothGrowth$dose)
 #' letters <- gh_letters(result)
 #' print(letters)
 #'
 #' @export
-
 gh_letters <- function(x, alpha = 0.05) {
   
   if (!inherits(x, "games_howell")) {
@@ -220,57 +218,7 @@ gh_letters <- function(x, alpha = 0.05) {
     p_matrix[g2, g1] <- x$p_adj[i]
   }
   
-  # Convert to multcompView format
-  letters <- multcompView::multcompLetters(p_matrix, 
-                                           threshold = alpha,
-                                           Letters = letters)
-  
-  return(letters$Letters)
-}
-
-#' Extract compact letter display from Games-Howell results
-#'
-#' Uses multcompView to create compact letter display showing which groups
-#' differ significantly from each other.
-#'
-#' @param gh_result A games_howell object
-#' @param alpha Significance level (default: 0.05)
-#'
-#' @return Named vector of letters; groups sharing a letter are not significantly different
-#'
-#' @examples
-#' result <- games_howell(ToothGrowth$len, ToothGrowth$dose)
-#' letters <- gh_letters(result)
-#' print(letters)
-#'
-#' @export
-
-gh_letters <- function(gh_result, alpha = 0.05) {
-  if (!inherits(gh_result, "games_howell")) {
-    stop("Input must be a games_howell object")
-  }
-  
-  # Create a matrix of p-values for multcompView
-  groups <- unique(c(gh_result$group1, gh_result$group2))
-  n_groups <- length(groups)
-  
-  # Initialize p-value matrix
-  p_matrix <- matrix(1, nrow = n_groups, ncol = n_groups)
-  rownames(p_matrix) <- groups
-  colnames(p_matrix) <- groups
-  
-  # Fill in p-values
-  for (i in 1:nrow(gh_result)) {
-    g1 <- gh_result$group1[i]
-    g2 <- gh_result$group2[i]
-    p <- gh_result$p_adj[i]
-    
-    p_matrix[g1, g2] <- p
-    p_matrix[g2, g1] <- p
-  }
-  
-  # Convert to format for multcompView
-  # multcompView expects logical matrix (TRUE = different)
+  # Convert to format for multcompView (TRUE = different)
   diff_matrix <- p_matrix < alpha
   
   # Use multcompView to get compact letter display
