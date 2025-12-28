@@ -6,11 +6,12 @@
 #' the Shapiro-Wilk and Anderson-Darling tests. The null hypothesis is that 
 #' each group is normally distributed. The function generates histograms 
 #' with normal distribution overlays and Q-Q plots to visually assess normality.
-#' The layout automatically adapts based on the number of groups (k).
+#' The layout is always 2 rows × k columns (histograms on top, Q-Q plots on bottom).
 #'
 #' @param samples Numeric vector; the dependent variable.
-#' @param groups Factor or vector; the grouping variable (2 to 20 groups).
-#' @param conf.level Numeric; confidence level, 0.95=default (currently unused, for future extensions).
+#' @param groups Factor or vector; the grouping variable (2 to 8 groups for visual display).
+#' @param conf.level Numeric; confidence level (default: 0.95). Used to determine 
+#'   alpha = 1 - conf.level for normality test interpretation.
 #' @param samplename Character; label for the y-axis (default: "").
 #' @param groupname Character; label for the x-axis (default: "").
 #' @param cex Numeric; scaling factor for plot text and symbols (default: 1).
@@ -24,14 +25,12 @@
 #' }
 #'
 #' @details
-#' Panel layouts adapt to number of groups:
+#' Layout is always 2 rows × k columns:
 #' \itemize{
-#'   \item k=2: 2×2 layout (histogram + Q-Q for each group)
-#'   \item k=3-4: 2×k layout (histogram + Q-Q for each group)
-#'   \item k=5-6: 3×4 layout (histogram + Q-Q side-by-side for each group)
-#'   \item k=7-12: 4×6 layout (histogram + Q-Q stacked for each group)
-#'   \item k=13-20: 5×8 layout (histogram + Q-Q stacked for each group)
+#'   \item Top row: Histograms with normal overlay for each group
+#'   \item Bottom row: Q-Q plots for each group
 #' }
+#' For more than 8 groups, a tabular summary is provided instead of plots.
 #'
 #' @examples
 #' # Two groups (like t-test)
@@ -73,12 +72,12 @@ vis_welch_normality <- function(samples,
   }
   
   # Check if too many groups for meaningful visualization
-  if (k > 10) {
+  if (k > 8) {
     cat("\n")
     cat("===============================================\n")
     cat("  TOO MANY GROUPS FOR VISUAL DISPLAY (k = ", k, ")\n")
     cat("===============================================\n\n")
-    cat("Visual plots are not meaningful with more than 10 groups.\n")
+    cat("Visual plots are not meaningful with more than 8 groups.\n")
     cat("Providing normality test results in tabular format instead.\n\n")
     
     # Calculate test results for all groups
@@ -148,21 +147,22 @@ vis_welch_normality <- function(samples,
     
     cat("\n")
     cat("Interpretation:\n")
-    cat("  - p > 0.05: Data consistent with normality\n")
-    cat("  - p <= 0.05: Evidence against normality\n")
+    alpha <- 1 - conf.level
+    cat("  - p >", alpha, ": Data consistent with normality\n")
+    cat("  - p <=", alpha, ": Evidence against normality\n")
     cat("\n")
     
     # Count how many groups fail normality
     n_fail_shapiro <- sum(results_table$Shapiro_p != "NA" & 
-                            as.numeric(sub("<", "", results_table$Shapiro_p)) < 0.05, 
+                            as.numeric(sub("<", "", results_table$Shapiro_p)) < alpha, 
                           na.rm = TRUE)
     n_fail_ad <- sum(results_table$AD_p != "NA" & 
-                       as.numeric(sub("<", "", results_table$AD_p)) < 0.05, 
+                       as.numeric(sub("<", "", results_table$AD_p)) < alpha, 
                      na.rm = TRUE)
     
     cat("Summary:\n")
-    cat("  ", n_fail_shapiro, "out of", k, "groups fail Shapiro-Wilk test (p < 0.05)\n")
-    cat("  ", n_fail_ad, "out of", k, "groups fail Anderson-Darling test (p < 0.05)\n")
+    cat("  ", n_fail_shapiro, "out of", k, "groups fail Shapiro-Wilk test (p <", alpha, ")\n")
+    cat("  ", n_fail_ad, "out of", k, "groups fail Anderson-Darling test (p <", alpha, ")\n")
     cat("\n")
     
     if (n_fail_shapiro > 0 || n_fail_ad > 0) {
@@ -186,7 +186,7 @@ vis_welch_normality <- function(samples,
     return(invisible(result))
   }
   
-  # For k <= 10: Continue with visual plots
+  # For k <= 8: Visual plots with 2 rows × k columns layout
   
   # Split data by groups
   group_data <- lapply(group_levels, function(lev) y[g == lev])
@@ -230,51 +230,29 @@ vis_welch_normality <- function(samples,
     }
   }
   
-  # Determine layout based on number of groups
-  # Design principle: All histograms in top row(s), all Q-Q plots in bottom row(s)
-  if (k == 2) {
-    # 2×2 layout: histograms on top, Q-Q plots on bottom
-    layout_rows <- 2
-    layout_cols <- 2
-    par(mfrow = c(layout_rows, layout_cols), 
-        mar = c(4, 4, 2, 1), 
-        oma = c(0, 0, 2.5, 0),
-        cex = 0.7 * cex)
-  } else if (k <= 4) {
-    # 2×k layout: top row = histograms, bottom row = Q-Q plots
-    layout_rows <- 2
-    layout_cols <- k
-    par(mfrow = c(layout_rows, layout_cols),
-        mar = c(4, 4, 2, 1),
-        oma = c(0, 0, 2.5, 0),
-        cex = 0.6 * cex)
-  } else if (k <= 8) {
-    # 2×8 layout: 5-8 groups fit in one row each
-    layout_rows <- 2
-    layout_cols <- 8
-    par(mfrow = c(layout_rows, layout_cols),
-        mar = c(3.5, 3.5, 2, 0.5),
-        oma = c(0, 0, 2.5, 0),
-        cex = 0.5 * cex)
-  } else if (k <= 16) {
-    # 4×8 layout: histograms in rows 1-2, Q-Q plots in rows 3-4
-    layout_rows <- 4
-    layout_cols <- 8
-    par(mfrow = c(layout_rows, layout_cols),
-        mar = c(3, 3, 1.5, 0.5),
-        oma = c(0, 0, 2.5, 0),
-        cex = 0.45 * cex)
+  # Simple 2 × k layout: histograms on top row, Q-Q plots on bottom row
+  # Adjust cex based on number of groups
+  if (k <= 3) {
+    plot_cex <- 0.6 * cex
+    mar_val <- c(4, 4, 3, 1)
+  } else if (k <= 5) {
+    plot_cex <- 0.55 * cex
+    mar_val <- c(3.5, 3.5, 2.5, 0.5)
   } else {
-    # 6×8 layout for 17-20 groups: histograms in rows 1-3, Q-Q in rows 4-6
-    layout_rows <- 6
-    layout_cols <- 8
-    par(mfrow = c(layout_rows, layout_cols),
-        mar = c(3, 3, 1.5, 0.5),
-        oma = c(0, 0, 2.5, 0),
-        cex = 0.4 * cex)
+    # k = 6, 7, 8
+    plot_cex <- 0.5 * cex
+    mar_val <- c(3, 3, 2, 0.5)
   }
   
-  # First pass: Plot all histograms
+  par(mfrow = c(2, k),
+      mar = mar_val,
+      oma = c(0, 0, 2.5, 0),
+      cex = plot_cex,
+      font.main = 1,  # 1 = plain, not bold
+      font.lab = 1,
+      font.axis = 1)
+  
+  # Row 1: All histograms
   for (i in seq_along(group_levels)) {
     gname <- group_levels[i]
     gdata <- group_data[[i]]
@@ -300,15 +278,15 @@ vis_welch_normality <- function(samples,
     y_max <- max(max_hist_density, max_normal_peak) * 1.1
     
     # Create title with p-values
-    p_s_text <- if (!is.na(p_s)) signif(p_s, 3) else "N/A"
-    p_a_text <- if (!is.na(p_a)) signif(p_a, 3) else "N/A"
-    main_text <- paste0("Hist. - ", gname, "\nSW p=", p_s_text, " | AD p=", p_a_text)
+    p_s_text <- if (!is.na(p_s)) signif(p_s, 2) else "N/A"
+    p_a_text <- if (!is.na(p_a)) signif(p_a, 2) else "N/A"
+    main_text <- paste0(gname, "\nSW p=", p_s_text, ", AD p=", p_a_text)
     
     hist(gdata, 
          freq = FALSE,
          main = main_text,
-         xlab = "Values",
-         ylab = "Density",
+         xlab = "",
+         ylab = if (i == 1) "Density" else "",
          ylim = c(0, y_max),
          col = "lightblue", 
          border = "black")
@@ -323,16 +301,7 @@ vis_welch_normality <- function(samples,
     lines(x_seq, normal_curve, col = "red", lwd = 2)
   }
   
-  # Fill remaining histogram slots if k > 8
-  if (k > 8) {
-    n_hist_rows <- ceiling(k / layout_cols)
-    n_hist_slots <- n_hist_rows * layout_cols
-    for (i in (k + 1):n_hist_slots) {
-      plot.new()
-    }
-  }
-  
-  # Second pass: Plot all Q-Q plots
+  # Row 2: All Q-Q plots
   for (i in seq_along(group_levels)) {
     gname <- group_levels[i]
     gdata <- group_data[[i]]
@@ -345,14 +314,14 @@ vis_welch_normality <- function(samples,
     
     # --- Q-Q plot ---
     qqnorm(gdata, 
-           main = paste("Q-Q Plot -", gname),
-           xlab = "Theoretical Quantiles",
-           ylab = "Sample Quantiles")
+           main = paste0(gname, " Q-Q"),
+           xlab = "Theoretical",
+           ylab = if (i == 1) "Sample" else "")
     qqline(gdata, col = "red", lwd = 2)
   }
   
-  # Simple outer title
-  mtext("Normality by Group", outer = TRUE, cex = 0.9, line = 0.5)
+  # Outer title
+  mtext("Normality Diagnostics by Group", outer = TRUE, cex = 1.0, line = 0.5)
   
   # Return results
   result <- list(
