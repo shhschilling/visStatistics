@@ -19,7 +19,7 @@
 #' }
 #'
 #' @details
-#' The function first tests for homogeneity of variance using Bartlett's test.
+#' The function first tests for homogeneity of variance using Levene's test.
 #' If variances are equal (p > alpha), Fisher's one-way ANOVA with TukeyHSD 
 #' post-hoc is performed. If variances are unequal (p <= alpha), Welch's 
 #' heteroscedastic one-way ANOVA with Games-Howell post-hoc is performed.

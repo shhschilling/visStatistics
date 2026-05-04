@@ -280,7 +280,7 @@ visstat_core <- function(dataframe,
         normality_met <- TRUE 
       } else {
         current_model <- lm(samples ~ fact)
-        std_resids <- rstandard(current_model) 
+        std_resids <- rstandard(current_model) #this is already part of the output of vis_glm_assumptions
         normality_met <- shapiro.test(std_resids)$p.value >= alpha
       }
     }
