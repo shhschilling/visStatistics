@@ -21,7 +21,7 @@
 #'   \item{ad_test}{Result from \code{nortest::ad.test()} or a character message if n < 7.}
 #'   \item{levene_test}{Result from \code{levene.test()} (only if \code{regression = FALSE}).}
 #'   \item{bartlett_test}{Result from \code{bartlett.test()} (only if \code{regression = FALSE}).}
-#'   \item{bp_test}{Result from \code{bp_test()} (only if \code{regression = TRUE}).}
+#'   \item{bp_test}{Result from \code{bp.test()} (only if \code{regression = TRUE}).}
 #' }
 #'
 #' @examples
@@ -68,13 +68,13 @@ vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
   if (!regression) {
     levene_test <- levene.test(samples, fact)
     bartlett_test <- bartlett.test(samples ~ fact)
-    bp_test <- NULL
+     bp_test <- NULL
   } else {
     # For regression: use Breusch-Pagan test for heteroscedasticity
     # (tests if error variance depends on independent variables)
     levene_test <- NULL
     bartlett_test <- NULL
-    bp_test <- bp_test(anova_model)
+     bp_test <-   bp.test(anova_model)
   }
   
   # Set up plotting area with outer margin for title
@@ -121,7 +121,7 @@ vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
   
   if (regression) {
     # Regression title with Breusch-Pagan test - split into two rows
-    p_bp <- signif(bp_test$p.value, 2)
+    p_bp <- signif( bp_test$p.value, 2)
     title_line1 <- paste("GLM assumptions: Shapiro-Wilk p =", p_shapiro, 
                          "| Anderson-Darling p =", p_AD)
     title_line2 <- paste("Breusch-Pagan p =", p_bp)
@@ -146,7 +146,7 @@ vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
     ad_test = ad_test,
     levene_test = if (!regression) levene_test else NULL,
     bartlett_test = if (!regression) bartlett_test else NULL,
-    bp_test = if (regression) bp_test else NULL
+     bp_test = if (regression)  bp_test else NULL
   )
   
   class(result) <- "vis_glm_assumptions"

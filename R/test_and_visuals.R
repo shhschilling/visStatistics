@@ -606,7 +606,7 @@ vis_chi_squared_test <- function(samples,
   if (check_assumptions_chi == FALSE) {
     fisher_chi <- counts
     return(fisher_chi)
-   
+    
   } else {
     row_sum <- rowSums(counts)
     col_sum <- colSums(counts)
@@ -721,12 +721,12 @@ vis_chi_squared_test <- function(samples,
 ## performs Kruskal Wallis and post-hoc Wilcoxon:
 
 vis_Kruskal_Wallis <- function(samples,
-                                        fact,
-                                        conf.level = conf.level,
-                                        samplename = "",
-                                        factorname = "",
-                                        cex = 1,
-                                        notch = F) {
+                               fact,
+                               conf.level = conf.level,
+                               samplename = "",
+                               factorname = "",
+                               cex = 1,
+                               notch = F) {
   oldparkruskal <- par(no.readonly = TRUE)
   on.exit(par(oldparkruskal))
   
@@ -740,7 +740,7 @@ vis_Kruskal_Wallis <- function(samples,
   samples <- samples3
   n_classes <- length(unique(fact))
   # define color scheme dependent on number of classes
-
+  
   mc <- rainbow(n_classes, alpha = 1)
   # mc=ColorPalette(n_classes)
   
@@ -830,9 +830,12 @@ vis_Kruskal_Wallis <- function(samples,
   
   kk_value <- round(as.numeric(kk$statistic),2)
   
+  
   title(paste0(kk$method,
                "\n H = ",kk_value,
-              ", p = ", signif(kk$p.value, digits = 3)))
+               ", p = ", signif(kk$p.value, digits = 3)),
+        font.main = 1)
+  
   my_list <-
     list("Kruskal Wallis rank sum test" = kk,
          "post-hoc by pairwise Wilcoxon rank sum test " = post_hoc_kruskal)
@@ -1074,7 +1077,7 @@ vis_mosaic <- function(samples,
   on.exit(par(oldparmosaic))
   
   if (missing(minperc)) {
-    # minperc is the minimum percehntage a column has to contribute to be displayed
+    # minperc is the minimum percentage a column has to contribute to be displayed
     minperc <- 0.05
   }
   if (missing(numbers)) {
@@ -1089,38 +1092,55 @@ vis_mosaic <- function(samples,
     return(my_list)
   } else {
     ## Mosaic plot
-    ## The height  of the box is the same for all boxes in the same row and
+    ## The height of the box is the same for all boxes in the same row and
     # is equal to the total count in that row.
     #
     # The width of the box is the proportion of individuals in the row which fall into that cell.
-    # #Full mosaic plot with all data only if unique number of samples and fact below threshold
-    maxfactors <- max(length(unique(samples)), length(unique(fact)))
+    n_samples <- length(unique(samples))
+    n_fact <- length(unique(fact))
+    maxfactors <- max(n_samples, n_fact)
     threshold <- 6
     
-    if (length(unique(samples)) < threshold &
-        length(unique(fact)) < threshold) {
+    # Calculate adaptive font sizes based on number of categories
+    if (maxfactors <= 4) {
+      label_fontsize <- 8
+      cell_fontsize <- 7
+    } else if (maxfactors <= 6) {
+      label_fontsize <- 7
+      cell_fontsize <- 6
+    } else if (maxfactors <= 8) {
+      label_fontsize <- 6
+      cell_fontsize <- 5
+    } else {
+      label_fontsize <- 4
+      cell_fontsize <- 3
+    }
+    
+    # Common labeling arguments for readable labels
+    label_args <- list(
+      gp_labels = gpar(fontsize = label_fontsize),
+      gp_varnames = gpar(fontsize = label_fontsize + 1, fontface = "bold")
+    )
+    
+    if (n_samples < threshold & n_fact < threshold) {
       res <- mosaic(
         counts,
         shade = TRUE,
         legend = TRUE,
-        # shows pearsons residual
-        pop = F
-        # ,main = titletext
+        labeling_args = label_args,
+        pop = FALSE
       )
       
-      tab <-
-        as.table(ifelse(counts < 0.005 * sum(counts), NA, counts))
-      # puts numbers on count
+      tab <- as.table(ifelse(counts < 0.005 * sum(counts), NA, counts))
       if (numbers == TRUE) {
-        labeling_cells(text = tab, margin = 0)(counts)
+        labeling_cells(text = tab, margin = 0, 
+                       gp_text = gpar(fontsize = cell_fontsize))(counts)
       }
     } else {
-      #
-      ## Elimintate rows and columns distributing less than minperc total number of counts
+      ## Eliminate rows and columns distributing less than minperc total number of counts
       rowSum <- rowSums(counts)
       colSum <- colSums(counts)
       total <- sum(counts)
-      
       
       countscolumn_row_reduced <- as.table(counts[which(rowSum > minperc * total), which(colSum > minperc * total)])
       
@@ -1131,23 +1151,21 @@ vis_mosaic <- function(samples,
       } else {
         countsreduced <- countscolumn_row_reduced
       }
+      
       res <- mosaic(
         countsreduced,
         shade = TRUE,
         legend = TRUE,
-        cex.axis = 50 / maxfactors,
-        labeling_args = list(gp_labels = (gpar(
-          fontsize = 70 / maxfactors
-        ))),
-        # main = titletext,
-        pop = F
+        labeling_args = label_args,
+        pop = FALSE
       )
-      if (numbers == TRUE) {
-        labeling_cells(text = countsreduced, margin = 0)(countsreduced)
+      
+      if (numbers == TRUE & maxfactors <= 10) {
+        labeling_cells(text = countsreduced, margin = 0,
+                       gp_text = gpar(fontsize = cell_fontsize))(countsreduced)
       }
     }
-    my_list <-
-      list("mosaic_stats" = res)
+    my_list <- list("mosaic_stats" = res)
     
     return(my_list)
   }

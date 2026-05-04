@@ -109,7 +109,7 @@ vis_anova <- function(samples,
     summarystat <- oneway
     
     # Use Games-Howell for post-hoc (correct for unequal variances)
-    gh_result <- games_howell(samples, fact, conf.level = conf.level)
+    gh_result <- games.howell(samples, fact, conf.level = conf.level)
     
     # Convert to format needed by multcompLetters (line 846)
     comparison_names <- paste0(gh_result$group2, "-", gh_result$group1)

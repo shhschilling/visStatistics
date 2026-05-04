@@ -102,7 +102,7 @@ test_that("bp_test gives reasonable results", {
   y <- 2 + 3*x + rnorm(100, sd = 1)
   model1 <- lm(y ~ x)
   
-  result1 <- bp_test(model1)
+  result1 <- bp.test(model1)
   
   expect_s3_class(result1, "htest")
   expect_named(result1, c("statistic", "parameter", "p.value", "method", "data.name"))
@@ -115,7 +115,7 @@ test_that("bp_test gives reasonable results", {
   y2 <- 2 + 3*x2 + rnorm(100, sd = 0.5 + 2*x2)
   model2 <- lm(y2 ~ x2)
   
-  result2 <- bp_test(model2)
+  result2 <- bp.test(model2)
   
   expect_s3_class(result2, "htest")
   expect_equal(result2$method, "Breusch-Pagan test for heteroscedasticity")

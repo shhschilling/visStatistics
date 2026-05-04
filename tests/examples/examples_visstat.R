@@ -9,11 +9,29 @@ while (!is.null(dev.list())) {
 options(warn = 0) # for debugging also warnings
 filedir <- tempdir()
 
-# Student's t-test (equal variances, two groups)
-visstat(sleep$group, sleep$extra)
+# Student's t-test (equal variances, two groups)----
+ttest = visstat(sleep$group, sleep$extra)
+tvalue <- unname(ttest[[3]]$statistic)
+# Show equivalance of student's t-test to aov approach-----
+aov_sleep <- aov(extra ~ group, data = sleep)
+summary_aov <- summary(aov_sleep)
+F_anova <- (summary_aov[[1]][["F value"]][1])
+stopifnot(all.equal(tvalue^2, F_anova))
+# Show equivalance of student's t-test to lm approach---
+# Extract t - statistics
+lm_sleep <- lm(extra ~ group, data = sleep)
+summary_lm <- summary(lm_sleep)
+abst = (summary_lm$coefficients[2, 3])
+stopifnot(all.equal(abst, abs(tvalue)))
+beta1 = summary_lm$coefficients[2, 1]
+# Check group means
+mean1 = mean(sleep$extra[sleep$group == 1])
+mean2 = mean(sleep$extra[sleep$group == 2])
+stopifnot(all.equal(beta1, abs(mean2 - mean1)))
 
 
-# Welch's t-test (unequal variances, two groups)
+
+# Welch's t-test (unequal variances, two groups)----
 visstat(mtcars$am, mtcars$mpg)
 
 
@@ -63,7 +81,7 @@ grades_gender <- data.frame(
     15.6
   )
 )
-visstat(grades_gender$Sex,grades_gender$Grade)
+visstat(grades_gender$Sex, grades_gender$Grade)
 
 # Fisher's ANOVA (equal variances, >2 groups)
 visstat(PlantGrowth$group, PlantGrowth$weight)
@@ -71,21 +89,22 @@ visstat(PlantGrowth$group, PlantGrowth$weight)
 
 # Welch ANOVA -----
 set.seed(1)
-welch_anova_data <- data.frame(
-  group = factor(rep(c("A", "B", "C"), each = 20)),
-  value = c(rnorm(20, mean = 50, sd = 5),
-            rnorm(20, mean = 55, sd = 10),
-            rnorm(20, mean = 60, sd = 15))
-)
-welch_annova=visstat(welch_anova_data$group, welch_anova_data$value)
+welch_anova_data <- data.frame(group = factor(rep(c("A", "B", "C"), each = 20)),
+                               value = c(
+                                 rnorm(20, mean = 50, sd = 5),
+                                 rnorm(20, mean = 55, sd = 10),
+                                 rnorm(20, mean = 60, sd = 15)
+                               ))
+welch_annova = visstat(welch_anova_data$group, welch_anova_data$value)
 
 
 
 # Kruskal-Wallis test: iris----
-iris_data=visstat(iris$Species, iris$Petal.Width)
+iris_data = visstat(iris$Species, iris$Petal.Width)
 
-iris_data_stored=visstat(
-  iris$Species, iris$Petal.Width,
+iris_data_stored = visstat(
+  iris$Species,
+  iris$Petal.Width,
   graphicsoutput = "pdf",
   plotName = "iris_kruskal",
   plotDirectory = filedir
@@ -93,7 +112,8 @@ iris_data_stored=visstat(
 
 # Linear regression: trees data set  ----
 linear_regression_trees <- visstat(trees$Height, trees$Girth)
-plot(linear_regression_trees, which=1) # replays assumption plot
+dev.off()
+plot(linear_regression_trees, which = 1) # replays assumption plot
 
 
 # Chi squared, mosaic plots with HairEyeColor----
@@ -106,7 +126,8 @@ HairEyeColorMaleFisher[HairEyeColorMaleFisher < 10] <- 4
 HairEyeColorMaleFisher <- counts_to_cases(as.data.frame(HairEyeColorMaleFisher))
 
 res_chi <- visstat(
-  HairEyeColorMaleFisher$Eye, HairEyeColorMaleFisher$Hair,
+  HairEyeColorMaleFisher$Eye,
+  HairEyeColorMaleFisher$Hair,
   graphicsoutput = "png",
   plotDirectory = filedir
 ) # stores two graphics outputs
@@ -125,21 +146,24 @@ fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 summary(iris_data_stored)
 print(iris_data_stored)
 plot(iris_data_stored) #file paths
-plot(iris_data,which = 1) #replay plot 1
+plot(iris_data, which = 1) #replay plot 1
 
 
 # Replay plots  or file paths of stored graphics------
-plot(insect_spray,which = 1) # path of assumption plot
-plot(anova_npk,which = 2)
+plot(insect_spray, which = 1) # path of assumption
+dev.off()
+plot(anova_npk, which = 2)
+dev.off()
 plot(linear_regression_trees)
 plot(res_chi)# paths two column plot and mosaic plot
-plot(fisher_stats,which = 2) #mosaic plot only
+plot(fisher_stats, which = 2) #mosaic plot only
 
 
 # Saving the graphical output to a user specified plotDirectory in user specified graphicsouput format ----
 linear_regression_trees_paths <- visstat(
-  trees$Height, trees$Girth,
-  graphicsoutput = "svg", 
+  trees$Height,
+  trees$Girth,
+  graphicsoutput = "svg",
   plotName = "trees",
   plotDirectory = filedir
 )
@@ -152,4 +176,3 @@ for (i in graphicaltypes) {
   print(file.path(filedir, plotname))
   # file.remove(file.path(filedir, plotname)) # removes all files of type ".png", ".pdf", ".svg", ".ps" in filedir=tempdir()-
 }
-

@@ -60,7 +60,7 @@
 #' Implemented post hoc tests:
 #' \itemize{
 #'   \item \code{TukeyHSD()} for \code{aov()} 
-#'   \item \code{games_howell_test()} for  \code{oneway.test()}
+#'   \item \code{games.howell} for  \code{oneway.test()}
 #'   \item \code{pairwise.wilcox.test()} for \code{kruskal.test()}
 #' }
 #' @seealso
@@ -204,6 +204,14 @@ visstat_core <- function(dataframe,
   name_of_factor <- input$name_of_factor
   matchingCriteria <- input$matchingCriteria
   
+  # Convert ordered response to numeric ranks and set flag
+  ordinal_response <- FALSE
+  if (is.ordered(samples)) {
+    warning("Ordered response (e.g., Likert scale) detected. Converting to numeric ranks for non-parametric analysis.")
+    samples <- as.numeric(samples)
+    ordinal_response <- TRUE  # Flag to force non-parametric
+  }
+  
   vis_sample_fact <- list()
   
   # dependent on samples, fact, name_of_sample, name_of_factor, conf.level,
@@ -214,7 +222,7 @@ visstat_core <- function(dataframe,
   
   
   # transform independent variable "fact" of class "character" to factor
-  if (typefactor == "character") {
+  if (inherits(fact, "character")) {
     fact <-
       as.factor(fact) # transform  "fact" of class "character" to factor
     typefactor <- class(fact) # store the class of type "factor"
@@ -222,7 +230,7 @@ visstat_core <- function(dataframe,
   
   #  Check order 
   
-  if ((typefactor == "numeric" || typefactor == "integer") && typesample == "factor") {
+  if ((inherits(fact, "numeric") || inherits(fact, "integer")) && inherits(samples, "factor")) {
     stop("A numeric or integer predictor with a factor response is ignored.")
   }
   
@@ -232,8 +240,8 @@ visstat_core <- function(dataframe,
   #  
   ## A) median or mean-------
   # --- Numeric vs Factor Logic with Original Error Catching ---
-  if ((typesample == "integer" | typesample == "numeric") &&
-      (typefactor == "factor") && nlevels(fact) >= 2) {
+  if ((inherits(samples, "integer") | inherits(samples, "numeric")) &&
+      inherits(fact, "factor") && nlevels(fact) >= 2) {
     
     # Pre-check: Original error handling for insufficient data
     counts_per_level <- table(fact)
@@ -248,27 +256,33 @@ visstat_core <- function(dataframe,
       return(vis_sample_fact)
     }
     
-    # MANDATORY DIAGNOSTIC: Provide visual evidence for the decision pipeline
-    openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 
-    vis_glm_assumptions(samples, fact, cex = 0.8)
-    
-    if (is.null(plotName)) {
-      filename <- paste("glm_assumptions_", name_of_sample, "_", name_of_factor, sep = "")
+    # Check if response was originally ordinal - force non-parametric
+    if (ordinal_response) {
+      warning("Ordinal response detected. Defaulting to non-parametric tests.")
+      normality_met <- FALSE
     } else {
-      filename <- paste("glm_assumptions_", plotName, sep = "")
-    }
-    plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename, type = graphicsoutput, 
-                                                 fileDirectory = plotDirectory, capture_env = capture_env))
-    
-    # Decision logic gate
-    all_groups_large <- all(counts_per_level > 100)
-    
-    if (all_groups_large) {
-      normality_met <- TRUE 
-    } else {
-      current_model <- lm(samples ~ fact)
-      std_resids <- rstandard(current_model) 
-      normality_met <- shapiro.test(std_resids)$p.value >= alpha
+      # MANDATORY DIAGNOSTIC: Provide visual evidence for the decision pipeline
+      openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 
+      vis_glm_assumptions(samples, fact, cex = 0.8)
+      
+      if (is.null(plotName)) {
+        filename <- paste("glm_assumptions_", name_of_sample, "_", name_of_factor, sep = "")
+      } else {
+        filename <- paste("glm_assumptions_", plotName, sep = "")
+      }
+      plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename, type = graphicsoutput, 
+                                                   fileDirectory = plotDirectory, capture_env = capture_env))
+      
+      # Decision logic gate
+      all_groups_large <- all(counts_per_level > 50)
+      
+      if (all_groups_large) {
+        normality_met <- TRUE 
+      } else {
+        current_model <- lm(samples ~ fact)
+        std_resids <- rstandard(current_model) 
+        normality_met <- shapiro.test(std_resids)$p.value >= alpha
+      }
     }
     
     # Testing and Visualization steps
@@ -300,18 +314,18 @@ visstat_core <- function(dataframe,
       if (nlevels(fact) == 2) {
         # Group-wise normality diagnostics for Welch t-tests
         # visualization of normality assumption per group
-         if (var_p < alpha) {
-        openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-        vis_welch_normality(samples, fact, conf.level = conf.level, cex = 0.8)
-
-        if (is.null(plotName)) {
-          filename <- paste("ttest_assumptions_", name_of_sample, "_", name_of_factor, sep = "")
-        } else {
-          filename <- paste("ttest_assumptions_", plotName, sep = "")
+        if (var_p < alpha) {
+          openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+          vis_welch_normality(samples, fact, conf.level = conf.level, cex = 0.8)
+          
+          if (is.null(plotName)) {
+            filename <- paste("ttest_assumptions_", name_of_sample, "_", name_of_factor, sep = "")
+          } else {
+            filename <- paste("ttest_assumptions_", plotName, sep = "")
+          }
+          plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename, type = graphicsoutput,
+                                                       fileDirectory = plotDirectory, capture_env = capture_env))
         }
-        plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename, type = graphicsoutput,
-                                                     fileDirectory = plotDirectory, capture_env = capture_env))
-         }
         # Final t-test execution
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 
         vis_sample_fact <- two_sample_t_test(samples, fact, var.equal = (var_p >= alpha), 
@@ -357,7 +371,7 @@ visstat_core <- function(dataframe,
   
   ## B) Chi2 and Mosaic-----
   
-  if (typefactor == "factor" && typesample == "factor") {
+  if (inherits(fact, "factor") && inherits(samples, "factor")) {
     if (check_assumptions_count_data(samples, fact) == FALSE) {
       # vis_sample_fact <-
       #   makeTable(samples, fact, name_of_sample, name_of_factor)
@@ -459,21 +473,20 @@ visstat_core <- function(dataframe,
   # Regression
   #
   #
-  if ((typefactor == "integer" |
-       typefactor == "numeric") &&
-      (typesample == "integer" | typesample == "numeric")) {
+  if ((inherits(fact, "integer") | inherits(fact, "numeric")) &&
+      (inherits(samples, "integer") | inherits(samples, "numeric"))) {
     
     # samples: independent variable, factor: dependent   variable
     # check normality
     # 
     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory
-                    ) 
-   
-   
+    ) 
+    
+    
     normality_residual_assumption <-
       vis_glm_assumptions(samples, fact,cex = 0.8,regression = TRUE)
     
-        
+    
     
     
     if (is.null(plotName)) {
