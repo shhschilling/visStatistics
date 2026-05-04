@@ -141,7 +141,7 @@ vis_numeric <- function(y,
     
     # 2. Test for homoscedasticity using Breusch-Pagan test (correct for regression)
     bp_result <- tryCatch({
-      bp_test(reg)
+      bp.test(reg)
     }, error = function(e) {
       list(p.value = NA, method = paste("Breusch-Pagan test failed:", e$message))
     })

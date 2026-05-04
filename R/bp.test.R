@@ -45,18 +45,18 @@
 #' x <- runif(100)
 #' y <- 2 + 3*x + rnorm(100, sd = 1)
 #' model1 <- lm(y ~ x)
-#' bp_test(model1)  # Should not reject (p > 0.05)
+#' bp.test(model1)  # Should not reject (p > 0.05)
 #' 
 #' # Example with heteroscedastic errors (variance increases with x)
 #' set.seed(456)
 #' x <- runif(100)
 #' y <- 2 + 3 *x + rnorm(100, sd = 0.5 + 2*x)
 #' model2 <- lm(y ~ x)
-#' bp_test(model2)  # Should reject (p < 0.05)
+#' bp.test(model2)  # Should reject (p < 0.05)
 #'
 #' @export
 
-bp_test <- function(model) {
+bp.test <- function(model) {
   
   # Error handling
   if (!inherits(model, "lm")) {

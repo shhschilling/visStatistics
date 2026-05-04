@@ -33,11 +33,11 @@
 #' ToothGrowth$dose <- as.factor(ToothGrowth$dose)
 #' 
 #' # Perform Games-Howell test
-#' result <- games_howell(ToothGrowth$len, ToothGrowth$dose)
+#' result <- games.howell(ToothGrowth$len, ToothGrowth$dose)
 #' print(result)
 #'
 #' @export
-games_howell <- function(samples, groups, conf.level = 0.95) {
+games.howell <- function(samples, groups, conf.level = 0.95) {
   
   # Input validation
   if (!is.numeric(samples)) {
@@ -136,18 +136,18 @@ games_howell <- function(samples, groups, conf.level = 0.95) {
   results$significant <- results$p_adj < (1 - conf.level)
   
   # Set class for potential print method
-  class(results) <- c("games_howell", "data.frame")
+  class(results) <- c("games.howell", "data.frame")
   
   return(results)
 }
 
-#' Print method for games_howell objects
+#' Print method for games.howell objects
 #'
-#' @param x A games_howell object
+#' @param x A games.howell object
 #' @param digits Number of digits to display (default: 4)
 #' @param ... Additional arguments (passed to print.data.frame)
 #' @export
-print.games_howell <- function(x, digits = 4, ...) {
+print.games.howell <- function(x, digits = 4, ...) {
   cat("\nGames-Howell Post-Hoc Test\n")
   cat("==========================\n\n")
   
@@ -182,7 +182,7 @@ print.games_howell <- function(x, digits = 4, ...) {
 #' Converts Games-Howell test results into compact letter display
 #' using multcompView. Groups sharing a letter are not significantly different.
 #'
-#' @param x A games_howell object from \code{games_howell()}
+#' @param x A games.howell object from \code{games.howell()}
 #' @param alpha Significance level (default: 0.05)
 #'
 #' @return A named vector with group names and their letter codes
@@ -190,15 +190,15 @@ print.games_howell <- function(x, digits = 4, ...) {
 #' @examples
 #' # Convert dose to factor
 #' ToothGrowth$dose <- as.factor(ToothGrowth$dose)
-#' result <- games_howell(ToothGrowth$len, ToothGrowth$dose)
+#' result <- games.howell(ToothGrowth$len, ToothGrowth$dose)
 #' letters <- gh_letters(result)
 #' print(letters)
 #'
 #' @export
 gh_letters <- function(x, alpha = 0.05) {
   
-  if (!inherits(x, "games_howell")) {
-    stop("x must be a games_howell object")
+  if (!inherits(x, "games.howell")) {
+    stop("x must be a games.howell object")
   }
   
   # Create a matrix of p-values for multcompView
