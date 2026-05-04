@@ -1,82 +1,141 @@
+
+## bibliography: inst/visstat.bib
+
 <!-- pkgdown::start -->
 
 # visStatistics: The right test, visualised.
 
-The R package `visStatistics` allows for rapid **vis**ualisation and
-statistical analysis of raw data. It automatically selects and
-visualises the most appropriate **statistic**al hypothesis test between
-two vectors of class `integer`, `numeric` or `factor`.
+<!-- Imagine you have a data base, which for confidentiality reasons, can not be directly accessed by collaborating researchers. But you want to give your collaborators to give  the possibility, via a web interface, to slice out groups of the data set, visualize it and get a first statistical analysis. This was the task for which `visstatistics` was originally developed: a fully automated  "quick and dirty"  visualisation and statistical analysis tool, particularly suited for browser-based interfaces that -->
+
+<!-- rely on  server-side R applications connected to secure databases, where users have no direct accesss.  -->
+
+<!-- The R package `visStatistics` allows for rapid **vis**ualisation and statistical -->
+
+<!-- analysis of raw data. It automatically selects and visualises the most -->
+
+<!-- appropriate **statistic**al hypothesis test between two vectors of class -->
+
+<!-- `integer`, `numeric` or `factor`. -->
+
 <!-- (an input vector of class -->
+
 <!-- `character` will be internally transformed to class `factor`). -->
 
-While numerous R packages provide statistical testing functionality, few
-are designed with pedagogical accessibility as a primary concern.
-`visStatistics` addresses this gap by automating the test selection
-process and presenting results using annotated, publication-ready
-visualisations. This helps the user to focus on interpretation rather
-than technical execution.
+<!-- While numerous R packages provide statistical testing functionality, few are -->
 
-The automated workflow is particularly suited for browser-based
-interfaces that rely on server-side R applications connected to secure
-databases, where users have no direct access, or for quick data
-visualisation, e.g. in statistical consulting projects or educational
-settings.
+<!-- designed with pedagogical accessibility as a primary concern.  -->
+
+<!-- `visStatistics`  -->
+
+<!-- addresses this gap -->
+
+<!-- by automating the test selection process and presenting results using annotated, -->
+
+<!-- publication-ready visualisations.  -->
+
+<!-- This helps the user to focus on interpretation rather than technical execution. -->
+
+<!-- Its easy access should be of extreme use  -->
+
+# Purpose
+
+`visStatistics` is an R package for automated statistical test selection
+and visualisation. It selects appropriate hypothesis tests for pairs of
+variables (integer, numeric, or factor), runs the analysis, and produces
+annotated, publication-ready plots.
+
+The package was originally developed for researchers who could not
+directly access sensitive data but needed to perform visualisations and
+statistical analyses of selected groups via a web interface connected to
+a protected database — a setting that required a fully automated
+workflow. The same automation makes it useful in time-constrained
+contexts such as statistical consulting, where it reduces effort spent
+on test selection and leaves more room for interpretation. The package
+covers most hypothesis tests taught in undergraduate statistics.
 
 # Installation of latest stable version from CRAN
 
 #### 1. Install the package
 
-    install.packages("visStatistics")
+``` r
+install.packages("visStatistics")
+```
 
 #### 2. Load the package
 
-    library(visStatistics)
+``` r
+library(visStatistics)
+```
 
 # Installation of the development version from GitHub
 
 #### 1.Install `devtools` from CRAN if not already installed:
 
-    install.packages("devtools")
+``` r
+install.packages("devtools")
+```
 
 #### 2. Load the `devtools` package:
 
-    library(devtools)
+``` r
+library(devtools)
+```
 
 #### 3. Install the `visStatistics` package from GitHub:
 
-    install_github("shhschilling/visStatistics")
+``` r
+pak::pak("shhschilling/visStatistics")
+```
 
 #### 4. Load the `visStatistics` package:
 
-    library(visStatistics)
+``` r
+library(visStatistics)
+```
 
 #### 5. View help for the main function:
 
-    ? visstat
+``` r
+? visstat
+```
 
 #### 6. Study all the details in the packages’ vignette:
 
-    vignette("visStatistics")
+``` r
+vignette("visStatistics")
+```
 
 # Getting Started
 
-The function `visstat()` accepts input in two ways:
+The function `visstat()` accepts input in three ways:
 
-    # Standardised form (recommended):
-    visstat(x, y)
+``` r
+# Standardised form:
+visstat(x, y)
 
-    # Backward-compatible form:
-    visstat(dataframe, "namey", "namex")
+# Formula interface: 
+visstat(y ~ x, data = df) 
+
+
+# Backward-compatible form:
+visstat(dataframe, "namey", "namex")
+```
 
 In the standardised form, `x` and `y` must be vectors of class
 `"numeric"`, `"integer"`, or `"factor"`.
+
+In the formula interface, the formula `y ~ x` specifies the response `y`
+and predictor `x` variables, and `data` is a data frame containing these
+variables.
 
 In the backward-compatible form, `"namex"` and `"namey"` must be
 character strings naming columns in a `data.frame` named `dataframe`.
 These column must be of class `"numeric"`, `"integer"`, or `"factor"`.
 This is equivalent to writing:
 
-    visstat(dataframe[["namex"]], dataframe[["namey"]])
+``` r
+visstat(dataframe[["namex"]], dataframe[["namey"]])
+```
 
 To simplify the notation, throughout the remainder, data of class
 `numeric` or `integer` are both referred to by their common `mode`
@@ -96,12 +155,63 @@ The interpretation of `x` and `y` depends on their classes:
   or Fisher’s exact). The test is symmetric, but the plot layout depends
   on which variable is supplied as `x`.
 
-`visstat()` selects the appropriate statistical test and generates
-visualisations accompanied by the main test statistics.
+- If both are factors and `y` is additionally of class`ordered`, a non
+  parametric test is performed: a Wilcoxon test in the case of two
+  factor levels in `x` , a Kruskal-Wallis-Test for more than two factor
+  levels in in `x`.
+
+# Decision logic
+
+The choice of statistical tests depends on whether the data of the
+selected columns are numeric or categorical, the number of levels in the
+categorical variable, and the distribution of the data.  
+For a detailed description of the underlying decision logic, please
+refer to the package vignette:
+
+``` r
+vignette("visStatistics")
+```
+
+Below figure gives a graphical overview of the main tests implemented.
+
+<div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: left;">
+
+<img src="vignettes/figures/overview.png" width="100%" 
+     alt="Decision logic of main tests.">
+
+<p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
+
+Overview of the implemented statistical tests based on the class of the
+variables.
+
+</p>
+
+</div>
+
+A graphical summary of the decision logic used for categorial predictors
+andnumerical responses is given in below figure:
+
+<div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: left;">
+
+<img src="vignettes/figures/decision_tree.png" width="100%" 
+     alt="Decision tree used to select the appropriate statistical test.">
+
+<p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
+
+Comparing central tendencies: Decision tree used to select the
+appropriate statistical test for a categorical predictor and numeric
+response, based on the number of factor levels, normality, and
+homoscedasticity.
+
+</p>
+
+</div>
 
 # Examples
 
-    library(visStatistics)
+``` r
+library(visStatistics)
+```
 
 ## Numerical response and categorical predictor
 
@@ -110,122 +220,132 @@ central tendencies are selected.
 
 ### Welch two sample t-test
 
-#### InsectSprays data set — both input forms
+<!-- #### InsectSprays data set — both input forms -->
 
-    insect_sprays_ab <- InsectSprays[InsectSprays$spray %in% c("A", "B"), ]
-    insect_sprays_ab$spray <- factor(insect_sprays_ab$spray)
+<!-- ```{r insect-sprays, eval = TRUE} -->
 
-    # Standardised
-    visstat(insect_sprays_ab$spray, insect_sprays_ab$count)
+<!-- insect_sprays_ab <- InsectSprays[InsectSprays$spray %in% c("A", "B"), ] -->
 
-<img src="man/figures/README-insect-sprays-1.png" width="100%" />
+<!-- insect_sprays_ab$spray <- factor(insect_sprays_ab$spray) -->
 
+<!-- visstat(insect_sprays_ab$spray, insect_sprays_ab$count) -->
 
-
-    # Backward-compatible function call resulting in same output
-    # visstat(insect_sprays_ab,"count", "spray")
+<!-- ``` -->
 
 #### mtcars data set
 
-    mtcars$am <- as.factor(mtcars$am)
-    t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
+``` r
+ mtcars$am <- as.factor(mtcars$am)
+ t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
+```
 
-<img src="man/figures/README-mtcars-1.png" width="100%" />
-
-    #summary(t_test_statistics)
+<img src="man/figures/README-mtcars-1.png" alt="" width="80%" /><img src="man/figures/README-mtcars-2.png" alt="" width="80%" /><img src="man/figures/README-mtcars-3.png" alt="" width="80%" />
 
 ### Wilcoxon rank sum test
 
-    grades_gender <- data.frame(
-      sex = factor(rep(c("girl", "boy"), times = c(21, 23))),
-      grade = c(
-        19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4, 20.3, 9.3, 11.3,
-        18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.0, 16.5, 5.1,
-        15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0, 17.4, 7.3, 14.3,
-        13.5, 8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6, 17.3, 19.9, 4.4, 2.1
-      )
-    )
+``` r
+grades_gender <- data.frame(
+  sex = factor(rep(c("girl", "boy"), times = c(21, 23))),
+  grade = c(
+    19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4, 20.3, 9.3, 11.3,
+    18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.0, 16.5, 5.1,
+    15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0, 17.4, 7.3, 14.3,
+    13.5, 8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6, 17.3, 19.9, 4.4, 2.1
+  )
+)
 
-    wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
+wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
+```
 
-<img src="man/figures/README-sex-grades2-1.png" width="100%" />
+<img src="man/figures/README-sex-grades2-1.png" alt="" width="80%" /><img src="man/figures/README-sex-grades2-2.png" alt="" width="80%" />
 
-### One-way test
+### Fisher’s one way test
 
-    one_way_npk <- visstat(npk$block,npk$yield)
+``` r
+fisher_one_way_npk <- visstat(npk$block,npk$yield)
+```
 
-<img src="man/figures/README-npk-onewy-1.png" width="100%" /><img src="man/figures/README-npk-onewy-2.png" width="100%" />
-
-    summary(one_way_npk)
-    #> Summary of visstat object
-    #> 
-    #> --- Named components ---
-    #> [1] "summary statistics of Fisher's one-way ANOVA"                              
-    #> [2] "summary statistics of Welch's one-way ANOVA (not assuming equal variances)"
-    #> [3] "post-hoc analysis of TuckeyHSD"                                            
-    #> [4] "conf.level"                                                                
-    #> 
-    #> --- Contents ---
-    #> 
-    #> $summary statistics of Fisher's one-way ANOVA:
-    #>             Df Sum Sq Mean Sq F value Pr(>F)  
-    #> fact         5  343.3   68.66   2.318 0.0861 .
-    #> Residuals   18  533.1   29.62                 
-    #> ---
-    #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-    #> 
-    #> $summary statistics of Welch's one-way ANOVA (not assuming equal variances):
-    #> 
-    #>  One-way analysis of means (not assuming equal variances)
-    #> 
-    #> data:  samples and fact
-    #> F = 6.2463, num df = 5.0000, denom df = 8.0508, p-value = 0.01178
-    #> 
-    #> 
-    #> $post-hoc analysis of TuckeyHSD:
-    #>   Tukey multiple comparisons of means
-    #>     95% family-wise confidence level
-    #> 
-    #> Fit: aov(formula = samples ~ fact)
-    #> 
-    #> $fact
-    #>        diff        lwr       upr     p adj
-    #> 2-1   3.425  -8.804242 15.654242 0.9440575
-    #> 3-1   6.750  -5.479242 18.979242 0.5166401
-    #> 4-1  -3.900 -16.129242  8.329242 0.9074049
-    #> 5-1  -3.500 -15.729242  8.729242 0.9390165
-    #> 6-1   2.325  -9.904242 14.554242 0.9893559
-    #> 3-2   3.325  -8.904242 15.554242 0.9503518
-    #> 4-2  -7.325 -19.554242  4.904242 0.4312574
-    #> 5-2  -6.925 -19.154242  5.304242 0.4900643
-    #> 6-2  -1.100 -13.329242 11.129242 0.9996936
-    #> 4-3 -10.650 -22.879242  1.579242 0.1094850
-    #> 5-3 -10.250 -22.479242  1.979242 0.1321421
-    #> 6-3  -4.425 -16.654242  7.804242 0.8539828
-    #> 5-4   0.400 -11.829242 12.629242 0.9999980
-    #> 6-4   6.225  -6.004242 18.454242 0.5981409
-    #> 6-5   5.825  -6.404242 18.054242 0.6604328
-    #> 
-    #> 
-    #> $conf.level:
-    #> [1] 0.95
+<img src="man/figures/README-npk-onewy-1.png" alt="" width="80%" /><img src="man/figures/README-npk-onewy-2.png" alt="" width="80%" />
 
 ### Kruskal-Wallis test
 
-    kruskal_iris=visstat(iris$Species, iris$Petal.Width)
+``` r
+kruskal_iris=visstat(iris$Species, iris$Petal.Width)
+```
 
-<img src="man/figures/README-iris-kruskal-1.png" width="100%" /><img src="man/figures/README-iris-kruskal-2.png" width="100%" />
+<img src="man/figures/README-iris-kruskal-1.png" alt="" width="80%" /><img src="man/figures/README-iris-kruskal-2.png" alt="" width="80%" />
 
-## Numerical response and numerical predictor: Linear Regression
+## Ordered response and categorical predictor:
 
-    linreg_cars <- visstat(cars$speed ,cars$dist)
+A response variable of classes `ordered` and `factor` is internally
+transformed to a `numeric` response and Wilcoxon test is performed for a
+predictor with two classes, otherwise a Kruskal-Wallis-Test.
 
-<img src="man/figures/README-lin-reg-dist-speed-1.png" width="100%" /><img src="man/figures/README-lin-reg-dist-speed-2.png" width="100%" />
+### Wilcoxon with ordinal response
+
+``` r
+set.seed(123)
+
+# Create predictor: Customer segment (2 groups)
+segment <- factor(rep(c("Budget", "Premium"), each = 50))
+
+# Create response: Likert scale ratings (1-5)
+satisfaction_numeric <- c(
+  sample(1:5, 50, replace = TRUE, prob = c(0.15, 0.25, 0.30, 0.20, 0.10)),  # Budget
+  sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.35, 0.30))   # Premium
+)
+
+# Create dataframe with ORDERED response
+survey_data <- data.frame(
+  segment = segment,
+  satisfaction = ordered(satisfaction_numeric)  # Declare as ordered
+)
+
+# triggers warnings and use Wilcoxon test
+result <- visstat(survey_data$segment,survey_data$satisfaction)
+```
+
+<img src="man/figures/README-ordinal-1.png" alt="" width="80%" />
+
+### Kruskal-Wallis test
+
+``` r
+set.seed(123)
+
+# Create predictor: Service class (3 groups)
+service_class <- factor(rep(c("Economy", "Business", "First"), each = 50))
+
+# Create response: Likert scale ratings (1-5)
+comfort_numeric <- c(
+  sample(1:5, 50, replace = TRUE, prob = c(0.35, 0.30, 0.20, 0.10, 0.05)),  # Economy
+  sample(1:5, 50, replace = TRUE, prob = c(0.10, 0.20, 0.35, 0.25, 0.10)),  # Business
+  sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.30, 0.35))   # First
+)
+
+# Create dataframe with ORDERED response
+flight_data <- data.frame(
+  service_class = service_class,
+  comfort = ordered(comfort_numeric)  # Declare as ordered
+)
+
+# triggers warning and uses Kruskal-Wallis test
+result <- visstat(flight_data$service_class, flight_data$comfort)
+```
+
+<img src="man/figures/README-unnamed-chunk-3-1.png" alt="" width="80%" />
+
+## Numerical response and numerical predictor: Linear Regression or correlation
+
+``` r
+vis_women <- visstat(women$height, women$weight)
+```
+
+<img src="man/figures/README-lin-reg-dist-speed-1.png" alt="" width="80%" /><img src="man/figures/README-lin-reg-dist-speed-2.png" alt="" width="80%" />
 
 Increasing the confidence level `conf.level` from the default 0.95 to
-0.99 leads two wider confidence and prediction bands:
+0.99 leads to wider confidence and prediction bands:
 
-<img src="man/figures/README-pressure-1.png" width="100%" /><img src="man/figures/README-pressure-2.png" width="100%" />
+<img src="man/figures/README-pressure-1.png" alt="" width="80%" /><img src="man/figures/README-pressure-2.png" alt="" width="80%" />
 
 ## Both variables categorical
 
@@ -236,22 +356,26 @@ called contingency tables, whereas `visstat()` requires a `data.frame`
 with a column structure. Arrays can be transformed to this column wise
 structure with the helper function `counts_to_cases()`:
 
-    hair_eye_color_df <- counts_to_cases(as.data.frame(HairEyeColor))
-    visstat(hair_eye_color_df$Eye, hair_eye_color_df$Hair)
+``` r
+hair_eye_color_df <- counts_to_cases(as.data.frame(HairEyeColor))
+visstat(hair_eye_color_df$Eye, hair_eye_color_df$Hair)
+```
 
-<img src="man/figures/README-pearson-1.png" width="100%" /><img src="man/figures/README-pearson-2.png" width="100%" />
+<img src="man/figures/README-pearson-1.png" alt="" width="80%" /><img src="man/figures/README-pearson-2.png" alt="" width="80%" />
 
 ### Fisher’s exact test
 
-    hair_eye_color_male <- HairEyeColor[, , 1]
-    # Slice out a 2 by 2 contingency table
-    black_brown_hazel_green_male <- hair_eye_color_male[1:2, 3:4]
-    # Transform to data frame
-    black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_green_male))
-    # Fisher test
-    fisher_stats <- visstat(black_brown_hazel_green_male$Eye,black_brown_hazel_green_male$Hair)
+``` r
+hair_eye_color_male <- HairEyeColor[, , 1]
+# Slice out a 2 by 2 contingency table
+black_brown_hazel_green_male <- hair_eye_color_male[1:2, 3:4]
+# Transform to data frame
+black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_green_male))
+# Fisher test
+fisher_stats <- visstat(black_brown_hazel_green_male$Eye,black_brown_hazel_green_male$Hair)
+```
 
-<img src="man/figures/README-haireye-fisher-1.png" width="100%" /><img src="man/figures/README-haireye-fisher-2.png" width="100%" />
+<img src="man/figures/README-haireye-fisher-1.png" alt="" width="80%" /><img src="man/figures/README-haireye-fisher-2.png" alt="" width="80%" />
 
 # Saving the graphical output
 
@@ -270,183 +394,60 @@ output file name.
 In the following example, we store the graphics in `png` format in the
 `plotDirectory` `tempdir()` with the default naming convention:
 
-    #Graphical output written to plotDirectory: In this example 
-    # a bar chart to visualise the Chi-squared test and mosaic plot showing
-    # Pearson's residuals named 
-    #chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png resp. 
-    save_fisher=visstat(black_brown_hazel_green_male, "Hair", "Eye",
-            graphicsoutput = "png", plotDirectory = tempdir())
+``` r
+#Graphical output written to plotDirectory: In this example 
+# a bar chart to visualise the Chi-squared test and mosaic plot showing
+# Pearson's residuals named 
+#chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png resp. 
+save_fisher <- visstat(black_brown_hazel_green_male, "Hair", "Eye",
+        graphicsoutput = "png", plotDirectory = tempdir())
+```
 
 The full file path of the generated graphics are stored as the attribute
 `"plot_paths"` on the returned object of class `"visstat"`.
 
-    paths <- attr(save_fisher, "plot_paths")
-    print(paths)
-    #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpPXM1z1/chi_squared_or_fisher_Hair_Eye.png"
-    #> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpPXM1z1/mosaic_complete_Hair_Eye.png"
+``` r
+paths <- attr(save_fisher, "plot_paths")
+print(paths)
+#> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpyjt470/chi_squared_or_fisher_Hair_Eye.png"
+#> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpyjt470/mosaic_complete_Hair_Eye.png"
+```
 
 Remove the graphical output from `plotDirectory`:
 
-    file.remove(paths)
-    #> [1] TRUE TRUE
+``` r
+file.remove(paths)
+#> [1] TRUE TRUE
+```
 
-# Decision logic
+<!-- ## Implemented tests -->
 
-The choice of statistical tests depends on whether the data of the
-selected columns are numeric or categorical, the number of levels in the
-categorical variable, and the distribution of the data. The function
-prioritizes interpretable visual output and tests that remain valid
-under the decision logic given below. The rationale for the test choices
-are given in the packages’ `vignette`.
+<!-- ### Numerical response and categorical predictor -->
 
-## Numerical response and categorical predictor
+<!-- #### Main tests -->
 
-When the response is numeric and the predictor is categorical, a
-statistical hypothesis test of central tendencies is selected.
+<!-- ` t.test()`, `wilcox.test()`, `lm()` ,`aov()`, `oneway.test()`, `kruskal.test()` -->
 
-- If the categorical predictor has exactly two levels, Welch’s t-test
-  (`t.test()`) is applied when both groups contain more than 30
-  observations. This heuristic is based on the central limit theorem,
-  which ensures approximate normality of the sampling distribution of
-  the mean (Rasch, Kubinger, and Moder 2011; Lumley et al. 2002). For
-  smaller samples, group - wise normality is assessed using the
-  Shapiro - Wilk test (`shapiro.test()`) at the significance level *α*
-  (Razali and Wah 2011; Ghasemi and Zahediasl 2012). If both groups are
-  found to be approximately normally distributed according to the
-  Shapiro - Wilk test, Welch’s t-test is applied; otherwise, the
-  Wilcoxon rank-sum test (`wilcox.test()`) is used.
+<!-- #### Normality assumption check -->
 
-- For predictors with more than two levels, an ANOVA model (`aov()`) is
-  initially fitted. The normality of residuals is evaluated using both
-  the Shapiro–Wilk test (`shapiro.test()`) and the Anderson–Darling test
-  (`ad.test()`); the algorithm considers residuals approximately normal
-  if the Shapiro–Wilk test yields a result exceeding the significance
-  threshold *α* (Razali and Wah 2011):
-  <!-- if at least one of the two tests yields a result exceeding the significance threshold $\alpha$.  -->
-  If this condition is met, Bartlett’s test (`bartlett.test()`) is then
-  used to assess homoscedasticity. When variances are homogeneous
-  (*p* &gt; *α*), ANOVA is applied with Tukey’s HSD (`TukeyHSD()`) for
-  post-hoc comparison. If variances differ significantly (*p* ≤ *α*),
-  Welch’s one - way test (`oneway.test()`) is used, also followed by
-  Tukey’s HSD. If residuals are not normally distributed according to
-  both tests (*p* ≤ *α*), the Kruskal-Wallis test (`kruskal.test()`) is
-  selected, followed by pairwise Wilcoxon tests
-  (`pairwise.wilcox.test()`).
+<!-- `shapiro.test()` and `ad.test()` -->
 
-A graphical overview of the decision logic used is provided in below
-figure.
+<!-- #### Homoscedasticity assumption check -->
 
-<img src="man/figures/decision_tree.png" width="100%" 
-     alt="Decision tree used to select the appropriate statistical test.">
+<!-- `levene.test()` and `bartlett.test()`for ANOVA and `bp.test()` for linear regression -->
 
-<p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
-Decision tree used to select the appropriate statistical test for a
-categorical predictor and numeric response, based on the number of
-factor levels, normality, and homoscedasticity.
-</p>
+<!-- #### Post-hoc tests -->
 
-## Numerical response and numerical predictor: Linear Regression
+<!-- -`TukeyHSD()` following `aov()`, -->
 
-When both the response and predictor are numeric, a simple linear
-regression model (`lm()`) is fitted. The resulting plots shows the
-regression line, confidence and prognosis bands. Residual analysis is
-performed both graphically (Tukey-Anscombe residual plot and QQ-plot)
-and via tests for normality `shapiro.test()` and `ad.test()`. Note that
-only one explanatory variable is allowed, as the function is designed
-for two-dimensional visualisation.
+<!-- -`games.howell()` following `oneway.test()`, -->
 
-## Both variables categorical
+<!-- -`pairwise.wilcox.test()` following `kruskal.test()`. -->
 
-When both variables are categorical, `visstat()` tests the null
-hypothesis that both variables are independent using either
-`chisq.test()` or `fisher.test()`. The choice of test is based on
-Cochran’s rule (Cochran 1954), which advises that
-the*χ*<sup>2</sup>approximation is reliable only if no expected cell
-count is zero and no more than 20 percent of cells have expected counts
-below 5.
+<!-- ### Numerical response and predictor -->
 
-For a more detailed description of the underlying decision logic see
+<!-- `lm()`, `cor()` -->
 
-    vignette("visStatistics")
+<!-- ### Both variables categorical -->
 
-# Limitations
-
-The main purpose of this package is a decision-logic based automatic
-visualisation of statistical test results. Therefore, except for the
-user-adjustable `conf.level` parameter, all statistical tests are
-applied using their default settings from the corresponding base R
-functions. As a consequence, paired tests are currently not supported
-and `visstat()` does not allow to study interactions terms between the
-different levels of an independent variable in an analysis of variance.
-Focusing on the graphical representation of tests, only simple linear
-regression is implemented, as multiple linear regressions cannot be
-visualised.
-
-## Implemented tests
-
-### Numerical response and categorical predictor
-
-#### Main tests
-
-`t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`, `kruskal.test()`
-
-#### Normality assumption check
-
-`shapiro.test()` and `ad.test()`
-
-#### Homoscedasticity assumption check
-
-`bartlett.test()`
-
-#### Post-hoc tests-`TukeyHSD()` (used following `aov()`and `oneway.test()`)
-
-- `pairwise.wilcox.test()` (used following `kruskal.test()`)
-
-### Numerical response and numerical predictor
-
-When both the response and predictor are numerical, a simple linear
-regression model is fitted:`lm()`. Normality of residuals is assesed
-both graphically(Tukey-Anscombe plot and Q-Q plot) as well as with
-`shapiro.test()` and `ad.test()`
-
-Note that multiple linear regression models are not implemented, as the
-package focuses on the visualisation of data, not model building. \###
-Categorical response and categorical predictor
-
-When both variables are categorical, `visstat()` tests the null
-hypothesis of independence using one of the following:-`chisq.test()`
-(default for larger samples) - `fisher.test()` (used for small expected
-cell counts based on Cochran’s rule)
-
-## References
-
-<!-- - Rasch, D., Kubinger, K. D., & Moder, K. (2011). *The two-sample t test: pre-testing   -->
-<!--   its assumptions does not pay off*. _Methods of Information in Medicine_, 50(4),   -->
-<!--   419–426. -->
-<!-- - Lumley, T., Diehr, P., Emerson, S., & Chen, L. (2002). *The importance of the   -->
-<!--   normality assumption in large public health data sets*. _Annual Review of Public   -->
-<!--   Health_, 23, 151–169. -->
-<!-- - Cochran, W. G. (1954). *Some methods for strengthening the common chi-squared   -->
-<!--   tests*. _Biometrics_, 10(4), 417–451. -->
-<!-- pkgdown::end -->
-
-Cochran, William G. 1954. “The Combination of Estimates from Different
-Experiments.” *Biometrics* 10 (1): 101.
-<https://doi.org/10.2307/3001666>.
-
-Ghasemi, Asghar, and Saleh Zahediasl. 2012. “Normality Tests for
-Statistical Analysis: A Guide for Non-Statisticians.” *Int J Endocrinol
-Metab* 10 (2): 486–89. <https://doi.org/10.5812/ijem.3505>.
-
-Lumley, Thomas, Paula Diehr, Scott Emerson, and Lu Chen. 2002. “The
-Importance of the Normality Assumption in Large Public Health Data
-Sets.” *Annu. Rev. Public Health* 23 (1): 151–69.
-<https://doi.org/10.1146/annurev.publhealth.23.100901.140546>.
-
-Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. “The Two-Sample
-t Test: Pre-Testing Its Assumptions Does Not Pay Off.” *Stat Papers* 52
-(1): 219–31. <https://doi.org/10.1007/s00362-009-0224-x>.
-
-Razali, Nornadiah Mohd, and Yap Bee Wah. 2011. “Power Comparisons of
-Shapiro-Wilk, Kolmogorov-Smirnov, Lilliefors and Anderson-Darling
-Tests.” *Journal of Statistical Modeling and Analytics* 2 (1): 21–33.
+<!-- `chisq.test()`, `fisher.test()`  -->

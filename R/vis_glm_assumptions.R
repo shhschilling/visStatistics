@@ -41,7 +41,7 @@ vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
   samples <- samples3
   
   # Fit model
-  anova_model <- aov(samples ~ fact)
+  anova_model <- aov(samples ~ fact) # needed for correct output structure, do not use lm(samples~fact)
   std_residuals <- rstandard(anova_model)
   
   # Run assumption tests
@@ -146,7 +146,7 @@ vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
     ad_test = ad_test,
     levene_test = if (!regression) levene_test else NULL,
     bartlett_test = if (!regression) bartlett_test else NULL,
-     bp_test = if (regression)  bp_test else NULL
+    bp_test = if (regression)  bp_test else NULL
   )
   
   class(result) <- "vis_glm_assumptions"
