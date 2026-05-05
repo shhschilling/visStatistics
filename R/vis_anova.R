@@ -20,12 +20,13 @@
 #'
 #' @details
 #' The function first tests for homogeneity of variance using Levene's test.
-#' If variances are equal (p > alpha), Fisher's one-way ANOVA with TukeyHSD 
-#' post-hoc is performed. If variances are unequal (p <= alpha), Welch's 
-#' heteroscedastic one-way ANOVA with Games-Howell post-hoc is performed.
-#' 
-#' The function produces a stripchart with means, confidence intervals, 
-#' and compact letter display showing which groups differ significantly.
+#' If variances are equal (p > alpha), Fisher's one-way ANOVA with Tukey's HSD
+#' post-hoc is performed. If variances are unequal (p <= alpha), Welch's
+#' one-way ANOVA with Games-Howell post-hoc is performed.
+#'
+#' The function produces a box plot with jittered points and group means
+#' (red diamonds for the parametric branches), annotated with a compact
+#' letter display showing which groups differ significantly.
 #' @examples
 #' # Example with equal variances (uses Fisher's ANOVA + TukeyHSD)
 #' data(PlantGrowth)
@@ -64,24 +65,12 @@ vis_anova <- function(samples,
   fact <- subset(fact, !is.na(samples))
   samples <- samples3
   n_classes <- length(unique(fact))
-  # https://en.wikipedia.org/wiki/Bonferroni_correction
-  number_of_pairwise_comparisons <- n_classes * (n_classes - 1) / 2
-  alpha_sidak <- 1 - conf.level^(1 / number_of_pairwise_comparisons) # Sidak correction, https://en.wikipedia.org/wiki/%C5%A0id%C3%A1k_correction
-  # alpha_sidak=alpha #do not apply sidak correction
-  sdna <- function(x) {
-    sd(x, na.rm = T)
-  }
+
   meanna <- function(x) {
     mean(x, na.rm = T)
   }
-  
-  s <- tapply(samples, fact, sdna)
+
   m <- tapply(samples, fact, meanna)
-  
-  samples_per_class <- integer(n_classes)
-  for (i in 1:n_classes) {
-    samples_per_class[i] <- sum(fact == unique(fact)[i])
-  }
   # tests
   an <- aov(samples ~ fact)
   summaryAnova <- summary(an)
@@ -98,14 +87,15 @@ vis_anova <- function(samples,
   {
     p_aov <- summaryAnova[[1]][["Pr(>F)"]][1]
     F_value <- round(summaryAnova[[1]]$`F value`[1],2)
-    label_aov <- "Fisher's one-way ANOVA (TuckeyHSD post-hoc)"
+    label_aov <- paste0("Fisher's one-way ANOVA (Tukey's HSD post-hoc test), alpha = ",
+                        signif(alpha, 2))
     summarystat <- summaryAnova
     post_hoc_anova <- TukeyHSD(an, conf.level = conf.level)
   } else {
     # Unequal variances - use Welch's ANOVA with Games-Howell post-hoc
     p_aov <- oneway$p.value
     F_value <- round(oneway$statistic, 2)
-    label_aov <- "Welch's one-way ANOVA (Games-Howell post-hoc)"
+    label_aov <- "Welch's one-way ANOVA (Games-Howell post-hoc test)"
     summarystat <- oneway
     
     # Use Games-Howell for post-hoc (correct for unequal variances)
@@ -134,54 +124,36 @@ vis_anova <- function(samples,
   mi <- minimum - 1.2 * spread
   ma <- maximum + 1.2 * spread
   par(mfrow = c(1, 1), oma = c(0, 0, 3, 0))
-  
+
+  box_cols <- rep_len(c(colorscheme(1), colorscheme(3)), n_classes)
+
+  b <- boxplot(
+    samples ~ fact,
+    xlim = c(0, n_classes + 1),
+    ylim = c(mi, ma),
+    col = box_cols,
+    ylab = samplename,
+    xlab = factorname,
+    las = 2,
+    outline = FALSE  # individual points shown via stripchart overlay
+  )
+
   stripchart(
     samples ~ fact,
     vertical = TRUE,
-    xlim = c(0, n_classes + 1),
-    ylim = c(mi, ma),
-    col = rep("grey30", n_classes),
-    ylab = samplename,
-    xlab = factorname,
-    las = 2
+    method = "jitter",
+    col = rep("grey50", n_classes),
+    pch = 1,
+    cex = 0.7,
+    add = TRUE
   )
-  
-  
-  
-  # sd:
-  for (i in 1:n_classes) {
-    sn <- qt(1 - alpha_sidak / 2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i])
-    lines(
-      x = c(i - 0.2, i - 0.2),
-      # y = c(m[[i]] - s[[i]], m[[i]] + s[[i]]),
-      y = c(m[[i]] - sn, m[[i]] + sn),
-      col = colors()[131],
-      lwd = 5
-    )
-  }
-  
-  
-  for (i in 1:n_classes) {
-    lines(
-      x = c(i - 0.1, i + 0.1),
-      y = c(m[[i]], m[[i]]),
-      col = colors()[552],
-      lwd = 3
-    )
-    arrows(
-      i,
-      m[[i]] + qt(1 - alpha / 2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
-      # m[[i]] + qt(1 - alpha_sidak/2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
-      i,
-      m[[i]] - qt(1 - alpha / 2, samples_per_class[i] - 1) * s[[i]] / sqrt(samples_per_class[i]),
-      angle = 90,
-      code = 3,
-      col = colors()[552],
-      lty = 1,
-      lwd = 2,
-      length = 0.1
-    )
-  }
+
+  # Group means -- parametric branch tests means, so mark them explicitly
+  points(seq_len(n_classes), m,
+         pch = 16, col = "red", cex = 1.3)
+
+  # N labels above each box
+  mtext(c("N =", b$n), at = c(0.7, seq_len(n_classes)), las = 1)
   
   
   
@@ -205,21 +177,22 @@ vis_anova <- function(samples,
   mtext(
     paste0(label_aov, "\nF = ", F_value, ", p = ", signif(p_aov, 2)),
     outer = TRUE)
-  
-  
-  
-  legend(
-    "topleft",
-    inset = 0.05,
-    horiz = F,
-    c(
-      paste("mean with", conf.level * 100, "% conf. intervall "),
-      paste("Sidak corrected" , round((1 - alpha_sidak) * 100, 2), "% conf. interval")
-    ),
-    col = c(colors()[131], colors()[552]),
-    bty = "n",
-    lwd = 3
-  )
+
+
+
+  # Legend: mean marker (top) + significance letters (bottom, so it sits
+  # directly above the green letters drawn at y = mi)
+  posthoc_name <- ifelse(p_levene > alpha, "Tukey's HSD", "Games-Howell")
+  legend(x = 0.1,
+         y = mi + 1 * spread,
+         legend = c("group mean",
+                    paste0("a, b,..: ", posthoc_name, " significance letters")),
+         pch = c(16, NA),
+         col = c("red", NA),
+         text.col = c("red", colors()[81]),
+         bty = "n",
+         cex = 0.9,
+         xpd = TRUE)
   
   
   
