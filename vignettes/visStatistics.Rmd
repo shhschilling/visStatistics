@@ -383,7 +383,7 @@ mtcars$am <- as.factor(mtcars$am)
 t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
 ```
 
-Increasing the confidence level `conf.level` from the default 0.95 to 0.99 results in wider confidence intervals, as a higher confidence level requires more conservative bounds to ensure that the interval includes the true parameter value with greater certainty.
+<!-- Increasing the confidence level `conf.level` from the default 0.95 to 0.99 results in wider confidence intervals, as a higher confidence level requires more conservative bounds to ensure that the interval includes the true parameter value with greater certainty. -->
 
 ```{r,echo = FALSE, fig.show = 'hide'}
 mtcars$am <- as.factor(mtcars$am)
@@ -517,92 +517,34 @@ Under the null hypothesis, $H$ approximately follows a $\chi^2$ distribution wit
 <!-- These assumptions are tested using the `vis_glm_assumptions()` function. -->
 ### Post-hoc analysis
 
-
-#### Post-hoc test following an aov(): `TukeyHSD()` {.unnumbered}
-
-ANOVA is an omnibus test that evaluates a single null hypothesis: all group means are equal.
-If the null hypothesis gets rejected, we would like to identify which specific groups differ significantly from each other.
-However, simple pairwise comparisons of group means following an ANOVA increases the probability of incorrectly declaring a significant difference when, in fact, there is none.
-
-This error is quantified by the family-wise error rate “alpha per family of tests” $\alpha_{PF}$, which refers to the probability of making at least one Type I error, that is, falsely rejecting the null hypothesis across all pairwise comparisons.
-
-Given $n$ levels of the categorical variable, there are
+ANOVA, Welch ANOVA, and Kruskal--Wallis are omnibus tests: a significant result tells us that *some* group differs, but not which.
+To identify the differing pairs we test all
 
 $$
 M = \frac{n \cdot (n - 1)}{2}
 $$
 
-pairwise comparisons possible, defining a *family of tests* [@Abdi:2007].
-$M$ corresponds to the number of null hypotheses in the post hoc tests, each testing whether the means of two specific groups are equal.
+pairwise comparisons among the $n$ factor levels, defining a *family of tests* [@Abdi:2007].
+Without correction, the family-wise error rate---the probability of at least one false rejection across the family---grows quickly with $n$.
+Because the three omnibus tests rest on different assumptions, `visstat()` pairs each with a different post-hoc procedure and returns the corresponding adjusted p-values for every pairwise comparison.
 
+#### Following `aov()`: `TukeyHSD()` {.unnumbered}
 
-#### Šidák correction {.unnumbered}
+When the residuals are normal and variances are homogeneous, `visstat()` follows `aov()` with Tukey's Honestly Significant Differences procedure.
+TukeyHSD controls the family-wise error rate via the studentised range distribution, which exploits the *common* residual variance shared across pairs [@Hochberg:1987].
+`visstat()` returns the HSD-adjusted p-values for every pairwise mean comparison.
 
-If $\alpha_{PT}$ (“alpha per test”) is the probability of making a Type I error in one comparison, then $1 - \alpha_{PT}$ is the probability of not making a Type I error in one comparison.
+#### Following `oneway.test()`: `games.howell()` {.unnumbered}
 
-If all $M$ comparisons are **independent** of each other, the probability of making no Type I error across the entire family of pairwise comparisons is $(1 -
-\alpha_{PT})^M$.
-The family-wise error rate is then given by its complement [@Abdi:2007]:
+When the residuals are normal but variances are heterogeneous, the common-variance assumption of TukeyHSD breaks down.
+`visstat()` therefore follows Welch's heteroscedastic `oneway.test()` with the Games--Howell procedure, which uses *separate* variance estimates for each pair and Welch-adjusted degrees of freedom [@Games:1976].
+The returned object contains the Games--Howell-adjusted p-values for every pairwise comparison.
 
-$$
-\alpha_{PF} = 1 - (1 - \alpha_{PT})^M.
-$$
+#### Following `kruskal.test()`: `pairwise.wilcox.test()` {.unnumbered}
 
-<!-- Let us illustrate the inflation of the family-wise error rate with increasing group number $n$ (equal to the number of `levels` in the categorical variable)) by the following examples: With $\alpha_{PT}=0.05$ pairwise comparison of  $n=3$ groups results in a family-wise error rate of $\alpha_{PF} \approx 14\%$, whereas pairwise comparing of $n=6$ groups (as in the examples below) already leads to the probability of at least one time falsely rejecting the null hypothesis of $\alpha_{PF} \approx 54\%$. -->
+When normality is rejected, `visstat()` follows `kruskal.test()` with `pairwise.wilcox.test()`, which compares each pair of factor levels via the Wilcoxon rank-sum test on ranks rather than means.
+The resulting p-values are adjusted for multiplicity using Holm's step-down method [@Holm:1979]: sorted ascending and tested against thresholds that loosen with rank.
 
-Solving the last equation defining $\alpha_{PF}$ for $\alpha_{PT}$ yields the Šidák equation [@Sidak:1967]:
-
-$$
-\alpha_{PT}=1-(1-{\alpha_{PF}})^{1/M}.
-$$ This shows that, in order to achieve a given family-wise error rate, the corresponding per-test significance level must be reduced when there are more than two groups.
-<!-- ###### Šidák  correction in `visstat()` {.unnumbered} -->
-
-`visstat()` sets $\alpha_{PF}$ to the user-defined $\alpha = 1 -$ `conf.level`, resulting in
-
-$$\alpha_{PT} = 1 - \texttt{conf.level}^{1 / M}.
-$$
-
-With the default setting `conf.level = 0.95`, this leads to:
-
--   $n = 3$ groups: $\alpha_{PT} = 1.70\%$
--   $n = 6$ groups: $\alpha_{PT} = 0.34\%$
--   $n = 10$ groups: $\alpha_{PT} = 0.11\%$
-
-`visstat()` displays the Šidák corrected $1-\alpha_{PT}-$confidence intervals around individual group means in the graphical output for visualisation purposes only.
-
-Thhe Šidák approach becomes increasingly conservative as the number of comparisons grows.
-Moreover, since the method assumes independence among tests, it may be overly conservative when this assumption is violated. `visstat()` therefore employs more specialized post-hoc procedures that account for the correlated nature of pairwise comparisons.
-
-
-In contrast to the general-purpose Šidák correction, Tukey's Honestly Significant Differences procedure (`TukeyHSD()`) is specifically designed for pairwise mean comparisons following an ANOVA (`aov()`).
-It controls the family-wise error rate using a critical value from the studentised range distribution, which properly accounts for the correlated nature of pairwise comparisons sharing a common residual variance [@Hochberg:1987].
-
-Based on the user-specified confidence level (`conf.level`), `visstat()` constructs confidence intervals for all pairwise **differences** between factor level means.
-A significant difference between two means is indicated when the corresponding confidence interval does not include zero.
-`visstat()` returns both the HSD-adjusted p-values and the associated confidence intervals for all pairwise comparisons.
-
-For graphical display, `visstat()` uses a dual approach: `TukeyHSD()` provides the statistical test results and significance determinations, while Šidák-corrected confidence intervals around individual group means are shown for visualisation purposes.
-This separation allows for optimal statistical testing while maintaining clear, interpretable graphics.
-
-#### Post-hoc test following oneway.test(): Games-Howell-Test `games.howell ()` {.unnumbered}
-
-In contrast to the general-purpose Šidák correction, the Games-Howell-test procedure (`games.howell()`) is specifically designed for pairwise mean comparisons following an Welch-ANOVA (`oneway.test()`).
-It controls the family-wise error rate using a critical value from the studentised range distribution, which properly accounts for the correlated nature of pairwise comparisons.
-Unlike Tukey's HSD, Games-Howell uses separate variance estimates for each pairwise comparison and Welch-adjusted degrees of freedom, making it appropriate when variances are unequal [@Games:1976].
-
-Based on the user-specified confidence level (`conf.level`), `visstat()` constructs confidence intervals for all pairwise **differences** between factor level means.
-A significant difference between two means is indicated when the corresponding confidence interval does not include zero.
-`visstat()` returns both the Games-Howell-adjusted p-values and the associated confidence intervals for all pairwise comparisons.
-
-For graphical display, `visstat()` uses a dual approach: `games.howell()` provides the statistical test results and significance determinations, while Šidák-corrected confidence intervals around individual group means are shown for visualisation purposes.
-<!-- This separation allows for optimal statistical testing while maintaining clear, interpretable graphics. -->
-
-#### Post-hoc test following the Kruskal--Wallis rank sum test: `pairwise.wilcox.test()` {.unnumbered}
-
-As a post-hoc analysis following the Kruskal--Wallis test, `visstat()` applies the pairwise Wilcoxon rank sum test using `pairwise.wilcox.test()` to compare each pair of factor levels (see section “Wilcoxon rank-sum test (`wilcox.test()`)”).
-
-The resulting p-values from all pairwise comparisons are then adjusted for multiple testing using Holm's method [@Holm:1979]: The p-values are first sorted from smallest to largest and tested against thresholds that become less strict as their rank increases.
-This stepwise adjustment does not assume independence among tests and is typically less conservative than the Šidák method, while still ensuring strong control of the family-wise error rate.
 
 ### Graphical output
 
@@ -618,23 +560,10 @@ The p-values of the formal tests for normality (Shapiro--Wilk and Anderson--Darl
 <!-- If normality of the residuals can be assumed, Bartlett's test can be assesed to check for homogenity of variances. Otherwise, the Levene Brown–Forsythe is a more robust test for homoscedasticity given deviations from the normality assumption of residuals  The p-values of the beforementioned tests are displayed in the title of the residual panel. -->
 
 `visstat()` then illustrates, in the subsequent graph, either the `kruskal.test()`, the `oneway.test()`, or `aov()` result (see also Section "Decision logic").
+In all three branches the result is shown as box plots alongside jittered data points, with the number of observations per level above each box; the title gives the name of the test that was run and its p-value (and, for the parametric branches, the corresponding $F$ statistic).
 
-If neither normality of the residuals nor homogeneity of variances is given, the `kruskal.test()` is executed.
-The result is illustrated using box plots alongside jittered data points, with the title displaying the p-value from `kruskal.test()`.
-
-Above each box plot, the number of observations per level is shown.
-Different green letters below a pair of box plots indicate that the two groups are considered significantly different based on Holm's-adjusted pairwise Wilcoxon rank sum test p-values smaller than $\alpha$.
-The letters are generated with the help of the function `multcompLetters()` from the `multcompView` package [@Graves:2024]).
-
-If normality of the residuals can be assumed, a parametric test is chosen: either `aov()`, if homoscedasticity is also assumed, or `oneway.test()` otherwise.
-`visstat()` displays the name of the test and the corresponding $F$ and p-value in the title.
-
-The graph shows both the `conf.level` $\cdot\,100\%$ confidence intervals corresponding to the null hypothesis of ANOVA (all group means are equal) and the Šidák-corrected $(1 - \alpha_{PT}) \cdot 100\%$ confidence intervals used in the post hoc analysis.
-
-In `visstat()`, the Šidák intervals are used only for visualisation, as the underlying method assumes independent comparisons and can become overly conservative when this assumption is violated.
-
-The actual post hoc analysis should be based on `TukeyHSD()`.
-A significant test result between two groups is graphically represented by different green letters below a pair of group means.
+In every branch, pairs of groups whose adjusted post-hoc p-value falls below $\alpha$ are marked with *different* green letters below the box plots; pairs sharing a letter are not significantly different.
+The letters are produced by `multcompLetters()` from the `multcompView` package [@Graves:2024].
 
 Besides the graphical output, `visstat()` returns a list containing the relevant test statistics along with the corresponding post-hoc-adjusted $p$-values for all pairwise comparisons.
 
@@ -652,7 +581,13 @@ anova_npk <- visstat(npk$block,npk$yield,conf.level=0.90)
 
 Normality of residuals is supported by graphical diagnostics (histogram, scatter plot of standardised residuals, Q-Q plot) and formal tests (Shapiro--Wilk and Anderson- Darling, both with $p > \alpha$). Homogeneity of variances is not supported at the given confidence level by `bartlett.test()`, but by `levene.test()` ($p > \alpha$).
 The decision logic is based on `levene.test()` and triggers `aov()`.
-Post-hoc analysis with `TukeyHSD()` shows no significant yield differences between blocks, as all share the same group label (e.g., all green letters).
+Post-hoc analysis with `TukeyHSD()`.
+Note that the omnibus F-test reports p = 0.09 — significant at $\alpha=0.1$ — yet no pairwise difference survives Tukey's family-wise correction (the smallest adjusted p, for blocks 4 vs 3, is 0.11). This illustrates a common phenomenon: with several groups, the omnibus test can detect a pattern of spread that no individual pair can attribute to itself once multiplicity is controlled.
+
+
+shows no significant yield differences between blocks, as all share the same group label (e.g., all green letters).
+
+
 
 #### Kruskal--Wallis rank sum test {.unnumbered}
 
@@ -961,13 +896,8 @@ Therefore, except for the user-adjustable `conf.level` parameter, all statistica
 As a consequence, paired tests are currently not supported and `visstat()` does not allow to study interactions terms between the different levels of an independent variable in an analysis of variance.
 Focusing on the graphical representation of tests, only simple linear regression is implemented, as multiple linear regressions cannot be visualised.
 
-## Limitations of decision-logic based on p-values of hypothesis tests
-
-This package uses the Shapiro-Wilk test to select between parametric (ANOVA/Welch's t-test) and non-parametric (Kruskal-Wallis/Wilcoxon) methods for groups smaller than 50, whereas it defaults to parametric tests for groups bigger than 50 best on the CLT. 
-
-<!-- It furthermore applies the  Levene-Brown-Forsythe test for variance homogeneity to select between the Welch's heteroscedastic one-way ANOVA (oneway.test())  and Fisher's one/way ANOVA aov(). -->
-
-However, no single test maintains optimal Type I error rates and statistical power across all distributions [@Olejnik:1987], and p-values obtained from these tests may be unreliable if their assumptions are violated.
+##  Limitations of test decisions based soley on p-values of statistical tests 
+No single test maintains optimal Type I error rates and statistical power across all distributions [@Olejnik:1987], and p-values obtained from these tests may be unreliable if their assumptions are violated.
 
 Assessing assumptions solely through p-values can lead to both type I errors (false positives) and type II errors (false negatives).
 In large samples, even minor, random deviations from the null hypothesis can result in statistically significant p-values, leading to type I errors.
@@ -981,17 +911,28 @@ Conversely, in small samples, substantial violations of the assumption may not r
 Moreover, assumption tests provide no information on the nature of deviations from the expected distribution [@Shatz:2024].
 Thus the assessment of normality or homoscedacity should never rely solely on p-values but should be complemented by visual inspection of the diagnostic plots generated by `visstat()`.
 
-### Limitations of normality testing
+
+#Limitation on testing normality with the Shapiro–Wilk test
 
 Normality tests behave poorly at both ends of the sample-size range: with small samples they fail to detect non-normality, and with large samples they flag negligible departures from normality as significant [@Ghasemi:2012; @Fagerland:2012; @Franc:2025].
-<!-- This is evident in the limitations of the normality tests used: for instance, the Shapiro–Wilk test is unreliable for large samples ($N > 5000$), while the Anderson–Darling test requires at least 7 observations. -->
 
 
-This package uses $n > 50$ per group as a rule of thumb threshold to omit normality testing, assuming parametric tests  for central tendencies become robust to non-normality at larger sample sizes based on the central limit theorem.
-In fact, the actual sample size needed for parametric test validity depends on the unknown shape of the underlying distribution [@Knief:2021], with heavily skewed data potentially requiring much larger samples.
 
-For smaller samples, the function defaults to assuming normality if the Shapiro–Wilk test yields a p-value greater than alpha.
+This package uses $n > 50$ per group as a rule of thumb threshold to omit normality testing for smaller samples, assuming parametric tests of central tendencies to become robust to non-normality at larger sample sizes based on the central limit theorem.
+<!-- In fact, the actual sample size needed for parametric test validity depends on the unknown shape of the underlying distribution [@Knief:2021], with heavily skewed data potentially requiring much larger samples. -->
+
+
 Simulation studies suggest that Shapiro–Wilk has the highest power among normality tests in small to moderate ($n = 10$to 100) samples sizes[@Razali:2011]
+
+This package uses therefore the Shapiro-Wilk test to select between parametric (ANOVA/Welch's t-test) and non-parametric (Kruskal-Wallis/Wilcoxon) methods for groups smaller than 50.
+
+<!-- It furthermore applies the  Levene-Brown-Forsythe test for variance homogeneity to select between the Welch's heteroscedastic one-way ANOVA (oneway.test())  and Fisher's one/way ANOVA aov(). -->
+
+
+
+
+
+
 
 ### Combining tests inflates the overall Type I error rate
 
@@ -1011,7 +952,7 @@ The computational intensity of bootstrap runs counter to the purpose of the `vis
 The package targets users with basic statistical literacy, such as non-specialist professionals and students in applied fields.
 It covers topics typically included in an undergraduate course on applied statistics, intentionally excluding more advanced methods like bootstrapping to keep the focus on foundational concepts.
 
-# Appendix: General Linear Model {#glm}
+# Appendix A: General Linear Model {#glm}
 General Linear Models (GLM) [@Searle:1971; @Nimon:2017] provide a unified 
 mathematical framework underlying the Student's t-test, Fisher ANOVA, and simple 
 linear regression. 
@@ -1079,9 +1020,9 @@ ANOVA.
 
 The two-sample case sits inside both the t-test and the ANOVA frameworks, so several pairs of tests are numerically related.
 
-**Welch's t-test → Student's t-test.** When the assumption of equal variances holds ($s_1^2 = s_2^2 = s^2$) and sample sizes are equal ($n_1 = n_2 = n$), Welch's t-test reduces to Student's t-test with $2n - 2$ degrees of freedom.
+**Welch's t-test → Student's t-test.** When the assumption of equal variances holds ($s_1^2 = s_2^2 = s^2$) and sample sizes are equal ($n_1 = n_2 = n$), Welch's t-test reduces to Student's t-test with $2n - 2$ degrees of freedom. This exact equivalence does not extend to the multi-group case: 
 
-**Welch's one-way ANOVA → Fisher's one-way ANOVA.** In the two-sample setting, Welch's $t$-test reduces exactly to Student's $t$-test when variances and sample sizes are equal. This exact equivalence does not extend to the multi-group case: even under equal variances ($s_1^2 = \cdots = s_k^2$) and equal sample sizes ($n_1 = \cdots = n_k$), the Welch test statistic is not algebraically identical to the classical ANOVA $F$-statistic. Nevertheless, under these conditions the Welch statistic converges to the classical $F$-statistic, and any numerical differences become negligible in practice [@Welch:1951].
+**Welch's one-way ANOVA → Fisher's one-way ANOVA.**  Even under equal variances ($s_1^2 = \cdots = s_k^2$) and equal sample sizes ($n_1 = \cdots = n_k$), the Welch test statistic is not algebraically identical to the classical ANOVA $F$-statistic. Nevertheless, under these conditions the Welch statistic converges to the classical $F$-statistic, and any numerical differences become negligible in practice [@Welch:1951].
 
 **t-tests as special cases of ANOVA.** t-tests are special cases of ANOVA for the comparison of two groups. The squared $t$-statistic equals the corresponding $F$-statistic:
 
@@ -1094,9 +1035,9 @@ Simple linear regression corresponds to one continuous predictor $x_{i1}$
 for observation $i$. Testing $H_0: \beta_1 = 0$ examines whether there is a 
 linear relationship between the predictor and the response.
 
-## Tests for homoscedasticity
+# Appendix B: Tests for homoscedasticity {#variance}
 
-***The Levene–Brown–Forsythe test `levene.test()`*** 
+## The Levene–Brown–Forsythe test `levene.test()`
 
 The Levene–Brown–Forsythe test improves upon Levene's original test [@Levene:1960] by using the median instead of the mean to centre the data.
 
@@ -1120,7 +1061,7 @@ where $k$ is the number of groups, $N$ is the total sample size, $n_i$ is the sa
 
 Under the null hypothesis of equal variances, the test statistic follows an F-distribution: $F \sim F(k-1, N-k)$.
 
-***Bartlett's test `bartlett.test()`***
+## Bartlett's test `bartlett.test()`
 
 Additionally, homoscedasticity is assessed via Bartlett's test [@Bartlett:1937] (`bartlett.test()`), which has more power than the Brown–Forsythe version of Levene’s test [@Brown:1974] when the normality assumption is met [@Allingham:2012]
 
@@ -1142,7 +1083,7 @@ $$
 Under the null hypothesis that all group variances are equal and the data are normally distributed, the test statistic approximately follows a $\chi^2$-distribution with $k - 1$ degrees of freedom [@Bartlett:1937].
 
 
-***Breusch-Pagan test `bp.test()`***
+##  Breusch-Pagan test `bp.test()`
 
 For linear regression (`regression = TRUE`), group-based tests cannot be used. Instead, the `vissstatics` package function `bp.test()` implements the  Breusch-Pagan test.
 
