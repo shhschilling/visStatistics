@@ -288,6 +288,8 @@ We report the definition of the test statistic, its distribution under the null 
 
 #### Student's t-test (`t.test(var.equal = TRUE)`)
 
+When `var.equal = TRUE`, R's `t.test()` reports its `method` as `"Two Sample t-test"`; this is the same procedure that is commonly known as Student's t-test, and `visstat()` displays the R wording verbatim in the plot title.
+
 <!-- Student's t-test can be formulated as a special case of the General Linear Model framework by using an indicator variable to represent group membership. -->
 <!-- The independent t-test model uses two means to predict $Y$: -->
 
