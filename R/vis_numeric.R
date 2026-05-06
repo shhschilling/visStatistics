@@ -207,15 +207,16 @@ vis_numeric <- function(y,
     # Create title
     conf_int_coeffs <- confint(reg, level = conf.level)
     
-    title_text <- paste0("y = b1*x + b0, R-squared = ", signif(reg_summary$r.squared, 3),", conf. level = ",conf.level,
-                         "\nslope b1 = ", signif(reg$coefficients[2], 3),
-                         ", CI [", signif(conf_int_coeffs[2, 1], 3), 
-                         ", ", signif(conf_int_coeffs[2, 2], 3), "]",
-                         ", p = ", signif(reg_summary$coefficients[2, 4], 3),
-                         "\nintercept b0 = ", signif(reg$coefficients[1], 3),
-                         ", CI [", signif(conf_int_coeffs[1, 1], 3),
-                         ", ", signif(conf_int_coeffs[1, 2], 3), "]",
-                         ", p = ", signif(reg_summary$coefficients[1, 4], 3))
+    title_text <- paste0("y = b1*x + b0, R-squared = ", sprintf("%.3f", reg_summary$r.squared),
+                         ", conf. level = ", conf.level,
+                         "\nslope b1 = ", sprintf("%.2f", reg$coefficients[2]),
+                         ", CI [", sprintf("%.2f", conf_int_coeffs[2, 1]),
+                         ", ", sprintf("%.2f", conf_int_coeffs[2, 2]), "]",
+                         ", p = ", signif(reg_summary$coefficients[2, 4], 2),
+                         "\nintercept b0 = ", sprintf("%.2f", reg$coefficients[1]),
+                         ", CI [", sprintf("%.2f", conf_int_coeffs[1, 1]),
+                         ", ", sprintf("%.2f", conf_int_coeffs[1, 2]), "]",
+                         ", p = ", signif(reg_summary$coefficients[1, 4], 2))
     
     mtext(title_text, outer = TRUE,cex = 0.7)
     

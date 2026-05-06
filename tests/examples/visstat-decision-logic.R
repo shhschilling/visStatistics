@@ -98,7 +98,7 @@ create_test_data <- function(scenario, n_per_group = 30, seed = 123) {
 }
 
 # ============================================================================
-# EXAMPLE 1: Two Groups, One Group Normal Data, other group normal with outlier,  Equal Variances -> t.test(), as n>30 in both groups---
+# EXAMPLE 1: Two Groups, One Group Normal Data, other group normal with outlier,  Equal Variances -> Welch t.test(), as n>30 in both groups---
 # ============================================================================
 
 cat("\n=== EXAMPLE 1: Two Groups, Normal, Equal Variances ===\n")
@@ -111,16 +111,16 @@ print(result1)
 
 
 # ============================================================================
-# EXAMPLE 2: Two Groups, One gorup Normal Data, Unequal Variances -> Welch t.test()-----
+# EXAMPLE 2: Two Groups, One group Normal Data, Unequal Variances -> Wilcoxon rank sum exact test ()-----
 # ============================================================================
 cat("\n=== EXAMPLE 2: Two Groups, Normal, Unequal Variances ===\n")
-cat("Expected: Welch t.test() (var.equal = FALSE)\n") 
+cat("Expected: wilcox.test()\n") 
 cat("Assumption tests should FAIL (Levene & Bartlett p < 0.05)\n\n")
 
 data2 <- create_test_data("normal_unequal_var_2groups", n_per_group = 35, seed = 200)
 result2 <- visstat(data2, "response", "group")
 print(result2)
-#note: add levenep test two test loigc
+
 # ============================================================================
 # EXAMPLE 3: Two Groups, Non-normal Data -> wilcox.test()-----
 # ============================================================================

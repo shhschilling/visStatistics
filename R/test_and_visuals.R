@@ -129,76 +129,32 @@ two_sample_t_test <- function(samples,
   
   b <- boxplot(
     samples ~ fact,
-    lwd = 0.5,
     xlab = factorname,
     ylab = samplename,
-    ylim = c(mi - 2, ma),
-    varwidth = T,
-    col = colorscheme(1)
+    ylim = c(mi, ma),
+    col = colorscheme(1),
+    outline = FALSE  # individual points shown via stripchart overlay
   )
-  
-  
+
   stripchart(
     samples ~ fact,
     vertical = TRUE,
     xlim = c(0, 3),
     ylim = c(mi, ma),
-    # col = c("grey70", "grey80"),
-    col = colorscheme(2),
-    axes = FALSE,
+    col = colorscheme(1),
+    pch = 1,
+    cex = 0.7,
     method = "jitter",
     add = TRUE
   )
-  
-  
-  
-  points(1,
-         mean(x1),
-         col = 2,
-         pch = 1,
-         lwd = 3)
-  points(2,
-         mean(x2),
-         col = 2,
-         pch = 1,
-         lwd = 3)
-  
-  # alpha_sidak = 1 - sqrt(1 - alpha)
-  
-  alpha_sidak <- alpha
-  
-  correction1 <- qt(1 - 0.5 * alpha_sidak, length(x1) - 1) * sd(x1) / sqrt(length(x1))
-  correction2 <- qt(1 - 0.5 * alpha_sidak, length(x2) - 1) * sd(x2) / sqrt(length(x2))
-  
-  arrows(
-    1,
-    mean(x1, na.rm = T) + correction1,
-    1,
-    mean(x1, na.rm = T) - correction1,
-    angle = 90,
-    code = 3,
-    # halbes Konfidenzintervall
-    col = 2,
-    lty = 1,
-    lwd = 2,
-    length = 0.1
-  )
-  
-  arrows(
-    2,
-    mean(x2) + correction2,
-    2,
-    mean(x2) - correction2,
-    angle = 90,
-    code = 3,
-    col = 2,
-    lty = 1,
-    lwd = 2,
-    length = 0.1
-  )
-  
+
+  # Group means -- parametric test compares means, so mark them explicitly
+  points(c(1, 2), c(mean(x1), mean(x2)),
+         pch = 16, col = "red", cex = 1.3)
+
   # Sample sizes above box plot
-  text(1:length(b$n), c(ma, ma), paste("N=", b$n))
+  text(1:length(b$n), c(ma, ma), paste("N =", b$n))
+
   t <- t.test(
     x1,
     x2,
@@ -208,81 +164,27 @@ two_sample_t_test <- function(samples,
     var.equal = var.equal,
     na.action = na.omit
   )
-  # Legend
-  legend(
-    "bottomleft",
-    inset = 0.05,
-    horiz = F,
-    c(paste(
-      "mean with", conf.level * 100, "% conf. intervall "
-    )),
-    col = c(colors()[552]),
-    bty = "n",
-    lwd = 3
-  )
-  
-  p_value <- t$p.value
-  p_value <- signif(p_value, 2)
-  test_statistic <- t$statistic
-  test_statistic <- round(test_statistic, 2)
-  stat_name <- names(t$statistic)
-  
-  # Title general generation
-  if (alternative == "two.sided") {
-    ah <- "equals"
-  } else {
-    ah <- alternative
-  }
-  compare <- side_of_nh(alternative)
-  
-  
-  
-  
-  mean_or_median <- "population mean"
-  comparepvalue <- calculate_comparepvalue(p_value, conf.level)
-  
-  two_sample_title <-
-    paste(
-      t$method,
-      ", alpha =",
-      1 - conf.level,
-      "\n Null hypothesis: ",
-      mean_or_median,
-      " ",
-      samplename,
-      " of ",
-      factorname,
-      " \"",
-      unique(sort(fact))[1],
-      "\" ",
-      compare,
-      " ",
-      mean_or_median,
-      " ",
-      samplename,
-      " of ",
-      factorname,
-      " \"",
-      unique(sort(fact))[2],
-      "\" ",
-      "\n",
-      stat_name,
-      "=",
-      test_statistic,
-      ", p = ",
-      p_value,
-      ", p ",
-      comparepvalue,
-      "alpha",
-      sep = ""
-    )
-  
-  
-  
-  
-  
-  
-  mtext(two_sample_title)
+
+  p_value       <- signif(t$p.value, 2)
+  test_statistic <- sprintf("%.2f", t$statistic)
+  stat_name     <- names(t$statistic)
+
+  # Title: line 1 = test name, line 2 = test statistic + p
+  # (alpha and decision suffix omitted -- 2-group test has no post-hoc letters
+  #  whose interpretation depends on alpha)
+  mtext(paste0(t$method, "\n",
+               stat_name, " = ", test_statistic,
+               ", p = ", p_value))
+
+  # Legend: just the mean marker (no significance letters in the 2-group case)
+  legend("bottomleft",
+         legend = "group mean",
+         pch = 16,
+         col = "red",
+         text.col = "red",
+         bty = "n",
+         cex = 0.9,
+         inset = 0.02)
   
   my_list <-
     list(
@@ -363,102 +265,42 @@ two_sample_wilcoxon_test <- function(samples,
   )))))
   
   par(oma = c(0, 0, 2, 0)) # outer margin above: 2 lines..
-  # par(mar = c(8,4,4,2) + 0.1) #increse margin of labels below
-  
-  b <- boxplot(samples ~ fact, plot = 0) # holds  the counts
-  
-  
-  
+
+  b <- boxplot(
+    samples ~ fact,
+    notch = notchf,
+    col = colorscheme(1),
+    ylim = c(mi, ma),
+    ylab = samplename,
+    xlab = factorname,
+    outline = FALSE  # individual points shown via stripchart overlay
+  )
+
   stripchart(
     samples ~ fact,
     vertical = TRUE,
-    xlim = c(0, 3),
-    # ylim = c(mi, ma),
     method = "jitter",
-    col = colorscheme(2),
-    ylim = c(0, ma),
-    ylab = samplename,
-    xlab = factorname
-  )
-  boxplot(
-    samples ~ fact,
-    notch = notchf,
-    varwidth = T,
     col = colorscheme(1),
-    ylim = c(0, ma),
-    add = T
+    pch = 1,
+    cex = 0.7,
+    add = TRUE
   )
-  # text(1:length(b$n), b$stats[5,]+1, paste("n=", b$n))
+
+  # Sample sizes above box plot
   text(1:length(b$n), c(ma, ma), paste("N =", b$n))
+
   t <- wilcox.test(samples ~ fact, alternative = alternative, na.action = na.omit)
-  p_value <- t$p.value
-  p_value <- formatC(signif(p_value, digits = 2))
-  
-  test_statistic <- t$statistic
-  test_statistic <- round(test_statistic, 2)
-  stat_name <- names(t$statistic)
-  
-  
-  compare <- side_of_nh(alternative)
-  if (factorname == "match") {
-    prefix <- "of matched"
-  } else {
-    prefix <- character()
-  }
-  
-  # Title general generation
-  if (alternative == "two.sided") {
-    ah <- "equals"
-  } else {
-    ah <- alternative
-  }
-  compare <- side_of_nh(alternative)
-  
-  
-  
-  
-  mean_or_median <- "population median"
-  comparepvalue <- calculate_comparepvalue(p_value, conf.level)
-  
-  two_sample_title <-
-    paste(
-      t$method,
-      ", alpha = ",
-      1 - conf.level,
-      "\n Null hypoth.: ",
-      mean_or_median,
-      " ",
-      samplename,
-      " of ",
-      factorname,
-      " ",
-      unique(sort(fact))[1],
-      " ",
-      compare,
-      " ",
-      mean_or_median,
-      " ",
-      samplename,
-      " of ",
-      factorname,
-      " ",
-      unique(sort(fact))[2],
-      "\n",
-      stat_name,
-      "=",
-      test_statistic,
-      ", p = ",
-      p_value,
-      ", p ",
-      comparepvalue,
-      " alpha",
-      sep = ""
-    )
-  
-  
-  
-  
-  mtext(two_sample_title)
+
+  p_value       <- signif(t$p.value, 2)
+  test_statistic <- sprintf("%.2f", t$statistic)
+  stat_name     <- names(t$statistic)
+
+  # Title: line 1 = test name, line 2 = test statistic + p
+  # (alpha and decision suffix omitted -- 2-group test has no post-hoc letters
+  #  whose interpretation depends on alpha)
+  mtext(paste0(t$method, "\n",
+               stat_name, " = ", test_statistic,
+               ", p = ", p_value))
   
   
   
@@ -735,103 +577,86 @@ vis_Kruskal_Wallis <- function(samples,
   fact <- subset(fact, !is.na(samples))
   samples <- samples3
   n_classes <- length(unique(fact))
-  # define color scheme dependent on number of classes
-  
-  mc <- rainbow(n_classes, alpha = 1)
-  # mc=ColorPalette(n_classes)
-  
-  s <- tapply(samples, fact, sd)
-  m <- tapply(samples, fact, mean)
-  
-  samples_per_class <- c()
-  for (i in 1:n_classes) {
-    samples_per_class[i] <- sum(fact == unique(fact)[i])
-  }
-  
+  # Box / stripchart colors -- start with the t-test pair (green, blue)
+  # and extend with RColorBrewer Set 3 for additional groups.
+  box_cols <- rep_len(c(colorscheme(1), colorscheme(3)), n_classes)
+
   kk <- kruskal.test(samples ~ fact)
-  
-  extramargin <- 0.1
-  margins <- calc_min_max_of_y_axis(samples, extramargin, extramargin)
-  mi <- margins[[1]]
-  ma <- margins[[2]]
-  
-  par(mfrow = c(1, 1), oma = c(1, 0, 1, 0)) # oma: outer margin sout, west, north, east
-  
-  if (notch == TRUE) {
-    b <- boxplot(
-      samples ~ fact,
-      notch = TRUE,
-      col = mc,
-      las = 1,
-      xlim = c(0, n_classes + 1),
-      ylim = c(mi, ma),
-      xlab = factorname,
-      ylab = samplename,
-      # changes group names size
-      cex.lab = cex,
-      cex.axis = 0.8 * cex,
-      cex.main = cex,
-      cex.sub = cex,
-      boxwex = 0.5
-    )
-  } else {
-    b <- boxplot(
-      samples ~ fact,
-      notch = FALSE,
-      col = mc,
-      las = 1,
-      xlim = c(0, n_classes + 1),
-      ylim = c(mi, ma),
-      xlab = factorname,
-      ylab = samplename,
-      boxwex = 0.5
-    )
-  }
-  
-  
+
+  # Margins -- spread below data minimum is reserved for the green letters
+  # and the in-plot legend (mirrors vis_anova layout).
+  maximum <- max(samples, na.rm = TRUE)
+  minimum <- min(samples, na.rm = TRUE)
+  spread <- maximum - minimum
+  mi <- minimum - 1.2 * spread
+  ma <- maximum + 1.2 * spread
+
+  par(mfrow = c(1, 1), oma = c(0, 0, 3, 0))
+
+  b <- boxplot(
+    samples ~ fact,
+    notch = isTRUE(notch),
+    xlim = c(0, n_classes + 1),
+    ylim = c(mi, ma),
+    col = box_cols,
+    las = 1,
+    xlab = factorname,
+    ylab = samplename,
+    cex.lab = cex,
+    cex.axis = 0.8 * cex,
+    boxwex = 0.5,
+    outline = FALSE  # individual points shown via stripchart overlay
+  )
+
   stripchart(
     samples ~ fact,
     vertical = TRUE,
-    # method="jitter",
-    col = rep("grey50", n_classes),
-    # ylab = ylab,
-    # xlab = xlab,
-    las = 1,
-    # horizontal legend,
+    method = "jitter",
+    col = box_cols,
+    pch = 1,
+    cex = 0.7,
     add = TRUE
   )
-  
-  mtext(c("N = ", b$n), at = c(0.7, seq(1, n_classes)), las = 1) # nmber of cases in each group
+
+  # N labels above each box
+  mtext(c("N =", b$n), at = c(0.7, seq_len(n_classes)), las = 1)
+
   post_hoc_kruskal <- sig_diffs_nongauss(samples, fact, conf.level = conf.level)
-  
   s <- multcompLetters(post_hoc_kruskal[[1]][, 4], threshold = alpha)
-  
-  ord <- c()
-  
+
+  ord <- integer(n_classes)
   v <- attributes(s$Letters)$names
   f_levels <- sort(unique(fact))
   for (i in 1:n_classes) {
     ord[i] <- which(v == f_levels[i])
   }
-  (ma)
-  text(
-    seq(1:n_classes + 1),
-    mi,
-    s$Letters[ord],
-    col = "darkgreen",
-    cex = cex,
-    lwd = 2
-  )
-  
-  
-  kk_value <- round(as.numeric(kk$statistic),2)
-  
-  
-  title(paste0(kk$method,
-               "\n H = ",kk_value,
-               ", p = ", signif(kk$p.value, digits = 3)),
-        font.main = 1)
-  
+
+  text(seq_len(n_classes),
+       mi,
+       s$Letters[ord],
+       col = colors()[81],
+       cex = cex,
+       lwd = 2)
+
+  # Title: line 1 = test name only, line 2 = H + p
+  # (post-hoc method + alpha live in the legend below to avoid duplication)
+  kk_value <- sprintf("%.2f", as.numeric(kk$statistic))
+  mtext(paste0("Kruskal-Wallis test\nH = ", kk_value,
+               ", p = ", signif(kk$p.value, 2)),
+        outer = TRUE)
+
+  # Legend: significance letters (no mean marker -- Kruskal tests ranks).
+  # All post-hoc / alpha info lives here, so the title can stay compact.
+  text(x = 0.1,
+       y = mi + 0.55 * spread,
+       labels = paste0("a, b, ...: significance letters\n",
+                       "(pairwise Wilcoxon, Holm-adjusted, alpha = ",
+                       signif(alpha, 2), ")"),
+       col = colors()[81],
+       adj = c(0, 1),
+       xpd = TRUE,
+       cex = 0.9)
+
   my_list <-
     list("Kruskal Wallis rank sum test" = kk,
          "post-hoc by pairwise Wilcoxon rank sum test " = post_hoc_kruskal)

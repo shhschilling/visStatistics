@@ -86,16 +86,15 @@ vis_anova <- function(samples,
   if (p_levene > 1 - conf.level)
   {
     p_aov <- summaryAnova[[1]][["Pr(>F)"]][1]
-    F_value <- round(summaryAnova[[1]]$`F value`[1],2)
-    label_aov <- paste0("Fisher's one-way ANOVA (Tukey's HSD post-hoc test), alpha = ",
-                        signif(alpha, 2))
+    F_value <- sprintf("%.2f", summaryAnova[[1]]$`F value`[1])
+    label_aov <- "Fisher's one-way ANOVA"
     summarystat <- summaryAnova
     post_hoc_anova <- TukeyHSD(an, conf.level = conf.level)
   } else {
     # Unequal variances - use Welch's ANOVA with Games-Howell post-hoc
     p_aov <- oneway$p.value
-    F_value <- round(oneway$statistic, 2)
-    label_aov <- "Welch's one-way ANOVA (Games-Howell post-hoc test)"
+    F_value <- sprintf("%.2f", oneway$statistic)
+    label_aov <- "Welch's one-way ANOVA"
     summarystat <- oneway
     
     # Use Games-Howell for post-hoc (correct for unequal variances)
@@ -142,7 +141,7 @@ vis_anova <- function(samples,
     samples ~ fact,
     vertical = TRUE,
     method = "jitter",
-    col = rep("grey50", n_classes),
+    col = box_cols,
     pch = 1,
     cex = 0.7,
     add = TRUE
@@ -180,16 +179,18 @@ vis_anova <- function(samples,
 
 
 
-  # Legend: mean marker (top) + significance letters (bottom, so it sits
-  # directly above the green letters drawn at y = mi)
+  # Legend: mean marker (top) + significance letters with post-hoc method
+  # and alpha (split on two lines for compactness in narrow windows).
+  # All post-hoc / alpha info lives here, so the title can stay compact.
   posthoc_name <- ifelse(p_levene > alpha, "Tukey's HSD", "Games-Howell")
   legend(x = 0.1,
-         y = mi + 1 * spread,
+         y = mi + 1.2 * spread,
          legend = c("group mean",
-                    paste0("a, b,..: ", posthoc_name, " significance letters")),
-         pch = c(16, NA),
-         col = c("red", NA),
-         text.col = c("red", colors()[81]),
+                    "a, b, ...: significance letters",
+                    paste0("(", posthoc_name, ", alpha = ", signif(alpha, 2), ")")),
+         pch = c(16, NA, NA),
+         col = c("red", NA, NA),
+         text.col = c("red", colors()[81], colors()[81]),
          bty = "n",
          cex = 0.9,
          xpd = TRUE)
