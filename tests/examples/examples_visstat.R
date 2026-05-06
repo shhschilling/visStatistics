@@ -87,7 +87,7 @@ visstat(grades_gender$Sex, grades_gender$Grade)
 visstat(PlantGrowth$group, PlantGrowth$weight)
 
 
-# Welch ANOVA -----
+# Welch ANOVA 1 -----
 set.seed(1)
 welch_anova_data <- data.frame(group = factor(rep(c("A", "B", "C"), each = 20)),
                                value = c(
@@ -97,6 +97,29 @@ welch_anova_data <- data.frame(group = factor(rep(c("A", "B", "C"), each = 20)),
                                ))
 welch_annova = visstat(welch_anova_data$group, welch_anova_data$value)
 
+set.seed(123)
+# Welch ANOVA  with 10 groups  -----
+# 
+# Create data with 10 groups
+groups_10 <- data.frame(
+  response = c(
+    rnorm(15, mean = 10, sd = 2),  # Group 1
+    rnorm(18, mean = 11, sd = 2),  # Group 2
+    rnorm(22, mean = 12, sd = 2),  # Group 3
+    rnorm(19, mean = 13, sd = 2),  # Group 4
+    rnorm(21, mean = 14, sd = 2),  # Group 5
+    rnorm(20, mean = 12, sd = 2),  # Group 6
+    rnorm(19, mean = 11, sd = 2),  # Group 7
+    rnorm(18, mean = 13, sd = 2),  # Group 8
+    rnorm(22, mean = 12, sd = 2),  # Group 9
+    rnorm(21, mean = 14, sd = 2)   # Group 10
+  ),
+  group = factor(rep(paste0("G", 1:10), times = c(15, 18, 22, 19, 21, 20, 19, 18, 22, 21)))
+)
+
+
+
+result_10 <- visstat(groups_10, "response", "group")
 
 
 # Kruskal-Wallis test: iris----
@@ -111,7 +134,7 @@ iris_data_stored = visstat(
 )
 
 # Linear regression: trees data set  ----
-linear_regression_trees <- visstat(trees$Height, trees$Girth)
+linear_regression_trees <- visstat(trees$Girth, trees$Volume,conf.level=0.99)
 dev.off()
 plot(linear_regression_trees, which = 1) # replays assumption plot
 
@@ -145,15 +168,11 @@ fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 # The visstat-methods -------
 summary(iris_data_stored)
 print(iris_data_stored)
-plot(iris_data_stored) #file paths
+plot(iris_data_stored) #file paths to plots
 plot(iris_data, which = 1) #replay plot 1
 
 
 # Replay plots  or file paths of stored graphics------
-plot(insect_spray, which = 1) # path of assumption
-dev.off()
-plot(anova_npk, which = 2)
-dev.off()
 plot(linear_regression_trees)
 plot(res_chi)# paths two column plot and mosaic plot
 plot(fisher_stats, which = 2) #mosaic plot only

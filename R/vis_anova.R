@@ -115,14 +115,16 @@ vis_anova <- function(samples,
   
   
   
-  maximum <- max(samples, na.rm = T)
-  minimum <- min(samples, na.rm = T)
-  
-  spread <- maximum - minimum
-  
-  mi <- minimum - 1.2 * spread
-  ma <- maximum + 1.2 * spread
-  par(mfrow = c(1, 1), oma = c(0, 0, 3, 0))
+  # Y-axis limits (with extra lower margin for legend space)
+  lower_margin <- 0.45
+  upper_margin <- 0.2
+  margins <- calc_min_max_of_y_axis(samples, lower_margin, upper_margin)
+  mi <- margins[[1]]
+  ma <- margins[[2]]
+
+  # For legend positioning (spread from actual plot range)
+  spread <- ma - mi
+
 
   box_cols <- rep_len(c(colorscheme(1), colorscheme(3)), n_classes)
 
@@ -151,8 +153,14 @@ vis_anova <- function(samples,
   points(seq_len(n_classes), m,
          pch = 16, col = "red", cex = 1.3)
 
-  # N labels above each box
-  mtext(c("N =", b$n), at = c(0.7, seq_len(n_classes)), las = 1)
+  # Sample sizes above box plot (inside, like two-sample tests)
+  # Space-saving for many groups: show "N =" once, then just numbers
+  if (n_classes >= 6) {
+    n_labels <- c(paste("N =", b$n[1]), as.character(b$n[-1]))
+  } else {
+    n_labels <- paste("N =", b$n)
+  }
+  text(seq_len(n_classes), ma, n_labels)
   
   
   
@@ -174,8 +182,7 @@ vis_anova <- function(samples,
   
   
   mtext(
-    paste0(label_aov, "\nF = ", F_value, ", p = ", signif(p_aov, 2)),
-    outer = TRUE)
+    paste0(label_aov, "\nF = ", F_value, ", p = ", signif(p_aov, 2)))
 
 
 
@@ -183,8 +190,7 @@ vis_anova <- function(samples,
   # and alpha (split on two lines for compactness in narrow windows).
   # All post-hoc / alpha info lives here, so the title can stay compact.
   posthoc_name <- ifelse(p_levene > alpha, "Tukey's HSD", "Games-Howell")
-  legend(x = 0.1,
-         y = mi + 1.2 * spread,
+  legend("bottomleft",
          legend = c("group mean",
                     "a, b, ...: significance letters",
                     paste0("(", posthoc_name, ", alpha = ", signif(alpha, 2), ")")),
@@ -193,7 +199,7 @@ vis_anova <- function(samples,
          text.col = c("red", colors()[81], colors()[81]),
          bty = "n",
          cex = 0.9,
-         xpd = TRUE)
+         inset = 0.08)
   
   
   

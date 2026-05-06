@@ -1,6 +1,6 @@
 #' Print method for visstat objects
 #'
-#' Displays a brief summary of the statistical test results and, if available, 
+#' Displays a brief summary of the statistical test results and, if available,
 #' assumption tests and post hoc comparisons.
 #'
 #' @param x An object of class \code{"visstat"}, returned by \code{visstat()}.
@@ -9,11 +9,11 @@
 #' @return The object \code{x}, invisibly.
 #'
 #' @details Quick overview of the statistical analysis results.
-#' 
-#' @examples 
+#'
+#' @examples
 #' anova=visstat(npk$block, npk$yield)
 #' print(anova)
-#' 
+#'
 #' @seealso \code{\link{summary.visstat}}, \code{\link{plot.visstat}}, \code{\link{visstat}}
 #'
 #' @export
@@ -37,7 +37,7 @@ print.visstat <- function(x, ...) {
 
 #' Summary method for visstat objects
 #'
-#' Displays the full statistical test results and, if available, 
+#' Displays the full statistical test results and, if available,
 #' assumption tests and post hoc comparisons.
 #'
 #' @param object An object of class \code{"visstat"}, returned by \code{visstat()}.
@@ -49,19 +49,19 @@ print.visstat <- function(x, ...) {
 #' returned by \code{visstat()}, and prints the contents of \code{posthoc_summary} if present.
 #'
 #' @seealso \code{\link{print.visstat}}, \code{\link{visstat}}
-#' 
-#' @examples 
+#'
+#' @examples
 #' anova=visstat(npk$block, npk$yield)
 #' summary(anova)
 #' @export
 
 summary.visstat <- function(object, ...) {
   cat("Summary of visstat object\n\n")
-  
+
   # Show available components
   cat("--- Named components ---\n")
   print(names(object))
-  
+
   # Print contents, with special handling for captured_plots
   cat("\n--- Contents ---\n")
   for (name in names(object)) {
@@ -72,12 +72,12 @@ summary.visstat <- function(object, ...) {
       print(object[[name]])
     }
   }
-  
-  
+
+
   invisible(object)
 }
 
-# Helper function for captured plots in plots 
+# Helper function for captured plots in plots
 .print_captured_plots <- function(plots) {
   if (is.list(plots) && length(plots) > 0) {
     cat(sprintf("List of %d plot object(s)\n", length(plots)))
@@ -85,7 +85,7 @@ summary.visstat <- function(object, ...) {
     print(plots)
   }
 }
-# Helper function for captured plots in summary 
+# Helper function for captured plots in summary
 .print_captured_plots_summary <- function(plots) {
   if (is.list(plots) && length(plots) > 0) {
     cat(sprintf("List of %d plot object(s)\n", length(plots)))
@@ -99,24 +99,44 @@ summary.visstat <- function(object, ...) {
 
 #' Plot method for visstat objects
 #'
-#' Displays captured plots or reports saved plot file paths.
-#' 
-#' @param x An object of class "visstat".
-#' @param which Which plot to display (1, 2, 3, etc.). If NULL, shows all plots.
-#' @param ... Currently unused.
+#' Replays captured plots or reports saved plot file paths from a
+#' \code{visstat} object.
 #'
-#' @return Invisibly returns x. Used for its side effect.
-#' 
-#' @examples 
-#' anova_path=visstat(npk$block, npk$yield,graphicsoutput = "png", plotDirectory = tempdir()) 
-#' plot(anova_path) #plots paths to graphics files 
-#' 
+#' When called without \code{which}, the method lists all available plots
+#' (either as file paths or as indices of captured plots).
+#' When called with \code{which}, the selected plot is displayed:
+#' for file-based output the stored path is printed, for captured plots
+#' the plot is replayed on a fresh graphics device via \code{replayPlot()}.
+#'
+#' @param x An object of class \code{"visstat"}, returned by \code{\link{visstat}()}.
+#' @param which Integer selecting a single plot to display (1, 2, ...).
+#'   If \code{NULL} (the default), all available plots are listed without
+#'   being drawn.
+#' @param ... Currently unused. Included for S3 method compatibility.
+#'
+#' @return The object \code{x}, invisibly. Called for its side effect.
+#'
+#' @seealso \code{\link{print.visstat}}, \code{\link{summary.visstat}},
+#'   \code{\link{visstat}}
+#'
+#' @examples
+#' # File-based output: plot() lists stored paths
+#' anova_path <- visstat(npk$block, npk$yield,
+#'                       graphicsoutput = "png", plotDirectory = tempdir())
+#' plot(anova_path)
+#'
+#' # Interactive output: plot() lists available plots,
+#' # plot(obj, which = n) replays a specific one
+#' linreg <- visstat(trees$Height, trees$Girth)
+#' plot(linreg)
+#' plot(linreg, which = 2)
+#'
 #' @export
-#' 
+#'
 plot.visstat <- function(x, which = NULL, ...) {
   path <- attr(x, "plot_paths")
   capture <- attr(x, "captured_plots")
-  
+
   if (!is.null(path) && length(path) > 0) {
     if (!is.null(which)) {
       message("Plot [", which, "] stored in ", path[[which]])
@@ -127,18 +147,26 @@ plot.visstat <- function(x, which = NULL, ...) {
     }
     return(invisible(x))
   }
-  
+
   if (!is.null(capture) && length(capture) > 0) {
     if (!is.null(which)) {
-      replayPlot(capture[[which]])
+      if (isTRUE(getOption("knitr.in.progress"))) {
+        # In knitr: replay directly on knitr's device (no overlay issue,
+        # each chunk gets a fresh device)
+        replayPlot(capture[[which]])
+      } else {
+        # Interactive: close and reopen device to prevent overlay
+        try(dev.off(), silent = TRUE)
+        suppressMessages(dev.new())
+        replayPlot(capture[[which]])
+      }
     } else {
       for (i in seq_along(capture)) {
-        replayPlot(capture[[i]])
-        Sys.sleep(0.5)
-      } 
+        message("Plot [", i, "] captured. Use plot(obj, which = ", i, ") to display.")
+      }
     }
     return(invisible(x))
   }
-  
+
   invisible(x)
 }

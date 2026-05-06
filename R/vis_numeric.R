@@ -174,8 +174,7 @@ vis_numeric <- function(y,
     mi <- min(y_sorted, y_pred_low, na.rm = TRUE)
     spread <- ma - mi
     
-    par(mfrow = c(1, 1), oma = c(0, 0, 2, 0))
-    #par(mfrow = c(1, 1))
+    par(mfrow = c(1, 1))
     plot(x_sorted, y_sorted, 
          ylim = c(mi - 0.1 * spread, ma + 0.4 * spread),
          xlab = name_of_factor,
@@ -208,17 +207,17 @@ vis_numeric <- function(y,
     conf_int_coeffs <- confint(reg, level = conf.level)
     
     title_text <- paste0("y = b1*x + b0, R-squared = ", sprintf("%.3f", reg_summary$r.squared),
-                         ", conf. level = ", conf.level,
+                         ", conf. level = ", sprintf("%.2f", conf.level),
                          "\nslope b1 = ", sprintf("%.2f", reg$coefficients[2]),
                          ", CI [", sprintf("%.2f", conf_int_coeffs[2, 1]),
                          ", ", sprintf("%.2f", conf_int_coeffs[2, 2]), "]",
-                         ", p = ", signif(reg_summary$coefficients[2, 4], 2),
+                         ", p = ", sprintf("%.2e", reg_summary$coefficients[2, 4]),
                          "\nintercept b0 = ", sprintf("%.2f", reg$coefficients[1]),
                          ", CI [", sprintf("%.2f", conf_int_coeffs[1, 1]),
                          ", ", sprintf("%.2f", conf_int_coeffs[1, 2]), "]",
-                         ", p = ", signif(reg_summary$coefficients[1, 4], 2))
+                         ", p = ", sprintf("%.2e", reg_summary$coefficients[1, 4]))
     
-    mtext(title_text, outer = TRUE,cex = 0.7)
+    mtext(title_text, cex = 0.7)
     
     # Prepare return values
     result_list <- list(
@@ -335,17 +334,17 @@ vis_numeric <- function(y,
     mi <- min(y_sorted, na.rm = TRUE)
     spread <- ma - mi
     
-    par(mfrow = c(1, 1), oma = c(0, 0, 2, 0))
-    
-    plot(x_sorted, y_sorted, 
+    par(mfrow = c(1, 1))
+
+    plot(x_sorted, y_sorted,
          ylim = c(mi - 0.1 * spread, ma + 0.4 * spread),
          xlab = name_of_factor,
          ylab = name_of_sample,
          main = "")
-    
+
     # Add trend line
     lines(x_sorted, trend_fitted, col = colorscheme(2)[2], lwd = 2, lty = 2)
-    
+
     legend("topleft", horiz = FALSE,
            paste(tools::toTitleCase(method_used), "correlation trend line"),
            lwd = 2,
@@ -353,16 +352,16 @@ vis_numeric <- function(y,
            lty = 2,
            bty = "n",
            cex = 0.7)
-    
+
     # Create title
     significance <- ifelse(p_value < alpha, "significant", "not significant")
     method_name <- tools::toTitleCase(method_used)
-    
+
     title_text <- paste0(method_name, " r = ", signif(cor_coef, 3),
-                         ", p = ", signif(p_value, 3), 
+                         ", p = ", signif(p_value, 3),
                          " (", significance, ")")
-    
-    mtext(title_text, outer = TRUE)
+
+    mtext(title_text)
     
     # Prepare return values
     result_list <- list(

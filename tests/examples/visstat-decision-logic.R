@@ -1,4 +1,4 @@
-# Examples demonstrating visstat() decision logic:
+# Examples demonstrating visstat() decision logi for tests of central tendencies
 # When it switches between t-test, wilcox.test, aov, oneway.test, and kruskal.test
 # Run each section to see the visual output and understand the decision process
 
@@ -74,23 +74,23 @@ create_test_data <- function(scenario, n_per_group = 30, seed = 123) {
   } else if (scenario == "small_sample_normal_2groups") {
     # Small sample, normal data, 2 groups -> should test normality first
     set.seed(seed)
-    group1 <- rnorm(8, mean = 0, sd = 1)  # Small sample
-    group2 <- rnorm(8, mean = 2, sd = 1)
+    group1 <- rnorm(15, mean = 0, sd = 1)  # Small sample
+    group2 <- rnorm(15, mean = 2, sd = 1)
     
     df <- data.frame(
       response = c(group1, group2),
-      group = factor(rep(c("A", "B"), each = 8))
+      group = factor(rep(c("A", "B"), each = 15))
     )
     
   } else if (scenario == "small_sample_nonnormal_2groups") {
     # Small sample, non-normal data, 2 groups -> wilcox.test()
     set.seed(seed)
-    group1 <- rexp(8, rate = 1)  # Small sample, non-normal
-    group2 <- rexp(8, rate = 0.5)
+    group1 <- rexp(15, rate = 1)  # Small sample, non-normal
+    group2 <- rexp(15, rate = 0.5)
     
     df <- data.frame(
       response = c(group1, group2),
-      group = factor(rep(c("A", "B"), each = 8))
+      group = factor(rep(c("A", "B"), each = 15))
     )
   }
   

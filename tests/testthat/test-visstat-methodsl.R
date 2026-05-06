@@ -183,13 +183,13 @@ test_that("plot.visstat handles specific plot selection with paths", {
 
 test_that("plot.visstat handles captured_plots attribute", {
   skip_if_not_installed("grDevices")
-  
+
   obj <- create_mock_visstat("basic")
-  
+
   # Create mock recorded plots
   # Note: This is tricky to test without actually creating plots
   # We'll test the structure but skip the actual replayPlot calls
-  
+
   mock_plots <- list()
   # Create a simple plot and record it
   plot(1:5, 1:5)
@@ -197,12 +197,12 @@ test_that("plot.visstat handles captured_plots attribute", {
   plot(1:3, 1:3)
   mock_plots[[2]] <- recordPlot()
   dev.off()
-  
+
   attr(obj, "captured_plots") <- mock_plots
-  
-  # Test that the function runs without error
-  # We can't easily test replayPlot output in automated tests
-  expect_silent(result <- plot(obj))
+
+  # Test that the function runs and displays first plot with helpful messages
+  # When multiple plots are available, show guidance to user
+  expect_message(result <- plot(obj), "captured. Use plot")
   expect_identical(result, obj)
 })
 

@@ -35,12 +35,13 @@ library(visStatistics)
 
 # Abstract
 
-`visStatistics` automatically selects and visualises appropriate statistical hypothesis tests between two column vectors of type of class `"numeric"`, `"integer"`, or `"factor"`.
+`visStatistics` automatically selects and visualises appropriate statistical hypothesis tests between two column vectors of class `"numeric"`, `"integer"`, or `"factor"`.
 The choice of test depends on the `class`, distribution, and sample size of the vectors, as well as the user-defined 'conf.level'.
 The main function `visstat()` visualises the selected test with appropriate graphs (box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots), annotated with the main test results, including any assumption checks and post-hoc analyses.
 
-This scripted workflow is well suited for browser-based applications where sensitive data (such as highly confidential medical records) is stored securely on a server and never directly accessed by users. Users interact only through a web interface, while server-side R applications handle the data processing. Typical use cases include secure data exploration, quick visualisations, and guided statistical test selection, for example in statistical consulting or educational settings.
-
+This scripted workflow is well suited for browser-based applications where sensitive data (such as highly confidential medical records) is stored securely on a server and never directly accessed by users.
+Users interact only through a web interface, while server-side R applications handle the data processing.
+Typical use cases include secure data exploration, quick visualisations, and guided statistical test selection, for example in statistical consulting or educational settings.
 
 # Introduction
 
@@ -48,15 +49,14 @@ This scripted workflow is well suited for browser-based applications where sensi
 
 <!-- `visStatistics` addresses this by applying a deterministic, transparent test selection logic.  -->
 
-While R packages exist which combine statistical analysis with the appropriate visualiation of the data (e.g. [@Patil:2021]) , none exists to automate the statistical test selection combined with statistically annotated plots as a primary concern.
+While R packages exist which combine statistical analysis with the appropriate visualisation of the data (e.g. [@Patil:2021]), none exists to automate the statistical test selection combined with statistically annotated plots as a primary concern.
 
-The visStatistics package addresses this challenge  by using deterministic decision logic, removing the burden of manual test choice.
+The visStatistics package addresses this challenge by using deterministic decision logic, removing the burden of manual test choice.
 This automation enables users to focus directly on interpreting statistical outcomes rather than navigating test selection.
 
 The tailored visual outputs—annotated with test results and, where appropriate, assumption checks and post-hoc analyses—further support comprehension and help ensure valid conclusions from the outset.
 
-
-The package was originally developed for  server-based applications where users have limited interaction: they provide only two input vectors, and the software returns valid, interpretable results without requiring further statistical knowledge.
+The package was originally developed for server-based applications where users have limited interaction: they provide only two input vectors, and the software returns valid, interpretable results without requiring further statistical knowledge.
 This supports reproducibility and correct inference even in such constrained environments.
 
 The package is also particularly valuable in statistical consulting for student research projects, where time constraints demand streamlined, assumption-aware output that prioritises interpretation over technical execution.
@@ -93,14 +93,14 @@ visstat(dataframe, "namey", "namex")
 
 `x` and `y` must be vectors of class `"numeric"`, `"integer"`, or `"factor"`.
 
-In the formula interface, `y ~ x` specifies the relationship, where `y` is the response variable and `x` is the predictor, with both being column names  in `dataframe`.
+In the formula interface, `y ~ x` specifies the relationship, where `y` is the response variable and `x` is the predictor, with both being column names in `dataframe`.
 
 In the backward-compatible form, `"namex"` and `"namey"` must be character strings naming columns in `dataframe`, which must themselves be of class `"numeric"`, `"integer"`, or `"factor"`.
-Note that in the backward-compatible form second argument belongs to the response, the third to the predictor.
+Note that in the backward-compatible form the second argument belongs to the response, the third to the predictor.
 This is equivalent to writing:
+
 ``` r
 visstat(dataframe[["namex"]], dataframe[["namey"]])
-
 ```
 
 ##### Exemplary function call {.unnumbered}
@@ -122,8 +122,7 @@ The significance level $\alpha$, used throughout for hypothesis testing, is defi
 The choice of statistical tests performed by the function `visstat()` depends on whether the data are numeric or categorical, the number of levels in the categorical variable, the distribution of the data, as well as the user-defined 'conf.level'.
 
 The function prioritizes interpretable visual output and tests that remain valid under the following decision logic.
-The following graph gives an overview of all implemented test based on their `class`:
-
+The following graph gives an overview of all implemented tests based on their `class`:
 
 ```{r fig-overview, echo=FALSE, results='asis'}
 if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "html") {
@@ -151,7 +150,8 @@ if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "html") {
 ')
 }
 ```
-A graphical summary of the decision logic used for numerical responses and categorial predictors resulting in comparisons of central tendencies is given in below figure:
+
+A graphical summary of the decision logic used for numerical responses and categorical predictors resulting in comparisons of central tendencies is given in the figure below:
 
 ```{r fig-decision-switch, echo=FALSE, results='asis'}
 if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "html") {
@@ -186,24 +186,24 @@ if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "html") {
 
 When the response `y` is numeric and the predictor `x` is categorical, a statistical hypothesis test comparing central tendencies is selected.
 
--   Normality testing of the residuals: A linear model `lm(y~x)` is fitted to extract standardized residuals, which are assessed for normality using the Shapiro-Wilk (SW) test [@Shapiro:1965] (`shapiro.test()`) at significance level $\alpha$.
-    Simulation studies show that the Shapiro-Wilk test is the most powerful for detecting non-normality across most distributions, especially with smaller sample sizes [@Razali:2011; @Ghasemi:2012].
+- Normality testing of the residuals: A linear model `lm(y~x)` is fitted to extract standardized residuals, which are assessed for normality using the Shapiro-Wilk (SW) test [@Shapiro:1965] (`shapiro.test()`) at significance level $\alpha$.
+  Simulation studies show that the Shapiro-Wilk test is the most powerful for detecting non-normality across most distributions, especially with smaller sample sizes [@Razali:2011; @Ghasemi:2012].
 
--   Non parametric-tests: If the test rejects normality ($p_{SW} \le \alpha$), non-parametric tests are selected: the Wilcoxon rank-sum test (`wilcox.test()`) for two groups, or the Kruskal--Wallis test (`kruskal.test()`) followed by pairwise Wilcoxon tests (`pairwise.wilcox.test()`) for more than two groups.
+- Non parametric-tests: If the test rejects normality ($p_{SW} \le \alpha$), non-parametric tests are selected: the Wilcoxon rank-sum test (`wilcox.test()`) for two groups, or the Kruskal--Wallis test (`kruskal.test()`) followed by the Holm adjusted pairwise Wilcoxon tests (`pairwise.wilcox.test()`) for more than two groups.
 
--   Parametric tests: When there is insufficient evidence against normality ($p_{SW} > \alpha$) or when the sample sizes are large (more than 50 observations per group), parametric tests are selected.
-    In large samples the central limit theorem ensures approximate normality of the sampling distribution of the mean.
-    [@Rasch:2011; @Lumley:2002; @Kwak:2017]
+- Parametric tests: When there is insufficient evidence against normality ($p_{SW} > \alpha$) or when the sample sizes are large (more than 50 observations per group), parametric tests are selected.
+  In large samples the central limit theorem ensures approximate normality of the sampling distribution of the mean.
+  [@Rasch:2011; @Lumley:2002; @Kwak:2017]
 
-    -   Homoscedasticity: The Levene–Brown–Forsythe (L) test (implemented as `levene.test()`) [@Brown:1974] tests for homogeneous variances.
-        -   When homogeneity is not rejected ($p_L > \alpha$): For two groups, Student's t-test (`t.test()` with `var.equal = TRUE`) is applied; for more than two groups, Fisher's one-way ANOVA (`aov()`) with Tukey's Honestly Significant Differences (HSD) (`TukeyHSD()`) [@Hochberg:1987] is applied.
+  - Homoscedasticity: The Levene–Brown–Forsythe (L) test (implemented as `levene.test()`) [@Brown:1974] tests for homogeneous variances.
+    - When homogeneity is not rejected ($p_L > \alpha$): For two groups, Student's t-test (`t.test()` with `var.equal = TRUE`) is applied; for more than two groups, Fisher's one-way ANOVA (`aov()`) with Tukey's Honestly Significant Differences (HSD) (`TukeyHSD()`) [@Hochberg:1987] is applied.
 
-        -   When homogeneity is rejected ($p_L \le \alpha$): For two groups, Welch's t-test (`t.test()` with `var.equal = FALSE`) is applied; for more than two groups, Welch's heteroscedastic one-way ANOVA (`oneway.test()`) with Games-Howell post-hoc test (`games.howell()`) [@Games:1976] is applied.
-            Welch's methods outperform their classical counterparts when variances differ [@Moser:1992; @Fagerland:2009; @Delacre:2017].
+    - When homogeneity is rejected ($p_L \le \alpha$): For two groups, Welch's t-test (`t.test()` with `var.equal = FALSE`) is applied; for more than two groups, Welch's heteroscedastic one-way ANOVA (`oneway.test()`) with Games-Howell post-hoc test (`games.howell()`) [@Games:1976] is applied.
+      Welch's methods outperform their classical counterparts when variances differ [@Moser:1992; @Fagerland:2009; @Delacre:2017].
 
--   Regardless of sample size, general linear model (GLM) assumption diagnostics are always displayed.
-    When heteroscedasticity is detected and therefore Welch methods are selected, group-wise normality diagnostics are additionally displayed because residual-based normality testing assumes homoscedasticity.
-    These diagnostic plots enable users to visually assess whether assumptions are met and manually override the automated p-value-based test selection.
+- Regardless of sample size, general linear model (GLM) assumption diagnostics are always displayed. Note, that throughout this vignette, GLM refers to the classical Gaussian linear model framework [@Searle, 1971] underlying t‑tests, ANOVA, and linear regression, and not to generalised linear models with non‑Gaussian responses.
+  When heteroscedasticity is detected and therefore Welch methods are selected, group-wise normality diagnostics are additionally displayed because residual-based normality testing assumes homoscedasticity.
+  These diagnostic plots enable users to visually assess whether assumptions are met and manually override the automated p-value-based test selection.
 
 ## Both variables numeric: Simple linear regression, Pearson or Spearman
 
@@ -222,7 +222,7 @@ The choice between methods is determined by applying the Shapiro-Wilk test to bo
 
 ### Comparing proportions (Chi-squared or Fisher's exact test)
 
-When both variables are categorical (and not orderd), no direction is assumed; the order of variables in the function call does not affect the test statistic, but it does influence the graphical output.
+When both variables are categorical (and not ordered), no direction is assumed; the order of variables in the function call does not affect the test statistic, but it does influence the graphical output.
 For consistency, we continue referring to the variables as *predictor* and *response*.
 
 `visstat()` tests the null hypothesis that the variables are independent using either Pearson’s $\chi^2$ test (`chisq.test()`) or Fisher’s exact test (`fisher.test()`), depending on expected cell counts.
@@ -230,40 +230,40 @@ The choice of test is based on Cochran's rule [@Cochran:1954], which advises tha
 
 ### Ordered response of class `ordered`
 
-When the response variable is an ordered factor (e.g., Likert scale ratings) and the predictor is categorical, `visstat()` converts the ordered response to numeric ranks and applies non-parametric tests.
+When the response variable is an ordered factor (e.g., Likert scale ratings) and the predictor is categorical, `visstat()` converts the ordered response to numeric ranks and redirects the analysis to the numeric response pathway described above, where non-parametric tests (Wilcoxon or Kruskal--Wallis) are applied.
 This is the appropriate analysis for ordinal data, as the numeric distances between ordered categories are not necessarily equal and the data cannot be assumed to follow a normal distribution.
 Users should declare Likert scale responses as ordered factors using `ordered()` to ensure non-parametric testing.
-
 
 The mathematical framework underlying Student's t-test, Fisher's ANOVA and simple linear regression — and the assumption diagnostics shown by `vis_glm_assumptions()` — is described in the [Appendix](#glm).
 
 # Assumption diagnostics: `vis_glm_assumptions()`
-All tests within in the GLM framework share the same set of assumptions:
 
--   Linearity: The expected value of the response is a linear function of the predictors; assessed by checking for systematic patterns in residual plots.
+All tests within the GLM framework share the same set of assumptions:
+
+- Linearity: The expected value of the response is a linear function of the predictors; assessed by checking for systematic patterns in residual plots.
 
 Error terms are:
 
--   independent,
+- independent,
 
--   normally distributed and
+- normally distributed with expectation value 0 and
 
--   homoscedastic: Constant error variance $\sigma^2$
+- homoscedastic: Constant error variance $\sigma^2$
 
 The function `vis_glm_assumptions()` provides a unified visual and statistical framework for validating the GLM assumptions.
-It fits  GLM model using `aov()` and provides four standard diagnostic plots: 
+It fits GLM model using `aov()` and provides four standard diagnostic plots:
 
-1. **Histogram and Normal Density**: Displays the distribution of standardized residuals with a red normal density curve overlay to visually assess normality.
+1.  **Histogram and Normal Density**: Displays the distribution of standardized residuals with a red normal density curve overlay to visually assess normality.
 
-2. **Std. Residuals vs. Fitted**: It shows the standardized residuals against fitted values with a zero-line to detect non-linearity or heteroscedasticity.
-3. **Normal Q-Q Plot**: A theoretical quantile-quantile plot using the standardized residuals to identify deviations from the Gaussian distribution.
+2.  **Std. Residuals vs. Fitted**: It shows the standardized residuals against fitted values with a zero-line to detect non-linearity or heteroscedasticity.
 
-4. If `regression = TRUE`, the **Standardized Residuals vs. Leverage** plot, if `regression = FALSE`, a **Scale-Location** plot.
+3.  **Normal Q-Q Plot**: A theoretical quantile-quantile plot using the standardized residuals to identify deviations from the Gaussian distribution.
 
+4.  If `regression = TRUE`, the **Standardized Residuals vs. Leverage** plot, if `regression = FALSE`, a **Scale-Location** plot.
 
 ## Test for normality and homoscedasticity
 
-The diagnostic plots are enhanced by p-values of tests for normality and homoscecadicity, shown in the title of the plot.
+The diagnostic plots are enhanced by p-values of tests for normality and homoscedasticity, shown in the title of the plot.
 
 **Normality Assessment**: The function evaluates residual normality using both the Shapiro-Wilk test (`shapiro.test()`) and Anderson-Darling test (`ad.test()`) [@Gross:2015].
 
@@ -291,24 +291,22 @@ We report the definition of the test statistic, its distribution under the null 
 When `var.equal = TRUE`, R's `t.test()` reports its `method` as `"Two Sample t-test"`; this is the same procedure that is commonly known as Student's t-test, and `visstat()` displays the R wording verbatim in the plot title.
 
 <!-- Student's t-test can be formulated as a special case of the General Linear Model framework by using an indicator variable to represent group membership. -->
+
 <!-- The independent t-test model uses two means to predict $Y$: -->
 
 <!-- $$Y_i = \beta_0 + \beta_1 x_i +\epsilon_i\quad H_0: \beta_1 = 0$$ -->
 
 <!-- where $x_i$ is an indicator (0 or 1) saying whether data point $i$ was sampled from one or the other group. -->
+
 <!-- $\beta_0$ is the mean of group 1, whereas $\beta_1$ ist the mean difference between the groups. -->
 
 The test statistic for Student's t-test is given by:
 
-$$
-t = \frac{\bar{x}_1 - \bar{x}_2}{s_p \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}},
-$$
+$$t = \frac{\bar{x}_1 - \bar{x}_2}{s_p \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}},$$
 
 where $\bar{x}_1$ and $\bar{x}_2$ are the sample means, $n_1$ and $n_2$ are the sample sizes, and $s_p$ is the pooled standard deviation:
 
-$$
-s_p = \sqrt{\frac{(n_1 - 1)s_1^2 + (n_2 - 1)s_2^2}{n_1 + n_2 - 2}},
-$$
+$$s_p = \sqrt{\frac{(n_1 - 1)s_1^2 + (n_2 - 1)s_2^2}{n_1 + n_2 - 2}},$$
 
 where $s_1^2$ and $s_2^2$ are the sample variances in the two groups.
 The test statistic follows a t-distribution with $\nu = n_1 + n_2 - 2$ degrees of freedom.
@@ -320,32 +318,31 @@ It evaluates the null hypothesis that the means of two groups are equal without 
 
 The test statistic is given by [@Welch:1947; @Satterthwaite:1946]
 
-$$
-t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}},
-$$
+$$t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}},$$
 
 where $\bar{x}_1$ and $\bar{x}_2$ are the sample means, $s_1^2$ and $s_2^2$ the sample variances, and $n_1$, $n_2$ the sample sizes in the two groups.
 The statistic follows a *t*-distribution with degrees of freedom approximated by the Welch-Satterthwaite equation:
 
-$$
-\nu \approx \frac{
+$$\nu \approx \frac{
 \left( \frac{s_1^2}{n_1} + \frac{s_2^2}{n_2} \right)^2
 }{
 \frac{(s_1^2 / n_1)^2}{n_1 - 1} + \frac{(s_2^2 / n_2)^2}{n_2 - 1}
-}.
-$$
+}.$$
 
 The resulting p-value is computed from the *t*-distribution with $\nu$ degrees of freedom.
 
-
 <!-- Under these conditions the pooled variance becomes: $s_p^2 = \frac{(n-1)s^2 + (n-1)s^2}{2n-2} = s^2$, whereas Welch's denominator simplifies to $\sqrt{\frac{s^2}{n} + \frac{s^2}{n}} = s\sqrt{\frac{2}{n}}$. -->
+
 <!-- Student's denominator becomes: $s_p \sqrt{\frac{1}{n} + \frac{1}{n}} = s\sqrt{\frac{2}{n}}$ -->
 
 <!-- The Welch-Satterthwaite degrees of freedom reduce to: $$ -->
+
 <!-- \nu = \frac{\left(\frac{2s^2}{n}\right)^2}{\frac{(s^2/n)^2}{n-1} + \frac{(s^2/n)^2}{n-1}} = \frac{\frac{4s^4}{n^2}}{\frac{2s^4}{n^2(n-1)}} = 2(n-1) = 2n-2 -->
+
 <!-- $$ -->
 
 <!-- Welch's t-test remains valid and exhibits only minimal loss of power even when the assumptions of Student's t-test -- namely, normality and equal variances of the response variable across groups -- are satisfied [@Moser:1992; @Zimmerman:2004; @Delacre:2017]. -->
+
 <!-- It is therefore the default implementation of the t-test in R and the default comparison of means between two groups in `visStatistics`. -->
 
 #### Wilcoxon rank-sum test (`wilcox.test()`)
@@ -358,16 +355,13 @@ The two-level factor variable `x` defines two groups, with sample sizes $n_1$ an
 All $N=n_1 + n_2$ observations are pooled and assigned ranks from $1$ to $N$.
 Let $W_1$ denote the sum of the ranks assigned to the group $x_1$ corresponding to the first level of `x` containing $n_1$ observations:
 
-$$
-W_{1}= \sum_{i=1}^{n_1} R(x_{1,i})$$,
+$$W_{1}= \sum_{i=1}^{n_1} R(x_{1,i})$$,
 
 where $R(x_{1,i})$ is the rank of observation $x_{1,i}$ in the pooled sample.
 
 The test statistic $W$ returned by `wilcox.test()` is then computed as
 
-$$
-W =U_{1}=W_{1} - \frac{n_1(n_1 + 1)}{2}.
-$$ It corresponds to the Mann-Whitney [@Mann:1947] $U$ statistic of the first group.
+$$W =U_{1}=W_{1} - \frac{n_1(n_1 + 1)}{2}.$$ It corresponds to the Mann-Whitney [@Mann:1947] $U$ statistic of the first group.
 
 If both groups contain fewer than 50 observations and the data contain no ties, the *p*-value is computed exactly.
 Otherwise, a normal approximation with continuity correction is used.
@@ -412,7 +406,7 @@ wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
 
 #### Wilcoxon with ordinal response {.unnumbered}
 
-```{r ordinal}
+```{r ordinal, results='hide'}
 set.seed(123)
 
 # Create predictor: Customer segment (2 groups)
@@ -431,44 +425,47 @@ survey_data <- data.frame(
 )
 
 # triggers warnings and use Wilcoxon test
-result <- visstat(survey_data, "satisfaction", "segment")
+wilcox_ordered <- visstat(survey_data, "satisfaction", "segment")
 ```
 
 ## Categorical predictor with more than two levels
 
 ### Fisher's one-way ANOVA (`aov()`)
 
-Fisher's one-way ANOVA (`aov()`) tests the null hypothesis that
-the means of $k$ groups are equal.
+Fisher's one-way ANOVA (`aov()`) tests the null hypothesis that the means of $k$ groups are equal.
 
 <!-- It can be formulated within the General Linear Model framework using $k-1$ indicator variables to represent group membership. -->
-
 
 <!-- $$Y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_{k-1} x_{i,k-1} + \varepsilon_i$$ -->
 
 <!-- $$H_0: \beta_1 = \beta_2 = \cdots = \beta_{k-1} = 0$$ -->
 
 <!-- where x\_{ij} are indicator variables (x\_{ij} = 1 if observation i belongs to group j+1, 0 otherwise), with the first group serving as the reference category (β_0 represents its mean). -->
+
 <!-- The null hypothesis tests whether all group means are equal. -->
 
 As it represents a [General Linear Model](#glm), it assumes independent observations, normally distributed residuals, and **homogeneous** variances across groups.
 The test statistic is the ratio of the variance explained by differences among group means (between-group variance) to the unexplained variance within groups [@Fisher:1990]
 
 $$F  = \frac{MS_{between}}{MS_{within}}=
-\frac{SS_{between}/(k-1)}{SS_{within}/(N-k)}== \frac{\frac{\sum_{i=1}^{k} n_i (\bar{x}_i - \bar{x})^2}{k - 1}}
+\frac{SS_{between}/(k-1)}{SS_{within}/(N-k)} = \frac{\frac{\sum_{i=1}^{k} n_i (\bar{x}_i - \bar{x})^2}{k - 1}}
 {\frac{\sum_{i=1}^{k}\sum_{j=1}^{n_i}(x_{ij}-\bar{x}_i)^2}{N - k}}$$
 
 where:
 
-- where $MS_{between}$ and $MS_{within}$ are the mean square between groups and mean Square within groups respectively.
+- $MS_{between}$ and $MS_{within}$ are the mean square between groups and mean square within groups, respectively.
 
-- $SS_{between}$ = Sum of Squares between groups (variance due to group differences) - $SS_{within}$ = Sum of Squares within groups (error variance),
+- $SS_{between}$ = Sum of Squares between groups (variance due to group differences)
 
-- $k$ = number of groups - $N$ = total sample size
+- $SS_{within}$ = Sum of Squares within groups (error variance)
 
-where $\bar{x}_i$ is the mean of group $i$, $\bar{x}$ is the overall mean, $x_{ij}$ is the observation $j$ in group $i$, $n_i$ is the sample size in group $i$, $k$ is the number of groups, and $N$ is the total number of observations.
+- $k$ = number of groups
 
-Under the null hypothesis, this statistic follows an F-distribution with two parameters for degrees of freedom: ($k - 1$) and ($N - k$): $F \sim F(k-1, N-k)$ The resulting p-value is computed from this distribution.
+- $N$ = total sample size
+
+ $\bar{x}_i$ is the mean of group $i$, $\bar{x}$ is the overall mean, $x_{ij}$ is the observation $j$ in group $i$, $n_i$ is the sample size in group $i$, $k$ is the number of groups, and $N$ is the total number of observations.
+
+Under the null hypothesis, this statistic follows an F-distribution with two parameters for degrees of freedom: $(k - 1)$ and $(N - k)$: $F \sim F(k-1, N-k)$ The resulting p-value is computed from this distribution.
 
 ### Welch’s heteroscedastic one-way ANOVA (`oneway.test()`)
 
@@ -477,9 +474,7 @@ It compares group means using weights based on sample sizes and variances.
 The degrees of freedom are adjusted using a Satterthwaite-type approximation [@Satterthwaite:1946], resulting in an F-statistic with non-integer degrees of freedom.
 The Welch F-statistic is calculated as [@Welch:1951]:
 
-$$
-F_W = \frac{\sum_{i=1}^{k} w_i (\bar{y}_i - \bar{y}_w)^2 / (k-1)}{1 + \frac{2(k-2)}{k^2-1} \sum_{i=1}^{k} \frac{(1-w_i/w)^2}{n_i-1}}
-$$
+$$F_W = \frac{\sum_{i=1}^{k} w_i (\bar{y}_i - \bar{y}_w)^2 / (k-1)}{1 + \frac{2(k-2)}{k^2-1} \sum_{i=1}^{k} \frac{(1-w_i/w)^2}{n_i-1}}$$
 
 where $w_i = n_i/s_i^2$ are the weights (inverse variances), $w = \sum_{i=1}^{k} w_i$, $\bar{y}_w = \sum_{i=1}^{k} w_i \bar{y}_i / w$ is the weighted grand mean, $k$ is the number of groups, $n_i$ is the sample size of group $i$, and $s_i^2$ is the variance of group $i$.
 
@@ -489,7 +484,11 @@ where $w_i = n_i/s_i^2$ are the weights (inverse variances), $w = \sum_{i=1}^{k}
 
 <!-- It is therefore the default implementation of one-way ANOVA in `visstat()` . -->
 
-Numerical equivalences between Student's t-test, Welch's t-test, `aov()` and `oneway.test()` (and the relationship $t^2 = F$ between the two-group t-test and one-way ANOVA) are summarised in the [Appendix](#glm).
+
+
+Numerical relationships within the parametric tests defined by the decision
+logic above (including the identity $t^2 = F$ in the equal-variance
+two-group case) are summarised in the Appendix [Appendix](#glm)..
 
 ### Kruskal–Wallis test (`kruskal.test()`)
 
@@ -499,9 +498,7 @@ If the group distributions are sufficiently similar in shape and scale, then the
 
 The test statistic is defined as:
 
-$$
-H = \frac{12}{N(N+1)} \sum_{i=1}^{k} n_i \left(\bar{R}_i - \bar{R} \right)^2,
-$$
+$$H = \frac{12}{N(N+1)} \sum_{i=1}^{k} n_i \left(\bar{R}_i - \bar{R} \right)^2,$$
 
 where $n_i$ is the sample size in group $i$, $k$ is the number of groups, $\bar{R}_i$ is the average rank of group $i$, $N$ is the total sample size, and $\bar{R} = \frac{N+1}{2}$ is the average of all ranks.
 Under the null hypothesis, $H$ approximately follows a $\chi^2$ distribution with $k - 1$ degrees of freedom.
@@ -509,22 +506,23 @@ Under the null hypothesis, $H$ approximately follows a $\chi^2$ distribution wit
 <!-- ### Test selection `aov()`/ `oneway.test()` -->
 
 <!-- The test logic for `aov()` and `oneway.test()` follows from their respective assumptions. -->
+
 <!-- `visstat()` initially models the data using `aov()` and analyses the residuals. -->
 
 <!-- If both of the following conditions are met: (1) the standardised residuals follow the standard normal distribution, and (2) the residuals exhibit homoscedasticity (equal variances across groups), then the test statistic from `aov()` is returned. -->
 
 <!-- If only the normality assumption is satisfied, `visstat()` applies `oneway.test()`. -->
+
 <!-- If the normality assumption is violated, `kruskal.test()` is used instead. -->
 
 <!-- These assumptions are tested using the `vis_glm_assumptions()` function. -->
+
 ### Post-hoc analysis
 
 ANOVA, Welch ANOVA, and Kruskal--Wallis are omnibus tests: a significant result tells us that *some* group differs, but not which.
 To identify the differing pairs we test all
 
-$$
-M = \frac{n \cdot (n - 1)}{2}
-$$
+$$M = \frac{n \cdot (n - 1)}{2}$$
 
 pairwise comparisons among the $n$ factor levels, defining a *family of tests* [@Abdi:2007].
 Without correction, the family-wise error rate---the probability of at least one false rejection across the family---grows quickly with $n$.
@@ -546,7 +544,6 @@ The returned object contains the Games--Howell-adjusted p-values for every pairw
 
 When normality is rejected, `visstat()` follows `kruskal.test()` with `pairwise.wilcox.test()`, which compares each pair of factor levels via the Wilcoxon rank-sum test on ranks rather than means.
 The resulting p-values are adjusted for multiplicity using Holm's step-down method [@Holm:1979]: sorted ascending and tested against thresholds that loosen with rank.
-
 
 ### Graphical output
 
@@ -571,25 +568,21 @@ Besides the graphical output, `visstat()` returns a list containing the relevant
 
 ### Examples
 
-#### ANOVA {.unnumbered}
+#### Fisher's one-way ANOVA {.unnumbered}
 
 The `npk` dataset reports the yield of peas (in pounds per block) from an agricultural experiment conducted on six blocks.
 In this experiment, the application of three different fertilisers -- nitrogen (N), phosphate (P), and potassium (K) -- was varied systematically.
-Each block received either none, one, two, or all three of the fertilisers,
+Each block received either none, one, two, or all three of the fertilisers.
 
 ```{r}
-anova_npk <- visstat(npk$block,npk$yield,conf.level=0.90)
+anova_npk <- visstat(npk$block,npk$yield,conf.level=0.95)
 ```
 
-Normality of residuals is supported by graphical diagnostics (histogram, scatter plot of standardised residuals, Q-Q plot) and formal tests (Shapiro--Wilk and Anderson- Darling, both with $p > \alpha$). Homogeneity of variances is not supported at the given confidence level by `bartlett.test()`, but by `levene.test()` ($p > \alpha$).
-The decision logic is based on `levene.test()` and triggers `aov()`.
+Normality of residuals is supported by graphical diagnostics (histogram, scatter plot of standardised residuals, Q-Q plot) and formal tests (Shapiro--Wilk and Anderson- Darling, both with $p > \alpha$).
+Homogeneity of variances is not supported at the given confidence level by `bartlett.test()`, but by `levene.test()` ($p > \alpha$).
+The decision logic is solely based on `levene.test()` and triggers `aov()`.
 Post-hoc analysis with `TukeyHSD()`.
-Note that the omnibus F-test reports p = 0.09 — significant at $\alpha=0.1$ — yet no pairwise difference survives Tukey's family-wise correction (the smallest adjusted p, for blocks 4 vs 3, is 0.11). This illustrates a common phenomenon: with several groups, the omnibus test can detect a pattern of spread that no individual pair can attribute to itself once multiplicity is controlled.
-
-
-shows no significant yield differences between blocks, as all share the same group label (e.g., all green letters).
-
-
+Note that the omnibus F-test reports p = 0.086 — not significant at $\alpha=0.05$. Therefore no pairwise differences are expected in the post-hoc analysis and all groups share the same green letter "a".
 
 #### Kruskal--Wallis rank sum test {.unnumbered}
 
@@ -611,21 +604,19 @@ Post-hoc analysis using `pairwise.wilcox.test()` shows significant differences i
 
 The regression plot displays the point estimate of the regression line
 
-$$
-y = b_0 + b_1 \cdot x,
-$$
+$$y = b_0 + b_1 \cdot x,$$
 
 where $y$ is the response variable, $x$ is the predictor variable, $b_0$ is the intercept, and $b_1$ is the slope of the regression line.
 
 #### Residual analysis
 
 `visstat()` checks the normality of the standardised residuals from `lm()` both with diagnostic plots and using the Shapiro--Wilk and Anderson-Darling tests.
-(via `visAnovassumptions()`)
+(via `vis_glm_assumptions()`)
 
 <!-- If the p-values for the null hypothesis of normally distributed residuals from both tests are smaller than $1 -$`conf.int`, the title of the residual plot will display the message: "Requirement of normally distributed residuals not met". -->
 
 Note, that regardless of the result of the residual analysis, `visstat()` proceeds to perform the regression.
-The title of the graphical output indicates the chosen confidence level (`conf.level`), the estimated regression parameters with their confidence intervals and p-values, and the adjusted $R^2$.
+The title of the graphical output indicates the chosen confidence level (`conf.level`), the estimated regression parameters with their confidence intervals and p-values, and $R^2$.
 The plot displays the raw data, the fitted regression line, and both the confidence and prediction bands corresponding to the specified `conf.level`.
 
 `visstat()` returns a list containing the regression test statistics, the p-values from the normality tests of the standardised residuals, and the pointwise estimates of the confidence and prediction bands.
@@ -642,13 +633,13 @@ linreg_trees <- visstat(trees$Girth, trees$Volume,conf.level=0.9)
 
 p-values greater than `conf.level` in both the Anderson-Darling normality test and the Shapiro--Wilk test of the standardised residuals indicate that the normality assumption of the residuals underlying the linear regression is met.
 
-Increasing the confidence level `conf.level` from the default 0.9 to 0.99 results in wider confidence intervals of the regression parameters as well as wider confidence and prediction bands
+Increasing the confidence level `conf.level` from 0.9 to 0.99 results in wider confidence intervals of the regression parameters as well as wider confidence and prediction bands
 
 ```{r,fig.show='hide'}
 linreg_trees_99 <- visstat(trees$Girth, trees$Volume,conf.level = 0.99)
 ```
 
-The `visStatistics` plot allows to display only the second generated plot (the assumption plot is unchanged):
+The `visStatistics` plot-method allows to display only the second generated plot (the assumption plot is unchanged):
 
 ```{r}
 plot(linreg_trees_99,which=2)
@@ -658,11 +649,7 @@ plot(linreg_trees_99,which=2)
 
 When the flag `do_regression = FALSE` is set, `visstat()` computes correlation coefficients instead of fitting a regression model.
 
-The Pearson correlation coefficient $$
-r = \frac{\text{Cov}(x,y)}{\sigma_x \cdot \sigma_y}
-$$ quantifies the linear association between variables $x$ and $y$, where $\text{Cov}(x,y) = \frac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})$ is the sample covariance measuring how the variables vary together, and $\sigma_x$ and $\sigma_y$ are the standard deviations representing the spread of each variable individually, while the Spearman correlation coefficient $$
-\rho = r(\text{rank}(x), \text{rank}(y))
-$$ applies the Pearson correlation formula to the ranked values of $x$ and $y$, measuring monotonic relationships by calculating the linear correlation between the rank-transformed variables rather than the original data values.
+The Pearson correlation coefficient $$r = \frac{\text{Cov}(x,y)}{\sigma_x \cdot \sigma_y}$$ quantifies the linear association between variables $x$ and $y$, where $\text{Cov}(x,y) = \frac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})$ is the sample covariance measuring how the variables vary together, and $\sigma_x$ and $\sigma_y$ are the standard deviations representing the spread of each variable individually, while the Spearman correlation coefficient $$\rho = r(\text{rank}(x), \text{rank}(y))$$ applies the Pearson correlation formula to the ranked values of $x$ and $y$, measuring monotonic relationships by calculating the linear correlation between the rank-transformed variables rather than the original data values.
 
 `visstat()` automatically switches between Pearson and Spearman correlation based on the normality of both variables, assessed using the Shapiro--Wilk-test.
 If both `x` and `y` are normally distributed (p-values greater than `1-conf.level`), Pearson correlation is computed; otherwise, Spearman correlation is used.
@@ -693,7 +680,8 @@ Here, both variables pass the Shapiro-Wilk normality test ($p > \alpha$), so Pea
 
 ## Both variables categorical: Comparing proportions
 
-Observed frequencies are arranged in a contingency table, where rows index the levels $i$ of the response variable and columns index the levels $j$ of the predictor variable. `visstat()` tests the null hypothesis that the two variables are independent.
+Observed frequencies are arranged in a contingency table, where rows index the levels $i$ of the response variable and columns index the levels $j$ of the predictor variable.
+`visstat()` tests the null hypothesis that the two variables are independent.
 
 ### Pearson's residuals and mosaic plots
 
@@ -704,65 +692,54 @@ These residuals measure the standardised deviation of observed from expected cou
 Let $O_{ij}$ and $E_{ij}$ denote the observed and expected frequencies in row $i$ and column $j$ of an $R \times C$ contingency table.
 The Pearson residual for each cell is defined as
 
-$$
-r_{ij} = \frac{O_{ij} - E_{ij}}{\sqrt{E_{ij}}}, \quad i = 1, \ldots, R,\quad
-j = 1, \ldots, C.
-$$ Positive residuals (shaded in blue) indicate observed counts greater than expected, while negative values suggest under-representation (shaded in red).
+$$r_{ij} = \frac{O_{ij} - E_{ij}}{\sqrt{E_{ij}}}, \quad i = 1, \ldots, R,\quad
+j = 1, \ldots, C.$$ Positive residuals (shaded in blue) indicate observed counts greater than expected, while negative values suggest under-representation (shaded in red).
 Colour shading thus highlights which combinations of categorical levels contribute most to the overall association.
 
 ### Pearson’s $\chi^2$-test (`chisq.test()`)
 
 The test statistic of Pearson’s $\chi^2$-test [@Pearson:1900] is the sum of squared Pearson residuals:
 
-$$
-\chi^2 = \sum_{i=1}^{R} \sum_{j=1}^{C} r_{ij}^2 =
-\sum_{i=1}^{R} \sum_{j=1}^{C} \frac{(O_{ij} - E_{ij})^2}{E_{ij}}.
-$$
+$$\chi^2 = \sum_{i=1}^{R} \sum_{j=1}^{C} r_{ij}^2 =
+\sum_{i=1}^{R} \sum_{j=1}^{C} \frac{(O_{ij} - E_{ij})^2}{E_{ij}}.$$
 
-The test statistic is compared to the chi-squared distribution with \$ (R - 1)(C - 1)\$ degrees of freedom.
+The test statistic is compared to the chi-squared distribution with $(R - 1)(C - 1)$ degrees of freedom.
 The resulting p-value corresponds to the upper tail probability — that is, the probability of observing a value greater than or equal to the test statistic under the null hypothesis.
 
 ### Pearson’s $\chi^2$ test with Yates’ continuity correction
-Pearson $\chi^2$ statistic in $2 \times 2$ contingency tables (resulting in only one  degree of freedom) tends to overestimate the significance level of the test.
 
-To correct for this, Yates proposed subtracting 0.5 from each absolute difference between observed and expected counts [@Yates:1934], resulting in a smaller test statistic: $$
-\chi^2_{\text{Yates}} = \sum_{i=1}^{2} \sum_{j=1}^{2}
-\frac{(|O_{ij} - E_{ij}| - 0.5)^2}{E_{ij}}.
-$$
+Pearson $\chi^2$ statistic in $2 \times 2$ contingency tables (resulting in only one degree of freedom) tends to overestimate the significance level of the test.
+
+To correct for this, Yates proposed subtracting 0.5 from each absolute difference between observed and expected counts [@Yates:1934], resulting in a smaller test statistic: $$\chi^2_{\text{Yates}} = \sum_{i=1}^{2} \sum_{j=1}^{2}
+\frac{(|O_{ij} - E_{ij}| - 0.5)^2}{E_{ij}}.$$
 
 This reduced test statistic yields a larger p-value, thereby lowering the risk of a Type I error.
 
-Yates' continuity correction is applied by default to $2 \times 2$ contingency tables with one degree of freedom  by the underlying routine `chisq.test()`.
+Yates' continuity correction is applied by default to $2 \times 2$ contingency tables with one degree of freedom by the underlying routine `chisq.test()`.
 
 ### Fisher's exact test (`fisher.test()`)
 
-The $\chi^2$ approximation is considered reliable only if no expected cell count is less than 1 and no more than 20 percent of cells have expected counts below 5 [@Cochran:1954]).
+The $\chi^2$ approximation is considered reliable only if no expected cell count is less than 1 and no more than 20 percent of cells have expected counts below 5 [@Cochran:1954].
 If this condition is not met, Fisher's exact test [@Fisher:1970] (`fisher.test()`) is applied instead, as it is a non-parametric method that does not rely on large-sample approximations.
 The test calculates an exact p-value for testing independence by conditioning on the observed margins: the row totals $R_i = \sum_{j=1}^C O_{ij}$ and the column totals $C_j = \sum_{i=1}^R O_{ij}$, defining the structure of the contingency table.
 
 In the $2 \times 2$ case, the observed table can be written as:
 
-$$
-\begin{array}{c|cc|c}
+$$\begin{array}{c|cc|c}
 & C_1 & C_2 & \text{Row sums} \\\\
 \hline
 R_1 & a & b & a + b \\\\
 R_2 & c & d & c + d \\\\
 \hline
 \text{Column sums} & a + c & b + d & n
-\end{array}
-$$
+\end{array}$$
 
-Let $$
-O = \begin{bmatrix} a & b \\\\ c & d \end{bmatrix}
-$$ denote the above observed $2 \times 2$ contingency table.
+Let $$O = \begin{bmatrix} a & b \\\\ c & d \end{bmatrix}$$ denote the above observed $2 \times 2$ contingency table.
 The exact probability of observing this table under the null hypothesis of independence, given the fixed margins, is given by the hypergeometric probability mass function (PMF)
 
-$$
-\mathbb{P}(O \mid
+$$\mathbb{P}(O \mid
 R_1, R_2, C_1, C_2) =
-\frac{\binom{a + b}{a} \binom{c + d}{c}}{\binom{n}{a + c}},
-$$
+\frac{\binom{a + b}{a} \binom{c + d}{c}}{\binom{n}{a + c}},$$
 
 where $n = a + b + c + d$ is the total sample size.
 
@@ -822,7 +799,7 @@ The graphical output shows that the null hypothesis of Pearson's $\chi^2$ test -
 The mosaic plot indicates that the strongest deviations are due to over-representation of individuals with black hair and brown eyes, and of those with blond hair and blue eyes.
 In contrast, individuals with blond hair and brown eyes are the most under-represented.
 
-#### Pearson's ${\chi}^2$-test with Yate's continuity correction
+#### Pearson's ${\chi}^2$-test with Yates' continuity correction
 
 In the following example, we restrict the data to participants with either black or brown hair and either brown or blue eyes, resulting in a 2-by-2 contingency table.
 
@@ -834,9 +811,9 @@ hair_black_brown_eyes_brown_blue_df <- counts_to_cases(as.data.frame(hair_black_
 visstat(hair_black_brown_eyes_brown_blue_df$Eye, hair_black_brown_eyes_brown_blue_df$Hair)
 ```
 
-Also in this reduced dataset we reject the null hypothesis of independence of the hair colors "brown" and "black" from the eye colours "brown" and " blue".
+Also in this reduced dataset we reject the null hypothesis of independence of the hair colours "brown" and "black" from the eye colours "brown" and "blue".
 The mosaic plot shows that blue-eyed persons with black hair are under-represented.
-Note the higher p-value of Pearson's ${\chi}^2$-test with Yate's continuity correction (p = 0.00354) compared to the p-value of Pearson's ${\chi}^2$-test (p = 0.00229) shown in the mosaic plot.
+Note the higher p-value of Pearson's ${\chi}^2$-test with Yates' continuity correction (p = 0.00354) compared to the p-value of Pearson's ${\chi}^2$-test (p = 0.00229) shown in the mosaic plot.
 
 #### Fisher's exact test (`fisher.test()`)
 
@@ -887,7 +864,50 @@ Remove the graphical output from `plotDirectory`:
 file.remove(paths)
 ```
 
-When assumptions plots (residual and Q-Q plot) are generated, the corresponding plot has the prefix `"assumption_`.
+When assumptions plots (residual and Q-Q plot) are generated, the corresponding plot has the prefix `"assumption_"`.
+
+# The `visstat` methods
+
+Objects returned by `visstat()` are of class `"visstat"` and support the S3 methods `print()`, `summary()`, and `plot()`.
+
+## `print()` and `summary()`
+
+`print()` displays the test used and the p-value; `summary()` provides the full contents of the returned object, including assumption tests and post-hoc comparisons.
+
+```{r visstat-methods, fig.show='hide', results='hide'}
+iris_kruskal <- visstat(iris$Species, iris$Petal.Width)
+```
+```{r visstat-methods-print-summary}
+print(iris_kruskal)
+summary(iris_kruskal)
+```
+
+## `plot()`
+
+When `visstat()` is called with `graphicsoutput` specified, `plot()` lists the file paths of the stored graphics:
+
+```{r visstat-methods-plot-paths}
+iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
+                               graphicsoutput = "pdf",
+                               plotName = "iris_kruskal",
+                               plotDirectory = tempdir())
+plot(iris_kruskal_stored)
+```
+
+When `visstat()` is called without `graphicsoutput` (the default interactive mode), the generated plots are captured internally. Calling `plot()` without `which` lists the available plots; calling `plot()` with `which` replays the selected plot in the interactive R session:
+
+```{r visstat-methods-plot-replay}
+plot(iris_kruskal)
+```
+
+```r
+# Interactive only (not executed during vignette build):
+plot(iris_kruskal, which = 2)
+```
+
+```{r visstat-methods-cleanup, echo = FALSE}
+file.remove(attr(iris_kruskal_stored, "plot_paths"))
+```
 
 # Limitations
 
@@ -898,7 +918,8 @@ Therefore, except for the user-adjustable `conf.level` parameter, all statistica
 As a consequence, paired tests are currently not supported and `visstat()` does not allow to study interactions terms between the different levels of an independent variable in an analysis of variance.
 Focusing on the graphical representation of tests, only simple linear regression is implemented, as multiple linear regressions cannot be visualised.
 
-##  Limitations of test decisions based soley on p-values of statistical tests 
+## Limitations of test decisions based solely on p-values of statistical tests
+
 No single test maintains optimal Type I error rates and statistical power across all distributions [@Olejnik:1987], and p-values obtained from these tests may be unreliable if their assumptions are violated.
 
 Assessing assumptions solely through p-values can lead to both type I errors (false positives) and type II errors (false negatives).
@@ -906,35 +927,26 @@ In large samples, even minor, random deviations from the null hypothesis can res
 Conversely, in small samples, substantial violations of the assumption may not reach statistical significance, resulting in type II errors [@Kozak:2018].
 
 <!-- Thus, the robustness of statistical tests depends on both the sample size and the shape of the underlying distribution. -->
+
 <!-- This is evident in the limitations of the normality tests used: for instance, the Shapiro–Wilk test is unreliable for large samples ($N > 5000$), and performs best for the range it was originally  -->
 
 <!-- while the Anderson–Darling test requires at least 7 observations. -->
 
 Moreover, assumption tests provide no information on the nature of deviations from the expected distribution [@Shatz:2024].
-Thus the assessment of normality or homoscedacity should never rely solely on p-values but should be complemented by visual inspection of the diagnostic plots generated by `visstat()`.
+Thus the assessment of normality or homoscedasticity should never rely solely on p-values but should be complemented by visual inspection of the diagnostic plots generated by `visstat()`.
 
-
-#Limitation on testing normality with the Shapiro–Wilk test
+# Limitation on testing normality with the Shapiro–Wilk test
 
 Normality tests behave poorly at both ends of the sample-size range: with small samples they fail to detect non-normality, and with large samples they flag negligible departures from normality as significant [@Ghasemi:2012; @Fagerland:2012; @Franc:2025].
-
-
 
 This package uses $n > 50$ per group as a rule of thumb threshold to omit normality testing for smaller samples, assuming parametric tests of central tendencies to become robust to non-normality at larger sample sizes based on the central limit theorem.
 <!-- In fact, the actual sample size needed for parametric test validity depends on the unknown shape of the underlying distribution [@Knief:2021], with heavily skewed data potentially requiring much larger samples. -->
 
-
-Simulation studies suggest that Shapiro–Wilk has the highest power among normality tests in small to moderate ($n = 10$to 100) samples sizes[@Razali:2011]
+Simulation studies suggest that Shapiro–Wilk has the highest power among normality tests in small to moderate ($n = 10$ to 100) sample sizes [@Razali:2011].
 
 This package uses therefore the Shapiro-Wilk test to select between parametric (ANOVA/Welch's t-test) and non-parametric (Kruskal-Wallis/Wilcoxon) methods for groups smaller than 50.
 
 <!-- It furthermore applies the  Levene-Brown-Forsythe test for variance homogeneity to select between the Welch's heteroscedastic one-way ANOVA (oneway.test())  and Fisher's one/way ANOVA aov(). -->
-
-
-
-
-
-
 
 ### Combining tests inflates the overall Type I error rate
 
@@ -955,87 +967,83 @@ The package targets users with basic statistical literacy, such as non-specialis
 It covers topics typically included in an undergraduate course on applied statistics, intentionally excluding more advanced methods like bootstrapping to keep the focus on foundational concepts.
 
 # Appendix A: General Linear Model {#glm}
-General Linear Models (GLM) [@Searle:1971; @Nimon:2017] provide a unified 
-mathematical framework underlying the Student's t-test, Fisher ANOVA, and simple 
-linear regression. 
 
-Let $n$ denote the number of observations and $k-1$ the number of predictors. 
+General Linear Models (GLM) [@Searle:1971; @Nimon:2017] provide a unified mathematical framework underlying the Student's t-test, Fisher ANOVA, and simple linear regression.
+
+Let $n$ denote the number of observations and $k-1$ the number of predictors.
 The GLM for observation $i,\;i = 1, \ldots, n$ is:
 
 $$Y_i = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_{k-1} x_{ik-1} + \varepsilon_i, \quad \varepsilon_i \sim N(0, \sigma^2)$$
 
-where $Y_i$ is the response for observation $i$, $x_{ij}$ is the value of 
-predictor $j$ for observation $i$, $\beta_0, \beta_1, \ldots, \beta_{k-1}$ are the 
-$k$ parameters, and $\varepsilon_i$ are independently distributed error 
-terms with constant variance $\sigma^2$.
+where $Y_i$ is the response for observation $i$, $x_{ij}$ is the value of predictor $j$ for observation $i$, $\beta_0, \beta_1, \ldots, \beta_{k-1}$ are the $k$ parameters, and $\varepsilon_i$ are independently distributed error terms with constant variance $\sigma^2$.
 
 ## Student's t-test as a GLM
-Student's  tests the null hypothesis that the means of two (unpaired) groups are equal.
-We create one indicator binary variable 
-$x_{i1}$, where $x_{i1} = 0$ for observations in group 1 and 
-$x_{i1} = 1$ for observations in group 2. Taking expectations for each group:
 
--   Group 1 ($x_{i1} = 0$): $E[Y_i | x_{i1} = 0] = \beta_0 = \mu_1$
--   Group 2 ($x_{i1} = 1$): $E[Y_i | x_{i1} = 1] = \beta_0 + \beta_1 = \mu_2$
+Student's t-test tests the null hypothesis that the means of two (unpaired) groups are equal.
+We create one indicator binary variable $x_{i1}$, where $x_{i1} = 0$ for observations in group 1 and $x_{i1} = 1$ for observations in group 2.
+Taking expectations for each group:
 
-Therefore, $\beta_1 = \mu_2 - \mu_1$ represents the difference between group 
-means. Testing $H_0: \beta_1 = 0$ is mathematically equivalent to testing 
-$H_0: \mu_1 = \mu_2$ in Student's t-test.
+- Group 1 ($x_{i1} = 0$): $E[Y_i | x_{i1} = 0] = \beta_0 = \mu_1$
+- Group 2 ($x_{i1} = 1$): $E[Y_i | x_{i1} = 1] = \beta_0 + \beta_1 = \mu_2$
+
+Therefore, $\beta_1 = \mu_2 - \mu_1$ represents the difference between group means.
+Testing $H_0: \beta_1 = 0$ is mathematically equivalent to testing $H_0: \mu_1 = \mu_2$ in Student's t-test.
 
 ## Fisher's ANOVA as a GLM
-Fisher's one-way ANOVA tests the null hypothesis that the means  $k$ groups are equal.
 
-It can be formulated within the General Linear Model framework using $k-1$ indicator variables $x_{i1}, x_{i2}, \ldots, x_{ik-1}$ for each observation $i$ to represent group membership. The indicator variable coding is defined as follows:
+Fisher's one-way ANOVA tests the null hypothesis that the means of $k$ groups are equal.
 
-- Group 1 (reference): $x_{i1} = x_{i2} = \cdots = x_{ik-1} = 0$ for all 
-  observations i in group 1
-- Group 2: $x_{i1} = 1$ and $x_{i2} = \cdots = x_{ik-1} = 0$ for all 
-  observations i in group 2  
-- Group 3: $x_{i2} = 1$ and $x_{i1} = x_{i3} = \cdots = x_{ik-1} = 0$ for all 
-  observations i in group 3
+It can be formulated within the General Linear Model framework using $k-1$ indicator variables $x_{i1}, x_{i2}, \ldots, x_{ik-1}$ for each observation $i$ to represent group membership.
+The indicator variable coding is defined as follows:
+
+- Group 1 (reference): $x_{i1} = x_{i2} = \cdots = x_{ik-1} = 0$ for all observations i in group 1
+- Group 2: $x_{i1} = 1$ and $x_{i2} = \cdots = x_{ik-1} = 0$ for all observations i in group 2\
+- Group 3: $x_{i2} = 1$ and $x_{i1} = x_{i3} = \cdots = x_{ik-1} = 0$ for all observations i in group 3
 - ...
-- Group k: $x_{ik-1} = 1$ and $x_{i1} = \cdots = x_{i,k-2} = 0$ for all 
-  observations i in group k
-
+- Group k: $x_{ik-1} = 1$ and $x_{i1} = \cdots = x_{i,k-2} = 0$ for all observations i in group k
 
 <!-- For observation i in group j: -->
 
 <!-- - If $j = 1$ (reference group): all dummy variables equal 0 -->
+
 <!-- - If $j > 1$: $x_{i,j-1} = 1$ and all other dummy variables equal 0 -->
 
 Taking expectations for each group:
 
--   Group 1: $E[Y_i | x_{i1} = x_{i2}=\cdots = x_{ik-1} = 0] = \beta_0 = \mu_1$
--   Group 2: $E[Y_i | x_{i1} = 1] = \beta_0 + \beta_1 = \mu_2$
--   Group 3: $E[Y_i | x_{i2} = 1] = \beta_0 + \beta_2 = \mu_3$
--   ...
--   Group k: $E[Y_i | x_{ik-1} = 1] = \beta_0 + \beta_{k-1} = \mu_{k}$
+- Group 1: $E[Y_i | x_{i1} = x_{i2}=\cdots = x_{ik-1} = 0] = \beta_0 = \mu_1$
+- Group 2: $E[Y_i | x_{i1} = 1] = \beta_0 + \beta_1 = \mu_2$
+- Group 3: $E[Y_i | x_{i2} = 1] = \beta_0 + \beta_2 = \mu_3$
+- ...
+- Group k: $E[Y_i | x_{ik-1} = 1] = \beta_0 + \beta_{k-1} = \mu_{k}$
 
-Testing $H_0: \beta_1 = \beta_2 = \cdots = \beta_{k-1} = 0$ is mathematically 
-equivalent to testing $H_0: \mu_1 = \mu_2 = \cdots = \mu_{k}$ in Fisher's 
-ANOVA.
+Testing $H_0: \beta_1 = \beta_2 = \cdots = \beta_{k-1} = 0$ is mathematically equivalent to testing $H_0: \mu_1 = \mu_2 = \cdots = \mu_{k}$ in Fisher's ANOVA.
 
 <!-- The F-test for whether all regression coefficients equal zero is equivalent to  -->
+
 <!-- the ANOVA F-test for equal group means. -->
 
 ### Equivalences between tests
 
 The two-sample case sits inside both the t-test and the ANOVA frameworks, so several pairs of tests are numerically related.
 
-**Welch's t-test → Student's t-test.** When the assumption of equal variances holds ($s_1^2 = s_2^2 = s^2$) and sample sizes are equal ($n_1 = n_2 = n$), Welch's t-test reduces to Student's t-test with $2n - 2$ degrees of freedom. This exact equivalence does not extend to the multi-group case: 
+**Welch's t-test → Student's t-test.** When the assumption of equal variances holds ($s_1^2 = s_2^2 = s^2$) and sample sizes are equal ($n_1 = n_2 = n$), Welch's t-test reduces to Student's t-test with $2n - 2$ degrees of freedom.
+This exact equivalence does not extend to the multi-group case:
 
-**Welch's one-way ANOVA → Fisher's one-way ANOVA.**  Even under equal variances ($s_1^2 = \cdots = s_k^2$) and equal sample sizes ($n_1 = \cdots = n_k$), the Welch test statistic is not algebraically identical to the classical ANOVA $F$-statistic. Nevertheless, under these conditions the Welch statistic converges to the classical $F$-statistic, and any numerical differences become negligible in practice [@Welch:1951].
+**Welch's one-way ANOVA → Fisher's one-way ANOVA.** Even under equal variances ($s_1^2 = \cdots = s_k^2$) and equal sample sizes ($n_1 = \cdots = n_k$), the Welch test statistic is not algebraically identical to the classical ANOVA $F$-statistic.
+Nevertheless, under these conditions the Welch statistic converges to the classical $F$-statistic, and any numerical differences become negligible in practice [@Welch:1951].
 
-**t-tests as special cases of ANOVA.** t-tests are special cases of ANOVA for the comparison of two groups. The squared $t$-statistic equals the corresponding $F$-statistic:
+**t-tests as special cases of ANOVA.** t-tests are special cases of ANOVA for the comparison of two groups.
+The squared $t$-statistic equals the corresponding $F$-statistic:
 
 $t^2 = F$.
 
-For the comparison of two groups, Student's t-test, `t.test(var.equal = TRUE)` and `aov()` yield identical p-values, as do Welch's t-test `t.test(var.equal = FALSE)` and `oneway.test()`. In this case `visstat()` reports the t-statistic, as it provides sign information (indicating which group has the larger mean).
+For the comparison of two groups, Student's t-test, `t.test(var.equal = TRUE)` and `aov()` yield identical p-values, as do Welch's t-test `t.test(var.equal = FALSE)` and `oneway.test()`.
+In this case `visstat()` reports the t-statistic, as it provides sign information (indicating which group has the larger mean).
 
 ## Simple linear regression as a GLM
-Simple linear regression corresponds to one continuous predictor $x_{i1}$ 
-for observation $i$. Testing $H_0: \beta_1 = 0$ examines whether there is a 
-linear relationship between the predictor and the response.
+
+Simple linear regression corresponds to one continuous predictor $x_{i1}$ for observation $i$.
+Testing $H_0: \beta_1 = 0$ examines whether there is a linear relationship between the predictor and the response.
 
 # Appendix B: Tests for homoscedasticity {#variance}
 
@@ -1065,34 +1073,26 @@ Under the null hypothesis of equal variances, the test statistic follows an F-di
 
 ## Bartlett's test `bartlett.test()`
 
-Additionally, homoscedasticity is assessed via Bartlett's test [@Bartlett:1937] (`bartlett.test()`), which has more power than the Brown–Forsythe version of Levene’s test [@Brown:1974] when the normality assumption is met [@Allingham:2012]
+Additionally, homoscedasticity is assessed via Bartlett's test [@Bartlett:1937] (`bartlett.test()`), which has more power than the Brown–Forsythe version of Levene’s test [@Brown:1974] when the normality assumption is met [@Allingham:2012].
 
 Bartlett’s test evaluates whether sample variances are equal across $k$ normally distributed groups.
 
 The test statistic is
 
-$$
-K^2 = \frac{(N - k) \ln s_p^2 - \sum_{i=1}^k (n_i - 1) \ln s_i^2}{
+$$K^2 = \frac{(N - k) \ln s_p^2 - \sum_{i=1}^k (n_i - 1) \ln s_i^2}{
    1 + \frac{1}{3(k - 1)} \left( \sum_{i=1}^k \frac{1}{n_i - 1}
-- \frac{1}{N - k} \right)},
-$$
-where $s_i^2$ is the sample variance of group $i$, and $s_p^2$ is the pooled variance:
+- \frac{1}{N - k} \right)},$$ where $s_i^2$ is the sample variance of group $i$, and $s_p^2$ is the pooled variance:
 
-$$
-s_p^2 = \frac{1}{N - k} \sum_{i=1}^k (n_i - 1) s_i^2.
-$$
+$$s_p^2 = \frac{1}{N - k} \sum_{i=1}^k (n_i - 1) s_i^2.$$
 
 Under the null hypothesis that all group variances are equal and the data are normally distributed, the test statistic approximately follows a $\chi^2$-distribution with $k - 1$ degrees of freedom [@Bartlett:1937].
 
+## Breusch-Pagan test `bp.test()`
 
-##  Breusch-Pagan test `bp.test()`
-
-For linear regression (`regression = TRUE`), group-based tests cannot be used. Instead, the `vissstatics` package function `bp.test()` implements the  Breusch-Pagan test.
+For linear regression (`regression = TRUE`), group-based tests cannot be used.
+Instead, the `visStatistics` package function `bp.test()` implements the Breusch-Pagan test.
 
 The Breusch-Pagan test assesses whether the variance of the residuals from a regression model depends on the values of the independent variables [@Breusch:1979].
-
-.
-
 
 The diagnostics plots together with the p-values of the tests for normality and homoscedasticity enable the user to assess whether classical GLM assumptions are met and manually override the automated test selection.
 
