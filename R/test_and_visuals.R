@@ -499,7 +499,7 @@ vis_chi_squared_test <- function(samples,
     } else {
       chi2_fisher_text <- paste0(
         fisher_chi$method,
-        ",\np-value = ", signif(fisher_chi$p.value, 3)
+        "\np-value = ", signif(fisher_chi$p.value, 3)
       )
     }
     
@@ -583,15 +583,16 @@ vis_Kruskal_Wallis <- function(samples,
 
   kk <- kruskal.test(samples ~ fact)
 
-  # Margins -- spread below data minimum is reserved for the green letters
-  # and the in-plot legend (mirrors vis_anova layout).
-  maximum <- max(samples, na.rm = TRUE)
-  minimum <- min(samples, na.rm = TRUE)
-  spread <- maximum - minimum
-  mi <- minimum - 1.2 * spread
-  ma <- maximum + 1.2 * spread
+  # Y-axis limits (with extra lower margin for legend space)
+  lower_margin <- 0.45
+  upper_margin <- 0.2
+  margins <- calc_min_max_of_y_axis(samples, lower_margin, upper_margin)
+  mi <- margins[[1]]
+  ma <- margins[[2]]
 
-  par(mfrow = c(1, 1), oma = c(0, 0, 3, 0))
+  # For legend positioning (spread from actual plot range)
+  spread <- ma - mi
+
 
   b <- boxplot(
     samples ~ fact,
@@ -618,8 +619,14 @@ vis_Kruskal_Wallis <- function(samples,
     add = TRUE
   )
 
-  # N labels above each box
-  mtext(c("N =", b$n), at = c(0.7, seq_len(n_classes)), las = 1)
+  # Sample sizes above box plot (inside, like two-sample tests)
+  # Space-saving for many groups: show "N =" once, then just numbers
+  if (n_classes >= 6) {
+    n_labels <- c(paste("N =", b$n[1]), as.character(b$n[-1]))
+  } else {
+    n_labels <- paste("N =", b$n)
+  }
+  text(seq_len(n_classes), ma, n_labels)
 
   post_hoc_kruskal <- sig_diffs_nongauss(samples, fact, conf.level = conf.level)
   s <- multcompLetters(post_hoc_kruskal[[1]][, 4], threshold = alpha)
@@ -642,20 +649,18 @@ vis_Kruskal_Wallis <- function(samples,
   # (post-hoc method + alpha live in the legend below to avoid duplication)
   kk_value <- sprintf("%.2f", as.numeric(kk$statistic))
   mtext(paste0("Kruskal-Wallis test\nH = ", kk_value,
-               ", p = ", signif(kk$p.value, 2)),
-        outer = TRUE)
+               ", p = ", signif(kk$p.value, 2)))
 
   # Legend: significance letters (no mean marker -- Kruskal tests ranks).
   # All post-hoc / alpha info lives here, so the title can stay compact.
-  text(x = 0.1,
-       y = mi + 0.55 * spread,
-       labels = paste0("a, b, ...: significance letters\n",
-                       "(pairwise Wilcoxon, Holm-adjusted, alpha = ",
-                       signif(alpha, 2), ")"),
-       col = colors()[81],
-       adj = c(0, 1),
-       xpd = TRUE,
-       cex = 0.9)
+  legend("bottomleft",
+         legend = c("a, b, ...: significance letters",
+                    paste0("(pairwise Wilcoxon, Holm adj., alpha = ",
+                           signif(alpha, 2), ")")),
+         text.col = colors()[81],
+         bty = "n",
+         cex = 0.9,
+         inset = 0.08)
 
   my_list <-
     list("Kruskal Wallis rank sum test" = kk,
