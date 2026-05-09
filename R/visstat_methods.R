@@ -57,11 +57,11 @@ print.visstat <- function(x, ...) {
 
 summary.visstat <- function(object, ...) {
   cat("Summary of visstat object\n\n")
-
+  
   # Show available components
   cat("--- Named components ---\n")
   print(names(object))
-
+  
   # Print contents, with special handling for captured_plots
   cat("\n--- Contents ---\n")
   for (name in names(object)) {
@@ -72,8 +72,8 @@ summary.visstat <- function(object, ...) {
       print(object[[name]])
     }
   }
-
-
+  
+  
   invisible(object)
 }
 
@@ -136,7 +136,7 @@ summary.visstat <- function(object, ...) {
 plot.visstat <- function(x, which = NULL, ...) {
   path <- attr(x, "plot_paths")
   capture <- attr(x, "captured_plots")
-
+  
   if (!is.null(path) && length(path) > 0) {
     if (!is.null(which)) {
       message("Plot [", which, "] stored in ", path[[which]])
@@ -147,7 +147,7 @@ plot.visstat <- function(x, which = NULL, ...) {
     }
     return(invisible(x))
   }
-
+  
   if (!is.null(capture) && length(capture) > 0) {
     if (!is.null(which)) {
       if (isTRUE(getOption("knitr.in.progress"))) {
@@ -167,6 +167,6 @@ plot.visstat <- function(x, which = NULL, ...) {
     }
     return(invisible(x))
   }
-
+  
   invisible(x)
 }

@@ -4,33 +4,116 @@ editor_options:
     wrap: 72
 ---
 
-# visStatistics 0.1.8
+# visStatistics 0.2.0
 
-## Major changes
+## Changes in decision logic
 
-- Included new function `levene.test()` implementing the
-  Levene-Brown-Forsythe Test for homogeneity of variance (center =
-  median). It mimics the default behaviour of `leveneTest` in the
-  `car` - package .
-- Decision test logic for numerical  response vector and 
-categorical predictor is now based on `shapiro,test()` and
-  `levene.test(). Described in detail in`vignette("visStatistics").
+- **Unified normality testing across all branches.** The two-group case
+  (t-test vs Wilcoxon) and the multi-group case (ANOVA vs
+  Kruskal-Wallis) now share the same normality test: `shapiro.test()`
+  applied to the internally studentized residuals from `lm(y ~ x)` via
+  `rstandard()`.
 
-## Structural Improvements
+- **Variance homogeneity test changed from `bartlett.test()` to
+  `levene.test()`.** The Levene-Brown-Forsythe test (using the median)
+  is more robust to non-normality than Bartlett's test. The test now
+  determines whether Student's t-test (`t.test(var.equal = TRUE)`) or
+  Welch's t-test is used in the two-group case, and whether `aov()` or
+  `oneway.test()` is used in the multi-group case.
 
-- The class `"visstat"` now includes a plot-method: `plot.visstat()`.
-- All tests for comparing central tendencies show plots for testing the
-  normality assumption.
-- Diagnostic plots for normality now include histogram overlaid by
-  normal distribution.
-- All assumption plots are now saved with the prefix "assumption"
-  followed by plot name.
+- **Large-sample threshold changed from 30 to 50 per group.** When every
+  group exceeds 50 observations, normality testing is skipped and
+  parametric tests are applied directly (justified by the central limit
+  theorem).
 
-## Minor Improvements
+- **Post-hoc test after `oneway.test()` changed from `TukeyHSD()` to
+  `games.howell()`.** `TukeyHSD()` assumes equal variances; Games-Howell
+  does not, making it the appropriate companion for Welch's ANOVA.
 
-In `vignette`: - Paragraph on the assumption checking, based on
-hypothesis tests and visual inspection, extended. - Complemented
-bibliography of `vignette`. - \`
+- **Spearman-only correlation.** The new correlation branch
+  (`do_regression = FALSE`) uses Spearman rank correlation exclusively.
+  Spearman's rho is Pearson's r applied to ranks: it yields nearly
+  identical results for bivariate normal data but requires no
+  distributional assumptions. A separate Pearson branch is not
+  implemented, because Pearson correlation requires bivariate normality
+  — a condition that cannot be reliably tested from marginal
+  distributions alone.
+
+## New features
+
+- **Formula interface:** `visstat(y ~ x, data = df)` is now supported
+  alongside the existing `visstat(x, y)` and
+  `visstat(dataframe, "namey", "namex")` forms.
+
+- **Ordered factor responses:** When the response variable is of class
+  `ordered` (e.g., Likert scale ratings), `visstat()` converts it to
+  numeric ranks and applies non-parametric tests (Wilcoxon or
+  Kruskal-Wallis).
+
+- **Correlation analysis:** New parameter `do_regression` in
+  `visstat()`. When set to `FALSE`, Spearman rank correlation is
+  computed via `cor.test(..., method = "spearman")` instead of fitting a
+  regression model.
+
+- **New exported functions:**
+
+  - `levene.test()`: Levene-Brown-Forsythe test for homogeneity of
+    variance (center = median), mimicking the default behaviour of
+    `leveneTest()` in the `car` package.
+  - `bp.test()`: Breusch-Pagan test for heteroscedasticity in linear
+    regression models.
+  - `games.howell()`: Games-Howell post-hoc test for pairwise
+    comparisons following Welch's ANOVA.
+  - `vis_numeric()`: Visualisation of numeric-numeric relationships
+    (regression or correlation).
+  - `vis_welch_normality()`: Diagnostic plots for the Welch t-test /
+    Welch ANOVA branch.
+  - `vis_lm_assumptions()`: Renamed from `vis_anova_assumptions()`, now
+    provides unified assumption diagnostics for the general linear model
+    (t-test, ANOVA, regression).
+
+## Breaking changes
+
+- `vis_anova_assumptions()` has been removed and replaced by
+  `vis_lm_assumptions()`. The new function handles both ANOVA and
+  regression diagnostics (controlled by the `regression` parameter). For
+  regression, it shows a Residuals vs Leverage plot (with Cook's
+  distance contours) and the Breusch-Pagan test instead of the Bartlett
+  test.
+
+## Deprecated
+
+- `vis_anova_assumptions()` is provided as a deprecated wrapper for
+  `vis_lm_assumptions()`. It will be removed in a future version.
+
+## Improvements
+
+- Diagnostic plot title now reads "Linear model assumptions" with all
+  test p-values on two lines.
+- `plot.visstat()` method added to the `visstat` class.
+- Diagnostic plots for normality now include a histogram overlaid with
+  the normal density curve.
+- All assumption plots are saved with the prefix "assumption".
+- `testthat` test suite added.
+
+## Documentation
+
+- Vignette substantially revised:
+  - Spearman correlation section rewritten; Pearson correlation section
+    removed; justification for Spearman-only approach added.
+  - Complete decision logic rewritten to reflect the new test selection
+    algorithm.
+  - The general linear model framework (Appendix A) introduced, using
+    terminology that avoids confusion with R's `glm()`.
+  - Clarified that `rstandard()` computes internally studentized
+    residuals, with reference to Cook and Weisberg (1982).
+  - Bibliography extended.
+- DESCRIPTION rewritten to reflect the updated test selection algorithm.
+- README cleaned up; HTML comments removed.
+
+# visStatistics 0.1.7
+
+- No user-visible changes relative to 0.1.6.
 
 # visStatistics 0.1.6
 
@@ -48,11 +131,6 @@ bibliography of `vignette`. - \`
 
   This change aligns with standard R conventions. Both calling styles
   remain supported for backwards compatibility.
-
-  See `?visstat`, the README, or `vignette("visStatistics")` for
-  details.
-
-.
 
 ## Structural Improvements
 
@@ -97,7 +175,7 @@ bibliography of `vignette`. - \`
 
 ## Change in decision logic
 
-- Welch’s t-test (`t.test()`) is now applied when both groups have more
+- Welch's t-test (`t.test()`) is now applied when both groups have more
   than 30 observations (previous threshold was 100).
 
 ## Bug fixes

@@ -263,7 +263,7 @@ visstat_core <- function(dataframe,
     } else {
       # MANDATORY DIAGNOSTIC: Provide visual evidence for the decision pipeline
       openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 
-      vis_glm_assumptions(samples, fact, cex = 0.8)
+      vis_lm_assumptions(samples, fact, cex = 0.8)
       
       if (is.null(plotName)) {
         filename <- paste("glm_assumptions_", name_of_sample, "_", name_of_factor, sep = "")
@@ -280,7 +280,7 @@ visstat_core <- function(dataframe,
         normality_met <- TRUE 
       } else {
         current_model <- lm(samples ~ fact)
-        std_resids <- rstandard(current_model) #this is already part of the output of vis_glm_assumptions
+        std_resids <- rstandard(current_model) #this is already part of the output of vis_lm_assumptions
         normality_met <- shapiro.test(std_resids)$p.value >= alpha
       }
     }
@@ -484,7 +484,7 @@ visstat_core <- function(dataframe,
     
     
     normality_residual_assumption <-
-      vis_glm_assumptions(samples, fact,cex = 0.8,regression = TRUE)
+      vis_lm_assumptions(samples, fact,cex = 0.8,regression = TRUE)
     
     
     

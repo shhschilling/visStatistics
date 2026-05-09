@@ -5,38 +5,6 @@
 
 # visStatistics: The right test, visualised.
 
-<!-- Imagine you have a data base, which for confidentiality reasons, can not be directly accessed by collaborating researchers. But you want to give your collaborators to give  the possibility, via a web interface, to slice out groups of the data set, visualize it and get a first statistical analysis. This was the task for which `visstatistics` was originally developed: a fully automated  "quick and dirty"  visualisation and statistical analysis tool, particularly suited for browser-based interfaces that -->
-
-<!-- rely on  server-side R applications connected to secure databases, where users have no direct accesss.  -->
-
-<!-- The R package `visStatistics` allows for rapid **vis**ualisation and statistical -->
-
-<!-- analysis of raw data. It automatically selects and visualises the most -->
-
-<!-- appropriate **statistic**al hypothesis test between two vectors of class -->
-
-<!-- `integer`, `numeric` or `factor`. -->
-
-<!-- (an input vector of class -->
-
-<!-- `character` will be internally transformed to class `factor`). -->
-
-<!-- While numerous R packages provide statistical testing functionality, few are -->
-
-<!-- designed with pedagogical accessibility as a primary concern.  -->
-
-<!-- `visStatistics`  -->
-
-<!-- addresses this gap -->
-
-<!-- by automating the test selection process and presenting results using annotated, -->
-
-<!-- publication-ready visualisations.  -->
-
-<!-- This helps the user to focus on interpretation rather than technical execution. -->
-
-<!-- Its easy access should be of extreme use  -->
-
 # Purpose
 
 `visStatistics` is an R package for automated statistical test selection
@@ -219,18 +187,6 @@ When the response is numerical and the predictor is categorical, test of
 central tendencies are selected.
 
 ### Welch two sample t-test
-
-<!-- #### InsectSprays data set — both input forms -->
-
-<!-- ```{r insect-sprays, eval = TRUE} -->
-
-<!-- insect_sprays_ab <- InsectSprays[InsectSprays$spray %in% c("A", "B"), ] -->
-
-<!-- insect_sprays_ab$spray <- factor(insect_sprays_ab$spray) -->
-
-<!-- visstat(insect_sprays_ab$spray, insect_sprays_ab$count) -->
-
-<!-- ``` -->
 
 #### mtcars data set
 
@@ -419,35 +375,3 @@ Remove the graphical output from `plotDirectory`:
 file.remove(paths)
 #> [1] TRUE TRUE
 ```
-
-<!-- ## Implemented tests -->
-
-<!-- ### Numerical response and categorical predictor -->
-
-<!-- #### Main tests -->
-
-<!-- ` t.test()`, `wilcox.test()`, `lm()` ,`aov()`, `oneway.test()`, `kruskal.test()` -->
-
-<!-- #### Normality assumption check -->
-
-<!-- `shapiro.test()` and `ad.test()` -->
-
-<!-- #### Homoscedasticity assumption check -->
-
-<!-- `levene.test()` and `bartlett.test()`for ANOVA and `bp.test()` for linear regression -->
-
-<!-- #### Post-hoc tests -->
-
-<!-- -`TukeyHSD()` following `aov()`, -->
-
-<!-- -`games.howell()` following `oneway.test()`, -->
-
-<!-- -`pairwise.wilcox.test()` following `kruskal.test()`. -->
-
-<!-- ### Numerical response and predictor -->
-
-<!-- `lm()`, `cor()` -->
-
-<!-- ### Both variables categorical -->
-
-<!-- `chisq.test()`, `fisher.test()`  -->

@@ -1,6 +1,6 @@
 #' Visualisation of the normality distribution of the standardised residuals
 #'
-#' Checks for normality of the standardised residuals in the generalised linear model
+#' Checks for normality of the standardised residuals in the general linear model
 #' Student's t-test 
 #' (t.test,var=EQUAL) 
 #' Fisher oneway ANOVA (aov) or simple linear regression.
@@ -26,11 +26,11 @@
 #'
 #' @examples
 #' ToothGrowth$dose <- as.factor(ToothGrowth$dose)
-#' vis_glm_assumptions(ToothGrowth$len, ToothGrowth$dose)
+#' vis_lm_assumptions(ToothGrowth$len, ToothGrowth$dose)
 #'
 #' @export
 
-vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
+vis_lm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
   
   oldpar <- par(no.readonly = TRUE)
   on.exit(par(oldpar))
@@ -122,7 +122,7 @@ vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
   if (regression) {
     # Regression title with Breusch-Pagan test - split into two rows
     p_bp <- signif( bp_test$p.value, 2)
-    title_line1 <- paste("GLM assumptions: Shapiro-Wilk p =", p_shapiro, 
+    title_line1 <- paste("Linear model assumptions: Shapiro-Wilk p =", p_shapiro, 
                          "| Anderson-Darling p =", p_AD)
     title_line2 <- paste("Breusch-Pagan p =", p_bp)
     
@@ -130,7 +130,7 @@ vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
     mtext(title_line2, side = 3, outer = TRUE, line = 0, cex = 0.7)
   } else {
     # ANOVA title with Levene and Bartlett - split into two rows
-    title_line1 <- paste("GLM assumptions: Shapiro-Wilk p =", p_shapiro,
+    title_line1 <- paste("Linear model assumptions: Shapiro-Wilk p =", p_shapiro,
                          "| Anderson-Darling p =", if(is.numeric(p_AD)) signif(p_AD, 2) else p_AD)
     title_line2 <- paste("Levene-Brown-Forsythe p =", signif(levene_test$p.value, 2),
                          "| Bartlett p =", signif(bartlett_test$p.value, 2))
@@ -149,6 +149,14 @@ vis_glm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
     bp_test = if (regression)  bp_test else NULL
   )
   
-  class(result) <- "vis_glm_assumptions"
+  class(result) <- "vis_lm_assumptions"
   return(invisible(result))
+}
+
+#' @rdname vis_lm_assumptions
+#' @param ... Arguments passed to \code{vis_lm_assumptions()}.
+#' @export
+vis_anova_assumptions <- function(...) {
+  .Deprecated("vis_lm_assumptions")
+  vis_lm_assumptions(...)
 }

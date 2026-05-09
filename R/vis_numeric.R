@@ -1,18 +1,16 @@
 #' Visualize Numeric Relationships: Regression or Correlation Analysis
 #'
 #' This function provides unified visualization for numeric relationships between two continuous variables.
-#' It can perform either regression analysis (with confidence and prediction bands) or 
-#' correlation analysis (automatically selecting the most appropriate method) with 
-#' appropriate visualizations and statistical output.
-#' All statistical assumptions are checked and warnings are issued if violated, but analysis proceeds.
+#' It can perform either regression analysis (with confidence and prediction bands) or
+#' Spearman rank correlation analysis with appropriate visualizations and statistical output.
+#' For regression, statistical assumptions are checked and warnings are issued if violated, but analysis proceeds.
 #'
 #' @param y Numeric vector. The response variable (dependent variable) for regression analysis, 
 #'   or the y-axis variable for correlation analysis.
 #' @param x Numeric vector. The predictor variable (independent variable) for regression analysis,
 #'   or the x-axis variable for correlation analysis. Must have the same length as y.
-#' @param do_regression Logical. If TRUE (default), performs regression analysis with 
-#'   confidence and prediction bands. If FALSE, performs correlation analysis with 
-#'   automatic method selection and trend line.
+#' @param do_regression Logical. If TRUE (default), performs regression analysis with
+#'   confidence and prediction bands. If FALSE, performs Spearman rank correlation analysis.
 #' @param conf.level Numeric. Confidence level for statistical tests and intervals. 
 #'   Must be between 0 and 1. Default is 0.95 (95 percent confidence level).
 #' @param name_of_factor Character string. Label for the x-axis (independent variable). 
@@ -22,18 +20,15 @@
 #'
 #' @return A list containing analysis results and assumption checks. Content depends on analysis type.
 #'   For regression analysis: analysis_type, summary_regression, assumptions, warnings, r_squared, adj_r_squared.
-#'   For correlation analysis: analysis_type, correlation_test, correlation_coefficient, assumptions, 
-#'   warnings, method_used, method_selection_reason.
+#'   For correlation analysis: analysis_type, correlation_test, correlation_coefficient, assumptions,
+#'   warnings, method_used.
 #'
 #' @details
 #' Statistical Assumptions Checked:
-#' Regression: Normality of residuals (Shapiro-Wilk test) and 
-#' homoscedasticity (Breusch-Pagan test).
-#' Correlation: When do_regression = FALSE, the function automatically selects between 
-#' Pearson correlation (if both variables are normally distributed) or Spearman correlation 
-#' (if normality assumptions are violated or sample size is outside valid range).
-#' 
-#' All analyses proceed even if assumptions are violated, but appropriate warnings are issued.
+#' Regression: Normality of residuals (Shapiro-Wilk test) and
+#' homoscedasticity (Breusch-Pagan test). All regression analyses proceed even if
+#' assumptions are violated, but appropriate warnings are issued.
+#' Correlation: Spearman rank correlation requires no distributional assumptions.
 #'
 #' @examples
 #' \dontrun{
@@ -47,7 +42,7 @@
 #'                       name_of_factor = "Predictor", 
 #'                       name_of_sample = "Response")
 #' 
-#' # Correlation analysis with automatic method selection
+#' # Spearman rank correlation
 #' result2 <- vis_numeric(y, x, do_regression = FALSE)
 #' }
 #'
@@ -235,33 +230,10 @@ vis_numeric <- function(y,
   } else {
     # ========== CORRELATION ANALYSIS ==========
     
-    # Automatically determine correlation method
-    method_used <- "auto"
-    selection_reason <- ""
-    
-    # Test normality of both variables for automatic selection
-    norm_tests <- list()
-    
-    if (n >= 3 && n <= 5000) {
-      norm_tests$shapiro_x <- shapiro.test(x)
-      norm_tests$shapiro_y <- shapiro.test(y)
-      
-      both_normal <- norm_tests$shapiro_x$p.value > alpha && 
-        norm_tests$shapiro_y$p.value > alpha
-      
-      if (both_normal) {
-        method_used <- "pearson"
-        selection_reason <- "Auto-selected: Both variables normally distributed"
-      } else {
-        method_used <- "spearman"
-        selection_reason <- paste("Auto-selected: Normality violated (", name_of_sample, ": p =", 
-                                  signif(norm_tests$shapiro_y$p.value, 3),
-                                  ", ", name_of_factor, ": p =", signif(norm_tests$shapiro_x$p.value, 3), ")")
-      }
-    } else {
-      method_used <- "spearman"
-      selection_reason <- "Auto-selected: Sample size outside valid range for normality tests"
-    }
+    # Always use Spearman: it subsumes Pearson (nearly identical results
+    # for bivariate normal data) while remaining valid for non-normal
+    # distributions and non-linear monotonic relationships.
+    method_used <- "spearman"
     
     # Perform correlation test
     cor_test <- tryCatch({
@@ -274,59 +246,24 @@ vis_numeric <- function(y,
     cor_coef <- cor_test$estimate
     p_value <- cor_test$p.value
     
-    # Check assumptions for Pearson correlation
-    assumptions <- list()
-    
-    if (method_used == "pearson") {
-      # Check bivariate normality (approximated by individual normality tests)
-      if (n >= 3 && n <= 5000) {
-        assumptions$shapiro_x <- shapiro.test(x)
-        assumptions$shapiro_y <- shapiro.test(y)
-        
-        if (assumptions$shapiro_x$p.value < alpha) {
-          warnings_list <- c(warnings_list, 
-                             paste("x variable not normally distributed (Shapiro-Wilk p =", 
-                                   signif(assumptions$shapiro_x$p.value, 3), ")"))
-        }
-        
-        if (assumptions$shapiro_y$p.value < alpha) {
-          warnings_list <- c(warnings_list, 
-                             paste("y variable not normally distributed (Shapiro-Wilk p =", 
-                                   signif(assumptions$shapiro_y$p.value, 3), ")"))
-        }
-        
-        if (length(warnings_list) > 0) {
-          warnings_list <- c(warnings_list, "Consider using do_regression = FALSE for robust analysis")
-        }
-      } else {
-        assumptions$normality_note <- "Sample size outside valid range for normality tests"
-      }
-    } else {
-      assumptions$note <- "Spearman correlation: No parametric assumptions required"
-    }
+    # Spearman correlation: no parametric assumptions required
+    assumptions <- list(note = "Spearman correlation: no distributional assumptions required")
     
     # Create visualization
     ord <- order(x)
     x_sorted <- x[ord]
     y_sorted <- y[ord]
     
-    # Fit trend line for visualization only
-    if (method_used == "pearson") {
-      # Linear trend line
-      trend_reg <- lm(y ~ x)
-      trend_fitted <- trend_reg$fitted[ord]
+    # Monotonic trend line for visualization (regression on ranks,
+    # mapped back to the original scale)
+    trend_reg <- lm(rank(y) ~ rank(x))
+    fitted_ranks <- trend_reg$fitted[ord]
+    y_range <- max(y_sorted) - min(y_sorted)
+    rank_range <- max(fitted_ranks) - min(fitted_ranks)
+    if (rank_range > 0) {
+      trend_fitted <- min(y_sorted) + (fitted_ranks - min(fitted_ranks)) * y_range / rank_range
     } else {
-      # Monotonic trend approximation for Spearman
-      trend_reg <- lm(rank(y) ~ rank(x))
-      fitted_ranks <- trend_reg$fitted[ord]
-      # Map ranks back to approximate original scale
-      y_range <- max(y_sorted) - min(y_sorted)
-      rank_range <- max(fitted_ranks) - min(fitted_ranks)
-      if (rank_range > 0) {
-        trend_fitted <- min(y_sorted) + (fitted_ranks - min(fitted_ranks)) * y_range / rank_range
-      } else {
-        trend_fitted <- rep(mean(y_sorted), length(fitted_ranks))
-      }
+      trend_fitted <- rep(mean(y_sorted), length(fitted_ranks))
     }
     
     # Set up plot
@@ -372,7 +309,6 @@ vis_numeric <- function(y,
       correlation_coefficient = cor_coef,
       p_value = p_value,
       method_used = method_used,
-      method_selection_reason = selection_reason,
       assumptions = assumptions,
       warnings = warnings_list,
       significance = significance,

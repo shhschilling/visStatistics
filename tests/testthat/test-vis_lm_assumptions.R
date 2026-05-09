@@ -1,9 +1,9 @@
-test_that("vis_glm_assumptions returns correct structure for ANOVA", {
+test_that("vis_lm_assumptions returns correct structure for ANOVA", {
   # Setup test data
   ToothGrowth$dose <- as.factor(ToothGrowth$dose)
   
   # Run function
-  result <- vis_glm_assumptions(ToothGrowth$len, ToothGrowth$dose)
+  result <- vis_lm_assumptions(ToothGrowth$len, ToothGrowth$dose)
   
   # Test structure - should have 6 elements
   expect_named(result, c("summary_anova", "shapiro_test", "ad_test", 
@@ -22,9 +22,9 @@ test_that("vis_glm_assumptions returns correct structure for ANOVA", {
   expect_true(is.list(result$ad_test) || is.character(result$ad_test))
 })
 
-test_that("vis_glm_assumptions returns correct structure for regression", {
+test_that("vis_lm_assumptions returns correct structure for regression", {
   # Run function with regression=TRUE
-  result <- vis_glm_assumptions(mtcars$mpg, as.factor(mtcars$cyl), regression = TRUE)
+  result <- vis_lm_assumptions(mtcars$mpg, as.factor(mtcars$cyl), regression = TRUE)
   
   # Test structure - should have 6 elements
   expect_named(result, c("summary_anova", "shapiro_test", "ad_test", 
@@ -47,12 +47,12 @@ test_that("vis_glm_assumptions returns correct structure for regression", {
   expect_true(is.list(result$ad_test) || is.character(result$ad_test))
 })
 
-test_that("vis_glm_assumptions handles small samples correctly", {
+test_that("vis_lm_assumptions handles small samples correctly", {
   # Create small sample (n < 7)
   small_sample <- c(1, 2, 3, 4, 5)
   small_groups <- factor(c(1, 1, 2, 2, 2))
   
-  result <- vis_glm_assumptions(small_sample, small_groups)
+  result <- vis_lm_assumptions(small_sample, small_groups)
   
   # Should still return structure but with warnings for small n
   expect_named(result, c("summary_anova", "shapiro_test", "ad_test", 
@@ -62,36 +62,36 @@ test_that("vis_glm_assumptions handles small samples correctly", {
   expect_type(result$ad_test, "character")
 })
 
-test_that("vis_glm_assumptions produces plots", {
+test_that("vis_lm_assumptions produces plots", {
   ToothGrowth$dose <- as.factor(ToothGrowth$dose)
   
   # Should not error when plotting
   expect_no_error({
-    result <- vis_glm_assumptions(ToothGrowth$len, ToothGrowth$dose)
+    result <- vis_lm_assumptions(ToothGrowth$len, ToothGrowth$dose)
   })
 })
 
-test_that("vis_glm_assumptions handles NA values", {
+test_that("vis_lm_assumptions handles NA values", {
   # Create data with NAs
   data_with_na <- c(1, 2, 3, NA, 5, 6, 7, 8, 9, 10)
   groups_with_na <- factor(c(1, 1, 1, 1, 1, 2, 2, 2, 2, 2))
   
   # Should handle NAs gracefully
   expect_no_error({
-    result <- vis_glm_assumptions(data_with_na, groups_with_na)
+    result <- vis_lm_assumptions(data_with_na, groups_with_na)
   })
 })
 
-test_that("vis_glm_assumptions cex parameter works", {
+test_that("vis_lm_assumptions cex parameter works", {
   ToothGrowth$dose <- as.factor(ToothGrowth$dose)
   
   # Should accept different cex values
   expect_no_error({
-    result <- vis_glm_assumptions(ToothGrowth$len, ToothGrowth$dose, cex = 0.8)
+    result <- vis_lm_assumptions(ToothGrowth$len, ToothGrowth$dose, cex = 0.8)
   })
   
   expect_no_error({
-    result <- vis_glm_assumptions(ToothGrowth$len, ToothGrowth$dose, cex = 1.5)
+    result <- vis_lm_assumptions(ToothGrowth$len, ToothGrowth$dose, cex = 1.5)
   })
 })
 
@@ -122,21 +122,21 @@ test_that("bp_test gives reasonable results", {
   expect_true(result2$p.value < 0.05)  # Should reject for heteroscedastic data
 })
 
-test_that("vis_glm_assumptions uses plot.lm correctly", {
+test_that("vis_lm_assumptions uses plot.lm correctly", {
   # Test that plots are generated without errors
   ToothGrowth$dose <- as.factor(ToothGrowth$dose)
   
   # Capture plot output to check it runs
   expect_no_error({
     pdf(NULL)  # Use null device to suppress actual plotting
-    result <- vis_glm_assumptions(ToothGrowth$len, ToothGrowth$dose)
+    result <- vis_lm_assumptions(ToothGrowth$len, ToothGrowth$dose)
     dev.off()
   })
   
   # For regression
   expect_no_error({
     pdf(NULL)
-    result <- vis_glm_assumptions(mtcars$mpg, as.factor(mtcars$cyl), regression = TRUE)
+    result <- vis_lm_assumptions(mtcars$mpg, as.factor(mtcars$cyl), regression = TRUE)
     dev.off()
   })
 })
