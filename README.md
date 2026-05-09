@@ -149,14 +149,20 @@ The interpretation of `x` and `y` depends on their classes:
 - If both are numeric, a simple linear regression model is fitted with
   `y` as the response and `x` as the predictor.
 
-- If both are factors, a test of association is performed (Chi-squared
-  or Fisher’s exact). The test is symmetric, but the plot layout depends
-  on which variable is supplied as `x`.
+- If both are factors (and not both ordered), a test of association is
+  performed (Chi-squared or Fisher’s exact). The test is symmetric, but
+  the plot layout depends on which variable is supplied as `x`.
 
-- If both are factors and `y` is additionally of class`ordered`, a non
+- If both are factors and `y` is additionally of class `ordered`, a non
   parametric test is performed: a Wilcoxon test in the case of two
-  factor levels in `x` , a Kruskal-Wallis-Test for more than two factor
-  levels in in `x`.
+  factor levels in `x`, a Kruskal-Wallis-Test for more than two factor
+  levels in `x`.
+
+- If **both** `x` and `y` are of class `ordered`, the order of the
+  levels carries information that Chi-squared / Fisher would discard.
+  `visstat()` instead tests for a monotone association via Kendall’s
+  $\tau_b$ (`cor.test(..., method = "kendall")`) and visualises the
+  relationship with a jittered rank–rank scatter plus a mosaic plot.
 
 # Decision logic
 
@@ -187,7 +193,8 @@ variables.
 </div>
 
 A graphical summary of the decision logic used for categorial predictors
-and numerical responses is given in below figure:
+and numerical responses resulting in tests of central tendencies is
+given in below figure:
 
 <div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: left;">
 
@@ -320,7 +327,7 @@ comfort_numeric <- c(
   sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.30, 0.35))   # First
 )
 
-# Create dataframe with ORDERED response
+# Create dataframe with ordered response
 flight_data <- data.frame(
   service_class = service_class,
   comfort = ordered(comfort_numeric)  # Declare as ordered
@@ -368,6 +375,26 @@ fisher_stats <- visstat(black_brown_hazel_green_male$Eye,black_brown_hazel_green
 
 <img src="man/figures/README-haireye-fisher-1.png" alt="Fisher's exact test for 2x2 contingency table of hair and eye colour in males (black/brown hair versus hazel/green eyes). Displays observed frequencies, mosaic plot showing cell proportions, and exact test statistics for association with small sample sizes." width="80%" /><img src="man/figures/README-haireye-fisher-2.png" alt="Fisher's exact test for 2x2 contingency table of hair and eye colour in males (black/brown hair versus hazel/green eyes). Displays observed frequencies, mosaic plot showing cell proportions, and exact test statistics for association with small sample sizes." width="80%" />
 
+## Both variables ordered: Rank correlation
+
+When both predictor and response are of class `ordered`, `visstat()`
+tests for a monotone association via Kendall’s $\tau_b$ and produces a
+jittered rank–rank scatter together with a mosaic plot.
+
+``` r
+set.seed(1)
+n <- 120
+xs <- sample(1:5, n, replace = TRUE)
+ys <- pmin(5, pmax(1, xs + sample(-1:1, n, replace = TRUE)))
+likert_levels <- c("strongly disagree", "disagree", "neutral",
+                   "agree", "strongly agree")
+attitude  <- ordered(likert_levels[xs], levels = likert_levels)
+intention <- ordered(likert_levels[ys], levels = likert_levels)
+kendall_result <- visstat(intention, attitude)
+```
+
+<img src="man/figures/README-kendall-ordered-1.png" alt="Kendall's tau-b rank correlation between two five-point Likert items. Shows a jittered rank-rank scatter annotated with tau-b, the p-value, and sample size, plus a mosaic plot whose tile ordering reflects the level ordering of the ordered factors." width="80%" /><img src="man/figures/README-kendall-ordered-2.png" alt="Kendall's tau-b rank correlation between two five-point Likert items. Shows a jittered rank-rank scatter annotated with tau-b, the p-value, and sample size, plus a mosaic plot whose tile ordering reflects the level ordering of the ordered factors." width="80%" />
+
 # Saving the graphical output
 
 All generated graphics can be saved in any file format supported by
@@ -400,8 +427,8 @@ The full file path of the generated graphics are stored as the attribute
 ``` r
 paths <- attr(save_fisher, "plot_paths")
 print(paths)
-#> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp367Gb0/chi_squared_or_fisher_Hair_Eye.png"
-#> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp367Gb0/mosaic_complete_Hair_Eye.png"
+#> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp5fn8wA/chi_squared_or_fisher_Hair_Eye.png"
+#> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp5fn8wA/mosaic_complete_Hair_Eye.png"
 ```
 
 Remove the graphical output from `plotDirectory`:

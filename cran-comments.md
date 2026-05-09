@@ -8,20 +8,23 @@ This is a resubmission of the package after addressing the following issues.
 
 - **New post-hoc test:** `games.howell()` is used as the post-hoc test after Welch's ANOVA when variances are unequal, as it correctly handles this case. `TukeyHSD()` remains for Student's ANOVA.
 
-- **Variance homogeneity test:** Changed from Bartlett's test to Levene-Brown-Forsythe test (`levene.test()`), which is more robust to non-normality.
+- **Variance homogeneity test:** Changed from Bartlett's test to Levene-Brown-Forsythe test (`levene.test()`).
 
 ## Structural Improvements
 
-- **Bibliography management:** Consolidated BibTeX files into a single `REFERENCES.bib` file located in both `vignettes/` and `inst/`, following R package standards. 
 
+- **Formula interface:** `visstat()` now accepts the formula interface
+`visstat(y ~ x, data = df)` in addition to the existing calling conventions.
 
-- **Formula interface:** `visstat()` now accepts the formula interface `visstat(y ~ x, data = df)` in addition to the existing calling conventions.
-
-- **Correlation analysis:** New parameter `do_regression` enables Spearman rank correlation analysis as an alternative to regression.
+- **Correlation analysis:** New parameter `do_regression` enables Spearman rank
+correlation analysis as an alternative to regression.
 
 ## New features
 
-- **Ordered factor support:** When the response variable is of class `ordered` (e.g., Likert scales), `visstat()` automatically converts to numeric ranks and applies appropriate non-parametric tests.
+- **Ordered factor support:** When a variable is of class `ordered` (e.g., Likert scales), `visstat()` automatically converts it to
+numeric ranks. When both variables are of of class `ordered`, 
+a Spearman - rank correlation is performed
+
 
 - **New exported functions:**
   - `levene.test()`: Levene-Brown-Forsythe test for homogeneity of variance
