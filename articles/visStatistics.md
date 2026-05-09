@@ -5,8 +5,10 @@
 `visStatistics` automatically selects and visualises appropriate
 statistical hypothesis tests between two column vectors of class
 `"numeric"`, `"integer"`, or `"factor"`. The choice of test depends on
-the `class`, distribution, and sample size of the vectors, as well as
-the user-defined ‘conf.level’. The main function
+the `class`, distributional assumptions, and sample size of the vectors,
+as well as the user-defined ‘conf.level’.
+
+The main function
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 visualises the selected test with appropriate graphs (box plots, bar
 charts, regression lines with confidence bands, mosaic plots, residual
@@ -161,20 +163,23 @@ number of factor levels, normality, and homoscedasticity.
 ### Numeric response and categorical predictor: Comparing central tendencies
 
 When the response `y` is numeric and the predictor `x` is categorical, a
-statistical hypothesis test comparing central tendencies is selected.
+statistical hypothesis test comparing central tendencies is selected. A
+linear model `lm(y~x)` is always fitted.
 
-- Normality testing of the residuals: A linear model `lm(y~x)` is fitted
-  to extract standardized residuals, which are assessed for normality
-  using the Shapiro-Wilk (SW) test ([Shapiro and Wilk
-  1965](#ref-Shapiro:1965))
-  ([`shapiro.test()`](https://rdrr.io/r/stats/shapiro.test.html)) at
-  significance level $`\alpha`$. Simulation studies show that the
-  Shapiro-Wilk test is the most powerful for detecting non-normality
-  across most distributions, especially with smaller sample sizes
-  ([Razali and Wah 2011](#ref-Razali:2011); [Ghasemi and Zahediasl
+- Normality testing of the residuals: The Shapiro–Wilk test ([Shapiro
+  and Wilk 1965](#ref-Shapiro:1965))
+  ([`shapiro.test()`](https://rdrr.io/r/stats/shapiro.test.html)) is
+  performed on internally studentized residuals computed by
+  [`rstandard()`](https://rdrr.io/r/stats/influence.measures.html),
+  which scales the raw residuals with an estimate of their standard
+  deviation that accounts for the leverage of each observation ([Cook
+  and Weisberg 1982](#ref-Cook:1982)). The Shapiro–Wilk test is the most
+  powerful for detecting non-normality across most distributions,
+  especially with smaller sample sizes ([Razali and Wah
+  2011](#ref-Razali:2011); [Ghasemi and Zahediasl
   2012](#ref-Ghasemi:2012)).
 
-- Non parametric-tests: If the test rejects normality
+- Non parametric-tests: Only when the test rejects normality
   ($`p_{SW} \le \alpha`$), non-parametric tests are selected: the
   Wilcoxon rank-sum test
   ([`wilcox.test()`](https://rdrr.io/r/stats/wilcox.test.html)) for two
@@ -216,11 +221,11 @@ statistical hypothesis test comparing central tendencies is selected.
       2009](#ref-Fagerland:2009); [Delacre et al.
       2017](#ref-Delacre:2017)).
 
-- Regardless of sample size, general linear model (GLM) assumption
-  diagnostics are always displayed. Note, that throughout this vignette,
-  GLM refers to the classical Gaussian linear model framework
-  ([**Searle?**](#ref-Searle)) underlying t‑tests, ANOVA, and linear
-  regression, and not to generalised linear models with non‑Gaussian
+- Regardless of sample size, assumption diagnostics are always
+  displayed. Throughout this vignette, *linear model* refers to the
+  classical Gaussian linear model framework ([Searle
+  1971](#ref-Searle:1971)) underlying t-tests, ANOVA, and linear
+  regression — not to generalised linear models with non-Gaussian
   responses. When heteroscedasticity is detected and therefore Welch
   methods are selected, group-wise normality diagnostics are
   additionally displayed because residual-based normality testing
@@ -228,7 +233,7 @@ statistical hypothesis test comparing central tendencies is selected.
   visually assess whether assumptions are met and manually override the
   automated p-value-based test selection.
 
-### Both variables numeric: Simple linear regression, Pearson or Spearman
+### Both variables numeric: Simple linear regression or Spearman correlation
 
 #### Causal relationship: Simple linear regression (`lm()`)
 
@@ -242,21 +247,25 @@ of fitted values with confidence bands. Note that **only one** predictor
 variable is allowed, as the function is designed for two-dimensional
 visualisation.
 
-#### Non-causal relationship: Correlation analysis (Pearson or Spearman)
+Note that in the linear regression branch, homoscedasticity is assessed
+using the Breusch–Pagan test `bp.test()`. The test evaluates whether the
+variance of the (raw, non standardized) residuals depends on the
+predictor variable.
+
+#### Non-causal relationship: Spearman rank correlation
 
 When no directional relationship is assumed (by flag
 `do_regression = FALSE`) between two numeric variables,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-performs correlation analysis using either Pearson’s product-moment
-correlation (`cor.test(method = "pearson")`) for bivariate normal data
-or Spearman’s rank correlation (`cor.test(method = "spearman")`) as a
-non-parametric alternative. Spearman correlation operates on the ranks
-of the data rather than the original values, making it robust to
-outliers and non-normal distributions while detecting monotonic
-relationships. The choice between methods is determined by applying the
-Shapiro-Wilk test to both variables separately, with Pearson correlation
-selected only when both variables pass normality testing at the
-specified significance level.
+performs Spearman’s rank correlation
+(`cor.test(..., method = "spearman")`). Spearman correlation operates on
+the ranks of the data rather than the original values, making it robust
+to outliers and non-normal distributions while detecting monotonic
+relationships. Because Spearman’s $`\rho`$ is Pearson’s $`r`$ applied to
+the ranks, it yields nearly identical results to Pearson correlation
+when the data are bivariate normal (the assumption of Pearson’s
+inference) but remains valid without any distributional assumptions. A
+separate Pearson branch is therefore not implemented.
 
 ### Both variables of class `factor`
 
@@ -296,28 +305,24 @@ non-parametric testing.
 
 The mathematical framework underlying Student’s t-test, Fisher’s ANOVA
 and simple linear regression — and the assumption diagnostics shown by
-`vis_glm_assumptions()` — is described in the [Appendix](#glm).
+`vis_lm_assumptions()` — is described in the [Appendix](#glm).
 
-## Assumption diagnostics: `vis_glm_assumptions()`
+## Assumption diagnostics: `vis_lm_assumptions()`
 
-All tests within the GLM framework share the same set of assumptions:
+All tests within the linear model framework share the same set of
+assumptions:
 
 - Linearity: The expected value of the response is a linear function of
   the predictors; assessed by checking for systematic patterns in
   residual plots.
 
-Error terms are:
+- Error terms are independent, normally distributed with expectation
+  value 0 and have constant error variance $`\sigma^2`$
 
-- independent,
-
-- normally distributed with expectation value 0 and
-
-- homoscedastic: Constant error variance $`\sigma^2`$
-
-The function `vis_glm_assumptions()` provides a unified visual and
-statistical framework for validating the GLM assumptions. It fits GLM
-model using [`aov()`](https://rdrr.io/r/stats/aov.html) and provides
-four standard diagnostic plots:
+The function `vis_lm_assumptions()` provides a unified visual and
+statistical framework for validating the linear model assumptions. It
+fits a linear model using [`aov()`](https://rdrr.io/r/stats/aov.html)
+and provides four standard diagnostic plots:
 
 1.  **Histogram and Normal Density**: Displays the distribution of
     standardized residuals with a red normal density curve overlay to
@@ -340,15 +345,11 @@ The diagnostic plots are enhanced by p-values of tests for normality and
 homoscedasticity, shown in the title of the plot.
 
 **Normality Assessment**: The function evaluates residual normality
-using both the Shapiro-Wilk test
-([`shapiro.test()`](https://rdrr.io/r/stats/shapiro.test.html)) and
-Anderson-Darling test (`ad.test()`) ([Gross and Ligges
-2015](#ref-Gross:2015)).
-
-These tests offer complementary strengths: Shapiro-Wilk generally
-exhibits greater power across non-normal distributions in small samples,
-while Anderson-Darling is highly sensitive to tail deviations in larger
-samples ([Razali and Wah 2011](#ref-Razali:2011); [Yap and Sim
+using both the Shapiro–Wilk test
+([`shapiro.test()`](https://rdrr.io/r/stats/shapiro.test.html)) and the
+Anderson–Darling test (`ad.test()`) ([Gross and Ligges
+2015](#ref-Gross:2015)). Anderson–Darling is particularly sensitive to
+tail deviations ([Razali and Wah 2011](#ref-Razali:2011); [Yap and Sim
 2011](#ref-Yap:2011)).
 
 **Homoscedasticity Assessment**: Variance equality is tested using the
@@ -404,10 +405,10 @@ $`\nu = n_1 + n_2 - 2`$ degrees of freedom.
 
 ##### Welch’s t-test (`t.test()`)
 
-Welch’s t-test relaxes the homoscedasticity assumption of the GLM while
-maintaining the requirements for independent observations and normally
-distributed residuals. It evaluates the null hypothesis that the means
-of two groups are equal without assuming equal variances.
+Welch’s t-test relaxes the homoscedasticity assumption while maintaining
+the requirements for independent observations and normally distributed
+residuals. It evaluates the null hypothesis that the means of two groups
+are equal without assuming equal variances.
 
 The test statistic is given by ([Welch 1947](#ref-Welch:1947);
 [Satterthwaite 1946](#ref-Satterthwaite:1946))
@@ -511,7 +512,7 @@ grades_gender <- data.frame(
 wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
 ```
 
-![](visStatistics_files/figure-html/unnamed-chunk-3-1.png)![](visStatistics_files/figure-html/unnamed-chunk-3-2.png)
+![](visStatistics_files/figure-html/unnamed-chunk-2-1.png)![](visStatistics_files/figure-html/unnamed-chunk-2-2.png)
 
 ##### Wilcoxon with ordinal response
 
@@ -545,8 +546,6 @@ wilcox_ordered <- visstat(survey_data, "satisfaction", "segment")
     ## Warning in visstat_core(dataframe = dataframe, varsample = varsample, varfactor
     ## = varfactor, : Ordinal response detected. Defaulting to non-parametric tests.
 
-![](visStatistics_files/figure-html/ordinal-1.png)
-
 ### Categorical predictor with more than two levels
 
 #### Fisher’s one-way ANOVA (`aov()`)
@@ -554,12 +553,11 @@ wilcox_ordered <- visstat(survey_data, "satisfaction", "segment")
 Fisher’s one-way ANOVA ([`aov()`](https://rdrr.io/r/stats/aov.html))
 tests the null hypothesis that the means of $`k`$ groups are equal.
 
-As it represents a [General Linear Model](#glm), it assumes independent
-observations, normally distributed residuals, and **homogeneous**
-variances across groups. The test statistic is the ratio of the variance
-explained by differences among group means (between-group variance) to
-the unexplained variance within groups ([Fisher and Yates
-1990](#ref-Fisher:1990))
+As a [linear model](#glm), it assumes independent observations, normally
+distributed residuals, and **homogeneous** variances across groups. The
+test statistic is the ratio of the variance explained by differences
+among group means (between-group variance) to the unexplained variance
+within groups ([Fisher and Yates 1990](#ref-Fisher:1990))
 
 ``` math
 F  = \frac{MS_{between}}{MS_{within}}=
@@ -617,8 +615,7 @@ $`i`$, and $`s_i^2`$ is the variance of group $`i`$.
 
 Numerical relationships within the parametric tests defined by the
 decision logic above (including the identity $`t^2 = F`$ in the
-equal-variance two-group case) are summarised in the Appendix
-[Appendix](#glm)..
+equal-variance two-group case) are summarised in [Appendix A](#glm).
 
 #### Kruskal–Wallis test (`kruskal.test()`)
 
@@ -756,7 +753,7 @@ either none, one, two, or all three of the fertilisers.
 anova_npk <- visstat(npk$block,npk$yield,conf.level=0.95)
 ```
 
-![](visStatistics_files/figure-html/unnamed-chunk-4-1.png)![](visStatistics_files/figure-html/unnamed-chunk-4-2.png)
+![](visStatistics_files/figure-html/unnamed-chunk-3-1.png)![](visStatistics_files/figure-html/unnamed-chunk-3-2.png)
 
 Normality of residuals is supported by graphical diagnostics (histogram,
 scatter plot of standardised residuals, Q-Q plot) and formal tests
@@ -781,14 +778,14 @@ different iris species.
 visstat(iris$Species, iris$Petal.Width)
 ```
 
-![](visStatistics_files/figure-html/unnamed-chunk-5-1.png)![](visStatistics_files/figure-html/unnamed-chunk-5-2.png)
+![](visStatistics_files/figure-html/unnamed-chunk-4-1.png)![](visStatistics_files/figure-html/unnamed-chunk-4-2.png)
 
 In this example, scatter plots of the standardised residuals and the Q-Q
 plot suggest that the residuals are not normally distributed. This is
 confirmed by very small p-values from both the Shapiro–Wilk and
 Anderson-Darling tests.
 
-If both p-values are below the significance level $`\alpha`$,
+Since the Shapiro–Wilk p-value is below $`\alpha`$,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 switches to the non-parametric
 [`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html). Post-hoc
@@ -817,7 +814,7 @@ line.
 checks the normality of the standardised residuals from
 [`lm()`](https://rdrr.io/r/stats/lm.html) both with diagnostic plots and
 using the Shapiro–Wilk and Anderson-Darling tests. (via
-`vis_glm_assumptions()`)
+`vis_lm_assumptions()`)
 
 Note, that regardless of the result of the residual analysis,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -845,7 +842,7 @@ The `trees` data set contains the diameter `Girth` in inches and
 linreg_trees <- visstat(trees$Girth, trees$Volume,conf.level=0.9)
 ```
 
-![](visStatistics_files/figure-html/unnamed-chunk-6-1.png)![](visStatistics_files/figure-html/unnamed-chunk-6-2.png)
+![](visStatistics_files/figure-html/unnamed-chunk-5-1.png)![](visStatistics_files/figure-html/unnamed-chunk-5-2.png)
 
     ## Warning: Statistical assumptions violated:
     ## Homoscedasticity violated (Breusch-Pagan p = 0.0178 )
@@ -853,10 +850,10 @@ linreg_trees <- visstat(trees$Girth, trees$Volume,conf.level=0.9)
 
     ## RECOMMENDATION: Consider using do_regression = FALSE for robust correlation analysis
 
-p-values greater than `conf.level` in both the Anderson-Darling
-normality test and the Shapiro–Wilk test of the standardised residuals
-indicate that the normality assumption of the residuals underlying the
-linear regression is met.
+p-values greater than $`\alpha`$ = `1 - conf.level` in both the
+Anderson–Darling and Shapiro–Wilk normality tests of the standardised
+residuals indicate that the normality assumption underlying the linear
+regression is met.
 
 Increasing the confidence level `conf.level` from 0.9 to 0.99 results in
 wider confidence intervals of the regression parameters as well as wider
@@ -875,43 +872,37 @@ generated plot (the assumption plot is unchanged):
 plot(linreg_trees_99,which=2)
 ```
 
-![](visStatistics_files/figure-html/unnamed-chunk-8-1.png)
+![](visStatistics_files/figure-html/unnamed-chunk-7-1.png)
 
-#### Pearson and Spearman correlation (`cor.test()`)
+#### Spearman correlation (`cor.test(..., method = "spearman")`)
 
-When the flag `do_regression = FALSE` is set,
+When `do_regression = FALSE`,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-computes correlation coefficients instead of fitting a regression model.
+calls `cor.test(x, y, method = "spearman")` to measure the monotonic
+association between two variables $`x`$ and $`y`$ using ranks. The
+Spearman rank correlation $`\rho`$ measures monotonic association by
+evaluating linear dependence on the ranked data rather than on the
+original scale:
 
-The Pearson correlation coefficient
 ``` math
-r = \frac{\text{Cov}(x,y)}{\sigma_x \cdot \sigma_y}
+\rho = r(\operatorname{rank}(x), \operatorname{rank}(y))
 ```
-quantifies the linear association between variables $`x`$ and $`y`$,
-where
-$`\text{Cov}(x,y) = \frac{1}{n-1}\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})`$
-is the sample covariance measuring how the variables vary together, and
-$`\sigma_x`$ and $`\sigma_y`$ are the standard deviations representing
-the spread of each variable individually, while the Spearman correlation
-coefficient
+where $`r(u, v)`$ denotes Pearson’s correlation coefficient:
 ``` math
-\rho = r(\text{rank}(x), \text{rank}(y))
+r(u,v)
+=
+\frac{\sum_{i=1}^{n}(u_i-\bar u)(v_i-\bar v)}
+{\sqrt{\sum_{i=1}^{n}(u_i-\bar u)^2}\,
+ \sqrt{\sum_{i=1}^{n}(v_i-\bar v)^2}}.
 ```
-applies the Pearson correlation formula to the ranked values of $`x`$
-and $`y`$, measuring monotonic relationships by calculating the linear
-correlation between the rank-transformed variables rather than the
-original data values.
 
-[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-automatically switches between Pearson and Spearman correlation based on
-the normality of both variables, assessed using the Shapiro–Wilk-test.
-If both `x` and `y` are normally distributed (p-values greater than
-`1-conf.level`), Pearson correlation is computed; otherwise, Spearman
-correlation is used.
+For inference, `cor.test(..., method = "spearman")` computes an exact
+p-value for small samples without ties by evaluating all $`n!`$ rank
+permutations. For larger samples or when ties are present, it uses an
+approximation to the null distribution of the test statistic. No
+distributional assumption on the original data is required.
 
-#### Examples
-
-##### Spearman correlation
+##### Example
 
 Here, we use the `swiss` data set, standardised fertility measure and
 socioeconomic indicators for each of 47 French-speaking provinces of
@@ -921,30 +912,10 @@ in percentage points.
 ``` r
 
 result_swiss1 <- visstat(swiss$Fertility,
-                             swiss$Education,do_regression = FALSE)
+                             swiss$Education, do_regression = FALSE)
 ```
 
-![](visStatistics_files/figure-html/unnamed-chunk-9-1.png)![](visStatistics_files/figure-html/unnamed-chunk-9-2.png)
-
-Since both variables are not normally distributed (p-values from the
-Shapiro–Wilk test are smaller than `1 -` `conf.level`),
-[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-computes the Spearman correlation.
-
-##### Pearson correlation
-
-The `women` dataset contains average heights and weights for American
-women, which are approximately normally distributed.
-
-``` r
-
-result_women <- visstat(women$height, women$weight, do_regression = FALSE)
-```
-
-![](visStatistics_files/figure-html/unnamed-chunk-10-1.png)![](visStatistics_files/figure-html/unnamed-chunk-10-2.png)
-
-Here, both variables pass the Shapiro-Wilk normality test
-($`p > \alpha`$), so Pearson correlation is used.
+![](visStatistics_files/figure-html/unnamed-chunk-8-1.png)![](visStatistics_files/figure-html/unnamed-chunk-8-2.png)
 
 ### Both variables categorical: Comparing proportions
 
@@ -1118,7 +1089,7 @@ hair_eye_colour_df <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(hair_eye_colour_df$Eye, hair_eye_colour_df$Hair)
 ```
 
-![](visStatistics_files/figure-html/unnamed-chunk-12-1.png)![](visStatistics_files/figure-html/unnamed-chunk-12-2.png)
+![](visStatistics_files/figure-html/unnamed-chunk-10-1.png)![](visStatistics_files/figure-html/unnamed-chunk-10-2.png)
 
 The graphical output shows that the null hypothesis of Pearson’s
 $`\chi^2`$ test – namely, that hair colour and eye colour are
@@ -1145,7 +1116,7 @@ hair_black_brown_eyes_brown_blue_df <- counts_to_cases(as.data.frame(hair_black_
 visstat(hair_black_brown_eyes_brown_blue_df$Eye, hair_black_brown_eyes_brown_blue_df$Hair)
 ```
 
-![](visStatistics_files/figure-html/unnamed-chunk-13-1.png)![](visStatistics_files/figure-html/unnamed-chunk-13-2.png)
+![](visStatistics_files/figure-html/unnamed-chunk-11-1.png)![](visStatistics_files/figure-html/unnamed-chunk-11-2.png)
 
 Also in this reduced dataset we reject the null hypothesis of
 independence of the hair colours “brown” and “black” from the eye
@@ -1219,8 +1190,8 @@ paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
 
-    ## [1] "/tmp/RtmpAx14TZ/chi_squared_or_fisher_Hair_Eye.png"
-    ## [2] "/tmp/RtmpAx14TZ/mosaic_complete_Hair_Eye.png"
+    ## [1] "/tmp/RtmpRyc1fl/chi_squared_or_fisher_Hair_Eye.png"
+    ## [2] "/tmp/RtmpRyc1fl/mosaic_complete_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -1311,9 +1282,9 @@ iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
 plot(iris_kruskal_stored)
 ```
 
-    ## Plot [1] stored in /tmp/RtmpAx14TZ/glm_assumptions_iris_kruskal.pdf
+    ## Plot [1] stored in /tmp/RtmpRyc1fl/glm_assumptions_iris_kruskal.pdf
 
-    ## Plot [2] stored in /tmp/RtmpAx14TZ/iris_kruskal.pdf
+    ## Plot [2] stored in /tmp/RtmpRyc1fl/iris_kruskal.pdf
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1388,13 +1359,17 @@ samples they flag negligible departures from normality as significant
 2012](#ref-Fagerland:2012); [Franc 2025](#ref-Franc:2025)).
 
 This package uses $`n > 50`$ per group as a rule of thumb threshold to
-omit normality testing for smaller samples, assuming parametric tests of
-central tendencies to become robust to non-normality at larger sample
-sizes based on the central limit theorem.
-
-Simulation studies suggest that Shapiro–Wilk has the highest power among
-normality tests in small to moderate ($`n = 10`$ to 100) sample sizes
-([Razali and Wah 2011](#ref-Razali:2011)).
+omit normality testing, assuming parametric tests of central tendencies
+to become robust to non-normality at larger sample sizes based on the
+central limit theorem. The threshold is necessarily arbitrary;
+simulation studies show that the convergence rate depends on the
+skewness and kurtosis of the underlying distribution, with moderately
+skewed distributions requiring roughly 40–50 observations for adequate
+convergence of the sampling distribution of the mean ([Fagerland
+2012](#ref-Fagerland:2012)). Simulation studies suggest that
+Shapiro–Wilk has the highest power among normality tests in small to
+moderate ($`n = 10`$ to 100) sample sizes ([Razali and Wah
+2011](#ref-Razali:2011)).
 
 This package uses therefore the Shapiro-Wilk test to select between
 parametric (ANOVA/Welch’s t-test) and non-parametric
@@ -1430,15 +1405,15 @@ topics typically included in an undergraduate course on applied
 statistics, intentionally excluding more advanced methods like
 bootstrapping to keep the focus on foundational concepts.
 
-## Appendix A: General Linear Model
+## Appendix A: The general linear model
 
-General Linear Models (GLM) ([Searle 1971](#ref-Searle:1971); [Nimon et
-al. 2017](#ref-Nimon:2017)) provide a unified mathematical framework
-underlying the Student’s t-test, Fisher ANOVA, and simple linear
+The general linear model ([Searle 1971](#ref-Searle:1971); [Nimon et al.
+2017](#ref-Nimon:2017)) provides a unified mathematical framework
+underlying Student’s t-test, Fisher’s ANOVA, and simple linear
 regression.
 
 Let $`n`$ denote the number of observations and $`k-1`$ the number of
-predictors. The GLM for observation $`i,\;i = 1, \ldots, n`$ is:
+predictors. The model for observation $`i,\;i = 1, \ldots, n`$ is:
 
 ``` math
 Y_i = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_{k-1} x_{ik-1} + \varepsilon_i, \quad \varepsilon_i \sim N(0, \sigma^2)
@@ -1450,7 +1425,7 @@ $`\beta_0, \beta_1, \ldots, \beta_{k-1}`$ are the $`k`$ parameters, and
 $`\varepsilon_i`$ are independently distributed error terms with
 constant variance $`\sigma^2`$.
 
-### Student’s t-test as a GLM
+### Student’s t-test as a linear model
 
 Student’s t-test tests the null hypothesis that the means of two
 (unpaired) groups are equal. We create one indicator binary variable
@@ -1466,15 +1441,15 @@ Therefore, $`\beta_1 = \mu_2 - \mu_1`$ represents the difference between
 group means. Testing $`H_0: \beta_1 = 0`$ is mathematically equivalent
 to testing $`H_0: \mu_1 = \mu_2`$ in Student’s t-test.
 
-### Fisher’s ANOVA as a GLM
+### Fisher’s ANOVA as a linear model
 
 Fisher’s one-way ANOVA tests the null hypothesis that the means of $`k`$
 groups are equal.
 
-It can be formulated within the General Linear Model framework using
-$`k-1`$ indicator variables $`x_{i1}, x_{i2}, \ldots, x_{ik-1}`$ for
-each observation $`i`$ to represent group membership. The indicator
-variable coding is defined as follows:
+It can be formulated within the linear model framework using $`k-1`$
+indicator variables $`x_{i1}, x_{i2}, \ldots, x_{ik-1}`$ for each
+observation $`i`$ to represent group membership. The indicator variable
+coding is defined as follows:
 
 - Group 1 (reference): $`x_{i1} = x_{i2} = \cdots = x_{ik-1} = 0`$ for
   all observations i in group 1
@@ -1535,7 +1510,7 @@ case
 reports the t-statistic, as it provides sign information (indicating
 which group has the larger mean).
 
-### Simple linear regression as a GLM
+### Simple linear regression as a linear model
 
 Simple linear regression corresponds to one continuous predictor
 $`x_{i1}`$ for observation $`i`$. Testing $`H_0: \beta_1 = 0`$ examines
@@ -1626,9 +1601,9 @@ The Breusch-Pagan test assesses whether the variance of the residuals
 from a regression model depends on the values of the independent
 variables ([Breusch and Pagan 1979](#ref-Breusch:1979)).
 
-The diagnostics plots together with the p-values of the tests for
-normality and homoscedasticity enable the user to assess whether
-classical GLM assumptions are met and manually override the automated
+The diagnostic plots together with the p-values of the tests for
+normality and homoscedasticity enable the user to assess whether the
+linear model assumptions are met and manually override the automated
 test selection.
 
 ## Bibliography
@@ -1658,6 +1633,9 @@ Association* 69 (346): 364–67.
 Cochran, William G. 1954. “The Combination of Estimates from Different
 Experiments.” *Biometrics* 10 (1): 101.
 <https://doi.org/10.2307/3001666>.
+
+Cook, R. Dennis, and Sanford Weisberg. 1982. *Residuals and Influence in
+Regression*. New York: Chapman and Hall.
 
 Delacre, Marie, Daniël Lakens, and Christophe Leys. 2017. “Why
 Psychologists Should by Default Use Welch’s t-Test Instead of Student’s
