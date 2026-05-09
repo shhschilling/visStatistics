@@ -134,10 +134,11 @@ iris_data_stored = visstat(
 )
 
 # Linear regression: trees data set  ----
-linear_regression_trees <- visstat(trees$Girth, trees$Volume,conf.level = 0.99)
 dev.off()
-plot(linear_regression_trees, which = 1) # replays assumption plot
+linear_regression_trees <- visstat(trees$Girth, trees$Volume,conf.level = 0.99)
 
+plot(linear_regression_trees, which = 1) # replays assumption plot
+plot(linear_regression_trees, which = 2)
 
 # Chi squared, mosaic plots with HairEyeColor----
 # HairEyeColor data set: Pearsons Chi squared, mosaic plot with Pearson's residuals
@@ -169,15 +170,14 @@ fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 summary(iris_data_stored)
 print(iris_data_stored)
 plot(iris_data_stored) #file paths to plots
-plot(iris_data, which = 1) #replay plot 1
+plot(iris_data, which = 2) #replay plot 2
 
 
 # Replay plots  or file paths of stored graphics------
-plot(linear_regression_trees)
-plot(res_chi)# paths two column plot and mosaic plot
-plot(fisher_stats, which = 2) #mosaic plot only
 
+plot(fisher_stats, which = 1) # column  plot 
 
+plot(fisher_stats, which = 2) #mosaic plot 
 # Saving the graphical output to a user specified plotDirectory in user specified graphicsouput format ----
 linear_regression_trees_paths <- visstat(
   trees$Height,
@@ -195,3 +195,5 @@ for (i in graphicaltypes) {
   print(file.path(filedir, plotname))
   # file.remove(file.path(filedir, plotname)) # removes all files of type ".png", ".pdf", ".svg", ".ps" in filedir=tempdir()-
 }
+dev.off()
+

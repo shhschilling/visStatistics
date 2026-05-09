@@ -14,7 +14,7 @@ output:
     toc_depth: 4
     fig_caption: true
 link-citations: true
-bibliography: visstat.bib
+bibliography: REFERENCES.bib
 #csl: ims.csl
 vignette: >
   %\VignetteIndexEntry{visStatistics: The right test, visualised}
@@ -47,7 +47,7 @@ Typical use cases include secure data exploration, quick visualisations, and gui
 
 # Introduction
 
-While R packages exist which combine statistical analysis with the appropriate visualisation of the data (e.g. [@Patil:2021]), none exists to automate the statistical test selection combined with statistically annotated plots as a primary concern.
+While R packages exist which combine statistical analysis with the appropriate visualisation of the data (e.g.the package `ggstatsplot` [@Patil:2021]), none exists to automate the statistical test selection combined with statistically annotated plots as a primary concern.
 
 The visStatistics package addresses this challenge by using deterministic decision logic, removing the burden of manual test choice.
 This automation enables users to focus directly on interpreting statistical outcomes rather than navigating test selection.
@@ -203,8 +203,8 @@ When the response `y` is numeric and the predictor `x` is categorical, a statist
     - When homogeneity is rejected ($p_L \le \alpha$): For two groups, Welch's t-test (`t.test()` with `var.equal = FALSE`) is applied; for more than two groups, Welch's heteroscedastic one-way ANOVA (`oneway.test()`) with Games-Howell post-hoc test (`games.howell()`) [@Games:1976] is applied.
       Welch's methods outperform their classical counterparts when variances differ [@Moser:1992; @Fagerland:2009; @Delacre:2017].
 
-- Regardless of sample size, assumption diagnostics are always displayed. Throughout this vignette, *linear model* refers to the classical Gaussian linear model framework [@Searle:1971] underlying t-tests, ANOVA, and linear regression — not to generalised linear models with non-Gaussian responses.
-  When heteroscedasticity is detected and therefore Welch methods are selected, group-wise normality diagnostics are additionally displayed because residual-based normality testing assumes homoscedasticity.
+- Regardless of sample size, assumption diagnostics are always displayed. Throughout this vignette, *linear model* refers to the classical Gaussian linear model framework [@Searle:1971] underlying t-tests, ANOVA, and linear regression.
+  When heteroscedasticity is detected and therefore Welch methods are selected, group-wise normality diagnostics are additionally displayed via `vis_group_normality()`.
   These diagnostic plots enable users to visually assess whether assumptions are met and manually override the automated p-value-based test selection.
 
 ## Both variables numeric: Simple linear regression or Spearman correlation
@@ -729,7 +729,8 @@ In the following example, we restrict the data to participants with either black
 hair_black_brown_eyes_brown_blue <- HairEyeColor[1:2, 1:2, ]
 # Transform to data frame
 hair_black_brown_eyes_brown_blue_df <- counts_to_cases(as.data.frame(hair_black_brown_eyes_brown_blue))
-# Chi-squared test
+# Chi-squared test with Yates' continuity correction
+
 visstat(hair_black_brown_eyes_brown_blue_df$Eye, hair_black_brown_eyes_brown_blue_df$Hair)
 ```
 
@@ -880,7 +881,7 @@ It covers topics typically included in an undergraduate course on applied statis
 
 # Appendix A: The general linear model {#glm}
 
-The general linear model [@Searle:1971; @Nimon:2017] provides a unified mathematical framework underlying Student's t-test, Fisher's ANOVA, and simple linear regression.
+The general linear model [@Searle:1971] provides a unified mathematical framework underlying Student's t-test, Fisher's ANOVA, and simple linear regression.
 
 Let $n$ denote the number of observations and $k-1$ the number of predictors.
 The model for observation $i,\;i = 1, \ldots, n$ is:
@@ -924,7 +925,7 @@ Taking expectations for each group:
 
 Testing $H_0: \beta_1 = \beta_2 = \cdots = \beta_{k-1} = 0$ is mathematically equivalent to testing $H_0: \mu_1 = \mu_2 = \cdots = \mu_{k}$ in Fisher's ANOVA.
 
-### Equivalences between tests
+### Relations between tests
 
 The two-sample case sits inside both the t-test and the ANOVA frameworks, so several pairs of tests are numerically related.
 

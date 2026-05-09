@@ -316,7 +316,7 @@ visstat_core <- function(dataframe,
         # visualization of normality assumption per group
         if (var_p < alpha) {
           openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-          vis_welch_normality(samples, fact, conf.level = conf.level, cex = 0.8)
+          vis_group_normality(samples, fact, conf.level = conf.level, cex = 0.8)
           
           if (is.null(plotName)) {
             filename <- paste("ttest_assumptions_", name_of_sample, "_", name_of_factor, sep = "")
@@ -344,7 +344,7 @@ visstat_core <- function(dataframe,
         if (var_p < alpha) {
           # Unequal variances - will use Welch ANOVA, show normality per group
           openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-          vis_welch_normality(samples, fact, conf.level = conf.level, cex = 0.8)
+          vis_group_normality(samples, fact, conf.level = conf.level, cex = 0.8)
           
           if (is.null(plotName)) {
             filename <- paste("anova_assumptions_", name_of_sample, "_", name_of_factor, sep = "")

@@ -1,8 +1,8 @@
-### Header vis_welch_normality -----
+### Header vis_group_normality -----
 
 #' Visualisation of the normality assumption for Welch ANOVA/t-test
 #'
-#' \code{vis_welch_normality} checks for normality of each group separately using 
+#' \code{vis_group_normality} checks for normality of each group separately using 
 #' the Shapiro-Wilk and Anderson-Darling tests. The null hypothesis is that 
 #' each group is normally distributed. The function generates histograms 
 #' with normal distribution overlays and Q-Q plots to visually assess normality.
@@ -34,15 +34,15 @@
 #'
 #' @examples
 #' # Two groups (like t-test)
-#' vis_welch_normality(ToothGrowth$len, ToothGrowth$supp)
+#' vis_group_normality(ToothGrowth$len, ToothGrowth$supp)
 #' 
 #' # Three groups
 #' ToothGrowth$dose <- as.factor(ToothGrowth$dose)
-#' vis_welch_normality(ToothGrowth$len, ToothGrowth$dose)
+#' vis_group_normality(ToothGrowth$len, ToothGrowth$dose)
 #'
 #' @export
 
-vis_welch_normality <- function(samples, 
+vis_group_normality <- function(samples, 
                                 groups, 
                                 conf.level = 0.95, 
                                 samplename = "", 
@@ -182,7 +182,7 @@ vis_welch_normality <- function(samples,
       note = "Too many groups for visual display"
     )
     
-    class(result) <- "vis_welch_normality"
+    class(result) <- "vis_group_normality"
     return(invisible(result))
   }
   
@@ -331,6 +331,6 @@ vis_welch_normality <- function(samples,
     group_names = group_levels
   )
   
-  class(result) <- "vis_welch_normality"
+  class(result) <- "vis_group_normality"
   return(invisible(result))
 }
