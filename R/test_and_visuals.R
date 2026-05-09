@@ -361,7 +361,7 @@ two_sample_FTest <- function(samples,
     xlim = c(0.5, 3),
     ylim = c(mi, ma),
     col = c("grey70", "grey80"),
-    ylab = "centered samples",
+    ylab = "centred samples",
     xlab = "",
     axes = FALSE
   )

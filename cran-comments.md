@@ -1,28 +1,57 @@
-## CRAN submission for visStatistics [version 0.1.8]
-This is a resubmission of the package after addressing the following issues:
+## CRAN submission for visStatistics [version 0.2.0]
+
+This is a resubmission of the package after addressing the following issues.
 
 ## Major changes
- -  Included new function `levene.test()` implementing the Levene-Brown-Forsythe Test for homogeneity of variance (center = median). It mimics the default behaviour of `leveneTest` in the `car` - package.
- -  Decision test logic now based on `shapiro,test()` and `levene.test()`. Described
-    in detail in `vignette("visStatistics").
-    
+
+- **New unified statistical decision logic:** The algorithm for selecting appropriate hypothesis tests has been substantially revised. See `vignette("visStatistics")` for detailed justification.
+
+- **New post-hoc test:** `games.howell()` is used as the post-hoc test after Welch's ANOVA when variances are unequal, as it correctly handles this case. `TukeyHSD()` remains for Student's ANOVA.
+
+- **Variance homogeneity test:** Changed from Bartlett's test to Levene-Brown-Forsythe test (`levene.test()`), which is more robust to non-normality.
+
 ## Structural Improvements
 
--   The class `"visstat"` now includes a plot-method: `plot.visstat()`.
--   All tests for comparing central tendencies show plots for testing the  normality assumption.
--   Diagnostic plots for normality now include histogram overlaid by normal distribution. 
--   All assumption plots are now saved with the prefix "assumption" followed by 
-    plot name. 
-
-## Minor Improvements
-
-  Explanation of test logic extended, above all the assumption checking, both based
-  on hypotheis tests and visual inspection. Bibliography of `vignette` extended.
-`
-
-### Test environment
+- **Bibliography management:** Consolidated BibTeX files into a single `REFERENCES.bib` file located in both `vignettes/` and `inst/`, following R package standards. 
 
 
-- R CMD check --as-cran: 0 errors, 0 warnings, 0– notes
+- **Formula interface:** `visstat()` now accepts the formula interface `visstat(y ~ x, data = df)` in addition to the existing calling conventions.
+
+- **Correlation analysis:** New parameter `do_regression` enables Spearman rank correlation analysis as an alternative to regression.
+
+## New features
+
+- **Ordered factor support:** When the response variable is of class `ordered` (e.g., Likert scales), `visstat()` automatically converts to numeric ranks and applies appropriate non-parametric tests.
+
+- **New exported functions:**
+  - `levene.test()`: Levene-Brown-Forsythe test for homogeneity of variance
+  - `bp.test()`: Breusch-Pagan test for heteroscedasticity
+  - `games.howell()`: Games-Howell post-hoc test
+  - `vis_numeric()`: Visualization for numeric-numeric relationships
+  - `vis_group_normality()`: Diagnostic plots for Welch t-test/ANOVA
+
+## Documentation improvements
+
+- Vignette substantially revised with updated decision logic, new sections on correlation analysis and the general linear model framework
+- README updated to reflect current decision tree
+
+
+## Test environment
+
+- R CMD check --as-cran: 0 errors, 0 warnings, 1 note
+
+## Note
+
+The CRAN incoming feasibility check flags "lm" and "spearman" as possibly misspelled words in DESCRIPTION. These are legitimate statistical terms:
+- **lm**: Linear model (standard R function for fitting linear models)
+- **spearman**: Spearman's rank correlation coefficient (non-parametric correlation method)
+
+Both terms are included in the package's WORDLIST and are appropriate technical terminology for a statistics package.
+
+## Changes since previous submission (0.1.7)
+
+- Fixed roxygen documentation compliance issues
+
+- Updated DESCRIPTION to reflect new decision logic
 
 Thank you for reviewing this update.

@@ -141,12 +141,7 @@ games.howell <- function(samples, groups, conf.level = 0.95) {
   return(results)
 }
 
-#' Print method for games.howell objects
-#'
-#' @param x A games.howell object
-#' @param digits Number of digits to display (default: 4)
-#' @param ... Additional arguments (passed to print.data.frame)
-#' @export
+#' @exportS3Method
 print.games.howell <- function(x, digits = 4, ...) {
   cat("\nGames-Howell Post-Hoc Test\n")
   cat("==========================\n\n")

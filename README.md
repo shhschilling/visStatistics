@@ -1,9 +1,41 @@
 
-## bibliography: inst/visstat.bib
+## bibliography: inst/REFERENCES.bib
 
 <!-- pkgdown::start -->
 
 # visStatistics: The right test, visualised.
+
+<!-- Imagine you have a data base, which for confidentiality reasons, can not be directly accessed by collaborating researchers. But you want to give your collaborators to give  the possibility, via a web interface, to slice out groups of the data set, visualize it and get a first statistical analysis. This was the task for which `visstatistics` was originally developed: a fully automated  "quick and dirty"  visualisation and statistical analysis tool, particularly suited for browser-based interfaces that -->
+
+<!-- rely on  server-side R applications connected to secure databases, where users have no direct accesss.  -->
+
+<!-- The R package `visStatistics` allows for rapid **vis**ualisation and statistical -->
+
+<!-- analysis of raw data. It automatically selects and visualises the most -->
+
+<!-- appropriate **statistic**al hypothesis test between two vectors of class -->
+
+<!-- `integer`, `numeric` or `factor`. -->
+
+<!-- (an input vector of class -->
+
+<!-- `character` will be internally transformed to class `factor`). -->
+
+<!-- While numerous R packages provide statistical testing functionality, few are -->
+
+<!-- designed with pedagogical accessibility as a primary concern.  -->
+
+<!-- `visStatistics`  -->
+
+<!-- addresses this gap -->
+
+<!-- by automating the test selection process and presenting results using annotated, -->
+
+<!-- publication-ready visualisations.  -->
+
+<!-- This helps the user to focus on interpretation rather than technical execution. -->
+
+<!-- Its easy access should be of extreme use  -->
 
 # Purpose
 
@@ -157,7 +189,7 @@ variables.
 </div>
 
 A graphical summary of the decision logic used for categorial predictors
-andnumerical responses is given in below figure:
+and numerical responses is given in below figure:
 
 <div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: left;">
 
@@ -188,6 +220,18 @@ central tendencies are selected.
 
 ### Welch two sample t-test
 
+<!-- #### InsectSprays data set — both input forms -->
+
+<!-- ```{r insect-sprays, eval = TRUE} -->
+
+<!-- insect_sprays_ab <- InsectSprays[InsectSprays$spray %in% c("A", "B"), ] -->
+
+<!-- insect_sprays_ab$spray <- factor(insect_sprays_ab$spray) -->
+
+<!-- visstat(insect_sprays_ab$spray, insect_sprays_ab$count) -->
+
+<!-- ``` -->
+
 #### mtcars data set
 
 ``` r
@@ -215,7 +259,7 @@ wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
 
 <img src="man/figures/README-sex-grades2-1.png" alt="" width="80%" /><img src="man/figures/README-sex-grades2-2.png" alt="" width="80%" />
 
-### Fisher’s one way test
+### Fisher’s one way ANOVA
 
 ``` r
 fisher_one_way_npk <- visstat(npk$block,npk$yield)
@@ -365,8 +409,8 @@ The full file path of the generated graphics are stored as the attribute
 ``` r
 paths <- attr(save_fisher, "plot_paths")
 print(paths)
-#> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpyjt470/chi_squared_or_fisher_Hair_Eye.png"
-#> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpyjt470/mosaic_complete_Hair_Eye.png"
+#> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpaCL8tH/chi_squared_or_fisher_Hair_Eye.png"
+#> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpaCL8tH/mosaic_complete_Hair_Eye.png"
 ```
 
 Remove the graphical output from `plotDirectory`:
@@ -375,3 +419,35 @@ Remove the graphical output from `plotDirectory`:
 file.remove(paths)
 #> [1] TRUE TRUE
 ```
+
+<!-- ## Implemented tests -->
+
+<!-- ### Numerical response and categorical predictor -->
+
+<!-- #### Main tests -->
+
+<!-- ` t.test()`, `wilcox.test()`, `lm()` ,`aov()`, `oneway.test()`, `kruskal.test()` -->
+
+<!-- #### Normality assumption check -->
+
+<!-- `shapiro.test()` and `ad.test()` -->
+
+<!-- #### Homoscedasticity assumption check -->
+
+<!-- `levene.test()` and `bartlett.test()`for ANOVA and `bp.test()` for linear regression -->
+
+<!-- #### Post-hoc tests -->
+
+<!-- -`TukeyHSD()` following `aov()`, -->
+
+<!-- -`games.howell()` following `oneway.test()`, -->
+
+<!-- -`pairwise.wilcox.test()` following `kruskal.test()`. -->
+
+<!-- ### Numerical response and predictor -->
+
+<!-- `lm()`, `cor()` -->
+
+<!-- ### Both variables categorical -->
+
+<!-- `chisq.test()`, `fisher.test()`  -->

@@ -38,7 +38,7 @@ Description: The right test - visualised. 'visStatistics' automatically
     group means is assumed normal by the central limit theorem (Lumley et
     al. (2002) <doi:10.1146/annurev.publhealth.23.100901.140546>);
     otherwise, residual normality is assessed using shapiro.test() applied
-    to the standardised residuals of lm(y ~ x). If normality is not met,
+    to the standardised residuals of lm(). If normality is not met,
     wilcox.test() is used when the predictor has two levels and
     kruskal.test() followed by pairwise.wilcox.test() otherwise. If
     normality is met, levene.test() assesses variance homogeneity. For
@@ -47,13 +47,13 @@ Description: The right test - visualised. 'visStatistics' automatically
     predictors with more than two levels, aov() followed by TukeyHSD() is
     applied if variances are homogeneous, and oneway.test() followed by
     games.howell() otherwise.
-    .
-    (2) When both the response and predictor vectors are numerical, a
+ .
+      (2) When both the response and predictor vectors are numerical, a
     simple linear regression model is fitted using lm(), if do_regression
     = TRUE (default). If do_regression=FALSE, Spearman rank correlation
-    is computed using cor.test(..., method = "spearman").
-    .
-    (3) When both vectors are categorical, Cochran's rule (Cochran (1954)
+    is computed using cor.test().
+ .
+      (3) When both vectors are categorical, Cochran's rule (Cochran (1954)
     <doi:10.2307/3001666>) is applied to test independence either by
     chisq.test() or fisher.test().
 License: MIT + file LICENSE
@@ -73,6 +73,7 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
+    spelling,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 BuildVignettes: true
@@ -81,3 +82,4 @@ Encoding: UTF-8
 NeedsCompilation: no
 Packaged: 2025-06-23 14:38:34 UTC; sschilli
 Config/roxygen2/version: 8.0.0
+Language: en-GB
