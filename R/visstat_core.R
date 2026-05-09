@@ -204,9 +204,13 @@ visstat_core <- function(dataframe,
   name_of_factor <- input$name_of_factor
   matchingCriteria <- input$matchingCriteria
   
-  # Convert ordered response to numeric ranks and set flag
+  # Detect ordered x ordered case: needs its own pathway (branch B-pre,
+  # Kendall's tau-b). For ordered response with non-ordered predictor we
+  # keep the existing behaviour: convert to numeric ranks and route to the
+  # non-parametric numeric/factor pathway (Wilcoxon/Kruskal-Wallis).
   ordinal_response <- FALSE
-  if (is.ordered(samples)) {
+  both_ordered <- is.ordered(samples) && is.ordered(fact)
+  if (is.ordered(samples) && !both_ordered) {
     warning("Ordered response (e.g., Likert scale) detected. Converting to numeric ranks for non-parametric analysis.")
     samples <- as.numeric(samples)
     ordinal_response <- TRUE  # Flag to force non-parametric
@@ -369,9 +373,94 @@ visstat_core <- function(dataframe,
   }
   
   
-  ## B) Chi2 and Mosaic-----
-  
+  ## B) Both variables of class factor -----
+  ##
+  ## "ordered" is a subclass of "factor", so the factor-x-factor branch
+  ## handles two sub-cases:
+  ##   B.1) both ordered  -> Kendall's tau-b rank correlation
+  ##   B.2) at least one nominal -> Chi^2 / Fisher exact test
+  ## In both sub-cases the visualisation includes a mosaic plot.
+
   if (inherits(fact, "factor") && inherits(samples, "factor")) {
+
+    if (both_ordered) {
+      ## ----- B.1) Both ordered: Kendall's tau-b -----
+      ##
+      ## Treating ordered levels as nominal would discard the ordering
+      ## and lose power against a monotone trend. Kendall's tau-b
+      ## handles tied ranks (unavoidable with few levels, e.g. Likert)
+      ## more accurately than Spearman's rho (Agresti 2010, ch. 2;
+      ## Kendall 1945).
+      samples_num <- as.numeric(samples)
+      fact_num    <- as.numeric(fact)
+
+      kendall_test <- suppressWarnings(
+        cor.test(samples_num, fact_num,
+                 method = "kendall", exact = FALSE,
+                 conf.level = conf.level)
+      )
+
+      # Plot 1: jittered rank-rank scatter
+      openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+      op <- par(mar = c(5, 6, 4, 2) + 0.1)
+      plot(jitter(fact_num,    amount = 0.15),
+           jitter(samples_num, amount = 0.15),
+           xlab = name_of_factor,
+           ylab = name_of_sample,
+           xaxt = "n", yaxt = "n",
+           pch = 19, col = grDevices::rgb(0.2, 0.2, 0.2, 0.4),
+           main = sprintf("Kendall's tau-b = %.3f, p = %.3g (n = %d)",
+                          kendall_test$estimate, kendall_test$p.value,
+                          length(samples_num)))
+      axis(1, at = seq_along(levels(fact)),    labels = levels(fact))
+      axis(2, at = seq_along(levels(samples)), labels = levels(samples), las = 1)
+      par(op)
+
+      if (is.null(plotName)) {
+        filename <- paste("kendall_", name_of_sample, "_", name_of_factor, sep = "")
+      } else {
+        filename <- paste(plotName, "_kendall", sep = "")
+      }
+      plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
+                                                   type = graphicsoutput,
+                                                   fileDirectory = plotDirectory,
+                                                   capture_env = capture_env))
+
+      # Plot 2: mosaic (vcd::mosaic respects ordered levels)
+      if (maxlabels > 7) {
+        numberflag <- FALSE
+      } else {
+        numberflag <- TRUE
+      }
+      openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+      vis_mosaic_res <- vis_mosaic(samples, fact,
+                                   name_of_sample = name_of_sample,
+                                   name_of_factor = name_of_factor,
+                                   minperc = 0,
+                                   numbers = numberflag)
+      if (is.null(plotName)) {
+        filename <- paste("mosaic_complete_", name_of_sample, "_", name_of_factor, sep = "")
+      } else {
+        filename <- paste(plotName, "_", "mosaic_complete", sep = "")
+      }
+      plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
+                                                   type = graphicsoutput,
+                                                   fileDirectory = plotDirectory,
+                                                   capture_env = capture_env))
+
+      # cor.test returns class "htest" with $method, $p.value, ... so we put
+      # it directly under $test for print.visstat / summary.visstat.
+      kendall_test$data.name <- paste(name_of_sample, "and", name_of_factor)
+      vis_sample_fact <- list(
+        test             = kendall_test,
+        n                = length(samples_num),
+        levels_response  = levels(samples),
+        levels_predictor = levels(fact),
+        mosaic           = vis_mosaic_res
+      )
+
+    } else {
+      ## ----- B.2) At least one nominal: Chi^2 / Fisher -----
     if (check_assumptions_count_data(samples, fact) == FALSE) {
       # vis_sample_fact <-
       #   makeTable(samples, fact, name_of_sample, name_of_factor)
@@ -466,7 +555,8 @@ visstat_core <- function(dataframe,
       
       vis_sample_fact <- c(vis_chi, vis_mosaic_res)
     }
-  }
+    }  # end B.2 (nominal Chi^2 / Fisher)
+  }    # end B (factor x factor)
   # C) both types numerical: Regression-----
   
   # Both samples and fact of type integer or numeric

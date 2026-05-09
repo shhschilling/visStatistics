@@ -24,9 +24,11 @@ build_pkgdown_site <- function(open = TRUE) {
     unlink("docs", recursive = TRUE)
   }
 
-  # STEP 4: Build the site
-  message(" Building pkgdown site ...")
-  pkgdown::build_site()
+  # STEP 4: Build the site.
+  # Use build_site_github_pages() to mirror the CI workflow exactly:
+  # it adds .nojekyll and a 404 handler that build_site() does not.
+  message(" Building pkgdown site (GitHub Pages flavour) ...")
+  pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
 
   # STEP 5: Open in browser if desired
   if (open) {

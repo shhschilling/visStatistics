@@ -49,7 +49,16 @@ Typical use cases include secure data exploration, quick visualisations, and gui
 
 While R packages exist which combine statistical analysis with the appropriate visualisation of the data (e.g.the package `ggstatsplot` [@Patil:2021]), none exists to automate the statistical test selection combined with statistically annotated plots as a primary concern.
 
-The visStatistics package addresses this challenge by using deterministic decision logic, removing the burden of manual test choice.
+
+While several R packages provide tools for statistical testing and
+visualisation (e.g. `ggstatsplot`, `rstatix`, `ggpubr`, `compareGroups`), these
+generally assume that the appropriate statistical procedure has already
+been selected. `visStatistics` instead implements an automated,
+assumption-driven decision framework that selects, executes, and
+visualises statistical tests within a unified inferential pipeline.
+
+
+<!-- The visStatistics package addresses this challenge by using deterministic decision logic, removing the burden of manual test choice. -->
 This automation enables users to focus directly on interpreting statistical outcomes rather than navigating test selection.
 
 The tailored visual outputs—annotated with test results and, where appropriate, assumption checks and post-hoc analyses—further support comprehension and help ensure valid conclusions from the outset.
@@ -117,7 +126,7 @@ visstat(npk$block,npk$yield)
 Throughout the remainder, data of class `"numeric"` or `"integer"` are referred to by their common `mode` `numeric`, while data of class `"factor"` are referred to as categorical.
 The significance level $\alpha$, used throughout for hypothesis testing, is defined as `1 - conf.level`, where `conf.level` is a user-controllable argument (defaulting to `0.95`).
 
-The choice of statistical tests performed by the function `visstat()` depends on whether the data are numeric or categorical, the number of levels in the categorical variable, the distribution of the data, as well as the user-defined 'conf.level'.
+The choice of statistical tests performed by the function `visstat()` depends on whether the data are numeric or categorical, the number of levels in the categorical variable, the distribution of the data, as well as the user-defined 'conf.level'. The common mathematical framework underlying Student's t-test, Fisher's ANOVA and simple linear regression  is described in the [Appendix](#glm).
 
 The function prioritizes interpretable visual output and tests that remain valid under the following decision logic.
 The following graph gives an overview of all implemented tests based on their `class`:
@@ -149,7 +158,7 @@ if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "html") {
 }
 ```
 
-A graphical summary of the decision logic used for numerical responses and categorical predictors resulting in comparisons of central tendencies is given in the figure below:
+A graphical summary of the decision logic used for numerical responses and categorical predictors resulting in comparisons of central tendencies is given in the figure below.
 
 ```{r fig-decision-switch, echo=FALSE, results='asis'}
 if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "html") {
@@ -183,15 +192,17 @@ if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "html") {
 ## Numeric response and categorical predictor: Comparing central tendencies
 
 
-When the response `y` is numeric and the predictor `x` is categorical, a statistical hypothesis test comparing central tendencies is selected. A  linear model `lm(y~x)` is always fitted.
-
+When the response `y` is numeric and the predictor `x` is categorical, a statistical hypothesis test comparing central tendencies is selected. 
+To check whether the assumptions of a general linear model (see
+(see[Appendix](#glm)) are fulfilled, a linear model
+lm(y ~ x) is first fitted.
 
 - Normality testing of the residuals:
   The Shapiro--Wilk test [@Shapiro:1965] (`shapiro.test()`) is performed on
   internally studentized residuals computed by `rstandard()`, which scales the raw residuals with an estimate of their standard deviation that accounts for the leverage of each observation [@Cook:1982].
-  The Shapiro--Wilk test is the most powerful for detecting non-normality across most distributions, especially with smaller sample sizes [@Razali:2011; @Ghasemi:2012].
+  The Shapiro--Wilk (SW) test is the most powerful for detecting non-normality across most distributions, especially with smaller sample sizes [@Razali:2011; @Ghasemi:2012].
 
-- Non parametric-tests: Only when the test rejects normality ($p_{SW} \le \alpha$), non-parametric tests are selected: the Wilcoxon rank-sum test (`wilcox.test()`) for two groups, or the Kruskal--Wallis test (`kruskal.test()`) followed by the Holm adjusted pairwise Wilcoxon tests (`pairwise.wilcox.test()`) for more than two groups.
+- Non parametric-tests: Only when SW the test rejects normality ($p_{SW} \le \alpha$), non-parametric tests are selected: the Wilcoxon rank-sum test (`wilcox.test()`) for two groups, or the Kruskal--Wallis test (`kruskal.test()`) followed by the Holm adjusted pairwise Wilcoxon tests (`pairwise.wilcox.test()`) for more than two groups.
 
 - Parametric tests: When there is insufficient evidence against normality ($p_{SW} > \alpha$) or when the sample sizes are large (more than 50 observations per group), parametric tests are selected.
   In large samples the central limit theorem ensures approximate normality of the sampling distribution of the mean.
@@ -233,17 +244,22 @@ For consistency, we continue referring to the variables as *predictor* and *resp
 `visstat()` tests the null hypothesis that the variables are independent using either Pearson’s $\chi^2$ test (`chisq.test()`) or Fisher’s exact test (`fisher.test()`), depending on expected cell counts.
 The choice of test is based on Cochran's rule [@Cochran:1954], which advises that the $\chi^2$ approximation is reliable only if no expected cell count is less than 1 and no more than 20 percent of cells have expected counts below 5.
 
-### Ordered response of class `ordered`
+### Response of class `ordered`
 
-When the response variable is an ordered factor (e.g., Likert scale ratings) and the predictor is categorical, `visstat()` converts the ordered response to numeric ranks and redirects the analysis to the numeric response pathway described above, where non-parametric tests (Wilcoxon or Kruskal--Wallis) are applied.
-This is the appropriate analysis for ordinal data, as the numeric distances between ordered categories are not necessarily equal and the data cannot be assumed to follow a normal distribution.
-Users should declare Likert scale responses as ordered factors using `ordered()` to ensure non-parametric testing.
+When the response variable is an ordered factor (e.g., Likert scale ratings) and the predictor is categorical, `visstat()` converts the ordered response to numeric ranks and redirects the analysis to the non- parametric `wilcox.test()` (predictor with two levels) or `kruskal.test()` (predictor with more then two levels) respectively,  as the numeric distances between ordered categories are not necessarily equal and the data cannot be assumed to follow a normal distribution.
 
-The mathematical framework underlying Student's t-test, Fisher's ANOVA and simple linear regression — and the assumption diagnostics shown by `vis_lm_assumptions()` — is described in the [Appendix](#glm).
+### Response and predictor of class `ordered` : Kendall's rank correlation
+
+When **both** the response and the predictor are ordered factors, the test of independence ignoring the order ($\chi^2$ or Fisher) is suboptimal because it discards the very information that defines an ordinal scale and has low power against monotone trends.
+`visstat()` detects this case and tests for a monotone association via Kendall's $\tau_b$ (`cor.test(..., method = "kendall")`).
+Kendall's $\tau_b$ is preferred over Spearman's $\rho$ for ordinal data with few levels, where ties are common: $\tau_b$ corrects for ties explicitly, while Spearman's $\rho$ uses only an approximate adjustment [@Agresti:2010; @Kendall:1945].
+The mosaic plot is reused as the visualisation, it is complemented by a jittered rank-rank scatter that makes the monotone trend visible.
+
+
 
 # Assumption diagnostics: `vis_lm_assumptions()`
 
-All tests within the linear model framework share the same set of assumptions:
+All tests within the linear model framework (see share the same set of assumptions:
 
 - Linearity: The expected value of the response is a linear function of the predictors; assessed by checking for systematic patterns in residual plots.
 
@@ -273,6 +289,8 @@ These tests compare the spread of data across different factor levels.
 For simple linear regression, the Breusch-Pagan test (`bp.test()`) is implemented.
 
 These three tests have standalone implementations in the package to avoid dependencies on external packages.
+
+
 
 # Implemented tests with examples
 
@@ -537,6 +555,33 @@ This is confirmed by very small p-values from both the Shapiro--Wilk and Anderso
 Since the Shapiro--Wilk p-value is below $\alpha$, `visstat()` switches to the non-parametric `kruskal.test()`.
 Post-hoc analysis using `pairwise.wilcox.test()` shows significant differences in petal width between all three species, as indicated by distinct group labels (all green letters differ).
 
+#### Kruskal--Wallis with ordinal response {.unnumbered}
+
+When the response is of class `ordered` and the predictor is a categorical factor with more than two levels, `visstat()` issues a warning, converts the ordered response to numeric ranks and routes the analysis to `kruskal.test()` followed by `pairwise.wilcox.test()`.
+
+```{r ordinal-kruskal, fig.show='hide'}
+set.seed(123)
+
+# Predictor: customer segment (3 groups)
+segment <- factor(rep(c("Budget", "Standard", "Premium"), each = 50))
+
+# Response: Likert scale ratings (1-5), with a deliberate trend across segments
+comfort_numeric <- c(
+  sample(1:5, 50, replace = TRUE, prob = c(0.30, 0.30, 0.20, 0.15, 0.05)),  # Budget
+  sample(1:5, 50, replace = TRUE, prob = c(0.10, 0.20, 0.40, 0.20, 0.10)),  # Standard
+  sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.35, 0.30))   # Premium
+)
+
+# Dataframe with ORDERED response
+survey_data_3 <- data.frame(
+  segment = segment,
+  comfort = ordered(comfort_numeric)  # Declare as ordered
+)
+
+# triggers warning and uses Kruskal-Wallis test
+kruskal_ordered <- visstat(survey_data_3, "comfort", "segment")
+```
+
 ## Both variables numeric
 
 ### Simple linear regression (`lm()`)
@@ -586,7 +631,7 @@ plot(linreg_trees_99,which=2)
 
 When `do_regression = FALSE`, `visstat()` 
 calls
-`cor.test(x, y, method = "spearman")` to measure the monotonic association between two variables $x$ and $y$ using ranks. The Spearman rank correlation $\rho$ measures monotonic association by evaluating linear dependence on the ranked data rather than on the original scale: 
+`cor.test(x, y, method = "spearman")` to measure the monotonic association between two variables $x$ and $y$ using ranks by evaluating linear dependence on the ranked data rather than on the original scale: 
 
 
 $$
@@ -756,6 +801,54 @@ black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_
 fisher_stats <- visstat(black_brown_hazel_green_male$Eye, black_brown_hazel_green_male$Hair)
 ```
 
+## Both variables ordered: Rank correlation
+
+When both the response and the predictor are ordered factors (`is.ordered(y) && is.ordered(x)`), `visstat()` does **not** call $\chi^2$ or Fisher.
+Treating ordered levels as nominal would discard the ordering and lose power against a monotone trend.
+Instead, `visstat()` tests the null hypothesis of no monotone association via Kendall's $\tau_b$ rank correlation [@Kendall:1945; @Agresti:2010].
+
+### Kendall's $\tau_b$ (`cor.test(..., method = "kendall")`)
+
+For two ordinal variables with $n$ joint observations, let $C$ denote the number of concordant pairs (those whose ranks agree in both variables) and $D$ the number of discordant pairs.
+Kendall's $\tau_b$ is defined as
+
+$$
+\tau_b \;=\; \frac{C - D}{\sqrt{(n_0 - n_1)(n_0 - n_2)}}
+$$
+
+where $n_0 = n(n-1)/2$, $n_1 = \sum_i t_i(t_i-1)/2$ summed over groups of tied ranks in the response, and $n_2$ is the analogous quantity for the predictor.
+The denominator correction makes $\tau_b$ attain $\pm 1$ even with ties, which Spearman's $\rho$ does not [@Kendall:1945].
+With few ordered levels (e.g., 5-point Likert items), ties are unavoidable; this is the principal reason to prefer $\tau_b$ over Spearman's $\rho$ in this setting [@Agresti:2010].
+
+`visstat()` calls `cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)` and reports $\tau_b$, the test statistic $z$, and the two-sided $p$-value.
+
+### Graphical output
+
+Two plots are produced:
+
+1. A jittered rank--rank scatter that visualises the monotone trend, annotated with $\tau_b$, the $p$-value, and the sample size.
+2. A mosaic plot via `vis_mosaic()`. Because `vcd::mosaic()` honours the level ordering of `ordered` factors, the tile layout itself preserves the ordinal structure.
+
+### Example
+
+We construct a small synthetic data set with two three-point ordered scales and a deliberate monotone trend.
+
+```{r kendall-example}
+set.seed(1)
+n <- 100
+# latent scores with positive monotone association
+xs <- sample(1:3, n, replace = TRUE)
+ys <- pmin(3, pmax(1, xs + sample(-1:1, n, replace = TRUE)))
+likert_levels <- c(" disagree", "neutral",
+                   "agree" )
+likert_levels2 <- c(" left", "centre",
+                   "right" )
+attitude  <- ordered(likert_levels[xs], levels = likert_levels)
+politics <- ordered(likert_levels2[ys], levels = likert_levels2)
+kendall_result <- visstat(politics, attitude)
+```
+
+
 # Saving the graphical output
 
 All generated graphics can be saved in any file format supported by `Cairo()`, including "png", "jpeg", "pdf", "svg", "ps", and "tiff" in the user specified `plotDirectory`.
@@ -879,7 +972,7 @@ The computational intensity of bootstrap runs counter to the purpose of the `vis
 The package targets users with basic statistical literacy, such as non-specialist professionals and students in applied fields.
 It covers topics typically included in an undergraduate course on applied statistics, intentionally excluding more advanced methods like bootstrapping to keep the focus on foundational concepts.
 
-# Appendix A: The general linear model {#glm}
+# Appendix A: The general linear model                                                  
 
 The general linear model [@Searle:1971] provides a unified mathematical framework underlying Student's t-test, Fisher's ANOVA, and simple linear regression.
 
