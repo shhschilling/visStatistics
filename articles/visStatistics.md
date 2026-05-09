@@ -27,10 +27,10 @@ settings.
 ## Introduction
 
 While R packages exist which combine statistical analysis with the
-appropriate visualisation of the data (e.g. ([Patil
-2021](#ref-Patil:2021))), none exists to automate the statistical test
-selection combined with statistically annotated plots as a primary
-concern.
+appropriate visualisation of the data (e.g.the package `ggstatsplot`
+([Patil 2021](#ref-Patil:2021))), none exists to automate the
+statistical test selection combined with statistically annotated plots
+as a primary concern.
 
 The visStatistics package addresses this challenge by using
 deterministic decision logic, removing the burden of manual test choice.
@@ -225,13 +225,11 @@ linear model `lm(y~x)` is always fitted.
   displayed. Throughout this vignette, *linear model* refers to the
   classical Gaussian linear model framework ([Searle
   1971](#ref-Searle:1971)) underlying t-tests, ANOVA, and linear
-  regression — not to generalised linear models with non-Gaussian
-  responses. When heteroscedasticity is detected and therefore Welch
+  regression. When heteroscedasticity is detected and therefore Welch
   methods are selected, group-wise normality diagnostics are
-  additionally displayed because residual-based normality testing
-  assumes homoscedasticity. These diagnostic plots enable users to
-  visually assess whether assumptions are met and manually override the
-  automated p-value-based test selection.
+  additionally displayed via `vis_group_normality()`. These diagnostic
+  plots enable users to visually assess whether assumptions are met and
+  manually override the automated p-value-based test selection.
 
 ### Both variables numeric: Simple linear regression or Spearman correlation
 
@@ -1112,7 +1110,8 @@ either black or brown hair and either brown or blue eyes, resulting in a
 hair_black_brown_eyes_brown_blue <- HairEyeColor[1:2, 1:2, ]
 # Transform to data frame
 hair_black_brown_eyes_brown_blue_df <- counts_to_cases(as.data.frame(hair_black_brown_eyes_brown_blue))
-# Chi-squared test
+# Chi-squared test with Yates' continuity correction
+
 visstat(hair_black_brown_eyes_brown_blue_df$Eye, hair_black_brown_eyes_brown_blue_df$Hair)
 ```
 
@@ -1190,8 +1189,8 @@ paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
 
-    ## [1] "/tmp/RtmpRyc1fl/chi_squared_or_fisher_Hair_Eye.png"
-    ## [2] "/tmp/RtmpRyc1fl/mosaic_complete_Hair_Eye.png"
+    ## [1] "/tmp/RtmpUtfqjZ/chi_squared_or_fisher_Hair_Eye.png"
+    ## [2] "/tmp/RtmpUtfqjZ/mosaic_complete_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -1282,9 +1281,9 @@ iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
 plot(iris_kruskal_stored)
 ```
 
-    ## Plot [1] stored in /tmp/RtmpRyc1fl/glm_assumptions_iris_kruskal.pdf
+    ## Plot [1] stored in /tmp/RtmpUtfqjZ/glm_assumptions_iris_kruskal.pdf
 
-    ## Plot [2] stored in /tmp/RtmpRyc1fl/iris_kruskal.pdf
+    ## Plot [2] stored in /tmp/RtmpUtfqjZ/iris_kruskal.pdf
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1407,10 +1406,9 @@ bootstrapping to keep the focus on foundational concepts.
 
 ## Appendix A: The general linear model
 
-The general linear model ([Searle 1971](#ref-Searle:1971); [Nimon et al.
-2017](#ref-Nimon:2017)) provides a unified mathematical framework
-underlying Student’s t-test, Fisher’s ANOVA, and simple linear
-regression.
+The general linear model ([Searle 1971](#ref-Searle:1971)) provides a
+unified mathematical framework underlying Student’s t-test, Fisher’s
+ANOVA, and simple linear regression.
 
 Let $`n`$ denote the number of observations and $`k-1`$ the number of
 predictors. The model for observation $`i,\;i = 1, \ldots, n`$ is:
@@ -1475,7 +1473,7 @@ Testing $`H_0: \beta_1 = \beta_2 = \cdots = \beta_{k-1} = 0`$ is
 mathematically equivalent to testing
 $`H_0: \mu_1 = \mu_2 = \cdots = \mu_{k}`$ in Fisher’s ANOVA.
 
-#### Equivalences between tests
+#### Relations between tests
 
 The two-sample case sits inside both the t-test and the ANOVA
 frameworks, so several pairs of tests are numerically related.
@@ -1609,7 +1607,8 @@ test selection.
 ## Bibliography
 
 Abdi, Hervé. 2007. “The Bonferonni and Šidák Corrections for Multiple
-Comparisons.” *Encyclopediav of Measurement and Statistics*.
+Comparisons.” In *Encyclopedia of Measurement and Statistics*, edited by
+Neil J. Salkind. Sage.
 
 Allingham, David, and J. C. W. Rayner. 2012. “Testing Equality of
 Variances for Multiple Univariate Normal Populations.” *Journal of
@@ -1695,7 +1694,6 @@ Probability and Statistics. John Wiley & Sons, Inc.
 
 Holm, Sture. 1979. “A Simple Sequentially Rejective Multiple Test
 Procedure.” *Scandinavian Journal of Statistics* 6 (2): 65–70.
-<https://www.jstor.org/stable/4615733>.
 
 Kozak, M., and H.-P. Piepho. 2018. “What’s Normal Anyway? Residual Plots
 Are More Telling Than Significance Tests When Checking ANOVA
@@ -1728,12 +1726,6 @@ Moser, B K, and G. R. Stevens. 1992. “Homogeneity of Variance in the
 Two-Sample Means Test.” *The American Statistician*, February, 19–21.
 <https://doi.org/10.1080/00031305.1992.10475839>.
 
-Nimon, Kim, Mandolen Mull, Julia Berrios, Jon Musgrave, and Greggory L.
-Keiffer. 2017. “Regression as the Univariate General Linear Model:
-Examining Test Statistics, p Values, Effect Sizes,and Descriptive
-Statistics Using R.” *General Linear Model Journal* 43 (1): 50–82.
-<https://doi.org/10.31523/glmj.04301.004>.
-
 Olejnik, Stephen F., and James Algina. 1987. “Type I Error Rates and
 Power Estimates of Selected Parametric and Nonparametric Tests of
 Scale.” *Journal of Educational Statistics* 12 (1): 45.
@@ -1751,7 +1743,7 @@ Journal of Science* 50 (302): 157–75.
 <https://doi.org/10.1080/14786440009463897>.
 
 Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. “The Two-Sample
-t Test: Pre-Testing Its Assumptions Does Not Pay Off.” *Stat Papers* 52
+t Test: Pre-testing Its Assumptions Does Not Pay Off.” *Stat Papers* 52
 (1): 219–31. <https://doi.org/10.1007/s00362-009-0224-x>.
 
 Razali, Nornadiah Mohd, and Yap Bee Wah. 2011. “Power Comparisons of

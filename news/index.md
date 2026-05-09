@@ -26,13 +26,12 @@
   parametric tests are applied directly (justified by the central limit
   theorem).
 
-- **Post-hoc test after
-  [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html) changed
-  from [`TukeyHSD()`](https://rdrr.io/r/stats/TukeyHSD.html) to
-  `games.howell()`.**
-  [`TukeyHSD()`](https://rdrr.io/r/stats/TukeyHSD.html) assumes equal
-  variances; Games-Howell does not, making it the appropriate companion
-  for Welch’s ANOVA.
+- **Post-hoc test selection.** When
+  [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html) (Welch’s
+  ANOVA) is used for unequal variances, `games.howell()` is the
+  appropriate post-hoc test, as it does not assume equal variances.
+  [`TukeyHSD()`](https://rdrr.io/r/stats/TukeyHSD.html) remains for
+  [`aov()`](https://rdrr.io/r/stats/aov.html) (Student’s ANOVA).
 
 - **Spearman-only correlation.** The new correlation branch
   (`do_regression = FALSE`) uses Spearman rank correlation exclusively.
@@ -72,7 +71,7 @@
     comparisons following Welch’s ANOVA.
   - `vis_numeric()`: Visualisation of numeric-numeric relationships
     (regression or correlation).
-  - `vis_welch_normality()`: Diagnostic plots for the Welch t-test /
+  - `vis_group_normality()`: Diagnostic plots for the Welch t-test /
     Welch ANOVA branch.
   - `vis_lm_assumptions()`: Renamed from `vis_anova_assumptions()`, now
     provides unified assumption diagnostics for the general linear model
@@ -100,25 +99,23 @@
 - Diagnostic plots for normality now include a histogram overlaid with
   the normal density curve.
 - All assumption plots are saved with the prefix “assumption”.
-- `testthat` test suite added.
 
 ### Documentation
 
 - Vignette substantially revised:
-  - Spearman correlation section rewritten; Pearson correlation section
-    removed; justification for Spearman-only approach added.
+
+  - Spearman correlation section rewritten, justification for
+    Spearman-only approach added.
   - Complete decision logic rewritten to reflect the new test selection
     algorithm.
-  - The general linear model framework (Appendix A) introduced, using
-    terminology that avoids confusion with R’s
-    [`glm()`](https://rdrr.io/r/stats/glm.html).
+  - The general linear model framework (Appendix A) introduced.
   - Clarified that
     [`rstandard()`](https://rdrr.io/r/stats/influence.measures.html)
     computes internally studentized residuals, with reference to Cook
     and Weisberg (1982).
   - Bibliography extended.
+
 - DESCRIPTION rewritten to reflect the updated test selection algorithm.
-- README cleaned up; HTML comments removed.
 
 ## visStatistics 0.1.7
 
