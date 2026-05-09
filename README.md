@@ -1,6 +1,4 @@
 
-## bibliography: inst/REFERENCES.bib
-
 <!-- pkgdown::start -->
 
 # visStatistics: The right test, visualised.
@@ -239,7 +237,7 @@ central tendencies are selected.
  t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
 ```
 
-<img src="man/figures/README-mtcars-1.png" alt="" width="80%" /><img src="man/figures/README-mtcars-2.png" alt="" width="80%" /><img src="man/figures/README-mtcars-3.png" alt="" width="80%" />
+<img src="man/figures/README-mtcars-1.png" alt="Welch two-sample t-test comparing fuel efficiency (mpg) between automatic and manual transmission. Shows boxplot with individual points, statistical results, and diagnostic plots for normality and variance homogeneity." width="80%" /><img src="man/figures/README-mtcars-2.png" alt="Welch two-sample t-test comparing fuel efficiency (mpg) between automatic and manual transmission. Shows boxplot with individual points, statistical results, and diagnostic plots for normality and variance homogeneity." width="80%" /><img src="man/figures/README-mtcars-3.png" alt="Welch two-sample t-test comparing fuel efficiency (mpg) between automatic and manual transmission. Shows boxplot with individual points, statistical results, and diagnostic plots for normality and variance homogeneity." width="80%" />
 
 ### Wilcoxon rank sum test
 
@@ -257,7 +255,7 @@ grades_gender <- data.frame(
 wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
 ```
 
-<img src="man/figures/README-sex-grades2-1.png" alt="" width="80%" /><img src="man/figures/README-sex-grades2-2.png" alt="" width="80%" />
+<img src="man/figures/README-sex-grades2-1.png" alt="Wilcoxon rank sum test comparing grades between girls and boys. Displays boxplot with overlaid individual points, test statistics, and diagnostic plots for assessing distributional differences." width="80%" /><img src="man/figures/README-sex-grades2-2.png" alt="Wilcoxon rank sum test comparing grades between girls and boys. Displays boxplot with overlaid individual points, test statistics, and diagnostic plots for assessing distributional differences." width="80%" />
 
 ### Fisher’s one way ANOVA
 
@@ -265,7 +263,7 @@ wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
 fisher_one_way_npk <- visstat(npk$block,npk$yield)
 ```
 
-<img src="man/figures/README-npk-onewy-1.png" alt="" width="80%" /><img src="man/figures/README-npk-onewy-2.png" alt="" width="80%" />
+<img src="man/figures/README-npk-onewy-1.png" alt="Fisher's one-way ANOVA comparing crop yield across different experimental blocks. Shows boxplot for each block with individual data points, ANOVA results, and post-hoc comparisons with confidence intervals." width="80%" /><img src="man/figures/README-npk-onewy-2.png" alt="Fisher's one-way ANOVA comparing crop yield across different experimental blocks. Shows boxplot for each block with individual data points, ANOVA results, and post-hoc comparisons with confidence intervals." width="80%" />
 
 ### Kruskal-Wallis test
 
@@ -273,7 +271,7 @@ fisher_one_way_npk <- visstat(npk$block,npk$yield)
 kruskal_iris=visstat(iris$Species, iris$Petal.Width)
 ```
 
-<img src="man/figures/README-iris-kruskal-1.png" alt="" width="80%" /><img src="man/figures/README-iris-kruskal-2.png" alt="" width="80%" />
+<img src="man/figures/README-iris-kruskal-1.png" alt="Kruskal-Wallis test comparing petal width across three iris species. Displays boxplot with individual observations for each species, test statistics, and post-hoc pairwise comparisons." width="80%" /><img src="man/figures/README-iris-kruskal-2.png" alt="Kruskal-Wallis test comparing petal width across three iris species. Displays boxplot with individual observations for each species, test statistics, and post-hoc pairwise comparisons." width="80%" />
 
 ## Ordered response and categorical predictor:
 
@@ -305,7 +303,7 @@ survey_data <- data.frame(
 result <- visstat(survey_data$segment,survey_data$satisfaction)
 ```
 
-<img src="man/figures/README-ordinal-1.png" alt="" width="80%" />
+<img src="man/figures/README-ordinal-1.png" alt="Wilcoxon rank sum test comparing satisfaction ratings (Likert scale 1-5) between budget and premium customer segments. Shows distribution of ordinal responses with test statistics and visualisations of rank differences." width="80%" />
 
 ### Kruskal-Wallis test
 
@@ -332,22 +330,15 @@ flight_data <- data.frame(
 result <- visstat(flight_data$service_class, flight_data$comfort)
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" alt="" width="80%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" alt="Kruskal-Wallis test comparing comfort ratings (Likert scale 1-5) across three airline service classes: economy, business, and first. Shows distribution of ordinal responses with test statistics and post-hoc pairwise rank comparisons." width="80%" />
 
-## Numerical response and numerical predictor: Linear Regression or correlation
+## Numerical response and numerical predictor: Linear Regression
 
 ``` r
-vis_women <- visstat(women$height, women$weight)
+vis_women <- visstat(women$height, women$weight,conf.level=0.99)
 ```
 
-<img src="man/figures/README-lin-reg-dist-speed-1.png" alt="" width="80%" /><img src="man/figures/README-lin-reg-dist-speed-2.png" alt="" width="80%" />
-
-Increasing the confidence level `conf.level` from the default 0.95 to
-0.99 leads to wider confidence and prediction bands:
-
-<img src="man/figures/README-pressure-1.png" alt="" width="80%" /><img src="man/figures/README-pressure-2.png" alt="" width="80%" />
-
-## Both variables categorical
+<img src="man/figures/README-lin-reg-dist-speed-1.png" alt="Linear regression analysis of weight versus height for women. Shows scatter plot with fitted regression line, 99% confidence band for the regression line, and prediction band. Includes residual plot and Q-Q plot for diagnostic assessment." width="80%" /><img src="man/figures/README-lin-reg-dist-speed-2.png" alt="Linear regression analysis of weight versus height for women. Shows scatter plot with fitted regression line, 99% confidence band for the regression line, and prediction band. Includes residual plot and Q-Q plot for diagnostic assessment." width="80%" />
 
 ### Pearson’s Chi-squared test
 
@@ -361,7 +352,7 @@ hair_eye_color_df <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(hair_eye_color_df$Eye, hair_eye_color_df$Hair)
 ```
 
-<img src="man/figures/README-pearson-1.png" alt="" width="80%" /><img src="man/figures/README-pearson-2.png" alt="" width="80%" />
+<img src="man/figures/README-pearson-1.png" alt="Pearson's Chi-squared test for independence between hair and eye colour. Shows bar chart of observed counts by colour combination, mosaic plot displaying proportional cell frequencies with Pearson residuals, and test statistics for association." width="80%" /><img src="man/figures/README-pearson-2.png" alt="Pearson's Chi-squared test for independence between hair and eye colour. Shows bar chart of observed counts by colour combination, mosaic plot displaying proportional cell frequencies with Pearson residuals, and test statistics for association." width="80%" />
 
 ### Fisher’s exact test
 
@@ -375,7 +366,7 @@ black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_
 fisher_stats <- visstat(black_brown_hazel_green_male$Eye,black_brown_hazel_green_male$Hair)
 ```
 
-<img src="man/figures/README-haireye-fisher-1.png" alt="" width="80%" /><img src="man/figures/README-haireye-fisher-2.png" alt="" width="80%" />
+<img src="man/figures/README-haireye-fisher-1.png" alt="Fisher's exact test for 2x2 contingency table of hair and eye colour in males (black/brown hair versus hazel/green eyes). Displays observed frequencies, mosaic plot showing cell proportions, and exact test statistics for association with small sample sizes." width="80%" /><img src="man/figures/README-haireye-fisher-2.png" alt="Fisher's exact test for 2x2 contingency table of hair and eye colour in males (black/brown hair versus hazel/green eyes). Displays observed frequencies, mosaic plot showing cell proportions, and exact test statistics for association with small sample sizes." width="80%" />
 
 # Saving the graphical output
 
@@ -409,8 +400,8 @@ The full file path of the generated graphics are stored as the attribute
 ``` r
 paths <- attr(save_fisher, "plot_paths")
 print(paths)
-#> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpaCL8tH/chi_squared_or_fisher_Hair_Eye.png"
-#> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpaCL8tH/mosaic_complete_Hair_Eye.png"
+#> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp367Gb0/chi_squared_or_fisher_Hair_Eye.png"
+#> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp367Gb0/mosaic_complete_Hair_Eye.png"
 ```
 
 Remove the graphical output from `plotDirectory`:
