@@ -128,7 +128,7 @@ which selects and executes the appropriate test with visual output and
 assumption diagnostics.
 }
 \note{
-For best visualization, ensure the RStudio Plots pane is adequately 
+For best visualization, ensure that the RStudio Plots pane is adequately 
 sized. If you get "figure margins too large" errors, try expanding the Plots 
 pane in RStudio, using \code{dev.new(width=10, height=6)} for a larger plot 
 window, or reducing the \code{cex} parameter.
@@ -147,7 +147,8 @@ visstat(mtcars, "mpg", "am")
 ## Student's t-test (equal variances, two groups)
 # When residuals are normally distributed and Levene's test indicates
 # homoscedasticity, the classic Student's t-test with pooled variance is used
-visstat(sleep$group, sleep$extra)
+df <- droplevels(subset(PlantGrowth, group \%in\% c("ctrl", "trt1")))
+visstat(df$group,df$weight)
 
 ## Welch's t-test (unequal variances, two groups)
 # When residuals are normally distributed but Levene's test indicates
@@ -169,16 +170,18 @@ visstat(grades_gender$Sex, grades_gender$Grade)
 
 ## Fisher's ANOVA (equal variances, >2 groups)
 # When residuals are normally distributed and Levene's test indicates
-# homoscedasticity, classic Fisher's ANOVA with TukeyHSD post-hoc is used
+# homoscedasticity, classic Fisher's ANOVA with TukeyHSD post-hoc is used.
+# Different green letters indicate significant differences between groups. 
 visstat(PlantGrowth$group, PlantGrowth$weight)
 
 ## Welch's one-way ANOVA (unequal variances, >2 groups)
-# When residuals are normally distributed but Levene's test indicates
-# heteroscedasticity, Welch's ANOVA with Games-Howell post-hoc is used
-visstat(npk$block, npk$yield) 
-
+set.seed(123)
+values <- c(rnorm(20, 10, 1),rnorm(20, 15, 5),rnorm(20, 12, 2))
+groups <- factor(rep(c("A", "B", "C"), each = 20))
+visstat(groups, values)
 ## Kruskal-Wallis (non-normal, >2 groups)
-# When residuals are not normally distributed
+# When residuals are not normally distributed, kruskal.test() is followed by 
+# pairwise.wilcox.test. 
 visstat(iris$Species, iris$Petal.Width)
 
 ## Simple linear regression (both numeric)

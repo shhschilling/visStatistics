@@ -134,7 +134,7 @@ iris_data_stored = visstat(
 )
 
 # Linear regression: trees data set  ----
-linear_regression_trees <- visstat(trees$Girth, trees$Volume,conf.level=0.99)
+linear_regression_trees <- visstat(trees$Girth, trees$Volume,conf.level = 0.99)
 dev.off()
 plot(linear_regression_trees, which = 1) # replays assumption plot
 

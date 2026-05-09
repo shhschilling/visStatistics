@@ -1,7 +1,7 @@
 Package: visStatistics
 Type: Package
 Title: Automated Selection and Visualisation of Statistical Hypothesis Tests
-Version: 0.1.8
+Version: 0.2.0
 Authors@R: c(
     person("Sabine", "Schilling",
            email = "sabineschilling@gmx.ch",
@@ -49,9 +49,9 @@ Description: The right test - visualised. 'visStatistics' automatically
     games.howell() otherwise.
     .
     (2) When both the response and predictor vectors are numerical, a
-    simple linear regression model is fitted using lm(), if do_regression 
-    = TRUE (default).If do_regression=FALSE, Pearson or Spearman correlation
-    is computed using cor.test().
+    simple linear regression model is fitted using lm(), if do_regression
+    = TRUE (default). If do_regression=FALSE, Spearman rank correlation
+    is computed using cor.test(..., method = "spearman").
     .
     (3) When both vectors are categorical, Cochran's rule (Cochran (1954)
     <doi:10.2307/3001666>) is applied to test independence either by
