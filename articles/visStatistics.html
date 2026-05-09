@@ -97,9 +97,15 @@ appropriate visualisation of the data (e.g.the package
 <code>ggstatsplot</code> <span class="citation">(<a href="#ref-Patil:2021">Patil 2021</a>)</span>), none exists to automate
 the statistical test selection combined with statistically annotated
 plots as a primary concern.</p>
-<p>The visStatistics package addresses this challenge by using
-deterministic decision logic, removing the burden of manual test choice.
-This automation enables users to focus directly on interpreting
+<p>While several R packages provide tools for statistical testing and
+visualisation (e.g. <code>ggstatsplot</code>, <code>rstatix</code>,
+<code>ggpubr</code>, <code>compareGroups</code>), these generally assume
+that the appropriate statistical procedure has already been selected.
+<code>visStatistics</code> instead implements an automated,
+assumption-driven decision framework that selects, executes, and
+visualises statistical tests within a unified inferential pipeline.</p>
+<!-- The visStatistics package addresses this challenge by using deterministic decision logic, removing the burden of manual test choice. -->
+<p>This automation enables users to focus directly on interpreting
 statistical outcomes rather than navigating test selection.</p>
 <p>The tailored visual outputs—annotated with test results and, where
 appropriate, assumption checks and post-hoc analyses—further support
@@ -189,7 +195,9 @@ user-controllable argument (defaulting to <code>0.95</code>).</p>
 <p>The choice of statistical tests performed by the function
 <code><a href="../reference/visstat.html">visstat()</a></code> depends on whether the data are numeric or
 categorical, the number of levels in the categorical variable, the
-distribution of the data, as well as the user-defined ‘conf.level’.</p>
+distribution of the data, as well as the user-defined ‘conf.level’. The
+common mathematical framework underlying Student’s t-test, Fisher’s
+ANOVA and simple linear regression is described in the <a href="#glm">Appendix</a>.</p>
 <p>The function prioritizes interpretable visual output and tests that
 remain valid under the following decision logic. The following graph
 gives an overview of all implemented tests based on their
@@ -202,7 +210,7 @@ variables.
 </div>
 <p>A graphical summary of the decision logic used for numerical
 responses and categorical predictors resulting in comparisons of central
-tendencies is given in the figure below:</p>
+tendencies is given in the figure below.</p>
 <div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: center;">
 <img src="figures/decision_tree.png" width="100%" alt="Decision tree used to select the appropriate statistical test."><p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
 Decision tree used to select the appropriate statistical test for a
@@ -216,19 +224,20 @@ tendencies<a class="anchor" aria-label="anchor" href="#numeric-response-and-cate
 </h3>
 <p>When the response <code>y</code> is numeric and the predictor
 <code>x</code> is categorical, a statistical hypothesis test comparing
-central tendencies is selected. A linear model <code>lm(y~x)</code> is
-always fitted.</p>
+central tendencies is selected. To check whether the assumptions of a
+general linear model (see (see<a href="#glm">Appendix</a>) are
+fulfilled, a linear model lm(y ~ x) is first fitted.</p>
 <ul>
 <li><p>Normality testing of the residuals: The Shapiro–Wilk test <span class="citation">(<a href="#ref-Shapiro:1965">Shapiro and Wilk
 1965</a>)</span> (<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>) is performed on
 internally studentized residuals computed by <code><a href="https://rdrr.io/r/stats/influence.measures.html" class="external-link">rstandard()</a></code>,
 which scales the raw residuals with an estimate of their standard
 deviation that accounts for the leverage of each observation <span class="citation">(<a href="#ref-Cook:1982">Cook and Weisberg
-1982</a>)</span>. The Shapiro–Wilk test is the most powerful for
+1982</a>)</span>. The Shapiro–Wilk (SW) test is the most powerful for
 detecting non-normality across most distributions, especially with
 smaller sample sizes <span class="citation">(<a href="#ref-Razali:2011">Razali and Wah 2011</a>; <a href="#ref-Ghasemi:2012">Ghasemi and Zahediasl
 2012</a>)</span>.</p></li>
-<li><p>Non parametric-tests: Only when the test rejects normality
+<li><p>Non parametric-tests: Only when SW the test rejects normality
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>S</mi><mi>W</mi></mrow></msub><mo>≤</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">p_{SW} \le \alpha</annotation></semantics></math>),
 non-parametric tests are selected: the Wilcoxon rank-sum test
 (<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>) for two groups, or the Kruskal–Wallis test
@@ -341,29 +350,48 @@ approximation is reliable only if no expected cell count is less than 1
 and no more than 20 percent of cells have expected counts below 5.</p>
 </div>
 <div class="section level4">
-<h4 id="ordered-response-of-class-ordered">Ordered response of class <code>ordered</code><a class="anchor" aria-label="anchor" href="#ordered-response-of-class-ordered"></a>
+<h4 id="response-of-class-ordered">Response of class <code>ordered</code><a class="anchor" aria-label="anchor" href="#response-of-class-ordered"></a>
 </h4>
 <p>When the response variable is an ordered factor (e.g., Likert scale
 ratings) and the predictor is categorical, <code><a href="../reference/visstat.html">visstat()</a></code>
 converts the ordered response to numeric ranks and redirects the
-analysis to the numeric response pathway described above, where
-non-parametric tests (Wilcoxon or Kruskal–Wallis) are applied. This is
-the appropriate analysis for ordinal data, as the numeric distances
-between ordered categories are not necessarily equal and the data cannot
-be assumed to follow a normal distribution. Users should declare Likert
-scale responses as ordered factors using <code><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered()</a></code> to
-ensure non-parametric testing.</p>
-<p>The mathematical framework underlying Student’s t-test, Fisher’s
-ANOVA and simple linear regression — and the assumption diagnostics
-shown by <code>vis_lm_assumptions()</code> — is described in the <a href="#glm">Appendix</a>.</p>
+analysis to the non- parametric <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> (predictor
+with two levels) or <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> (predictor with more
+then two levels) respectively, as the numeric distances between ordered
+categories are not necessarily equal and the data cannot be assumed to
+follow a normal distribution.</p>
+</div>
+<div class="section level4">
+<h4 id="response-and-predictor-of-class-ordered-kendalls-rank-correlation">Response and predictor of class <code>ordered</code> : Kendall’s
+rank correlation<a class="anchor" aria-label="anchor" href="#response-and-predictor-of-class-ordered-kendalls-rank-correlation"></a>
+</h4>
+<p>When <strong>both</strong> the response and the predictor are ordered
+factors, the test of independence ignoring the order
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
+or Fisher) is suboptimal because it discards the very information that
+defines an ordinal scale and has low power against monotone trends.
+<code><a href="../reference/visstat.html">visstat()</a></code> detects this case and tests for a monotone
+association via Kendall’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
+(<code>cor.test(..., method = "kendall")</code>). Kendall’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
+is preferred over Spearman’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
+for ordinal data with few levels, where ties are common:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
+corrects for ties explicitly, while Spearman’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
+uses only an approximate adjustment <span class="citation">(<a href="#ref-Agresti:2010">Agresti 2010</a>; <a href="#ref-Kendall:1945">Kendall 1945</a>)</span>. The mosaic plot is
+reused as the visualisation, it is complemented by a jittered rank-rank
+scatter that makes the monotone trend visible.</p>
 </div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="assumption-diagnostics-vis_lm_assumptions">Assumption diagnostics: <code>vis_lm_assumptions()</code><a class="anchor" aria-label="anchor" href="#assumption-diagnostics-vis_lm_assumptions"></a>
 </h2>
-<p>All tests within the linear model framework share the same set of
-assumptions:</p>
+<p>All tests within the linear model framework (see share the same set
+of assumptions:</p>
 <ul>
 <li><p>Linearity: The expected value of the response is a linear
 function of the predictors; assessed by checking for systematic patterns
@@ -884,6 +912,41 @@ Anderson-Darling tests.</p>
 petal width between all three species, as indicated by distinct group
 labels (all green letters differ).</p>
 </div>
+<div class="section level5">
+<h5 class="unnumbered" id="kruskalwallis-with-ordinal-response">Kruskal–Wallis with ordinal response<a class="anchor" aria-label="anchor" href="#kruskalwallis-with-ordinal-response"></a>
+</h5>
+<p>When the response is of class <code>ordered</code> and the predictor
+is a categorical factor with more than two levels,
+<code><a href="../reference/visstat.html">visstat()</a></code> issues a warning, converts the ordered response
+to numeric ranks and routes the analysis to <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>
+followed by <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Predictor: customer segment (3 groups)</span></span>
+<span><span class="va">segment</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Budget"</span>, <span class="st">"Standard"</span>, <span class="st">"Premium"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Response: Likert scale ratings (1-5), with a deliberate trend across segments</span></span>
+<span><span class="va">comfort_numeric</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">50</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.30</span>, <span class="fl">0.30</span>, <span class="fl">0.20</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span>,  <span class="co"># Budget</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">50</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.10</span>, <span class="fl">0.20</span>, <span class="fl">0.40</span>, <span class="fl">0.20</span>, <span class="fl">0.10</span><span class="op">)</span><span class="op">)</span>,  <span class="co"># Standard</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">50</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.10</span>, <span class="fl">0.20</span>, <span class="fl">0.35</span>, <span class="fl">0.30</span><span class="op">)</span><span class="op">)</span>   <span class="co"># Premium</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Dataframe with ORDERED response</span></span>
+<span><span class="va">survey_data_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  segment <span class="op">=</span> <span class="va">segment</span>,</span>
+<span>  comfort <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">comfort_numeric</span><span class="op">)</span>  <span class="co"># Declare as ordered</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># triggers warning and uses Kruskal-Wallis test</span></span>
+<span><span class="va">kruskal_ordered</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">survey_data_3</span>, <span class="st">"comfort"</span>, <span class="st">"segment"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning in visstat_core(dataframe = dataframe, varsample = varsample, varfactor</span></span>
+<span><span class="co">## = varfactor, : Ordered response (e.g., Likert scale) detected. Converting to</span></span>
+<span><span class="co">## numeric ranks for non-parametric analysis.</span></span></code></pre>
+<pre><code><span><span class="co">## Warning in visstat_core(dataframe = dataframe, varsample = varsample, varfactor</span></span>
+<span><span class="co">## = varfactor, : Ordinal response detected. Defaulting to non-parametric tests.</span></span></code></pre>
+</div>
 </div>
 </div>
 <div class="section level3">
@@ -936,7 +999,7 @@ bands.</p>
 <p>The <code>trees</code> data set contains the diameter
 <code>Girth</code> in inches and <code>Volume</code> in cubic ft of 31
 black cherry trees.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_trees</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span><span class="op">$</span><span class="va">Girth</span>, <span class="va">trees</span><span class="op">$</span><span class="va">Volume</span>,conf.level<span class="op">=</span><span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-5-2.png" class="r-plt" alt="" width="100%"></p>
 <pre><code><span><span class="co">## Warning: Statistical assumptions violated:</span></span>
@@ -951,11 +1014,11 @@ the normality assumption underlying the linear regression is met.</p>
 <p>Increasing the confidence level <code>conf.level</code> from 0.9 to
 0.99 results in wider confidence intervals of the regression parameters
 as well as wider confidence and prediction bands</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_trees_99</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">trees</span><span class="op">$</span><span class="va">Girth</span>, <span class="va">trees</span><span class="op">$</span><span class="va">Volume</span>,conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>visStatistics</code> plot-method allows to display only the
 second generated plot (the assumption plot is unchanged):</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">linreg_trees_99</span>,which<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
@@ -970,10 +1033,8 @@ monotonic association between two variables
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>
-using ranks. The Spearman rank correlation
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
-measures monotonic association by evaluating linear dependence on the
-ranked data rather than on the original scale:</p>
+using ranks by evaluating linear dependence on the ranked data rather
+than on the original scale:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mi>r</mi><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">rank</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mrow><mi mathvariant="normal">rank</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
 \rho = r(\operatorname{rank}(x), \operatorname{rank}(y))
 </annotation></semantics></math> where
@@ -1000,7 +1061,7 @@ distributional assumption on the original data is required.</p>
 measure and socioeconomic indicators for each of 47 French-speaking
 provinces of Switzerland at about 1888. Both fertility and education
 level are given in percentage points.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result_swiss1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">swiss</span><span class="op">$</span><span class="va">Fertility</span>,</span>
 <span>                             <span class="va">swiss</span><span class="op">$</span><span class="va">Education</span>, do_regression <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-8-2.png" class="r-plt" alt="" width="100%"></p>
@@ -1164,7 +1225,7 @@ table.</p>
 <code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code>. The function transforms the contingency
 table <code>HairEyeColor</code> into <code>data.frame</code> named
 <code>HairEyeColourDataFrame</code>.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">HairEyeColourDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -1178,7 +1239,7 @@ other.</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test
 (<code>chisq.test()</code>)<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test-chisq-test-1"></a>
 </h5>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_colour_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_colour_df</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">hair_eye_colour_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-10-2.png" class="r-plt" alt="" width="100%"></p>
@@ -1202,7 +1263,7 @@ with Yates’ continuity correction<a class="anchor" aria-label="anchor" href="#
 <p>In the following example, we restrict the data to participants with
 either black or brown hair and either brown or blue eyes, resulting in a
 2-by-2 contingency table.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_black_brown_eyes_brown_blue</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></span>
 <span><span class="co"># Transform to data frame</span></span>
 <span><span class="va">hair_black_brown_eyes_brown_blue_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue</span><span class="op">)</span><span class="op">)</span></span>
@@ -1236,7 +1297,7 @@ greater <span class="citation">(<a href="#ref-Cochran:1954">Cochran
 1954</a>)</span>.</p>
 <p>Therefore, <code><a href="../reference/visstat.html">visstat()</a></code> automatically selects Fisher’s
 exact test instead.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">hair_eye_colour_male</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co"># Slice out a 2 by 2 contingency table</span></span>
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="va">hair_eye_colour_male</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
@@ -1246,6 +1307,102 @@ exact test instead.</p>
 <span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/fisher-data-prep-1.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/fisher-data-prep-2.png" class="r-plt" alt="" width="100%"></p>
 </div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="both-variables-ordered-rank-correlation">Both variables ordered: Rank correlation<a class="anchor" aria-label="anchor" href="#both-variables-ordered-rank-correlation"></a>
+</h3>
+<p>When both the response and the predictor are ordered factors
+(<code>is.ordered(y) &amp;&amp; is.ordered(x)</code>),
+<code><a href="../reference/visstat.html">visstat()</a></code> does <strong>not</strong> call
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
+or Fisher. Treating ordered levels as nominal would discard the ordering
+and lose power against a monotone trend. Instead, <code><a href="../reference/visstat.html">visstat()</a></code>
+tests the null hypothesis of no monotone association via Kendall’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
+rank correlation <span class="citation">(<a href="#ref-Kendall:1945">Kendall 1945</a>; <a href="#ref-Agresti:2010">Agresti 2010</a>)</span>.</p>
+<div class="section level4">
+<h4 id="kendalls-tau_b-cor-test----method-kendall">Kendall’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
+(<code>cor.test(..., method = "kendall")</code>)<a class="anchor" aria-label="anchor" href="#kendalls-tau_b-cor-test----method-kendall"></a>
+</h4>
+<p>For two ordinal variables with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+joint observations, let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+denote the number of concordant pairs (those whose ranks agree in both
+variables) and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
+the number of discordant pairs. Kendall’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
+is defined as</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>τ</mi><mi>b</mi></msub><mspace width="0.278em"></mspace><mo>=</mo><mspace width="0.278em"></mspace><mfrac><mrow><mi>C</mi><mo>−</mo><mi>D</mi></mrow><msqrt><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>n</mi><mn>0</mn></msub><mo>−</mo><msub><mi>n</mi><mn>1</mn></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>n</mi><mn>0</mn></msub><mo>−</mo><msub><mi>n</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">
+\tau_b \;=\; \frac{C - D}{\sqrt{(n_0 - n_1)(n_0 - n_2)}}
+</annotation></semantics></math></p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mn>0</mn></msub><mo>=</mo><mi>n</mi><mo stretchy="false" form="prefix">(</mo><mi>n</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">n_0 = n(n-1)/2</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mn>1</mn></msub><mo>=</mo><msub><mo>∑</mo><mi>i</mi></msub><msub><mi>t</mi><mi>i</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>t</mi><mi>i</mi></msub><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">n_1 = \sum_i t_i(t_i-1)/2</annotation></semantics></math>
+summed over groups of tied ranks in the response, and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mn>2</mn></msub><annotation encoding="application/x-tex">n_2</annotation></semantics></math>
+is the analogous quantity for the predictor. The denominator correction
+makes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
+attain
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>±</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">\pm 1</annotation></semantics></math>
+even with ties, which Spearman’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
+does not <span class="citation">(<a href="#ref-Kendall:1945">Kendall
+1945</a>)</span>. With few ordered levels (e.g., 5-point Likert items),
+ties are unavoidable; this is the principal reason to prefer
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
+over Spearman’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
+in this setting <span class="citation">(<a href="#ref-Agresti:2010">Agresti 2010</a>)</span>.</p>
+<p><code><a href="../reference/visstat.html">visstat()</a></code> calls
+<code>cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)</code>
+and reports
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>,
+the test statistic
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>z</mi><annotation encoding="application/x-tex">z</annotation></semantics></math>,
+and the two-sided
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value.</p>
+</div>
+<div class="section level4">
+<h4 id="graphical-output-1">Graphical output<a class="anchor" aria-label="anchor" href="#graphical-output-1"></a>
+</h4>
+<p>Two plots are produced:</p>
+<ol style="list-style-type: decimal">
+<li>A jittered rank–rank scatter that visualises the monotone trend,
+annotated with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>,
+the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value,
+and the sample size.</li>
+<li>A mosaic plot via <code>vis_mosaic()</code>. Because
+<code><a href="https://rdrr.io/pkg/vcd/man/mosaic.html" class="external-link">vcd::mosaic()</a></code> honours the level ordering of
+<code>ordered</code> factors, the tile layout itself preserves the
+ordinal structure.</li>
+</ol>
+</div>
+<div class="section level4">
+<h4 id="example-1">Example<a class="anchor" aria-label="anchor" href="#example-1"></a>
+</h4>
+<p>We construct a small synthetic data set with two three-point ordered
+scales and a deliberate monotone trend.</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
+<span><span class="co"># latent scores with positive monotone association</span></span>
+<span><span class="va">xs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">ys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmin</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">xs</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="fl">1</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">likert_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">" disagree"</span>, <span class="st">"neutral"</span>,</span>
+<span>                   <span class="st">"agree"</span> <span class="op">)</span></span>
+<span><span class="va">likert_levels2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">" left"</span>, <span class="st">"centre"</span>,</span>
+<span>                   <span class="st">"right"</span> <span class="op">)</span></span>
+<span><span class="va">attitude</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">likert_levels</span><span class="op">[</span><span class="va">xs</span><span class="op">]</span>, levels <span class="op">=</span> <span class="va">likert_levels</span><span class="op">)</span></span>
+<span><span class="va">politics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">likert_levels2</span><span class="op">[</span><span class="va">ys</span><span class="op">]</span>, levels <span class="op">=</span> <span class="va">likert_levels2</span><span class="op">)</span></span>
+<span><span class="va">kendall_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">politics</span>, <span class="va">attitude</span><span class="op">)</span></span></code></pre></div>
+<p><img src="visStatistics_files/figure-html/kendall-example-1.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/kendall-example-2.png" class="r-plt" alt="" width="100%"></p>
 </div>
 </div>
 </div>
@@ -1267,7 +1424,7 @@ complete output file name.</p>
 <p>In the following example, we store the graphics in <code>png</code>
 format in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> with the
 default naming convention:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Graphical output written to plotDirectory: In this example</span></span>
 <span><span class="co"># a bar chart to visualise the Chi-squared test and mosaic plot showing</span></span>
 <span><span class="co"># Pearson's residuals.</span></span>
@@ -1277,13 +1434,13 @@ default naming convention:</p>
 <p>The full file path of the generated graphics are stored as the
 attribute <code>"plot_paths"</code> on the returned object of class
 <code>"visstat"</code>.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "/tmp/RtmpAQ6jyM/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span><span class="co">## [2] "/tmp/RtmpAQ6jyM/mosaic_complete_Hair_Eye.png"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "/tmp/RtmpPiYxEe/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span><span class="co">## [2] "/tmp/RtmpPiYxEe/mosaic_complete_Hair_Eye.png"</span></span></code></pre>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] TRUE TRUE</span></span></code></pre>
 <p>When assumptions plots (residual and Q-Q plot) are generated, the
@@ -1302,16 +1459,16 @@ corresponding plot has the prefix <code>"assumption_"</code>.</p>
 <p><code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> displays the test used and the p-value;
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> provides the full contents of the returned
 object, including assumption tests and post-hoc comparisons.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">iris_kruskal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Width</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">iris_kruskal</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Object of class 'visstat'</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Available components:</span></span>
 <span><span class="co">## [1] "Kruskal Wallis rank sum test"                </span></span>
 <span><span class="co">## [2] "post-hoc by pairwise Wilcoxon rank sum test "</span></span></code></pre>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">iris_kruskal</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Summary of visstat object</span></span>
 <span><span class="co">## </span></span>
@@ -1343,25 +1500,25 @@ object, including assumption tests and post-hoc comparisons.</p>
 <p>When <code><a href="../reference/visstat.html">visstat()</a></code> is called with
 <code>graphicsoutput</code> specified, <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> lists the
 file paths of the stored graphics:</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">iris_kruskal_stored</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Width</span>,</span>
 <span>                               graphicsoutput <span class="op">=</span> <span class="st">"pdf"</span>,</span>
 <span>                               plotName <span class="op">=</span> <span class="st">"iris_kruskal"</span>,</span>
 <span>                               plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iris_kruskal_stored</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Plot [1] stored in /tmp/RtmpAQ6jyM/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
-<pre><code><span><span class="co">## Plot [2] stored in /tmp/RtmpAQ6jyM/iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [1] stored in /tmp/RtmpPiYxEe/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [2] stored in /tmp/RtmpPiYxEe/iris_kruskal.pdf</span></span></code></pre>
 <p>When <code><a href="../reference/visstat.html">visstat()</a></code> is called without
 <code>graphicsoutput</code> (the default interactive mode), the
 generated plots are captured internally. Calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>
 without <code>which</code> lists the available plots; calling
 <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> with <code>which</code> replays the selected plot in
 the interactive R session:</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iris_kruskal</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Plot [1] captured. Use plot(obj, which = 1) to display.</span></span></code></pre>
 <pre><code><span><span class="co">## Plot [2] captured. Use plot(obj, which = 2) to display.</span></span></code></pre>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Interactive only (not executed during vignette build):</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iris_kruskal</span>, which <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] TRUE TRUE</span></span></code></pre>
@@ -1463,7 +1620,7 @@ bootstrapping to keep the focus on foundational concepts.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="glm">Appendix A: The general linear model<a class="anchor" aria-label="anchor" href="#glm"></a>
+<h2 id="appendix-a-the-general-linear-model">Appendix A: The general linear model<a class="anchor" aria-label="anchor" href="#appendix-a-the-general-linear-model"></a>
 </h2>
 <p>The general linear model <span class="citation">(<a href="#ref-Searle:1971">Searle 1971</a>)</span> provides a unified
 mathematical framework underlying Student’s t-test, Fisher’s ANOVA, and
@@ -1734,9 +1891,13 @@ test selection.</p>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Abdi:2007" class="csl-entry">
 Abdi, Hervé. 2007. <span>“The <span>Bonferonni</span> and <span>Šidák
-Corrections</span> for <span>Multiple Comparisons</span>.”</span> In
-<em>Encyclopedia of Measurement and Statistics</em>, edited by Neil J.
-Salkind. Sage.
+Corrections</span> for <span>Multiple Comparisons</span>.”</span>
+<em>Encyclopedia of Measurement and Statistics</em> (Thousand Oaks, CA).
+</div>
+<div id="ref-Agresti:2010" class="csl-entry">
+Agresti, Alan. 2010. <em>Analysis of <span>Ordinal Categorical
+Data</span></em>. 1st ed. Wiley <span>Series</span> in
+<span>Probability</span> and <span>Statistics</span>. Wiley. <a href="https://doi.org/10.1002/9780470594001" class="external-link">https://doi.org/10.1002/9780470594001</a>.
 </div>
 <div id="ref-Allingham:2012" class="csl-entry">
 Allingham, David, and J. C. W. Rayner. 2012. <span>“Testing
@@ -1772,10 +1933,9 @@ Chapman and Hall</span>.
 </div>
 <div id="ref-Delacre:2017" class="csl-entry">
 Delacre, Marie, Daniël Lakens, and Christophe Leys. 2017. <span>“Why
-Psychologists Should by Default Use <span>Welch</span>’s
-t-<span>Test</span> Instead of <span>Student</span>’s
-t-<span>Test</span>.”</span> <em>International Review of Social
-Psychology</em> 30 (1): 92–101. <a href="https://doi.org/10.5334/irsp.82" class="external-link">https://doi.org/10.5334/irsp.82</a>.
+Psychologists Should by Default Use <span>Welch</span>’s t-Test Instead
+of <span>Student</span>’s t-Test.”</span> <em>International Review of
+Social Psychology</em> 30 (1): 92–101. <a href="https://doi.org/10.5334/irsp.82" class="external-link">https://doi.org/10.5334/irsp.82</a>.
 </div>
 <div id="ref-Fagerland:2012" class="csl-entry">
 Fagerland, Morten W. 2012. <span>“T-Tests, Non-Parametric Tests, and
@@ -1849,7 +2009,12 @@ in Probability and Statistics. John Wiley &amp; Sons, Inc.
 <div id="ref-Holm:1979" class="csl-entry">
 Holm, Sture. 1979. <span>“A <span>Simple Sequentially Rejective Multiple
 Test Procedure</span>.”</span> <em>Scandinavian Journal of
-Statistics</em> 6 (2): 65–70.
+Statistics</em> 6 (2): 65–70. <a href="https://www.jstor.org/stable/4615733" class="external-link">https://www.jstor.org/stable/4615733</a>.
+</div>
+<div id="ref-Kendall:1945" class="csl-entry">
+Kendall, M. G. 1945. <span>“The <span>Treatment</span> of
+<span>Ties</span> in <span>Ranking Problems</span>.”</span>
+<em>Biometrika</em> 33 (3): 239–51. <a href="https://doi.org/10.2307/2332303" class="external-link">https://doi.org/10.2307/2332303</a>.
 </div>
 <div id="ref-Kozak:2018" class="csl-entry">
 Kozak, M., and H.-P. Piepho. 2018. <span>“What’s Normal Anyway?
@@ -1865,7 +2030,7 @@ Association</em> 47 (260): 583–621. <a href="https://doi.org/10.2307/2280779" 
 </div>
 <div id="ref-Kwak:2017" class="csl-entry">
 Kwak, Sang Gyu, and Jong Hae Kim. 2017. <span>“Central Limit Theorem:
-<span>The</span> Cornerstone of Modern Statistics.”</span> <em>Korean J
+The Cornerstone of Modern Statistics.”</span> <em>Korean J
 Anesthesiol</em> 70 (2): 144–56. <a href="https://doi.org/10.4097/kjae.2017.70.2.144" class="external-link">https://doi.org/10.4097/kjae.2017.70.2.144</a>.
 </div>
 <div id="ref-Levene:1960" class="csl-entry">
@@ -1912,9 +2077,8 @@ Philosophical Magazine and Journal of Science</em> 50 (302): 157–75. <a href="
 </div>
 <div id="ref-Rasch:2011" class="csl-entry">
 Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. <span>“The
-Two-Sample t Test: <span class="nocase">Pre-testing</span> Its
-Assumptions Does Not Pay Off.”</span> <em>Stat Papers</em> 52 (1):
-219–31. <a href="https://doi.org/10.1007/s00362-009-0224-x" class="external-link">https://doi.org/10.1007/s00362-009-0224-x</a>.
+Two-Sample t Test: Pre-Testing Its Assumptions Does Not Pay Off.”</span>
+<em>Stat Papers</em> 52 (1): 219–31. <a href="https://doi.org/10.1007/s00362-009-0224-x" class="external-link">https://doi.org/10.1007/s00362-009-0224-x</a>.
 </div>
 <div id="ref-Razali:2011" class="csl-entry">
 Razali, Nornadiah Mohd, and Yap Bee Wah. 2011. <span>“Power Comparisons

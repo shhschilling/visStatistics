@@ -152,8 +152,9 @@
 <ul>
 <li><p>If one is numeric and the other is a factor, the numeric must be passed as response <code>y</code> and the factor as predictor <code>x</code>. This supports tests for central tendencies.</p></li>
 <li><p>If both are numeric, a simple linear regression model is fitted with <code>y</code> as the response and <code>x</code> as the predictor.</p></li>
-<li><p>If both are factors, a test of association is performed (Chi-squared or Fisher’s exact). The test is symmetric, but the plot layout depends on which variable is supplied as <code>x</code>.</p></li>
-<li><p>If both are factors and <code>y</code> is additionally of class<code>ordered</code>, a non parametric test is performed: a Wilcoxon test in the case of two factor levels in <code>x</code> , a Kruskal-Wallis-Test for more than two factor levels in in <code>x</code>.</p></li>
+<li><p>If both are factors (and not both ordered), a test of association is performed (Chi-squared or Fisher’s exact). The test is symmetric, but the plot layout depends on which variable is supplied as <code>x</code>.</p></li>
+<li><p>If both are factors and <code>y</code> is additionally of class <code>ordered</code>, a non parametric test is performed: a Wilcoxon test in the case of two factor levels in <code>x</code>, a Kruskal-Wallis-Test for more than two factor levels in <code>x</code>.</p></li>
+<li><p>If <strong>both</strong> <code>x</code> and <code>y</code> are of class <code>ordered</code>, the order of the levels carries information that Chi-squared / Fisher would discard. <code><a href="reference/visstat.html">visstat()</a></code> instead tests for a monotone association via Kendall’s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math> (<code>cor.test(..., method = "kendall")</code>) and visualises the relationship with a jittered rank–rank scatter plus a mosaic plot.</p></li>
 </ul>
 </div>
 <div class="section level1">
@@ -171,7 +172,7 @@ For a detailed description of the underlying decision logic, please refer to the
 <p>Overview of the implemented statistical tests based on the class of the variables.</p>
 
 </div>
-<p>A graphical summary of the decision logic used for categorial predictors and numerical responses is given in below figure:</p>
+<p>A graphical summary of the decision logic used for categorial predictors and numerical responses resulting in tests of central tendencies is given in below figure:</p>
 <div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: left;">
 <p><img src="articles/figures/decision_tree.png" width="100%" alt="Decision tree used to select the appropriate statistical test."></p>
 <p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
@@ -284,7 +285,7 @@ For a detailed description of the underlying decision logic, please refer to the
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">50</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.10</span>, <span class="fl">0.20</span>, <span class="fl">0.30</span>, <span class="fl">0.35</span><span class="op">)</span><span class="op">)</span>   <span class="co"># First</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Create dataframe with ORDERED response</span></span>
+<span><span class="co"># Create dataframe with ordered response</span></span>
 <span><span class="va">flight_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  service_class <span class="op">=</span> <span class="va">service_class</span>,</span>
 <span>  comfort <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">comfort_numeric</span><span class="op">)</span>  <span class="co"># Declare as ordered</span></span>
@@ -324,6 +325,22 @@ For a detailed description of the underlying decision logic, please refer to the
 <p><img src="reference/figures/README-haireye-fisher-1.png" alt="Fisher's exact test for 2x2 contingency table of hair and eye colour in males (black/brown hair versus hazel/green eyes). Displays observed frequencies, mosaic plot showing cell proportions, and exact test statistics for association with small sample sizes." width="80%"><img src="reference/figures/README-haireye-fisher-2.png" alt="Fisher's exact test for 2x2 contingency table of hair and eye colour in males (black/brown hair versus hazel/green eyes). Displays observed frequencies, mosaic plot showing cell proportions, and exact test statistics for association with small sample sizes." width="80%"></p>
 </div>
 </div>
+<div class="section level2">
+<h2 id="both-variables-ordered-rank-correlation">Both variables ordered: Rank correlation<a class="anchor" aria-label="anchor" href="#both-variables-ordered-rank-correlation"></a>
+</h2>
+<p>When both predictor and response are of class <code>ordered</code>, <code><a href="reference/visstat.html">visstat()</a></code> tests for a monotone association via Kendall’s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math> and produces a jittered rank–rank scatter together with a mosaic plot.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">120</span></span>
+<span><span class="va">xs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">ys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmin</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">xs</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="fl">1</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">likert_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"strongly disagree"</span>, <span class="st">"disagree"</span>, <span class="st">"neutral"</span>,</span>
+<span>                   <span class="st">"agree"</span>, <span class="st">"strongly agree"</span><span class="op">)</span></span>
+<span><span class="va">attitude</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">likert_levels</span><span class="op">[</span><span class="va">xs</span><span class="op">]</span>, levels <span class="op">=</span> <span class="va">likert_levels</span><span class="op">)</span></span>
+<span><span class="va">intention</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">likert_levels</span><span class="op">[</span><span class="va">ys</span><span class="op">]</span>, levels <span class="op">=</span> <span class="va">likert_levels</span><span class="op">)</span></span>
+<span><span class="va">kendall_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">intention</span>, <span class="va">attitude</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-kendall-ordered-1.png" alt="Kendall's tau-b rank correlation between two five-point Likert items. Shows a jittered rank-rank scatter annotated with tau-b, the p-value, and sample size, plus a mosaic plot whose tile ordering reflects the level ordering of the ordered factors." width="80%"><img src="reference/figures/README-kendall-ordered-2.png" alt="Kendall's tau-b rank correlation between two five-point Likert items. Shows a jittered rank-rank scatter annotated with tau-b, the p-value, and sample size, plus a mosaic plot whose tile ordering reflects the level ordering of the ordered factors." width="80%"></p>
+</div>
 </div>
 <div class="section level1">
 <h1 id="saving-the-graphical-output">Saving the graphical output<a class="anchor" aria-label="anchor" href="#saving-the-graphical-output"></a>
@@ -331,7 +348,7 @@ For a detailed description of the underlying decision logic, please refer to the
 <p>All generated graphics can be saved in any file format supported by <code>Cairo()</code>, including “png”, “jpeg”, “pdf”, “svg”, “ps”, and “tiff” in the user specified <code>plotDirectory</code>.</p>
 <p>If the optional argument <code>plotName</code> is not given, the naming of the output follows the pattern <code>"testname_namey_namex."</code>, where <code>"testname"</code> specifies the selected test or visualisation and <code>"namey"</code> and <code>"namex"</code> are character strings naming the selected data vectors <code>y</code> and <code>x</code>, respectively. The suffix corresponding to the chosen <code>graphicsoutput</code> (e.g., <code>"pdf"</code>, <code>"png"</code>) is then concatenated to form the complete output file name.</p>
 <p>In the following example, we store the graphics in <code>png</code> format in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> with the default naming convention:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Graphical output written to plotDirectory: In this example </span></span>
 <span><span class="co"># a bar chart to visualise the Chi-squared test and mosaic plot showing</span></span>
 <span><span class="co"># Pearson's residuals named </span></span>
@@ -339,13 +356,13 @@ For a detailed description of the underlying decision logic, please refer to the
 <span><span class="va">save_fisher</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span>, <span class="st">"Hair"</span>, <span class="st">"Eye"</span>,</span>
 <span>        graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The full file path of the generated graphics are stored as the attribute <code>"plot_paths"</code> on the returned object of class <code>"visstat"</code>.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp367Gb0/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span><span class="co">#&gt; [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp367Gb0/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp5fn8wA/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span><span class="co">#&gt; [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp5fn8wA/mosaic_complete_Hair_Eye.png"</span></span></code></pre></div>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE TRUE</span></span></code></pre></div>
 <!-- ## Implemented tests -->

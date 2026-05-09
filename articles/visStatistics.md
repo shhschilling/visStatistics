@@ -32,8 +32,14 @@ appropriate visualisation of the data (e.g.the package `ggstatsplot`
 statistical test selection combined with statistically annotated plots
 as a primary concern.
 
-The visStatistics package addresses this challenge by using
-deterministic decision logic, removing the burden of manual test choice.
+While several R packages provide tools for statistical testing and
+visualisation (e.g. `ggstatsplot`, `rstatix`, `ggpubr`,
+`compareGroups`), these generally assume that the appropriate
+statistical procedure has already been selected. `visStatistics` instead
+implements an automated, assumption-driven decision framework that
+selects, executes, and visualises statistical tests within a unified
+inferential pipeline.
+
 This automation enables users to focus directly on interpreting
 statistical outcomes rather than navigating test selection.
 
@@ -138,7 +144,9 @@ The choice of statistical tests performed by the function
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 depends on whether the data are numeric or categorical, the number of
 levels in the categorical variable, the distribution of the data, as
-well as the user-defined ‘conf.level’.
+well as the user-defined ‘conf.level’. The common mathematical framework
+underlying Student’s t-test, Fisher’s ANOVA and simple linear regression
+is described in the [Appendix](#glm).
 
 The function prioritizes interpretable visual output and tests that
 remain valid under the following decision logic. The following graph
@@ -151,7 +159,7 @@ variables.
 
 A graphical summary of the decision logic used for numerical responses
 and categorical predictors resulting in comparisons of central
-tendencies is given in the figure below:
+tendencies is given in the figure below.
 
 ![Decision tree used to select the appropriate statistical
 test.](figures/decision_tree.png)
@@ -163,8 +171,10 @@ number of factor levels, normality, and homoscedasticity.
 ### Numeric response and categorical predictor: Comparing central tendencies
 
 When the response `y` is numeric and the predictor `x` is categorical, a
-statistical hypothesis test comparing central tendencies is selected. A
-linear model `lm(y~x)` is always fitted.
+statistical hypothesis test comparing central tendencies is selected. To
+check whether the assumptions of a general linear model (see
+(see[Appendix](#glm)) are fulfilled, a linear model lm(y ~ x) is first
+fitted.
 
 - Normality testing of the residuals: The Shapiro–Wilk test ([Shapiro
   and Wilk 1965](#ref-Shapiro:1965))
@@ -173,13 +183,13 @@ linear model `lm(y~x)` is always fitted.
   [`rstandard()`](https://rdrr.io/r/stats/influence.measures.html),
   which scales the raw residuals with an estimate of their standard
   deviation that accounts for the leverage of each observation ([Cook
-  and Weisberg 1982](#ref-Cook:1982)). The Shapiro–Wilk test is the most
-  powerful for detecting non-normality across most distributions,
+  and Weisberg 1982](#ref-Cook:1982)). The Shapiro–Wilk (SW) test is the
+  most powerful for detecting non-normality across most distributions,
   especially with smaller sample sizes ([Razali and Wah
   2011](#ref-Razali:2011); [Ghasemi and Zahediasl
   2012](#ref-Ghasemi:2012)).
 
-- Non parametric-tests: Only when the test rejects normality
+- Non parametric-tests: Only when SW the test rejects normality
   ($`p_{SW} \le \alpha`$), non-parametric tests are selected: the
   Wilcoxon rank-sum test
   ([`wilcox.test()`](https://rdrr.io/r/stats/wilcox.test.html)) for two
@@ -286,28 +296,39 @@ on expected cell counts. The choice of test is based on Cochran’s rule
 approximation is reliable only if no expected cell count is less than 1
 and no more than 20 percent of cells have expected counts below 5.
 
-#### Ordered response of class `ordered`
+#### Response of class `ordered`
 
 When the response variable is an ordered factor (e.g., Likert scale
 ratings) and the predictor is categorical,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 converts the ordered response to numeric ranks and redirects the
-analysis to the numeric response pathway described above, where
-non-parametric tests (Wilcoxon or Kruskal–Wallis) are applied. This is
-the appropriate analysis for ordinal data, as the numeric distances
+analysis to the non- parametric
+[`wilcox.test()`](https://rdrr.io/r/stats/wilcox.test.html) (predictor
+with two levels) or
+[`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html) (predictor
+with more then two levels) respectively, as the numeric distances
 between ordered categories are not necessarily equal and the data cannot
-be assumed to follow a normal distribution. Users should declare Likert
-scale responses as ordered factors using
-[`ordered()`](https://rdrr.io/r/base/factor.html) to ensure
-non-parametric testing.
+be assumed to follow a normal distribution.
 
-The mathematical framework underlying Student’s t-test, Fisher’s ANOVA
-and simple linear regression — and the assumption diagnostics shown by
-`vis_lm_assumptions()` — is described in the [Appendix](#glm).
+#### Response and predictor of class `ordered` : Kendall’s rank correlation
+
+When **both** the response and the predictor are ordered factors, the
+test of independence ignoring the order ($`\chi^2`$ or Fisher) is
+suboptimal because it discards the very information that defines an
+ordinal scale and has low power against monotone trends.
+[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
+detects this case and tests for a monotone association via Kendall’s
+$`\tau_b`$ (`cor.test(..., method = "kendall")`). Kendall’s $`\tau_b`$
+is preferred over Spearman’s $`\rho`$ for ordinal data with few levels,
+where ties are common: $`\tau_b`$ corrects for ties explicitly, while
+Spearman’s $`\rho`$ uses only an approximate adjustment ([Agresti
+2010](#ref-Agresti:2010); [Kendall 1945](#ref-Kendall:1945)). The mosaic
+plot is reused as the visualisation, it is complemented by a jittered
+rank-rank scatter that makes the monotone trend visible.
 
 ## Assumption diagnostics: `vis_lm_assumptions()`
 
-All tests within the linear model framework share the same set of
+All tests within the linear model framework (see share the same set of
 assumptions:
 
 - Linearity: The expected value of the response is a linear function of
@@ -792,6 +813,48 @@ analysis using
 shows significant differences in petal width between all three species,
 as indicated by distinct group labels (all green letters differ).
 
+##### Kruskal–Wallis with ordinal response
+
+When the response is of class `ordered` and the predictor is a
+categorical factor with more than two levels,
+[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
+issues a warning, converts the ordered response to numeric ranks and
+routes the analysis to
+[`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html) followed
+by
+[`pairwise.wilcox.test()`](https://rdrr.io/r/stats/pairwise.wilcox.test.html).
+
+``` r
+
+set.seed(123)
+
+# Predictor: customer segment (3 groups)
+segment <- factor(rep(c("Budget", "Standard", "Premium"), each = 50))
+
+# Response: Likert scale ratings (1-5), with a deliberate trend across segments
+comfort_numeric <- c(
+  sample(1:5, 50, replace = TRUE, prob = c(0.30, 0.30, 0.20, 0.15, 0.05)),  # Budget
+  sample(1:5, 50, replace = TRUE, prob = c(0.10, 0.20, 0.40, 0.20, 0.10)),  # Standard
+  sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.35, 0.30))   # Premium
+)
+
+# Dataframe with ORDERED response
+survey_data_3 <- data.frame(
+  segment = segment,
+  comfort = ordered(comfort_numeric)  # Declare as ordered
+)
+
+# triggers warning and uses Kruskal-Wallis test
+kruskal_ordered <- visstat(survey_data_3, "comfort", "segment")
+```
+
+    ## Warning in visstat_core(dataframe = dataframe, varsample = varsample, varfactor
+    ## = varfactor, : Ordered response (e.g., Likert scale) detected. Converting to
+    ## numeric ranks for non-parametric analysis.
+
+    ## Warning in visstat_core(dataframe = dataframe, varsample = varsample, varfactor
+    ## = varfactor, : Ordinal response detected. Defaulting to non-parametric tests.
+
 ### Both variables numeric
 
 #### Simple linear regression (`lm()`)
@@ -877,8 +940,7 @@ plot(linreg_trees_99,which=2)
 When `do_regression = FALSE`,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 calls `cor.test(x, y, method = "spearman")` to measure the monotonic
-association between two variables $`x`$ and $`y`$ using ranks. The
-Spearman rank correlation $`\rho`$ measures monotonic association by
+association between two variables $`x`$ and $`y`$ using ranks by
 evaluating linear dependence on the ranked data rather than on the
 original scale:
 
@@ -1153,6 +1215,79 @@ fisher_stats <- visstat(black_brown_hazel_green_male$Eye, black_brown_hazel_gree
 
 ![](visStatistics_files/figure-html/fisher-data-prep-1.png)![](visStatistics_files/figure-html/fisher-data-prep-2.png)
 
+### Both variables ordered: Rank correlation
+
+When both the response and the predictor are ordered factors
+(`is.ordered(y) && is.ordered(x)`),
+[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
+does **not** call $`\chi^2`$ or Fisher. Treating ordered levels as
+nominal would discard the ordering and lose power against a monotone
+trend. Instead,
+[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
+tests the null hypothesis of no monotone association via Kendall’s
+$`\tau_b`$ rank correlation ([Kendall 1945](#ref-Kendall:1945); [Agresti
+2010](#ref-Agresti:2010)).
+
+#### Kendall’s $`\tau_b`$ (`cor.test(..., method = "kendall")`)
+
+For two ordinal variables with $`n`$ joint observations, let $`C`$
+denote the number of concordant pairs (those whose ranks agree in both
+variables) and $`D`$ the number of discordant pairs. Kendall’s
+$`\tau_b`$ is defined as
+
+``` math
+\tau_b \;=\; \frac{C - D}{\sqrt{(n_0 - n_1)(n_0 - n_2)}}
+```
+
+where $`n_0 = n(n-1)/2`$, $`n_1 = \sum_i t_i(t_i-1)/2`$ summed over
+groups of tied ranks in the response, and $`n_2`$ is the analogous
+quantity for the predictor. The denominator correction makes $`\tau_b`$
+attain $`\pm 1`$ even with ties, which Spearman’s $`\rho`$ does not
+([Kendall 1945](#ref-Kendall:1945)). With few ordered levels (e.g.,
+5-point Likert items), ties are unavoidable; this is the principal
+reason to prefer $`\tau_b`$ over Spearman’s $`\rho`$ in this setting
+([Agresti 2010](#ref-Agresti:2010)).
+
+[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
+calls
+`cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)`
+and reports $`\tau_b`$, the test statistic $`z`$, and the two-sided
+$`p`$-value.
+
+#### Graphical output
+
+Two plots are produced:
+
+1.  A jittered rank–rank scatter that visualises the monotone trend,
+    annotated with $`\tau_b`$, the $`p`$-value, and the sample size.
+2.  A mosaic plot via `vis_mosaic()`. Because
+    [`vcd::mosaic()`](https://rdrr.io/pkg/vcd/man/mosaic.html) honours
+    the level ordering of `ordered` factors, the tile layout itself
+    preserves the ordinal structure.
+
+#### Example
+
+We construct a small synthetic data set with two three-point ordered
+scales and a deliberate monotone trend.
+
+``` r
+
+set.seed(1)
+n <- 100
+# latent scores with positive monotone association
+xs <- sample(1:3, n, replace = TRUE)
+ys <- pmin(3, pmax(1, xs + sample(-1:1, n, replace = TRUE)))
+likert_levels <- c(" disagree", "neutral",
+                   "agree" )
+likert_levels2 <- c(" left", "centre",
+                   "right" )
+attitude  <- ordered(likert_levels[xs], levels = likert_levels)
+politics <- ordered(likert_levels2[ys], levels = likert_levels2)
+kendall_result <- visstat(politics, attitude)
+```
+
+![](visStatistics_files/figure-html/kendall-example-1.png)![](visStatistics_files/figure-html/kendall-example-2.png)
+
 ## Saving the graphical output
 
 All generated graphics can be saved in any file format supported by
@@ -1189,8 +1324,8 @@ paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
 
-    ## [1] "/tmp/RtmpAQ6jyM/chi_squared_or_fisher_Hair_Eye.png"
-    ## [2] "/tmp/RtmpAQ6jyM/mosaic_complete_Hair_Eye.png"
+    ## [1] "/tmp/RtmpPiYxEe/chi_squared_or_fisher_Hair_Eye.png"
+    ## [2] "/tmp/RtmpPiYxEe/mosaic_complete_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -1281,9 +1416,9 @@ iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
 plot(iris_kruskal_stored)
 ```
 
-    ## Plot [1] stored in /tmp/RtmpAQ6jyM/glm_assumptions_iris_kruskal.pdf
+    ## Plot [1] stored in /tmp/RtmpPiYxEe/glm_assumptions_iris_kruskal.pdf
 
-    ## Plot [2] stored in /tmp/RtmpAQ6jyM/iris_kruskal.pdf
+    ## Plot [2] stored in /tmp/RtmpPiYxEe/iris_kruskal.pdf
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1607,8 +1742,12 @@ test selection.
 ## Bibliography
 
 Abdi, Hervé. 2007. “The Bonferonni and Šidák Corrections for Multiple
-Comparisons.” In *Encyclopedia of Measurement and Statistics*, edited by
-Neil J. Salkind. Sage.
+Comparisons.” *Encyclopedia of Measurement and Statistics* (Thousand
+Oaks, CA).
+
+Agresti, Alan. 2010. *Analysis of Ordinal Categorical Data*. 1st ed.
+Wiley Series in Probability and Statistics. Wiley.
+<https://doi.org/10.1002/9780470594001>.
 
 Allingham, David, and J. C. W. Rayner. 2012. “Testing Equality of
 Variances for Multiple Univariate Normal Populations.” *Journal of
@@ -1694,6 +1833,10 @@ Probability and Statistics. John Wiley & Sons, Inc.
 
 Holm, Sture. 1979. “A Simple Sequentially Rejective Multiple Test
 Procedure.” *Scandinavian Journal of Statistics* 6 (2): 65–70.
+<https://www.jstor.org/stable/4615733>.
+
+Kendall, M. G. 1945. “The Treatment of Ties in Ranking Problems.”
+*Biometrika* 33 (3): 239–51. <https://doi.org/10.2307/2332303>.
 
 Kozak, M., and H.-P. Piepho. 2018. “What’s Normal Anyway? Residual Plots
 Are More Telling Than Significance Tests When Checking ANOVA
@@ -1743,7 +1886,7 @@ Journal of Science* 50 (302): 157–75.
 <https://doi.org/10.1080/14786440009463897>.
 
 Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. “The Two-Sample
-t Test: Pre-testing Its Assumptions Does Not Pay Off.” *Stat Papers* 52
+t Test: Pre-Testing Its Assumptions Does Not Pay Off.” *Stat Papers* 52
 (1): 219–31. <https://doi.org/10.1007/s00362-009-0224-x>.
 
 Razali, Nornadiah Mohd, and Yap Bee Wah. 2011. “Power Comparisons of
