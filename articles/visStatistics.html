@@ -1294,7 +1294,7 @@ exact test instead.</p>
 <span><span class="va">black_brown_hazel_green_male</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># Fisher test</span></span>
 <span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/fisher-data-prep-1.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/fisher-data-prep-2.png" class="r-plt" alt="" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/fisher-data-prep-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 </div>
 </div>
@@ -1391,7 +1391,7 @@ scales and a deliberate monotone trend.</p>
 <span><span class="va">attitude</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">likert_levels</span><span class="op">[</span><span class="va">xs</span><span class="op">]</span>, levels <span class="op">=</span> <span class="va">likert_levels</span><span class="op">)</span></span>
 <span><span class="va">politics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">likert_levels2</span><span class="op">[</span><span class="va">ys</span><span class="op">]</span>, levels <span class="op">=</span> <span class="va">likert_levels2</span><span class="op">)</span></span>
 <span><span class="va">kendall_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">politics</span>, <span class="va">attitude</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/kendall-example-1.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/kendall-example-2.png" class="r-plt" alt="" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/kendall-example-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 </div>
 </div>
@@ -1426,12 +1426,11 @@ attribute <code>"plot_paths"</code> on the returned object of class
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "/tmp/RtmpvHjvv1/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span><span class="co">## [2] "/tmp/RtmpvHjvv1/mosaic_complete_Hair_Eye.png"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "/tmp/RtmpmXNYYu/chi_squared_or_fisher_Hair_Eye.png"</span></span></code></pre>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] TRUE TRUE</span></span></code></pre>
+<pre><code><span><span class="co">## [1] TRUE</span></span></code></pre>
 <p>When assumptions plots (residual and Q-Q plot) are generated, the
 corresponding plot has the prefix <code>"assumption_"</code>.</p>
 </div>
@@ -1495,8 +1494,8 @@ file paths of the stored graphics:</p>
 <span>                               plotName <span class="op">=</span> <span class="st">"iris_kruskal"</span>,</span>
 <span>                               plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iris_kruskal_stored</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Plot [1] stored in /tmp/RtmpvHjvv1/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
-<pre><code><span><span class="co">## Plot [2] stored in /tmp/RtmpvHjvv1/iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [1] stored in /tmp/RtmpmXNYYu/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [2] stored in /tmp/RtmpmXNYYu/iris_kruskal.pdf</span></span></code></pre>
 <p>When <code><a href="../reference/visstat.html">visstat()</a></code> is called without
 <code>graphicsoutput</code> (the default interactive mode), the
 generated plots are captured internally. Calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>

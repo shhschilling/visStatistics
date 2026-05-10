@@ -1196,7 +1196,7 @@ black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_
 fisher_stats <- visstat(black_brown_hazel_green_male$Eye, black_brown_hazel_green_male$Hair)
 ```
 
-![](visStatistics_files/figure-html/fisher-data-prep-1.png)![](visStatistics_files/figure-html/fisher-data-prep-2.png)
+![](visStatistics_files/figure-html/fisher-data-prep-1.png)
 
 ### Both variables ordered: Rank correlation
 
@@ -1269,7 +1269,7 @@ politics <- ordered(likert_levels2[ys], levels = likert_levels2)
 kendall_result <- visstat(politics, attitude)
 ```
 
-![](visStatistics_files/figure-html/kendall-example-1.png)![](visStatistics_files/figure-html/kendall-example-2.png)
+![](visStatistics_files/figure-html/kendall-example-1.png)
 
 ## Saving the graphical output
 
@@ -1307,8 +1307,7 @@ paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
 
-    ## [1] "/tmp/RtmpvHjvv1/chi_squared_or_fisher_Hair_Eye.png"
-    ## [2] "/tmp/RtmpvHjvv1/mosaic_complete_Hair_Eye.png"
+    ## [1] "/tmp/RtmpmXNYYu/chi_squared_or_fisher_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -1317,7 +1316,7 @@ Remove the graphical output from `plotDirectory`:
 file.remove(paths)
 ```
 
-    ## [1] TRUE TRUE
+    ## [1] TRUE
 
 When assumptions plots (residual and Q-Q plot) are generated, the
 corresponding plot has the prefix `"assumption_"`.
@@ -1399,9 +1398,9 @@ iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
 plot(iris_kruskal_stored)
 ```
 
-    ## Plot [1] stored in /tmp/RtmpvHjvv1/glm_assumptions_iris_kruskal.pdf
+    ## Plot [1] stored in /tmp/RtmpmXNYYu/glm_assumptions_iris_kruskal.pdf
 
-    ## Plot [2] stored in /tmp/RtmpvHjvv1/iris_kruskal.pdf
+    ## Plot [2] stored in /tmp/RtmpmXNYYu/iris_kruskal.pdf
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)

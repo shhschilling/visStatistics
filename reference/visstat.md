@@ -257,7 +257,6 @@ blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
 visstat(blackBrownHazelGreen$Eye, blackBrownHazelGreen$Hair)
 
 
-
 ## Save PNG
 visstat(blackBrownHazelGreen$Hair, blackBrownHazelGreen$Eye,
         graphicsoutput = "png", plotDirectory = tempdir())
