@@ -795,13 +795,17 @@ black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_
 fisher_stats <- visstat(black_brown_hazel_green_male$Eye, black_brown_hazel_green_male$Hair)
 ```
 
-## Both variables ordered: Rank correlation
+### Response of class `ordered`
+
+When the response is an ordered factor, `visstat()` converts it internally to numeric ranks and redirects to the non-parametric path (see examples in Section [Comparing central tendencies](#comparing-central-tendencies)).
+
+### Both variables ordered: Kendall's rank correlation
 
 When both the response and the predictor are ordered factors (`is.ordered(y) && is.ordered(x)`), `visstat()` does **not** call $\chi^2$ or Fisher.
 Treating ordered levels as nominal would discard the ordering and lose power against a monotone trend.
 Instead, `visstat()` tests the null hypothesis of no monotone association via Kendall's $\tau_b$ rank correlation [@Kendall:1945; @Agresti:2010].
 
-### Kendall's $\tau_b$ (`cor.test(..., method = "kendall")`)
+#### Kendall's $\tau_b$ (`cor.test(..., method = "kendall")`)
 
 For two ordinal variables with $n$ joint observations, let $C$ denote the number of concordant pairs (those whose ranks agree in both variables) and $D$ the number of discordant pairs.
 Kendall's $\tau_b$ is defined as
@@ -816,11 +820,11 @@ With few ordered levels (e.g., 3-point Likert items), ties are unavoidable; this
 
 `visstat()` calls `cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)` and reports $\tau_b$, the test statistic $z$, and the two-sided $p$-value.
 
-### Graphical output
+#### Graphical output
 
 One plot is produced: a jittered rank--rank scatter that visualises the monotone trend, with points colour-coded by the predictor level and annotated with $\tau_b$ and the $p$-value.
 
-### Example
+#### Example
 
 We construct a small synthetic data set with two three-point ordered scales and a deliberate monotone trend.
 
