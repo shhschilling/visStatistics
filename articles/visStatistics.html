@@ -94,11 +94,11 @@ statistical consulting or educational settings.</p>
 </h2>
 <p>Most routine data analyses reduce to a comparatively small set of
 inferential frameworks, including group comparisons, contingency-table
-analyses, correlation methods, and regression models <span class="citation">(<a href="#ref-Chicco:2025">Chicco et al.
-2025</a>)</span>, <code>visStatistics</code> selects the “right test” by
-using a reproducible decision framework based on the data’s
-distributional assumptions and the sample size of the input data. It
-visualises its decision by both an assumption-diagnostic plot and a
+analyses, correlation methods, and regression models <span class="citation">(<a href="#ref-Sato:2017">Sato et al. 2017</a>; <a href="#ref-Chicco:2025">Chicco et al. 2025</a>)</span>
+<code>visStatistics</code> selects out of these most commonly used tests
+“right test” by using a reproducible decision framework based on the
+data’s distributional assumptions and the sample size of the input data.
+It visualises its decision by both an assumption-diagnostic plot and a
 descriptive plot with the main test statistics annotated, and returns an
 R object whose <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> methods
 expose the complete test results. <code>compareGroups</code> <span class="citation">(<a href="#ref-Subirana:2014">Subirana et al.
@@ -1426,7 +1426,7 @@ attribute <code>"plot_paths"</code> on the returned object of class
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "/tmp/RtmpmXNYYu/chi_squared_or_fisher_Hair_Eye.png"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "/tmp/RtmpKI5e90/chi_squared_or_fisher_Hair_Eye.png"</span></span></code></pre>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
@@ -1494,8 +1494,8 @@ file paths of the stored graphics:</p>
 <span>                               plotName <span class="op">=</span> <span class="st">"iris_kruskal"</span>,</span>
 <span>                               plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iris_kruskal_stored</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Plot [1] stored in /tmp/RtmpmXNYYu/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
-<pre><code><span><span class="co">## Plot [2] stored in /tmp/RtmpmXNYYu/iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [1] stored in /tmp/RtmpKI5e90/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [2] stored in /tmp/RtmpKI5e90/iris_kruskal.pdf</span></span></code></pre>
 <p>When <code><a href="../reference/visstat.html">visstat()</a></code> is called without
 <code>graphicsoutput</code> (the default interactive mode), the
 generated plots are captured internally. Calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>
@@ -1516,18 +1516,18 @@ the interactive R session:</p>
 <h2 id="limitations">Limitations<a class="anchor" aria-label="anchor" href="#limitations"></a>
 </h2>
 <div class="section level3">
-<h3 id="limitations-by-default-settings">Limitations by default settings<a class="anchor" aria-label="anchor" href="#limitations-by-default-settings"></a>
+<h3 id="default-settings">Default settings<a class="anchor" aria-label="anchor" href="#default-settings"></a>
 </h3>
 <p>The main purpose of this package is a decision-logic based automatic
-visualisation of statistical test results. Therefore, except for the
-user-adjustable <code>conf.level</code> parameter, all statistical tests
-are applied using their default settings from the corresponding base R
-functions. As a consequence, paired tests are currently not supported
-and <code><a href="../reference/visstat.html">visstat()</a></code> does not allow to study interactions terms
-between the different levels of an independent variable in an analysis
-of variance. Focusing on the graphical representation of tests, only
-simple linear regression is implemented, as multiple linear regressions
-cannot be visualised.</p>
+selection visualisation of the “right” statistical test. Therefore,
+except for the user-adjustable <code>conf.level</code> parameter, all
+statistical tests are applied using their default settings from the
+corresponding base R functions. As a consequence, paired tests are
+currently not supported and <code><a href="../reference/visstat.html">visstat()</a></code> does not allow to
+study interactions terms between the different levels of an independent
+variable in an analysis of variance. Focusing on the graphical
+representation of tests, only simple linear regression is implemented,
+as multiple linear regressions cannot be visualised.</p>
 </div>
 <div class="section level3">
 <h3 id="test-decisions-based-solely-on-p-values-of-statistical-tests">Test decisions based solely on p-values of statistical tests<a class="anchor" aria-label="anchor" href="#test-decisions-based-solely-on-p-values-of-statistical-tests"></a>
@@ -1596,6 +1596,19 @@ replace the visual inspection of sample distributions provided by
 be necessary to override the automated choice of test in individual
 cases.</p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="limited-number-of-implemented-tests">Limited number of implemented tests<a class="anchor" aria-label="anchor" href="#limited-number-of-implemented-tests"></a>
+</h2>
+<p>While one of R’s greatest strengths is the sheer volume of
+statistical methods available, our automated test selection pipeline
+deliberately restricts its scope to the most frequently used tests,
+particularly those relevant in a medical context <span class="citation">Chicco et al. (<a href="#ref-Chicco:2025">2025</a>)</span>. Incorporating a wider array of
+methods would require additional preliminary assumption checks, which in
+turn exacerbates the risk of overall Type I error inflation.
+Furthermore, expanding the pipeline would result in a highly complex
+decision tree, rendering the underlying statistical logic increasingly
+opaque to the user.</p>
 <div class="section level3">
 <h3 id="bootstrapping-as-modern-alternative-to-hypothesis-testing">Bootstrapping as modern alternative to hypothesis testing<a class="anchor" aria-label="anchor" href="#bootstrapping-as-modern-alternative-to-hypothesis-testing"></a>
 </h3>
@@ -2086,6 +2099,12 @@ Razali, Nornadiah Mohd, and Yap Bee Wah. 2011. <span>“Power Comparisons
 of <span>Shapiro-Wilk</span>, <span>Kolmogorov-Smirnov</span>,
 <span>Lilliefors</span> and <span>Anderson-Darling</span> Tests.”</span>
 <em>Journal of Statistical Modeling and Analytics</em> 2 (1): 21–33.
+</div>
+<div id="ref-Sato:2017" class="csl-entry">
+Sato, Yasunori, Masahiko Gosho, Kengo Nagashima, Sho Takahashi, Minoru
+Machida, and Hironobu Shigemi. 2017. <span>“Statistical Methods in the
+Journal of the American Medical Association and the New England Journal
+of Medicine.”</span> <em>PLOS ONE</em> 12 (2): e0173268. <a href="https://doi.org/10.1371/journal.pone.0173268" class="external-link">https://doi.org/10.1371/journal.pone.0173268</a>.
 </div>
 <div id="ref-Satterthwaite:1946" class="csl-entry">
 Satterthwaite, F. E. 1946. <span>“An <span>Approximate

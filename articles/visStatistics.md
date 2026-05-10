@@ -25,9 +25,10 @@ statistical consulting or educational settings.
 
 Most routine data analyses reduce to a comparatively small set of
 inferential frameworks, including group comparisons, contingency-table
-analyses, correlation methods, and regression models ([Chicco et al.
-2025](#ref-Chicco:2025)), `visStatistics` selects the “right test” by
-using a reproducible decision framework based on the data’s
+analyses, correlation methods, and regression models ([Sato et al.
+2017](#ref-Sato:2017); [Chicco et al. 2025](#ref-Chicco:2025))
+`visStatistics` selects out of these most commonly used tests “right
+test” by using a reproducible decision framework based on the data’s
 distributional assumptions and the sample size of the input data. It
 visualises its decision by both an assumption-diagnostic plot and a
 descriptive plot with the main test statistics annotated, and returns an
@@ -1307,7 +1308,7 @@ paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
 
-    ## [1] "/tmp/RtmpmXNYYu/chi_squared_or_fisher_Hair_Eye.png"
+    ## [1] "/tmp/RtmpKI5e90/chi_squared_or_fisher_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -1398,9 +1399,9 @@ iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
 plot(iris_kruskal_stored)
 ```
 
-    ## Plot [1] stored in /tmp/RtmpmXNYYu/glm_assumptions_iris_kruskal.pdf
+    ## Plot [1] stored in /tmp/RtmpKI5e90/glm_assumptions_iris_kruskal.pdf
 
-    ## Plot [2] stored in /tmp/RtmpmXNYYu/iris_kruskal.pdf
+    ## Plot [2] stored in /tmp/RtmpKI5e90/iris_kruskal.pdf
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1430,14 +1431,14 @@ plot(iris_kruskal, which = 2)
 
 ## Limitations
 
-### Limitations by default settings
+### Default settings
 
 The main purpose of this package is a decision-logic based automatic
-visualisation of statistical test results. Therefore, except for the
-user-adjustable `conf.level` parameter, all statistical tests are
-applied using their default settings from the corresponding base R
-functions. As a consequence, paired tests are currently not supported
-and
+selection visualisation of the “right” statistical test. Therefore,
+except for the user-adjustable `conf.level` parameter, all statistical
+tests are applied using their default settings from the corresponding
+base R functions. As a consequence, paired tests are currently not
+supported and
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 does not allow to study interactions terms between the different levels
 of an independent variable in an analysis of variance. Focusing on the
@@ -1509,6 +1510,19 @@ replace the visual inspection of sample distributions provided by
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md).
 Based on the provided diagnostic plots, it may be necessary to override
 the automated choice of test in individual cases.
+
+## Limited number of implemented tests
+
+While one of R’s greatest strengths is the sheer volume of statistical
+methods available, our automated test selection pipeline deliberately
+restricts its scope to the most frequently used tests, particularly
+those relevant in a medical context Chicco et al.
+([2025](#ref-Chicco:2025)). Incorporating a wider array of methods would
+require additional preliminary assumption checks, which in turn
+exacerbates the risk of overall Type I error inflation. Furthermore,
+expanding the pipeline would result in a highly complex decision tree,
+rendering the underlying statistical logic increasingly opaque to the
+user.
 
 ### Bootstrapping as modern alternative to hypothesis testing
 
@@ -1884,6 +1898,12 @@ t Test: Pre-Testing Its Assumptions Does Not Pay Off.” *Stat Papers* 52
 Razali, Nornadiah Mohd, and Yap Bee Wah. 2011. “Power Comparisons of
 Shapiro-Wilk, Kolmogorov-Smirnov, Lilliefors and Anderson-Darling
 Tests.” *Journal of Statistical Modeling and Analytics* 2 (1): 21–33.
+
+Sato, Yasunori, Masahiko Gosho, Kengo Nagashima, Sho Takahashi, Minoru
+Machida, and Hironobu Shigemi. 2017. “Statistical Methods in the Journal
+of the American Medical Association and the New England Journal of
+Medicine.” *PLOS ONE* 12 (2): e0173268.
+<https://doi.org/10.1371/journal.pone.0173268>.
 
 Satterthwaite, F. E. 1946. “An Approximate Distribution of Estimates of
 Variance Components.” *Biometrics Bulletin* 2 (6): 110–14.
