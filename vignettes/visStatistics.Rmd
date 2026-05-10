@@ -35,16 +35,16 @@ library(visStatistics)
 
 # Abstract
 
-`visStatistics` automatically selects and visualises appropriate statistical hypothesis tests between two column vectors of class `"numeric"`, `"integer"`, or `"factor"`.
+`visStatistics` automatically selects and visualises appropriate statistical tests between two column vectors of class `"numeric"`, `"integer"`, or `"factor"`.
 The choice of test depends on the `class`, distributional assumptions, and sample size of the vectors.
 
 
 
 The main function `visstat()` visualises the selected test with appropriate graphs (box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots), annotated with the main test results, including visualisations of the  assumption checks and post-hoc analyses.
 
-This scripted workflow is well suited for browser-based applications where sensitive data (such as highly confidential medical records) is stored securely on a server and can not be directly accessed by users.
- <!-- Users interact only through a web interface, while server-side R applications handle the data processing. -->
-Besides secure data exploration, typical use cases include  quick visualisations, and guided statistical test selection, for example in statistical consulting or educational settings.
+This scripted workflow is well suited for browser-based applications, where  ysers interact only through a web interface, while server-side R applications handle the data processing. 
+
+Other  typical use cases include  quick visualisations, and guided statistical test selection, for example in statistical consulting or educational settings.
 
 
 
@@ -52,8 +52,9 @@ Besides secure data exploration, typical use cases include  quick visualisations
 Most routine
 data analyses reduce to a comparatively small set of inferential
 frameworks, including group comparisons, contingency-table analyses,
-correlation methods, and regression models [@Sato:2017; @Chicco:2025] `visStatistics` selects out of these most commonly used tests “right test” by using a reproducible decision framework based on the data’s distributional assumptions and the sample size of the input data. It visualises its decision by both an assumption-diagnostic plot and a descriptive plot with the main test statistics annotated, and returns an R object whose `print()` and `summary()` methods expose the complete test results.
-`compareGroups` [@Subirana:2014] also automates test choice by evaluating  normality per group. In contrast, `visStatistics` assesses the normality of the overall model residuals, adhering to the general linear model framework [@Searle:1971]. This avoids the loss of statistical power inherent in group-wise testing, which often leads to the unnecessary rejection of parametric methods
+correlation methods, and regression models [@Sato:2017; @Chicco:2025] `visStatistics` selects out of these most commonly used tests “right test” by using a reproducible decision framework based on the data’s distributional assumptions and the sample size of the input data. It visualises its decision by, where appropriate,  assumption-diagnostic plot and a descriptive plot with the main test statistics annotated, and returns an R object whose `print()` and `summary()` methods expose the complete test results. The scripted  workflow is well suited for browser-based applications where sensitive data (such as highly confidential medical records) is stored securely on a server and can not be directly accessed by users. This approach was already succesfully applied to develop a medical scoring tool [@Bijlenga:2017].
+A package with similar scope, 
+`compareGroups` [@Subirana:2014],  also automates test choice by evaluating  normality per group. In contrast, `visStatistics` assesses the normality of the overall model residuals, adhering to the general linear model framework [@Searle:1971]. This avoids the loss of statistical power inherent in group-wise testing, which often leads to the unnecessary rejection of parametric methods.
 
 
 # Getting started
@@ -643,9 +644,11 @@ Here, we use the `swiss` data set, standardised fertility measure and socioecono
 Both fertility and education level are given in percentage points.
 
 ```{r}
-result_swiss1 <- visstat(swiss$Fertility,
-                             swiss$Education, do_regression = FALSE)
+result_swiss1 <- visstat(swiss$Education,
+                         swiss$Fertility, do_regression = FALSE)
 ```
+Visual inspection of the assumption plot suggest that the normality of the residuals can not be assumed. A rank correlation analysis is therefore applied.
+
 
 ## Both variables categorical: Comparing proportions
 

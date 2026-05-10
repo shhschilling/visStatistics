@@ -58,14 +58,14 @@ knitr::opts_chunk$set(
 # Purpose
 
 `visStatistics` is an R package for automated statistical test selection and
-visualisation. It selects appropriate hypothesis tests for pairs of variables
+visualisation. Its decision logic selects the appropriate statistical test for pairs of variables
 (integer, numeric, or factor), runs the analysis, and produces annotated,
 publication-ready plots.
 
 The package was originally developed for researchers who could not directly
 access sensitive data but needed to perform visualisations and statistical
 analyses of selected groups via a web interface connected to a protected
-database — a setting that required a fully automated workflow. The same
+database — a setting that required a fully automated workflow The same
 automation makes it useful in time-constrained contexts such as statistical
 consulting, where it reduces effort spent on test selection and leaves more room
 for interpretation. The package covers most hypothesis tests taught in
