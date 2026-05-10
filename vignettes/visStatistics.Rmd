@@ -36,38 +36,25 @@ library(visStatistics)
 # Abstract
 
 `visStatistics` automatically selects and visualises appropriate statistical hypothesis tests between two column vectors of class `"numeric"`, `"integer"`, or `"factor"`.
-The choice of test depends on the `class`, distributional assumptions, and sample size of the vectors, as well as the user-defined 'conf.level'.
+The choice of test depends on the `class`, distributional assumptions, and sample size of the vectors.
 
 
-The main function `visstat()` visualises the selected test with appropriate graphs (box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots), annotated with the main test results, including any assumption checks and post-hoc analyses.
 
-This scripted workflow is well suited for browser-based applications where sensitive data (such as highly confidential medical records) is stored securely on a server and never directly accessed by users.
-Users interact only through a web interface, while server-side R applications handle the data processing.
-Typical use cases include secure data exploration, quick visualisations, and guided statistical test selection, for example in statistical consulting or educational settings.
+The main function `visstat()` visualises the selected test with appropriate graphs (box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots), annotated with the main test results, including visualisations of the  assumption checks and post-hoc analyses.
+
+This scripted workflow is well suited for browser-based applications where sensitive data (such as highly confidential medical records) is stored securely on a server and can not be directly accessed by users.
+ <!-- Users interact only through a web interface, while server-side R applications handle the data processing. -->
+Besides secure data exploration, typical use cases include  quick visualisations, and guided statistical test selection, for example in statistical consulting or educational settings.
+
+
 
 # Introduction
+Most routine
+data analyses reduce to a comparatively small set of inferential
+frameworks, including group comparisons, contingency-table analyses,
+correlation methods, and regression models [@Chicco:2025],  `visStatistics` selects the “right test” by using a reproducible decision framework based on the data’s distributional assumptions and the sample size of the input data. It visualises its decision by both an assumption-diagnostic plot and a descriptive plot with the main test statistics annotated, and returns an R object whose `print()` and `summary()` methods expose the complete test results.
+`compareGroups` [@Subirana:2014] also automates test choice by evaluating  normality per group. In contrast, `visStatistics` assesses the normality of the overall model residuals, adhering to the general linear model framework [@Searle:1971]. This avoids the loss of statistical power inherent in group-wise testing, which often leads to the unnecessary rejection of parametric methods
 
-While R packages exist which combine statistical analysis with the appropriate visualisation of the data (e.g.the package `ggstatsplot` [@Patil:2021]), none exists to automate the statistical test selection combined with statistically annotated plots as a primary concern.
-
-
-While several R packages provide tools for statistical testing and
-visualisation (e.g. `ggstatsplot`, `rstatix`, `ggpubr`, `compareGroups`), these
-generally assume that the appropriate statistical procedure has already
-been selected. `visStatistics` instead implements an automated,
-assumption-driven decision framework that selects, executes, and
-visualises statistical tests within a unified inferential pipeline.
-
-
-<!-- The visStatistics package addresses this challenge by using deterministic decision logic, removing the burden of manual test choice. -->
-This automation enables users to focus directly on interpreting statistical outcomes rather than navigating test selection.
-
-The tailored visual outputs—annotated with test results and, where appropriate, assumption checks and post-hoc analyses—further support comprehension and help ensure valid conclusions from the outset.
-
-The package was originally developed for server-based applications where users have limited interaction: they provide only two input vectors, and the software returns valid, interpretable results without requiring further statistical knowledge.
-This supports reproducibility and correct inference even in such constrained environments.
-
-The package is also particularly valuable in statistical consulting for student research projects, where time constraints demand streamlined, assumption-aware output that prioritises interpretation over technical execution.
-The implemented tests cover the typical content of an introductory undergraduate course in statistics.
 
 # Getting started
 
@@ -251,8 +238,8 @@ When the response variable is an ordered factor (e.g., Likert scale ratings) and
 ### Response and predictor of class `ordered` : Kendall's rank correlation
 
 When **both** the response and the predictor are ordered factors, the test of independence ignoring the order ($\chi^2$ or Fisher) is suboptimal because it discards the very information that defines an ordinal scale and has low power against monotone trends.
-`visstat()` detects this case and tests for a monotone association via Kendall's $\tau_b$ (`cor.test(..., method = "kendall")`).
-Kendall's $\tau_b$ is preferred over Spearman's $\rho$ for ordinal data with few levels, where ties are common: $\tau_b$ corrects for ties explicitly, while Spearman's $\rho$ uses only an approximate adjustment [@Agresti:2010; @Kendall:1945].
+`visstat()` detects this case and tests for a monotone association via Kendall's $\tau_b$ @Kendall:1945] (`cor.test(..., method = "kendall")`).
+Kendall's $\tau_b$ is preferred over Spearman's $\rho$ for ordinal data with few levels, where ties are common: $\tau_b$ corrects for ties explicitly, while Spearman's $\rho$ uses only an approximate adjustment [@Agresti:2010, @Xu:2013].
 The mosaic plot is reused as the visualisation, it is complemented by a jittered rank-rank scatter that makes the monotone trend visible.
 
 
@@ -818,7 +805,7 @@ $$
 
 where $n_0 = n(n-1)/2$, $n_1 = \sum_i t_i(t_i-1)/2$ summed over groups of tied ranks in the response, and $n_2$ is the analogous quantity for the predictor.
 The denominator correction makes $\tau_b$ attain $\pm 1$ even with ties, which Spearman's $\rho$ does not [@Kendall:1945].
-With few ordered levels (e.g., 5-point Likert items), ties are unavoidable; this is the principal reason to prefer $\tau_b$ over Spearman's $\rho$ in this setting [@Agresti:2010].
+With few ordered levels (e.g., 3-point Likert items), ties are unavoidable; this is the principal reason to prefer $\tau_b$ over Spearman's $\rho$ in this setting [@Agresti:2010].
 
 `visstat()` calls `cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)` and reports $\tau_b$, the test statistic $z$, and the two-sided $p$-value.
 
@@ -934,7 +921,7 @@ Therefore, except for the user-adjustable `conf.level` parameter, all statistica
 As a consequence, paired tests are currently not supported and `visstat()` does not allow to study interactions terms between the different levels of an independent variable in an analysis of variance.
 Focusing on the graphical representation of tests, only simple linear regression is implemented, as multiple linear regressions cannot be visualised.
 
-## Limitations of test decisions based solely on p-values of statistical tests
+## Test decisions based solely on p-values of statistical tests
 
 No single test maintains optimal Type I error rates and statistical power across all distributions [@Olejnik:1987], and p-values obtained from these tests may be unreliable if their assumptions are violated.
 
@@ -945,7 +932,7 @@ Conversely, in small samples, substantial violations of the assumption may not r
 Moreover, assumption tests provide no information on the nature of deviations from the expected distribution [@Shatz:2024].
 Thus the assessment of normality or homoscedasticity should never rely solely on p-values but should be complemented by visual inspection of the diagnostic plots generated by `visstat()`.
 
-# Limitation on testing normality with the Shapiro–Wilk test
+## Testing normality with the Shapiro–Wilk normality test
 
 Normality tests behave poorly at both ends of the sample-size range: with small samples they fail to detect non-normality, and with large samples they flag negligible departures from normality as significant [@Ghasemi:2012; @Fagerland:2012; @Franc:2025].
 
@@ -955,7 +942,11 @@ Simulation studies suggest that Shapiro–Wilk has the highest power among norma
 
 This package uses therefore the Shapiro-Wilk test to select between parametric (ANOVA/Welch's t-test) and non-parametric (Kruskal-Wallis/Wilcoxon) methods for groups smaller than 50.
 
-### Combining tests inflates the overall Type I error rate
+
+## Visualisation based solely on base R 
+The package depends only on base R graphics with no `ggplot2`  dependency keeping the transitive dependency footprint minimal. For more polished,  annotated plots of chosen statistical test, we refer to packages as `ggstatsplot` [@Patil:2021] or `ggpubr` [@Kassambara:2026].
+
+## Combining tests inflates the overall Type I error rate
 
 Combining multiple tests with differing assumptions using simple majority voting inflates the overall Type I error rate.
 
@@ -969,8 +960,6 @@ However, bootstrapping is computationally intensive, often requiring thousands o
 
 The computational intensity of bootstrap runs counter to the purpose of the `visStatistics` package, which is designed to offer a rapid overview of the data, laying the groundwork for deeper analysis in subsequent steps.
 
-The package targets users with basic statistical literacy, such as non-specialist professionals and students in applied fields.
-It covers topics typically included in an undergraduate course on applied statistics, intentionally excluding more advanced methods like bootstrapping to keep the focus on foundational concepts.
 
 # Appendix A: The general linear model                                                  
 
