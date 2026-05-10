@@ -5,59 +5,41 @@
 `visStatistics` automatically selects and visualises appropriate
 statistical hypothesis tests between two column vectors of class
 `"numeric"`, `"integer"`, or `"factor"`. The choice of test depends on
-the `class`, distributional assumptions, and sample size of the vectors,
-as well as the user-defined ‘conf.level’.
+the `class`, distributional assumptions, and sample size of the vectors.
 
 The main function
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 visualises the selected test with appropriate graphs (box plots, bar
 charts, regression lines with confidence bands, mosaic plots, residual
-plots), annotated with the main test results, including any assumption
-checks and post-hoc analyses.
+plots), annotated with the main test results, including visualisations
+of the assumption checks and post-hoc analyses.
 
 This scripted workflow is well suited for browser-based applications
 where sensitive data (such as highly confidential medical records) is
-stored securely on a server and never directly accessed by users. Users
-interact only through a web interface, while server-side R applications
-handle the data processing. Typical use cases include secure data
-exploration, quick visualisations, and guided statistical test
-selection, for example in statistical consulting or educational
-settings.
+stored securely on a server and can not be directly accessed by users.
+Besides secure data exploration, typical use cases include quick
+visualisations, and guided statistical test selection, for example in
+statistical consulting or educational settings.
 
 ## Introduction
 
-While R packages exist which combine statistical analysis with the
-appropriate visualisation of the data (e.g.the package `ggstatsplot`
-([Patil 2021](#ref-Patil:2021))), none exists to automate the
-statistical test selection combined with statistically annotated plots
-as a primary concern.
-
-While several R packages provide tools for statistical testing and
-visualisation (e.g. `ggstatsplot`, `rstatix`, `ggpubr`,
-`compareGroups`), these generally assume that the appropriate
-statistical procedure has already been selected. `visStatistics` instead
-implements an automated, assumption-driven decision framework that
-selects, executes, and visualises statistical tests within a unified
-inferential pipeline.
-
-This automation enables users to focus directly on interpreting
-statistical outcomes rather than navigating test selection.
-
-The tailored visual outputs—annotated with test results and, where
-appropriate, assumption checks and post-hoc analyses—further support
-comprehension and help ensure valid conclusions from the outset.
-
-The package was originally developed for server-based applications where
-users have limited interaction: they provide only two input vectors, and
-the software returns valid, interpretable results without requiring
-further statistical knowledge. This supports reproducibility and correct
-inference even in such constrained environments.
-
-The package is also particularly valuable in statistical consulting for
-student research projects, where time constraints demand streamlined,
-assumption-aware output that prioritises interpretation over technical
-execution. The implemented tests cover the typical content of an
-introductory undergraduate course in statistics.
+Most routine data analyses reduce to a comparatively small set of
+inferential frameworks, including group comparisons, contingency-table
+analyses, correlation methods, and regression models ([Chicco et al.
+2025](#ref-Chicco:2025)), `visStatistics` selects the “right test” by
+using a reproducible decision framework based on the data’s
+distributional assumptions and the sample size of the input data. It
+visualises its decision by both an assumption-diagnostic plot and a
+descriptive plot with the main test statistics annotated, and returns an
+R object whose [`print()`](https://rdrr.io/r/base/print.html) and
+[`summary()`](https://rdrr.io/r/base/summary.html) methods expose the
+complete test results. `compareGroups` ([Subirana et al.
+2014](#ref-Subirana:2014)) also automates test choice by evaluating
+normality per group. In contrast, `visStatistics` assesses the normality
+of the overall model residuals, adhering to the general linear model
+framework ([Searle 1971](#ref-Searle:1971)). This avoids the loss of
+statistical power inherent in group-wise testing, which often leads to
+the unnecessary rejection of parametric methods
 
 ## Getting started
 
@@ -318,13 +300,14 @@ suboptimal because it discards the very information that defines an
 ordinal scale and has low power against monotone trends.
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 detects this case and tests for a monotone association via Kendall’s
-$`\tau_b`$ (`cor.test(..., method = "kendall")`). Kendall’s $`\tau_b`$
-is preferred over Spearman’s $`\rho`$ for ordinal data with few levels,
-where ties are common: $`\tau_b`$ corrects for ties explicitly, while
-Spearman’s $`\rho`$ uses only an approximate adjustment ([Agresti
-2010](#ref-Agresti:2010); [Kendall 1945](#ref-Kendall:1945)). The mosaic
-plot is reused as the visualisation, it is complemented by a jittered
-rank-rank scatter that makes the monotone trend visible.
+$`\tau_b`$Kendall ([1945](#ref-Kendall:1945))\]
+(`cor.test(..., method = "kendall")`). Kendall’s $`\tau_b`$ is preferred
+over Spearman’s $`\rho`$ for ordinal data with few levels, where ties
+are common: $`\tau_b`$ corrects for ties explicitly, while Spearman’s
+$`\rho`$ uses only an approximate adjustment Xu et al.
+([2013](#ref-Xu:2013)). The mosaic plot is reused as the visualisation,
+it is complemented by a jittered rank-rank scatter that makes the
+monotone trend visible.
 
 ## Assumption diagnostics: `vis_lm_assumptions()`
 
@@ -1244,7 +1227,7 @@ groups of tied ranks in the response, and $`n_2`$ is the analogous
 quantity for the predictor. The denominator correction makes $`\tau_b`$
 attain $`\pm 1`$ even with ties, which Spearman’s $`\rho`$ does not
 ([Kendall 1945](#ref-Kendall:1945)). With few ordered levels (e.g.,
-5-point Likert items), ties are unavoidable; this is the principal
+3-point Likert items), ties are unavoidable; this is the principal
 reason to prefer $`\tau_b`$ over Spearman’s $`\rho`$ in this setting
 ([Agresti 2010](#ref-Agresti:2010)).
 
@@ -1324,8 +1307,8 @@ paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
 
-    ## [1] "/tmp/RtmpPiYxEe/chi_squared_or_fisher_Hair_Eye.png"
-    ## [2] "/tmp/RtmpPiYxEe/mosaic_complete_Hair_Eye.png"
+    ## [1] "/tmp/RtmpvHjvv1/chi_squared_or_fisher_Hair_Eye.png"
+    ## [2] "/tmp/RtmpvHjvv1/mosaic_complete_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -1416,9 +1399,9 @@ iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
 plot(iris_kruskal_stored)
 ```
 
-    ## Plot [1] stored in /tmp/RtmpPiYxEe/glm_assumptions_iris_kruskal.pdf
+    ## Plot [1] stored in /tmp/RtmpvHjvv1/glm_assumptions_iris_kruskal.pdf
 
-    ## Plot [2] stored in /tmp/RtmpPiYxEe/iris_kruskal.pdf
+    ## Plot [2] stored in /tmp/RtmpvHjvv1/iris_kruskal.pdf
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1462,7 +1445,7 @@ of an independent variable in an analysis of variance. Focusing on the
 graphical representation of tests, only simple linear regression is
 implemented, as multiple linear regressions cannot be visualised.
 
-### Limitations of test decisions based solely on p-values of statistical tests
+### Test decisions based solely on p-values of statistical tests
 
 No single test maintains optimal Type I error rates and statistical
 power across all distributions ([Olejnik and Algina
@@ -1484,7 +1467,7 @@ homoscedasticity should never rely solely on p-values but should be
 complemented by visual inspection of the diagnostic plots generated by
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md).
 
-## Limitation on testing normality with the Shapiro–Wilk test
+### Testing normality with the Shapiro–Wilk normality test
 
 Normality tests behave poorly at both ends of the sample-size range:
 with small samples they fail to detect non-normality, and with large
@@ -1509,7 +1492,15 @@ This package uses therefore the Shapiro-Wilk test to select between
 parametric (ANOVA/Welch’s t-test) and non-parametric
 (Kruskal-Wallis/Wilcoxon) methods for groups smaller than 50.
 
-#### Combining tests inflates the overall Type I error rate
+### Visualisation based solely on base R
+
+The package depends only on base R graphics with no `ggplot2` dependency
+keeping the transitive dependency footprint minimal. For more polished,
+annotated plots of chosen statistical test, we refer to packages as
+`ggstatsplot` ([Patil 2021](#ref-Patil:2021)) or `ggpubr` ([Kassambara
+2026](#ref-Kassambara:2026)).
+
+### Combining tests inflates the overall Type I error rate
 
 Combining multiple tests with differing assumptions using simple
 majority voting inflates the overall Type I error rate.
@@ -1532,12 +1523,6 @@ The computational intensity of bootstrap runs counter to the purpose of
 the `visStatistics` package, which is designed to offer a rapid overview
 of the data, laying the groundwork for deeper analysis in subsequent
 steps.
-
-The package targets users with basic statistical literacy, such as
-non-specialist professionals and students in applied fields. It covers
-topics typically included in an undergraduate course on applied
-statistics, intentionally excluding more advanced methods like
-bootstrapping to keep the focus on foundational concepts.
 
 ## Appendix A: The general linear model
 
@@ -1768,6 +1753,11 @@ Equality of Variances.” *Journal of the American Statistical
 Association* 69 (346): 364–67.
 <https://doi.org/10.1080/01621459.1974.10482955>.
 
+Chicco, Davide, Andrea Sichenze, and Giuseppe Jurman. 2025. “A Simple
+Guide to the Use of Student’s t-Test, Mann-Whitney U Test, Chi-squared
+Test, and Kruskal-Wallis Test in Biostatistics.” *BioData Min* 18 (1):
+56. <https://doi.org/10.1186/s13040-025-00465-6>.
+
 Cochran, William G. 1954. “The Combination of Estimates from Different
 Experiments.” *Biometrics* 10 (1): 101.
 <https://doi.org/10.2307/3001666>.
@@ -1834,6 +1824,9 @@ Probability and Statistics. John Wiley & Sons, Inc.
 Holm, Sture. 1979. “A Simple Sequentially Rejective Multiple Test
 Procedure.” *Scandinavian Journal of Statistics* 6 (2): 65–70.
 <https://www.jstor.org/stable/4615733>.
+
+Kassambara, Alboukadel. 2026. *Ggpubr: ’Ggplot2’ Based Publication Ready
+Plots*. Manual. <https://doi.org/10.32614/CRAN.package.ggpubr>.
 
 Kendall, M. G. 1945. “The Treatment of Ties in Ranking Problems.”
 *Biometrika* 33 (3): 239–51. <https://doi.org/10.2307/2332303>.
@@ -1908,6 +1901,10 @@ The Importance of Visualization and Effect Size in Statistical
 Diagnostics.” *Behav Res* 56 (2): 826–45.
 <https://doi.org/10.3758/s13428-023-02072-x>.
 
+Subirana, Isaac, Héctor Sanz, and Joan Vila. 2014. “Building Bivariate
+Tables: The compareGroups Package for R.” *Journal of Statistical
+Software* 57 (12): 1–16.
+
 Welch, B. L. 1947. “The Generalization of ‘Student’s’ Problem When
 Several Different Population Variances Are Involved.” *Biometrika* 34
 (1–2): 28–35. <https://doi.org/10.1093/biomet/34.1-2.28>.
@@ -1918,6 +1915,11 @@ Alternative Approach.” *Biometrika* 38 (3/4): 330–36.
 
 Wilcox, Rand R. 2021. *Introduction to Robust Estimation and Hypothesis
 Testing*.
+
+Xu, Weichao, Yunhe Hou, Y. S. Hung, and Yuexian Zou. 2013. “A
+Comparative Analysis of Spearman’s Rho and Kendall’s Tau in Normal and
+Contaminated Normal Models.” *Signal Processing* 93 (1): 261–76.
+<https://doi.org/10.1016/j.sigpro.2012.08.005>.
 
 Yap, B. W., and C. H. Sim. 2011. “Comparisons of Various Types of
 Normality Tests.” *Journal of Statistical Computation and Simulation* 81

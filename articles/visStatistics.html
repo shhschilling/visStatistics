@@ -59,7 +59,7 @@ Sciences and
 Arts<br><a class="author_email" href="mailto:#"></a><a href="mailto:sabine.schilling@protonmail.com" class="email">sabine.schilling@protonmail.com</a>
       </address>
                   
-            <h4 data-toc-skip class="date">2026-05-09</h4>
+            <h4 data-toc-skip class="date">2026-05-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -75,51 +75,40 @@ appropriate statistical hypothesis tests between two column vectors of
 class <code>"numeric"</code>, <code>"integer"</code>, or
 <code>"factor"</code>. The choice of test depends on the
 <code>class</code>, distributional assumptions, and sample size of the
-vectors, as well as the user-defined ‘conf.level’.</p>
+vectors.</p>
 <p>The main function <code><a href="../reference/visstat.html">visstat()</a></code> visualises the selected test
 with appropriate graphs (box plots, bar charts, regression lines with
 confidence bands, mosaic plots, residual plots), annotated with the main
-test results, including any assumption checks and post-hoc analyses.</p>
+test results, including visualisations of the assumption checks and
+post-hoc analyses.</p>
 <p>This scripted workflow is well suited for browser-based applications
 where sensitive data (such as highly confidential medical records) is
-stored securely on a server and never directly accessed by users. Users
-interact only through a web interface, while server-side R applications
-handle the data processing. Typical use cases include secure data
-exploration, quick visualisations, and guided statistical test
-selection, for example in statistical consulting or educational
-settings.</p>
+stored securely on a server and can not be directly accessed by users.
+<!-- Users interact only through a web interface, while server-side R applications handle the data processing. -->
+Besides secure data exploration, typical use cases include quick
+visualisations, and guided statistical test selection, for example in
+statistical consulting or educational settings.</p>
 </div>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>While R packages exist which combine statistical analysis with the
-appropriate visualisation of the data (e.g.the package
-<code>ggstatsplot</code> <span class="citation">(<a href="#ref-Patil:2021">Patil 2021</a>)</span>), none exists to automate
-the statistical test selection combined with statistically annotated
-plots as a primary concern.</p>
-<p>While several R packages provide tools for statistical testing and
-visualisation (e.g. <code>ggstatsplot</code>, <code>rstatix</code>,
-<code>ggpubr</code>, <code>compareGroups</code>), these generally assume
-that the appropriate statistical procedure has already been selected.
-<code>visStatistics</code> instead implements an automated,
-assumption-driven decision framework that selects, executes, and
-visualises statistical tests within a unified inferential pipeline.</p>
-<!-- The visStatistics package addresses this challenge by using deterministic decision logic, removing the burden of manual test choice. -->
-<p>This automation enables users to focus directly on interpreting
-statistical outcomes rather than navigating test selection.</p>
-<p>The tailored visual outputs—annotated with test results and, where
-appropriate, assumption checks and post-hoc analyses—further support
-comprehension and help ensure valid conclusions from the outset.</p>
-<p>The package was originally developed for server-based applications
-where users have limited interaction: they provide only two input
-vectors, and the software returns valid, interpretable results without
-requiring further statistical knowledge. This supports reproducibility
-and correct inference even in such constrained environments.</p>
-<p>The package is also particularly valuable in statistical consulting
-for student research projects, where time constraints demand
-streamlined, assumption-aware output that prioritises interpretation
-over technical execution. The implemented tests cover the typical
-content of an introductory undergraduate course in statistics.</p>
+<p>Most routine data analyses reduce to a comparatively small set of
+inferential frameworks, including group comparisons, contingency-table
+analyses, correlation methods, and regression models <span class="citation">(<a href="#ref-Chicco:2025">Chicco et al.
+2025</a>)</span>, <code>visStatistics</code> selects the “right test” by
+using a reproducible decision framework based on the data’s
+distributional assumptions and the sample size of the input data. It
+visualises its decision by both an assumption-diagnostic plot and a
+descriptive plot with the main test statistics annotated, and returns an
+R object whose <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> methods
+expose the complete test results. <code>compareGroups</code> <span class="citation">(<a href="#ref-Subirana:2014">Subirana et al.
+2014</a>)</span> also automates test choice by evaluating normality per
+group. In contrast, <code>visStatistics</code> assesses the normality of
+the overall model residuals, adhering to the general linear model
+framework <span class="citation">(<a href="#ref-Searle:1971">Searle
+1971</a>)</span>. This avoids the loss of statistical power inherent in
+group-wise testing, which often leads to the unnecessary rejection of
+parametric methods</p>
 </div>
 <div class="section level2">
 <h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
@@ -372,7 +361,7 @@ or Fisher) is suboptimal because it discards the very information that
 defines an ordinal scale and has low power against monotone trends.
 <code><a href="../reference/visstat.html">visstat()</a></code> detects this case and tests for a monotone
 association via Kendall’s
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math><span class="citation">Kendall (<a href="#ref-Kendall:1945">1945</a>)</span>]
 (<code>cor.test(..., method = "kendall")</code>). Kendall’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
 is preferred over Spearman’s
@@ -381,9 +370,9 @@ for ordinal data with few levels, where ties are common:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
 corrects for ties explicitly, while Spearman’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
-uses only an approximate adjustment <span class="citation">(<a href="#ref-Agresti:2010">Agresti 2010</a>; <a href="#ref-Kendall:1945">Kendall 1945</a>)</span>. The mosaic plot is
-reused as the visualisation, it is complemented by a jittered rank-rank
-scatter that makes the monotone trend visible.</p>
+uses only an approximate adjustment <span class="citation">Xu et al. (<a href="#ref-Xu:2013">2013</a>)</span>. The mosaic plot is reused as the
+visualisation, it is complemented by a jittered rank-rank scatter that
+makes the monotone trend visible.</p>
 </div>
 </div>
 </div>
@@ -1352,7 +1341,7 @@ attain
 even with ties, which Spearman’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
 does not <span class="citation">(<a href="#ref-Kendall:1945">Kendall
-1945</a>)</span>. With few ordered levels (e.g., 5-point Likert items),
+1945</a>)</span>. With few ordered levels (e.g., 3-point Likert items),
 ties are unavoidable; this is the principal reason to prefer
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
 over Spearman’s
@@ -1437,8 +1426,8 @@ attribute <code>"plot_paths"</code> on the returned object of class
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "/tmp/RtmpPiYxEe/chi_squared_or_fisher_Hair_Eye.png"</span></span>
-<span><span class="co">## [2] "/tmp/RtmpPiYxEe/mosaic_complete_Hair_Eye.png"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "/tmp/RtmpvHjvv1/chi_squared_or_fisher_Hair_Eye.png"</span></span>
+<span><span class="co">## [2] "/tmp/RtmpvHjvv1/mosaic_complete_Hair_Eye.png"</span></span></code></pre>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
@@ -1506,8 +1495,8 @@ file paths of the stored graphics:</p>
 <span>                               plotName <span class="op">=</span> <span class="st">"iris_kruskal"</span>,</span>
 <span>                               plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iris_kruskal_stored</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Plot [1] stored in /tmp/RtmpPiYxEe/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
-<pre><code><span><span class="co">## Plot [2] stored in /tmp/RtmpPiYxEe/iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [1] stored in /tmp/RtmpvHjvv1/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [2] stored in /tmp/RtmpvHjvv1/iris_kruskal.pdf</span></span></code></pre>
 <p>When <code><a href="../reference/visstat.html">visstat()</a></code> is called without
 <code>graphicsoutput</code> (the default interactive mode), the
 generated plots are captured internally. Calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>
@@ -1542,8 +1531,7 @@ simple linear regression is implemented, as multiple linear regressions
 cannot be visualised.</p>
 </div>
 <div class="section level3">
-<h3 id="limitations-of-test-decisions-based-solely-on-p-values-of-statistical-tests">Limitations of test decisions based solely on p-values of
-statistical tests<a class="anchor" aria-label="anchor" href="#limitations-of-test-decisions-based-solely-on-p-values-of-statistical-tests"></a>
+<h3 id="test-decisions-based-solely-on-p-values-of-statistical-tests">Test decisions based solely on p-values of statistical tests<a class="anchor" aria-label="anchor" href="#test-decisions-based-solely-on-p-values-of-statistical-tests"></a>
 </h3>
 <p>No single test maintains optimal Type I error rates and statistical
 power across all distributions <span class="citation">(<a href="#ref-Olejnik:1987">Olejnik and Algina 1987</a>)</span>, and
@@ -1563,10 +1551,9 @@ normality or homoscedasticity should never rely solely on p-values but
 should be complemented by visual inspection of the diagnostic plots
 generated by <code><a href="../reference/visstat.html">visstat()</a></code>.</p>
 </div>
-</div>
-<div class="section level2">
-<h2 id="limitation-on-testing-normality-with-the-shapirowilk-test">Limitation on testing normality with the Shapiro–Wilk test<a class="anchor" aria-label="anchor" href="#limitation-on-testing-normality-with-the-shapirowilk-test"></a>
-</h2>
+<div class="section level3">
+<h3 id="testing-normality-with-the-shapirowilk-normality-test">Testing normality with the Shapiro–Wilk normality test<a class="anchor" aria-label="anchor" href="#testing-normality-with-the-shapirowilk-normality-test"></a>
+</h3>
 <p>Normality tests behave poorly at both ends of the sample-size range:
 with small samples they fail to detect non-normality, and with large
 samples they flag negligible departures from normality as significant
@@ -1589,9 +1576,19 @@ to 100) sample sizes <span class="citation">(<a href="#ref-Razali:2011">Razali a
 <p>This package uses therefore the Shapiro-Wilk test to select between
 parametric (ANOVA/Welch’s t-test) and non-parametric
 (Kruskal-Wallis/Wilcoxon) methods for groups smaller than 50.</p>
-<div class="section level4">
-<h4 id="combining-tests-inflates-the-overall-type-i-error-rate">Combining tests inflates the overall Type I error rate<a class="anchor" aria-label="anchor" href="#combining-tests-inflates-the-overall-type-i-error-rate"></a>
-</h4>
+</div>
+<div class="section level3">
+<h3 id="visualisation-based-solely-on-base-r">Visualisation based solely on base R<a class="anchor" aria-label="anchor" href="#visualisation-based-solely-on-base-r"></a>
+</h3>
+<p>The package depends only on base R graphics with no
+<code>ggplot2</code> dependency keeping the transitive dependency
+footprint minimal. For more polished, annotated plots of chosen
+statistical test, we refer to packages as <code>ggstatsplot</code> <span class="citation">(<a href="#ref-Patil:2021">Patil 2021</a>)</span> or
+<code>ggpubr</code> <span class="citation">(<a href="#ref-Kassambara:2026">Kassambara 2026</a>)</span>.</p>
+</div>
+<div class="section level3">
+<h3 id="combining-tests-inflates-the-overall-type-i-error-rate">Combining tests inflates the overall Type I error rate<a class="anchor" aria-label="anchor" href="#combining-tests-inflates-the-overall-type-i-error-rate"></a>
+</h3>
 <p>Combining multiple tests with differing assumptions using simple
 majority voting inflates the overall Type I error rate.</p>
 <p>Therefore, automated test selection based solely on p-values cannot
@@ -1612,11 +1609,6 @@ poorly with very small sample sizes.</p>
 of the <code>visStatistics</code> package, which is designed to offer a
 rapid overview of the data, laying the groundwork for deeper analysis in
 subsequent steps.</p>
-<p>The package targets users with basic statistical literacy, such as
-non-specialist professionals and students in applied fields. It covers
-topics typically included in an undergraduate course on applied
-statistics, intentionally excluding more advanced methods like
-bootstrapping to keep the focus on foundational concepts.</p>
 </div>
 </div>
 <div class="section level2">
@@ -1921,6 +1913,12 @@ Brown, Morton B., and Alan B. Forsythe. 1974. <span>“Robust
 <span>Variances</span>.”</span> <em>Journal of the American Statistical
 Association</em> 69 (346): 364–67. <a href="https://doi.org/10.1080/01621459.1974.10482955" class="external-link">https://doi.org/10.1080/01621459.1974.10482955</a>.
 </div>
+<div id="ref-Chicco:2025" class="csl-entry">
+Chicco, Davide, Andrea Sichenze, and Giuseppe Jurman. 2025. <span>“A
+Simple Guide to the Use of <span>Student</span>’s t-Test,
+<span>Mann-Whitney U</span> Test, <span class="nocase">Chi-squared</span> Test, and <span>Kruskal-Wallis</span>
+Test in Biostatistics.”</span> <em>BioData Min</em> 18 (1): 56. <a href="https://doi.org/10.1186/s13040-025-00465-6" class="external-link">https://doi.org/10.1186/s13040-025-00465-6</a>.
+</div>
 <div id="ref-Cochran:1954" class="csl-entry">
 Cochran, William G. 1954. <span>“The <span>Combination</span> of
 <span>Estimates</span> from <span>Different Experiments</span>.”</span>
@@ -2010,6 +2008,10 @@ in Probability and Statistics. John Wiley &amp; Sons, Inc.
 Holm, Sture. 1979. <span>“A <span>Simple Sequentially Rejective Multiple
 Test Procedure</span>.”</span> <em>Scandinavian Journal of
 Statistics</em> 6 (2): 65–70. <a href="https://www.jstor.org/stable/4615733" class="external-link">https://www.jstor.org/stable/4615733</a>.
+</div>
+<div id="ref-Kassambara:2026" class="csl-entry">
+Kassambara, Alboukadel. 2026. <em>Ggpubr: ’Ggplot2’ Based Publication
+Ready Plots</em>. Manual. <a href="https://doi.org/10.32614/CRAN.package.ggpubr" class="external-link">https://doi.org/10.32614/CRAN.package.ggpubr</a>.
 </div>
 <div id="ref-Kendall:1945" class="csl-entry">
 Kendall, M. G. 1945. <span>“The <span>Treatment</span> of
@@ -2105,6 +2107,12 @@ Shatz, Itamar. 2024. <span>“Assumption-Checking Rather Than (Just)
 Testing: <span>The</span> Importance of Visualization and Effect Size in
 Statistical Diagnostics.”</span> <em>Behav Res</em> 56 (2): 826–45. <a href="https://doi.org/10.3758/s13428-023-02072-x" class="external-link">https://doi.org/10.3758/s13428-023-02072-x</a>.
 </div>
+<div id="ref-Subirana:2014" class="csl-entry">
+Subirana, Isaac, Héctor Sanz, and Joan Vila. 2014. <span>“Building
+Bivariate Tables: <span class="nocase">The compareGroups</span> Package
+for <span>R</span>.”</span> <em>Journal of Statistical Software</em> 57
+(12): 1–16.
+</div>
 <div id="ref-Welch:1947" class="csl-entry">
 Welch, B. L. 1947. <span>“The Generalization of <span>‘Student’s’</span>
 Problem When Several Different Population Variances Are
@@ -2118,6 +2126,12 @@ Approach</span>.”</span> <em>Biometrika</em> 38 (3/4): 330–36. <a href="http
 <div id="ref-Wilcox:2021" class="csl-entry">
 Wilcox, Rand R. 2021. <em>Introduction to <span>Robust Estimation</span>
 and <span>Hypothesis Testing</span></em>.
+</div>
+<div id="ref-Xu:2013" class="csl-entry">
+Xu, Weichao, Yunhe Hou, Y. S. Hung, and Yuexian Zou. 2013. <span>“A
+Comparative Analysis of <span>Spearman</span>’s Rho and
+<span>Kendall</span>’s Tau in Normal and Contaminated Normal
+Models.”</span> <em>Signal Processing</em> 93 (1): 261–76. <a href="https://doi.org/10.1016/j.sigpro.2012.08.005" class="external-link">https://doi.org/10.1016/j.sigpro.2012.08.005</a>.
 </div>
 <div id="ref-Yap:2011" class="csl-entry">
 Yap, B. W., and C. H. Sim. 2011. <span>“Comparisons of Various Types of
