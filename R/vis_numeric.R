@@ -9,8 +9,8 @@
 #'   or the y-axis variable for correlation analysis.
 #' @param x Numeric vector. The predictor variable (independent variable) for regression analysis,
 #'   or the x-axis variable for correlation analysis. Must have the same length as y.
-#' @param do_regression Logical. If TRUE (default), performs regression analysis with
-#'   confidence and prediction bands. If FALSE, performs Spearman rank correlation analysis.
+#' @param correlation Logical. If FALSE (default), performs regression analysis with
+#'   confidence and prediction bands. If TRUE, performs Spearman rank correlation analysis.
 #' @param conf.level Numeric. Confidence level for statistical tests and intervals. 
 #'   Must be between 0 and 1. Default is 0.95 (95 percent confidence level).
 #' @param name_of_factor Character string. Label for the x-axis (independent variable). 
@@ -43,7 +43,7 @@
 #'                       name_of_sample = "Response")
 #' 
 #' # Spearman rank correlation
-#' result2 <- vis_numeric(y, x, do_regression = FALSE)
+#' result2 <- vis_numeric(y, x, correlation = TRUE)
 #' }
 #'
 #' @seealso \code{\link{cor.test}}, \code{\link{lm}}, \code{\link{shapiro.test}}
@@ -52,7 +52,7 @@
 #' @export
 vis_numeric <- function(y,
                         x,
-                        do_regression = TRUE,
+                        correlation = FALSE,
                         conf.level = 0.95,
                         name_of_factor = character(),
                         name_of_sample = character()) {
@@ -66,8 +66,8 @@ vis_numeric <- function(y,
     stop("'y' and 'x' must have the same length")
   }
   
-  if (!is.logical(do_regression) || length(do_regression) != 1) {
-    stop("'do_regression' must be a single logical value (TRUE or FALSE)")
+  if (!is.logical(correlation) || length(correlation) != 1) {
+    stop("'correlation' must be a single logical value (TRUE or FALSE)")
   }
   
   if (!is.numeric(conf.level) || length(conf.level) != 1 || 
@@ -111,7 +111,7 @@ vis_numeric <- function(y,
   # Initialize warnings vector
   warnings_list <- character(0)
   
-  if (do_regression) {
+  if (!correlation) {
     # ========== REGRESSION ANALYSIS ==========
     
     # Fit regression model
@@ -321,8 +321,8 @@ vis_numeric <- function(y,
             call. = FALSE)
     
     # Suggest correlation analysis if regression assumptions are violated
-    if (do_regression && any(grepl("Normality|Homoscedasticity", warnings_list))) {
-      message("RECOMMENDATION: Consider using do_regression = FALSE for robust correlation analysis")
+    if (!correlation && any(grepl("Normality|Homoscedasticity", warnings_list))) {
+      message("RECOMMENDATION: Consider using correlation = TRUE for robust correlation analysis")
     }
   }
   

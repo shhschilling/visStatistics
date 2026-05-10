@@ -29,10 +29,10 @@
 #'   input styles.
 #' @param conf.level Confidence level for statistical inference; default is 
 #'   \code{0.95}.
-#' @param do_regression Logical. If \code{TRUE} (default), performs simple 
-#'   linear regression analysis with confidence and prediction bands when both 
-#'   variables are numeric. If \code{FALSE}, performs correlation analysis with 
-#'   trend line only (no regression interpretation).
+#' @param correlation Logical. If \code{FALSE} (default), performs simple
+#'   linear regression analysis with confidence and prediction bands when both
+#'   variables are numeric. If \code{TRUE}, performs Spearman correlation analysis
+#'   with trend line only (no regression interpretation).
 #' @param numbers Logical. Whether to annotate plots with numeric values.
 #' @param minpercent Number between 0 and 1 indicating minimal fraction of 
 #'   total count data of a category to be displayed in mosaic count plots.
@@ -186,7 +186,7 @@ visstat <- function(x,
                     ...,
                     data = NULL,
                     conf.level = 0.95,
-                    do_regression = TRUE,
+                    correlation = FALSE,
                     numbers = TRUE,
                     minpercent = 0.05,
                     graphicsoutput = NULL,
@@ -221,7 +221,7 @@ visstat <- function(x,
       varsample = yvar,
       varfactor = xvar,
       conf.level = conf.level,
-      do_regression = do_regression,
+      correlation = correlation,
       numbers = numbers,
       minpercent = minpercent,
       graphicsoutput = graphicsoutput,
@@ -245,7 +245,7 @@ visstat <- function(x,
       varsample = varsample,
       varfactor = varfactor,
       conf.level = conf.level,
-      do_regression = do_regression,
+      correlation = correlation,
       numbers = numbers,
       minpercent = minpercent,
       graphicsoutput = graphicsoutput,
@@ -272,7 +272,7 @@ visstat <- function(x,
     varsample = sample_name,   # second argument = response
     varfactor = factor_name,   # first argument = predictor
     conf.level = conf.level,
-    do_regression = do_regression,
+    correlation = correlation,
     numbers = numbers,
     minpercent = minpercent,
     graphicsoutput = graphicsoutput,

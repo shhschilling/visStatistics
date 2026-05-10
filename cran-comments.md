@@ -16,14 +16,16 @@ This is a resubmission of the package after addressing the following issues.
 - **Formula interface:** `visstat()` now accepts the formula interface
 `visstat(y ~ x, data = df)` in addition to the existing calling conventions.
 
-- **Correlation analysis:** New parameter `do_regression` enables Spearman rank
-correlation analysis as an alternative to regression.
+- **Correlation analysis:** New parameter `correlation`. When `TRUE`,
+  selects Spearman's $\rho$ for two numeric variables or Kendall's
+  $\tau_b$ when both variables are ordered factors.
 
 ## New features
 
-- **Ordered factor support:** When a variable is of class `ordered` (e.g., Likert scales), `visstat()` automatically converts it to
-numeric ranks. When both variables are of of class `ordered`, 
-a Spearman - rank correlation is performed
+- **Ordered factor support:** When a variable is of class `ordered`
+  (e.g., Likert scales), `visstat()` converts it to numeric ranks and
+  applies Wilcoxon or Kruskal-Wallis. When both variables are ordered
+  and `correlation = TRUE`, Kendall's $\tau_b$ is used.
 
 
 - **New exported functions:**

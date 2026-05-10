@@ -24,7 +24,7 @@ y1 <- 2.5 * x1 + 3 + rnorm(n1, mean = 0, sd = 1.5)
 # Test regression analysis
 cat("Testing regression analysis...\n")
 result1a <- vis_numeric(y1, x1, 
-                        do_regression = TRUE,
+                        correlation = FALSE,
                         name_of_factor = "Predictor (X)", 
                         name_of_sample = "Response (Y)")
 
@@ -34,7 +34,7 @@ cat("Warnings:", length(result1a$warnings), "\n\n")
 # Test correlation analysis on same data
 cat("Testing correlation analysis on same data...\n")
 result1b <- vis_numeric(y1, x1, 
-                        do_regression = FALSE,
+                        correlation = TRUE,
                         name_of_factor = "Variable X", 
                         name_of_sample = "Variable Y")
 
@@ -55,7 +55,7 @@ y2 <- 0.5 * x2^2 + 0.2 * x2 + rnorm(n2, mean = 0, sd = 0.5)
 # Test regression (should show poor fit and violated assumptions)
 cat("Testing regression on quadratic data...\n")
 result2a <- vis_numeric(y2, x2, 
-                        do_regression = TRUE,
+                        correlation = FALSE,
                         name_of_factor = "X", 
                         name_of_sample = "Y = 0.5*X² + 0.2*X + error")
 
@@ -65,7 +65,7 @@ cat("Number of warnings:", length(result2a$warnings), "\n")
 # Test correlation (should automatically select appropriate method)
 cat("Testing correlation on quadratic data...\n")
 result2b <- vis_numeric(y2, x2, 
-                        do_regression = FALSE,
+                        correlation = TRUE,
                         name_of_factor = "X", 
                         name_of_sample = "Y = 0.5*X² + 0.2*X + error")
 
@@ -85,7 +85,7 @@ y3 <- 1.2 * x3 + rexp(n3, rate = 0.3)  # Also right-skewed
 # Test regression
 cat("Testing regression on skewed data...\n")
 result3a <- vis_numeric(y3, x3, 
-                        do_regression = TRUE,
+                        correlation = FALSE,
                         name_of_factor = "Skewed X", 
                         name_of_sample = "Skewed Y")
 
@@ -94,7 +94,7 @@ cat("Number of warnings:", length(result3a$warnings), "\n")
 # Test correlation (should auto-select Spearman)
 cat("Testing correlation on skewed data...\n")
 result3b <- vis_numeric(y3, x3, 
-                        do_regression = FALSE,
+                        correlation = TRUE,
                         name_of_factor = "Skewed X", 
                         name_of_sample = "Skewed Y")
 
@@ -114,7 +114,7 @@ y4 <- log(x4) + rnorm(n4, mean = 0, sd = 0.2)
 # Test regression (linear fit on log relationship)
 cat("Testing regression on log relationship...\n")
 result4a <- vis_numeric(y4, x4, 
-                        do_regression = TRUE,
+                        correlation = FALSE,
                         name_of_factor = "X", 
                         name_of_sample = "Y = log(X) + error")
 
@@ -123,7 +123,7 @@ cat("R-squared:", result4a$r_squared, "\n")
 # Test correlation (Spearman should handle this well)
 cat("Testing correlation on log relationship...\n")
 result4b <- vis_numeric(y4, x4, 
-                        do_regression = FALSE,
+                        correlation = TRUE,
                         name_of_factor = "X", 
                         name_of_sample = "Y = log(X) + error")
 
@@ -143,7 +143,7 @@ y5 <- rnorm(n5, mean = 10, sd = 3)  # Independent of x5
 # Test regression
 cat("Testing regression on independent variables...\n")
 result5a <- vis_numeric(y5, x5, 
-                        do_regression = TRUE,
+                        correlation = FALSE,
                         name_of_factor = "Independent X", 
                         name_of_sample = "Independent Y")
 
@@ -153,7 +153,7 @@ cat("Slope p-value:", summary(lm(y5 ~ x5))$coefficients[2, 4], "\n")
 # Test correlation
 cat("Testing correlation on independent variables...\n")
 result5b <- vis_numeric(y5, x5, 
-                        do_regression = FALSE,
+                        correlation = TRUE,
                         name_of_factor = "Independent X", 
                         name_of_sample = "Independent Y")
 
@@ -175,7 +175,7 @@ y6 <- 2 * x6 + rnorm(n6, mean = 0, sd = x6 * 0.3)
 # Test regression (should detect heteroscedasticity)
 cat("Testing regression with heteroscedasticity...\n")
 result6a <- vis_numeric(y6, x6, 
-                        do_regression = TRUE,
+                        correlation = FALSE,
                         name_of_factor = "X", 
                         name_of_sample = "Y (increasing variance)")
 
@@ -187,7 +187,7 @@ if (length(result6a$warnings) > 0) {
 # Test correlation
 cat("Testing correlation with heteroscedasticity...\n")
 result6b <- vis_numeric(y6, x6, 
-                        do_regression = FALSE,
+                        correlation = TRUE,
                         name_of_factor = "X", 
                         name_of_sample = "Y (increasing variance)")
 
@@ -206,7 +206,7 @@ y7 <- 2 * x7 + rnorm(n7, mean = 0, sd = 1)
 # Test regression with small sample
 cat("Testing regression with small sample (n =", n7, ")...\n")
 result7a <- vis_numeric(y7, x7, 
-                        do_regression = TRUE,
+                        correlation = FALSE,
                         name_of_factor = "X (small n)", 
                         name_of_sample = "Y (small n)")
 
@@ -215,7 +215,7 @@ cat("R-squared:", result7a$r_squared, "\n")
 # Test correlation with small sample
 cat("Testing correlation with small sample...\n")
 result7b <- vis_numeric(y7, x7, 
-                        do_regression = FALSE,
+                        correlation = TRUE,
                         name_of_factor = "X (small n)", 
                         name_of_sample = "Y (small n)")
 
@@ -244,7 +244,7 @@ cat("Missing values in y:", sum(is.na(y8)), "\n")
 # Test regression with missing values
 cat("Testing regression with missing values...\n")
 result8a <- vis_numeric(y8, x8, 
-                        do_regression = TRUE,
+                        correlation = FALSE,
                         name_of_factor = "X (with NAs)", 
                         name_of_sample = "Y (with NAs)")
 
@@ -253,7 +253,7 @@ cat("Effective sample size:", result8a$sample_size, "\n")
 # Test correlation with missing values
 cat("Testing correlation with missing values...\n")
 result8b <- vis_numeric(y8, x8, 
-                        do_regression = FALSE,
+                        correlation = TRUE,
                         name_of_factor = "X (with NAs)", 
                         name_of_sample = "Y (with NAs)")
 
@@ -273,7 +273,7 @@ y9 <- 2 * x9 + rnorm(n9, mean = 0, sd = 1)
 # Test with 90% confidence level
 cat("Testing with 90% confidence level...\n")
 result9a <- vis_numeric(y9, x9, 
-                        do_regression = TRUE,
+                        correlation = FALSE,
                         conf.level = 0.90,
                         name_of_factor = "X (90% CI)", 
                         name_of_sample = "Y (90% CI)")
@@ -281,7 +281,7 @@ result9a <- vis_numeric(y9, x9,
 # Test with 99% confidence level
 cat("Testing with 99% confidence level...\n")
 result9b <- vis_numeric(y9, x9, 
-                        do_regression = TRUE,
+                        correlation = FALSE,
                         conf.level = 0.99,
                         name_of_factor = "X (99% CI)", 
                         name_of_sample = "Y (99% CI)")
@@ -304,7 +304,7 @@ y10 <- 3 * x10 + 5  # Perfect linear relationship
 # Test regression
 cat("Testing regression with perfect correlation...\n")
 result10a <- vis_numeric(y10, x10, 
-                         do_regression = TRUE,
+                         correlation = FALSE,
                          name_of_factor = "X (perfect)", 
                          name_of_sample = "Y = 3X + 5")
 
@@ -313,7 +313,7 @@ cat("R-squared:", result10a$r_squared, "\n")
 # Test correlation
 cat("Testing correlation with perfect correlation...\n")
 result10b <- vis_numeric(y10, x10, 
-                         do_regression = FALSE,
+                         correlation = TRUE,
                          name_of_factor = "X (perfect)", 
                          name_of_sample = "Y = 3X + 5")
 
