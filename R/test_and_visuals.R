@@ -454,20 +454,30 @@ vis_chi_squared_test <- function(samples,
     category_names <- dimnames(counts)[1]
     category_names <- as.character(unlist(category_names))
     
-    norm_counts <- (counts / row_sum) * 100 # 100 %percentage in each group
-    max_val_y <- max(norm_counts, na.rm = T)
-    # col_vec_browser=c(colortuple,rainbow(nrow(counts)-2, s = 0.5))
+    norm_counts <- (counts / row_sum) * 100 # row percentages
+
+    fisher_chi <- fisher_chi(counts) # checks Cochran requirements; uses Fisher if violated
+
+    # Fisher's exact test: show absolute counts; Chi² / Yates: show row percentages
+    is_fisher <- isTRUE(grepl("Fisher", fisher_chi$method, ignore.case = TRUE))
+    if (is_fisher) {
+      bar_data  <- counts
+      ylab_text <- "Count"
+      max_val_y <- max(counts, na.rm = TRUE)
+    } else {
+      bar_data  <- norm_counts
+      ylab_text <- "%"
+      max_val_y <- max(norm_counts, na.rm = TRUE)
+    }
+
     if (nrow(counts) < (length(ColorPalette) + 2)) {
       col_vec_browser <- c(colortuple, head(ColorPalette, n = nrow(counts) - 2))
     } else {
       col_vec_browser <- c(colortuple, rainbow(nrow(counts) - 2, s = 0.4, alpha = 1))
     }
-    
-    
-    # creates new plot for barplot
-    
+
     par(mfrow = c(1, 1), oma = c(0, 0, 3, 0))
-    
+
     maxlabels <- length(levels(samples))
     if (maxlabels > 7 |
         grepl("basis", samplename) | grepl("source", samplename) |
@@ -480,16 +490,7 @@ vis_chi_squared_test <- function(samples,
     } else {
       labelsize <- cex
     }
-    
-    
-    fisher_chi <- fisher_chi(counts) # checks if Cochran requirements for chi2 are met, if not: only fisher exact test allowed
-    
-    # titletext <- paste0(fisher_chi$method,
-    #                    "\n Chi-squared = ",signif(fisher_chi$p.statistic, 2),
-    #                    ", p-value = ",
-    #                    signif(fisher_chi$p.value, 3),
-    #                    sep = "")
-    #                    
+
     if (fisher_chi$method != "Fisher's Exact Test for Count Data") {
       chi2_fisher_text <- paste0(
         fisher_chi$method,
@@ -502,45 +503,54 @@ vis_chi_squared_test <- function(samples,
         "\np-value = ", signif(fisher_chi$p.value, 3)
       )
     }
-    
-    # titletext <- paste0(
-    #   fisher_chi$method,
-    #   "\n Chi-squared = ", round(fisher_chi$statistic, 2),
-    #   ", p-value = ", signif(fisher_chi$p.value, 3)
-    # )
-    
-    titletext = chi2_fisher_text
-    
-    
+
+    titletext <- chi2_fisher_text
+
     if (nrow(counts) > 3) {
-      ma <- max(1.3 * max_val_y)
+      ma <- 1.3 * max_val_y
       legendsize <- 0.7 * cex
     } else {
-      ma <- ma <- max(1.1 * max_val_y)
+      # Fisher shows N= labels above each bar; 1.2x gives enough headroom so
+      # the label on the tallest bar stays inside the yaxs="i" coordinate range.
+      ma <- if (is_fisher) 1.2 * max_val_y else 1.1 * max_val_y
       legendsize <- cex
     }
-    
-    barplot(
-      norm_counts,
+
+    bp <- barplot(
+      bar_data,
       names.arg = count_labels,
       xlim = c(-0.5, ncol(counts) + 1),
       ylim = c(0, ma),
       width = 1 / (nrow(counts) + 1),
       space = c(0, 1),
       col = col_vec_browser,
-      ylab = "%",
+      ylab = ylab_text,
       xlab = samplename,
       beside = TRUE,
       cex.axis = 1,
-      cex.names = labelsize # size of labels of barplot
+      cex.names = labelsize
     )
-    
+
+    # N labels: Fisher branch only — Pearson chi² is followed by a mosaic that
+    # already displays counts. For Fisher, place one label directly above each
+    # individual bar (4 labels for a 2×2 table). as.vector() reads column-major,
+    # matching barplot's draw order.
+    if (is_fisher) {
+      bar_x <- as.vector(bp)
+      bar_n <- as.vector(counts)
+      bar_h <- as.vector(bar_data)
+      text(bar_x, bar_h + strheight("N", units = "user"),
+           paste("N =", bar_n),
+           cex = labelsize * 0.8)
+    }
+
     box()
     mtext(titletext)
     category_names <- as.character(category_names)
     legend(
       "topright",
       inset = 0.05,
+      title = factorname,
       category_names,
       col = col_vec_browser,
       bty = "n",
@@ -897,7 +907,8 @@ vis_mosaic <- function(samples,
                        name_of_sample = character(),
                        name_of_factor = character(),
                        minperc = 0.05,
-                       numbers = TRUE) {
+                       numbers = TRUE,
+                       shade = TRUE) {
   oldparmosaic <- par(no.readonly = TRUE)
   oldparmosaic$new <- FALSE
   on.exit(par(oldparmosaic))
@@ -951,8 +962,8 @@ vis_mosaic <- function(samples,
     if (n_samples < threshold & n_fact < threshold) {
       res <- mosaic(
         counts,
-        shade = TRUE,
-        legend = TRUE,
+        shade = shade,
+        legend = shade,
         labeling_args = label_args,
         pop = FALSE
       )
@@ -980,8 +991,8 @@ vis_mosaic <- function(samples,
       
       res <- mosaic(
         countsreduced,
-        shade = TRUE,
-        legend = TRUE,
+        shade = shade,
+        legend = shade,
         labeling_args = label_args,
         pop = FALSE
       )

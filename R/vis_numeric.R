@@ -294,11 +294,8 @@ vis_numeric <- function(y,
     significance <- ifelse(p_value < alpha, "significant", "not significant")
     method_name <- tools::toTitleCase(method_used)
 
-    title_text <- paste0(method_name, " r = ", signif(cor_coef, 3),
-                         ", p = ", signif(p_value, 3),
-                         " (", significance, ")")
-
-    mtext(title_text)
+    mtext(bquote("Spearman" ~ rho ~ "=" ~ .(signif(cor_coef, 3)) ~
+                 ", p =" ~ .(signif(p_value, 3))))
     
     # Prepare return values
     result_list <- list(

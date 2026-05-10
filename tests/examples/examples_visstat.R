@@ -140,6 +140,24 @@ linear_regression_trees <- visstat(trees$Girth, trees$Volume,conf.level = 0.99)
 plot(linear_regression_trees, which = 1) # replays assumption plot
 plot(linear_regression_trees, which = 2)
 
+# Spearman-correlation----
+result_swiss1 <- visstat(swiss$Fertility,
+                         swiss$Education, do_regression = FALSE)
+# Kendall-correlation----
+set.seed(1)
+n <- 100
+# latent scores with positive monotone association
+xs <- sample(1:3, n, replace = TRUE)
+ys <- pmin(3, pmax(1, xs + sample(-1:1, n, replace = TRUE)))
+likert_levels <- c(" disagree", "neutral",
+                   "agree" )
+likert_levels2 <- c(" left", "centre",
+                    "right" )
+attitude  <- ordered(likert_levels[xs], levels = likert_levels)
+politics <- ordered(likert_levels2[ys], levels = likert_levels2)
+kendall_result <- visstat(politics, attitude)
+
+
 # Chi squared, mosaic plots with HairEyeColor----
 # HairEyeColor data set: Pearsons Chi squared, mosaic plot with Pearson's residuals
 HairEyeColorMale <- counts_to_cases(as.data.frame(HairEyeColor[, , 1]))
@@ -151,16 +169,14 @@ HairEyeColorMaleFisher <- counts_to_cases(as.data.frame(HairEyeColorMaleFisher))
 
 res_chi <- visstat(
   HairEyeColorMaleFisher$Eye,
-  HairEyeColorMaleFisher$Hair,
-  graphicsoutput = "png",
-  plotDirectory = filedir
+  HairEyeColorMaleFisher$Hair
 ) # stores two graphics outputs
 
-# 2x2 contingency tables----
+# Fisher-test 2x2 contingency tables----
 HairEyeColorMaleFisher <- HairEyeColor[, , 1]
 # slicing out a 2 x2 contingency table
 blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
-fishertest <- blackBrownHazelGreen
+
 
 blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
 fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
@@ -170,14 +186,14 @@ fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 summary(iris_data_stored)
 print(iris_data_stored)
 plot(iris_data_stored) #file paths to plots
-plot(iris_data, which = 2) #replay plot 2
+plot(iris_data, which = 1) #replay plot 1
 
 
 # Replay plots  or file paths of stored graphics------
 
 plot(fisher_stats, which = 1) # column  plot 
 
-plot(fisher_stats, which = 2) #mosaic plot 
+
 # Saving the graphical output to a user specified plotDirectory in user specified graphicsouput format ----
 linear_regression_trees_paths <- visstat(
   trees$Height,
