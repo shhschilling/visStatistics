@@ -1219,7 +1219,15 @@ fisher_stats <- visstat(black_brown_hazel_green_male$Eye, black_brown_hazel_gree
 
 ![](visStatistics_files/figure-html/fisher-data-prep-1.png)
 
-### Both variables ordered: Rank correlation
+#### Response of class `ordered`
+
+When the response is an ordered factor,
+[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
+converts it internally to numeric ranks and redirects to the
+non-parametric path (see examples in Section [Comparing central
+tendencies](#comparing-central-tendencies)).
+
+#### Both variables ordered: Kendall’s rank correlation
 
 When both the response and the predictor are ordered factors
 (`is.ordered(y) && is.ordered(x)`),
@@ -1232,7 +1240,7 @@ tests the null hypothesis of no monotone association via Kendall’s
 $`\tau_b`$ rank correlation ([Kendall 1945](#ref-Kendall:1945); [Agresti
 2010](#ref-Agresti:2010)).
 
-#### Kendall’s $`\tau_b`$ (`cor.test(..., method = "kendall")`)
+##### Kendall’s $`\tau_b`$ (`cor.test(..., method = "kendall")`)
 
 For two ordinal variables with $`n`$ joint observations, let $`C`$
 denote the number of concordant pairs (those whose ranks agree in both
@@ -1258,13 +1266,13 @@ calls
 and reports $`\tau_b`$, the test statistic $`z`$, and the two-sided
 $`p`$-value.
 
-#### Graphical output
+##### Graphical output
 
 One plot is produced: a jittered rank–rank scatter that visualises the
 monotone trend, with points colour-coded by the predictor level and
 annotated with $`\tau_b`$ and the $`p`$-value.
 
-#### Example
+##### Example
 
 We construct a small synthetic data set with two three-point ordered
 scales and a deliberate monotone trend.
@@ -1322,7 +1330,7 @@ paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
 
-    ## [1] "/tmp/Rtmp2qMBXW/chi_squared_or_fisher_Hair_Eye.png"
+    ## [1] "/tmp/Rtmp32EDqh/chi_squared_or_fisher_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -1413,9 +1421,9 @@ iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
 plot(iris_kruskal_stored)
 ```
 
-    ## Plot [1] stored in /tmp/Rtmp2qMBXW/glm_assumptions_iris_kruskal.pdf
+    ## Plot [1] stored in /tmp/Rtmp32EDqh/glm_assumptions_iris_kruskal.pdf
 
-    ## Plot [2] stored in /tmp/Rtmp2qMBXW/iris_kruskal.pdf
+    ## Plot [2] stored in /tmp/Rtmp32EDqh/iris_kruskal.pdf
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)

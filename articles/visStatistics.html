@@ -1332,10 +1332,17 @@ exact test instead.</p>
 <p><img src="visStatistics_files/figure-html/fisher-data-prep-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 </div>
+<div class="section level4">
+<h4 id="response-of-class-ordered-1">Response of class <code>ordered</code><a class="anchor" aria-label="anchor" href="#response-of-class-ordered-1"></a>
+</h4>
+<p>When the response is an ordered factor, <code><a href="../reference/visstat.html">visstat()</a></code>
+converts it internally to numeric ranks and redirects to the
+non-parametric path (see examples in Section <a href="#comparing-central-tendencies">Comparing central
+tendencies</a>).</p>
 </div>
-<div class="section level3">
-<h3 id="both-variables-ordered-rank-correlation">Both variables ordered: Rank correlation<a class="anchor" aria-label="anchor" href="#both-variables-ordered-rank-correlation"></a>
-</h3>
+<div class="section level4">
+<h4 id="both-variables-ordered-kendalls-rank-correlation">Both variables ordered: Kendall’s rank correlation<a class="anchor" aria-label="anchor" href="#both-variables-ordered-kendalls-rank-correlation"></a>
+</h4>
 <p>When both the response and the predictor are ordered factors
 (<code>is.ordered(y) &amp;&amp; is.ordered(x)</code>),
 <code><a href="../reference/visstat.html">visstat()</a></code> does <strong>not</strong> call
@@ -1345,11 +1352,11 @@ and lose power against a monotone trend. Instead, <code><a href="../reference/vi
 tests the null hypothesis of no monotone association via Kendall’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
 rank correlation <span class="citation">(<a href="#ref-Kendall:1945">Kendall 1945</a>; <a href="#ref-Agresti:2010">Agresti 2010</a>)</span>.</p>
-<div class="section level4">
-<h4 id="kendalls-tau_b-cor-test----method-kendall">Kendall’s
+<div class="section level5">
+<h5 id="kendalls-tau_b-cor-test----method-kendall">Kendall’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
 (<code>cor.test(..., method = "kendall")</code>)<a class="anchor" aria-label="anchor" href="#kendalls-tau_b-cor-test----method-kendall"></a>
-</h4>
+</h5>
 <p>For two ordinal variables with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
 joint observations, let
@@ -1391,9 +1398,9 @@ the test statistic
 and the two-sided
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value.</p>
 </div>
-<div class="section level4">
-<h4 id="graphical-output-1">Graphical output<a class="anchor" aria-label="anchor" href="#graphical-output-1"></a>
-</h4>
+<div class="section level5">
+<h5 id="graphical-output-1">Graphical output<a class="anchor" aria-label="anchor" href="#graphical-output-1"></a>
+</h5>
 <p>One plot is produced: a jittered rank–rank scatter that visualises
 the monotone trend, with points colour-coded by the predictor level and
 annotated with
@@ -1401,9 +1408,9 @@ annotated with
 and the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value.</p>
 </div>
-<div class="section level4">
-<h4 id="example-1">Example<a class="anchor" aria-label="anchor" href="#example-1"></a>
-</h4>
+<div class="section level5">
+<h5 id="example-1">Example<a class="anchor" aria-label="anchor" href="#example-1"></a>
+</h5>
 <p>We construct a small synthetic data set with two three-point ordered
 scales and a deliberate monotone trend.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
@@ -1420,6 +1427,7 @@ scales and a deliberate monotone trend.</p>
 <span><span class="va">politics</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">likert_levels2</span><span class="op">[</span><span class="va">ys</span><span class="op">]</span>, levels <span class="op">=</span> <span class="va">likert_levels2</span><span class="op">)</span></span>
 <span><span class="va">kendall_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">politics</span>, <span class="va">attitude</span><span class="op">)</span></span></code></pre></div>
 <p><img src="visStatistics_files/figure-html/kendall-example-1.png" class="r-plt" alt="" width="100%"></p>
+</div>
 </div>
 </div>
 </div>
@@ -1453,7 +1461,7 @@ attribute <code>"plot_paths"</code> on the returned object of class
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "/tmp/Rtmp2qMBXW/chi_squared_or_fisher_Hair_Eye.png"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "/tmp/Rtmp32EDqh/chi_squared_or_fisher_Hair_Eye.png"</span></span></code></pre>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
@@ -1521,8 +1529,8 @@ file paths of the stored graphics:</p>
 <span>                               plotName <span class="op">=</span> <span class="st">"iris_kruskal"</span>,</span>
 <span>                               plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iris_kruskal_stored</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Plot [1] stored in /tmp/Rtmp2qMBXW/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
-<pre><code><span><span class="co">## Plot [2] stored in /tmp/Rtmp2qMBXW/iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [1] stored in /tmp/Rtmp32EDqh/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [2] stored in /tmp/Rtmp32EDqh/iris_kruskal.pdf</span></span></code></pre>
 <p>When <code><a href="../reference/visstat.html">visstat()</a></code> is called without
 <code>graphicsoutput</code> (the default interactive mode), the
 generated plots are captured internally. Calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>
