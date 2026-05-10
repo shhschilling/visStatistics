@@ -33,14 +33,11 @@
   [`TukeyHSD()`](https://rdrr.io/r/stats/TukeyHSD.html) remains for
   [`aov()`](https://rdrr.io/r/stats/aov.html) (Student’s ANOVA).
 
-- **Spearman-only correlation.** The new correlation branch
-  (`do_regression = FALSE`) uses Spearman rank correlation exclusively.
-  Spearman’s rho is Pearson’s r applied to ranks: it yields nearly
-  identical results for bivariate normal data but requires no
-  distributional assumptions. A separate Pearson branch is not
-  implemented, because Pearson correlation requires bivariate normality
-  — a condition that cannot be reliably tested from marginal
-  distributions alone.
+- **Rank correlation (`correlation = TRUE`).** Selects the most
+  appropriate rank correlation for the data type: Spearman’s $`\rho`$
+  for two numeric variables, Kendall’s $`\tau_b`$ when both variables
+  are ordered factors. This is the only test decision not made
+  automatically; it requires an explicit user choice.
 
 ### New features
 
@@ -48,17 +45,17 @@
   alongside the existing `visstat(x, y)` and
   `visstat(dataframe, "namey", "namex")` forms.
 
-- **Ordered factor responses:** When the response variable is of class
-  `ordered` (e.g., Likert scale ratings),
+- **Ordered factor responses:** When the response is of class `ordered`,
   [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-  converts it to numeric ranks and applies non-parametric tests
-  (Wilcoxon or Kruskal-Wallis).
+  converts it to numeric ranks and applies Wilcoxon or Kruskal-Wallis.
+  When both variables are ordered and `correlation = TRUE`, Kendall’s
+  $`\tau_b`$ is used instead.
 
-- **Correlation analysis:** New parameter `do_regression` in
+- **Correlation analysis:** New parameter `correlation` in
   [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md).
-  When set to `FALSE`, Spearman rank correlation is computed via
-  `cor.test(..., method = "spearman")` instead of fitting a regression
-  model.
+  When set to `TRUE`, selects Spearman rank correlation for numeric
+  variables or Kendall’s $`\tau_b`$ for two ordered factors, instead of
+  fitting a regression model.
 
 - **New exported functions:**
 

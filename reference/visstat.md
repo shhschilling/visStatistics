@@ -16,7 +16,7 @@ visstat(
   ...,
   data = NULL,
   conf.level = 0.95,
-  do_regression = TRUE,
+  correlation = FALSE,
   numbers = TRUE,
   minpercent = 0.05,
   graphicsoutput = NULL,
@@ -60,12 +60,12 @@ visstat(
 
   Confidence level for statistical inference; default is `0.95`.
 
-- do_regression:
+- correlation:
 
-  Logical. If `TRUE` (default), performs simple linear regression
+  Logical. If `FALSE` (default), performs simple linear regression
   analysis with confidence and prediction bands when both variables are
-  numeric. If `FALSE`, performs correlation analysis with trend line
-  only (no regression interpretation).
+  numeric. If `TRUE`, performs Spearman correlation analysis with trend
+  line only (no regression interpretation).
 
 - numbers:
 

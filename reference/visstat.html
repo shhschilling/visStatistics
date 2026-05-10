@@ -60,7 +60,7 @@ hypothesis testing and visualisation between two variables of class
 <span>  <span class="va">...</span>,</span>
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  conf.level <span class="op">=</span> <span class="fl">0.95</span>,</span>
-<span>  do_regression <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  correlation <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  numbers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  minpercent <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  graphicsoutput <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -108,11 +108,11 @@ input styles.</p></dd>
 <code>0.95</code>.</p></dd>
 
 
-<dt id="arg-do-regression">do_regression<a class="anchor" aria-label="anchor" href="#arg-do-regression"></a></dt>
-<dd><p>Logical. If <code>TRUE</code> (default), performs simple
+<dt id="arg-correlation">correlation<a class="anchor" aria-label="anchor" href="#arg-correlation"></a></dt>
+<dd><p>Logical. If <code>FALSE</code> (default), performs simple
 linear regression analysis with confidence and prediction bands when both
-variables are numeric. If <code>FALSE</code>, performs correlation analysis with
-trend line only (no regression interpretation).</p></dd>
+variables are numeric. If <code>TRUE</code>, performs Spearman correlation analysis
+with trend line only (no regression interpretation).</p></dd>
 
 
 <dt id="arg-numbers">numbers<a class="anchor" aria-label="anchor" href="#arg-numbers"></a></dt>

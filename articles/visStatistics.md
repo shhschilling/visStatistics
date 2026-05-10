@@ -16,7 +16,7 @@ results, including visualisations of the assumption checks and post-hoc
 analyses.
 
 This scripted workflow is well suited for browser-based applications,
-where ysers interact only through a web interface, while server-side R
+where users interact only through a web interface, while server-side R
 applications handle the data processing.
 
 Other typical use cases include quick visualisations, and guided
@@ -39,7 +39,7 @@ and [`summary()`](https://rdrr.io/r/base/summary.html) methods expose
 the complete test results. The scripted workflow is well suited for
 browser-based applications where sensitive data (such as highly
 confidential medical records) is stored securely on a server and can not
-be directly accessed by users. This approach was already succesfully
+be directly accessed by users. This approach was already successfully
 applied to develop a medical scoring tool ([Bijlenga et al.
 2017](#ref-Bijlenga:2017)). A package with similar scope,
 `compareGroups` ([Subirana et al. 2014](#ref-Subirana:2014)), also
@@ -164,7 +164,7 @@ number of factor levels, normality, and homoscedasticity.
 When the response `y` is numeric and the predictor `x` is categorical, a
 statistical hypothesis test comparing central tendencies is selected. To
 check whether the assumptions of a general linear model (see
-(see[Appendix](#glm)) are fulfilled, a linear model lm(y ~ x) is first
+[Appendix](#glm)) are fulfilled, a linear model `lm(y ~ x)` is first
 fitted.
 
 - Normality testing of the residuals: The Shapiro–Wilk test ([Shapiro
@@ -234,37 +234,43 @@ fitted.
 
 ### Both variables numeric: Simple linear regression or Spearman correlation
 
-#### Causal relationship: Simple linear regression (`lm()`)
+#### Simple linear regression (`lm()`)
 
 By default,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-assumes a causal, linear relationship between a numeric response and
-predictor and simple linear regression model
-([`lm()`](https://rdrr.io/r/stats/lm.html)) is fitted and analysed in
-detail, including residual diagnostics, formal tests, and the plotting
-of fitted values with confidence bands. Note that **only one** predictor
-variable is allowed, as the function is designed for two-dimensional
-visualisation.
-
-Note that in the linear regression branch, homoscedasticity is assessed
-using the Breusch–Pagan test `bp.test()`. The test evaluates whether the
-variance of the (raw, non standardized) residuals depends on the
-predictor variable.
-
-#### Non-causal relationship: Spearman rank correlation
-
-When no directional relationship is assumed (by flag
-`do_regression = FALSE`) between two numeric variables,
+fits a simple linear regression model
+([`lm()`](https://rdrr.io/r/stats/lm.html)) for two numeric variables,
+regardless of whether the GLM assumptions of normality and
+homoscedasticity are met. Assumption diagnostics are always shown,
+enabling the user to assess whether the model is appropriate. The only
+case in which
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-performs Spearman’s rank correlation
-(`cor.test(..., method = "spearman")`). Spearman correlation operates on
-the ranks of the data rather than the original values, making it robust
-to outliers and non-normal distributions while detecting monotonic
-relationships. Because Spearman’s $`\rho`$ is Pearson’s $`r`$ applied to
-the ranks, it yields nearly identical results to Pearson correlation
-when the data are bivariate normal (the assumption of Pearson’s
-inference) but remains valid without any distributional assumptions. A
-separate Pearson branch is therefore not implemented.
+does not automatically select linear regression for two numeric
+variables is when the user explicitly sets `correlation = TRUE`. Note
+that **only one** predictor variable is allowed, as the function is
+designed for two-dimensional visualisation.
+
+In the linear regression branch, homoscedasticity is assessed using the
+Breusch–Pagan test `bp.test()`, which evaluates whether the variance of
+the raw residuals depends on the predictor variable.
+
+#### Spearman rank correlation (`correlation = TRUE`)
+
+When `correlation = TRUE` is set,
+[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
+uses Spearman’s $`\rho`$ (`cor.test(..., method = "spearman")`) to
+measure the monotone association between the two numeric variables.
+Switching to correlation requires an explicit user choice, because the
+decision between modelling a directional relationship (regression) and
+measuring a monotone association (correlation) cannot be derived from
+the data type alone. Spearman correlation operates on the ranks of the
+data rather than the original values, making it robust to outliers and
+non-normal distributions while detecting monotonic relationships.
+Because Spearman’s $`\rho`$ is Pearson’s $`r`$ applied to the ranks, it
+yields nearly identical results to Pearson correlation when the data are
+bivariate normal (the assumption of Pearson’s inference) but remains
+valid without any distributional assumptions. A separate Pearson branch
+is therefore not implemented.
 
 ### Both variables of class `factor`
 
@@ -287,32 +293,35 @@ on expected cell counts. The choice of test is based on Cochran’s rule
 approximation is reliable only if no expected cell count is less than 1
 and no more than 20 percent of cells have expected counts below 5.
 
-#### Response of class `ordered`
+### Response of class `ordered`, predictor of class `factor`
 
 When the response variable is an ordered factor (e.g., Likert scale
 ratings) and the predictor is categorical,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 converts the ordered response to numeric ranks and redirects the
-analysis to the non- parametric
+analysis to the non-parametric
 [`wilcox.test()`](https://rdrr.io/r/stats/wilcox.test.html) (predictor
 with two levels) or
 [`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html) (predictor
-with more then two levels) respectively, as the numeric distances
+with more than two levels) respectively, as the numeric distances
 between ordered categories are not necessarily equal and the data cannot
 be assumed to follow a normal distribution.
 
-#### Response and predictor of class `ordered` : Kendall’s rank correlation
+### Both variables of class `factor` and `ordered`
 
-When **both** the response and the predictor are ordered factors, the
-test of independence ignoring the order ($`\chi^2`$ or Fisher) is
-suboptimal because it discards the very information that defines an
-ordinal scale and has low power against monotone trends.
+When `correlation = FALSE` (default) and both variables are ordered
+factors, the response is converted to numeric ranks and the analysis
+follows the standard non-parametric path (Wilcoxon or Kruskal–Wallis).
+
+#### Kendall rank correlation (`correlation = TRUE`)
+
+When additionally `correlation = TRUE` is set,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-detects this case and tests for a monotone association via Kendall’s
-$`\tau_b`$Kendall ([1945](#ref-Kendall:1945))\]
-(`cor.test(..., method = "kendall")`). Kendall’s $`\tau_b`$ is preferred
-over Spearman’s $`\rho`$ for ordinal data with few levels, where ties
-are common: $`\tau_b`$ corrects for ties explicitly, while Spearman’s
+tests for a monotone association via Kendall’s $`\tau_b`$ rank
+correlation ([Kendall 1945](#ref-Kendall:1945); [Agresti
+2010](#ref-Agresti:2010)). Kendall’s $`\tau_b`$ is preferred over
+Spearman’s $`\rho`$ for ordinal data with few levels, where ties are
+common: $`\tau_b`$ corrects for ties explicitly, while Spearman’s
 $`\rho`$ uses only an approximate adjustment Xu et al.
 ([2013](#ref-Xu:2013)). The visualisation is a jittered rank–rank
 scatter that makes the monotone trend visible, annotated with $`\tau_b`$
@@ -320,8 +329,8 @@ and the $`p`$-value.
 
 ## Assumption diagnostics: `vis_lm_assumptions()`
 
-All tests within the linear model framework (see share the same set of
-assumptions:
+All tests within the linear model framework (see [Appendix](#glm)) share
+the same set of assumptions:
 
 - Linearity: The expected value of the response is a linear function of
   the predictors; assessed by checking for systematic patterns in
@@ -347,8 +356,9 @@ and provides four standard diagnostic plots:
     standardized residuals to identify deviations from the Gaussian
     distribution.
 
-4.  If `regression = TRUE`, the **Standardized Residuals vs. Leverage**
-    plot, if `regression = FALSE`, a **Scale-Location** plot.
+4.  If `correlation = FALSE` (regression mode), the **Standardized
+    Residuals vs. Leverage** plot; if `correlation = TRUE` (correlation
+    mode), a **Scale-Location** plot.
 
 ### Test for normality and homoscedasticity
 
@@ -901,7 +911,7 @@ linreg_trees <- visstat(trees$Girth, trees$Volume,conf.level=0.9)
     ## Homoscedasticity violated (Breusch-Pagan p = 0.0178 )
     ## Analysis proceeded but interpret results cautiously.
 
-    ## RECOMMENDATION: Consider using do_regression = FALSE for robust correlation analysis
+    ## RECOMMENDATION: Consider using correlation = TRUE for robust correlation analysis
 
 p-values greater than $`\alpha`$ = `1 - conf.level` in both the
 Anderson–Darling and Shapiro–Wilk normality tests of the standardised
@@ -927,14 +937,13 @@ plot(linreg_trees_99,which=2)
 
 ![](visStatistics_files/figure-html/unnamed-chunk-7-1.png)
 
-#### Spearman correlation (`cor.test(..., method = "spearman")`)
+#### Spearman rank correlation (`cor.test(..., method = "spearman")`)
 
-When `do_regression = FALSE`,
+For two numeric variables with `correlation = TRUE`,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 calls `cor.test(x, y, method = "spearman")` to measure the monotonic
-association between two variables $`x`$ and $`y`$ using ranks by
-evaluating linear dependence on the ranked data rather than on the
-original scale:
+association between $`x`$ and $`y`$ using ranks, evaluating linear
+dependence on the ranked data rather than on the original scale:
 
 ``` math
 \rho = r(\operatorname{rank}(x), \operatorname{rank}(y))
@@ -964,7 +973,7 @@ in percentage points.
 ``` r
 
 result_swiss1 <- visstat(swiss$Education,
-                         swiss$Fertility, do_regression = FALSE)
+                         swiss$Fertility, correlation = TRUE)
 ```
 
 ![](visStatistics_files/figure-html/unnamed-chunk-8-1.png)![](visStatistics_files/figure-html/unnamed-chunk-8-2.png)
@@ -1219,7 +1228,7 @@ fisher_stats <- visstat(black_brown_hazel_green_male$Eye, black_brown_hazel_gree
 
 ![](visStatistics_files/figure-html/fisher-data-prep-1.png)
 
-#### Response of class `ordered`
+### Response of class `ordered`, predictor of class `factor`
 
 When the response is an ordered factor,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1227,20 +1236,18 @@ converts it internally to numeric ranks and redirects to the
 non-parametric path (see examples in Section [Comparing central
 tendencies](#comparing-central-tendencies)).
 
-#### Both variables ordered: Kendall’s rank correlation
+### Both variables of class `factor` and `ordered`
 
-When both the response and the predictor are ordered factors
-(`is.ordered(y) && is.ordered(x)`),
-[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-does **not** call $`\chi^2`$ or Fisher. Treating ordered levels as
-nominal would discard the ordering and lose power against a monotone
-trend. Instead,
+When both the response and the predictor are ordered factors and
+`correlation = TRUE` is set,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 tests the null hypothesis of no monotone association via Kendall’s
 $`\tau_b`$ rank correlation ([Kendall 1945](#ref-Kendall:1945); [Agresti
-2010](#ref-Agresti:2010)).
+2010](#ref-Agresti:2010)). Without `correlation = TRUE`, both-ordered
+inputs follow the standard non-parametric path (Wilcoxon or
+Kruskal–Wallis).
 
-##### Kendall’s $`\tau_b`$ (`cor.test(..., method = "kendall")`)
+#### Kendall’s $`\tau_b`$ (`cor.test(..., method = "kendall")`)
 
 For two ordinal variables with $`n`$ joint observations, let $`C`$
 denote the number of concordant pairs (those whose ranks agree in both
@@ -1256,7 +1263,7 @@ groups of tied ranks in the response, and $`n_2`$ is the analogous
 quantity for the predictor. The denominator correction makes $`\tau_b`$
 attain $`\pm 1`$ even with ties, which Spearman’s $`\rho`$ does not
 ([Kendall 1945](#ref-Kendall:1945)). With few ordered levels (e.g.,
-3-point Likert items), ties are unavoidable; this is the principal
+five-point Likert items), ties are unavoidable; this is the principal
 reason to prefer $`\tau_b`$ over Spearman’s $`\rho`$ in this setting
 ([Agresti 2010](#ref-Agresti:2010)).
 
@@ -1266,31 +1273,33 @@ calls
 and reports $`\tau_b`$, the test statistic $`z`$, and the two-sided
 $`p`$-value.
 
-##### Graphical output
+#### Graphical output
 
 One plot is produced: a jittered rank–rank scatter that visualises the
 monotone trend, with points colour-coded by the predictor level and
 annotated with $`\tau_b`$ and the $`p`$-value.
 
-##### Example
+#### Example
 
-We construct a small synthetic data set with two three-point ordered
-scales and a deliberate monotone trend.
+We construct a hypothetical survey of 150 secondary-school students in
+which alcohol consumption frequency and academic performance are each
+recorded on a five-point ordinal scale. A negative monotone association
+is expected: students who consume alcohol more frequently tend to
+achieve lower academic performance.
 
 ``` r
 
-set.seed(1)
-n <- 100
-# latent scores with positive monotone association
-xs <- sample(1:3, n, replace = TRUE)
-ys <- pmin(3, pmax(1, xs + sample(-1:1, n, replace = TRUE)))
-likert_levels <- c(" disagree", "neutral",
-                   "agree" )
-likert_levels2 <- c(" left", "centre",
-                   "right" )
-attitude  <- ordered(likert_levels[xs], levels = likert_levels)
-politics <- ordered(likert_levels2[ys], levels = likert_levels2)
-kendall_result <- visstat(politics, attitude)
+set.seed(42)
+n <- 150
+# Latent scores with deliberate negative monotone association:
+# higher alcohol consumption (xs) -> lower academic performance (ys)
+xs <- sample(1:5, n, replace = TRUE)
+ys <- pmin(5, pmax(1, (6 - xs) + sample(-1:1, n, replace = TRUE)))
+likert_levels  <- c("never", "rarely", "sometimes", "often", "always")
+likert_levels2 <- c("poor", "fair", "ok", "good", "great")
+alcohol     <- ordered(likert_levels[xs],  levels = likert_levels)
+performance <- ordered(likert_levels2[ys], levels = likert_levels2)
+kendall_result <- visstat(performance, alcohol, correlation = TRUE)
 ```
 
 ![](visStatistics_files/figure-html/kendall-example-1.png)
@@ -1330,7 +1339,7 @@ paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
 
-    ## [1] "/tmp/Rtmp32EDqh/chi_squared_or_fisher_Hair_Eye.png"
+    ## [1] "/tmp/Rtmp6XLX5I/chi_squared_or_fisher_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -1421,9 +1430,9 @@ iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
 plot(iris_kruskal_stored)
 ```
 
-    ## Plot [1] stored in /tmp/Rtmp32EDqh/glm_assumptions_iris_kruskal.pdf
+    ## Plot [1] stored in /tmp/Rtmp6XLX5I/glm_assumptions_iris_kruskal.pdf
 
-    ## Plot [2] stored in /tmp/Rtmp32EDqh/iris_kruskal.pdf
+    ## Plot [2] stored in /tmp/Rtmp6XLX5I/iris_kruskal.pdf
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
