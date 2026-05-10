@@ -52,7 +52,7 @@ Besides secure data exploration, typical use cases include  quick visualisations
 Most routine
 data analyses reduce to a comparatively small set of inferential
 frameworks, including group comparisons, contingency-table analyses,
-correlation methods, and regression models [@Chicco:2025],  `visStatistics` selects the “right test” by using a reproducible decision framework based on the data’s distributional assumptions and the sample size of the input data. It visualises its decision by both an assumption-diagnostic plot and a descriptive plot with the main test statistics annotated, and returns an R object whose `print()` and `summary()` methods expose the complete test results.
+correlation methods, and regression models [@Sato:2017; @Chicco:2025] `visStatistics` selects out of these most commonly used tests “right test” by using a reproducible decision framework based on the data’s distributional assumptions and the sample size of the input data. It visualises its decision by both an assumption-diagnostic plot and a descriptive plot with the main test statistics annotated, and returns an R object whose `print()` and `summary()` methods expose the complete test results.
 `compareGroups` [@Subirana:2014] also automates test choice by evaluating  normality per group. In contrast, `visStatistics` assesses the normality of the overall model residuals, adhering to the general linear model framework [@Searle:1971]. This avoids the loss of statistical power inherent in group-wise testing, which often leads to the unnecessary rejection of parametric methods
 
 
@@ -914,9 +914,10 @@ file.remove(attr(iris_kruskal_stored, "plot_paths"))
 
 # Limitations
 
-## Limitations by default settings
 
-The main purpose of this package is a decision-logic based automatic visualisation of statistical test results.
+## Default settings
+
+The main purpose of this package is a decision-logic based automatic selection visualisation of the "right" statistical test.
 Therefore, except for the user-adjustable `conf.level` parameter, all statistical tests are applied using their default settings from the corresponding base R functions.
 As a consequence, paired tests are currently not supported and `visstat()` does not allow to study interactions terms between the different levels of an independent variable in an analysis of variance.
 Focusing on the graphical representation of tests, only simple linear regression is implemented, as multiple linear regressions cannot be visualised.
@@ -952,6 +953,12 @@ Combining multiple tests with differing assumptions using simple majority voting
 
 Therefore, automated test selection based solely on p-values cannot replace the visual inspection of sample distributions provided by `visstat()`.
 Based on the provided diagnostic plots, it may be necessary to override the automated choice of test in individual cases.
+
+
+# Limited number of implemented tests
+
+While one of R's greatest strengths is the sheer volume of statistical methods available, our automated test selection pipeline deliberately restricts its scope to the most frequently used tests, particularly those relevant in a medical context [@Sato:2017,@Chicco:2025]. Incorporating a wider array of methods would require additional preliminary assumption checks, which in turn exacerbates the risk of overall Type I error inflation. Furthermore, expanding the pipeline would result in a highly complex decision tree, rendering the underlying statistical logic increasingly opaque to the user.
+
 
 ## Bootstrapping as modern alternative to hypothesis testing
 
