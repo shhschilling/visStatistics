@@ -80,9 +80,9 @@
 #'   column is of class \code{factor} and the column named by \code{varsample} 
 #'   is of class \code{numeric} or \code{integer}.
 #' @param conf.level Confidence level
-#' @param do_regression Logical. If TRUE (default), performs simple
+#' @param correlation Logical. If FALSE (default), performs simple
 #' linear regression analysis with confidence and prediction bands.
-#' If FALSE, performs correlation analysis with trend line only
+#' If TRUE, performs Spearman correlation analysis with trend line only
 #'  (no regression interpretation).
 #' @param numbers a logical indicating whether to show numbers in mosaic count
 #'   plots.
@@ -164,7 +164,7 @@ visstat_core <- function(dataframe,
                          varsample,
                          varfactor,
                          conf.level = 0.95,
-                         do_regression=TRUE,
+                         correlation = FALSE,
                          numbers = TRUE,
                          minpercent = 0.05,
                          graphicsoutput = NULL,
@@ -204,13 +204,25 @@ visstat_core <- function(dataframe,
   name_of_factor <- input$name_of_factor
   matchingCriteria <- input$matchingCriteria
   
-  # Detect ordered x ordered case: needs its own pathway (branch B-pre,
-  # Kendall's tau-b). For ordered response with non-ordered predictor we
-  # keep the existing behaviour: convert to numeric ranks and route to the
-  # non-parametric numeric/factor pathway (Wilcoxon/Kruskal-Wallis).
+  # Detect ordered x ordered case:
+  # Only route to Kendall's tau-b when correlation=TRUE; otherwise treat as
+  # ordered response + factor predictor (Wilcoxon/Kruskal-Wallis).
+  # For ordered response with non-ordered predictor we always convert to
+  # numeric ranks and route to the non-parametric pathway.
   ordinal_response <- FALSE
   both_ordered <- is.ordered(samples) && is.ordered(fact)
-  if (is.ordered(samples) && !both_ordered) {
+  use_kendall   <- both_ordered && correlation
+
+  if (both_ordered && !correlation && nlevels(fact) > 4) {
+    warning(
+      "Ordered predictor with ", nlevels(fact), " levels detected. ",
+      "Kruskal-Wallis discards the ordering of the predictor. ",
+      "If a monotone association is of interest, consider correlation = TRUE ",
+      "for Kendall's tau_b."
+    )
+  }
+
+  if (is.ordered(samples) && (!both_ordered || !correlation)) {
     warning("Ordered response (e.g., Likert scale) detected. Converting to numeric ranks for non-parametric analysis.")
     samples <- as.numeric(samples)
     ordinal_response <- TRUE  # Flag to force non-parametric
@@ -377,14 +389,14 @@ visstat_core <- function(dataframe,
   ##
   ## "ordered" is a subclass of "factor", so the factor-x-factor branch
   ## handles two sub-cases:
-  ##   B.1) both ordered  -> Kendall's tau-b rank correlation
-  ##   B.2) at least one nominal -> Chi^2 / Fisher exact test
-  ## In both sub-cases the visualisation includes a mosaic plot.
+  ##   B.1) both ordered AND correlation=TRUE -> Kendall's tau-b rank correlation
+  ##   B.2) at least one nominal, or both ordered but correlation=FALSE
+  ##        -> Chi^2 / Fisher exact test (ordered response already converted above)
 
   if (inherits(fact, "factor") && inherits(samples, "factor")) {
 
-    if (both_ordered) {
-      ## ----- B.1) Both ordered: Kendall's tau-b -----
+    if (use_kendall) {
+      ## ----- B.1) Both ordered + correlation=TRUE: Kendall's tau-b -----
       ##
       ## Treating ordered levels as nominal would discard the ordering
       ## and lose power against a monotone trend. Kendall's tau-b
@@ -607,7 +619,7 @@ visstat_core <- function(dataframe,
       name_of_factor = name_of_factor,
       name_of_sample = name_of_sample,
       conf.level = conf.level,
-      do_regression=do_regression
+      correlation = correlation
     )
     if (is.null(plotName)) {
       filename <-

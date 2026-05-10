@@ -15,7 +15,7 @@ Description: The right test - visualised. 'visStatistics' automatically
     selects and visualises statistical hypothesis tests between two vectors,
     based on their class, distribution, sample size, and a user-defined
     confidence level (conf.level). Visual outputs - including box plots,
-    bar charts, regression lines with confidence bands, mosaic plots,
+    bar charts, regression lines with confidence bands, mosaic plots (Pearson chi-squared only),
     residual plots, and Q-Q plots - are annotated with relevant test
     statistics, assumption checks, and post-hoc analyses where applicable.
     The algorithmic workflow shifts attention from test selection to
@@ -49,11 +49,16 @@ Description: The right test - visualised. 'visStatistics' automatically
     games.howell() otherwise.
  .
       (2) When both the response and predictor vectors are numerical, a
-    simple linear regression model is fitted using lm(), if do_regression
-    = TRUE (default). If do_regression=FALSE, Spearman rank correlation
-    is computed using cor.test().
+    simple linear regression model is fitted using lm(), if correlation
+    = FALSE (default). If correlation=TRUE, the most appropriate rank
+    correlation is selected: Spearman for numeric variables, Kendall's tau_b for two ordered factors.
  .
-      (3) When both vectors are categorical, Cochran's rule (Cochran (1954)
+      (3) When the response is of class ordered, it is converted to numeric
+    ranks and the non-parametric path from (1) is followed (Wilcoxon or
+    Kruskal-Wallis). When both variables are ordered and correlation=TRUE,
+    Kendall's tau_b is used instead.
+ .
+      (4) When both vectors are categorical, Cochran's rule (Cochran (1954)
     <doi:10.2307/3001666>) is applied to test independence either by
     chisq.test() or fisher.test().
 License: MIT + file LICENSE

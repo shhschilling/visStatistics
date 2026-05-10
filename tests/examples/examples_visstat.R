@@ -142,20 +142,18 @@ plot(linear_regression_trees, which = 2)
 
 # Spearman-correlation----
 result_swiss1 <- visstat(swiss$Education,
-                         swiss$Fertility, do_regression = FALSE)
+                         swiss$Fertility, correlation = TRUE)
 # Kendall-correlation----
-set.seed(1)
-n <- 100
-# latent scores with positive monotone association
-xs <- sample(1:3, n, replace = TRUE)
-ys <- pmin(3, pmax(1, xs + sample(-1:1, n, replace = TRUE)))
-likert_levels <- c(" disagree", "neutral",
-                   "agree" )
-likert_levels2 <- c(" left", "centre",
-                    "right" )
-attitude  <- ordered(likert_levels[xs], levels = likert_levels)
-politics <- ordered(likert_levels2[ys], levels = likert_levels2)
-kendall_result <- visstat(politics, attitude)
+set.seed(42)
+n <- 150
+# Negative monotone association: higher alcohol -> lower academic performance
+xs <- sample(1:5, n, replace = TRUE)
+ys <- pmin(5, pmax(1, (6 - xs) + sample(-1:1, n, replace = TRUE)))
+likert_levels  <- c("never", "rarely", "sometimes", "often", "always")
+likert_levels2 <- c("poor", "fair", "ok", "good", "great")
+alcohol     <- ordered(likert_levels[xs],  levels = likert_levels)
+performance <- ordered(likert_levels2[ys], levels = likert_levels2)
+kendall_result <- visstat(performance, alcohol, correlation = TRUE)
 
 
 # Chi squared, mosaic plots with HairEyeColor----

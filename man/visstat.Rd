@@ -10,7 +10,7 @@ visstat(
   ...,
   data = NULL,
   conf.level = 0.95,
-  do_regression = TRUE,
+  correlation = FALSE,
   numbers = TRUE,
   minpercent = 0.05,
   graphicsoutput = NULL,
@@ -44,10 +44,10 @@ input styles.}
 \item{conf.level}{Confidence level for statistical inference; default is 
 \code{0.95}.}
 
-\item{do_regression}{Logical. If \code{TRUE} (default), performs simple 
-linear regression analysis with confidence and prediction bands when both 
-variables are numeric. If \code{FALSE}, performs correlation analysis with 
-trend line only (no regression interpretation).}
+\item{correlation}{Logical. If \code{FALSE} (default), performs simple
+linear regression analysis with confidence and prediction bands when both
+variables are numeric. If \code{TRUE}, performs Spearman correlation analysis
+with trend line only (no regression interpretation).}
 
 \item{numbers}{Logical. Whether to annotate plots with numeric values.}
 

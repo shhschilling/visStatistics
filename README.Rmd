@@ -174,11 +174,12 @@ The interpretation of `x` and `y` depends on their classes:
   parametric test is performed: a Wilcoxon test in the case of two factor levels
   in `x`, a Kruskal-Wallis-Test for more than two factor levels in `x`.
 
-- If **both** `x` and `y` are of class `ordered`, the order of the levels carries
-  information that Chi-squared / Fisher would discard. `visstat()` instead tests
-  for a monotone association via Kendall's $\tau_b$
+- If **both** `x` and `y` are of class `ordered` and `correlation = TRUE` is set,
+  `visstat()` tests for a monotone association via Kendall's $\tau_b$
   (`cor.test(..., method = "kendall")`) and visualises the relationship with a
   jittered rank–rank scatter with points colour-coded by predictor level.
+  With the default `correlation = FALSE`, both-ordered inputs follow the standard
+  non-parametric path (Wilcoxon or Kruskal--Wallis).
 
 # Decision logic
 
@@ -374,21 +375,22 @@ fisher_stats <- visstat(black_brown_hazel_green_male$Eye,black_brown_hazel_green
 
 ## Both variables ordered: Rank correlation
 
-When both predictor and response are of class `ordered`, `visstat()` tests for a
-monotone association via Kendall's $\tau_b$ and produces a jittered rank–rank
-scatter with points colour-coded by predictor level, annotated with $\tau_b$ and
-the $p$-value.
+When both predictor and response are of class `ordered` and `correlation = TRUE`
+is set, `visstat()` tests for a monotone association via Kendall's $\tau_b$ and
+produces a jittered rank–rank scatter with points colour-coded by predictor level,
+annotated with $\tau_b$ and the $p$-value.
 
-```{r kendall-ordered, fig.alt="Kendall's tau-b rank correlation between two five-point Likert items. Shows a jittered rank-rank scatter with colour-coded points by predictor level, annotated with tau-b and the p-value."}
-set.seed(1)
-n <- 120
+```{r kendall-ordered, fig.alt="Kendall's tau-b rank correlation between alcohol consumption frequency and academic performance, both on five-point ordinal scales. Shows a jittered rank-rank scatter with colour-coded points by predictor level, annotated with tau-b and the p-value."}
+set.seed(42)
+n <- 150
+# Negative monotone association: higher alcohol -> lower academic performance
 xs <- sample(1:5, n, replace = TRUE)
-ys <- pmin(5, pmax(1, xs + sample(-1:1, n, replace = TRUE)))
-likert_levels <- c("strongly disagree", "disagree", "neutral",
-                   "agree", "strongly agree")
-attitude  <- ordered(likert_levels[xs], levels = likert_levels)
-intention <- ordered(likert_levels[ys], levels = likert_levels)
-kendall_result <- visstat(intention, attitude)
+ys <- pmin(5, pmax(1, (6 - xs) + sample(-1:1, n, replace = TRUE)))
+likert_levels  <- c("never", "rarely", "sometimes", "often", "always")
+likert_levels2 <- c("poor", "fair", "ok", "good", "great")
+alcohol     <- ordered(likert_levels[xs],  levels = likert_levels)
+performance <- ordered(likert_levels2[ys], levels = likert_levels2)
+kendall_result <- visstat(performance, alcohol, correlation = TRUE)
 ```
 
 # Saving the graphical output
