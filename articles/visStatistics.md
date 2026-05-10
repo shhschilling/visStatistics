@@ -199,9 +199,8 @@ fitted.
   and Kim 2017](#ref-Kwak:2017))
 
   - Homoscedasticity: The Levene–Brown–Forsythe (L) test (implemented as
-    [`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md))
-    ([Brown and Forsythe 1974](#ref-Brown:1974)) tests for homogeneous
-    variances.
+    `levene.test()`) ([Brown and Forsythe 1974](#ref-Brown:1974)) tests
+    for homogeneous variances.
     - When homogeneity is not rejected ($`p_L > \alpha`$): For two
       groups, Student’s t-test
       ([`t.test()`](https://rdrr.io/r/stats/t.test.html) with
@@ -216,12 +215,11 @@ fitted.
       with `var.equal = FALSE`) is applied; for more than two groups,
       Welch’s heteroscedastic one-way ANOVA
       ([`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html)) with
-      Games-Howell post-hoc test
-      ([`games.howell()`](https://shhschilling.github.io/visStatistics/reference/games.howell.md))
-      ([Games and Howell 1976](#ref-Games:1976)) is applied. Welch’s
-      methods outperform their classical counterparts when variances
-      differ ([Moser and Stevens 1992](#ref-Moser:1992); [Fagerland and
-      Sandvik 2009](#ref-Fagerland:2009); [Delacre et al.
+      Games-Howell post-hoc test (`games.howell()`) ([Games and Howell
+      1976](#ref-Games:1976)) is applied. Welch’s methods outperform
+      their classical counterparts when variances differ ([Moser and
+      Stevens 1992](#ref-Moser:1992); [Fagerland and Sandvik
+      2009](#ref-Fagerland:2009); [Delacre et al.
       2017](#ref-Delacre:2017)).
 
 - Regardless of sample size, assumption diagnostics are always
@@ -230,11 +228,9 @@ fitted.
   1971](#ref-Searle:1971)) underlying t-tests, ANOVA, and linear
   regression. When heteroscedasticity is detected and therefore Welch
   methods are selected, group-wise normality diagnostics are
-  additionally displayed via
-  [`vis_group_normality()`](https://shhschilling.github.io/visStatistics/reference/vis_group_normality.md).
-  These diagnostic plots enable users to visually assess whether
-  assumptions are met and manually override the automated p-value-based
-  test selection.
+  additionally displayed via `vis_group_normality()`. These diagnostic
+  plots enable users to visually assess whether assumptions are met and
+  manually override the automated p-value-based test selection.
 
 ### Both variables numeric: Simple linear regression or Spearman correlation
 
@@ -255,10 +251,8 @@ that **only one** predictor variable is allowed, as the function is
 designed for two-dimensional visualisation.
 
 In the linear regression branch, homoscedasticity is assessed using the
-Breusch–Pagan test
-[`bp.test()`](https://shhschilling.github.io/visStatistics/reference/bp.test.md),
-which evaluates whether the variance of the raw residuals depends on the
-predictor variable.
+Breusch–Pagan test `bp.test()`, which evaluates whether the variance of
+the raw residuals depends on the predictor variable.
 
 #### Spearman rank correlation (`correlation = TRUE`)
 
@@ -345,12 +339,10 @@ the same set of assumptions:
 - Error terms are independent, normally distributed with expectation
   value 0 and have constant error variance $`\sigma^2`$
 
-The function
-[`vis_lm_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md)
-provides a unified visual and statistical framework for validating the
-linear model assumptions. It fits a linear model using
-[`aov()`](https://rdrr.io/r/stats/aov.html) and provides four standard
-diagnostic plots:
+The function `vis_lm_assumptions()` provides a unified visual and
+statistical framework for validating the linear model assumptions. It
+fits a linear model using [`aov()`](https://rdrr.io/r/stats/aov.html)
+and provides four standard diagnostic plots:
 
 1.  **Histogram and Normal Density**: Displays the distribution of
     standardized residuals with a red normal density curve overlay to
@@ -382,17 +374,15 @@ tail deviations ([Razali and Wah 2011](#ref-Razali:2011); [Yap and Sim
 2011](#ref-Yap:2011)).
 
 **Homoscedasticity Assessment**: Variance equality is tested using the
-Levene-Brown-Forsythe test
-([`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md))
-([Brown and Forsythe 1974](#ref-Brown:1974)) and Bartlett’s test
+Levene-Brown-Forsythe test (`levene.test()`) ([Brown and Forsythe
+1974](#ref-Brown:1974)) and Bartlett’s test
 ([`bartlett.test()`](https://rdrr.io/r/stats/bartlett.test.html)) in the
 ANOVA path.
 
 These tests compare the spread of data across different factor levels.
 
-For simple linear regression, the Breusch-Pagan test
-([`bp.test()`](https://shhschilling.github.io/visStatistics/reference/bp.test.md))
-is implemented.
+For simple linear regression, the Breusch-Pagan test (`bp.test()`) is
+implemented.
 
 These three tests have standalone implementations in the package to
 avoid dependencies on external packages.
@@ -791,15 +781,13 @@ scatter plot of standardised residuals, Q-Q plot) and formal tests
 (Shapiro–Wilk and Anderson- Darling, both with $`p > \alpha`$).
 Homogeneity of variances is not supported at the given confidence level
 by [`bartlett.test()`](https://rdrr.io/r/stats/bartlett.test.html), but
-by
-[`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
-($`p > \alpha`$). The decision logic is solely based on
-[`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
-and triggers [`aov()`](https://rdrr.io/r/stats/aov.html). Post-hoc
-analysis with [`TukeyHSD()`](https://rdrr.io/r/stats/TukeyHSD.html).
-Note that the omnibus F-test reports p = 0.086 — not significant at
-$`\alpha=0.05`$. Therefore no pairwise differences are expected in the
-post-hoc analysis and all groups share the same green letter “a”.
+by `levene.test()` ($`p > \alpha`$). The decision logic is solely based
+on `levene.test()` and triggers
+[`aov()`](https://rdrr.io/r/stats/aov.html). Post-hoc analysis with
+[`TukeyHSD()`](https://rdrr.io/r/stats/TukeyHSD.html). Note that the
+omnibus F-test reports p = 0.086 — not significant at $`\alpha=0.05`$.
+Therefore no pairwise differences are expected in the post-hoc analysis
+and all groups share the same green letter “a”.
 
 ##### Kruskal–Wallis rank sum test
 
@@ -889,7 +877,7 @@ line.
 checks the normality of the standardised residuals from
 [`lm()`](https://rdrr.io/r/stats/lm.html) both with diagnostic plots and
 using the Shapiro–Wilk and Anderson-Darling tests. (via
-[`vis_lm_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md))
+`vis_lm_assumptions()`)
 
 Note, that regardless of the result of the residual analysis,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1351,7 +1339,7 @@ paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
 
-    ## [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp9NkySa/chi_squared_or_fisher_Hair_Eye.png"
+    ## [1] "/tmp/RtmpTJ9Nee/chi_squared_or_fisher_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -1442,9 +1430,9 @@ iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
 plot(iris_kruskal_stored)
 ```
 
-    ## Plot [1] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp9NkySa/glm_assumptions_iris_kruskal.pdf
+    ## Plot [1] stored in /tmp/RtmpTJ9Nee/glm_assumptions_iris_kruskal.pdf
 
-    ## Plot [2] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp9NkySa/iris_kruskal.pdf
+    ## Plot [2] stored in /tmp/RtmpTJ9Nee/iris_kruskal.pdf
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1703,9 +1691,8 @@ This makes it more robust to skewed data or data with outliers providing
 more reliable results in many practical situations ([Allingham and
 Rayner 2012](#ref-Allingham:2012)).
 
-[`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
-mimics the default behaviour of `leveneTest()` in the `car` package
-([Fox and Weisberg 2019](#ref-Fox:2019)).
+`levene.test()` mimics the default behaviour of `leveneTest()` in the
+`car` package ([Fox and Weisberg 2019](#ref-Fox:2019)).
 
 The Levene–Brown–Forsythe test evaluates the null hypothesis that all
 groups have equal variances by testing whether the absolute deviations
@@ -1769,8 +1756,7 @@ a $`\chi^2`$-distribution with $`k - 1`$ degrees of freedom ([Bartlett
 ### Breusch-Pagan test `bp.test()`
 
 For linear regression (`regression = TRUE`), group-based tests cannot be
-used. Instead, the `visStatistics` package function
-[`bp.test()`](https://shhschilling.github.io/visStatistics/reference/bp.test.md)
+used. Instead, the `visStatistics` package function `bp.test()`
 implements the Breusch-Pagan test.
 
 The Breusch-Pagan test assesses whether the variance of the residuals
