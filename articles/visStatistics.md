@@ -3,9 +3,9 @@
 ## Abstract
 
 `visStatistics` automatically selects and visualises appropriate
-statistical hypothesis tests between two column vectors of class
-`"numeric"`, `"integer"`, or `"factor"`. The choice of test depends on
-the `class`, distributional assumptions, and sample size of the vectors.
+statistical tests between two column vectors of class `"numeric"`,
+`"integer"`, or `"factor"`. The choice of test depends on the `class`,
+distributional assumptions, and sample size of the vectors.
 
 The main function
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -14,12 +14,13 @@ charts, regression lines with confidence bands, mosaic plots, residual
 plots), annotated with the main test results, including visualisations
 of the assumption checks and post-hoc analyses.
 
-This scripted workflow is well suited for browser-based applications
-where sensitive data (such as highly confidential medical records) is
-stored securely on a server and can not be directly accessed by users.
-Besides secure data exploration, typical use cases include quick
-visualisations, and guided statistical test selection, for example in
-statistical consulting or educational settings.
+This scripted workflow is well suited for browser-based applications,
+where ysers interact only through a web interface, while server-side R
+applications handle the data processing.
+
+Other typical use cases include quick visualisations, and guided
+statistical test selection, for example in statistical consulting or
+educational settings.
 
 ## Introduction
 
@@ -30,17 +31,23 @@ analyses, correlation methods, and regression models ([Sato et al.
 `visStatistics` selects out of these most commonly used tests “right
 test” by using a reproducible decision framework based on the data’s
 distributional assumptions and the sample size of the input data. It
-visualises its decision by both an assumption-diagnostic plot and a
-descriptive plot with the main test statistics annotated, and returns an
-R object whose [`print()`](https://rdrr.io/r/base/print.html) and
-[`summary()`](https://rdrr.io/r/base/summary.html) methods expose the
-complete test results. `compareGroups` ([Subirana et al.
-2014](#ref-Subirana:2014)) also automates test choice by evaluating
-normality per group. In contrast, `visStatistics` assesses the normality
-of the overall model residuals, adhering to the general linear model
-framework ([Searle 1971](#ref-Searle:1971)). This avoids the loss of
-statistical power inherent in group-wise testing, which often leads to
-the unnecessary rejection of parametric methods
+visualises its decision by, where appropriate, assumption-diagnostic
+plot and a descriptive plot with the main test statistics annotated, and
+returns an R object whose [`print()`](https://rdrr.io/r/base/print.html)
+and [`summary()`](https://rdrr.io/r/base/summary.html) methods expose
+the complete test results. The scripted workflow is well suited for
+browser-based applications where sensitive data (such as highly
+confidential medical records) is stored securely on a server and can not
+be directly accessed by users. This approach was already succesfully
+applied to develop a medical scoring tool ([Bijlenga et al.
+2017](#ref-Bijlenga:2017)). A package with similar scope,
+`compareGroups` ([Subirana et al. 2014](#ref-Subirana:2014)), also
+automates test choice by evaluating normality per group. In contrast,
+`visStatistics` assesses the normality of the overall model residuals,
+adhering to the general linear model framework ([Searle
+1971](#ref-Searle:1971)). This avoids the loss of statistical power
+inherent in group-wise testing, which often leads to the unnecessary
+rejection of parametric methods.
 
 ## Getting started
 
@@ -955,11 +962,14 @@ in percentage points.
 
 ``` r
 
-result_swiss1 <- visstat(swiss$Fertility,
-                             swiss$Education, do_regression = FALSE)
+result_swiss1 <- visstat(swiss$Education,
+                         swiss$Fertility, do_regression = FALSE)
 ```
 
 ![](visStatistics_files/figure-html/unnamed-chunk-8-1.png)![](visStatistics_files/figure-html/unnamed-chunk-8-2.png)
+Visual inspection of the assumption plot suggest that the normality of
+the residuals can not be assumed. A rank correlation analysis is
+therefore applied.
 
 ### Both variables categorical: Comparing proportions
 
@@ -1308,7 +1318,7 @@ paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
 
-    ## [1] "/tmp/RtmpKI5e90/chi_squared_or_fisher_Hair_Eye.png"
+    ## [1] "/tmp/RtmpcKzk21/chi_squared_or_fisher_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -1399,9 +1409,9 @@ iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
 plot(iris_kruskal_stored)
 ```
 
-    ## Plot [1] stored in /tmp/RtmpKI5e90/glm_assumptions_iris_kruskal.pdf
+    ## Plot [1] stored in /tmp/RtmpcKzk21/glm_assumptions_iris_kruskal.pdf
 
-    ## Plot [2] stored in /tmp/RtmpKI5e90/iris_kruskal.pdf
+    ## Plot [2] stored in /tmp/RtmpcKzk21/iris_kruskal.pdf
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1756,6 +1766,11 @@ Bartlett, M. S. 1937. “Properties of Sufficiency and Statistical Tests.”
 *Proceedings of the Royal Society of London. Series A, Mathematical and
 Physical Sciences* 160 (901): 268–82.
 <https://doi.org/10.1098/rspa.1937.0109>.
+
+Bijlenga, Philippe, Renato Gondar, Sabine Schilling, et al. 2017.
+“PHASES Score for the Management of Intracranial Aneurysm: A
+Cross-Sectional Population-Based Retrospective Study.” *Stroke* 48 (8):
+2105–12. <https://doi.org/10.1161/STROKEAHA.117.017391>.
 
 Breusch, T. S., and A. R. Pagan. 1979. “A Simple Test for
 Heteroscedasticity and Random Coefficient Variation.” *Econometrica* 47
