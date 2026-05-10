@@ -141,8 +141,8 @@ plot(linear_regression_trees, which = 1) # replays assumption plot
 plot(linear_regression_trees, which = 2)
 
 # Spearman-correlation----
-result_swiss1 <- visstat(swiss$Fertility,
-                         swiss$Education, do_regression = FALSE)
+result_swiss1 <- visstat(swiss$Education,
+                         swiss$Fertility, do_regression = FALSE)
 # Kendall-correlation----
 set.seed(1)
 n <- 100

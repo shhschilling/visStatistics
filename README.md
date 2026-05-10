@@ -373,7 +373,7 @@ black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_
 fisher_stats <- visstat(black_brown_hazel_green_male$Eye,black_brown_hazel_green_male$Hair)
 ```
 
-<img src="man/figures/README-haireye-fisher-1.png" alt="Fisher's exact test for 2x2 contingency table of hair and eye colour in males (black/brown hair versus hazel/green eyes). Displays observed frequencies, mosaic plot showing cell proportions, and exact test statistics for association with small sample sizes." width="80%" /><img src="man/figures/README-haireye-fisher-2.png" alt="Fisher's exact test for 2x2 contingency table of hair and eye colour in males (black/brown hair versus hazel/green eyes). Displays observed frequencies, mosaic plot showing cell proportions, and exact test statistics for association with small sample sizes." width="80%" />
+<img src="man/figures/README-haireye-fisher-1.png" alt="Fisher's exact test for 2x2 contingency table of hair and eye colour in males (black/brown hair versus hazel/green eyes). Displays observed frequencies, mosaic plot showing cell proportions, and exact test statistics for association with small sample sizes." width="80%" />
 
 ## Both variables ordered: Rank correlation
 
@@ -393,7 +393,7 @@ intention <- ordered(likert_levels[ys], levels = likert_levels)
 kendall_result <- visstat(intention, attitude)
 ```
 
-<img src="man/figures/README-kendall-ordered-1.png" alt="Kendall's tau-b rank correlation between two five-point Likert items. Shows a jittered rank-rank scatter annotated with tau-b, the p-value, and sample size, plus a mosaic plot whose tile ordering reflects the level ordering of the ordered factors." width="80%" /><img src="man/figures/README-kendall-ordered-2.png" alt="Kendall's tau-b rank correlation between two five-point Likert items. Shows a jittered rank-rank scatter annotated with tau-b, the p-value, and sample size, plus a mosaic plot whose tile ordering reflects the level ordering of the ordered factors." width="80%" />
+<img src="man/figures/README-kendall-ordered-1.png" alt="Kendall's tau-b rank correlation between two five-point Likert items. Shows a jittered rank-rank scatter annotated with tau-b, the p-value, and sample size, plus a mosaic plot whose tile ordering reflects the level ordering of the ordered factors." width="80%" />
 
 # Saving the graphical output
 
@@ -427,15 +427,14 @@ The full file path of the generated graphics are stored as the attribute
 ``` r
 paths <- attr(save_fisher, "plot_paths")
 print(paths)
-#> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp5fn8wA/chi_squared_or_fisher_Hair_Eye.png"
-#> [2] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp5fn8wA/mosaic_complete_Hair_Eye.png"
+#> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmptoHBnl/chi_squared_or_fisher_Hair_Eye.png"
 ```
 
 Remove the graphical output from `plotDirectory`:
 
 ``` r
 file.remove(paths)
-#> [1] TRUE TRUE
+#> [1] TRUE
 ```
 
 <!-- ## Implemented tests -->
