@@ -178,7 +178,7 @@ The interpretation of `x` and `y` depends on their classes:
   information that Chi-squared / Fisher would discard. `visstat()` instead tests
   for a monotone association via Kendall's $\tau_b$
   (`cor.test(..., method = "kendall")`) and visualises the relationship with a
-  jittered rank–rank scatter plus a mosaic plot.
+  jittered rank–rank scatter with points colour-coded by predictor level.
 
 # Decision logic
 
@@ -362,7 +362,7 @@ visstat(hair_eye_color_df$Eye, hair_eye_color_df$Hair)
 
 ### Fisher's exact test
 
-```{r haireye-fisher, fig.alt="Fisher's exact test for 2x2 contingency table of hair and eye colour in males (black/brown hair versus hazel/green eyes). Displays observed frequencies, mosaic plot showing cell proportions, and exact test statistics for association with small sample sizes."}
+```{r haireye-fisher, fig.alt="Fisher's exact test for 2x2 contingency table of hair and eye colour in males (black/brown hair versus hazel/green eyes). Displays absolute counts with N labels above each bar and exact test statistics. No mosaic plot is produced."}
 hair_eye_color_male <- HairEyeColor[, , 1]
 # Slice out a 2 by 2 contingency table
 black_brown_hazel_green_male <- hair_eye_color_male[1:2, 3:4]
@@ -376,9 +376,10 @@ fisher_stats <- visstat(black_brown_hazel_green_male$Eye,black_brown_hazel_green
 
 When both predictor and response are of class `ordered`, `visstat()` tests for a
 monotone association via Kendall's $\tau_b$ and produces a jittered rank–rank
-scatter together with a mosaic plot.
+scatter with points colour-coded by predictor level, annotated with $\tau_b$ and
+the $p$-value.
 
-```{r kendall-ordered, fig.alt="Kendall's tau-b rank correlation between two five-point Likert items. Shows a jittered rank-rank scatter annotated with tau-b, the p-value, and sample size, plus a mosaic plot whose tile ordering reflects the level ordering of the ordered factors."}
+```{r kendall-ordered, fig.alt="Kendall's tau-b rank correlation between two five-point Likert items. Shows a jittered rank-rank scatter with colour-coded points by predictor level, annotated with tau-b and the p-value."}
 set.seed(1)
 n <- 120
 xs <- sample(1:5, n, replace = TRUE)
@@ -407,10 +408,9 @@ In the following example, we store the graphics in `png` format in the
 `plotDirectory` `tempdir()` with the default naming convention:
 
 ```{r}
-#Graphical output written to plotDirectory: In this example 
-# a bar chart to visualise the Chi-squared test and mosaic plot showing
-# Pearson's residuals named 
-#chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png resp. 
+# Graphical output written to plotDirectory: In this example
+# a single bar chart showing absolute counts (Fisher's exact test).
+# Output file: chi_squared_or_fisher_Hair_Eye.png
 save_fisher <- visstat(black_brown_hazel_green_male, "Hair", "Eye",
         graphicsoutput = "png", plotDirectory = tempdir())
 ```
