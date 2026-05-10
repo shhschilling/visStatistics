@@ -78,9 +78,10 @@ appropriate statistical tests between two column vectors of class
 vectors.</p>
 <p>The main function <code><a href="../reference/visstat.html">visstat()</a></code> visualises the selected test
 with appropriate graphs (box plots, bar charts, regression lines with
-confidence bands, mosaic plots, residual plots), annotated with the main
-test results, including visualisations of the assumption checks and
-post-hoc analyses.</p>
+confidence bands, mosaic plots for Pearson’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
+test, residual plots), annotated with the main test results, including
+visualisations of the assumption checks and post-hoc analyses.</p>
 <p>This scripted workflow is well suited for browser-based applications,
 where ysers interact only through a web interface, while server-side R
 applications handle the data processing.</p>
@@ -375,9 +376,11 @@ for ordinal data with few levels, where ties are common:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
 corrects for ties explicitly, while Spearman’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
-uses only an approximate adjustment <span class="citation">Xu et al. (<a href="#ref-Xu:2013">2013</a>)</span>. The mosaic plot is reused as the
-visualisation, it is complemented by a jittered rank-rank scatter that
-makes the monotone trend visible.</p>
+uses only an approximate adjustment <span class="citation">Xu et al. (<a href="#ref-Xu:2013">2013</a>)</span>. The visualisation is a jittered
+rank–rank scatter that makes the monotone trend visible, annotated with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
+and the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value.</p>
 </div>
 </div>
 </div>
@@ -1205,11 +1208,35 @@ expected count is smaller than 1, the function uses Pearson’s
 <p>For 2-by-2 contingency tables, Yates’ continuity correction <span class="citation">(<a href="#ref-Yates:1934">Yates 1934</a>)</span> is
 always applied to Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test.</p>
-<p>For all tests of independence <code><a href="../reference/visstat.html">visstat()</a></code> displays a
-grouped column plot that includes the respective test’s p-value in the
-title, as well as a mosaic plot showing colour-coded Pearson residuals
-and the p-value of Pearson’s
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>-test.</p>
+<p>The graphical output depends on the selected test:</p>
+<ul>
+<li>
+<strong>Pearson’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
+test</strong> (general
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>×</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">R \times C</annotation></semantics></math>
+tables): a grouped column plot showing row percentages with the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
+in the title, followed by a mosaic plot with colour-coded Pearson
+residuals.</li>
+<li>
+<strong>Pearson’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\chi^2</annotation></semantics></math>
+test with Yates’ continuity correction</strong>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">2 \times 2</annotation></semantics></math>
+tables): a grouped column plot showing row percentages with the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
+in the title. No mosaic plot is produced, because the Yates-corrected
+statistic is not decomposable into cell-level Pearson residuals.</li>
+<li>
+<strong>Fisher’s exact test</strong>: a grouped column plot showing
+absolute counts with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+labels above each bar and the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
+in the title. No mosaic plot is produced, as Fisher’s exact test does
+not yield Pearson residuals.</li>
+</ul>
 </div>
 <div class="section level4">
 <h4 id="transforming-a-contingency-table-to-a-data-frame">Transforming a contingency table to a data frame<a class="anchor" aria-label="anchor" href="#transforming-a-contingency-table-to-a-data-frame"></a>
@@ -1267,17 +1294,17 @@ either black or brown hair and either brown or blue eyes, resulting in a
 <span><span class="co"># Chi-squared test with Yates' continuity correction</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
-<p><img src="visStatistics_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="100%"><img src="visStatistics_files/figure-html/unnamed-chunk-11-2.png" class="r-plt" alt="" width="100%"></p>
+<p><img src="visStatistics_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="100%"></p>
 <p>Also in this reduced dataset we reject the null hypothesis of
 independence of the hair colours “brown” and “black” from the eye
-colours “brown” and “blue”. The mosaic plot shows that blue-eyed persons
-with black hair are under-represented. Note the higher p-value of
-Pearson’s
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test
-with Yates’ continuity correction (p = 0.00354) compared to the p-value
-of Pearson’s
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>χ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">{\chi}^2</annotation></semantics></math>-test
-(p = 0.00229) shown in the mosaic plot.</p>
+colours “brown” and “blue”. As a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">2 \times 2</annotation></semantics></math>
+table, Yates’ continuity correction is applied and no mosaic plot is
+produced. Note that the Yates-corrected
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
+is slightly higher than the uncorrected Pearson
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value,
+reflecting the more conservative correction.</p>
 </div>
 <div class="section level5">
 <h5 id="fishers-exact-test-fisher-test-1">Fisher’s exact test (<code>fisher.test()</code>)<a class="anchor" aria-label="anchor" href="#fishers-exact-test-fisher-test-1"></a>
@@ -1367,19 +1394,12 @@ and the two-sided
 <div class="section level4">
 <h4 id="graphical-output-1">Graphical output<a class="anchor" aria-label="anchor" href="#graphical-output-1"></a>
 </h4>
-<p>Two plots are produced:</p>
-<ol style="list-style-type: decimal">
-<li>A jittered rank–rank scatter that visualises the monotone trend,
+<p>One plot is produced: a jittered rank–rank scatter that visualises
+the monotone trend, with points colour-coded by the predictor level and
 annotated with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>,
-the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value,
-and the sample size.</li>
-<li>A mosaic plot via <code>vis_mosaic()</code>. Because
-<code><a href="https://rdrr.io/pkg/vcd/man/mosaic.html" class="external-link">vcd::mosaic()</a></code> honours the level ordering of
-<code>ordered</code> factors, the tile layout itself preserves the
-ordinal structure.</li>
-</ol>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math>
+and the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value.</p>
 </div>
 <div class="section level4">
 <h4 id="example-1">Example<a class="anchor" aria-label="anchor" href="#example-1"></a>
@@ -1422,10 +1442,9 @@ complete output file name.</p>
 format in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> with the
 default naming convention:</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Graphical output written to plotDirectory: In this example</span></span>
-<span><span class="co"># a bar chart to visualise the Chi-squared test and mosaic plot showing</span></span>
-<span><span class="co"># Pearson's residuals.</span></span>
-<span><span class="co">#chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png</span></span>
+<code class="sourceCode R"><span><span class="co"># Graphical output written to plotDirectory: In this example</span></span>
+<span><span class="co"># a single bar chart showing absolute counts.</span></span>
+<span><span class="co"># Output file: chi_squared_or_fisher_Hair_Eye.png</span></span>
 <span><span class="va">save_fisher</span> <span class="op">=</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">black_brown_hazel_green_male</span><span class="op">$</span><span class="va">Hair</span>,</span>
 <span>        graphicsoutput <span class="op">=</span> <span class="st">"png"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The full file path of the generated graphics are stored as the
@@ -1434,7 +1453,7 @@ attribute <code>"plot_paths"</code> on the returned object of class
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "/tmp/RtmpcKzk21/chi_squared_or_fisher_Hair_Eye.png"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "/tmp/Rtmp2qMBXW/chi_squared_or_fisher_Hair_Eye.png"</span></span></code></pre>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
@@ -1502,8 +1521,8 @@ file paths of the stored graphics:</p>
 <span>                               plotName <span class="op">=</span> <span class="st">"iris_kruskal"</span>,</span>
 <span>                               plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iris_kruskal_stored</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Plot [1] stored in /tmp/RtmpcKzk21/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
-<pre><code><span><span class="co">## Plot [2] stored in /tmp/RtmpcKzk21/iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [1] stored in /tmp/Rtmp2qMBXW/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [2] stored in /tmp/Rtmp2qMBXW/iris_kruskal.pdf</span></span></code></pre>
 <p>When <code><a href="../reference/visstat.html">visstat()</a></code> is called without
 <code>graphicsoutput</code> (the default interactive mode), the
 generated plots are captured internally. Calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>

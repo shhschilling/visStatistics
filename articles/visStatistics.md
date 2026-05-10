@@ -10,9 +10,10 @@ distributional assumptions, and sample size of the vectors.
 The main function
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 visualises the selected test with appropriate graphs (box plots, bar
-charts, regression lines with confidence bands, mosaic plots, residual
-plots), annotated with the main test results, including visualisations
-of the assumption checks and post-hoc analyses.
+charts, regression lines with confidence bands, mosaic plots for
+Pearson’s $`\chi^2`$ test, residual plots), annotated with the main test
+results, including visualisations of the assumption checks and post-hoc
+analyses.
 
 This scripted workflow is well suited for browser-based applications,
 where ysers interact only through a web interface, while server-side R
@@ -313,9 +314,9 @@ $`\tau_b`$Kendall ([1945](#ref-Kendall:1945))\]
 over Spearman’s $`\rho`$ for ordinal data with few levels, where ties
 are common: $`\tau_b`$ corrects for ties explicitly, while Spearman’s
 $`\rho`$ uses only an approximate adjustment Xu et al.
-([2013](#ref-Xu:2013)). The mosaic plot is reused as the visualisation,
-it is complemented by a jittered rank-rank scatter that makes the
-monotone trend visible.
+([2013](#ref-Xu:2013)). The visualisation is a jittered rank–rank
+scatter that makes the monotone trend visible, annotated with $`\tau_b`$
+and the $`p`$-value.
 
 ## Assumption diagnostics: `vis_lm_assumptions()`
 
@@ -1107,11 +1108,21 @@ For 2-by-2 contingency tables, Yates’ continuity correction ([Yates
 1934](#ref-Yates:1934)) is always applied to Pearson’s
 $`{\chi}^2`$-test.
 
-For all tests of independence
-[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-displays a grouped column plot that includes the respective test’s
-p-value in the title, as well as a mosaic plot showing colour-coded
-Pearson residuals and the p-value of Pearson’s $`\chi^2`$-test.
+The graphical output depends on the selected test:
+
+- **Pearson’s $`\chi^2`$ test** (general $`R \times C`$ tables): a
+  grouped column plot showing row percentages with the $`p`$-value in
+  the title, followed by a mosaic plot with colour-coded Pearson
+  residuals.
+- **Pearson’s $`\chi^2`$ test with Yates’ continuity correction**
+  ($`2 \times 2`$ tables): a grouped column plot showing row percentages
+  with the $`p`$-value in the title. No mosaic plot is produced, because
+  the Yates-corrected statistic is not decomposable into cell-level
+  Pearson residuals.
+- **Fisher’s exact test**: a grouped column plot showing absolute counts
+  with $`N`$ labels above each bar and the $`p`$-value in the title. No
+  mosaic plot is produced, as Fisher’s exact test does not yield Pearson
+  residuals.
 
 #### Transforming a contingency table to a data frame
 
@@ -1171,15 +1182,14 @@ hair_black_brown_eyes_brown_blue_df <- counts_to_cases(as.data.frame(hair_black_
 visstat(hair_black_brown_eyes_brown_blue_df$Eye, hair_black_brown_eyes_brown_blue_df$Hair)
 ```
 
-![](visStatistics_files/figure-html/unnamed-chunk-11-1.png)![](visStatistics_files/figure-html/unnamed-chunk-11-2.png)
+![](visStatistics_files/figure-html/unnamed-chunk-11-1.png)
 
 Also in this reduced dataset we reject the null hypothesis of
 independence of the hair colours “brown” and “black” from the eye
-colours “brown” and “blue”. The mosaic plot shows that blue-eyed persons
-with black hair are under-represented. Note the higher p-value of
-Pearson’s $`{\chi}^2`$-test with Yates’ continuity correction (p =
-0.00354) compared to the p-value of Pearson’s $`{\chi}^2`$-test (p =
-0.00229) shown in the mosaic plot.
+colours “brown” and “blue”. As a $`2 \times 2`$ table, Yates’ continuity
+correction is applied and no mosaic plot is produced. Note that the
+Yates-corrected $`p`$-value is slightly higher than the uncorrected
+Pearson $`p`$-value, reflecting the more conservative correction.
 
 ##### Fisher’s exact test (`fisher.test()`)
 
@@ -1250,14 +1260,9 @@ $`p`$-value.
 
 #### Graphical output
 
-Two plots are produced:
-
-1.  A jittered rank–rank scatter that visualises the monotone trend,
-    annotated with $`\tau_b`$, the $`p`$-value, and the sample size.
-2.  A mosaic plot via `vis_mosaic()`. Because
-    [`vcd::mosaic()`](https://rdrr.io/pkg/vcd/man/mosaic.html) honours
-    the level ordering of `ordered` factors, the tile layout itself
-    preserves the ordinal structure.
+One plot is produced: a jittered rank–rank scatter that visualises the
+monotone trend, with points colour-coded by the predictor level and
+annotated with $`\tau_b`$ and the $`p`$-value.
 
 #### Example
 
@@ -1301,10 +1306,9 @@ the default naming convention:
 
 ``` r
 
-#Graphical output written to plotDirectory: In this example
-# a bar chart to visualise the Chi-squared test and mosaic plot showing
-# Pearson's residuals.
-#chi_squared_or_fisher_Hair_Eye.png and mosaic_complete_Hair_Eye.png
+# Graphical output written to plotDirectory: In this example
+# a single bar chart showing absolute counts.
+# Output file: chi_squared_or_fisher_Hair_Eye.png
 save_fisher = visstat(black_brown_hazel_green_male$Eye, black_brown_hazel_green_male$Hair,
         graphicsoutput = "png", plotDirectory = tempdir())
 ```
@@ -1318,7 +1322,7 @@ paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
 
-    ## [1] "/tmp/RtmpcKzk21/chi_squared_or_fisher_Hair_Eye.png"
+    ## [1] "/tmp/Rtmp2qMBXW/chi_squared_or_fisher_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -1409,9 +1413,9 @@ iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
 plot(iris_kruskal_stored)
 ```
 
-    ## Plot [1] stored in /tmp/RtmpcKzk21/glm_assumptions_iris_kruskal.pdf
+    ## Plot [1] stored in /tmp/Rtmp2qMBXW/glm_assumptions_iris_kruskal.pdf
 
-    ## Plot [2] stored in /tmp/RtmpcKzk21/iris_kruskal.pdf
+    ## Plot [2] stored in /tmp/Rtmp2qMBXW/iris_kruskal.pdf
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
