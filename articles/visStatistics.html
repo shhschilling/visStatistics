@@ -30,7 +30,7 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -59,9 +59,9 @@ Sciences and
 Arts<br><a class="author_email" href="mailto:#"></a><a href="mailto:sabine.schilling@protonmail.com" class="email">sabine.schilling@protonmail.com</a>
       </address>
                   
-            <h4 data-toc-skip class="date">2026-05-10</h4>
+            <h4 data-toc-skip class="date">2026-05-11</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/HEAD/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
     </div>
 
@@ -124,7 +124,7 @@ methods.</p>
 GITHUB<a class="anchor" aria-label="anchor" href="#install-the-latest-development-version-from-github"></a>
 </h5>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">install_github</span><span class="op">(</span><span class="st">"shhschilling/visStatistics"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"shhschilling/visStatistics"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level5">
 <h5 class="unnumbered" id="load-the-package">2. Load the package<a class="anchor" aria-label="anchor" href="#load-the-package"></a>
@@ -250,7 +250,7 @@ of the mean. <span class="citation">(<a href="#ref-Rasch:2011">Rasch et
 al. 2011</a>; <a href="#ref-Lumley:2002">Lumley et al. 2002</a>; <a href="#ref-Kwak:2017">Kwak and Kim 2017</a>)</span></p>
 <ul>
 <li>Homoscedasticity: The Levene–Brown–Forsythe (L) test (implemented as
-<code>levene.test()</code>) <span class="citation">(<a href="#ref-Brown:1974">Brown and Forsythe 1974</a>)</span> tests for
+<code><a href="../reference/levene.test.html">levene.test()</a></code>) <span class="citation">(<a href="#ref-Brown:1974">Brown and Forsythe 1974</a>)</span> tests for
 homogeneous variances.
 <ul>
 <li><p>When homogeneity is not rejected
@@ -265,7 +265,7 @@ Significant Differences (HSD) (<code><a href="https://rdrr.io/r/stats/TukeyHSD.h
 For two groups, Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> with
 <code>var.equal = FALSE</code>) is applied; for more than two groups,
 Welch’s heteroscedastic one-way ANOVA (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) with
-Games-Howell post-hoc test (<code>games.howell()</code>) <span class="citation">(<a href="#ref-Games:1976">Games and Howell
+Games-Howell post-hoc test (<code><a href="../reference/games.howell.html">games.howell()</a></code>) <span class="citation">(<a href="#ref-Games:1976">Games and Howell
 1976</a>)</span> is applied. Welch’s methods outperform their classical
 counterparts when variances differ <span class="citation">(<a href="#ref-Moser:1992">Moser and Stevens 1992</a>; <a href="#ref-Fagerland:2009">Fagerland and Sandvik 2009</a>; <a href="#ref-Delacre:2017">Delacre et al. 2017</a>)</span>.</p></li>
 </ul>
@@ -277,7 +277,7 @@ displayed. Throughout this vignette, <em>linear model</em> refers to the
 classical Gaussian linear model framework <span class="citation">(<a href="#ref-Searle:1971">Searle 1971</a>)</span> underlying t-tests,
 ANOVA, and linear regression. When heteroscedasticity is detected and
 therefore Welch methods are selected, group-wise normality diagnostics
-are additionally displayed via <code>vis_group_normality()</code>. These
+are additionally displayed via <code><a href="../reference/vis_group_normality.html">vis_group_normality()</a></code>. These
 diagnostic plots enable users to visually assess whether assumptions are
 met and manually override the automated p-value-based test
 selection.</p></li>
@@ -301,7 +301,7 @@ for two numeric variables is when the user explicitly sets
 predictor variable is allowed, as the function is designed for
 two-dimensional visualisation.</p>
 <p>In the linear regression branch, homoscedasticity is assessed using
-the Breusch–Pagan test <code>bp.test()</code>, which evaluates whether
+the Breusch–Pagan test <code><a href="../reference/bp.test.html">bp.test()</a></code>, which evaluates whether
 the variance of the raw residuals depends on the predictor variable.</p>
 </div>
 <div class="section level4">
@@ -406,7 +406,7 @@ in residual plots.</p></li>
 expectation value 0 and have constant error variance
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>σ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\sigma^2</annotation></semantics></math></p></li>
 </ul>
-<p>The function <code>vis_lm_assumptions()</code> provides a unified
+<p>The function <code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code> provides a unified
 visual and statistical framework for validating the linear model
 assumptions. It fits a linear model using <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> and
 provides four standard diagnostic plots:</p>
@@ -436,14 +436,14 @@ residual normality using both the Shapiro–Wilk test
 (<code>ad.test()</code>) <span class="citation">(<a href="#ref-Gross:2015">Gross and Ligges 2015</a>)</span>.
 Anderson–Darling is particularly sensitive to tail deviations <span class="citation">(<a href="#ref-Razali:2011">Razali and Wah 2011</a>; <a href="#ref-Yap:2011">Yap and Sim 2011</a>)</span>.</p>
 <p><strong>Homoscedasticity Assessment</strong>: Variance equality is
-tested using the Levene-Brown-Forsythe test (<code>levene.test()</code>)
+tested using the Levene-Brown-Forsythe test (<code><a href="../reference/levene.test.html">levene.test()</a></code>)
 <span class="citation">(<a href="#ref-Brown:1974">Brown and Forsythe
 1974</a>)</span> and Bartlett’s test (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>) in
 the ANOVA path.</p>
 <p>These tests compare the spread of data across different factor
 levels.</p>
 <p>For simple linear regression, the Breusch-Pagan test
-(<code>bp.test()</code>) is implemented.</p>
+(<code><a href="../reference/bp.test.html">bp.test()</a></code>) is implemented.</p>
 <p>These three tests have standalone implementations in the package to
 avoid dependencies on external packages.</p>
 </div>
@@ -888,9 +888,9 @@ fertilisers.</p>
 tests (Shapiro–Wilk and Anderson- Darling, both with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>&gt;</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">p &gt; \alpha</annotation></semantics></math>).
 Homogeneity of variances is not supported at the given confidence level
-by <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>, but by <code>levene.test()</code>
+by <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>, but by <code><a href="../reference/levene.test.html">levene.test()</a></code>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>&gt;</mo><mi>α</mi></mrow><annotation encoding="application/x-tex">p &gt; \alpha</annotation></semantics></math>).
-The decision logic is solely based on <code>levene.test()</code> and
+The decision logic is solely based on <code><a href="../reference/levene.test.html">levene.test()</a></code> and
 triggers <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>. Post-hoc analysis with
 <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>. Note that the omnibus F-test reports p = 0.086
 — not significant at
@@ -979,7 +979,7 @@ is the slope of the regression line.</p>
 <p><code><a href="../reference/visstat.html">visstat()</a></code> checks the normality of the standardised
 residuals from <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> both with diagnostic plots and using
 the Shapiro–Wilk and Anderson-Darling tests. (via
-<code>vis_lm_assumptions()</code>)</p>
+<code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code>)</p>
 <p>Note, that regardless of the result of the residual analysis,
 <code><a href="../reference/visstat.html">visstat()</a></code> proceeds to perform the regression. The title of
 the graphical output indicates the chosen confidence level
@@ -1473,7 +1473,7 @@ attribute <code>"plot_paths"</code> on the returned object of class
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "/tmp/Rtmp6XLX5I/chi_squared_or_fisher_Hair_Eye.png"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp9NkySa/chi_squared_or_fisher_Hair_Eye.png"</span></span></code></pre>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
@@ -1541,8 +1541,8 @@ file paths of the stored graphics:</p>
 <span>                               plotName <span class="op">=</span> <span class="st">"iris_kruskal"</span>,</span>
 <span>                               plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iris_kruskal_stored</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Plot [1] stored in /tmp/Rtmp6XLX5I/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
-<pre><code><span><span class="co">## Plot [2] stored in /tmp/Rtmp6XLX5I/iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [1] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp9NkySa/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [2] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp9NkySa/iris_kruskal.pdf</span></span></code></pre>
 <p>When <code><a href="../reference/visstat.html">visstat()</a></code> is called without
 <code>graphicsoutput</code> (the default interactive mode), the
 generated plots are captured internally. Calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>
@@ -1853,7 +1853,7 @@ data.</p>
 <p>This makes it more robust to skewed data or data with outliers
 providing more reliable results in many practical situations <span class="citation">(<a href="#ref-Allingham:2012">Allingham and Rayner
 2012</a>)</span>.</p>
-<p><code>levene.test()</code> mimics the default behaviour of
+<p><code><a href="../reference/levene.test.html">levene.test()</a></code> mimics the default behaviour of
 <code>leveneTest()</code> in the <code>car</code> package <span class="citation">(<a href="#ref-Fox:2019">Fox and Weisberg
 2019</a>)</span>.</p>
 <p>The Levene–Brown–Forsythe test evaluates the null hypothesis that all
@@ -1925,7 +1925,7 @@ degrees of freedom <span class="citation">(<a href="#ref-Bartlett:1937">Bartlett
 </h3>
 <p>For linear regression (<code>regression = TRUE</code>), group-based
 tests cannot be used. Instead, the <code>visStatistics</code> package
-function <code>bp.test()</code> implements the Breusch-Pagan test.</p>
+function <code><a href="../reference/bp.test.html">bp.test()</a></code> implements the Breusch-Pagan test.</p>
 <p>The Breusch-Pagan test assesses whether the variance of the residuals
 from a regression model depends on the values of the independent
 variables <span class="citation">(<a href="#ref-Breusch:1979">Breusch
