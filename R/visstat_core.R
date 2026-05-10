@@ -401,19 +401,45 @@ visstat_core <- function(dataframe,
       )
 
       # Plot 1: jittered rank-rank scatter
+      # Title via mtext() (outer margin) to match the font used by all other
+      # test functions; no "(n=...)" — no other test reports sample size there.
       openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-      op <- par(mar = c(5, 6, 4, 2) + 0.1)
+      # Adaptive left margin: las=1 prints y-axis labels horizontally.
+      # strwidth() measures actual rendered width in inches (device already open);
+      # dividing by par("csi") converts to margin lines. +2 for tick gap + ylab.
+      max_ylabel_in <- max(strwidth(as.character(levels(samples)), units = "inches"))
+      label_lines   <- ceiling(max_ylabel_in / par("csi"))  # lines for tick text
+      ylab_line     <- label_lines + 1                       # ylab 1 line beyond
+      left_mar      <- max(5, ylab_line + 1)                 # margin + 1 buffer
+      op <- par(oma = c(0, 0, 3, 0), mar = c(5, left_mar, 4, 2) + 0.1)
+
+      # Colour by x-axis group (fact levels), consistent with boxplot/Kruskal.
+      # Semi-transparency preserved so overlapping points show as darker shades.
+      n_x <- length(levels(fact))
+      if (n_x <= 2) {
+        base_cols <- colorscheme(1)
+      } else if (n_x <= length(colorscheme(3)) + 2) {
+        base_cols <- c(colorscheme(1), head(colorscheme(3), n_x - 2))
+      } else {
+        base_cols <- rainbow(n_x, s = 0.4, alpha = 1)
+      }
+      point_cols <- adjustcolor(base_cols[fact_num], alpha.f = 0.6)
+
+      # ylab placed via mtext() so it sits at the outer margin edge, clear of
+      # the horizontal tick labels (las=1). Using plot(ylab=...) would anchor
+      # it at mgp[1]=3 lines — inside the tick text for any label >2 lines wide.
       plot(jitter(fact_num,    amount = 0.15),
            jitter(samples_num, amount = 0.15),
            xlab = name_of_factor,
-           ylab = name_of_sample,
+           ylab = "",
            xaxt = "n", yaxt = "n",
-           pch = 19, col = grDevices::rgb(0.2, 0.2, 0.2, 0.4),
-           main = sprintf("Kendall's tau-b = %.3f, p = %.3g (n = %d)",
-                          kendall_test$estimate, kendall_test$p.value,
-                          length(samples_num)))
+           pch = 19, col = point_cols)
       axis(1, at = seq_along(levels(fact)),    labels = levels(fact))
       axis(2, at = seq_along(levels(samples)), labels = levels(samples), las = 1)
+      mtext(name_of_sample, side = 2, line = ylab_line, las = 0)
+      mtext(bquote("Kendall's" ~ tau[b] ~ "=" ~
+                     .(round(kendall_test$estimate, 3))), line = 2)
+      mtext(bquote("p =" ~ .(signif(kendall_test$p.value, 3))),  line = 1)
       par(op)
 
       if (is.null(plotName)) {
@@ -426,27 +452,8 @@ visstat_core <- function(dataframe,
                                                    fileDirectory = plotDirectory,
                                                    capture_env = capture_env))
 
-      # Plot 2: mosaic (vcd::mosaic respects ordered levels)
-      if (maxlabels > 7) {
-        numberflag <- FALSE
-      } else {
-        numberflag <- TRUE
-      }
-      openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-      vis_mosaic_res <- vis_mosaic(samples, fact,
-                                   name_of_sample = name_of_sample,
-                                   name_of_factor = name_of_factor,
-                                   minperc = 0,
-                                   numbers = numberflag)
-      if (is.null(plotName)) {
-        filename <- paste("mosaic_complete_", name_of_sample, "_", name_of_factor, sep = "")
-      } else {
-        filename <- paste(plotName, "_", "mosaic_complete", sep = "")
-      }
-      plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
-                                                   type = graphicsoutput,
-                                                   fileDirectory = plotDirectory,
-                                                   capture_env = capture_env))
+      # No mosaic for Kendall: shade=FALSE + ordered factors renders all tiles
+      # black; and the jitter scatter already captures the rank structure.
 
       # cor.test returns class "htest" with $method, $p.value, ... so we put
       # it directly under $test for print.visstat / summary.visstat.
@@ -455,8 +462,7 @@ visstat_core <- function(dataframe,
         test             = kendall_test,
         n                = length(samples_num),
         levels_response  = levels(samples),
-        levels_predictor = levels(fact),
-        mosaic           = vis_mosaic_res
+        levels_predictor = levels(fact)
       )
 
     } else {
@@ -476,7 +482,7 @@ visstat_core <- function(dataframe,
       openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
       
       vis_chi <-
-        vis_chi_squared_test(samples, fact, name_of_sample, "groups")
+        vis_chi_squared_test(samples, fact, name_of_sample, name_of_factor)
       if (is.null(plotName)) {
         filename <- paste("chi_squared_or_fisher_",
                           name_of_sample,
@@ -490,69 +496,62 @@ visstat_core <- function(dataframe,
       plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                                                    type = graphicsoutput,
                                                    fileDirectory = plotDirectory,capture_env = capture_env))
-      # Mosaic plots -----
-      # a) complete labeled mosaic graph
-      
-      if (maxlabels > 7) {
-        numberflag <- F
-      } else {
-        numberflag <- T
-      }
-      
-      openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
-      
-      vis_mosaic_res <- vis_mosaic(
-        samples,
-        fact,
-        name_of_sample = name_of_sample,
-        name_of_factor = name_of_factor,
-        minperc = 0,
-        numbers = numberflag
-      )
-      
-      
-      
-      if (is.null(plotName)) {
-        filename <- paste("mosaic_complete_",
-                          name_of_sample,
-                          "_",
-                          name_of_factor,
-                          sep = "")
-      } else {
-        filename <- paste(plotName, "_", "mosaic_complete", sep = "")
-      }
-      
-      
-      
-      plot_paths <- c(plot_paths, saveGraphVisstat(filename, type = graphicsoutput, fileDirectory = plotDirectory,capture_env = capture_env))
-      
-      # b) reduced plots if number of of levels>7
-      # Display only categories with at least minpercent of entries
-      
-      if (maxlabels > 7) {
-        openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
-        
+      # Mosaic plots: only for Pearson chi-square (not Fisher's exact test)
+      is_fisher <- isTRUE(grepl("Fisher", vis_chi$method, ignore.case = TRUE))
+      vis_mosaic_res <- NULL
+
+      if (!is_fisher) {
+        # a) complete labeled mosaic graph
+        if (maxlabels > 7) {
+          numberflag <- FALSE
+        } else {
+          numberflag <- TRUE
+        }
+
+        openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+
         vis_mosaic_res <- vis_mosaic(
           samples,
           fact,
           name_of_sample = name_of_sample,
-          name_of_factor = "groups",
-          minperc = minpercent,
-          numbers = T
+          name_of_factor = name_of_factor,
+          minperc = 0,
+          numbers = numberflag,
+          shade = !grepl("Yates", vis_chi$method, ignore.case = TRUE)
         )
-        plot_paths <- c(plot_paths, saveGraphVisstat(
-          paste(
-            "mosaic_reduced_",
-            name_of_sample,
-            "_",
-            name_of_factor,
-            sep = ""
-          )),
-          type = graphicsoutput,
-          fileDirectory = plotDirectory,capture_env = capture_env
-        )
+
+        if (is.null(plotName)) {
+          filename <- paste("mosaic_complete_", name_of_sample, "_", name_of_factor, sep = "")
+        } else {
+          filename <- paste(plotName, "_", "mosaic_complete", sep = "")
+        }
+
+        plot_paths <- c(plot_paths, saveGraphVisstat(filename, type = graphicsoutput,
+                                                     fileDirectory = plotDirectory,
+                                                     capture_env = capture_env))
+
+        # b) reduced mosaic if many levels
+        if (maxlabels > 7) {
+          openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+
+          vis_mosaic_res <- vis_mosaic(
+            samples,
+            fact,
+            name_of_sample = name_of_sample,
+            name_of_factor = "groups",
+            minperc = minpercent,
+            numbers = TRUE,
+            shade = !grepl("Yates", vis_chi$method, ignore.case = TRUE)
+          )
+          plot_paths <- c(plot_paths, saveGraphVisstat(
+            paste("mosaic_reduced_", name_of_sample, "_", name_of_factor, sep = ""),
+            type = graphicsoutput,
+            fileDirectory = plotDirectory,
+            capture_env = capture_env
+          ))
+        }
       }
-      
+
       vis_sample_fact <- c(vis_chi, vis_mosaic_res)
     }
     }  # end B.2 (nominal Chi^2 / Fisher)
