@@ -496,11 +496,13 @@ visstat_core <- function(dataframe,
       plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename,
                                                    type = graphicsoutput,
                                                    fileDirectory = plotDirectory,capture_env = capture_env))
-      # Mosaic plots: only for Pearson chi-square (not Fisher's exact test)
+      # Mosaic plots: only for Pearson chi-square without Yates correction
+      # (not Fisher's exact test, not Yates-corrected 2x2 tables)
       is_fisher <- isTRUE(grepl("Fisher", vis_chi$method, ignore.case = TRUE))
+      is_yates  <- isTRUE(grepl("Yates",  vis_chi$method, ignore.case = TRUE))
       vis_mosaic_res <- NULL
 
-      if (!is_fisher) {
+      if (!is_fisher && !is_yates) {
         # a) complete labeled mosaic graph
         if (maxlabels > 7) {
           numberflag <- FALSE
