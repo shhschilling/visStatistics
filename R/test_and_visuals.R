@@ -127,26 +127,30 @@ two_sample_t_test <- function(samples,
     x2
   )))))
   
+  show_jitter  <- max(length(x1), length(x2)) <= jitter_max_n
+
   b <- boxplot(
     samples ~ fact,
     xlab = factorname,
     ylab = samplename,
     ylim = c(mi, ma),
     col = colorscheme(1),
-    outline = FALSE  # individual points shown via stripchart overlay
+    outline = !show_jitter  # outliers via boxplot only when jitter is suppressed
   )
 
-  stripchart(
-    samples ~ fact,
-    vertical = TRUE,
-    xlim = c(0, 3),
-    ylim = c(mi, ma),
-    col = colorscheme(1),
-    pch = 1,
-    cex = 0.7,
-    method = "jitter",
-    add = TRUE
-  )
+  if (show_jitter) {
+    stripchart(
+      samples ~ fact,
+      vertical = TRUE,
+      xlim = c(0, 3),
+      ylim = c(mi, ma),
+      col = adjustcolor(colorscheme(1), red.f = 0.55, green.f = 0.55, blue.f = 0.55),
+      pch = 1,
+      cex = 0.7,
+      method = "jitter",
+      add = TRUE
+    )
+  }
 
   # Group means -- parametric test compares means, so mark them explicitly
   points(c(1, 2), c(mean(x1), mean(x2)),
@@ -266,6 +270,8 @@ two_sample_wilcoxon_test <- function(samples,
   
   par(oma = c(0, 0, 2, 0)) # outer margin above: 2 lines..
 
+  show_jitter  <- max(length(x1), length(x2)) <= jitter_max_n
+
   b <- boxplot(
     samples ~ fact,
     notch = notchf,
@@ -273,18 +279,20 @@ two_sample_wilcoxon_test <- function(samples,
     ylim = c(mi, ma),
     ylab = samplename,
     xlab = factorname,
-    outline = FALSE  # individual points shown via stripchart overlay
+    outline = !show_jitter  # outliers via boxplot only when jitter is suppressed
   )
 
-  stripchart(
-    samples ~ fact,
-    vertical = TRUE,
-    method = "jitter",
-    col = colorscheme(1),
-    pch = 1,
-    cex = 0.7,
-    add = TRUE
-  )
+  if (show_jitter) {
+    stripchart(
+      samples ~ fact,
+      vertical = TRUE,
+      method = "jitter",
+      col = adjustcolor(colorscheme(1), red.f = 0.55, green.f = 0.55, blue.f = 0.55),
+      pch = 1,
+      cex = 0.7,
+      add = TRUE
+    )
+  }
 
   # Sample sizes above box plot
   text(1:length(b$n), c(ma, ma), paste("N =", b$n))
@@ -532,9 +540,7 @@ vis_chi_squared_test <- function(samples,
     )
 
     # N labels: Fisher branch only — Pearson chi² is followed by a mosaic that
-    # already displays counts. For Fisher, place one label directly above each
-    # individual bar (4 labels for a 2×2 table). as.vector() reads column-major,
-    # matching barplot's draw order.
+    # already displays counts. Place "N = <count>" above every individual bar.
     if (is_fisher) {
       bar_x <- as.vector(bp)
       bar_n <- as.vector(counts)
@@ -604,6 +610,8 @@ vis_Kruskal_Wallis <- function(samples,
   spread <- ma - mi
 
 
+  show_jitter  <- max(tapply(samples, fact, length)) <= jitter_max_n
+
   b <- boxplot(
     samples ~ fact,
     notch = isTRUE(notch),
@@ -616,22 +624,22 @@ vis_Kruskal_Wallis <- function(samples,
     cex.lab = cex,
     cex.axis = 0.8 * cex,
     boxwex = 0.5,
-    outline = FALSE  # individual points shown via stripchart overlay
+    outline = !show_jitter  # outliers via boxplot only when jitter is suppressed
   )
 
-  stripchart(
-    samples ~ fact,
-    vertical = TRUE,
-    method = "jitter",
-    col = box_cols,
-    pch = 1,
-    cex = 0.7,
-    add = TRUE
-  )
+  if (show_jitter) {
+    stripchart(
+      samples ~ fact,
+      vertical = TRUE,
+      method = "jitter",
+      col = adjustcolor(box_cols, red.f = 0.55, green.f = 0.55, blue.f = 0.55),
+      pch = 1,
+      cex = 0.7,
+      add = TRUE
+    )
+  }
 
-  # Sample sizes above box plot (inside, like two-sample tests)
-  # Space-saving for many groups: show "N =" once, then just numbers
-  if (n_classes >= 6) {
+  if (n_classes > 6) {
     n_labels <- c(paste("N =", b$n[1]), as.character(b$n[-1]))
   } else {
     n_labels <- paste("N =", b$n)
@@ -1378,6 +1386,13 @@ check_assumption_sample_size_t_test <- function(x1, x2, minimum_size) {
     return(FALSE)
   }
 }
+
+# Visual constants ----
+
+# Maximum per-group n for showing jitter overlay on box plots.
+# Above this threshold the stripchart is suppressed and boxplot() reverts to
+# its classical Tukey behaviour (outliers beyond 1.5*IQR shown as points).
+jitter_max_n <- 50
 
 # Define color scheme-----
 
