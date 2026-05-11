@@ -1339,7 +1339,7 @@ paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
 
-    ## [1] "/tmp/RtmpuHEyBb/chi_squared_or_fisher_Hair_Eye.png"
+    ## [1] "/tmp/RtmpaYiqlO/chi_squared_or_fisher_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
@@ -1430,9 +1430,9 @@ iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
 plot(iris_kruskal_stored)
 ```
 
-    ## Plot [1] stored in /tmp/RtmpuHEyBb/glm_assumptions_iris_kruskal.pdf
+    ## Plot [1] stored in /tmp/RtmpaYiqlO/glm_assumptions_iris_kruskal.pdf
 
-    ## Plot [2] stored in /tmp/RtmpuHEyBb/iris_kruskal.pdf
+    ## Plot [2] stored in /tmp/RtmpaYiqlO/iris_kruskal.pdf
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
