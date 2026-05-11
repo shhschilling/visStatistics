@@ -218,12 +218,13 @@ visstat_core <- function(dataframe,
       "Ordered predictor with ", nlevels(fact), " levels detected. ",
       "Kruskal-Wallis discards the ordering of the predictor. ",
       "If a monotone association is of interest, consider correlation = TRUE ",
-      "for Kendall's tau_b."
+      "for Kendall's tau_b.",
+      call. = FALSE
     )
   }
 
   if (is.ordered(samples) && (!both_ordered || !correlation)) {
-    warning("Ordered response (e.g., Likert scale) detected. Converting to numeric ranks for non-parametric analysis.")
+    warning("Ordered response detected. Converting to integer level codes for non-parametric analysis.", call. = FALSE)
     samples <- as.numeric(samples)
     ordinal_response <- TRUE  # Flag to force non-parametric
   }
@@ -262,7 +263,7 @@ visstat_core <- function(dataframe,
     # Pre-check: Original error handling for insufficient data
     counts_per_level <- table(fact)
     if (any(counts_per_level < 1) | length(samples) < 3) {
-      warning("In each group must be at least one member and total sample size >= 3.")
+      warning("In each group must be at least one member and total sample size >= 3.", call. = FALSE)
       vis_sample_fact <- list(
         error = "Insufficient data",
         input_summary = list(sample_name = name_of_sample, factor_name = name_of_factor)
@@ -274,7 +275,6 @@ visstat_core <- function(dataframe,
     
     # Check if response was originally ordinal - force non-parametric
     if (ordinal_response) {
-      warning("Ordinal response detected. Defaulting to non-parametric tests.")
       normality_met <- FALSE
     } else {
       # MANDATORY DIAGNOSTIC: Provide visual evidence for the decision pipeline

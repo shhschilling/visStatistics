@@ -1,6 +1,7 @@
 Package: visStatistics
 Type: Package
-Title: Automated Selection and Visualisation of Statistical Hypothesis Tests
+Title: Automated Selection and Visualisation of Statistical Hypothesis
+        Tests
 Version: 0.2.0
 Authors@R: c(
     person("Sabine", "Schilling",
@@ -15,8 +16,8 @@ Description: The right test - visualised. 'visStatistics' automatically
     selects and visualises statistical hypothesis tests between two vectors,
     based on their class, distribution, sample size, and a user-defined
     confidence level (conf.level). Visual outputs - including box plots,
-    bar charts, regression lines with confidence bands, mosaic plots (Pearson chi-squared only),
-    residual plots, and Q-Q plots - are annotated with relevant test
+    bar charts, regression lines with confidence bands, mosaic plots, 
+    residual plots, and Q-Q plots are annotated with relevant test
     statistics, assumption checks, and post-hoc analyses where applicable.
     The algorithmic workflow shifts attention from test selection to
     visualisation and statistical interpretation. It is particularly suited for
@@ -25,8 +26,7 @@ Description: The right test - visualised. 'visStatistics' automatically
     and receive a complete visual statistical analysis automatically. The
     same automation makes it useful in time-constrained contexts such as
     statistical consulting, where it reduces effort spent on test selection
-    and leaves more room for interpretation. The package covers most hypothesis
-    tests taught in undergraduate statistics.The test selection algorithm
+    and leaves more room for interpretation. The test selection algorithm
     proceeds as follows: Input vectors of class numeric or integer are
     considered numerical; those of class factor are considered categorical.
     Assumptions of residual normality and homogeneity of variances are 
@@ -47,44 +47,33 @@ Description: The right test - visualised. 'visStatistics' automatically
     predictors with more than two levels, aov() followed by TukeyHSD() is
     applied if variances are homogeneous, and oneway.test() followed by
     games.howell() otherwise.
- .
-      (2) When both the response and predictor vectors are numerical, a
+    (2) When both the response and predictor vectors are numerical, a
     simple linear regression model is fitted using lm(), if correlation
-    = FALSE (default). If correlation=TRUE, the most appropriate rank
-    correlation is selected: Spearman for numeric variables, Kendall's tau_b for two ordered factors.
- .
-      (3) When the response is of class ordered, it is converted to numeric
+    = FALSE (default). If correlation=TRUE, a Spearman rank correlation test is
+    performed.
+    (3) When the response is of class ordered, it is converted to numeric
     ranks and the non-parametric path from (1) is followed (Wilcoxon or
     Kruskal-Wallis). When both variables are ordered and correlation=TRUE,
     Kendall's tau_b is used instead.
- .
-      (4) When both vectors are categorical, Cochran's rule (Cochran (1954)
+    (4) When both vectors are categorical, Cochran's rule (Cochran (1954)
     <doi:10.2307/3001666>) is applied to test independence either by
     chisq.test() or fisher.test().
 License: MIT + file LICENSE
 URL: https://github.com/shhschilling/visStatistics,
-    https://shhschilling.github.io/visStatistics/
+        https://shhschilling.github.io/visStatistics/
 BugReports: https://github.com/shhschilling/visStatistics/issues
-Imports:
-    Cairo,
-    graphics,
-    grDevices,
-    grid,
-    multcompView,
-    nortest,
-    stats,
-    utils,
-    vcd
-Suggests:
-    knitr,
-    rmarkdown,
-    spelling,
-    testthat (>= 3.0.0)
+Imports: Cairo, graphics, grDevices, grid, multcompView, nortest,
+        stats, utils, vcd
+Suggests: knitr, rmarkdown, spelling, testthat (>= 3.0.0)
 VignetteBuilder: knitr
 BuildVignettes: true
 Config/testthat/edition: 3
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2025-06-23 14:38:34 UTC; sschilli
+Packaged: 2026-05-11 15:35:56 UTC; sschilli
 Config/roxygen2/version: 8.0.0
 Language: en-GB
+Author: Sabine Schilling [cre, aut, cph] (ORCID:
+    <https://orcid.org/0000-0002-8318-9421>, year: 2025),
+  Peter Kauf [ctb]
+Maintainer: Sabine Schilling <sabineschilling@gmx.ch>
