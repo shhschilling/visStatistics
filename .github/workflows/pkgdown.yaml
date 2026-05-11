@@ -10,8 +10,6 @@ on:
 
 name: pkgdown.yaml
 
-permissions: read-all
-
 jobs:
   pkgdown:
     runs-on: ubuntu-latest
@@ -24,6 +22,11 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcairo2-dev libxt-dev
 
       - uses: r-lib/actions/setup-pandoc@v2
 
