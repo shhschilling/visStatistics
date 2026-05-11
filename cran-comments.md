@@ -1,6 +1,5 @@
 ## CRAN submission for visStatistics [version 0.2.0]
 
-This is a resubmission of the package after addressing the following issues.
 
 ## Major changes
 
@@ -18,14 +17,15 @@ This is a resubmission of the package after addressing the following issues.
 
 - **Correlation analysis:** New parameter `correlation`. When `TRUE`,
   selects Spearman's $\rho$ for two numeric variables or Kendall's
-  $\tau_b$ when both variables are ordered factors.
+  $\tau_b$ when both variables are ordered factors. 
 
 ## New features
 
 - **Ordered factor support:** When a variable is of class `ordered`
   (e.g., Likert scales), `visstat()` converts it to numeric ranks and
   applies Wilcoxon or Kruskal-Wallis. When both variables are ordered
-  and `correlation = TRUE`, Kendall's $\tau_b$ is used.
+  and additionally  `correlation = TRUE` is manually set, 
+  Kendall's $\tau_b$ is used.
 
 
 - **New exported functions:**
@@ -48,8 +48,8 @@ This is a resubmission of the package after addressing the following issues.
 
 ## Changes since previous submission (0.1.7)
 
-- Fixed roxygen documentation compliance issues
 
-- Updated DESCRIPTION to reflect new decision logic
+
+- Updated DESCRIPTION to reflect extended decision logic
 
 Thank you for reviewing this update.

@@ -315,14 +315,12 @@ vis_numeric <- function(y,
   
   # Issue warnings to console if any assumptions violated
   if (length(warnings_list) > 0) {
-    warning("Statistical assumptions violated:\n", 
-            paste(warnings_list, collapse = "\n"), 
+    warning("Statistical assumptions violated:\n",
+            paste(warnings_list, collapse = "\n"),
             "\nAnalysis proceeded but interpret results cautiously.",
             call. = FALSE)
-    
-    # Suggest correlation analysis if regression assumptions are violated
     if (!correlation && any(grepl("Normality|Homoscedasticity", warnings_list))) {
-      message("RECOMMENDATION: Consider using correlation = TRUE for robust correlation analysis")
+      message("RECOMMENDATION: Consider exploring alternatives outside visstat() such as data transformations, generalised linear models, or robust regression. For an assumption-free, non-causal alternative consider rerunning with correlation = TRUE.")
     }
   }
   
