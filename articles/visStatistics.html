@@ -59,7 +59,7 @@ Sciences and
 Arts<br><a class="author_email" href="mailto:#"></a><a href="mailto:sabine.schilling@protonmail.com" class="email">sabine.schilling@protonmail.com</a>
       </address>
                   
-            <h4 data-toc-skip class="date">2026-05-10</h4>
+            <h4 data-toc-skip class="date">2026-05-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -1473,7 +1473,7 @@ attribute <code>"plot_paths"</code> on the returned object of class
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "/tmp/RtmpTJ9Nee/chi_squared_or_fisher_Hair_Eye.png"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "/tmp/RtmpuHEyBb/chi_squared_or_fisher_Hair_Eye.png"</span></span></code></pre>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
@@ -1541,8 +1541,8 @@ file paths of the stored graphics:</p>
 <span>                               plotName <span class="op">=</span> <span class="st">"iris_kruskal"</span>,</span>
 <span>                               plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iris_kruskal_stored</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Plot [1] stored in /tmp/RtmpTJ9Nee/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
-<pre><code><span><span class="co">## Plot [2] stored in /tmp/RtmpTJ9Nee/iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [1] stored in /tmp/RtmpuHEyBb/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [2] stored in /tmp/RtmpuHEyBb/iris_kruskal.pdf</span></span></code></pre>
 <p>When <code><a href="../reference/visstat.html">visstat()</a></code> is called without
 <code>graphicsoutput</code> (the default interactive mode), the
 generated plots are captured internally. Calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>
