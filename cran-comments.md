@@ -43,15 +43,8 @@ This is a resubmission of the package after addressing the following issues.
 
 ## Test environment
 
-- R CMD check --as-cran: 0 errors, 0 warnings, 1 note
-
-## Note
-
-The CRAN incoming feasibility check flags "lm" and "spearman" as possibly misspelled words in DESCRIPTION. These are legitimate statistical terms:
-- **lm**: Linear model (standard R function for fitting linear models)
-- **spearman**: Spearman's rank correlation coefficient (non-parametric correlation method)
-
-Both terms are included in the package's WORDLIST and are appropriate technical terminology for a statistics package.
+- R 4.6.0, macOS Sequoia 15.7.2 (aarch64-apple-darwin23)
+- R CMD check --as-cran: 0 errors, 0 warnings, 0 notes
 
 ## Changes since previous submission (0.1.7)
 
