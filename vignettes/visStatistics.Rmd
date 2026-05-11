@@ -496,7 +496,8 @@ If the residuals are normally distributed, no more than $5\%$ of the standardise
 The p-values of the formal tests for normality (Shapiro--Wilk and Anderson--Darling) as well as the tests for homoscedasticity (Bartlett's and Levene Brown–Forsythe) are given in the title.
 
 `visstat()` then illustrates, in the subsequent graph, either the `kruskal.test()`, the `oneway.test()`, or `aov()` result (see also Section "Decision logic").
-In all three branches the result is shown as box plots alongside jittered data points, with the number of observations per level above each box; the title gives the name of the test that was run and its p-value (and, for the parametric branches, the corresponding $F$ statistic).
+In all three branches the result is shown as box plots with the number of observations per level above each box; the title gives the name of the test that was run and its p-value (and, for the parametric branches, the corresponding $F$ statistic).
+When the largest group contains no more than 50 observations, individual data points are overlaid as a jittered strip chart, making the raw distribution visible.
 
 In every branch, pairs of groups whose adjusted post-hoc p-value falls below $\alpha$ are marked with *different* green letters below the box plots; pairs sharing a letter are not significantly different.
 The letters are produced by `multcompLetters()` from the `multcompView` package [@Graves:2026].

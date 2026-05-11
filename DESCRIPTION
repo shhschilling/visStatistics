@@ -7,13 +7,13 @@ Authors@R: c(
     person("Sabine", "Schilling",
            email = "sabineschilling@gmx.ch",
            role = c("cre", "aut", "cph"),
-           comment = c(ORCID = "0000-0002-8318-9421", year = "2025")),
+           comment = c(ORCID = "0000-0002-8318-9421", year = "2026")),
     person("Peter", "Kauf",
            email = "peter.kauf@zhaw.ch",
            role = "ctb")
     )
 Description: The right test - visualised. 'visStatistics' automatically
-    selects and visualises statistical hypothesis tests between two vectors,
+    selects and visualises statistical hypothesis tests comparing two vectors,
     based on their class, distribution, sample size, and a user-defined
     confidence level (conf.level). Visual outputs - including box plots,
     bar charts, regression lines with confidence bands, mosaic plots, 
@@ -31,7 +31,7 @@ Description: The right test - visualised. 'visStatistics' automatically
     considered numerical; those of class factor are considered categorical.
     Assumptions of residual normality and homogeneity of variances are 
     considered met if the corresponding test yields a p-value greater than the
-    significance level  alpha = 1 - conf.level.
+    significance level alpha = 1 - conf.level.
     (1) When the response vector is numerical and the predictor vector is
     categorical, a test of central tendencies is selected. If every group
     contains more than 50 observations, the sampling distribution of the
@@ -49,12 +49,13 @@ Description: The right test - visualised. 'visStatistics' automatically
     games.howell() otherwise.
     (2) When both the response and predictor vectors are numerical, a
     simple linear regression model is fitted using lm(), if correlation
-    = FALSE (default). If correlation=TRUE, a Spearman rank correlation test is
+    = FALSE (default). If correlation =TRUE, a Spearman rank correlation test is
     performed.
-    (3) When the response is of class ordered, it is converted to numeric
+    (3) When the the categorical response is an ordered factor, 
+    it is converted to numeric
     ranks and the non-parametric path from (1) is followed (Wilcoxon or
-    Kruskal-Wallis). When both variables are ordered and correlation=TRUE,
-    Kendall's tau_b is used instead.
+    Kruskal-Wallis). When both variables are ordered factors and 
+    correlation=TRUE, Kendall's tau_b is used instead.
     (4) When both vectors are categorical, Cochran's rule (Cochran (1954)
     <doi:10.2307/3001666>) is applied to test independence either by
     chisq.test() or fisher.test().

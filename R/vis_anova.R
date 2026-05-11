@@ -128,6 +128,8 @@ vis_anova <- function(samples,
 
   box_cols <- rep_len(c(colorscheme(1), colorscheme(3)), n_classes)
 
+  show_jitter  <- max(tapply(samples, fact, length)) <= jitter_max_n
+
   b <- boxplot(
     samples ~ fact,
     xlim = c(0, n_classes + 1),
@@ -136,26 +138,26 @@ vis_anova <- function(samples,
     ylab = samplename,
     xlab = factorname,
     las = 2,
-    outline = FALSE  # individual points shown via stripchart overlay
+    outline = !show_jitter  # outliers via boxplot only when jitter is suppressed
   )
 
-  stripchart(
-    samples ~ fact,
-    vertical = TRUE,
-    method = "jitter",
-    col = box_cols,
-    pch = 1,
-    cex = 0.7,
-    add = TRUE
-  )
+  if (show_jitter) {
+    stripchart(
+      samples ~ fact,
+      vertical = TRUE,
+      method = "jitter",
+      col = adjustcolor(box_cols, red.f = 0.55, green.f = 0.55, blue.f = 0.55),
+      pch = 1,
+      cex = 0.7,
+      add = TRUE
+    )
+  }
 
   # Group means -- parametric branch tests means, so mark them explicitly
   points(seq_len(n_classes), m,
          pch = 16, col = "red", cex = 1.3)
 
-  # Sample sizes above box plot (inside, like two-sample tests)
-  # Space-saving for many groups: show "N =" once, then just numbers
-  if (n_classes >= 6) {
+  if (n_classes > 6) {
     n_labels <- c(paste("N =", b$n[1]), as.character(b$n[-1]))
   } else {
     n_labels <- paste("N =", b$n)
