@@ -25,15 +25,58 @@ mtcars$am <- as.factor(mtcars$am)
 t_test_stats <- visstat(mtcars$am, mtcars$mpg)
 
 
+## ----wilcoxon-example, fig.cap="Wilcoxon rank-sum test applied to examination grades by sex. Assumption diagnostics (Shapiro--Wilk rejected; non-parametric path selected) and box plots with the Wilcoxon test result.", out.width="48%", fig.height=4.5, fig.show="hold"----
+grades_gender <- data.frame(
+  sex   = as.factor(c(rep("girl", 21), rep("boy", 23))),
+  grade = c(19.3, 18.1, 15.2, 18.3,  7.9,  6.2, 19.4, 20.3,  9.3, 11.3,
+            18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.0, 16.5,
+             5.1, 15.3, 17.1, 14.8, 15.4, 14.4,  7.5, 15.5,  6.0, 17.4,
+             7.3, 14.3, 13.5,  8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6,
+            17.3, 19.9,  4.4,  2.1)
+)
+wilcoxon_stats <- visstat(grades_gender$sex, grades_gender$grade)
+
+
 ## ----anova-example, fig.cap="Fisher's one-way ANOVA applied to the \\texttt{npk} dataset (\\texttt{block} vs.\\ \\texttt{yield}). Assumption diagnostics and box plots of pea yield by experimental block; compact letter display (TukeyHSD, $\\alpha = 0.05$) shows no significant pairwise differences.", out.width="48%", fig.height=4.5, fig.show="hold"----
 anova_npk <- visstat(npk$block, npk$yield, conf.level = 0.95)
 
 
-## ----regression-example, fig.cap="Simple linear regression of \\texttt{Volume} on \\texttt{Girth} for the \\texttt{trees} dataset (\\texttt{conf.level = 0.9}). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 90\\% confidence band (dark shading), and 90\\% prediction band (light shading).", out.width="48%", fig.height=4.5, fig.show="hold"----
-linreg_trees <- visstat(trees$Girth, trees$Volume, conf.level = 0.9)
+## ----kruskal-example, fig.cap="Kruskal-Wallis test applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots with the Kruskal-Wallis result; all pairwise post-hoc comparisons significant (all letters differ).", out.width="48%", fig.height=4.5, fig.show="hold"----
+kruskal_iris <- visstat(iris$Species, iris$Petal.Width)
+
+
+## ----regression-example, fig.cap="Simple linear regression of \\texttt{Fertility} on \\texttt{Examination} for the \\texttt{swiss} dataset (\\texttt{conf.level = 0.99}). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\\% confidence band (dark shading), and 99\\% prediction band (light shading).", out.width="48%", fig.height=4.5, fig.show="hold"----
+linreg_swiss <- visstat(swiss$Examination, swiss$Fertility, conf.level = 0.99)
+
+
+## ----spearman-example, fig.cap="Spearman rank correlation of \\texttt{Wind} and \\texttt{Ozone} from the \\texttt{airquality} dataset (\\texttt{correlation = TRUE}). Assumption diagnostics and scatter plot of ranked values annotated with $\\rho$ and the $p$-value.", out.width="48%", fig.height=4.5, fig.show="hold"----
+spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 
 
 ## ----chisq-example, fig.cap="Pearson's $\\chi^2$ test applied to the \\texttt{HairEyeColor} dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented).", out.width="48%", fig.height=4.5, fig.show="hold"----
 hair_eye_df <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(hair_eye_df$Eye, hair_eye_df$Hair)
+
+
+## ----fisher-exact-example, fig.cap="Fisher's exact test applied to a $2 \\times 2$ subset of \\texttt{HairEyeColor} (male participants, black/brown hair, hazel/green eyes). Bar chart of absolute counts with the $p$-value; the odds ratio and confidence interval are accessible from the returned object.", out.width="60%", fig.height=4.5, fig.show="hold"----
+hair_eye_male <- HairEyeColor[, , 1]
+black_brown_hazel_green <- hair_eye_male[1:2, 3:4]
+black_brown_hazel_green_df <- counts_to_cases(
+  as.data.frame(black_brown_hazel_green))
+fisher_stats <- visstat(black_brown_hazel_green_df$Eye,
+                        black_brown_hazel_green_df$Hair)
+fisher_stats$estimate   # odds ratio
+fisher_stats$conf.int   # 95 % CI
+
+
+## ----kendall-example, fig.cap="Kendall's $\\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\\ academic performance (both five-point ordinal scales). Jittered rank--rank scatter annotated with $\\tau_b$ and the $p$-value; the negative monotone association is significant.", out.width="80%", fig.height=4.5, fig.show="hold"----
+set.seed(42)
+n <- 150
+xs <- sample(1:5, n, replace = TRUE)
+ys <- pmin(5, pmax(1, (6 - xs) + sample(-1:1, n, replace = TRUE)))
+likert_alc  <- c("never", "rarely", "sometimes", "often", "always")
+likert_perf <- c("poor",  "fair",   "ok",        "good",  "great")
+alcohol     <- ordered(likert_alc[xs],  levels = likert_alc)
+performance <- ordered(likert_perf[ys], levels = likert_perf)
+kendall_result <- visstat(performance, alcohol, correlation = TRUE)
 
