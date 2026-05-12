@@ -212,6 +212,35 @@ test_that("fisher_chi works correctly", {
   expect_true(result$p.value >= 0 && result$p.value <= 1)
 })
 
+test_that("fisher_chi 2x2: exact Fisher with OR and CI", {
+  # Fisher's tea-tasting example: small counts -> Cochran violated -> exact Fisher
+  counts <- matrix(c(7, 1, 1, 7), nrow = 2)
+  dimnames(counts) <- list(c("milk_first", "tea_first"), c("correct", "wrong"))
+
+  result <- fisher_chi(counts)
+
+  expect_s3_class(result, "htest")
+  expect_true(grepl("Fisher", result$method))
+  # exact Fisher (not simulated) must return OR and CI
+  expect_false(is.null(result$estimate))
+  expect_false(is.null(result$conf.int))
+  expect_true(is.numeric(result$estimate))
+  expect_length(result$conf.int, 2)
+})
+
+test_that("fisher_chi larger table: simulate.p.value, no OR", {
+  # 3x3 table with small counts -> Cochran violated -> simulated Fisher -> no OR
+  counts <- matrix(c(1, 2, 1, 2, 1, 2, 1, 2, 1), nrow = 3)
+  dimnames(counts) <- list(c("A", "B", "C"), c("X", "Y", "Z"))
+
+  result <- fisher_chi(counts)
+
+  expect_s3_class(result, "htest")
+  expect_true(grepl("Fisher", result$method))
+  # simulated Fisher does not return OR
+  expect_null(result$estimate)
+})
+
 test_that("odds_ratio function works correctly", {
   # Test basic odds ratio calculation
   result <- odds_ratio(a = 10, b = 5, c = 8, d = 12, alpha = 0.05)

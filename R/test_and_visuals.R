@@ -1113,28 +1113,33 @@ fisher_chi <- function(counts) {
   # if Cochran requirements for chi2 not given: fisher test is performed
   # if more than 20% of cells have EXPECTED count smaller 5 or one cell has expected count smaller than 1
   #
-  
+
   suppressWarnings(chisq <- chisq.test(counts))
   expected_counts <- chisq$expected
-  
-  if (any(expected_counts < 1) # at least one cell with expectation value smaller 1
-      |
-      sum(expected_counts < 5) / length(expected_counts) > 0.2 # more than 20% of cells have expected count smaller 5
-      &
-      # Fisher Tests breaks down for too large tables
-      dim(counts)[2] < 7) {
-    # fisher.test
-    testFisherChi <- fisher.test(
-      counts,
-      workspace = 1e9,
-      simulate.p.value = T,
-      hybrid = F,
-      B = 1e5
-    )
+
+  cochran_violated <- any(expected_counts < 1) | # at least one cell with expectation value smaller 1
+    (sum(expected_counts < 5) / length(expected_counts) > 0.2 # more than 20% of cells have expected count smaller 5
+     &
+     dim(counts)[2] < 7) # Fisher breaks down for too large tables
+
+  if (cochran_violated) {
+    if (all(dim(counts) == 2)) {
+      # 2x2 table: exact Fisher test — includes OR and CI in output
+      testFisherChi <- fisher.test(counts)
+    } else {
+      # larger tables: simulate p-value (OR not defined)
+      testFisherChi <- fisher.test(
+        counts,
+        workspace = 1e9,
+        simulate.p.value = TRUE,
+        hybrid = FALSE,
+        B = 1e5
+      )
+    }
   } else {
     testFisherChi <- chisq
   }
-  
+
   return(testFisherChi)
 }
 
