@@ -589,27 +589,17 @@ The plot displays the raw data, the fitted regression line, and both the confide
 
 ### Examples
 
-#### `trees` dataset {.unnumbered}
+#### `swiss` dataset {.unnumbered}
 
-The `trees` data set contains the diameter `Girth` in inches and `Volume` in cubic ft of 31 black cherry trees.
-
-```{r}
-linreg_trees <- visstat(trees$Girth, trees$Volume,conf.level=0.9)
-```
-
-p-values greater than $\alpha$ = `1 - conf.level` in both the Anderson--Darling and Shapiro--Wilk normality tests of the standardised residuals indicate that the normality assumption underlying the linear regression is met.
-
-Increasing the confidence level `conf.level` from 0.9 to 0.99 results in wider confidence intervals of the regression parameters as well as wider confidence and prediction bands
-
-```{r,fig.show='hide'}
-linreg_trees_99 <- visstat(trees$Girth, trees$Volume,conf.level = 0.99)
-```
-
-The `visStatistics` plot-method allows to display only the second generated plot (the assumption plot is unchanged):
+The `swiss` dataset records standardised fertility and socioeconomic indicators for 47 French-speaking Swiss provinces in 1888.
+We examine how the share of draftees achieving the highest army examination score (`Examination`) predicts the fertility measure (`Fertility`).
 
 ```{r}
-plot(linreg_trees_99,which=2)
+linreg_swiss <- visstat(swiss$Examination, swiss$Fertility, conf.level = 0.99)
 ```
+
+Both normality tests pass ($p > \alpha$) and the Breusch--Pagan test confirms homoscedasticity, validating the linear model.
+
 
 ### Spearman rank correlation (`cor.test(..., method = "spearman")`)
 
@@ -635,17 +625,16 @@ A default call to `visstat()` fits a simple linear regression model, but trigger
 result_ozone0 <- visstat(airquality$Wind, airquality$Ozone)
 ```
 
-The warning indicates that both normality of residuals and homoscedasticity are violated (see [Assumption diagnostics](#assumption-diagnostics-vis_lm_assumptions)).
-It recommends exploring alternatives outside `visstat()` such as data transformations, [generalised linear models](#gamma-glm), or robust regression (see [Limitations](#limitations)).
+The warning reports violated normality and homoscedasticity and recommends two paths: rerun with `correlation = TRUE` within `visstat()`, or switch to a model outside it.
 
-Within `visstat()`, Spearman rank correlation offers an assumption-free alternative, at the cost of causal interpretability:
+Staying within `visstat()`, `correlation = TRUE` gives an assumption-free result at the cost of causality:
 
 ```{r}
 result_ozone1 <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 ```
 
 <a id="gamma-glm"></a>
-To maintain a causal relationship, we model Ozone directly using a Gamma GLM with log link, which addresses the right-skewed distribution of Ozone concentrations.
+To preserve causality, we follow the second path and fit a Gamma GLM with log link, suited to the right-skewed distribution of Ozone concentrations.
 
 ```{r}
 # Remove zeros to satisfy Gamma requirements
