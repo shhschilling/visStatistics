@@ -52,9 +52,8 @@ Most routine data analyses reduce to a comparatively small set of inferential fr
 It visualises its decision by, where appropriate, assumption-diagnostic plot and a descriptive plot with the main test statistics annotated, and returns an R object whose `print()` and `summary()` methods expose the complete test results.
 The scripted workflow is well suited for browser-based applications where sensitive data (such as highly confidential medical records) is stored securely on a server and can not be directly accessed by users.
 This approach was already successfully applied to develop a medical scoring tool [@Bijlenga:2017].
-When selecting tests for group comparisons, packages with overlapping scope such as `automatedtests` [@Zeevat:2025] and `compareGroups` [@Subirana:2014] automate test choice by evaluating normality per group.
+When selecting tests for group comparisons, packages with overlapping scope such as `automatedtests` [@Zeevat:2025] and `compareGroups` [@Subirana:2014] base their test selection on group‑wise normality assessments of the response variable. But group-wise testing inflates the [family-wise type I error rate](#post-hoc-analysis): the probability of at least one false rejection of normality grows with the number of compared groups, leading to unnecessary switching to non-parametric methods even when the linear model assumptions hold globally.
 In contrast, `visStatistics` assesses the normality of the overall model residuals, adhering to the general linear model framework [@Searle:1971].
-This avoids the loss of statistical power inherent in group-wise testing, which often leads to the unnecessary rejection of parametric methods.
 
 # Getting started
 
@@ -100,7 +99,7 @@ visstat(dataframe[["namex"]], dataframe[["namey"]])
 ##### Exemplary function call {.unnumbered}
 
 ```{r npk, fig.show='hide'}
-#Standardized form
+#Standardised form
 visstat(npk$block,npk$yield)
 # Using formula interface
  visstat(yield~block,data=npk)
@@ -182,7 +181,7 @@ if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "html") {
 When the response `y` is numeric and the predictor `x` is categorical, a statistical hypothesis test comparing central tendencies is selected.
 To check whether the assumptions of a general linear model (see [Appendix A](#glm)) are fulfilled, a linear model `lm(y ~ x)` is first fitted.
 
-- Normality testing of the residuals: The Shapiro--Wilk test [@Shapiro:1965] (`shapiro.test()`) is performed on internally studentized residuals computed by `rstandard()`, which scales the raw residuals with an estimate of their standard deviation that accounts for the leverage of each observation [@Cook:1982].
+- Normality testing of the residuals: The Shapiro--Wilk test [@Shapiro:1965] (`shapiro.test()`) is performed on internally studentised residuals computed by `rstandard()`, which scales the raw residuals with an estimate of their standard deviation that accounts for the leverage of each observation [@Cook:1982].
   The Shapiro--Wilk (SW) test is the most powerful for detecting non-normality across most distributions, especially with smaller sample sizes [@Razali:2011; @Ghasemi:2012].
 
 - Non parametric-tests: Only when SW the test rejects normality ($p_{SW} \le \alpha$), non-parametric tests are selected: the Wilcoxon rank-sum test (`wilcox.test()`) for two groups, or the Kruskal--Wallis test (`kruskal.test()`) followed by the Holm adjusted pairwise Wilcoxon tests (`pairwise.wilcox.test()`) for more than two groups.
@@ -261,13 +260,13 @@ All tests within the linear model framework (see [Appendix A](#glm)) share the s
 The function `vis_lm_assumptions()` provides a unified visual and statistical framework for validating the linear model assumptions.
 It fits a linear model using `aov()` and provides four standard diagnostic plots:
 
-1.  **Histogram and Normal Density**: Displays the distribution of standardized residuals with a red normal density curve overlay to visually assess normality.
+1.  **Histogram and Normal Density**: Displays the distribution of standardised residuals with a red normal density curve overlay to visually assess normality.
 
-2.  **Std. Residuals vs. Fitted**: It shows the standardized residuals against fitted values with a zero-line to detect non-linearity or heteroscedasticity.
+2.  **Std. Residuals vs. Fitted**: It shows the standardised residuals against fitted values with a zero-line to detect non-linearity or heteroscedasticity.
 
-3.  **Normal Q-Q Plot**: A theoretical quantile-quantile plot using the standardized residuals to identify deviations from the Gaussian distribution.
+3.  **Normal Q-Q Plot**: A theoretical quantile-quantile plot using the standardised residuals to identify deviations from the Gaussian distribution.
 
-4.  If `correlation = FALSE` (regression mode), the **Standardized Residuals vs. Leverage** plot; if `correlation = TRUE` (correlation mode), a **Scale-Location** plot.
+4.  If `correlation = FALSE` (regression mode), the **Standardised Residuals vs. Leverage** plot; if `correlation = TRUE` (correlation mode), a **Scale-Location** plot.
 
 ## Test for normality and homoscedasticity
 
@@ -479,7 +478,7 @@ TukeyHSD controls the family-wise error rate via the studentised range distribut
 #### Following `oneway.test()`: `games.howell()` {.unnumbered}
 
 When the residuals are normal but variances are heterogeneous, the common-variance assumption of TukeyHSD breaks down.
-`visstat()` therefore follows Welch's heteroscedastic `oneway.test()` with the Games--Howell procedure, which uses *separate* variance estimates for each pair and Welch-adjusted degrees of freedom [@Games:1976].
+`visstat()` therefore pairs Welch’s heteroscedastic `oneway.test()` with the Games–Howell procedure, which is appropriate under unequal variances and unequal sample sizes. `games.howell()` uses *separate* variance estimates for each pair and Welch-adjusted degrees of freedom [@Games:1976].
 The returned object contains the Games--Howell-adjusted p-values for every pairwise comparison.
 
 #### Following `kruskal.test()`: `pairwise.wilcox.test()` {.unnumbered}
@@ -633,8 +632,8 @@ Staying within `visstat()`, `correlation = TRUE` gives an assumption-free result
 result_ozone1 <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 ```
 
-<a id="gamma-glm"></a>
-To preserve causality, we follow the second path and fit a Gamma GLM with log link, suited to the right-skewed distribution of Ozone concentrations.
+
+To preserve causality, we follow the second path and fit a Gamma generalised linear model with log link. The Gamma family is suited here because Ozone is strictly positive and continuous, and its variance grows with the mean — the structure detected by the Breusch--Pagan test. The log link (not the canonical inverse link) is preferred in practice as it guarantees positive fitted values.
 
 ```{r}
 # Remove zeros to satisfy Gamma requirements
@@ -658,7 +657,7 @@ legend("topright", legend = c("Data", "Gamma GLM (log link)"),
        col = c("darkgrey", "red"), pch = c(19, NA), lty = c(NA, 1), lwd = c(NA, 2))
 ```
 
-To verify the model fit, we check the standardized deviance residuals. If the Gamma model correctly represents the data structure, these residuals should be approximately normally distributed. In our example, both the Shapiro-Wilk and Anderson-Darling normality tests on the standardized residuals confirm that this diagnostic requirement is met
+For a well-fitting Gamma generalised linear model, standardised deviance residuals are asymptotically standard normal; we use Shapiro--Wilk and Anderson--Darling as approximate checks.
 
 ```{r}
 # Extract standardised  residuals
@@ -982,11 +981,13 @@ Combining tests for normality and homoscedasticity using simple majority voting 
 Therefore, automated test selection based solely on p-values cannot replace the visual inspection of sample distributions provided by `visstat()`.
 Based on the provided diagnostic plots, it may be necessary to override the automated choice of test in individual cases.
 
-# Limited number of implemented tests
+## Limited number of implemented tests
 
 While one of R's greatest strengths is the sheer volume of statistical methods available, our automated test selection pipeline deliberately restricts its scope to the most frequently used tests, particularly those relevant in a medical context [@Strasak:2007,@Sato:2017,@Chicco:2025].
-Incorporating a wider array of methods would require additional preliminary assumption checks, which in turn exacerbates the risk of overall Type I error inflation.
+Incorporating a wider array of methods (such as regression models with a categorical response) would require additional preliminary assumption checks, which in turn exacerbates the risk of overall Type I error inflation.
 Furthermore, expanding the pipeline would result in a highly complex decision tree, rendering the underlying statistical logic increasingly opaque to the user.
+
+
 
 ## Bootstrapping as modern alternative to hypothesis testing
 
