@@ -17,6 +17,7 @@ rj_latex_pkgs <- c(
   "palatino", "mathpazo", "inconsolata", "ae",
   # layout & spacing
   "setspace", "geometry", "parskip", "fancyhdr", "footmisc", "lastpage",
+  "titlesec",
   # references & links
   "natbib", "hyperref", "doi", "url",
   # tables & figures
