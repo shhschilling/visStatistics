@@ -179,6 +179,16 @@ blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
 blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
 fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
 
+# Fisher-test 2x2: tea-tasting example (Fisher 1935)
+# Small cell counts -> Cochran violated -> exact Fisher -> OR and CI in output
+tea <- data.frame(
+  poured  = as.factor(c(rep("milk_first", 8), rep("tea_first", 8))),
+  correct = as.factor(c(rep("yes", 7), rep("no", 1), rep("yes", 1), rep("no", 7)))
+)
+tea_stats <- visstat(tea$poured, tea$correct)
+tea_stats$estimate   # odds ratio
+tea_stats$conf.int   # 95% CI
+
 
 # The visstat-methods -------
 summary(iris_data_stored)
