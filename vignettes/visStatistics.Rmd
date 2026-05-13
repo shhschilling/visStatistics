@@ -52,8 +52,7 @@ Most routine data analyses reduce to a comparatively small set of inferential fr
 It visualises its decision by, where appropriate, assumption-diagnostic plot and a descriptive plot with the main test statistics annotated, and returns an R object whose `print()` and `summary()` methods expose the complete test results.
 The scripted workflow is well suited for browser-based applications where sensitive data (such as highly confidential medical records) is stored securely on a server and can not be directly accessed by users.
 This approach was already successfully applied to develop a medical scoring tool [@Bijlenga:2017].
-When selecting tests for group comparisons, packages with overlapping scope such as `automatedtests` [@Zeevat:2025] and `compareGroups` [@Subirana:2014] base their test selection on group‑wise normality assessments of the response variable.
-But group-wise testing inflates the [family-wise type I error rate](#post-hoc-analysis): the probability of at least one false rejection of normality grows with the number of compared groups, leading to unnecessary switching to non-parametric methods even when the linear model assumptions hold globally.
+When selecting tests for group comparisons, packages with overlapping scope such as `automatedtests` [@Zeevat:2025] and `compareGroups` [@Subirana:2014] base their test selection on group‑wise normality assessments of the response variable. But group-wise testing inflates the [family-wise type I error rate](#post-hoc-analysis): the probability of at least one false rejection of normality grows with the number of compared groups, leading to unnecessary switching to non-parametric methods even when the linear model assumptions hold globally.
 In contrast, `visStatistics` assesses the normality of the overall model residuals, adhering to the general linear model framework [@Searle:1971].
 
 # Getting started
@@ -459,7 +458,7 @@ $$H = \frac{12}{N(N+1)} \sum_{i=1}^{k} n_i \left(\bar{R}_i - \bar{R} \right)^2,$
 where $n_i$ is the sample size in group $i$, $k$ is the number of groups, $\bar{R}_i$ is the average rank of group $i$, $N$ is the total sample size, and $\bar{R} = \frac{N+1}{2}$ is the average of all ranks.
 Under the null hypothesis, $H$ approximately follows a $\chi^2$ distribution with $k - 1$ degrees of freedom.
 
-### Post-hoc analysis {#post-hoc-analysis}
+### Post-hoc analysis
 
 ANOVA, Welch ANOVA, and Kruskal--Wallis are omnibus tests: a significant result tells us that *some* group differs, but not which.
 To identify the differing pairs we test all
@@ -479,8 +478,7 @@ TukeyHSD controls the family-wise error rate via the studentised range distribut
 #### Following `oneway.test()`: `games.howell()` {.unnumbered}
 
 When the residuals are normal but variances are heterogeneous, the common-variance assumption of TukeyHSD breaks down.
-`visstat()` therefore pairs Welch’s heteroscedastic `oneway.test()` with the Games–Howell procedure, which is appropriate under unequal variances and unequal sample sizes.
-`games.howell()` uses *separate* variance estimates for each pair and Welch-adjusted degrees of freedom [@Games:1976].
+`visstat()` therefore pairs Welch’s heteroscedastic `oneway.test()` with the Games–Howell procedure, which is appropriate under unequal variances and unequal sample sizes. `games.howell()` uses *separate* variance estimates for each pair and Welch-adjusted degrees of freedom [@Games:1976].
 The returned object contains the Games--Howell-adjusted p-values for every pairwise comparison.
 
 #### Following `kruskal.test()`: `pairwise.wilcox.test()` {.unnumbered}
@@ -601,6 +599,7 @@ linreg_swiss <- visstat(swiss$Examination, swiss$Fertility, conf.level = 0.99)
 
 Both normality tests pass ($p > \alpha$) and the Breusch--Pagan test confirms homoscedasticity, validating the linear model.
 
+
 ### Spearman rank correlation (`cor.test(..., method = "spearman")`)
 
 For two numeric variables with `correlation = TRUE`, `visstat()` calls `cor.test(x, y, method = "spearman")` to measure the monotonic association between $x$ and $y$ using ranks, evaluating linear dependence on the ranked data rather than on the original scale:
@@ -633,9 +632,8 @@ Staying within `visstat()`, `correlation = TRUE` gives an assumption-free result
 result_ozone1 <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 ```
 
-To preserve causality, we follow the second path and fit a Gamma generalised linear model with log link.
-The Gamma family is suited here because Ozone is strictly positive and continuous, and its variance grows with the mean — the structure detected by the Breusch--Pagan test.
-The log link (not the canonical inverse link) is preferred in practice as it guarantees positive fitted values.
+
+To preserve causality, we follow the second path and fit a Gamma generalised linear model with log link. The Gamma family is suited here because Ozone is strictly positive and continuous, and its variance grows with the mean — the structure detected by the Breusch--Pagan test. The log link (not the canonical inverse link) is preferred in practice as it guarantees positive fitted values.
 
 ```{r}
 # Remove zeros to satisfy Gamma requirements
@@ -647,7 +645,7 @@ summary(model_gamma)
 
 ```{r, echo=FALSE}
 # Plotting the data with Gamma model overlay
-plot(airquality_clean$Wind, airquality_clean$Ozone, log = "y", 
+plot(airquality_clean$Wind, airquality_clean$Ozone, log = "y",
      pch = 19, col = "darkgrey", xlab = "Wind (mph)", ylab = "Ozone (ppb) [log scale]",
      main = "Gamma GLM Fit (Log Link)")
 # Generate predictions for the overlay
@@ -655,7 +653,7 @@ wind_seq <- seq(min(airquality_clean$Wind), max(airquality_clean$Wind), length.o
 preds <- predict(model_gamma, newdata = data.frame(Wind = wind_seq), type = "response")
 lines(wind_seq, preds, col = "red", lwd = 2)
 
-legend("topright", legend = c("Data", "Gamma GLM (log link)"), 
+legend("topright", legend = c("Data", "Gamma GLM (log link)"),
        col = c("darkgrey", "red"), pch = c(19, NA), lty = c(NA, 1), lwd = c(NA, 2))
 ```
 
@@ -706,12 +704,9 @@ Yates' continuity correction is applied by default to $2 \times 2$ contingency t
 
 #### Fisher's exact test (`fisher.test()`)
 
-The $\chi^2$ approximation is considered reliable only if no expected cell count is less than 1 and no more than 20% of cells have expected counts below 5 [@Cochran:1954].
-If this condition is not met, Fisher's exact test [@Fisher:1970] (`fisher.test()`) is applied instead.
+The $\chi^2$ approximation is considered reliable only if no expected cell count is less than 1 and no more than 20% of cells have expected counts below 5 [@Cochran:1954]. If this condition is not met, Fisher's exact test [@Fisher:1970] (`fisher.test()`) is applied instead.
 
-The test calculates an exact $p$-value by conditioning on the observed margins of an $R \times C$ contingency table.
-To maintain consistency with the `y ~ x` (response \~ predictor) framework used throughout `visStatistics`, the **rows (**$i=1, \dots, R$) represent the levels of the response variable $y$ and the **columns (**$j=1, \dots, C$) represent the levels of the predictor $x$.
-The row totals are defined as $n_{i\cdot} = \sum_{j=1}^C n_{ij}$ and the column totals as $n_{\cdot j} = \sum_{i=1}^R n_{ij}$, for $i = 1, \dots, R$ and $j = 1, \dots, C$.
+The test calculates an exact $p$-value by conditioning on the observed margins of an $R \times C$ contingency table. To maintain consistency with the `y ~ x` (response ~ predictor) framework used throughout `visStatistics`, the **rows ($i=1, \dots, R$) represent the levels of the response variable $y$** and the **columns ($j=1, \dots, C$) represent the levels of the predictor $x$**. The row totals are defined as $n_{i\cdot} = \sum_{j=1}^C n_{ij}$ and the column totals as $n_{\cdot j} = \sum_{i=1}^R n_{ij}$, for $i = 1, \dots, R$ and $j = 1, \dots, C$.
 
 In the $2 \times 2$ case ($R=2, C=2$), the table is structured as follows:
 
@@ -728,14 +723,11 @@ The exact probability of observing this table under the null hypothesis of indep
 
 $$\mathbb{P}(N \mid n_{1\cdot}, n_{2\cdot}, n_{\cdot 1}, n_{\cdot 2}) = \frac{\binom{n_{1\cdot}}{n_{11}} \binom{n_{2\cdot}}{n_{21}}}{\binom{n}{n_{\cdot 1}}}$$
 
-where $n = n_{1\cdot} + n_{2\cdot} = n_{\cdot 1} + n_{\cdot 2}$ is the total sample size.
-The $p$-value is computed by summing the probabilities of all tables with the same margins whose probabilities under the null are less than or equal to that of the observed table.
+where $n = n_{1\cdot} + n_{2\cdot} = n_{\cdot 1} + n_{\cdot 2}$ is the total sample size. The $p$-value is computed by summing the probabilities of all tables with the same margins whose probabilities under the null are less than or equal to that of the observed table.
 
 For general $R \times C$ tables, `fisher.test()` generalises this approach using the multivariate hypergeometric distribution.
 
-For $2 \times 2$ tables, `fisher.test()` additionally returns the conditional maximum likelihood estimate of the odds ratio $\widehat{\text{OR}}$.
-Given the orientation where rows are the response $y$, the odds of observing response level $y_1$ (relative to $y_2$) in predictor group $x_1$ are $n_{11}/n_{21}$, and the corresponding odds in group $x_2$ are $n_{12}/n_{22}$.
-The odds ratio is thus:
+For $2 \times 2$ tables, `fisher.test()` additionally returns the conditional maximum likelihood estimate of the odds ratio $\widehat{\text{OR}}$. Given the orientation where rows are the response $y$, the odds of observing response level $y_1$ (relative to $y_2$) in predictor group $x_1$ are $n_{11}/n_{21}$, and the corresponding odds in group $x_2$ are $n_{12}/n_{22}$. The odds ratio is thus:
 
 $$\widehat{\text{OR}} = \frac{n_{11} / n_{21}}{n_{12} / n_{22}} = \frac{n_{11} \cdot n_{22}}{n_{12} \cdot n_{21}}$$
 
@@ -996,6 +988,8 @@ While one of R's greatest strengths is the sheer volume of statistical methods a
 Incorporating a wider array of methods (such as regression models with a categorical response) would require additional preliminary assumption checks, which in turn exacerbates the risk of overall Type I error inflation.
 Furthermore, expanding the pipeline would result in a highly complex decision tree, rendering the underlying statistical logic increasingly opaque to the user.
 
+
+
 ## Bootstrapping as modern alternative to hypothesis testing
 
 Bootstrapping methods [@Wilcox:2021] make minimal distributional assumptions and can provide confidence intervals for nearly any statistic.
@@ -1073,16 +1067,22 @@ Simple linear regression corresponds to one continuous predictor $x_{i1}$ for ob
 Testing $H_0: \beta_1 = 0$ examines whether there is a linear relationship between the predictor and the response.
 
 ## Normality tests
-
-The package uses both the Shapiro-Wilk test as well ass the Anderson-Darling test to check the normality of the studentised residuals $r_i^* = e_i / (s\sqrt{1-h_{ii}})$, where $e_i$ are the raw residuals, $s^2$ is the residual mean square, and $h_{ii}$ is the leverage of observation $i$ [@Cook:1982].
+The package uses both the Shapiro-Wilk test  as well ass the Anderson-Darling test to check the  normality of the studentised residuals
+$r_i^* = e_i / (s\sqrt{1-h_{ii}})$, where $e_i$ are the raw residuals,
+$s^2$ is the residual mean square, and $h_{ii}$ is the leverage of
+observation $i$ [@Cook:1982].
 
 ### Shapiro--Wilk test `shapiro.test()`
 
-The Shapiro--Wilk test [@Shapiro:1965] evaluates whether a sample $x_1,\ldots,x_n$ comes from a normal distribution.
-Let $x_{(1)}\le \cdots \le x_{(n)}$ be its order statistics.
-Introduce a reference sample $Y_1,\ldots,Y_n$ of independent standard normal random variables, i.e. $Y_i \sim N(0,1)$ for all $i$, and let $Y_{(1)}\le \cdots \le Y_{(n)}$ be their order statistics used to construct the Shapiro--Wilk weights.
+The Shapiro--Wilk test [@Shapiro:1965] evaluates whether a sample
+$x_1,\ldots,x_n$ comes from a normal distribution. Let
+$x_{(1)}\le \cdots \le x_{(n)}$ be its order statistics. Introduce a
+reference sample $Y_1,\ldots,Y_n$ of independent standard normal random
+variables, i.e. $Y_i \sim N(0,1)$ for all $i$, and let
+$Y_{(1)}\le \cdots \le Y_{(n)}$ be their order statistics used to construct the Shapiro--Wilk weights.
 
-Define $$m_i = E\!\left(Y_{(i)}\right), \quad i=1,\ldots,n,$$
+Define
+$$m_i = E\!\left(Y_{(i)}\right), \quad i=1,\ldots,n,$$
 
 $$v_{ij} = \operatorname{Cov}\!\left(Y_{(i)},Y_{(j)}\right),
 \quad i,j=1,\ldots,n,$$
@@ -1090,29 +1090,43 @@ $$v_{ij} = \operatorname{Cov}\!\left(Y_{(i)},Y_{(j)}\right),
 $$\mathbf{m}=(m_1,\ldots,m_n)^\top,\qquad
 \mathbf{V}=(v_{ij})_{i,j=1}^n.$$
 
-Thus, $\mathbf{m}$ contains the expected positions of the standard-normal order statistics, and $\mathbf{V}$ describes their covariance structure.
-Let $\mathbf{a}=(a_1,\ldots,a_n)^\top$ be the resulting vector of normalised weights for the ordered observed sample values
+Thus, $\mathbf{m}$ contains the expected positions of the standard-normal
+order statistics, and $\mathbf{V}$ describes their covariance structure.
+Let $\mathbf{a}=(a_1,\ldots,a_n)^\top$ be the resulting vector of
+normalised weights for the ordered observed sample values
+
 
 $$\mathbf{a}
 =\frac{\mathbf{V}^{-1}\mathbf{m}}
-{\sqrt{\left(\mathbf{m}^\top \mathbf{V}^{-1}\mathbf{V}^{-1}\mathbf{m}\right)}}.$$ Then the Shapiro--Wilk statistic is $$W=\frac{\left(\sum_{i=1}^{n} a_i x_{(i)}\right)^2}
+{\sqrt{\left(\mathbf{m}^\top \mathbf{V}^{-1}\mathbf{V}^{-1}\mathbf{m}\right)}}.$$
+Then the Shapiro--Wilk statistic is
+$$W=\frac{\left(\sum_{i=1}^{n} a_i x_{(i)}\right)^2}
 {\sum_{i=1}^{n} (x_i-\bar{x})^2}.$$
 
-$W$ takes values in $(0, 1]$; values close to 1 indicate normality. Simulation studies show that the Shapiro--Wilk test has the highest power among normality tests for small to moderate sample sizes ($n = 10$ to $100$) [@Razali:2011].
-It drives the parametric/non-parametric branching decision in `visstat()`; for groups with more than 50 observations normality is assumed by the central limit theorem [@Lumley:2002; @Rasch:2011].
+$W$ takes values in $(0, 1]$; values close to 1 indicate normality.
+Simulation studies show that the Shapiro--Wilk test has the highest
+power among normality tests for small to moderate sample sizes ($n = 10$
+to $100$) [@Razali:2011]. It drives the parametric/non-parametric
+branching decision in `visstat()`; for groups with more than 50
+observations normality is assumed by the central limit theorem
+[@Lumley:2002; @Rasch:2011].
 
 The implementation uses `shapiro.test()` from \CRANpkg{stats} [@R:2026].
+
 ### Anderson--Darling test `ad.test()`
 
-The Anderson--Darling test [@Anderson:1952] is particularly sensitive to deviations in the tails of the distribution [@Razali:2011; @Yap:2011].
-Let $z_i = (x_{(i)} - \bar{x})/s,\; i=1,2,\ldots,n$ be the standardised order statistics of $x_i$ and $\Phi$ the standard normal cumulattive densitiy function.
-The test statistic is
+The Anderson--Darling test [@Anderson:1952] is particularly sensitive to
+deviations in the tails of the distribution [@Razali:2011; @Yap:2011].
+Let $z_i = (x_{(i)} - \bar{x})/s,\; i=1,2,\ldots,n$ be the standardised order statistics of $x_i$
+and $\Phi$ the standard normal cumulattive  densitiy function. The test statistic is
 
 $$A^2 = -n - \frac{1}{n}\sum_{i=1}^{n}(2i-1)
         \left[\ln\Phi(z_i) + \ln\!\left(1 - \Phi(z_{n+1-i})\right)\right].$$
 
-The implementation uses `ad.test()` from \CRANpkg{nortest} [@Gross:2015].
-Albeit the Anderson--Darling result is shown in all assumption plots, it does **not** drive the branching decision; only Shapiro--Wilk does.
+The implementation uses `ad.test()` from \CRANpkg{nortest}
+[@Gross:2015]. Albeit the  Anderson--Darling result is shown in all assumption
+plots, it does **not** drive the branching decision; only Shapiro--Wilk
+does.
 
 # Appendix B: Tests for homoscedasticity {#variance}
 
@@ -1158,11 +1172,23 @@ Under the null hypothesis that all group variances are equal and the data are no
 
 ## Breusch-Pagan test `bp.test()`
 
-For linear regression, group-based tests are not applicable.
-Instead, the `visStatistics` package function `bp.test()` implements the Breusch-Pagan test.
+For simple linear regression, group-based variance tests are not
+applicable. The Breusch--Pagan test [@Breusch:1979] assesses whether the
+variance of the residuals from the regression model depends on the
+predictor values. Let $e_i$ be the residuals from the fitted regression model and
+let $\hat{\sigma}^2 = n^{-1}\sum_{i=1}^n e_i^2$. The auxiliary
+regression models $e_i^2 / \hat{\sigma}^2$ as a function of the
+predictors. Let $R^2_\text{aux}$ denote the coefficient of determination from this
+auxiliary regression. Crucially, while a high $R^2$ is typically a sign of
+a strong model, here it indicates a failure of the constant-variance
+assumption: a higher $R^2_\text{aux}$ means the error variance follows
+a systematic, non-random pattern. The Breusch--Pagan statistic is then
+calculated as:
+$$BP = n R^2_\text{aux},$$
 
-The Breusch-Pagan test assesses whether the variance of the residuals from a regression model depends on the values of the independent variables [@Breusch:1979].
+which is compared asymptotically to a $\chi^2$ distribution with degrees
+of freedom equal to the number of predictors in the auxiliary regression.
 
-The diagnostic plots together with the p-values of the tests for normality and homoscedasticity enable the user to assess whether the linear model assumptions are met and manually override the automated test selection.
+
 
 # Bibliography
