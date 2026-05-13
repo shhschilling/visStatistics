@@ -21,14 +21,12 @@ covers most hypothesis tests taught in undergraduate statistics.
 #### 1. Install the package
 
 ``` r
-
 install.packages("visStatistics")
 ```
 
 #### 2. Load the package
 
 ``` r
-
 library(visStatistics)
 ```
 
@@ -37,42 +35,36 @@ library(visStatistics)
 #### 1.Install `devtools` from CRAN if not already installed:
 
 ``` r
-
 install.packages("devtools")
 ```
 
 #### 2. Load the `devtools` package:
 
 ``` r
-
 library(devtools)
 ```
 
 #### 3. Install the `visStatistics` package from GitHub:
 
 ``` r
-
 pak::pak("shhschilling/visStatistics")
 ```
 
 #### 4. Load the `visStatistics` package:
 
 ``` r
-
 library(visStatistics)
 ```
 
 #### 5. View help for the main function:
 
 ``` r
-
 ? visstat
 ```
 
 #### 6. Study all the details in the packages’ vignette:
 
 ``` r
-
 vignette("visStatistics")
 ```
 
@@ -83,7 +75,6 @@ The function
 accepts input in three ways:
 
 ``` r
-
 # Standardised form:
 visstat(x, y)
 
@@ -108,7 +99,6 @@ These column must be of class `"numeric"`, `"integer"`, or `"factor"`.
 This is equivalent to writing:
 
 ``` r
-
 visstat(dataframe[["namex"]], dataframe[["namey"]])
 ```
 
@@ -151,7 +141,6 @@ For a detailed description of the underlying decision logic, please
 refer to the package vignette:
 
 ``` r
-
 vignette("visStatistics")
 ```
 
@@ -177,7 +166,6 @@ homoscedasticity.
 # Examples
 
 ``` r
-
 library(visStatistics)
 ```
 
@@ -191,7 +179,6 @@ central tendencies are selected.
 #### mtcars data set
 
 ``` r
-
  mtcars$am <- as.factor(mtcars$am)
  t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
 ```
@@ -212,7 +199,6 @@ homogeneity.](reference/figures/README-mtcars-3.png)
 ### Wilcoxon rank sum test
 
 ``` r
-
 grades_gender <- data.frame(
   sex = factor(rep(c("girl", "boy"), times = c(21, 23))),
   grade = c(
@@ -238,7 +224,6 @@ differences.](reference/figures/README-sex-grades2-2.png)
 ### Fisher’s one way ANOVA
 
 ``` r
-
 fisher_one_way_npk <- visstat(npk$block,npk$yield)
 ```
 
@@ -254,7 +239,6 @@ intervals.](reference/figures/README-npk-onewy-2.png)
 ### Kruskal-Wallis test
 
 ``` r
-
 kruskal_iris=visstat(iris$Species, iris$Petal.Width)
 ```
 
@@ -276,7 +260,6 @@ predictor with two classes, otherwise a Kruskal-Wallis-Test.
 ### Wilcoxon with ordinal response
 
 ``` r
-
 set.seed(123)
 
 # Create predictor: Customer segment (2 groups)
@@ -306,7 +289,6 @@ differences.](reference/figures/README-ordinal-1.png)
 ### Kruskal-Wallis test
 
 ``` r
-
 set.seed(123)
 
 # Create predictor: Service class (3 groups)
@@ -338,7 +320,6 @@ comparisons.](reference/figures/README-unnamed-chunk-3-1.png)
 ## Numerical response and numerical predictor: Linear Regression
 
 ``` r
-
 vis_women <- visstat(women$height, women$weight,conf.level=0.99)
 ```
 
@@ -363,7 +344,6 @@ transformed to this column wise structure with the helper function
 [`counts_to_cases()`](https://shhschilling.github.io/visStatistics/reference/counts_to_cases.md):
 
 ``` r
-
 hair_eye_color_df <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(hair_eye_color_df$Eye, hair_eye_color_df$Hair)
 ```
@@ -381,7 +361,6 @@ statistics for association.](reference/figures/README-pearson-2.png)
 ### Fisher’s exact test
 
 ``` r
-
 hair_eye_color_male <- HairEyeColor[, , 1]
 # Slice out a 2 by 2 contingency table
 black_brown_hazel_green_male <- hair_eye_color_male[1:2, 3:4]
@@ -405,7 +384,6 @@ tests for a monotone association via Kendall’s $`\tau_b`$ and produces a
 jittered rank–rank scatter together with a mosaic plot.
 
 ``` r
-
 set.seed(1)
 n <- 120
 xs <- sample(1:5, n, replace = TRUE)
@@ -442,7 +420,6 @@ In the following example, we store the graphics in `png` format in the
 the default naming convention:
 
 ``` r
-
 #Graphical output written to plotDirectory: In this example 
 # a bar chart to visualise the Chi-squared test and mosaic plot showing
 # Pearson's residuals named 
@@ -455,7 +432,6 @@ The full file path of the generated graphics are stored as the attribute
 `"plot_paths"` on the returned object of class `"visstat"`.
 
 ``` r
-
 paths <- attr(save_fisher, "plot_paths")
 print(paths)
 #> [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmptoHBnl/chi_squared_or_fisher_Hair_Eye.png"
@@ -464,7 +440,6 @@ print(paths)
 Remove the graphical output from `plotDirectory`:
 
 ``` r
-
 file.remove(paths)
 #> [1] TRUE
 ```

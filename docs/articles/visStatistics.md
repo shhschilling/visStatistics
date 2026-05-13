@@ -44,7 +44,7 @@ be directly accessed by users. This approach was already successfully
 applied to develop a medical scoring tool ([Bijlenga et al.
 2017](#ref-Bijlenga:2017)). When selecting tests for group comparisons,
 packages with overlapping scope such as `automatedtests` ([Zeevat
-2025](#ref-Zeevat:2025)) and `compareGroups` ([Subirana et al.
+2025](#ref-Zeevat:2025)) and `compareGroups` ([Subirana, Sanz, and Vila
 2014](#ref-Subirana:2014)) base their test selection on group‑wise
 normality assessments of the response variable. But group-wise testing
 inflates the [family-wise type I error rate](#post-hoc-analysis): the
@@ -60,14 +60,12 @@ overall model residuals, adhering to the general linear model framework
 ##### 1. Install the latest development version from GITHUB
 
 ``` r
-
 install_github("shhschilling/visStatistics")
 ```
 
 ##### 2. Load the package
 
 ``` r
-
 library(visStatistics)
 ```
 
@@ -78,7 +76,6 @@ The function
 accepts input in three ways:
 
 ``` r
-
 # Standardised form (recommended):
 visstat(x, y)
 
@@ -103,26 +100,22 @@ backward-compatible form the second argument belongs to the response,
 the third to the predictor. This is equivalent to writing:
 
 ``` r
-
 visstat(dataframe[["namex"]], dataframe[["namey"]])
 ```
 
 ###### Exemplary function call
 
 ``` r
-
 #Standardised form
 visstat(npk$block,npk$yield)
 ```
 
 ``` r
-
 # Using formula interface
  visstat(yield~block,data=npk)
 ```
 
 ``` r
-
 #Backward-compatible form
  visstat(npk,"yield","block")
 ```
@@ -198,9 +191,9 @@ A](#glm)) are fulfilled, a linear model `lm(y ~ x)` is first fitted.
   normality ($`p_{SW} > \alpha`$) or when the sample sizes are large
   (more than 50 observations per group), parametric tests are selected.
   In large samples the central limit theorem ensures approximate
-  normality of the sampling distribution of the mean. ([Rasch et al.
-  2011](#ref-Rasch:2011); [Lumley et al. 2002](#ref-Lumley:2002); [Kwak
-  and Kim 2017](#ref-Kwak:2017))
+  normality of the sampling distribution of the mean. ([Rasch, Kubinger,
+  and Moder 2011](#ref-Rasch:2011); [Lumley et al.
+  2002](#ref-Lumley:2002); [Kwak and Kim 2017](#ref-Kwak:2017))
 
   - Homoscedasticity: The Levene–Brown–Forsythe (L) test (implemented as
     [`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md))
@@ -225,7 +218,7 @@ A](#glm)) are fulfilled, a linear model `lm(y ~ x)` is first fitted.
       ([Games and Howell 1976](#ref-Games:1976)) is applied. Welch’s
       methods outperform their classical counterparts when variances
       differ ([Moser and Stevens 1992](#ref-Moser:1992); [Fagerland and
-      Sandvik 2009](#ref-Fagerland:2009); [Delacre et al.
+      Sandvik 2009](#ref-Fagerland:2009); [Delacre, Lakens, and Leys
       2017](#ref-Delacre:2017)).
 
 - Regardless of sample size, assumption diagnostics are always
@@ -492,7 +485,7 @@ tests for a difference in location between two independent distributions
 ([Mann and Whitney 1947](#ref-Mann:1947)). If the two groups have
 distributions that are sufficiently similar in shape and scale, the
 Wilcoxon rank-sum test can be interpreted as testing whether the medians
-of the two populations are equal ([Hollander et al.
+of the two populations are equal ([Hollander, Chicken, and Wolfe
 2014](#ref-Hollander:2014)).
 
 The two-level factor variable `x` defines two groups, with sample sizes
@@ -535,7 +528,6 @@ observations, where `mpg` denotes miles per (US) gallon, and `am`
 represents the transmission type (`0` = automatic, `1` = manual).
 
 ``` r
-
 mtcars$am <- as.factor(mtcars$am)
 t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
 ```
@@ -548,7 +540,6 @@ The Wilcoxon rank sum test is exemplified on differences between the
 central tendencies of grades of “boys” and “girls” in a class:
 
 ``` r
-
 grades_gender <- data.frame(
   sex = as.factor(c(rep("girl", 21), rep("boy", 23))),
   grade = c(
@@ -567,7 +558,6 @@ wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
 ##### Wilcoxon with ordinal response
 
 ``` r
-
 set.seed(123)
 
 # Create predictor: Customer segment (2 groups)
@@ -603,7 +593,7 @@ As a [linear model](#glm), it assumes independent observations, normally
 distributed residuals, and **homogeneous** variances across groups. The
 test statistic is the ratio of the variance explained by differences
 among group means (between-group variance) to the unexplained variance
-within groups ([Fisher and Yates 1990](#ref-Fisher:1990))
+within groups ([Ronald A. Fisher and Yates 1990](#ref-Fisher:1990))
 
 ``` math
 F  = \frac{MS_{between}}{MS_{within}}=
@@ -672,7 +662,8 @@ come from the same population — specifically, that the distributions
 have the same location ([Kruskal and Wallis 1952](#ref-Kruskal:1952)).
 If the group distributions are sufficiently similar in shape and scale,
 then the Kruskal–Wallis test can be interpreted as testing for equality
-of medians across groups ([Hollander et al. 2014](#ref-Hollander:2014)).
+of medians across groups ([Hollander, Chicken, and Wolfe
+2014](#ref-Hollander:2014)).
 
 The test statistic is defined as:
 
@@ -781,7 +772,8 @@ In every branch, pairs of groups whose adjusted post-hoc p-value falls
 below $`\alpha`$ are marked with *different* green letters below the box
 plots; pairs sharing a letter are not significantly different. The
 letters are produced by `multcompLetters()` from the `multcompView`
-package ([Graves et al. 2026](#ref-Graves:2026)).
+package ([Graves, Piepho, and with help from Sundar Dorai-Raj
+2026](#ref-Graves:2026)).
 
 Besides the graphical output,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -800,7 +792,6 @@ the application of three different fertilisers – nitrogen (N), phosphate
 either none, one, two, or all three of the fertilisers.
 
 ``` r
-
 anova_npk <- visstat(npk$block,npk$yield,conf.level=0.95)
 ```
 
@@ -827,7 +818,6 @@ The `iris` dataset contains petal width measurements (in cm) for three
 different iris species.
 
 ``` r
-
 visstat(iris$Species, iris$Petal.Width)
 ```
 
@@ -859,7 +849,6 @@ by
 [`pairwise.wilcox.test()`](https://rdrr.io/r/stats/pairwise.wilcox.test.html).
 
 ``` r
-
 set.seed(123)
 
 # Predictor: customer segment (3 groups)
@@ -931,7 +920,6 @@ how the share of draftees achieving the highest army examination score
 (`Examination`) predicts the fertility measure (`Fertility`).
 
 ``` r
-
 linreg_swiss <- visstat(swiss$Examination, swiss$Fertility, conf.level = 0.99)
 ```
 
@@ -977,7 +965,6 @@ fits a simple linear regression model, but triggers the following
 warning:
 
 ``` r
-
 result_ozone0 <- visstat(airquality$Wind, airquality$Ozone)
 ```
 
@@ -999,7 +986,6 @@ Staying within
 causality:
 
 ``` r
-
 result_ozone1 <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 ```
 
@@ -1013,7 +999,6 @@ The log link (not the canonical inverse link) is preferred in practice
 as it guarantees positive fitted values.
 
 ``` r
-
 # Remove zeros to satisfy Gamma requirements
 airquality_clean <- subset(airquality, Ozone > 0)
 # Gamma model with log mapping
@@ -1047,7 +1032,6 @@ residuals are asymptotically standard normal; we use Shapiro–Wilk and
 Anderson–Darling as approximate checks.
 
 ``` r
-
 # Extract standardised  residuals
 std_dev_res <- rstandard(model_gamma, type = "deviance")
 # Validate using the Shapiro-Wilk normality test
@@ -1061,7 +1045,6 @@ shapiro.test(std_dev_res)
     ## W = 0.99245, p-value = 0.7817
 
 ``` r
-
 # Validate using the Anderson-Darling normality test
 nortest::ad.test(std_dev_res)
 ```
@@ -1106,13 +1089,13 @@ hypothesis.
 
 For general $`R \times C`$ tables,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-supplements the bar chart with a mosaic plot ([Meyer et al.
-2006](#ref-Meyer:2006), [2024](#ref-Meyer:2024)), in which the area of
-each tile is proportional to the observed cell frequency and tiles are
-coloured by their Pearson residual $`r_{ij}`$: blue for positive
-residuals (observed exceeds expected) and red for negative ones
-(observed falls short of expected). This makes the cells driving the
-association immediately visible.
+supplements the bar chart with a mosaic plot ([Meyer, Zeileis, and
+Hornik 2006](#ref-Meyer:2006); [Meyer et al. 2024](#ref-Meyer:2024)), in
+which the area of each tile is proportional to the observed cell
+frequency and tiles are coloured by their Pearson residual $`r_{ij}`$:
+blue for positive residuals (observed exceeds expected) and red for
+negative ones (observed falls short of expected). This makes the cells
+driving the association immediately visible.
 
 #### Pearson’s $`\chi^2`$ test with Yates’ continuity correction
 
@@ -1140,7 +1123,8 @@ contingency tables with one degree of freedom by the underlying routine
 The $`\chi^2`$ approximation is considered reliable only if no expected
 cell count is less than 1 and no more than 20% of cells have expected
 counts below 5 ([Cochran 1954](#ref-Cochran:1954)). If this condition is
-not met, Fisher’s exact test ([Fisher 1970](#ref-Fisher:1970))
+not met, Fisher’s exact test ([Ronald Aylmer Fisher
+1970](#ref-Fisher:1970))
 ([`fisher.test()`](https://rdrr.io/r/stats/fisher.test.html)) is applied
 instead.
 
@@ -1240,7 +1224,6 @@ The function transforms the contingency table `HairEyeColor` into
 `data.frame` named `HairEyeColourDataFrame`.
 
 ``` r
-
 HairEyeColourDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
 ```
 
@@ -1253,7 +1236,6 @@ other.
 ##### Pearson’s $`{\chi}^2`$-test (`chisq.test()`)
 
 ``` r
-
 hair_eye_colour_df <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(hair_eye_colour_df$Eye, hair_eye_colour_df$Hair)
 ```
@@ -1277,7 +1259,6 @@ either black or brown hair and either brown or blue eyes, resulting in a
 2-by-2 contingency table.
 
 ``` r
-
 hair_black_brown_eyes_brown_blue <- HairEyeColor[1:2, 1:2, ]
 # Transform to data frame
 hair_black_brown_eyes_brown_blue_df <- counts_to_cases(as.data.frame(hair_black_brown_eyes_brown_blue))
@@ -1311,7 +1292,6 @@ Therefore,
 automatically selects Fisher’s exact test instead.
 
 ``` r
-
 hair_eye_colour_male <- HairEyeColor[, , 1]
 # Slice out a 2 by 2 contingency table
 black_brown_hazel_green_male <- hair_eye_colour_male[1:2, 3:4]
@@ -1327,7 +1307,6 @@ For this $`2 \times 2`$ table, the odds ratio and its 95% confidence
 interval are available in the returned object:
 
 ``` r
-
 fisher_stats$estimate   # odds ratio
 ```
 
@@ -1335,7 +1314,6 @@ fisher_stats$estimate   # odds ratio
     ##  0.5062015
 
 ``` r
-
 fisher_stats$conf.int   # 95% CI
 ```
 
@@ -1404,7 +1382,6 @@ is expected: students who consume alcohol more frequently tend to
 achieve lower academic performance.
 
 ``` r
-
 set.seed(42)
 n <- 150
 # Latent scores with deliberate negative monotone association:
@@ -1439,7 +1416,6 @@ In the following example, we store the graphics in `png` format in the
 the default naming convention:
 
 ``` r
-
 # Graphical output written to plotDirectory: In this example
 # a single bar chart showing absolute counts.
 # Output file: chi_squared_or_fisher_Hair_Eye.png
@@ -1451,17 +1427,15 @@ The full file path of the generated graphics are stored as the attribute
 `"plot_paths"` on the returned object of class `"visstat"`.
 
 ``` r
-
 paths <- attr(save_fisher, "plot_paths")
 print(paths)
 ```
 
-    ## [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpguQIHN/chi_squared_or_fisher_Hair_Eye.png"
+    ## [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpb6Y1f7/chi_squared_or_fisher_Hair_Eye.png"
 
 Remove the graphical output from `plotDirectory`:
 
 ``` r
-
 file.remove(paths)
 ```
 
@@ -1487,12 +1461,10 @@ provides the full contents of the returned object, including assumption
 tests and post-hoc comparisons.
 
 ``` r
-
 iris_kruskal <- visstat(iris$Species, iris$Petal.Width)
 ```
 
 ``` r
-
 print(iris_kruskal)
 ```
 
@@ -1503,7 +1475,6 @@ print(iris_kruskal)
     ## [2] "post-hoc by pairwise Wilcoxon rank sum test "
 
 ``` r
-
 summary(iris_kruskal)
 ```
 
@@ -1539,7 +1510,6 @@ is called with `graphicsoutput` specified,
 paths of the stored graphics:
 
 ``` r
-
 iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
                                graphicsoutput = "pdf",
                                plotName = "iris_kruskal",
@@ -1547,9 +1517,9 @@ iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
 plot(iris_kruskal_stored)
 ```
 
-    ## Plot [1] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpguQIHN/glm_assumptions_iris_kruskal.pdf
+    ## Plot [1] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpb6Y1f7/glm_assumptions_iris_kruskal.pdf
 
-    ## Plot [2] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpguQIHN/iris_kruskal.pdf
+    ## Plot [2] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpb6Y1f7/iris_kruskal.pdf
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1561,7 +1531,6 @@ lists the available plots; calling
 replays the selected plot in the interactive R session:
 
 ``` r
-
 plot(iris_kruskal)
 ```
 
@@ -1570,7 +1539,6 @@ plot(iris_kruskal)
     ## Plot [2] captured. Use plot(obj, which = 2) to display.
 
 ``` r
-
 # Interactive only (not executed during vignette build):
 plot(iris_kruskal, which = 2)
 ```
@@ -1672,7 +1640,7 @@ the automated choice of test in individual cases.
 While one of R’s greatest strengths is the sheer volume of statistical
 methods available, our automated test selection pipeline deliberately
 restricts its scope to the most frequently used tests, particularly
-those relevant in a medical context Chicco et al.
+those relevant in a medical context Chicco, Sichenze, and Jurman
 ([2025](#ref-Chicco:2025)). Incorporating a wider array of methods (such
 as regression models with a categorical response) would require
 additional preliminary assumption checks, which in turn exacerbates the
@@ -1804,7 +1772,7 @@ $`x_{i1}`$ for observation $`i`$. Testing $`H_0: \beta_1 = 0`$ examines
 whether there is a linear relationship between the predictor and the
 response.
 
-### Normality tests
+## Appendix B: Tests for homoscedasticity
 
 The package uses both the Shapiro-Wilk test as well ass the
 Anderson-Darling test to check the normality of the studentised
@@ -1862,8 +1830,8 @@ $`100`$) ([Razali and Wah 2011](#ref-Razali:2011)). It drives the
 parametric/non-parametric branching decision in
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md);
 for groups with more than 50 observations normality is assumed by the
-central limit theorem ([Lumley et al. 2002](#ref-Lumley:2002); [Rasch et
-al. 2011](#ref-Rasch:2011)).
+central limit theorem ([Lumley et al. 2002](#ref-Lumley:2002); [Rasch,
+Kubinger, and Moder 2011](#ref-Rasch:2011)).
 
 The implementation uses
 [`shapiro.test()`](https://rdrr.io/r/stats/shapiro.test.html) from ([R
@@ -1889,7 +1857,7 @@ The implementation uses `ad.test()` from ([Gross and Ligges
 all assumption plots, it does **not** drive the branching decision; only
 Shapiro–Wilk does.
 
-## Appendix B: Tests for homoscedasticity
+## Appendix C: Tests for homoscedasticity
 
 ### The Levene–Brown–Forsythe test `levene.test()`
 
@@ -1990,8 +1958,8 @@ regression.
 ## Bibliography
 
 Abdi, Hervé. 2007. “The Bonferonni and Šidák Corrections for Multiple
-Comparisons.” *Encyclopedia of Measurement and Statistics* (Thousand
-Oaks, CA).
+Comparisons.” Edited by Neil J. Salkind. *Encyclopedia of Measurement
+and Statistics*.
 
 Agresti, Alan. 2010. *Analysis of Ordinal Categorical Data*. 1st ed.
 Wiley Series in Probability and Statistics. Wiley.
@@ -2007,10 +1975,12 @@ Bartlett, M. S. 1937. “Properties of Sufficiency and Statistical Tests.”
 Physical Sciences* 160 (901): 268–82.
 <https://doi.org/10.1098/rspa.1937.0109>.
 
-Bijlenga, Philippe, Renato Gondar, Sabine Schilling, et al. 2017.
-“PHASES Score for the Management of Intracranial Aneurysm: A
-Cross-Sectional Population-Based Retrospective Study.” *Stroke* 48 (8):
-2105–12. <https://doi.org/10.1161/STROKEAHA.117.017391>.
+Bijlenga, Philippe, Renato Gondar, Sabine Schilling, Sandrine Morel,
+Sven Hirsch, Johanna Cuony, Marco-Vincenzo Corniola, Fabienne Perren,
+Daniel Rüfenacht, and Karl Schaller. 2017. “PHASES Score for the
+Management of Intracranial Aneurysm: A Cross-Sectional Population-Based
+Retrospective Study.” *Stroke* 48 (8): 2105–12.
+<https://doi.org/10.1161/STROKEAHA.117.017391>.
 
 Breusch, T. S., and A. R. Pagan. 1979. “A Simple Test for
 Heteroscedasticity and Random Coefficient Variation.” *Econometrica* 47
@@ -2021,8 +1991,8 @@ Equality of Variances.” *Journal of the American Statistical
 Association* 69 (346): 364–67.
 <https://doi.org/10.1080/01621459.1974.10482955>.
 
-Chambers, J. M. 2018. *Graphical Methods for Data Analysis*. Chapman and
-Hall/CRC. <https://doi.org/10.1201/9781351072304>.
+Chambers, J. M. 2018. *Graphical Methods for Data Analysis*. Boca Raton:
+Chapman and Hall/CRC. <https://doi.org/10.1201/9781351072304>.
 
 Chicco, Davide, Andrea Sichenze, and Giuseppe Jurman. 2025. “A Simple
 Guide to the Use of Student’s t-Test, Mann-Whitney U Test, Chi-squared
@@ -2057,10 +2027,10 @@ Scientific Inference*. Edited by J H Bennett. Oxford University
 PressOxford. <https://doi.org/10.1093/oso/9780198522294.001.0001>.
 
 Fisher, Ronald Aylmer. 1970. *Statistical Methods for Research Workers*.
-14th ed., revised and enlarged. Oliver and Boyd.
+14th ed., revised and enlarged. Edinburgh: Oliver and Boyd.
 
 Fox, John, and Sanford Weisberg. 2019. *An R Companion to Applied
-Regression*. 3rd ed. Sage.
+Regression*. 3rd ed. Thousand Oaks CA: Sage.
 
 Franc, Jeffrey Michael. 2025. “The Misuse of Normality Tests as
 Gatekeepers for Research in Prehospital and Disaster Medicine.”
@@ -2069,7 +2039,7 @@ Gatekeepers for Research in Prehospital and Disaster Medicine.”
 
 Games, Paul A., and John F. Howell. 1976. “Pairwise Multiple Comparison
 Procedures with Unequal N’s and/or Variances: A Monte Carlo Study.”
-*Journal of Educational Statistics* (US) 1 (2): 113–25.
+*Journal of Educational Statistics* 1 (2): 113–25.
 <https://doi.org/10.2307/1164979>.
 
 Ghasemi, Asghar, and Saleh Zahediasl. 2012. “Normality Tests for
@@ -2096,7 +2066,7 @@ Procedures*. 1st ed. Wiley Series in Probability and Statistics. Wiley.
 
 Hollander, Myles, Eric Chicken, and Douglas A. Wolfe. 2014.
 *Nonparametric Statistical Methods*. Third edition. Wiley Series in
-Probability and Statistics. John Wiley & Sons, Inc.
+Probability and Statistics. Hoboken, New Jersey: John Wiley & Sons, Inc.
 
 Holm, Sture. 1979. “A Simple Sequentially Rejective Multiple Test
 Procedure.” *Scandinavian Journal of Statistics* 6 (2): 65–70.
@@ -2123,7 +2093,8 @@ Cornerstone of Modern Statistics.” *Korean Journal of Anesthesiology* 70
 
 Levene, Howard. 1960. “Robust Tests for Equality of Variances.” In
 *Contributions to Probability and Statistics: Essays in Honor of Harold
-Hotelling*, edited by Ingram Olkin. Stanford University Press.
+Hotelling*, edited by Ingram Olkin, 278–92. Stanford, CA: Stanford
+University Press.
 
 Lumley, Thomas, Paula Diehr, Scott Emerson, and Lu Chen. 2002. “The
 Importance of the Normality Assumption in Large Public Health Data
@@ -2165,8 +2136,8 @@ Journal of Science* 50 (302): 157–75.
 <https://doi.org/10.1080/14786440009463897>.
 
 R Core Team. 2026. *R: A Language and Environment for Statistical
-Computing*. Manual. R Foundation for Statistical Computing.
-<https://doi.org/10.32614/R.manuals>.
+Computing*. Manual. Vienna, Austria: R Foundation for Statistical
+Computing. <https://doi.org/10.32614/R.manuals>.
 
 Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. “The Two-Sample
 t Test: Pre-Testing Its Assumptions Does Not Pay Off.” *Statistical
@@ -2215,8 +2186,8 @@ Welch, B. L. 1947. “The Generalization of ‘Student’s’ Problem When
 Several Different Population Variances Are Involved.” *Biometrika* 34
 (1–2): 28–35. <https://doi.org/10.1093/biomet/34.1-2.28>.
 
-Welch, B. L. 1951. “On the Comparison of Several Mean Values: An
-Alternative Approach.” *Biometrika* 38 (3/4): 330–36.
+———. 1951. “On the Comparison of Several Mean Values: An Alternative
+Approach.” *Biometrika* 38 (3/4): 330–36.
 <https://doi.org/10.2307/2332579>.
 
 Wickham, Hadley. 2016. *Ggplot2: Elegant Graphics for Data Analysis*.

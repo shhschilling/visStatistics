@@ -110,8 +110,8 @@ be directly accessed by users. This approach was already successfully
 applied to develop a medical scoring tool <span class="citation">(<a href="#ref-Bijlenga:2017">Bijlenga et al. 2017</a>)</span>. When
 selecting tests for group comparisons, packages with overlapping scope
 such as <code>automatedtests</code> <span class="citation">(<a href="#ref-Zeevat:2025">Zeevat 2025</a>)</span> and
-<code>compareGroups</code> <span class="citation">(<a href="#ref-Subirana:2014">Subirana et al. 2014</a>)</span> base their
-test selection on group‑wise normality assessments of the response
+<code>compareGroups</code> <span class="citation">(<a href="#ref-Subirana:2014">Subirana, Sanz, and Vila 2014</a>)</span> base
+their test selection on group‑wise normality assessments of the response
 variable. But group-wise testing inflates the <a href="#post-hoc-analysis">family-wise type I error rate</a>: the
 probability of at least one false rejection of normality grows with the
 number of compared groups, leading to unnecessary switching to
@@ -251,8 +251,9 @@ normality
 or when the sample sizes are large (more than 50 observations per
 group), parametric tests are selected. In large samples the central
 limit theorem ensures approximate normality of the sampling distribution
-of the mean. <span class="citation">(<a href="#ref-Rasch:2011">Rasch et
-al. 2011</a>; <a href="#ref-Lumley:2002">Lumley et al. 2002</a>; <a href="#ref-Kwak:2017">Kwak and Kim 2017</a>)</span></p>
+of the mean. <span class="citation">(<a href="#ref-Rasch:2011">Rasch,
+Kubinger, and Moder 2011</a>; <a href="#ref-Lumley:2002">Lumley et al.
+2002</a>; <a href="#ref-Kwak:2017">Kwak and Kim 2017</a>)</span></p>
 <ul>
 <li>Homoscedasticity: The Levene–Brown–Forsythe (L) test (implemented as
 <code><a href="../reference/levene.test.html">levene.test()</a></code>) <span class="citation">(<a href="#ref-Brown:1974">Brown and Forsythe 1974</a>)</span> tests for
@@ -272,7 +273,8 @@ For two groups, Welch’s t-test (<code><a href="https://rdrr.io/r/stats/t.test.
 Welch’s heteroscedastic one-way ANOVA (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) with
 Games-Howell post-hoc test (<code><a href="../reference/games.howell.html">games.howell()</a></code>) <span class="citation">(<a href="#ref-Games:1976">Games and Howell
 1976</a>)</span> is applied. Welch’s methods outperform their classical
-counterparts when variances differ <span class="citation">(<a href="#ref-Moser:1992">Moser and Stevens 1992</a>; <a href="#ref-Fagerland:2009">Fagerland and Sandvik 2009</a>; <a href="#ref-Delacre:2017">Delacre et al. 2017</a>)</span>.</p></li>
+counterparts when variances differ <span class="citation">(<a href="#ref-Moser:1992">Moser and Stevens 1992</a>; <a href="#ref-Fagerland:2009">Fagerland and Sandvik 2009</a>; <a href="#ref-Delacre:2017">Delacre, Lakens, and Leys
+2017</a>)</span>.</p></li>
 </ul>
 </li>
 </ul>
@@ -563,8 +565,8 @@ tests for a difference in location between two independent distributions
 1947</a>)</span>. If the two groups have distributions that are
 sufficiently similar in shape and scale, the Wilcoxon rank-sum test can
 be interpreted as testing whether the medians of the two populations are
-equal <span class="citation">(<a href="#ref-Hollander:2014">Hollander et
-al. 2014</a>)</span>.</p>
+equal <span class="citation">(<a href="#ref-Hollander:2014">Hollander,
+Chicken, and Wolfe 2014</a>)</span>.</p>
 <p>The two-level factor variable <code>x</code> defines two groups, with
 sample sizes
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mn>1</mn></msub><annotation encoding="application/x-tex">n_1</annotation></semantics></math>
@@ -679,7 +681,7 @@ groups are equal.</p>
 observations, normally distributed residuals, and
 <strong>homogeneous</strong> variances across groups. The test statistic
 is the ratio of the variance explained by differences among group means
-(between-group variance) to the unexplained variance within groups <span class="citation">(<a href="#ref-Fisher:1990">Fisher and Yates
+(between-group variance) to the unexplained variance within groups <span class="citation">(<a href="#ref-Fisher:1990">Ronald A. Fisher and Yates
 1990</a>)</span></p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mfrac><mrow><mi>M</mi><msub><mi>S</mi><mrow><mi>b</mi><mi>e</mi><mi>t</mi><mi>w</mi><mi>e</mi><mi>e</mi><mi>n</mi></mrow></msub></mrow><mrow><mi>M</mi><msub><mi>S</mi><mrow><mi>w</mi><mi>i</mi><mi>t</mi><mi>h</mi><mi>i</mi><mi>n</mi></mrow></msub></mrow></mfrac><mo>=</mo><mfrac><mrow><mi>S</mi><msub><mi>S</mi><mrow><mi>b</mi><mi>e</mi><mi>t</mi><mi>w</mi><mi>e</mi><mi>e</mi><mi>n</mi></mrow></msub><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mi>S</mi><msub><mi>S</mi><mrow><mi>w</mi><mi>i</mi><mi>t</mi><mi>h</mi><mi>i</mi><mi>n</mi></mrow></msub><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mi>N</mi><mo>−</mo><mi>k</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mo>=</mo><mfrac><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></munderover><msub><mi>n</mi><mi>i</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mover><mi>x</mi><mo accent="true">‾</mo></mover><mi>i</mi></msub><mo>−</mo><mover><mi>x</mi><mo accent="true">‾</mo></mover><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow></mfrac><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></munderover><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>n</mi><mi>i</mi></msub></munderover><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>−</mo><msub><mover><mi>x</mi><mo accent="true">‾</mo></mover><mi>i</mi></msub><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow><mrow><mi>N</mi><mo>−</mo><mi>k</mi></mrow></mfrac></mfrac></mrow><annotation encoding="application/x-tex">F  = \frac{MS_{between}}{MS_{within}}=
 \frac{SS_{between}/(k-1)}{SS_{within}/(N-k)} = \frac{\frac{\sum_{i=1}^{k} n_i (\bar{x}_i - \bar{x})^2}{k - 1}}
@@ -770,7 +772,8 @@ come from the same population — specifically, that the distributions
 have the same location <span class="citation">(<a href="#ref-Kruskal:1952">Kruskal and Wallis 1952</a>)</span>. If the
 group distributions are sufficiently similar in shape and scale, then
 the Kruskal–Wallis test can be interpreted as testing for equality of
-medians across groups <span class="citation">(<a href="#ref-Hollander:2014">Hollander et al. 2014</a>)</span>.</p>
+medians across groups <span class="citation">(<a href="#ref-Hollander:2014">Hollander, Chicken, and Wolfe
+2014</a>)</span>.</p>
 <p>The test statistic is defined as:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mo>=</mo><mfrac><mn>12</mn><mrow><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mi>N</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></munderover><msub><mi>n</mi><mi>i</mi></msub><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>R</mi><mo accent="true">‾</mo></mover><mi>i</mi></msub><mo>−</mo><mover><mi>R</mi><mo accent="true">‾</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo>,</mo></mrow><annotation encoding="application/x-tex">H = \frac{12}{N(N+1)} \sum_{i=1}^{k} n_i \left(\bar{R}_i - \bar{R} \right)^2,</annotation></semantics></math></p>
 <p>where
@@ -885,8 +888,8 @@ falls below
 are marked with <em>different</em> green letters below the box plots;
 pairs sharing a letter are not significantly different. The letters are
 produced by <code>multcompLetters()</code> from the
-<code>multcompView</code> package <span class="citation">(<a href="#ref-Graves:2026"><span class="nocase">Graves et al.</span>
-2026</a>)</span>.</p>
+<code>multcompView</code> package <span class="citation">(<a href="#ref-Graves:2026">Graves, Piepho, and with help from Sundar
+Dorai-Raj 2026</a>)</span>.</p>
 <p>Besides the graphical output, <code><a href="../reference/visstat.html">visstat()</a></code> returns a list
 containing the relevant test statistics along with the corresponding
 post-hoc-adjusted
@@ -1052,7 +1055,7 @@ and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>
 using ranks, evaluating linear dependence on the ranked data rather than
 on the original scale:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mi>r</mi><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">rank</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mrow><mi mathvariant="normal">rank</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho = r(\operatorname{rank}(x), \operatorname{rank}(y))</annotation></semantics></math>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo>=</mo><mi>r</mi><mo stretchy="false" form="prefix">(</mo><mrow><mi>rank</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mrow><mi>rank</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>y</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho = r(\operatorname{rank}(x), \operatorname{rank}(y))</annotation></semantics></math>
 where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mo stretchy="false" form="prefix">(</mo><mi>u</mi><mo>,</mo><mi>v</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">r(u, v)</annotation></semantics></math>
 denotes Pearson’s correlation coefficient:
@@ -1188,10 +1191,10 @@ or equal to the test statistic under the null hypothesis.</p>
 <p>For general
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>×</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">R \times C</annotation></semantics></math>
 tables, <code><a href="../reference/visstat.html">visstat()</a></code> supplements the bar chart with a mosaic
-plot <span class="citation">(<a href="#ref-Meyer:2006">Meyer et al.
-2006</a>, <a href="#ref-Meyer:2024">2024</a>)</span>, in which the area
-of each tile is proportional to the observed cell frequency and tiles
-are coloured by their Pearson residual
+plot <span class="citation">(<a href="#ref-Meyer:2006">Meyer, Zeileis,
+and Hornik 2006</a>; <a href="#ref-Meyer:2024">Meyer et al.
+2024</a>)</span>, in which the area of each tile is proportional to the
+observed cell frequency and tiles are coloured by their Pearson residual
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">r_{ij}</annotation></semantics></math>:
 blue for positive residuals (observed exceeds expected) and red for
 negative ones (observed falls short of expected). This makes the cells
@@ -1228,7 +1231,7 @@ approximation is considered reliable only if no expected cell count is
 less than 1 and no more than 20% of cells have expected counts below 5
 <span class="citation">(<a href="#ref-Cochran:1954">Cochran
 1954</a>)</span>. If this condition is not met, Fisher’s exact test
-<span class="citation">(<a href="#ref-Fisher:1970">Fisher
+<span class="citation">(<a href="#ref-Fisher:1970">Ronald Aylmer Fisher
 1970</a>)</span> (<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>) is applied instead.</p>
 <p>The test calculates an exact
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
@@ -1587,7 +1590,7 @@ attribute <code>"plot_paths"</code> on the returned object of class
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">save_fisher</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpguQIHN/chi_squared_or_fisher_Hair_Eye.png"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "/var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpb6Y1f7/chi_squared_or_fisher_Hair_Eye.png"</span></span></code></pre>
 <p>Remove the graphical output from <code>plotDirectory</code>:</p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span></span></code></pre></div>
@@ -1655,8 +1658,8 @@ file paths of the stored graphics:</p>
 <span>                               plotName <span class="op">=</span> <span class="st">"iris_kruskal"</span>,</span>
 <span>                               plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">iris_kruskal_stored</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Plot [1] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpguQIHN/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
-<pre><code><span><span class="co">## Plot [2] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpguQIHN/iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [1] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpb6Y1f7/glm_assumptions_iris_kruskal.pdf</span></span></code></pre>
+<pre><code><span><span class="co">## Plot [2] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpb6Y1f7/iris_kruskal.pdf</span></span></code></pre>
 <p>When <code><a href="../reference/visstat.html">visstat()</a></code> is called without
 <code>graphicsoutput</code> (the default interactive mode), the
 generated plots are captured internally. Calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>
@@ -1772,7 +1775,7 @@ cases.</p>
 <p>While one of R’s greatest strengths is the sheer volume of
 statistical methods available, our automated test selection pipeline
 deliberately restricts its scope to the most frequently used tests,
-particularly those relevant in a medical context <span class="citation">Chicco et al. (<a href="#ref-Chicco:2025">2025</a>)</span>. Incorporating a wider array of
+particularly those relevant in a medical context <span class="citation">Chicco, Sichenze, and Jurman (<a href="#ref-Chicco:2025">2025</a>)</span>. Incorporating a wider array of
 methods (such as regression models with a categorical response) would
 require additional preliminary assumption checks, which in turn
 exacerbates the risk of overall Type I error inflation. Furthermore,
@@ -1963,9 +1966,10 @@ Testing
 examines whether there is a linear relationship between the predictor
 and the response.</p>
 </div>
-<div class="section level3">
-<h3 id="normality-tests">Normality tests<a class="anchor" aria-label="anchor" href="#normality-tests"></a>
-</h3>
+</div>
+<div class="section level2">
+<h2 id="variance">Appendix B: Tests for homoscedasticity<a class="anchor" aria-label="anchor" href="#variance"></a>
+</h2>
 <p>The package uses both the Shapiro-Wilk test as well ass the
 Anderson-Darling test to check the normality of the studentised
 residuals
@@ -1999,7 +2003,7 @@ be their order statistics used to construct the Shapiro–Wilk
 weights.</p>
 <p>Define
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>m</mi><mi>i</mi></msub><mo>=</mo><mi>E</mi><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Y</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mi>i</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>n</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">m_i = E\!\left(Y_{(i)}\right), \quad i=1,\ldots,n,</annotation></semantics></math></p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mrow><mi mathvariant="normal">Cov</mi><mo>⁡</mo></mrow><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Y</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo>,</mo><msub><mi>Y</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mi>i</mi><mo>,</mo><mi>j</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>n</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">v_{ij} = \operatorname{Cov}\!\left(Y_{(i)},Y_{(j)}\right),
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mrow><mi>Cov</mi><mo>⁡</mo></mrow><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>Y</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>i</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo>,</mo><msub><mi>Y</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>j</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mi>i</mi><mo>,</mo><mi>j</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>n</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">v_{ij} = \operatorname{Cov}\!\left(Y_{(i)},Y_{(j)}\right),
 \quad i,j=1,\ldots,n,</annotation></semantics></math></p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝐦</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>m</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>m</mi><mi>n</mi></msub><msup><mo stretchy="false" form="postfix">)</mo><mi>⊤</mi></msup><mo>,</mo><mspace width="2.0em"></mspace><mi>𝐕</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>v</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><msubsup><mo stretchy="false" form="postfix">)</mo><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></msubsup><mi>.</mi></mrow><annotation encoding="application/x-tex">\mathbf{m}=(m_1,\ldots,m_n)^\top,\qquad
 \mathbf{V}=(v_{ij})_{i,j=1}^n.</annotation></semantics></math></p>
@@ -2030,7 +2034,7 @@ to
 <span class="citation">(<a href="#ref-Razali:2011">Razali and Wah
 2011</a>)</span>. It drives the parametric/non-parametric branching
 decision in <code><a href="../reference/visstat.html">visstat()</a></code>; for groups with more than 50
-observations normality is assumed by the central limit theorem <span class="citation">(<a href="#ref-Lumley:2002">Lumley et al. 2002</a>; <a href="#ref-Rasch:2011">Rasch et al. 2011</a>)</span>.</p>
+observations normality is assumed by the central limit theorem <span class="citation">(<a href="#ref-Lumley:2002">Lumley et al. 2002</a>; <a href="#ref-Rasch:2011">Rasch, Kubinger, and Moder 2011</a>)</span>.</p>
 <p>The implementation uses <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> from <span class="citation">(<a href="#ref-R:2026">R Core Team
 2026</a>)</span>.</p>
 </div>
@@ -2048,7 +2052,7 @@ and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">Φ</mi><annotation encoding="application/x-tex">\Phi</annotation></semantics></math>
 the standard normal cumulattive densitiy function. The test statistic
 is</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>A</mi><mn>2</mn></msup><mo>=</mo><mi>−</mi><mi>n</mi><mo>−</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mi>i</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mrow><mo stretchy="true" form="prefix">[</mo><mi mathvariant="normal">ln</mi><mi mathvariant="normal">Φ</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>z</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi mathvariant="normal">ln</mi><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi mathvariant="normal">Φ</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>z</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn><mo>−</mo><mi>i</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">A^2 = -n - \frac{1}{n}\sum_{i=1}^{n}(2i-1)
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>A</mi><mn>2</mn></msup><mo>=</mo><mi>−</mi><mi>n</mi><mo>−</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mi>i</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mrow><mo stretchy="true" form="prefix">[</mo><mi>ln</mi><mi mathvariant="normal">Φ</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>z</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mi>ln</mi><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi mathvariant="normal">Φ</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>z</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn><mo>−</mo><mi>i</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">A^2 = -n - \frac{1}{n}\sum_{i=1}^{n}(2i-1)
         \left[\ln\Phi(z_i) + \ln\!\left(1 - \Phi(z_{n+1-i})\right)\right].</annotation></semantics></math></p>
 <p>The implementation uses <code>ad.test()</code> from <span class="citation">(<a href="#ref-Gross:2015">Gross and Ligges
 2015</a>)</span>. Albeit the Anderson–Darling result is shown in all
@@ -2056,9 +2060,8 @@ assumption plots, it does <strong>not</strong> drive the branching
 decision; only Shapiro–Wilk does.</p>
 </div>
 </div>
-</div>
 <div class="section level2">
-<h2 id="variance">Appendix B: Tests for homoscedasticity<a class="anchor" aria-label="anchor" href="#variance"></a>
+<h2 id="variance-1">Appendix C: Tests for homoscedasticity<a class="anchor" aria-label="anchor" href="#variance-1"></a>
 </h2>
 <div class="section level3">
 <h3 id="the-levenebrownforsythe-test-levene-test">The Levene–Brown–Forsythe test <code>levene.test()</code><a class="anchor" aria-label="anchor" href="#the-levenebrownforsythe-test-levene-test"></a>
@@ -2119,7 +2122,7 @@ normality assumption is met <span class="citation">(<a href="#ref-Allingham:2012
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
 normally distributed groups.</p>
 <p>The test statistic is</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>K</mi><mn>2</mn></msup><mo>=</mo><mfrac><mrow><mo stretchy="false" form="prefix">(</mo><mi>N</mi><mo>−</mo><mi>k</mi><mo stretchy="false" form="postfix">)</mo><mrow><mi mathvariant="normal">ln</mi><mo>⁡</mo></mrow><msubsup><mi>s</mi><mi>p</mi><mn>2</mn></msubsup><mo>−</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></munderover><mo stretchy="false" form="prefix">(</mo><msub><mi>n</mi><mi>i</mi></msub><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mrow><mi mathvariant="normal">ln</mi><mo>⁡</mo></mrow><msubsup><mi>s</mi><mi>i</mi><mn>2</mn></msubsup></mrow><mrow><mn>1</mn><mo>+</mo><mfrac><mn>1</mn><mrow><mn>3</mn><mo stretchy="false" form="prefix">(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></munderover><mfrac><mn>1</mn><mrow><msub><mi>n</mi><mi>i</mi></msub><mo>−</mo><mn>1</mn></mrow></mfrac><mo>−</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mo>−</mo><mi>k</mi></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>,</mo></mrow><annotation encoding="application/x-tex">K^2 = \frac{(N - k) \ln s_p^2 - \sum_{i=1}^k (n_i - 1) \ln s_i^2}{
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>K</mi><mn>2</mn></msup><mo>=</mo><mfrac><mrow><mo stretchy="false" form="prefix">(</mo><mi>N</mi><mo>−</mo><mi>k</mi><mo stretchy="false" form="postfix">)</mo><mrow><mi>ln</mi><mo>⁡</mo></mrow><msubsup><mi>s</mi><mi>p</mi><mn>2</mn></msubsup><mo>−</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></munderover><mo stretchy="false" form="prefix">(</mo><msub><mi>n</mi><mi>i</mi></msub><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mrow><mi>ln</mi><mo>⁡</mo></mrow><msubsup><mi>s</mi><mi>i</mi><mn>2</mn></msubsup></mrow><mrow><mn>1</mn><mo>+</mo><mfrac><mn>1</mn><mrow><mn>3</mn><mo stretchy="false" form="prefix">(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>k</mi></munderover><mfrac><mn>1</mn><mrow><msub><mi>n</mi><mi>i</mi></msub><mo>−</mo><mn>1</mn></mrow></mfrac><mo>−</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mo>−</mo><mi>k</mi></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>,</mo></mrow><annotation encoding="application/x-tex">K^2 = \frac{(N - k) \ln s_p^2 - \sum_{i=1}^k (n_i - 1) \ln s_i^2}{
    1 + \frac{1}{3(k - 1)} \left( \sum_{i=1}^k \frac{1}{n_i - 1}
 - \frac{1}{N - k} \right)},</annotation></semantics></math> where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>s</mi><mi>i</mi><mn>2</mn></msubsup><annotation encoding="application/x-tex">s_i^2</annotation></semantics></math>
@@ -2169,11 +2172,11 @@ in the auxiliary regression.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="bibliography">Bibliography<a class="anchor" aria-label="anchor" href="#bibliography"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-Abdi:2007" class="csl-entry">
 Abdi, Hervé. 2007. <span>“The <span>Bonferonni</span> and <span>Šidák
-Corrections</span> for <span>Multiple Comparisons</span>.”</span>
-<em>Encyclopedia of Measurement and Statistics</em> (Thousand Oaks, CA).
+Corrections</span> for <span>Multiple Comparisons</span>.”</span> Edited
+by Neil J. Salkind. <em>Encyclopedia of Measurement and Statistics</em>.
 </div>
 <div id="ref-Agresti:2010" class="csl-entry">
 Agresti, Alan. 2010. <em>Analysis of <span>Ordinal Categorical
@@ -2192,11 +2195,12 @@ Tests.”</span> <em>Proceedings of the Royal Society of London. Series A,
 Mathematical and Physical Sciences</em> 160 (901): 268–82. <a href="https://doi.org/10.1098/rspa.1937.0109" class="external-link">https://doi.org/10.1098/rspa.1937.0109</a>.
 </div>
 <div id="ref-Bijlenga:2017" class="csl-entry">
-Bijlenga, Philippe, Renato Gondar, Sabine Schilling, et al. 2017.
-<span>“<span>PHASES Score</span> for the <span>Management</span> of
-<span>Intracranial Aneurysm</span>: <span>A Cross-Sectional
-Population-Based Retrospective Study</span>.”</span> <em>Stroke</em> 48
-(8): 2105–12. <a href="https://doi.org/10.1161/STROKEAHA.117.017391" class="external-link">https://doi.org/10.1161/STROKEAHA.117.017391</a>.
+Bijlenga, Philippe, Renato Gondar, Sabine Schilling, Sandrine Morel,
+Sven Hirsch, Johanna Cuony, Marco-Vincenzo Corniola, Fabienne Perren,
+Daniel Rüfenacht, and Karl Schaller. 2017. <span>“<span>PHASES
+Score</span> for the <span>Management</span> of <span>Intracranial
+Aneurysm</span>: <span>A Cross-Sectional Population-Based Retrospective
+Study</span>.”</span> <em>Stroke</em> 48 (8): 2105–12. <a href="https://doi.org/10.1161/STROKEAHA.117.017391" class="external-link">https://doi.org/10.1161/STROKEAHA.117.017391</a>.
 </div>
 <div id="ref-Breusch:1979" class="csl-entry">
 Breusch, T. S., and A. R. Pagan. 1979. <span>“A <span>Simple Test</span>
@@ -2211,7 +2215,7 @@ Association</em> 69 (346): 364–67. <a href="https://doi.org/10.1080/01621459.1
 </div>
 <div id="ref-Chambers:2018" class="csl-entry">
 Chambers, J. M. 2018. <em>Graphical <span>Methods</span> for <span>Data
-Analysis</span></em>. <span>Chapman and Hall/CRC</span>. <a href="https://doi.org/10.1201/9781351072304" class="external-link">https://doi.org/10.1201/9781351072304</a>.
+Analysis</span></em>. Boca Raton: <span>Chapman and Hall/CRC</span>. <a href="https://doi.org/10.1201/9781351072304" class="external-link">https://doi.org/10.1201/9781351072304</a>.
 </div>
 <div id="ref-Chicco:2025" class="csl-entry">
 Chicco, Davide, Andrea Sichenze, and Giuseppe Jurman. 2025. <span>“A
@@ -2258,12 +2262,12 @@ PressOxford. <a href="https://doi.org/10.1093/oso/9780198522294.001.0001" class=
 </div>
 <div id="ref-Fisher:1970" class="csl-entry">
 Fisher, Ronald Aylmer. 1970. <em>Statistical Methods for Research
-Workers</em>. 14th ed., revised and enlarged. <span>Oliver and
-Boyd</span>.
+Workers</em>. 14th ed., revised and enlarged. Edinburgh: <span>Oliver
+and Boyd</span>.
 </div>
 <div id="ref-Fox:2019" class="csl-entry">
 Fox, John, and Sanford Weisberg. 2019. <em>An <span>R</span> Companion
-to Applied Regression</em>. 3rd ed. Sage.
+to Applied Regression</em>. 3rd ed. Thousand Oaks CA: Sage.
 </div>
 <div id="ref-Franc:2025" class="csl-entry">
 Franc, Jeffrey Michael. 2025. <span>“The <span>Misuse</span> of
@@ -2276,7 +2280,7 @@ Medicine</span>.”</span> <em>Prehospital and Disaster Medicine</em> 40
 Games, Paul A., and John F. Howell. 1976. <span>“Pairwise Multiple
 Comparison Procedures with Unequal <span>N</span>’s and/or Variances:
 <span>A Monte Carlo</span> Study.”</span> <em>Journal of Educational
-Statistics</em> (US) 1 (2): 113–25. <a href="https://doi.org/10.2307/1164979" class="external-link">https://doi.org/10.2307/1164979</a>.
+Statistics</em> 1 (2): 113–25. <a href="https://doi.org/10.2307/1164979" class="external-link">https://doi.org/10.2307/1164979</a>.
 </div>
 <div id="ref-Ghasemi:2012" class="csl-entry">
 Ghasemi, Asghar, and Saleh Zahediasl. 2012. <span>“Normality
@@ -2286,9 +2290,9 @@ Guide</span> for <span>Non-Statisticians</span>.”</span>
 486–89. <a href="https://doi.org/10.5812/ijem.3505" class="external-link">https://doi.org/10.5812/ijem.3505</a>.
 </div>
 <div id="ref-Graves:2026" class="csl-entry">
-<span class="nocase">Graves, Spencer, Hans-Peter Piepho, and Luciano
-Selzer with help from Sundar Dorai-Raj</span>. 2026. <em><span class="nocase">multcompView</span>: <span>Visualizations</span> of
-Paired Comparisons</em>. Manual. <a href="https://doi.org/10.32614/CRAN.package.multcompView" class="external-link">https://doi.org/10.32614/CRAN.package.multcompView</a>.
+Graves, Spencer, Hans-Peter Piepho, and Luciano Selzer with help from
+Sundar Dorai-Raj. 2026. <em><span class="nocase">multcompView</span>:
+<span>Visualizations</span> of Paired Comparisons</em>. Manual. <a href="https://doi.org/10.32614/CRAN.package.multcompView" class="external-link">https://doi.org/10.32614/CRAN.package.multcompView</a>.
 </div>
 <div id="ref-Gross:2015" class="csl-entry">
 Gross, Juergen, and Uwe Ligges. 2015. <em>Nortest: <span>Tests</span>
@@ -2309,7 +2313,8 @@ Hochberg, Yosef, and Ajit C. Tamhane. 1987. <em>Multiple
 <div id="ref-Hollander:2014" class="csl-entry">
 Hollander, Myles, Eric Chicken, and Douglas A. Wolfe. 2014.
 <em>Nonparametric Statistical Methods</em>. Third edition. Wiley Series
-in Probability and Statistics. John Wiley &amp; Sons, Inc.
+in Probability and Statistics. Hoboken, New Jersey: John Wiley &amp;
+Sons, Inc.
 </div>
 <div id="ref-Holm:1979" class="csl-entry">
 Holm, Sture. 1979. <span>“A <span>Simple Sequentially Rejective Multiple
@@ -2347,7 +2352,7 @@ Anesthesiology</em> 70 (2): 144–56. <a href="https://doi.org/10.4097/kjae.2017
 Levene, Howard. 1960. <span>“Robust Tests for Equality of
 Variances.”</span> In <em>Contributions to Probability and Statistics:
 <span>Essays</span> in Honor of Harold Hotelling</em>, edited by Ingram
-Olkin. Stanford University Press.
+Olkin, 278–92. Stanford, CA: Stanford University Press.
 </div>
 <div id="ref-Lumley:2002" class="csl-entry">
 Lumley, Thomas, Paula Diehr, Scott Emerson, and Lu Chen. 2002.
@@ -2397,7 +2402,8 @@ Philosophical Magazine and Journal of Science</em> 50 (302): 157–75. <a href="
 </div>
 <div id="ref-R:2026" class="csl-entry">
 R Core Team. 2026. <em>R: A Language and Environment for Statistical
-Computing</em>. Manual. R Foundation for Statistical Computing. <a href="https://doi.org/10.32614/R.manuals" class="external-link">https://doi.org/10.32614/R.manuals</a>.
+Computing</em>. Manual. Vienna, Austria: R Foundation for Statistical
+Computing. <a href="https://doi.org/10.32614/R.manuals" class="external-link">https://doi.org/10.32614/R.manuals</a>.
 </div>
 <div id="ref-Rasch:2011" class="csl-entry">
 Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. <span>“The
@@ -2463,9 +2469,9 @@ Problem When Several Different Population Variances Are
 Involved.”</span> <em>Biometrika</em> 34 (1–2): 28–35. <a href="https://doi.org/10.1093/biomet/34.1-2.28" class="external-link">https://doi.org/10.1093/biomet/34.1-2.28</a>.
 </div>
 <div id="ref-Welch:1951" class="csl-entry">
-Welch, B. L. 1951. <span>“On the <span>Comparison</span> of
-<span>Several Mean Values</span>: <span>An Alternative
-Approach</span>.”</span> <em>Biometrika</em> 38 (3/4): 330–36. <a href="https://doi.org/10.2307/2332579" class="external-link">https://doi.org/10.2307/2332579</a>.
+———. 1951. <span>“On the <span>Comparison</span> of <span>Several Mean
+Values</span>: <span>An Alternative Approach</span>.”</span>
+<em>Biometrika</em> 38 (3/4): 330–36. <a href="https://doi.org/10.2307/2332579" class="external-link">https://doi.org/10.2307/2332579</a>.
 </div>
 <div id="ref-Wickham:2016" class="csl-entry">
 Wickham, Hadley. 2016. <em>Ggplot2: <span>Elegant</span> Graphics for
