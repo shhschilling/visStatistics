@@ -1066,7 +1066,7 @@ In this case `visstat()` reports the t-statistic, as it provides sign informatio
 Simple linear regression corresponds to one continuous predictor $x_{i1}$ for observation $i$.
 Testing $H_0: \beta_1 = 0$ examines whether there is a linear relationship between the predictor and the response.
 
-## Normality tests
+# Appendix B: Tests for homoscedasticity {#variance}
 The package uses both the Shapiro-Wilk test  as well ass the Anderson-Darling test to check the  normality of the studentised residuals
 $r_i^* = e_i / (s\sqrt{1-h_{ii}})$, where $e_i$ are the raw residuals,
 $s^2$ is the residual mean square, and $h_{ii}$ is the leverage of
@@ -1128,7 +1128,7 @@ The implementation uses `ad.test()` from \CRANpkg{nortest}
 plots, it does **not** drive the branching decision; only Shapiro--Wilk
 does.
 
-# Appendix B: Tests for homoscedasticity {#variance}
+# Appendix C: Tests for homoscedasticity {#variance}
 
 ## The Levene–Brown–Forsythe test `levene.test()`
 
