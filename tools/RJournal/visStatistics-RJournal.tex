@@ -1,5 +1,5 @@
 % !TeX root = RJwrapper.tex
-\title{visStatistics: A transparent visual decision pipeline for statistical hypothesis tests in R}
+\title{visStatistics: The right test, visualised}
 
 
 \author{by Sabine Schilling}
@@ -7,69 +7,38 @@
 \maketitle
 
 \abstract{%
-We present \CRANpkg{visStatistics}, an R package that implements a transparent decision pipeline for selecting, executing, and visualising common statistical hypothesis tests between two vectors. Given vectors of class \code{numeric}, \code{integer}, or \code{factor}, the main function \code{visstat()} routes the analysis according to variable types, sample size, and displayed assumption diagnostics. Visual outputs --- box plots, bar charts, regression lines with confidence bands, mosaic plots, and residual diagnostics --- are annotated with test statistics, assumption-check results, and post-hoc comparisons where applicable. The decision logic follows the general linear model framework, assessing normality on pooled model residuals rather than per group, which preserves statistical power. The package is particularly suited for server-side R applications where end users interact exclusively via a web interface, and for time-constrained settings such as statistical consulting or introductory teaching. All tests are applied using their default settings from base R, keeping the dependency footprint minimal and the decision tree reproducible.
+\texttt{visStatistics} automatically selects and visualises appropriate statistical tests between two column vectors of class \texttt{"numeric"}, \texttt{"integer"}, or \texttt{"factor"}. No manual test selection is required: the function determines the appropriate method from the data types and distributional properties alone. The choice of test depends on the \texttt{class}, distributional assumptions, and sample size of the vectors.
+The main function \texttt{visstat()} visualises the selected test with appropriate graphs (box plots, bar charts, regression lines with confidence bands, mosaic plots for Pearson's \(\chi^2\) test, residual plots), annotated with the main test results, including visualisations of the assumption checks and post-hoc analyses.
+This scripted workflow is well suited for browser-based applications, where users interact only through a web interface, while server-side R applications handle the data processing.
+Other typical use cases include quick visualisations, and guided statistical test selection, for example in statistical consulting or educational settings.
 }
 
 \section{Introduction}\label{introduction}
 
 Most routine data analyses reduce to a comparatively small set of
-inferential frameworks: group comparisons, contingency-table analyses,
-correlation, and simple regression \citep{Sato:2017, Chicco:2025}. Selecting
-the appropriate test within each framework, however, requires evaluating
-variable types, sample sizes, and distributional assumptions --- a
-process that is error-prone, time-consuming, and a recurring bottleneck
-in statistical consulting and undergraduate teaching.
-
-Several R packages address parts of this problem.
-\CRANpkg{compareGroups} \citep{Subirana:2014} automates test choice via a
-per-group Shapiro--Wilk normality test and produces publication-ready
-descriptive tables, but its primary output is tabular rather than
-graphical, and assumption diagnostics are not displayed alongside
-results. \CRANpkg{ggstatsplot} \citep{Patil:2021} produces information-rich
-\CRANpkg{ggplot2}-based \citep{Wickham:2016} plots with embedded test
-results, but requires the user to select the appropriate plotting
-function for each data-type combination (e.g., \texttt{ggbetweenstats()} for
-group comparisons, \texttt{ggscatterstats()} for regression). \CRANpkg{rstatix}
-\citep{Kassambara:2025} provides a pipe-friendly framework for common tests
-with tidy output, and \CRANpkg{ggpubr} \citep{Kassambara:2026} adds
-statistical annotations to publication-ready plots; both leave test
-selection entirely to the user.
-
-\CRANpkg{visStatistics} takes a different approach: a single function
-\texttt{visstat(x,\ y)} accepts any combination of numeric and categorical
-vectors and resolves the full decision pipeline --- test selection,
-execution, assumption checking, and visualisation --- without any
-further input. Three design choices distinguish it from the packages
-above.
-
-The contribution is not a new hypothesis test, but a reproducible
-software workflow around existing tests. \texttt{visstat()} combines a unified
-two-vector interface, explicit routing by input class and diagnostics,
-graphical assumption checks shown alongside the selected result, and
-branch-specific post-hoc procedures. The aim is to make routine default
-analyses transparent and inspectable, not to replace statistical
-judgement in cases where the displayed diagnostics suggest that another
-model is more appropriate.
-
-First, normality is assessed on the pooled residuals of a linear model
-\texttt{lm(y\ \textasciitilde{}\ x)}, following the general linear model (GLM) framework
-\citep{Searle:1971}, rather than per group. Group-wise testing is
-statistically less powerful and more likely to reject normality
-unnecessarily, pushing the analysis to non-parametric methods
-\citep{Lumley:2002}. When heteroscedasticity is subsequently detected,
-group-wise normality diagnostics are shown additionally, since Welch's
-methods use group-specific variance estimates.
-
-Second, assumption diagnostics are always displayed, regardless of
-whether assumptions are met. This enables users to visually override the
-automated decision in individual cases, and supports the pedagogical
-goal of making assumption checking an integral part of the analysis
-rather than an afterthought.
-
-Third, all tests use their default settings from base R functions,
-keeping the dependency footprint minimal and the decision tree
-transparent. The package does not wrap external statistical engines; the
-automated layer is purely in the routing logic.
+inferential frameworks, including group comparisons, contingency-table
+analyses, and regression models \citep[\citet{Sato:2017}]{Hayat:2017}.
+\texttt{visStatistics} selects out of these most commonly used ``right test'' by
+using a reproducible decision framework based on the data's
+distributional assumptions and sample size. It visualises its decision
+by, where appropriate, assumption-diagnostic plot and a descriptive plot
+with the main test statistics annotated, and returns an R object whose
+\texttt{print()} and \texttt{summary()} methods expose the complete test results. The
+scripted workflow is well suited for browser-based applications where
+sensitive data (such as highly confidential medical records) is stored
+securely on a server and can not be directly accessed by users. This
+approach was already successfully applied to develop a medical scoring
+tool \citep{Bijlenga:2017}. When selecting tests for group comparisons,
+packages with overlapping scope such as \texttt{automatedtests} \citep{Zeevat:2025}
+and \texttt{compareGroups} \citep{Subirana:2014} base their test selection on
+group‑wise normality assessments of the response variable. But
+group-wise testing inflates the \hyperref[post-hoc-analysis]{family-wise type I error
+rate}: the probability of at least one false
+rejection of normality grows with the number of compared groups, leading
+to unnecessary switching to non-parametric methods even when the linear
+model assumptions hold globally. In contrast, \texttt{visStatistics} assesses
+the normality of the overall model residuals, adhering to the general
+linear model framework \citep{Searle:1971}.
 
 \section{Package overview}\label{package-overview}
 
@@ -226,7 +195,7 @@ t_test_stats <- visstat(mtcars$am, mtcars$mpg)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.32\linewidth]{visStatistics-RJournal_files/figure-latex/ttest-example-1} \includegraphics[width=0.32\linewidth]{visStatistics-RJournal_files/figure-latex/ttest-example-2} \includegraphics[width=0.32\linewidth]{visStatistics-RJournal_files/figure-latex/ttest-example-3} \caption{Welch's t-test applied to the \texttt{mtcars} dataset (\texttt{am} vs.\ \texttt{mpg}). Pooled-residual assumption diagnostics (Shapiro--Wilk, Bartlett, Levene), group-wise normality diagnostics, and box plots of fuel efficiency by transmission type with the Welch t-test result.}\label{fig:ttest-example}
+\includegraphics[width=0.32\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/ttest-example-1} \includegraphics[width=0.32\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/ttest-example-2} \includegraphics[width=0.32\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/ttest-example-3} \caption{Welch's t-test applied to the \texttt{mtcars} dataset (\texttt{am} vs.\ \texttt{mpg}). Pooled-residual assumption diagnostics (Shapiro--Wilk, Bartlett, Levene), group-wise normality diagnostics, and box plots of fuel efficiency by transmission type with the Welch t-test result.}\label{fig:ttest-example}
 \end{figure}
 
 \subsubsection{Wilcoxon rank-sum test}\label{wilcoxon-rank-sum-test}
@@ -249,7 +218,7 @@ wilcoxon_stats <- visstat(grades_gender$sex, grades_gender$grade)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/wilcoxon-example-1} \includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/wilcoxon-example-2} \caption{Wilcoxon rank-sum test applied to examination grades by sex. Assumption diagnostics (Shapiro--Wilk rejected; non-parametric path selected) and box plots with the Wilcoxon test result.}\label{fig:wilcoxon-example}
+\includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/wilcoxon-example-1} \includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/wilcoxon-example-2} \caption{Wilcoxon rank-sum test applied to examination grades by sex. Assumption diagnostics (Shapiro--Wilk rejected; non-parametric path selected) and box plots with the Wilcoxon test result.}\label{fig:wilcoxon-example}
 \end{figure}
 
 \subsection{Numeric response and categorical predictor: more than two groups}\label{numeric-response-and-categorical-predictor-more-than-two-groups}
@@ -304,7 +273,7 @@ anova_npk <- visstat(npk$block, npk$yield, conf.level = 0.95)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/anova-example-1} \includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/anova-example-2} \caption{Fisher's one-way ANOVA applied to the \texttt{npk} dataset (\texttt{block} vs.\ \texttt{yield}). Assumption diagnostics and box plots of pea yield by experimental block; compact letter display (TukeyHSD, $\alpha = 0.05$) shows no significant pairwise differences.}\label{fig:anova-example}
+\includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/anova-example-1} \includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/anova-example-2} \caption{Fisher's one-way ANOVA applied to the \texttt{npk} dataset (\texttt{block} vs.\ \texttt{yield}). Assumption diagnostics and box plots of pea yield by experimental block; compact letter display (TukeyHSD, $\alpha = 0.05$) shows no significant pairwise differences.}\label{fig:anova-example}
 \end{figure}
 
 \subsubsection{Kruskal-Wallis rank sum test}\label{kruskal-wallis-rank-sum-test}
@@ -322,7 +291,7 @@ kruskal_iris <- visstat(iris$Species, iris$Petal.Width)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/kruskal-example-1} \includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/kruskal-example-2} \caption{Kruskal-Wallis test applied to the \texttt{iris} dataset (\texttt{Species} vs.\ \texttt{Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots with the Kruskal-Wallis result; all pairwise post-hoc comparisons significant (all letters differ).}\label{fig:kruskal-example}
+\includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/kruskal-example-1} \includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/kruskal-example-2} \caption{Kruskal-Wallis test applied to the \texttt{iris} dataset (\texttt{Species} vs.\ \texttt{Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots with the Kruskal-Wallis result; all pairwise post-hoc comparisons significant (all letters differ).}\label{fig:kruskal-example}
 \end{figure}
 
 \subsection{Both variables numeric}\label{both-variables-numeric}
@@ -332,18 +301,16 @@ kruskal_iris <- visstat(iris$Species, iris$Petal.Width)
 \texttt{When\ both\ predictor\ and\ response\ are\ numerical,\ visstat()} checks the
 standardised residuals from \texttt{lm()} graphically and with the
 Shapiro--Wilk and Anderson--Darling tests; the Breusch--Pagan test
-assesses homoscedasticity. Regardless of these diagnostics, a simple linear
-regression fitted and displayed. The graphical shows
-the fitted line \(\hat{y} = b_0 + b_1 x\), where \(b_0\) is the
-intercept and \(b_1\) the slope, with pointwise confidence and prediction
-bands at the specified \texttt{conf.level}.
+assesses homoscedasticity. Regardless of these diagnostics, a simple
+linear regression fitted and displayed. The graphical shows the fitted
+line \(\hat{y} = b_0 + b_1 x\), where \(b_0\) is the intercept and \(b_1\) the
+slope, with pointwise confidence and prediction bands at the specified
+\texttt{conf.level}.
 
-The title
-shows \(R^2\), the estimated regression
-parameters with confidence intervals and \(p\)-values. The
-returned object contains the regression statistics, the
-residual-normality \(p\)-values, and pointwise estimates of the confidence
-and prediction bands.
+The title shows \(R^2\), the estimated regression parameters with
+confidence intervals and \(p\)-values. The returned object contains the
+regression statistics, the residual-normality \(p\)-values, and pointwise
+estimates of the confidence and prediction bands.
 
 The \texttt{swiss} dataset records standardised fertility and socioeconomic
 indicators for 47 French-speaking Swiss provinces in 1888. We examine
@@ -357,7 +324,7 @@ linreg_swiss <- visstat(swiss$Examination, swiss$Fertility, conf.level = 0.99)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/regression-example-1} \includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/regression-example-2} \caption{Simple linear regression of \texttt{Fertility} on \texttt{Examination} for the \texttt{swiss} dataset (\texttt{conf.level = 0.99}). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\% confidence band (dark shading), and 99\% prediction band (light shading).}\label{fig:regression-example}
+\includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/regression-example-1} \includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/regression-example-2} \caption{Simple linear regression of \texttt{Fertility} on \texttt{Examination} for the \texttt{swiss} dataset (\texttt{conf.level = 0.99}). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\% confidence band (dark shading), and 99\% prediction band (light shading).}\label{fig:regression-example}
 \end{figure}
 
 \subsubsection{Spearman rank correlation}\label{spearman-rank-correlation}
@@ -370,14 +337,17 @@ simple linear regression but flags violated normality and
 homoscedasticity. The warning recommends two paths: rerun with
 \texttt{correlation\ =\ TRUE} within \texttt{visstat()}, or switch to a model outside
 it. Staying within \texttt{visstat()}, \texttt{correlation\ =\ TRUE} gives an
-assumption-free Spearman result at the cost of causal interpretability.
+assumption-free Spearman result at the cost of causal interpretability
+(Note that here e.g.~a Gamma model with log link
+might be more appropriate to describe the data, as \texttt{Ozone} is strictly
+positive and continuous, and its variance grows with the mean ),
 
 \begin{verbatim}
 spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/spearman-example-1} \includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/spearman-example-2} \caption{Spearman rank correlation of \texttt{Wind} and \texttt{Ozone} from the \texttt{airquality} dataset (\texttt{correlation = TRUE}). Assumption diagnostics and scatter plot of ranked values annotated with $\rho$ and the $p$-value.}\label{fig:spearman-example}
+\includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/spearman-example-1} \includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/spearman-example-2} \caption{Spearman rank correlation of \texttt{Wind} and \texttt{Ozone} from the \texttt{airquality} dataset (\texttt{correlation = TRUE}). Assumption diagnostics and scatter plot of ranked values annotated with $\rho$ and the $p$-value.}\label{fig:spearman-example}
 \end{figure}
 
 \subsection{Both variables categorical}\label{both-variables-categorical}
@@ -417,7 +387,7 @@ visstat(hair_eye_df$Eye, hair_eye_df$Hair)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/chisq-example-1} \includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/chisq-example-2} \caption{Pearson's $\chi^2$ test applied to the \texttt{HairEyeColor} dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented).}\label{fig:chisq-example}
+\includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/chisq-example-1} \includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/chisq-example-2} \caption{Pearson's $\chi^2$ test applied to the \texttt{HairEyeColor} dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented).}\label{fig:chisq-example}
 \end{figure}
 
 \subsubsection{Fisher's exact test}\label{fishers-exact-test}
@@ -455,7 +425,7 @@ fisher_stats$conf.int   # 95 % CI
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.6\linewidth]{visStatistics-RJournal_files/figure-latex/fisher-exact-example-1} \caption{Fisher's exact test applied to a $2 \times 2$ subset of \texttt{HairEyeColor} (male participants, black/brown hair, hazel/green eyes). Bar chart of absolute counts with the $p$-value; the odds ratio and confidence interval are accessible from the returned object.}\label{fig:fisher-exact-example}
+\includegraphics[width=0.6\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/fisher-exact-example-1} \caption{Fisher's exact test applied to a $2 \times 2$ subset of \texttt{HairEyeColor} (male participants, black/brown hair, hazel/green eyes). Bar chart of absolute counts with the $p$-value; the odds ratio and confidence interval are accessible from the returned object.}\label{fig:fisher-exact-example}
 \end{figure}
 
 \subsection{Ordered factors}\label{ordered-factors-1}
@@ -491,7 +461,7 @@ kendall_result <- visstat(performance, alcohol, correlation = TRUE)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.8\linewidth]{visStatistics-RJournal_files/figure-latex/kendall-example-1} \caption{Kendall's $\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance (both five-point ordinal scales). Jittered rank--rank scatter annotated with $\tau_b$ and the $p$-value; the negative monotone association is significant.}\label{fig:kendall-example}
+\includegraphics[width=0.8\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/kendall-example-1} \caption{Kendall's $\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance (both five-point ordinal scales). Jittered rank--rank scatter annotated with $\tau_b$ and the $p$-value; the negative monotone association is significant.}\label{fig:kendall-example}
 \end{figure}
 
 \section{Saving graphical output}\label{saving-graphical-output}
@@ -506,46 +476,96 @@ object.
 
 \section{Limitations}\label{limitations}
 
-\subsection{Scope of automated test selection}\label{scope-of-automated-test-selection}
+The main purpose of this package is a decision-logic based automatic
+selection visualisation of the ``right'' statistical test. Therefore,
+except for the user-adjustable \texttt{conf.level} parameter, all statistical
+tests are applied using their default settings from the corresponding
+base R functions. As a consequence, paired tests are currently not
+supported and \texttt{visstat()} does not allow to study interactions terms
+between the different levels of an independent variable in an analysis
+of variance. Focusing on the graphical representation of tests, only
+simple linear regression is implemented, as multiple linear regressions
+cannot be visualised. When regression assumptions are violated, the
+package offers Spearman rank correlation (\texttt{correlation\ =\ TRUE}) as the
+sole alternative to linear regression. Alternative methods such as data
+transformation, generalised linear models or robust regression are not
+implemented: each requires user judgment -- about the transformation
+family, the link function, or the estimator -- that cannot be automated
+without substantially expanding the decision tree and increasing the
+risk of Type I error inflation.
 
-All tests are applied with their default settings from base R. As a
-consequence, paired tests are not supported and interaction terms are
-not available in the ANOVA path. Only simple linear regression is
-implemented, as multiple regression cannot be visualised in two
-dimensions. When regression assumptions are violated,
-\CRANpkg{visStatistics} offers Spearman rank correlation
-(\texttt{correlation\ =\ TRUE}) as the sole automated alternative. Alternative
-methods such as data transformations, generalised linear models, or
-robust regression are not implemented: each requires user judgment ---
-about the transformation family, the link function, or the estimator ---
-that cannot be automated without substantially expanding the decision
-tree and increasing the risk of Type I error inflation.
+Within this restricted automated pipeline, the routing depends on
+p-values of assumption tests to select tests of central tendencies. But no single (assumption) test maintains optimal Type I
+error rates and statistical power across all distributions
+\citep{Olejnik:1987}, and p-values obtained from these tests may be
+unreliable if their assumptions are violated.
 
-\subsection{P-value-based assumption testing}\label{p-value-based-assumption-testing}
+Assessing assumptions solely through p-values can therefore lead to both type I
+errors (false positives) and type II errors (false negatives). In large
+samples, even minor, random deviations from the null hypothesis can
+result in statistically significant p-values, leading to type I errors.
+Conversely, in small samples, substantial violations of the assumption
+may not reach statistical significance, resulting in type II errors
+\citep{Kozak:2018}.
 
-No single test maintains optimal Type I error rates and power across all
-distributions \citep{Olejnik:1987}. Normality tests behave poorly at both
-extremes of the sample-size range: they fail to detect non-normality in
-small samples and flag negligible departures as significant in large
-ones \citep{Ghasemi:2012, Fagerland:2012}. The \(n > 50\) per-group threshold
-for bypassing the Shapiro--Wilk test is necessarily arbitrary;
-simulation studies indicate that the required sample size for the
-central limit theorem to take effect depends on the skewness and
-kurtosis of the underlying distribution \citep{Fagerland:2012}. Assumption
-tests provide no information on the nature of the deviation
-\citep{Shatz:2024}, and combining multiple tests inflates the overall Type I
-error rate. For these reasons, the diagnostic plots generated by
-\texttt{visstat()} should always be inspected alongside the automated decision;
-the \texttt{conf.level} argument provides a direct handle on the \(\alpha\) used
-throughout.
+Moreover, assumption tests provide no information on the nature of
+deviations from the expected distribution \citep{Shatz:2024}. Thus the
+assessment of normality or homoscedasticity should never rely solely on
+p-values but should be complemented by visual inspection of the
+diagnostic plots generated by \texttt{visstat()}.
 
-\subsection{Visualisation}\label{visualisation}
+This general limitation is particularly relevant for normality test. Normality tests behave poorly at both ends of the
+sample-size range: with small samples they fail to detect non-normality,
+and with large samples they flag negligible departures from normality as
+significant \citep{Ghasemi:2012, Fagerland:2012, Franc:2025}.
 
-The package depends exclusively on base R graphics with no
-\CRANpkg{ggplot2} \citep{Wickham:2016} dependency, keeping the transitive
-dependency footprint minimal. For more polished, annotated plots of
-chosen statistical tests, see \CRANpkg{ggstatsplot} \citep{Patil:2021} or
-\CRANpkg{ggpubr} \citep{Kassambara:2026}.
+For this reason, this package uses \(n > 50\) per group as a rule of thumb
+threshold to omit normality testing, assuming parametric tests of
+central tendencies to become robust to non-normality at larger sample
+sizes based on the central limit theorem. The threshold is necessarily
+arbitrary; simulation studies show that the convergence rate depends on
+the skewness and kurtosis of the underlying distribution, with
+moderately skewed distributions requiring roughly 40--50 observations
+for adequate convergence of the sampling distribution of the mean
+\citep{Fagerland:2012}. Simulation studies suggest that Shapiro--Wilk has the
+highest power among normality tests in small to moderate (\(n = 10\) to
+100) sample sizes \citep{Razali:2011}. Accordingly, Shapiro--Wilk is used to
+select between parametric (ANOVA/Welch's t-test) and non-parametric
+(Kruskal--Wallis/Wilcoxon) methods for groups smaller than 50.
+
+The same issue extends to combinations of assumption tests. Combining
+tests for normality and homoscedasticity using simple majority voting
+inflates the overall Type I error rate. Therefore, automated test
+selection based solely on p-values cannot replace the visual inspection
+of sample distributions provided by \texttt{visstat()}. Based on the provided
+diagnostic plots, it may be necessary to override the automated choice
+of test in individual cases.
+
+To avoid further compounding these problems, the automated test
+selection pipeline deliberately restricts its scope to the most
+frequently used tests, particularly those relevant in a medical context
+\citep[\citet{Sato:2017},\citet{Chicco:2025}]{Strasak:2007}. While one of R's greatest
+strengths is the sheer volume of statistical methods available,
+incorporating a wider array of methods would require additional
+preliminary assumption checks, which in turn exacerbates the risk of
+overall Type I error inflation. Furthermore, expanding the pipeline
+would result in a highly complex decision tree, rendering the underlying
+statistical logic increasingly opaque to the user.
+
+The package depends only on base R graphics with no \texttt{ggplot2}
+\citep{Wickham:2016} dependency, keeping the transitive dependency footprint
+minimal. For more polished, annotated plots of chosen statistical tests,
+we refer to packages such as \texttt{ggstatsplot} \citep{Patil:2021} or \texttt{ggpubr}
+\citep{Kassambara:2026}.
+
+Bootstrapping methods \citep{Wilcox:2021} make minimal distributional
+assumptions and can provide confidence intervals for nearly any
+statistic. However, bootstrapping is computationally intensive, often
+requiring thousands of resamples, and may perform poorly with very small
+sample sizes. The computational intensity of bootstrap runs counter to
+the purpose of the \texttt{visStatistics} package, which is designed to offer a
+rapid overview of the data, laying the groundwork for deeper analysis in
+subsequent steps.
 
 \section{Summary}\label{summary}
 
@@ -588,7 +608,7 @@ groups, \texttt{t.test(var.equal\ =\ TRUE)} and \texttt{aov()} yield identical
 
 \subsection{Normality tests}\label{normality-tests}
 
-Both normality tests are applied to the internally studentised residuals
+The package uses both the Shapiro-Wilk test as well ass the Anderson-Darling test to check the normality of the studentised residuals
 \(r_i^* = e_i / (s\sqrt{1-h_{ii}})\), where \(e_i\) are the raw residuals,
 \(s^2\) is the residual mean square, and \(h_{ii}\) is the leverage of
 observation \(i\) \citep{Cook:1982}.
@@ -596,44 +616,55 @@ observation \(i\) \citep{Cook:1982}.
 \subsubsection{\texorpdfstring{Shapiro--Wilk test \texttt{shapiro.test()}}{Shapiro--Wilk test shapiro.test()}}\label{shapirowilk-test-shapiro.test}
 
 The Shapiro--Wilk test \citep{Shapiro:1965} evaluates whether a sample
-\(x_1, \ldots, x_n\) comes from a normal distribution. Let \(x_{(i)}\)
-denote the \(i\)-th order statistic. The test statistic is
+\(x_1,\ldots,x_n\) comes from a normal distribution. Let
+\(x_{(1)}\le \cdots \le x_{(n)}\) be its order statistics. Introduce a
+reference sample \(Y_1,\ldots,Y_n\) of independent standard normal random
+variables, i.e.~\(Y_i \sim N(0,1)\) for all \(i\), and let
+\(Y_{(1)}\le \cdots \le Y_{(n)}\) be their order statistics used to construct the Shapiro--Wilk weights.
 
-\[W = \frac{\left(\displaystyle\sum_{i=1}^{n} a_i\, x_{(i)}\right)^2}
-           {\displaystyle\sum_{i=1}^{n} (x_i - \bar{x})^2},\]
+Define
+\(m_i = E\!\left(Y_{(i)}\right), \quad i=1,\ldots,n,\),
 
-where \(\mathbf{a} = (a_1,\ldots,a_n)^\top\) is the normalised coefficient
-vector,
+\(v_{ij} = \operatorname{Cov}\!\left(Y_{(i)},Y_{(j)}\right),
+\quad i,j=1,\ldots,n,\),
+\[\mathbf{m}=(m_1,\ldots,m_n)^\top,\qquad
+V=(v_{ij})_{i,j=1}^n.\]
 
-\[\mathbf{a} =
-\frac{V^{-1}\mathbf{m}}
-{\sqrt{\mathbf{m}^\top V^{-1}V^{-1}\mathbf{m}}},\]
+Thus, \(\mathbf{m}\) contains the expected positions of the standard-normal
+order statistics, and \(V\) describes their covariance structure.
+Let \(\mathbf{a}=(a_1,\ldots,a_n)^\top\) be the resulting vector of
+normalised weights for the ordered observed sample values
 
-and \(Z_{(1)},\ldots,Z_{(n)}\) are the ordered values expected from a
-sample of size \(n\) drawn from a standard normal distribution. The vector
-\(\mathbf{m}\) contains their expected positions, and \(V\) describes how
-these ordered positions vary together across repeated standard normal
-samples \citep{Shapiro:1965}. \(W\) takes values in \((0, 1]\); values close to 1
-indicate normality. Simulation studies show that the Shapiro--Wilk test
-has the highest power among normality tests for small to moderate sample
-sizes (\(n = 10\) to \(100\)) \citep{Razali:2011}. It drives the
-parametric/non-parametric branching decision in \texttt{visstat()}; for groups
-with more than 50 observations normality is assumed by the central limit
-theorem \citep{Lumley:2002, Rasch:2011}.
+\[\mathbf{a}
+=\frac{V^{-1}\mathbf{m}}
+{\sqrt{\left(\mathbf{m}^\top V^{-1}V^{-1}\mathbf{m}\right)}}.\]
+Then the Shapiro--Wilk statistic is
+\[W=\frac{\left(\sum_{i=1}^{n} a_i x_{(i)}\right)^2}
+{\sum_{i=1}^{n} (x_i-\bar{x})^2}.\]
+
+\(W\) takes values in \((0, 1]\); values close to 1 indicate normality.
+Simulation studies show that the Shapiro--Wilk test has the highest
+power among normality tests for small to moderate sample sizes (\(n = 10\)
+to \(100\)) \citep{Razali:2011}. It drives the parametric/non-parametric
+branching decision in \texttt{visstat()}; for groups with more than 50
+observations normality is assumed by the central limit theorem
+\citep{Lumley:2002, Rasch:2011}.
+
+The implementation uses \texttt{shapiro.test()} from \CRANpkg{stats} \citep{R:2026}.
 
 \subsubsection{\texorpdfstring{Anderson--Darling test \texttt{ad.test()}}{Anderson--Darling test ad.test()}}\label{andersondarling-test-ad.test}
 
 The Anderson--Darling test \citep{Anderson:1952} is particularly sensitive to
 deviations in the tails of the distribution \citep{Razali:2011, Yap:2011}.
-Let \(z_i = (x_{(i)} - \bar{x})/s\) be the standardised order statistics
-and \(\Phi\) the standard normal CDF. The test statistic is
+Let \(z_i = (x_{(i)} - \bar{x})/s,\; i=1,2,\ldots,n\) be the standardised order statistics of \(x_i\)
+and \(\Phi\) the standard normal cumulattive densitiy function. The test statistic is
 
 \[A^2 = -n - \frac{1}{n}\sum_{i=1}^{n}(2i-1)
         \left[\ln\Phi(z_i) + \ln\!\left(1 - \Phi(z_{n+1-i})\right)\right].\]
 
 The implementation uses \texttt{ad.test()} from \CRANpkg{nortest}
-\citep{Gross:2015}. The Anderson--Darling result is shown in all assumption
-plots but does \textbf{not} drive the branching decision; only Shapiro--Wilk
+\citep{Gross:2015}. Albeit the Anderson--Darling result is shown in all assumption
+plots, it does \textbf{not} drive the branching decision; only Shapiro--Wilk
 does.
 
 \subsection{Homoscedasticity tests}\label{homoscedasticity-tests}
@@ -821,11 +852,13 @@ association between \(x\) and \(y\) using ranks, evaluating linear
 dependence on the ranked data rather than on the original scale.
 Spearman's \(\rho\) is Pearson's \(r\) applied to the ranks:
 
-\[\rho = r\!\left(\operatorname{rank}(x),\, \operatorname{rank}(y)\right)
-= \frac{\displaystyle\sum_{i=1}^n(\operatorname{rank}(x_i)-\overline{\operatorname{rank}(x)})
-                                 (\operatorname{rank}(y_i)-\overline{\operatorname{rank}(y)})}
-       {\sqrt{\displaystyle\sum_{i=1}^n(\operatorname{rank}(x_i)-\overline{\operatorname{rank}(x)})^2}
-        \sqrt{\displaystyle\sum_{i=1}^n(\operatorname{rank}(y_i)-\overline{\operatorname{rank}(y)})^2}}.\]
+\[\rho = r(\operatorname{rank}(x), \operatorname{rank}(y))\] where \(r(u, v)\) denotes Pearson's correlation coefficient:
+
+\[r(u,v)
+=
+\frac{\sum_{i=1}^{n}(u_i-\bar u)(v_i-\bar v)}
+{\sqrt{\sum_{i=1}^{n}(u_i-\bar u)^2}\,
+ \sqrt{\sum_{i=1}^{n}(v_i-\bar v)^2}}.\]
 
 For inference, \texttt{cor.test(...,\ method\ =\ "spearman")} computes an exact
 \(p\)-value for small samples without ties by evaluating all \(n!\) rank
@@ -835,19 +868,17 @@ distributional assumptions on the original data are required.
 
 \subsection{\texorpdfstring{Kendall's \(\tau_b\)}{Kendall's \textbackslash tau\_b}}\label{kendalls-tau_b-1}
 
-For two ordinal variables with \(n\) joint observations, let \(C\) denote
-the number of concordant pairs and \(D\) the number of discordant pairs.
-Kendall's \(\tau_b\) \citep{Kendall:1945} is
+For two ordinal variables with \(n\) joint observations, let \(C\) denote the number of concordant pairs (those whose ranks agree in both variables) and \(D\) the number of discordant pairs.
+Kendall's \(\tau_b\) is defined as
 
-\[\tau_b = \frac{C - D}{\sqrt{(n_0 - n_1)(n_0 - n_2)}},\]
+\[\tau_b \;=\; \frac{C - D}
+{\sqrt{\left(n_0 - n_1\right)\left(n_0 - n_2\right)}}\]
 
-where \(n_0 = n(n-1)/2\), \(n_1 = \sum_i t_i(t_i-1)/2\) sums over groups of
-tied ranks in the response (with \(t_i\) the size of the \(i\)-th tie
-group), and \(n_2\) is the analogous quantity for the predictor. The
-denominator correction ensures \(\tau_b \in [-1, 1]\) even in the presence
-of ties, which Spearman's \(\rho\) does not guarantee \citep{Kendall:1945}.
-\(\tau_b\) is therefore preferred for ordinal data with few levels, where
-ties are unavoidable \citep{Agresti:2010, Xu:2013}.
+where \(n_0 = n(n-1)/2\), \(n_1 = \sum_i t_i(t_i-1)/2\) summed over groups of tied ranks in the response, and \(n_2\) is the analogous quantity for the predictor.
+The denominator correction makes \(\tau_b\) attain \(\pm 1\) even with ties, which Spearman's \(\rho\) does not \citep{Kendall:1945}.
+With few ordered levels (e.g., five-point Likert items), ties are unavoidable; this is the principal reason to prefer \(\tau_b\) over Spearman's \(\rho\) in this setting \citep{Agresti:2010}.
+
+\texttt{visstat()} calls \texttt{cor.test(as.numeric(y),\ as.numeric(x),\ method\ =\ "kendall",\ exact\ =\ FALSE)} and reports \(\tau_b\), the test statistic \(z\), and the two-sided \(p\)-value.
 
 \bibliography{../../vignettes/REFERENCES.bib}
 

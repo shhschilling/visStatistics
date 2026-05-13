@@ -27,7 +27,7 @@ rj_latex_pkgs <- c(
   "environ", "trimspaces", "pgf", "ms"
 )
 
-tinytex::tlmgr_install(rj_latex_pkgs)
+#tinytex::tlmgr_install(rj_latex_pkgs)
 
 # ── 2. Locate the Rmd and render ──────────────────────────────────────────────
 pkg_root <- rprojroot::find_root(rprojroot::has_file("DESCRIPTION"))
@@ -44,3 +44,4 @@ rmarkdown::render(
   output_dir    = rj_dir,
   knit_root_dir = rj_dir
 )
+browseURL("tools/RJournal/visStatistics-RJournal.html")
