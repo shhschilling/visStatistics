@@ -375,44 +375,28 @@ t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
 
 #### Wilcoxon rank sum test {.unnumbered}
 
-The Wilcoxon rank sum test is exemplified on differences between the central tendencies of grades of "boys" and "girls" in a class:
+The `warpbreaks` dataset records thread breaks during weaving. Using wool
+type (`A` or `B`) as predictor and the number of breaks as response, the
+Shapiro--Wilk test rejects normality of the standardised residuals, so
+`visstat()` selects the Wilcoxon rank-sum test.
 
-```{r}
-grades_gender <- data.frame(
-  sex = as.factor(c(rep("girl", 21), rep("boy", 23))),
-  grade = c(
-    19.3, 18.1, 15.2, 18.3, 7.9, 6.2, 19.4,
-    20.3, 9.3, 11.3, 18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.0,
-    16.5, 5.1, 15.3, 17.1, 14.8, 15.4, 14.4, 7.5, 15.5, 6.0, 17.4,
-    7.3, 14.3, 13.5, 8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6, 17.3, 19.9, 4.4, 2.1
-  )
-)
-
-wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
+```{r wilcoxon-example, fig.show='hide', results='hide'}
+wilcoxon_warpbreaks <- visstat(warpbreaks$wool, warpbreaks$breaks)
 ```
 
-#### Wilcoxon with ordinal response {.unnumbered}
+#### Wilcoxon with ordered response {.unnumbered}
 
-```{r ordinal, fig.show='hide'}
-set.seed(123)
+The `Titanic` dataset contains passenger counts by, among other
+variables, passenger class and gender. After expanding the table to
+individual rows, passenger class is treated as ordered and gender as a
+two-level predictor. `visstat()` converts the ordered response to integer
+level codes and selects the Wilcoxon rank-sum test.
 
-# Create predictor: Customer segment (2 groups)
-segment <- factor(rep(c("Budget", "Premium"), each = 50))
-
-# Create response: Likert scale ratings (1-5)
-satisfaction_numeric <- c(
-  sample(1:5, 50, replace = TRUE, prob = c(0.15, 0.25, 0.30, 0.20, 0.10)),  # Budget
-  sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.35, 0.30))   # Premium
-)
-
-# Create dataframe with ORDERED response
-survey_data <- data.frame(
-  segment = segment,
-  satisfaction = ordered(satisfaction_numeric)  # Declare as ordered
-)
-
-# triggers warnings and use Wilcoxon test
-wilcox_ordered <- visstat(survey_data, "satisfaction", "segment")
+```{r ordinal-wilcoxon-example, fig.show='hide', results='hide'}
+titanic_df <- counts_to_cases(as.data.frame(Titanic))
+titanic_df$Class <- ordered(titanic_df$Class,
+                            levels = c("1st", "2nd", "3rd", "Crew"))
+wilcox_ordered <- visstat(titanic_df$Sex, titanic_df$Class)
 ```
 
 ## Categorical predictor with more than two levels

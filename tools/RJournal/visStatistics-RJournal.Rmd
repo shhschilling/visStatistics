@@ -102,12 +102,11 @@ variables enter simple linear regression unless `correlation = TRUE`,
 which switches to Spearman rank correlation; and two ordered factors
 are analysed as Kendall rank correlation when `correlation = TRUE`.
 Definitions of all implemented test
-statistics and association measures are collected in [Appendix B](#tests).
+statistics and association measures are collected in [Appendix C](#tests).
 
 ## Test selection based on the assumptions of the general linear model framework
 
-Student's t-test, Fisher's ANOVA, and simple linear regression all
-belong to the general linear model framework [see Appendix A](#glm) and
+Student's t-test, Fisher's ANOVA, and simple linear regression all belong to the general linear model framework ([see Appendix A](#glm)) and
 thus share a common set of assumptions: the expected value of the
 response is a linear function of the predictors, the error terms are
 independent and normally distributed with expectation 0, and the error
@@ -156,11 +155,53 @@ normality diagnostics are additionally displayed, since the pooled
 `lm()` residuals are no longer the appropriate diagnostic under
 heteroscedasticity.
 
+For more than two groups, this route leads to `kruskal.test()`,
+Fisher's one-way ANOVA (`aov()`), or Welch's heteroscedastic one-way
+ANOVA (`oneway.test()`). The graphical output consists of two panels. The
+first panel displays standardised residuals versus fitted values and a
+normal Q--Q plot; no more than about 5% of the standardised residuals
+should exceed $|2|$ when residuals are normally distributed, and the
+Q--Q points should approximately follow the red reference line. The
+title reports the Shapiro--Wilk and Anderson--Darling normality tests
+together with Bartlett's and Levene--Brown--Forsythe tests for
+homoscedasticity. The second panel shows the selected omnibus test as
+box plots with sample sizes above each group; for the parametric
+branches, the title also reports the corresponding $F$ statistic. When
+the largest group has no more than 50 observations, jittered points are
+overlaid to show the raw data.
+
+ANOVA, Welch ANOVA, and Kruskal--Wallis are omnibus tests: a significant
+result tells us that *some* group differs, but not which. To identify
+the differing pairs, `visstat()` tests all pairwise comparisons among
+the factor levels, defining a family of tests [@Abdi:2007]. Because the
+three omnibus tests rest on different assumptions, each branch uses a
+matching post-hoc procedure: `TukeyHSD()` after `aov()`,
+`games.howell()` after `oneway.test()`, and
+`pairwise.wilcox.test(p.adjust.method = "holm")` after `kruskal.test()`.
+`TukeyHSD()` controls the family-wise error rate through the studentised
+range distribution under a common-variance assumption. `games.howell()`
+uses separate variance estimates and Welch-adjusted degrees of freedom
+for each pair, making it the post-hoc procedure for the heteroscedastic
+Welch branch. The Kruskal--Wallis branch uses Holm's step-down
+adjustment for the pairwise Wilcoxon tests. Pairs whose adjusted
+post-hoc $p$-value falls below $\alpha$ are marked with different green
+letters below the box plots; pairs sharing a letter are not
+significantly different. The returned object contains the corresponding
+adjusted $p$-values.
+
 ## Both variables numeric: regression or Spearman rank correlation
 
-By default, `visstat()` fits a simple linear regression via `lm()`,
-regardless of whether linear-model assumptions are met, and always displays
-assumption diagnostics. When `correlation = TRUE` is set explicitly,
+When both predictor and response are numerical, `visstat()` fits and
+displays a simple linear regression. The standardised residuals from
+`lm()` are assessed graphically and with the Shapiro--Wilk and
+Anderson--Darling tests; homoscedasticity is assessed with the
+Breusch--Pagan test. The regression plot shows the fitted line
+$\hat{y} = b_0 + b_1 x$ with pointwise confidence and prediction bands
+at the specified `conf.level`. The returned object contains the
+regression statistics, residual-normality tests, pointwise confidence
+and prediction bands, and the effect size $R^2$.
+
+When `correlation = TRUE` is set explicitly,
 Spearman's $\rho$ is computed via `cor.test(..., method = "spearman")`.
 Because the choice between modelling a directional relationship and
 measuring a monotone association cannot be automated from data types
@@ -171,16 +212,23 @@ target; see [Appendix C](#rho).
 
 ## Both variables categorical: comparing proportions
 
-When both variables are categorical, `visstat()` tests independence
-using Pearson's $\chi^2$ test (`chisq.test()`) or Fisher's exact test
-(`fisher.test()`), depending on expected cell counts following Cochran's
-rule [@Cochran:1954]: the $\chi^2$ approximation is used if no expected
-cell count is less than 1 and no more than 20% of cells have expected
-counts below 5. Yates' continuity correction [@Yates:1934] is applied by
-default to $2 \times 2$ tables. For general $R \times C$ tables,
-Pearson's $\chi^2$ result is supplemented with a mosaic plot from
-\CRANpkg{vcd} [@Meyer:2006; @Meyer:2024] with tiles coloured by Pearson
-residuals.
+Observed frequencies are arranged in a contingency table, where rows
+index the levels of the response and columns index the levels of the
+predictor. `visstat()` tests independence using Pearson's $\chi^2$ test
+(`chisq.test()`) or Fisher's exact test (`fisher.test()`), depending on
+expected cell counts following Cochran's rule [@Cochran:1954]: the
+$\chi^2$ approximation is used if no expected cell count is less than 1
+and no more than 20% of cells have expected counts below 5. Yates'
+continuity correction [@Yates:1934] is applied by default to $2 \times
+2$ tables. The graphical output depends on the selected test. General
+$R \times C$ Pearson $\chi^2$ tests show a grouped column plot of row
+percentages with the $p$-value in the title, followed by a mosaic plot
+from \CRANpkg{vcd} [@Meyer:2006; @Meyer:2024] with tiles coloured by
+Pearson residuals. Yates-corrected $2 \times 2$ $\chi^2$ tests show the
+grouped column plot only, because the corrected statistic is not
+decomposed into cell-level residuals. Fisher's exact test shows
+absolute counts with $N$ labels above each bar and the $p$-value in the
+title.
 
 ## Ordered factors
 
@@ -251,80 +299,31 @@ t_test_stats <- visstat(mtcars$am, mtcars$mpg)
 
 ### Wilcoxon rank-sum test
 
-The Wilcoxon branch is exemplified on examination grades for a class of
-44 students (21 girls, 23 boys). After fitting `lm(grade ~ sex)`,
-Shapiro--Wilk rejects normality of the pooled residuals, so `visstat()`
-switches to the non-parametric Wilcoxon rank-sum test.
+The `warpbreaks` dataset records thread breaks during weaving. Using wool
+type (`A` or `B`) as predictor and the number of breaks as response, the
+Shapiro--Wilk test rejects normality of the standardised residuals, so
+`visstat()` selects the Wilcoxon rank-sum test.
 
-```{r wilcoxon-example, fig.cap="Wilcoxon rank-sum test applied to examination grades by sex. Assumption diagnostics (Shapiro--Wilk rejected; non-parametric path selected) and box plots with the Wilcoxon test result.", out.width="48%", fig.height=4.5, fig.show="hold"}
-grades_gender <- data.frame(
-  sex   = as.factor(c(rep("girl", 21), rep("boy", 23))),
-  grade = c(19.3, 18.1, 15.2, 18.3,  7.9,  6.2, 19.4, 20.3,  9.3, 11.3,
-            18.2, 17.5, 10.2, 20.1, 13.3, 17.2, 15.1, 16.2, 17.0, 16.5,
-             5.1, 15.3, 17.1, 14.8, 15.4, 14.4,  7.5, 15.5,  6.0, 17.4,
-             7.3, 14.3, 13.5,  8.0, 19.5, 13.4, 17.9, 17.7, 16.4, 15.6,
-            17.3, 19.9,  4.4,  2.1)
-)
-wilcoxon_stats <- visstat(grades_gender$sex, grades_gender$grade)
+```{r wilcoxon-example, fig.cap="Wilcoxon rank-sum test applied to the \\texttt{warpbreaks} dataset (\\texttt{wool} vs.\\ \\texttt{breaks}). Assumption diagnostics (Shapiro--Wilk rejected on standardised residuals; non-parametric path selected) and box plots with the Wilcoxon test result.", out.width="48%", fig.height=4.5, fig.show="hold"}
+wilcoxon_stats <- visstat(warpbreaks$wool, warpbreaks$breaks)
 ```
 
 ### Wilcoxon rank-sum test with ordered response
 
-When the response is an ordered factor and the predictor has two levels,
-`visstat()` converts the ordered response to integer level codes and
-routes the analysis to the Wilcoxon rank-sum test.
+The `Titanic` dataset contains passenger counts by, among other
+variables, passenger class and gender. After expanding the table to
+individual rows, passenger class is treated as ordered and gender as a
+two-level predictor. `visstat()` converts the ordered response to integer
+level codes and selects the Wilcoxon rank-sum test.
 
 ```{r ordinal-wilcoxon-example, fig.show='hide', results='hide'}
-set.seed(123)
-segment <- factor(rep(c("Budget", "Premium"), each = 50))
-satisfaction_numeric <- c(
-  sample(1:5, 50, replace = TRUE, prob = c(0.15, 0.25, 0.30, 0.20, 0.10)),
-  sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.35, 0.30))
-)
-survey_data <- data.frame(
-  segment = segment,
-  satisfaction = ordered(satisfaction_numeric)
-)
-wilcox_ordered <- visstat(survey_data, "satisfaction", "segment")
+titanic_df <- counts_to_cases(as.data.frame(Titanic))
+titanic_df$Class <- ordered(titanic_df$Class,
+                            levels = c("1st", "2nd", "3rd", "Crew"))
+wilcox_ordered <- visstat(titanic_df$Sex, titanic_df$Class)
 ```
 
 ## Numeric response and categorical predictor: more than two groups
-
-For more than two groups, the same residual-normality decision is
-applied first. If residual normality is rejected, `visstat()` applies
-`kruskal.test()`. Otherwise, `levene.test()` chooses between Fisher's
-one-way ANOVA (`aov()`) and Welch's heteroscedastic one-way ANOVA
-(`oneway.test()`). The graphical output consists of two panels. The
-first panel displays standardised residuals versus fitted values and a
-normal Q--Q plot; no more than about 5% of the standardised residuals
-should exceed $|2|$ when residuals are normally distributed, and the
-Q--Q points should approximately follow the red reference line. The
-title reports the Shapiro--Wilk and Anderson--Darling normality tests
-together with Bartlett's and Levene--Brown--Forsythe tests for
-homoscedasticity. The second panel shows the selected omnibus test as
-box plots with sample sizes above each group; for the parametric
-branches, the title also reports the corresponding $F$ statistic. When
-the largest group has no more than 50 observations, jittered points are
-overlaid to show the raw data.
-
-ANOVA, Welch ANOVA, and Kruskal--Wallis are omnibus tests: a significant
-result tells us that *some* group differs, but not which. To identify
-the differing pairs, `visstat()` tests all pairwise comparisons among
-the factor levels, defining a family of tests [@Abdi:2007]. Because the
-three omnibus tests rest on different assumptions, each branch uses a
-matching post-hoc procedure: `TukeyHSD()` after `aov()`,
-`games.howell()` after `oneway.test()`, and
-`pairwise.wilcox.test(p.adjust.method = "holm")` after `kruskal.test()`.
-`TukeyHSD()` controls the family-wise error rate through the studentised
-range distribution under a common-variance assumption. `games.howell()`
-uses separate variance estimates and Welch-adjusted degrees of freedom
-for each pair, making it the post-hoc procedure for the heteroscedastic
-Welch branch. The Kruskal--Wallis branch uses Holm's step-down
-adjustment for the pairwise Wilcoxon tests. Pairs whose adjusted
-post-hoc $p$-value falls below $\alpha$ are marked with different green
-letters below the box plots; pairs sharing a letter are not
-significantly different. The returned object contains the corresponding
-adjusted $p$-values.
 
 ### One-way ANOVA with Tukey HSD
 
@@ -339,11 +338,24 @@ at $\alpha = 0.05$, and all groups share the same compact-letter label.
 anova_npk <- visstat(npk$block, npk$yield, conf.level = 0.95)
 ```
 
+### Welch's heteroscedastic one-way ANOVA
+
+In the `iris` dataset, using `Species` as predictor and `Sepal.Length`
+as response, Shapiro--Wilk does not reject normality of the standardised
+residuals, whereas the Levene--Brown--Forsythe test rejects
+homoscedasticity. `visstat()` therefore selects Welch's heteroscedastic
+one-way ANOVA (`oneway.test()`), adds group-wise normality diagnostics,
+and applies Games--Howell post-hoc comparisons.
+
+```{r welch-anova-example, fig.cap="Welch's heteroscedastic one-way ANOVA applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Sepal.Length}). Assumption diagnostics, group-wise normality diagnostics, and box plots with Games--Howell post-hoc comparisons.", out.width="32%", fig.height=4.5, fig.show="hold"}
+welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length)
+```
+
 ### Kruskal-Wallis rank sum test
 
-The `iris` dataset contains petal-width measurements for three species.
-Here, the residual plots and very small Shapiro--Wilk and
-Anderson--Darling $p$-values indicate non-normal residuals. Since
+For the same dataset, `Petal.Width` by `Species` follows a different
+route. The standardised residuals show clear departures from normality,
+and both normality tests return very small $p$-values. Since
 Shapiro--Wilk falls below $\alpha$, `visstat()` switches to
 `kruskal.test()` followed by Holm-adjusted `pairwise.wilcox.test()`. All
 three species differ significantly in petal width, as indicated by
@@ -379,22 +391,6 @@ kruskal_ordered <- visstat(survey_data_3, "comfort", "segment")
 
 ### Simple linear regression
 
-When both predictor and response are numerical, `visstat()` fits and
-displays a simple linear regression. The standardised residuals from
-`lm()` are assessed graphically and with the Shapiro--Wilk and
-Anderson--Darling tests; homoscedasticity is assessed with the
-Breusch--Pagan test. The regression plot shows the fitted line
-$\hat{y} = b_0 + b_1 x$, where $b_0$ is the intercept and $b_1$ the
-slope, with pointwise confidence and prediction bands at the specified
-`conf.level`.
-
-The title shows $R^2$, the estimated regression parameters with
-confidence intervals and $p$-values. The returned object contains the
-regression statistics, the residual-normality $p$-values, and pointwise
-estimates of the confidence and prediction bands. The regression is
-reported regardless of the diagnostics; in this branch, `visstat()`
-therefore also serves as a model-triage tool.
-
 The `swiss` dataset records standardised fertility and socioeconomic
 indicators for 47 French-speaking Swiss provinces in 1888. We examine
 how the share of draftees achieving the highest army examination score
@@ -406,17 +402,24 @@ test confirms homoscedasticity, supporting the linear model.
 linreg_swiss <- visstat(swiss$Examination, swiss$Fertility, conf.level = 0.99)
 ```
 
-The `airquality` ozone example illustrates this triage role. A default
+The `airquality` ozone example shows the limits of the automated
+approach when the default linear model is not an adequate final model.
+`visstat()` identifies assumption violations and points to analyses
+outside the automated decision tree. A default
 `visstat()` call for ozone concentration (`Ozone`) as a function of wind
-speed (`Wind`) fits the simple linear model, but the diagnostics flag
-violated residual normality and homoscedasticity. The printed
-recommendation suggests two possible next steps: exploring alternatives
+speed (`Wind`) fits the simple linear model.
+
+```{r ozone-lm-triage, fig.show='hide', results='hide'}
+ozone_lm <- visstat(airquality$Wind, airquality$Ozone)
+```
+
+The diagnostic output flags non-normal standardised residuals and
+heteroscedasticity. The printed
+recommendation suggests two possible next steps: first, rerunning the
+analysis with `correlation = TRUE` for an assumption-free, non-causal
+Spearman analysis within `visstat()`; second, exploring alternatives
 outside `visstat()`, such as data transformations, generalised linear
-models, or robust regression, or rerunning the analysis with
-`correlation = TRUE` for an assumption-free, non-causal Spearman
-analysis. For these data, a Gamma GLM with log link is one plausible
-follow-up outside `visstat()` because `Ozone` is positive, continuous,
-and shows variance increasing with the mean.
+models, or robust regression.
 
 ### Spearman rank correlation
 
@@ -430,22 +433,14 @@ staying within `visstat()` gives the following Spearman analysis:
 spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 ```
 
-## Both variables categorical
+### Model exploration outside `visstat()`
 
-Observed frequencies are arranged in a contingency table, where rows
-index the levels of the response and columns index the levels of the
-predictor. `visstat()` tests the null hypothesis that the variables are
-independent. If expected frequencies satisfy Cochran's rule, Pearson's
-$\chi^2$ test is used; otherwise, `visstat()` switches to Fisher's exact
-test. For $2 \times 2$ tables, Yates' continuity correction is applied
-by default to Pearson's $\chi^2$ test. The graphical output depends on
-the selected test. General $R \times C$ Pearson $\chi^2$ tests show a
-grouped column plot of row percentages with the $p$-value in the title,
-followed by a mosaic plot with colour-coded Pearson residuals.
-Yates-corrected $2 \times 2$ $\chi^2$ tests show the grouped column plot
-only, because the corrected statistic is not decomposed into cell-level
-residuals. Fisher's exact test shows absolute counts with $N$ labels
-above each bar and the $p$-value in the title.
+The second path is model exploration outside `visstat()`. For these
+data, a Gamma GLM with log link is one plausible follow-up because
+`Ozone` is positive, continuous, and shows variance increasing with the
+mean.
+
+## Both variables categorical
 
 The following examples are based on the `HairEyeColor` contingency
 table, which is converted to the column-based data frame expected by
@@ -579,7 +574,8 @@ assessment of normality or homoscedasticity should never rely solely on
 p-values but should be complemented by visual inspection of the
 diagnostic plots generated by `visstat()`.
 
-This general limitation is particularly relevant for normality test. Normality tests behave poorly at both ends of the
+This general limitation is particularly relevant for normality testing.
+Normality tests behave poorly at both ends of the
 sample-size range: with small samples they fail to detect non-normality,
 and with large samples they flag negligible departures from normality as
 significant [@Ghasemi:2012; @Fagerland:2012; @Franc:2025].

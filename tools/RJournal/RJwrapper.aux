@@ -35,8 +35,8 @@
 \newlabel{fig:overview}{{1}{2}{Overview of all implemented tests selected based on input class}{figure.caption.2}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Decision tree for tests on central tendencies. If all groups contain more than 50 observations, the formal residual normality test is bypassed and variance homogeneity is assessed directly. Otherwise, Shapiro--Wilk on standardised residuals determines whether the route remains mean-based or switches to rank-based tests; Levene--Brown--Forsythe then selects equal-variance or Welch-type procedures.}}{2}{figure.caption.3}\protected@file@percent }
 \newlabel{fig:decision-tree}{{2}{2}{Decision tree for tests on central tendencies. If all groups contain more than 50 observations, the formal residual normality test is bypassed and variance homogeneity is assessed directly. Otherwise, Shapiro--Wilk on standardised residuals determines whether the route remains mean-based or switches to rank-based tests; Levene--Brown--Forsythe then selects equal-variance or Welch-type procedures}{figure.caption.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}Test selection based on the assumptions of the general linear framework}{2}{subsection.2.3.1}\protected@file@percent }
-\newlabel{test-selection-based-on-the-assumptions-of-the-general-linear-framework}{{2.3.1}{2}{Test selection based on the assumptions of the general linear framework}{subsection.2.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}Test selection based on the assumptions of the general linear model framework}{2}{subsection.2.3.1}\protected@file@percent }
+\newlabel{test-selection-based-on-the-assumptions-of-the-general-linear-model-framework}{{2.3.1}{2}{Test selection based on the assumptions of the general linear model framework}{subsection.2.3.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}Numeric response and categorical predictor: comparing central tendencies}{2}{subsection.2.3.2}\protected@file@percent }
 \newlabel{numeric-categoric}{{2.3.2}{2}{Numeric response and categorical predictor: comparing central tendencies}{subsection.2.3.2}{}}
 \citation{Mann:1947}
@@ -46,11 +46,10 @@
 \citation{Welch:1947,Satterthwaite:1946}
 \citation{Welch:1951}
 \citation{Games:1976}
+\citation{Abdi:2007}
 \citation{Cochran:1954}
 \citation{Yates:1934}
 \citation{Meyer:2006,Meyer:2024}
-\citation{Kendall:1945,Agresti:2010}
-\citation{Xu:2013}
 \@writefile{brf}{\backcite{Lumley:2002}{{3}{2.3.2}{figure.caption.3}}}
 \@writefile{brf}{\backcite{Rasch:2011}{{3}{2.3.2}{figure.caption.3}}}
 \@writefile{brf}{\backcite{Ghasemi:2012}{{3}{2.3.2}{figure.caption.3}}}
@@ -66,88 +65,98 @@
 \@writefile{brf}{\backcite{Satterthwaite:1946}{{3}{2.3.2}{figure.caption.3}}}
 \@writefile{brf}{\backcite{Welch:1951}{{3}{2.3.2}{figure.caption.3}}}
 \@writefile{brf}{\backcite{Games:1976}{{3}{2.3.2}{figure.caption.3}}}
+\@writefile{brf}{\backcite{Abdi:2007}{{3}{2.3.2}{figure.caption.3}}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3.3}Both variables numeric: regression or Spearman rank correlation}{3}{subsection.2.3.3}\protected@file@percent }
 \newlabel{both-variables-numeric-regression-or-spearman-rank-correlation}{{2.3.3}{3}{Both variables numeric: regression or Spearman rank correlation}{subsection.2.3.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3.4}Both variables categorical: comparing proportions}{3}{subsection.2.3.4}\protected@file@percent }
 \newlabel{both-variables-categorical-comparing-proportions}{{2.3.4}{3}{Both variables categorical: comparing proportions}{subsection.2.3.4}{}}
 \@writefile{brf}{\backcite{Cochran:1954}{{3}{2.3.4}{subsection.2.3.4}}}
-\@writefile{brf}{\backcite{Yates:1934}{{3}{2.3.4}{subsection.2.3.4}}}
-\@writefile{brf}{\backcite{Meyer:2006}{{3}{2.3.4}{subsection.2.3.4}}}
-\@writefile{brf}{\backcite{Meyer:2024}{{3}{2.3.4}{subsection.2.3.4}}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.5}Ordered factors}{3}{subsection.2.3.5}\protected@file@percent }
-\newlabel{ordered-factors}{{2.3.5}{3}{Ordered factors}{subsection.2.3.5}{}}
-\@writefile{brf}{\backcite{Kendall:1945}{{3}{2.3.5}{subsection.2.3.5}}}
-\@writefile{brf}{\backcite{Agresti:2010}{{3}{2.3.5}{subsection.2.3.5}}}
-\@writefile{brf}{\backcite{Xu:2013}{{3}{2.3.5}{subsection.2.3.5}}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.4}Examples}{3}{section.2.4}\protected@file@percent }
-\newlabel{examples}{{2.4}{3}{Examples}{section.2.4}{}}
-\citation{Abdi:2007}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Welch's t-test applied to the \texttt  {mtcars} dataset (\texttt  {am} vs.\ \texttt  {mpg}). Pooled-residual assumption diagnostics (Shapiro--Wilk, Bartlett, Levene), group-wise normality diagnostics, and box plots of fuel efficiency by transmission type with the Welch t-test result.}}{4}{figure.caption.4}\protected@file@percent }
-\newlabel{fig:ttest-example}{{3}{4}{Welch's t-test applied to the \texttt {mtcars} dataset (\texttt {am} vs.\ \texttt {mpg}). Pooled-residual assumption diagnostics (Shapiro--Wilk, Bartlett, Levene), group-wise normality diagnostics, and box plots of fuel efficiency by transmission type with the Welch t-test result}{figure.caption.4}{}}
+\citation{Kendall:1945,Agresti:2010}
+\citation{Xu:2013}
+\@writefile{brf}{\backcite{Yates:1934}{{4}{2.3.4}{subsection.2.3.4}}}
+\@writefile{brf}{\backcite{Meyer:2006}{{4}{2.3.4}{subsection.2.3.4}}}
+\@writefile{brf}{\backcite{Meyer:2024}{{4}{2.3.4}{subsection.2.3.4}}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.5}Ordered factors}{4}{subsection.2.3.5}\protected@file@percent }
+\newlabel{ordered-factors}{{2.3.5}{4}{Ordered factors}{subsection.2.3.5}{}}
+\@writefile{brf}{\backcite{Kendall:1945}{{4}{2.3.5}{subsection.2.3.5}}}
+\@writefile{brf}{\backcite{Agresti:2010}{{4}{2.3.5}{subsection.2.3.5}}}
+\@writefile{brf}{\backcite{Xu:2013}{{4}{2.3.5}{subsection.2.3.5}}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.4}Examples}{4}{section.2.4}\protected@file@percent }
+\newlabel{examples}{{2.4}{4}{Examples}{section.2.4}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.4.1}Numeric response and categorical predictor: two groups}{4}{subsection.2.4.1}\protected@file@percent }
 \newlabel{numeric-response-and-categorical-predictor-two-groups}{{2.4.1}{4}{Numeric response and categorical predictor: two groups}{subsection.2.4.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Student's t-test}{4}{subsection.2.4.1}\protected@file@percent }
+\newlabel{students-t-test}{{2.4.1}{4}{Student's t-test}{subsection.2.4.1}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Welch's t-test}{4}{subsection.2.4.1}\protected@file@percent }
 \newlabel{welchs-t-test}{{2.4.1}{4}{Welch's t-test}{subsection.2.4.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Wilcoxon rank-sum test}{4}{figure.caption.4}\protected@file@percent }
-\newlabel{wilcoxon-rank-sum-test}{{2.4.1}{4}{Wilcoxon rank-sum test}{figure.caption.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.2}Numeric response and categorical predictor: more than two groups}{4}{subsection.2.4.2}\protected@file@percent }
-\newlabel{numeric-response-and-categorical-predictor-more-than-two-groups}{{2.4.2}{4}{Numeric response and categorical predictor: more than two groups}{subsection.2.4.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Wilcoxon rank-sum test applied to examination grades by sex. Assumption diagnostics (Shapiro--Wilk rejected; non-parametric path selected) and box plots with the Wilcoxon test result.}}{5}{figure.caption.5}\protected@file@percent }
-\newlabel{fig:wilcoxon-example}{{4}{5}{Wilcoxon rank-sum test applied to examination grades by sex. Assumption diagnostics (Shapiro--Wilk rejected; non-parametric path selected) and box plots with the Wilcoxon test result}{figure.caption.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Fisher's one-way ANOVA applied to the \texttt  {npk} dataset (\texttt  {block} vs.\ \texttt  {yield}). Assumption diagnostics and box plots of pea yield by experimental block; compact letter display (TukeyHSD, $\alpha = 0.05$) shows no significant pairwise differences.}}{5}{figure.caption.6}\protected@file@percent }
-\newlabel{fig:anova-example}{{5}{5}{Fisher's one-way ANOVA applied to the \texttt {npk} dataset (\texttt {block} vs.\ \texttt {yield}). Assumption diagnostics and box plots of pea yield by experimental block; compact letter display (TukeyHSD, $\alpha = 0.05$) shows no significant pairwise differences}{figure.caption.6}{}}
-\@writefile{brf}{\backcite{Abdi:2007}{{5}{2.4.2}{subsection.2.4.2}}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Welch's t-test applied to the \texttt  {mtcars} dataset (\texttt  {am} vs.\ \texttt  {mpg}). Pooled-residual assumption diagnostics (Shapiro--Wilk, Bartlett, Levene), group-wise normality diagnostics, and box plots of fuel efficiency by transmission type with the Welch t-test result.}}{5}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:ttest-example}{{3}{5}{Welch's t-test applied to the \texttt {mtcars} dataset (\texttt {am} vs.\ \texttt {mpg}). Pooled-residual assumption diagnostics (Shapiro--Wilk, Bartlett, Levene), group-wise normality diagnostics, and box plots of fuel efficiency by transmission type with the Welch t-test result}{figure.caption.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Wilcoxon rank-sum test applied to the \texttt  {warpbreaks} dataset (\texttt  {wool} vs.\ \texttt  {breaks}). Assumption diagnostics (Shapiro--Wilk rejected on standardised residuals; non-parametric path selected) and box plots with the Wilcoxon test result.}}{5}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:wilcoxon-example}{{4}{5}{Wilcoxon rank-sum test applied to the \texttt {warpbreaks} dataset (\texttt {wool} vs.\ \texttt {breaks}). Assumption diagnostics (Shapiro--Wilk rejected on standardised residuals; non-parametric path selected) and box plots with the Wilcoxon test result}{figure.caption.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Wilcoxon rank-sum test}{5}{figure.caption.4}\protected@file@percent }
+\newlabel{wilcoxon-rank-sum-test}{{2.4.1}{5}{Wilcoxon rank-sum test}{figure.caption.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Wilcoxon rank-sum test with ordered response}{5}{figure.caption.5}\protected@file@percent }
+\newlabel{wilcoxon-rank-sum-test-with-ordered-response}{{2.4.1}{5}{Wilcoxon rank-sum test with ordered response}{figure.caption.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.2}Numeric response and categorical predictor: more than two groups}{5}{subsection.2.4.2}\protected@file@percent }
+\newlabel{numeric-response-and-categorical-predictor-more-than-two-groups}{{2.4.2}{5}{Numeric response and categorical predictor: more than two groups}{subsection.2.4.2}{}}
 \@writefile{toc}{\contentsline {subsubsection}{One-way ANOVA with Tukey HSD}{5}{subsection.2.4.2}\protected@file@percent }
 \newlabel{one-way-anova-with-tukey-hsd}{{2.4.2}{5}{One-way ANOVA with Tukey HSD}{subsection.2.4.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Kruskal-Wallis rank sum test}{5}{figure.caption.6}\protected@file@percent }
-\newlabel{kruskal-wallis-rank-sum-test}{{2.4.2}{5}{Kruskal-Wallis rank sum test}{figure.caption.6}{}}
-\citation{Chambers:2018}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Kruskal-Wallis test applied to the \texttt  {iris} dataset (\texttt  {Species} vs.\ \texttt  {Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots with the Kruskal-Wallis result; all pairwise post-hoc comparisons significant (all letters differ).}}{6}{figure.caption.7}\protected@file@percent }
-\newlabel{fig:kruskal-example}{{6}{6}{Kruskal-Wallis test applied to the \texttt {iris} dataset (\texttt {Species} vs.\ \texttt {Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots with the Kruskal-Wallis result; all pairwise post-hoc comparisons significant (all letters differ)}{figure.caption.7}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Simple linear regression of \texttt  {Fertility} on \texttt  {Examination} for the \texttt  {swiss} dataset (\texttt  {conf.level = 0.99}). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\% confidence band (dark shading), and 99\% prediction band (light shading).}}{6}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:regression-example}{{7}{6}{Simple linear regression of \texttt {Fertility} on \texttt {Examination} for the \texttt {swiss} dataset (\texttt {conf.level = 0.99}). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\% confidence band (dark shading), and 99\% prediction band (light shading)}{figure.caption.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.3}Both variables numeric}{6}{subsection.2.4.3}\protected@file@percent }
-\newlabel{both-variables-numeric}{{2.4.3}{6}{Both variables numeric}{subsection.2.4.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Simple linear regression}{6}{subsection.2.4.3}\protected@file@percent }
-\newlabel{simple-linear-regression}{{2.4.3}{6}{Simple linear regression}{subsection.2.4.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Spearman rank correlation}{6}{figure.caption.8}\protected@file@percent }
-\newlabel{spearman-rank-correlation}{{2.4.3}{6}{Spearman rank correlation}{figure.caption.8}{}}
-\@writefile{brf}{\backcite{Chambers:2018}{{6}{2.4.3}{figure.caption.8}}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Fisher's one-way ANOVA applied to the \texttt  {npk} dataset (\texttt  {block} vs.\ \texttt  {yield}). Assumption diagnostics and box plots of pea yield by experimental block; compact letter display (TukeyHSD, $\alpha = 0.05$) shows no significant pairwise differences.}}{6}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:anova-example}{{5}{6}{Fisher's one-way ANOVA applied to the \texttt {npk} dataset (\texttt {block} vs.\ \texttt {yield}). Assumption diagnostics and box plots of pea yield by experimental block; compact letter display (TukeyHSD, $\alpha = 0.05$) shows no significant pairwise differences}{figure.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Welch's heteroscedastic one-way ANOVA applied to the \texttt  {iris} dataset (\texttt  {Species} vs.\ \texttt  {Sepal.Length}). Assumption diagnostics, group-wise normality diagnostics, and box plots with Games--Howell post-hoc comparisons.}}{6}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:welch-anova-example}{{6}{6}{Welch's heteroscedastic one-way ANOVA applied to the \texttt {iris} dataset (\texttt {Species} vs.\ \texttt {Sepal.Length}). Assumption diagnostics, group-wise normality diagnostics, and box plots with Games--Howell post-hoc comparisons}{figure.caption.7}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Welch's heteroscedastic one-way ANOVA}{6}{figure.caption.6}\protected@file@percent }
+\newlabel{welchs-heteroscedastic-one-way-anova}{{2.4.2}{6}{Welch's heteroscedastic one-way ANOVA}{figure.caption.6}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Kruskal-Wallis rank sum test}{6}{figure.caption.7}\protected@file@percent }
+\newlabel{kruskal-wallis-rank-sum-test}{{2.4.2}{6}{Kruskal-Wallis rank sum test}{figure.caption.7}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Kruskal-Wallis test with ordered response}{6}{figure.caption.8}\protected@file@percent }
+\newlabel{kruskal-wallis-test-with-ordered-response}{{2.4.2}{6}{Kruskal-Wallis test with ordered response}{figure.caption.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Kruskal-Wallis test applied to the \texttt  {iris} dataset (\texttt  {Species} vs.\ \texttt  {Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots with the Kruskal-Wallis result; all pairwise post-hoc comparisons significant (all letters differ).}}{7}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:kruskal-example}{{7}{7}{Kruskal-Wallis test applied to the \texttt {iris} dataset (\texttt {Species} vs.\ \texttt {Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots with the Kruskal-Wallis result; all pairwise post-hoc comparisons significant (all letters differ)}{figure.caption.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Simple linear regression of \texttt  {Fertility} on \texttt  {Examination} for the \texttt  {swiss} dataset (\texttt  {conf.level = 0.99}). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\% confidence band (dark shading), and 99\% prediction band (light shading).}}{7}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:regression-example}{{8}{7}{Simple linear regression of \texttt {Fertility} on \texttt {Examination} for the \texttt {swiss} dataset (\texttt {conf.level = 0.99}). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\% confidence band (dark shading), and 99\% prediction band (light shading)}{figure.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.3}Both variables numeric}{7}{subsection.2.4.3}\protected@file@percent }
+\newlabel{both-variables-numeric}{{2.4.3}{7}{Both variables numeric}{subsection.2.4.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Simple linear regression}{7}{subsection.2.4.3}\protected@file@percent }
+\newlabel{simple-linear-regression}{{2.4.3}{7}{Simple linear regression}{subsection.2.4.3}{}}
 \citation{Cochran:1954}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Spearman rank correlation of \texttt  {Wind} and \texttt  {Ozone} from the \texttt  {airquality} dataset (\texttt  {correlation = TRUE}). Assumption diagnostics and scatter plot of ranked values annotated with $\rho $ and the $p$-value.}}{8}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:spearman-example}{{9}{8}{Spearman rank correlation of \texttt {Wind} and \texttt {Ozone} from the \texttt {airquality} dataset (\texttt {correlation = TRUE}). Assumption diagnostics and scatter plot of ranked values annotated with $\rho $ and the $p$-value}{figure.caption.10}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Spearman rank correlation}{8}{figure.caption.9}\protected@file@percent }
+\newlabel{spearman-rank-correlation}{{2.4.3}{8}{Spearman rank correlation}{figure.caption.9}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Model exploration outside \texttt  {visstat()}}{8}{figure.caption.10}\protected@file@percent }
+\newlabel{model-exploration-outside-visstat}{{2.4.3}{8}{\texorpdfstring {Model exploration outside \texttt {visstat()}}{Model exploration outside visstat()}}{figure.caption.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.4}Both variables categorical}{8}{subsection.2.4.4}\protected@file@percent }
+\newlabel{both-variables-categorical}{{2.4.4}{8}{Both variables categorical}{subsection.2.4.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Pearson's \(\chi ^2\) test}{8}{subsection.2.4.4}\protected@file@percent }
+\newlabel{pearsons-chi2-test}{{2.4.4}{8}{\texorpdfstring {Pearson's \(\chi ^2\) test}{Pearson's \textbackslash chi\^{}2 test}}{subsection.2.4.4}{}}
+\@writefile{brf}{\backcite{Cochran:1954}{{8}{2.4.4}{subsection.2.4.4}}}
 \citation{Cochran:1954}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Spearman rank correlation of \texttt  {Wind} and \texttt  {Ozone} from the \texttt  {airquality} dataset (\texttt  {correlation = TRUE}). Assumption diagnostics and scatter plot of ranked values annotated with $\rho $ and the $p$-value.}}{7}{figure.caption.9}\protected@file@percent }
-\newlabel{fig:spearman-example}{{8}{7}{Spearman rank correlation of \texttt {Wind} and \texttt {Ozone} from the \texttt {airquality} dataset (\texttt {correlation = TRUE}). Assumption diagnostics and scatter plot of ranked values annotated with $\rho $ and the $p$-value}{figure.caption.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.4}Both variables categorical}{7}{subsection.2.4.4}\protected@file@percent }
-\newlabel{both-variables-categorical}{{2.4.4}{7}{Both variables categorical}{subsection.2.4.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Pearson's \(\chi ^2\) test}{7}{subsection.2.4.4}\protected@file@percent }
-\newlabel{pearsons-chi2-test}{{2.4.4}{7}{\texorpdfstring {Pearson's \(\chi ^2\) test}{Pearson's \textbackslash chi\^{}2 test}}{subsection.2.4.4}{}}
-\@writefile{brf}{\backcite{Cochran:1954}{{7}{2.4.4}{subsection.2.4.4}}}
-\@writefile{toc}{\contentsline {subsubsection}{Fisher's exact test}{7}{figure.caption.10}\protected@file@percent }
-\newlabel{fishers-exact-test}{{2.4.4}{7}{Fisher's exact test}{figure.caption.10}{}}
-\@writefile{brf}{\backcite{Cochran:1954}{{7}{2.4.4}{figure.caption.10}}}
 \citation{Kendall:1945,Agresti:2010}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Pearson's $\chi ^2$ test applied to the \texttt  {HairEyeColor} dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented).}}{8}{figure.caption.10}\protected@file@percent }
-\newlabel{fig:chisq-example}{{9}{8}{Pearson's $\chi ^2$ test applied to the \texttt {HairEyeColor} dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented)}{figure.caption.10}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Fisher's exact test applied to a $2 \times 2$ subset of \texttt  {HairEyeColor} (male participants, black/brown hair, hazel/green eyes). Bar chart of absolute counts with the $p$-value; the odds ratio and confidence interval are accessible from the returned object.}}{8}{figure.caption.11}\protected@file@percent }
-\newlabel{fig:fisher-exact-example}{{10}{8}{Fisher's exact test applied to a $2 \times 2$ subset of \texttt {HairEyeColor} (male participants, black/brown hair, hazel/green eyes). Bar chart of absolute counts with the $p$-value; the odds ratio and confidence interval are accessible from the returned object}{figure.caption.11}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.5}Ordered factors}{8}{subsection.2.4.5}\protected@file@percent }
-\newlabel{ordered-factors-1}{{2.4.5}{8}{Ordered factors}{subsection.2.4.5}{}}
-\@writefile{brf}{\backcite{Kendall:1945}{{8}{2.4.5}{subsection.2.4.5}}}
-\@writefile{brf}{\backcite{Agresti:2010}{{8}{2.4.5}{subsection.2.4.5}}}
-\@writefile{toc}{\contentsline {subsubsection}{Kendall's \(\tau _b\)}{8}{subsection.2.4.5}\protected@file@percent }
-\newlabel{kendalls-tau_b}{{2.4.5}{8}{\texorpdfstring {Kendall's \(\tau _b\)}{Kendall's \textbackslash tau\_b}}{subsection.2.4.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Pearson's $\chi ^2$ test applied to the \texttt  {HairEyeColor} dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented).}}{9}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:chisq-example}{{10}{9}{Pearson's $\chi ^2$ test applied to the \texttt {HairEyeColor} dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented)}{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Pearson's \(\chi ^2\) test with Yates' continuity correction}{9}{figure.caption.11}\protected@file@percent }
+\newlabel{pearsons-chi2-test-with-yates-continuity-correction}{{2.4.4}{9}{\texorpdfstring {Pearson's \(\chi ^2\) test with Yates' continuity correction}{Pearson's \textbackslash chi\^{}2 test with Yates' continuity correction}}{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Fisher's exact test}{9}{figure.caption.11}\protected@file@percent }
+\newlabel{fishers-exact-test}{{2.4.4}{9}{Fisher's exact test}{figure.caption.11}{}}
+\@writefile{brf}{\backcite{Cochran:1954}{{9}{2.4.4}{figure.caption.11}}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.5}Ordered factors}{9}{subsection.2.4.5}\protected@file@percent }
+\newlabel{ordered-factors-1}{{2.4.5}{9}{Ordered factors}{subsection.2.4.5}{}}
+\@writefile{brf}{\backcite{Kendall:1945}{{9}{2.4.5}{subsection.2.4.5}}}
+\@writefile{brf}{\backcite{Agresti:2010}{{9}{2.4.5}{subsection.2.4.5}}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Fisher's exact test applied to a $2 \times 2$ subset of \texttt  {HairEyeColor} (male participants, black/brown hair, hazel/green eyes). Bar chart of absolute counts with the $p$-value; the odds ratio and confidence interval are accessible from the returned object.}}{10}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:fisher-exact-example}{{11}{10}{Fisher's exact test applied to a $2 \times 2$ subset of \texttt {HairEyeColor} (male participants, black/brown hair, hazel/green eyes). Bar chart of absolute counts with the $p$-value; the odds ratio and confidence interval are accessible from the returned object}{figure.caption.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Kendall's $\tau _b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance (both five-point ordinal scales). Jittered rank--rank scatter annotated with $\tau _b$ and the $p$-value; the negative monotone association is significant.}}{10}{figure.caption.13}\protected@file@percent }
+\newlabel{fig:kendall-example}{{12}{10}{Kendall's $\tau _b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance (both five-point ordinal scales). Jittered rank--rank scatter annotated with $\tau _b$ and the $p$-value; the negative monotone association is significant}{figure.caption.13}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Kendall's \(\tau _b\)}{10}{subsection.2.4.5}\protected@file@percent }
+\newlabel{kendalls-tau_b}{{2.4.5}{10}{\texorpdfstring {Kendall's \(\tau _b\)}{Kendall's \textbackslash tau\_b}}{subsection.2.4.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.5}Limitations}{10}{section.2.5}\protected@file@percent }
+\newlabel{limitations}{{2.5}{10}{Limitations}{section.2.5}{}}
+\citation{Shatz:2024}
 \citation{Olejnik:1987}
 \citation{Kozak:2018}
 \citation{Shatz:2024}
 \citation{Ghasemi:2012,Fagerland:2012,Franc:2025}
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Kendall's $\tau _b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance (both five-point ordinal scales). Jittered rank--rank scatter annotated with $\tau _b$ and the $p$-value; the negative monotone association is significant.}}{9}{figure.caption.12}\protected@file@percent }
-\newlabel{fig:kendall-example}{{11}{9}{Kendall's $\tau _b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance (both five-point ordinal scales). Jittered rank--rank scatter annotated with $\tau _b$ and the $p$-value; the negative monotone association is significant}{figure.caption.12}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.5}Limitations}{9}{section.2.5}\protected@file@percent }
-\newlabel{limitations}{{2.5}{9}{Limitations}{section.2.5}{}}
-\@writefile{brf}{\backcite{Olejnik:1987}{{9}{2.5}{section.2.5}}}
-\@writefile{brf}{\backcite{Kozak:2018}{{9}{2.5}{section.2.5}}}
-\@writefile{brf}{\backcite{Shatz:2024}{{9}{2.5}{section.2.5}}}
-\@writefile{brf}{\backcite{Ghasemi:2012}{{9}{2.5}{section.2.5}}}
 \citation{Fagerland:2012}
 \citation{Razali:2011}
 \citation{Strasak:2007}
@@ -157,44 +166,40 @@
 \citation{Patil:2021}
 \citation{Kassambara:2026}
 \citation{Wilcox:2021}
+\@writefile{brf}{\backcite{Shatz:2024}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Olejnik:1987}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Kozak:2018}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Shatz:2024}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Ghasemi:2012}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Fagerland:2012}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Franc:2025}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Fagerland:2012}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Razali:2011}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Strasak:2007}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Sato:2017}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Chicco:2025}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Wickham:2016}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Patil:2021}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Kassambara:2026}{{11}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{Wilcox:2021}{{11}{2.5}{section.2.5}}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.6}Summary}{11}{section.2.6}\protected@file@percent }
+\newlabel{summary}{{2.6}{11}{Summary}{section.2.6}{}}
 \citation{Searle:1971}
-\@writefile{brf}{\backcite{Fagerland:2012}{{10}{2.5}{section.2.5}}}
-\@writefile{brf}{\backcite{Franc:2025}{{10}{2.5}{section.2.5}}}
-\@writefile{brf}{\backcite{Fagerland:2012}{{10}{2.5}{section.2.5}}}
-\@writefile{brf}{\backcite{Razali:2011}{{10}{2.5}{section.2.5}}}
-\@writefile{brf}{\backcite{Strasak:2007}{{10}{2.5}{section.2.5}}}
-\@writefile{brf}{\backcite{Sato:2017}{{10}{2.5}{section.2.5}}}
-\@writefile{brf}{\backcite{Chicco:2025}{{10}{2.5}{section.2.5}}}
-\@writefile{brf}{\backcite{Wickham:2016}{{10}{2.5}{section.2.5}}}
-\@writefile{brf}{\backcite{Patil:2021}{{10}{2.5}{section.2.5}}}
-\@writefile{brf}{\backcite{Kassambara:2026}{{10}{2.5}{section.2.5}}}
-\@writefile{brf}{\backcite{Wilcox:2021}{{10}{2.5}{section.2.5}}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.6}Summary}{10}{section.2.6}\protected@file@percent }
-\newlabel{summary}{{2.6}{10}{Summary}{section.2.6}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.7}Appendix A: The general linear model}{10}{section.2.7}\protected@file@percent }
-\newlabel{glm}{{2.7}{10}{Appendix A: The general linear model}{section.2.7}{}}
-\@writefile{brf}{\backcite{Searle:1971}{{10}{2.7}{section.2.7}}}
 \citation{Gross:2015}
 \citation{Razali:2011,Yap:2011}
 \citation{Brown:1974}
+\@writefile{toc}{\contentsline {section}{\numberline {2.7}Appendix A: The general linear model}{12}{section.2.7}\protected@file@percent }
+\newlabel{glm}{{2.7}{12}{Appendix A: The general linear model}{section.2.7}{}}
+\@writefile{brf}{\backcite{Searle:1971}{{12}{2.7}{section.2.7}}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.8}Appendix B: The general linear model assumption diagnostics \texttt  {vis\_lm\_assumptions()}}{12}{section.2.8}\protected@file@percent }
+\newlabel{assumptions}{{2.8}{12}{\texorpdfstring {Appendix B: The general linear model assumption diagnostics \texttt {vis\_lm\_assumptions()}}{Appendix B: The general linear model assumption diagnostics vis\_lm\_assumptions()}}{section.2.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.8.1}Test for normality and homoscedasticity}{12}{subsection.2.8.1}\protected@file@percent }
+\newlabel{test-for-normality-and-homoscedasticity}{{2.8.1}{12}{Test for normality and homoscedasticity}{subsection.2.8.1}{}}
+\@writefile{brf}{\backcite{Gross:2015}{{12}{2.8.1}{subsection.2.8.1}}}
+\@writefile{brf}{\backcite{Razali:2011}{{12}{2.8.1}{subsection.2.8.1}}}
+\@writefile{brf}{\backcite{Yap:2011}{{12}{2.8.1}{subsection.2.8.1}}}
 \citation{Cook:1982}
 \citation{Shapiro:1965}
-\@writefile{toc}{\contentsline {section}{\numberline {2.8}Appendix B: The general linear model assumption diagnostics \texttt  {vis\_lm\_assumptions()}}{11}{section.2.8}\protected@file@percent }
-\newlabel{assumptions}{{2.8}{11}{\texorpdfstring {Appendix B: The general linear model assumption diagnostics \texttt {vis\_lm\_assumptions()}}{Appendix B: The general linear model assumption diagnostics vis\_lm\_assumptions()}}{section.2.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.8.1}Test for normality and homoscedasticity}{11}{subsection.2.8.1}\protected@file@percent }
-\newlabel{test-for-normality-and-homoscedasticity}{{2.8.1}{11}{Test for normality and homoscedasticity}{subsection.2.8.1}{}}
-\@writefile{brf}{\backcite{Gross:2015}{{11}{2.8.1}{subsection.2.8.1}}}
-\@writefile{brf}{\backcite{Razali:2011}{{11}{2.8.1}{subsection.2.8.1}}}
-\@writefile{brf}{\backcite{Yap:2011}{{11}{2.8.1}{subsection.2.8.1}}}
-\@writefile{brf}{\backcite{Brown:1974}{{11}{2.8.1}{subsection.2.8.1}}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.9}Appendix C: Test statistics and association measures}{11}{section.2.9}\protected@file@percent }
-\newlabel{tests}{{2.9}{11}{Appendix C: Test statistics and association measures}{section.2.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.1}Normality tests}{11}{subsection.2.9.1}\protected@file@percent }
-\newlabel{norm}{{2.9.1}{11}{Normality tests}{subsection.2.9.1}{}}
-\@writefile{brf}{\backcite{Cook:1982}{{11}{2.9.1}{subsection.2.9.1}}}
-\@writefile{toc}{\contentsline {subsubsection}{Shapiro--Wilk test \texttt  {shapiro.test()}}{11}{subsection.2.9.1}\protected@file@percent }
-\newlabel{shap}{{2.9.1}{11}{\texorpdfstring {Shapiro--Wilk test \texttt {shapiro.test()}}{Shapiro--Wilk test shapiro.test()}}{subsection.2.9.1}{}}
-\@writefile{brf}{\backcite{Shapiro:1965}{{11}{2.9.1}{subsection.2.9.1}}}
 \citation{Razali:2011}
 \citation{Lumley:2002,Rasch:2011}
 \citation{R:2026}
@@ -205,88 +210,101 @@
 \citation{Levene:1960}
 \citation{Allingham:2012}
 \citation{Fox:2019}
+\@writefile{brf}{\backcite{Brown:1974}{{13}{2.8.1}{subsection.2.8.1}}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.9}Appendix C: Test statistics and association measures}{13}{section.2.9}\protected@file@percent }
+\newlabel{tests}{{2.9}{13}{Appendix C: Test statistics and association measures}{section.2.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.1}Normality tests}{13}{subsection.2.9.1}\protected@file@percent }
+\newlabel{norm}{{2.9.1}{13}{Normality tests}{subsection.2.9.1}{}}
+\@writefile{brf}{\backcite{Cook:1982}{{13}{2.9.1}{subsection.2.9.1}}}
+\@writefile{toc}{\contentsline {subsubsection}{Shapiro--Wilk test \texttt  {shapiro.test()}}{13}{subsection.2.9.1}\protected@file@percent }
+\newlabel{shap}{{2.9.1}{13}{\texorpdfstring {Shapiro--Wilk test \texttt {shapiro.test()}}{Shapiro--Wilk test shapiro.test()}}{subsection.2.9.1}{}}
+\@writefile{brf}{\backcite{Shapiro:1965}{{13}{2.9.1}{subsection.2.9.1}}}
+\@writefile{brf}{\backcite{Razali:2011}{{13}{2.9.1}{subsection.2.9.1}}}
+\@writefile{brf}{\backcite{Lumley:2002}{{13}{2.9.1}{subsection.2.9.1}}}
+\@writefile{brf}{\backcite{Rasch:2011}{{13}{2.9.1}{subsection.2.9.1}}}
+\@writefile{brf}{\backcite{R:2026}{{13}{2.9.1}{subsection.2.9.1}}}
+\@writefile{toc}{\contentsline {subsubsection}{Anderson--Darling test \texttt  {ad.test()}}{13}{subsection.2.9.1}\protected@file@percent }
+\newlabel{adar}{{2.9.1}{13}{\texorpdfstring {Anderson--Darling test \texttt {ad.test()}}{Anderson--Darling test ad.test()}}{subsection.2.9.1}{}}
+\@writefile{brf}{\backcite{Anderson:1952}{{13}{2.9.1}{subsection.2.9.1}}}
+\@writefile{brf}{\backcite{Razali:2011}{{13}{2.9.1}{subsection.2.9.1}}}
+\@writefile{brf}{\backcite{Yap:2011}{{13}{2.9.1}{subsection.2.9.1}}}
+\@writefile{brf}{\backcite{Gross:2015}{{13}{2.9.1}{subsection.2.9.1}}}
 \citation{Bartlett:1937}
 \citation{Allingham:2012}
-\@writefile{brf}{\backcite{Razali:2011}{{12}{2.9.1}{subsection.2.9.1}}}
-\@writefile{brf}{\backcite{Lumley:2002}{{12}{2.9.1}{subsection.2.9.1}}}
-\@writefile{brf}{\backcite{Rasch:2011}{{12}{2.9.1}{subsection.2.9.1}}}
-\@writefile{brf}{\backcite{R:2026}{{12}{2.9.1}{subsection.2.9.1}}}
-\@writefile{toc}{\contentsline {subsubsection}{Anderson--Darling test \texttt  {ad.test()}}{12}{subsection.2.9.1}\protected@file@percent }
-\newlabel{adar}{{2.9.1}{12}{\texorpdfstring {Anderson--Darling test \texttt {ad.test()}}{Anderson--Darling test ad.test()}}{subsection.2.9.1}{}}
-\@writefile{brf}{\backcite{Anderson:1952}{{12}{2.9.1}{subsection.2.9.1}}}
-\@writefile{brf}{\backcite{Razali:2011}{{12}{2.9.1}{subsection.2.9.1}}}
-\@writefile{brf}{\backcite{Yap:2011}{{12}{2.9.1}{subsection.2.9.1}}}
-\@writefile{brf}{\backcite{Gross:2015}{{12}{2.9.1}{subsection.2.9.1}}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.2}Homoscedasticity tests}{12}{subsection.2.9.2}\protected@file@percent }
-\newlabel{homo}{{2.9.2}{12}{Homoscedasticity tests}{subsection.2.9.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{The Levene--Brown--Forsythe test \texttt  {levene.test()}}{12}{subsection.2.9.2}\protected@file@percent }
-\newlabel{lev}{{2.9.2}{12}{\texorpdfstring {The Levene--Brown--Forsythe test \texttt {levene.test()}}{The Levene--Brown--Forsythe test levene.test()}}{subsection.2.9.2}{}}
-\@writefile{brf}{\backcite{Brown:1974}{{12}{2.9.2}{subsection.2.9.2}}}
-\@writefile{brf}{\backcite{Levene:1960}{{12}{2.9.2}{subsection.2.9.2}}}
-\@writefile{brf}{\backcite{Allingham:2012}{{12}{2.9.2}{subsection.2.9.2}}}
-\@writefile{brf}{\backcite{Fox:2019}{{12}{2.9.2}{subsection.2.9.2}}}
-\@writefile{toc}{\contentsline {subsubsection}{Bartlett's test \texttt  {bartlett.test()}}{12}{subsection.2.9.2}\protected@file@percent }
-\newlabel{bart}{{2.9.2}{12}{\texorpdfstring {Bartlett's test \texttt {bartlett.test()}}{Bartlett's test bartlett.test()}}{subsection.2.9.2}{}}
-\@writefile{brf}{\backcite{Bartlett:1937}{{12}{2.9.2}{subsection.2.9.2}}}
-\@writefile{brf}{\backcite{Allingham:2012}{{12}{2.9.2}{subsection.2.9.2}}}
 \citation{Breusch:1979}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.2}Homoscedasticity tests}{14}{subsection.2.9.2}\protected@file@percent }
+\newlabel{homo}{{2.9.2}{14}{Homoscedasticity tests}{subsection.2.9.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{The Levene--Brown--Forsythe test \texttt  {levene.test()}}{14}{subsection.2.9.2}\protected@file@percent }
+\newlabel{lev}{{2.9.2}{14}{\texorpdfstring {The Levene--Brown--Forsythe test \texttt {levene.test()}}{The Levene--Brown--Forsythe test levene.test()}}{subsection.2.9.2}{}}
+\@writefile{brf}{\backcite{Brown:1974}{{14}{2.9.2}{subsection.2.9.2}}}
+\@writefile{brf}{\backcite{Levene:1960}{{14}{2.9.2}{subsection.2.9.2}}}
+\@writefile{brf}{\backcite{Allingham:2012}{{14}{2.9.2}{subsection.2.9.2}}}
+\@writefile{brf}{\backcite{Fox:2019}{{14}{2.9.2}{subsection.2.9.2}}}
+\@writefile{toc}{\contentsline {subsubsection}{Bartlett's test \texttt  {bartlett.test()}}{14}{subsection.2.9.2}\protected@file@percent }
+\newlabel{bart}{{2.9.2}{14}{\texorpdfstring {Bartlett's test \texttt {bartlett.test()}}{Bartlett's test bartlett.test()}}{subsection.2.9.2}{}}
+\@writefile{brf}{\backcite{Bartlett:1937}{{14}{2.9.2}{subsection.2.9.2}}}
+\@writefile{brf}{\backcite{Allingham:2012}{{14}{2.9.2}{subsection.2.9.2}}}
+\@writefile{toc}{\contentsline {subsubsection}{Breusch--Pagan test \texttt  {bp.test()}}{14}{subsection.2.9.2}\protected@file@percent }
+\newlabel{bp}{{2.9.2}{14}{\texorpdfstring {Breusch--Pagan test \texttt {bp.test()}}{Breusch--Pagan test bp.test()}}{subsection.2.9.2}{}}
+\@writefile{brf}{\backcite{Breusch:1979}{{14}{2.9.2}{subsection.2.9.2}}}
 \citation{Welch:1947,Satterthwaite:1946}
 \citation{Moser:1992,Fagerland:2009,Delacre:2017}
-\@writefile{toc}{\contentsline {subsubsection}{Breusch--Pagan test \texttt  {bp.test()}}{13}{subsection.2.9.2}\protected@file@percent }
-\newlabel{bp}{{2.9.2}{13}{\texorpdfstring {Breusch--Pagan test \texttt {bp.test()}}{Breusch--Pagan test bp.test()}}{subsection.2.9.2}{}}
-\@writefile{brf}{\backcite{Breusch:1979}{{13}{2.9.2}{subsection.2.9.2}}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.3}Student's t-test and Welch's t-test}{13}{subsection.2.9.3}\protected@file@percent }
-\newlabel{tt}{{2.9.3}{13}{Student's t-test and Welch's t-test}{subsection.2.9.3}{}}
-\@writefile{brf}{\backcite{Welch:1947}{{13}{2.9.3}{subsection.2.9.3}}}
-\@writefile{brf}{\backcite{Satterthwaite:1946}{{13}{2.9.3}{subsection.2.9.3}}}
-\@writefile{brf}{\backcite{Moser:1992}{{13}{2.9.3}{subsection.2.9.3}}}
 \citation{Mann:1947}
 \citation{Fisher:1990}
 \citation{Hochberg:1987}
 \citation{Abdi:2007}
 \citation{Welch:1951}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.3}Student's t-test and Welch's t-test}{15}{subsection.2.9.3}\protected@file@percent }
+\newlabel{tt}{{2.9.3}{15}{Student's t-test and Welch's t-test}{subsection.2.9.3}{}}
+\@writefile{brf}{\backcite{Welch:1947}{{15}{2.9.3}{subsection.2.9.3}}}
+\@writefile{brf}{\backcite{Satterthwaite:1946}{{15}{2.9.3}{subsection.2.9.3}}}
+\@writefile{brf}{\backcite{Moser:1992}{{15}{2.9.3}{subsection.2.9.3}}}
+\@writefile{brf}{\backcite{Fagerland:2009}{{15}{2.9.3}{subsection.2.9.3}}}
+\@writefile{brf}{\backcite{Delacre:2017}{{15}{2.9.3}{subsection.2.9.3}}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.4}Wilcoxon rank-sum test}{15}{subsection.2.9.4}\protected@file@percent }
+\newlabel{wilc}{{2.9.4}{15}{Wilcoxon rank-sum test}{subsection.2.9.4}{}}
+\@writefile{brf}{\backcite{Mann:1947}{{15}{2.9.4}{subsection.2.9.4}}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.5}Fisher's one-way ANOVA and Welch's heteroscedastic ANOVA}{15}{subsection.2.9.5}\protected@file@percent }
+\newlabel{aov}{{2.9.5}{15}{Fisher's one-way ANOVA and Welch's heteroscedastic ANOVA}{subsection.2.9.5}{}}
+\@writefile{brf}{\backcite{Fisher:1990}{{15}{2.9.5}{subsection.2.9.5}}}
+\@writefile{brf}{\backcite{Hochberg:1987}{{15}{2.9.5}{subsection.2.9.5}}}
+\@writefile{brf}{\backcite{Abdi:2007}{{15}{2.9.5}{subsection.2.9.5}}}
+\@writefile{brf}{\backcite{Welch:1951}{{15}{2.9.5}{subsection.2.9.5}}}
 \citation{Satterthwaite:1946}
 \citation{Games:1976}
 \citation{Graves:2026}
 \citation{Kruskal:1952}
 \citation{Holm:1979}
-\@writefile{brf}{\backcite{Fagerland:2009}{{14}{2.9.3}{subsection.2.9.3}}}
-\@writefile{brf}{\backcite{Delacre:2017}{{14}{2.9.3}{subsection.2.9.3}}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.4}Wilcoxon rank-sum test}{14}{subsection.2.9.4}\protected@file@percent }
-\newlabel{wilc}{{2.9.4}{14}{Wilcoxon rank-sum test}{subsection.2.9.4}{}}
-\@writefile{brf}{\backcite{Mann:1947}{{14}{2.9.4}{subsection.2.9.4}}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.5}Fisher's one-way ANOVA and Welch's heteroscedastic ANOVA}{14}{subsection.2.9.5}\protected@file@percent }
-\newlabel{aov}{{2.9.5}{14}{Fisher's one-way ANOVA and Welch's heteroscedastic ANOVA}{subsection.2.9.5}{}}
-\@writefile{brf}{\backcite{Fisher:1990}{{14}{2.9.5}{subsection.2.9.5}}}
-\@writefile{brf}{\backcite{Hochberg:1987}{{14}{2.9.5}{subsection.2.9.5}}}
-\@writefile{brf}{\backcite{Abdi:2007}{{14}{2.9.5}{subsection.2.9.5}}}
-\@writefile{brf}{\backcite{Welch:1951}{{14}{2.9.5}{subsection.2.9.5}}}
-\@writefile{brf}{\backcite{Satterthwaite:1946}{{14}{2.9.5}{subsection.2.9.5}}}
-\@writefile{brf}{\backcite{Games:1976}{{14}{2.9.5}{subsection.2.9.5}}}
-\@writefile{brf}{\backcite{Graves:2026}{{14}{2.9.5}{subsection.2.9.5}}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.6}Kruskal--Wallis test}{14}{subsection.2.9.6}\protected@file@percent }
-\newlabel{kw}{{2.9.6}{14}{Kruskal--Wallis test}{subsection.2.9.6}{}}
-\@writefile{brf}{\backcite{Kruskal:1952}{{14}{2.9.6}{subsection.2.9.6}}}
-\@writefile{brf}{\backcite{Holm:1979}{{14}{2.9.6}{subsection.2.9.6}}}
 \citation{Pearson:1900}
 \citation{Yates:1934}
 \citation{Fisher:1970}
 \citation{Cochran:1954}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.7}Pearson's \(\chi ^2\) test and Fisher's exact test}{15}{subsection.2.9.7}\protected@file@percent }
-\newlabel{chi}{{2.9.7}{15}{\texorpdfstring {Pearson's \(\chi ^2\) test and Fisher's exact test}{Pearson's \textbackslash chi\^{}2 test and Fisher's exact test}}{subsection.2.9.7}{}}
-\@writefile{brf}{\backcite{Pearson:1900}{{15}{2.9.7}{subsection.2.9.7}}}
-\@writefile{brf}{\backcite{Yates:1934}{{15}{2.9.7}{subsection.2.9.7}}}
-\@writefile{brf}{\backcite{Fisher:1970}{{15}{2.9.7}{subsection.2.9.7}}}
-\@writefile{brf}{\backcite{Cochran:1954}{{15}{2.9.7}{subsection.2.9.7}}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.8}Rank Association Measures}{15}{subsection.2.9.8}\protected@file@percent }
-\newlabel{rank-association-measures}{{2.9.8}{15}{Rank Association Measures}{subsection.2.9.8}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Spearman rank correlation}{15}{subsection.2.9.8}\protected@file@percent }
-\newlabel{rho}{{2.9.8}{15}{Spearman rank correlation}{subsection.2.9.8}{}}
+\@writefile{brf}{\backcite{Satterthwaite:1946}{{16}{2.9.5}{subsection.2.9.5}}}
+\@writefile{brf}{\backcite{Games:1976}{{16}{2.9.5}{subsection.2.9.5}}}
+\@writefile{brf}{\backcite{Graves:2026}{{16}{2.9.5}{subsection.2.9.5}}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.6}Kruskal--Wallis test}{16}{subsection.2.9.6}\protected@file@percent }
+\newlabel{kw}{{2.9.6}{16}{Kruskal--Wallis test}{subsection.2.9.6}{}}
+\@writefile{brf}{\backcite{Kruskal:1952}{{16}{2.9.6}{subsection.2.9.6}}}
+\@writefile{brf}{\backcite{Holm:1979}{{16}{2.9.6}{subsection.2.9.6}}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.7}Pearson's \(\chi ^2\) test and Fisher's exact test}{16}{subsection.2.9.7}\protected@file@percent }
+\newlabel{chi}{{2.9.7}{16}{\texorpdfstring {Pearson's \(\chi ^2\) test and Fisher's exact test}{Pearson's \textbackslash chi\^{}2 test and Fisher's exact test}}{subsection.2.9.7}{}}
+\@writefile{brf}{\backcite{Pearson:1900}{{16}{2.9.7}{subsection.2.9.7}}}
+\@writefile{brf}{\backcite{Yates:1934}{{16}{2.9.7}{subsection.2.9.7}}}
+\@writefile{brf}{\backcite{Fisher:1970}{{16}{2.9.7}{subsection.2.9.7}}}
+\@writefile{brf}{\backcite{Cochran:1954}{{16}{2.9.7}{subsection.2.9.7}}}
 \citation{Kendall:1945}
 \citation{Agresti:2010}
 \bibdata{../../vignettes/REFERENCES.bib}
 \bibcite{Abdi:2007}{{1}{2007}{{Abdi}}{{}}}
 \bibcite{Agresti:2010}{{2}{2010}{{Agresti}}{{}}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.9.8}Rank Association Measures}{17}{subsection.2.9.8}\protected@file@percent }
+\newlabel{rank-association-measures}{{2.9.8}{17}{Rank Association Measures}{subsection.2.9.8}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Spearman rank correlation}{17}{subsection.2.9.8}\protected@file@percent }
+\newlabel{rho}{{2.9.8}{17}{Spearman rank correlation}{subsection.2.9.8}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Kendall's \(\tau _b\)}{17}{subsection.2.9.8}\protected@file@percent }
+\newlabel{tau}{{2.9.8}{17}{\texorpdfstring {Kendall's \(\tau _b\)}{Kendall's \textbackslash tau\_b}}{subsection.2.9.8}{}}
+\@writefile{brf}{\backcite{Kendall:1945}{{17}{2.9.8}{subsection.2.9.8}}}
+\@writefile{brf}{\backcite{Agresti:2010}{{17}{2.9.8}{subsection.2.9.8}}}
 \bibcite{Allingham:2012}{{3}{2012}{{Allingham and Rayner}}{{}}}
 \bibcite{Anderson:1952}{{4}{1952}{{Anderson and Darling}}{{}}}
 \bibcite{Angrist:2009}{{5}{2009}{{Angrist and Pischke}}{{}}}
@@ -295,58 +313,53 @@
 \bibcite{Breusch:1979}{{8}{1979}{{Breusch and Pagan}}{{}}}
 \bibcite{Brodeur:2020}{{9}{2020}{{Brodeur et~al.}}{{Brodeur, Cook, and Heyes}}}
 \bibcite{Brown:1974}{{10}{1974}{{Brown and Forsythe}}{{}}}
-\bibcite{Chambers:2018}{{11}{2018}{{Chambers}}{{}}}
-\bibcite{Chicco:2025}{{12}{2025}{{Chicco et~al.}}{{Chicco, Sichenze, and Jurman}}}
-\bibcite{Cochran:1954}{{13}{1954}{{Cochran}}{{}}}
-\@writefile{toc}{\contentsline {subsubsection}{Kendall's \(\tau _b\)}{16}{subsection.2.9.8}\protected@file@percent }
-\newlabel{tau}{{2.9.8}{16}{\texorpdfstring {Kendall's \(\tau _b\)}{Kendall's \textbackslash tau\_b}}{subsection.2.9.8}{}}
-\@writefile{brf}{\backcite{Kendall:1945}{{16}{2.9.8}{subsection.2.9.8}}}
-\@writefile{brf}{\backcite{Agresti:2010}{{16}{2.9.8}{subsection.2.9.8}}}
-\bibcite{Cook:1982}{{14}{1982}{{Cook and Weisberg}}{{}}}
-\bibcite{Delacre:2017}{{15}{2017}{{Delacre et~al.}}{{Delacre, Lakens, and Leys}}}
-\bibcite{Fagerland:2012}{{16}{2012}{{Fagerland}}{{}}}
-\bibcite{Fagerland:2009}{{17}{2009}{{Fagerland and Sandvik}}{{}}}
-\bibcite{Fisher:1970}{{18}{1970}{{Fisher}}{{}}}
-\bibcite{Fisher:1990}{{19}{1990}{{Fisher and Yates}}{{}}}
-\bibcite{Fox:2019}{{20}{2019}{{Fox and Weisberg}}{{}}}
-\bibcite{Franc:2025}{{21}{2025}{{Franc}}{{}}}
-\bibcite{Games:1976}{{22}{1976}{{Games and Howell}}{{}}}
-\bibcite{Ghasemi:2012}{{23}{2012}{{Ghasemi and Zahediasl}}{{}}}
-\bibcite{Graves:2026}{{24}{2026}{{Graves et~al.}}{{Graves, Piepho, and {}{with help from Sundar Dorai-Raj}}}}
-\bibcite{Gross:2015}{{25}{2015}{{Gross and Ligges}}{{}}}
-\bibcite{Hayat:2017}{{26}{2017}{{Hayat et~al.}}{{Hayat, Powell, Johnson, and Cadwell}}}
-\bibcite{Hochberg:1987}{{27}{1987}{{Hochberg and Tamhane}}{{}}}
-\bibcite{Holm:1979}{{28}{1979}{{Holm}}{{}}}
-\bibcite{Kassambara:2026}{{29}{2026}{{Kassambara}}{{}}}
-\bibcite{Kendall:1945}{{30}{1945}{{Kendall}}{{}}}
-\bibcite{Kozak:2018}{{31}{2018}{{Kozak and Piepho}}{{}}}
-\bibcite{Kruskal:1952}{{32}{1952}{{Kruskal and Wallis}}{{}}}
-\bibcite{Levene:1960}{{33}{1960}{{Levene}}{{}}}
-\bibcite{Lumley:2002}{{34}{2002}{{Lumley et~al.}}{{Lumley, Diehr, Emerson, and Chen}}}
-\bibcite{Mann:1947}{{35}{1947}{{Mann and Whitney}}{{}}}
-\bibcite{Meyer:2006}{{36}{2006}{{Meyer et~al.}}{{Meyer, Zeileis, and Hornik}}}
-\bibcite{Meyer:2024}{{37}{2024}{{Meyer et~al.}}{{Meyer, Zeileis, Hornik, and Friendly}}}
-\bibcite{Moser:1992}{{38}{1992}{{Moser and Stevens}}{{}}}
-\bibcite{Olejnik:1987}{{39}{1987}{{Olejnik and Algina}}{{}}}
-\bibcite{Patil:2021}{{40}{2021}{{Patil}}{{}}}
-\bibcite{Pearson:1900}{{41}{1900}{{Pearson}}{{}}}
-\bibcite{R:2026}{{42}{2026}{{R Core Team}}{{}}}
-\bibcite{Rasch:2011}{{43}{2011}{{Rasch et~al.}}{{Rasch, Kubinger, and Moder}}}
-\bibcite{Razali:2011}{{44}{2011}{{Razali and Wah}}{{}}}
-\bibcite{Sato:2017}{{45}{2017}{{Sato et~al.}}{{Sato, Gosho, Nagashima, Takahashi, Ware, and Laird}}}
-\bibcite{Satterthwaite:1946}{{46}{1946}{{Satterthwaite}}{{}}}
-\bibcite{Searle:1971}{{47}{1971}{{Searle}}{{}}}
-\bibcite{Shapiro:1965}{{48}{1965}{{Shapiro and Wilk}}{{}}}
-\bibcite{Shatz:2024}{{49}{2024}{{Shatz}}{{}}}
-\bibcite{Strasak:2007}{{50}{2007}{{Strasak et~al.}}{{Strasak, Zaman, Marinell, Pfeiffer, and Ulmer}}}
-\bibcite{Subirana:2014}{{51}{2014}{{Subirana et~al.}}{{Subirana, Sanz, and Vila}}}
-\bibcite{Welch:1947}{{52}{1947}{{Welch}}{{}}}
-\bibcite{Welch:1951}{{53}{1951}{{Welch}}{{}}}
-\bibcite{Wickham:2016}{{54}{2016}{{Wickham}}{{}}}
-\bibcite{Wilcox:2021}{{55}{2021}{{Wilcox}}{{}}}
-\bibcite{Xu:2013}{{56}{2013}{{Xu et~al.}}{{Xu, Hou, Hung, and Zou}}}
-\bibcite{Yap:2011}{{57}{2011}{{Yap and Sim}}{{}}}
-\bibcite{Yates:1934}{{58}{1934}{{Yates}}{{}}}
-\bibcite{Zeevat:2025}{{59}{2025}{{Zeevat}}{{}}}
+\bibcite{Chicco:2025}{{11}{2025}{{Chicco et~al.}}{{Chicco, Sichenze, and Jurman}}}
+\bibcite{Cochran:1954}{{12}{1954}{{Cochran}}{{}}}
+\bibcite{Cook:1982}{{13}{1982}{{Cook and Weisberg}}{{}}}
+\bibcite{Delacre:2017}{{14}{2017}{{Delacre et~al.}}{{Delacre, Lakens, and Leys}}}
+\bibcite{Fagerland:2012}{{15}{2012}{{Fagerland}}{{}}}
+\bibcite{Fagerland:2009}{{16}{2009}{{Fagerland and Sandvik}}{{}}}
+\bibcite{Fisher:1970}{{17}{1970}{{Fisher}}{{}}}
+\bibcite{Fisher:1990}{{18}{1990}{{Fisher and Yates}}{{}}}
+\bibcite{Fox:2019}{{19}{2019}{{Fox and Weisberg}}{{}}}
+\bibcite{Franc:2025}{{20}{2025}{{Franc}}{{}}}
+\bibcite{Games:1976}{{21}{1976}{{Games and Howell}}{{}}}
+\bibcite{Ghasemi:2012}{{22}{2012}{{Ghasemi and Zahediasl}}{{}}}
+\bibcite{Graves:2026}{{23}{2026}{{Graves et~al.}}{{Graves, Piepho, and {}{with help from Sundar Dorai-Raj}}}}
+\bibcite{Gross:2015}{{24}{2015}{{Gross and Ligges}}{{}}}
+\bibcite{Hayat:2017}{{25}{2017}{{Hayat et~al.}}{{Hayat, Powell, Johnson, and Cadwell}}}
+\bibcite{Hochberg:1987}{{26}{1987}{{Hochberg and Tamhane}}{{}}}
+\bibcite{Holm:1979}{{27}{1979}{{Holm}}{{}}}
+\bibcite{Kassambara:2026}{{28}{2026}{{Kassambara}}{{}}}
+\bibcite{Kendall:1945}{{29}{1945}{{Kendall}}{{}}}
+\bibcite{Kozak:2018}{{30}{2018}{{Kozak and Piepho}}{{}}}
+\bibcite{Kruskal:1952}{{31}{1952}{{Kruskal and Wallis}}{{}}}
+\bibcite{Levene:1960}{{32}{1960}{{Levene}}{{}}}
+\bibcite{Lumley:2002}{{33}{2002}{{Lumley et~al.}}{{Lumley, Diehr, Emerson, and Chen}}}
+\bibcite{Mann:1947}{{34}{1947}{{Mann and Whitney}}{{}}}
+\bibcite{Meyer:2006}{{35}{2006}{{Meyer et~al.}}{{Meyer, Zeileis, and Hornik}}}
+\bibcite{Meyer:2024}{{36}{2024}{{Meyer et~al.}}{{Meyer, Zeileis, Hornik, and Friendly}}}
+\bibcite{Moser:1992}{{37}{1992}{{Moser and Stevens}}{{}}}
+\bibcite{Olejnik:1987}{{38}{1987}{{Olejnik and Algina}}{{}}}
+\bibcite{Patil:2021}{{39}{2021}{{Patil}}{{}}}
+\bibcite{Pearson:1900}{{40}{1900}{{Pearson}}{{}}}
+\bibcite{R:2026}{{41}{2026}{{R Core Team}}{{}}}
+\bibcite{Rasch:2011}{{42}{2011}{{Rasch et~al.}}{{Rasch, Kubinger, and Moder}}}
+\bibcite{Razali:2011}{{43}{2011}{{Razali and Wah}}{{}}}
+\bibcite{Sato:2017}{{44}{2017}{{Sato et~al.}}{{Sato, Gosho, Nagashima, Takahashi, Ware, and Laird}}}
+\bibcite{Satterthwaite:1946}{{45}{1946}{{Satterthwaite}}{{}}}
+\bibcite{Searle:1971}{{46}{1971}{{Searle}}{{}}}
+\bibcite{Shapiro:1965}{{47}{1965}{{Shapiro and Wilk}}{{}}}
+\bibcite{Shatz:2024}{{48}{2024}{{Shatz}}{{}}}
+\bibcite{Strasak:2007}{{49}{2007}{{Strasak et~al.}}{{Strasak, Zaman, Marinell, Pfeiffer, and Ulmer}}}
+\bibcite{Subirana:2014}{{50}{2014}{{Subirana et~al.}}{{Subirana, Sanz, and Vila}}}
+\bibcite{Welch:1947}{{51}{1947}{{Welch}}{{}}}
+\bibcite{Welch:1951}{{52}{1951}{{Welch}}{{}}}
+\bibcite{Wickham:2016}{{53}{2016}{{Wickham}}{{}}}
+\bibcite{Wilcox:2021}{{54}{2021}{{Wilcox}}{{}}}
+\bibcite{Xu:2013}{{55}{2013}{{Xu et~al.}}{{Xu, Hou, Hung, and Zou}}}
+\bibcite{Yap:2011}{{56}{2011}{{Yap and Sim}}{{}}}
+\bibcite{Yates:1934}{{57}{1934}{{Yates}}{{}}}
+\bibcite{Zeevat:2025}{{58}{2025}{{Zeevat}}{{}}}
 \ttl@finishall
-\gdef \@abspage@last{19}
+\gdef \@abspage@last{20}
