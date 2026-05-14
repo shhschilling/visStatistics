@@ -186,7 +186,9 @@ visstat_core(mtcars, "mpg", "am")
 #> Warning: Statistical assumptions violated:
 #> Homoscedasticity violated (Breusch-Pagan p = 0.0242 )
 #> Analysis proceeded but interpret results cautiously.
-#> RECOMMENDATION: Consider exploring alternatives outside visstat() such as data transformations, generalised linear models, or robust regression. For an assumption-free, non-causal alternative consider rerunning with correlation = TRUE.
+#> RECOMMENDATION: Consider exploring alternatives outside visstat() such as data transformations,
+#> generalised linear models, or robust regression. For an assumption-free, non-causal alternative
+#> consider rerunning with correlation = TRUE.
 
 ## Wilcoxon rank sum test (wilcox.test())
 grades_gender <- data.frame(
@@ -208,10 +210,11 @@ anova_npk <- visstat_core(npk, "yield", "block")
 
 anova_npk # prints summary of tests
 #> Object of class 'visstat'
+#> Effect size: omega-squared = 0.215 
 #> 
 #> Available components:
 #> [1] "summary statistics of ANOVA" "post-hoc analysis "         
-#> [3] "conf.level"                 
+#> [3] "conf.level"                  "effect_size"                
 
 ## Kruskal-Wallis rank sum test (kruskal.test())
 visstat_core(iris, "Petal.Width", "Species")
