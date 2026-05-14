@@ -482,24 +482,51 @@ The returned object contains the Games--Howell-adjusted p-values for every pairw
 When normality is rejected, `visstat()` follows `kruskal.test()` with `pairwise.wilcox.test()`, which compares each pair of factor levels via the Wilcoxon rank-sum test on ranks rather than means.
 The resulting p-values are adjusted for multiplicity using Holm's step-down method [@Holm:1979]: sorted ascending and tested against thresholds that loosen with rank.
 
-### Graphical output
+### Graphical output {.unnumbered}
 
-The graphical output for all tests based on a numeric response and a categorical predictor with more than two levels consists of two panels: the first focuses on the residual analysis, the second on the actual test chosen by the decision logic.
+The first panel shows the linear-model assumption diagnostics. It
+contains a histogram of the standardised residuals with a standard
+normal density overlay, a plot of standardised residuals against fitted
+values, a normal Q--Q plot, and a scale-location plot. The latter three
+are inherited from `plot.lm()`, while the histogram is added to make the
+residual distribution directly visible. The title reports the
+Shapiro--Wilk and Anderson--Darling normality tests together with
+Bartlett's and Levene--Brown--Forsythe tests for homoscedasticity.
 
-The residual panel addresses the assumption of normality, both graphically and through formal tests.
-It displays a scatter plot of the standardised residuals versus the predicted values, as well as a normal Q--Q plot comparing the sample quantiles to the theoretical quantiles.
-If the residuals are normally distributed, no more than $5\%$ of the standardised residuals should exceed approximately $|2|$; in the Q--Q plot the data points should approximately follow the red straight line.
+If homoscedasticity is rejected and a Welch method is selected, an
+additional group-wise normality panel is displayed. For each group, this
+panel shows a histogram with a normal density overlay and a normal Q--Q
+plot. It is added because the pooled `lm()` residuals are no longer the
+appropriate diagnostic under heteroscedasticity.
 
-The p-values of the formal tests for normality (Shapiro--Wilk and Anderson--Darling) as well as the tests for homoscedasticity (Bartlett's and Levene Brown–Forsythe) are given in the title.
+The final panel shows the selected test as box plots with sample sizes
+above each group. For the parametric branches, the title also reports
+the corresponding $F$ statistic. When the largest group has no more than
+50 observations, jittered points are overlaid to show the raw data.
 
-`visstat()` then illustrates, in the subsequent graph, either the `kruskal.test()`, the `oneway.test()`, or `aov()` result (see also Section "Decision logic").
-In all three branches the result is shown as box plots with the number of observations per level above each box; the title gives the name of the test that was run and its p-value (and, for the parametric branches, the corresponding $F$ statistic).
-When the largest group contains no more than 50 observations, individual data points are overlaid as a jittered strip chart, making the raw distribution visible.
+#### Visualising the post-hoc analysis with significant--letters 
 
-In every branch, pairs of groups whose adjusted post-hoc p-value falls below $\alpha$ are marked with *different* green letters below the box plots; pairs sharing a letter are not significantly different.
-The letters are produced by `multcompLetters()` from the `multcompView` package [@Graves:2026].
+The box plots are enrichted with significant-letters to visualise the post-hoc analysis: 
 
-Besides the graphical output, `visstat()` returns a list containing the relevant test statistics along with the corresponding post-hoc-adjusted $p$-values for all pairwise comparisons.
+ANOVA, Welch ANOVA, and Kruskal--Wallis are omnibus tests: a significant
+result tells us that *some* group differs, but not which. To identify
+the differing pairs, `visstat()` tests all pairwise comparisons among
+the factor levels, defining a family of tests [@Abdi:2007]. Because the
+three omnibus tests rest on different assumptions, each branch uses a
+matching post-hoc procedure: `TukeyHSD()` after `aov()`,
+`games.howell()` after `oneway.test()`, and
+`pairwise.wilcox.test(p.adjust.method = "holm")` after `kruskal.test()`.
+`TukeyHSD()` controls the family-wise error rate through the studentised
+range distribution under a common-variance assumption. `games.howell()`
+uses separate variance estimates and Welch-adjusted degrees of freedom
+for each pair, making it the post-hoc procedure for the heteroscedastic
+Welch branch. The Kruskal--Wallis branch uses Holm's step-down
+adjustment for the pairwise Wilcoxon tests. Pairs whose adjusted
+post-hoc $p$-value falls below $\alpha$ are marked with different green
+significant--letters below the box plots; pairs sharing a letter are not
+significantly different.
+<!-- The returned object contains the corresponding -->
+<!-- adjusted $p$-values. -->
 
 ### Examples
 

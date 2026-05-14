@@ -10,6 +10,8 @@ knitr::opts_chunk$set(
   out.width  = "100%",
   echo = TRUE
 )
+example_conf_level <- 0.95
+example_alpha <- 1 - example_conf_level
 
 
 ## ----overview, echo=FALSE, fig.cap="Overview of all implemented tests selected based on input class.", fig.alt="Flowchart showing all implemented statistical tests organised by the class of the input vectors."----
@@ -20,7 +22,7 @@ knitr::include_graphics("figures/overview.png")
 knitr::include_graphics("figures/decision_tree.png")
 
 
-## ----student-ttest-example, results='hide'------------------------------------
+## ----student-ttest-example, fig.cap="Student's t-test applied to the \\texttt{ToothGrowth} dataset (\\texttt{supp} vs.\\ \\texttt{len}). Assumption diagnostics and box plots of odontoblast length by vitamin C delivery method with the Student t-test result.", out.width="48%", fig.height=4.5, fig.show="hold", results='hide'----
 ToothGrowth$supp <- as.factor(ToothGrowth$supp)
 student_ttest <- visstat(ToothGrowth$supp, ToothGrowth$len)
 
@@ -34,26 +36,28 @@ t_test_stats <- visstat(mtcars$am, mtcars$mpg)
 wilcoxon_stats <- visstat(warpbreaks$wool, warpbreaks$breaks)
 
 
-## ----ordinal-wilcoxon-example, fig.show='hide', results='hide'----------------
+## ----ordinal-wilcoxon-example, fig.cap="Wilcoxon rank-sum test for ordered passenger class by sex in the expanded \\texttt{Titanic} data. Ordered class is converted to integer level codes; assumption diagnostics and box plots show the Wilcoxon result.", out.width="48%", fig.height=4.5, fig.show="hold", results='hide'----
 titanic_df <- counts_to_cases(as.data.frame(Titanic))
 titanic_df$Class <- ordered(titanic_df$Class,
                             levels = c("1st", "2nd", "3rd", "Crew"))
 wilcox_ordered <- visstat(titanic_df$Sex, titanic_df$Class)
 
 
-## ----anova-example, fig.cap="Fisher's one-way ANOVA applied to the \\texttt{npk} dataset (\\texttt{block} vs.\\ \\texttt{yield}). Assumption diagnostics and box plots of pea yield by experimental block; compact letter display (TukeyHSD, $\\alpha = 0.05$) shows no significant pairwise differences.", out.width="48%", fig.height=4.5, fig.show="hold"----
-anova_npk <- visstat(npk$block, npk$yield, conf.level = 0.95)
+## ----anova-example, fig.cap=paste0("Fisher's one-way ANOVA applied to the \\texttt{npk} dataset (\\texttt{block} vs.\\ \\texttt{yield}). Assumption diagnostics and box plots of pea yield by experimental block; Tukey HSD post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"----
+anova_npk <- visstat(npk$block, npk$yield, conf.level = example_conf_level)
 
 
-## ----welch-anova-example, fig.cap="Welch's heteroscedastic one-way ANOVA applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Sepal.Length}). Assumption diagnostics, group-wise normality diagnostics, and box plots with Games--Howell post-hoc comparisons.", out.width="32%", fig.height=4.5, fig.show="hold"----
-welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length)
+## ----welch-anova-example, fig.cap=paste0("Welch's heteroscedastic one-way ANOVA applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Sepal.Length}). Assumption diagnostics, group-wise normality diagnostics, and box plots; Games--Howell post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="32%", fig.height=4.5, fig.show="hold"----
+welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length,
+                            conf.level = example_conf_level)
 
 
-## ----kruskal-example, fig.cap="Kruskal-Wallis test applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots with the Kruskal-Wallis result; all pairwise post-hoc comparisons significant (all letters differ).", out.width="48%", fig.height=4.5, fig.show="hold"----
-kruskal_iris <- visstat(iris$Species, iris$Petal.Width)
+## ----kruskal-example, fig.cap=paste0("Kruskal-Wallis test applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots; Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"----
+kruskal_iris <- visstat(iris$Species, iris$Petal.Width,
+                        conf.level = example_conf_level)
 
 
-## ----ordinal-kruskal-example, fig.show='hide', results='hide'-----------------
+## ----ordinal-kruskal-example, fig.cap=paste0("Kruskal-Wallis test for ordered comfort ratings by customer segment. The ordered response is converted to integer level codes; assumption diagnostics and box plots show the Kruskal-Wallis result; Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold", results='hide'----
 set.seed(123)
 segment <- factor(rep(c("Budget", "Standard", "Premium"), each = 50))
 comfort_numeric <- c(
@@ -65,14 +69,15 @@ survey_data_3 <- data.frame(
   segment = segment,
   comfort = ordered(comfort_numeric)
 )
-kruskal_ordered <- visstat(survey_data_3, "comfort", "segment")
+kruskal_ordered <- visstat(survey_data_3, "comfort", "segment",
+                           conf.level = example_conf_level)
 
 
 ## ----regression-example, fig.cap="Simple linear regression of \\texttt{Fertility} on \\texttt{Examination} for the \\texttt{swiss} dataset (\\texttt{conf.level = 0.99}). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\\% confidence band (dark shading), and 99\\% prediction band (light shading).", out.width="48%", fig.height=4.5, fig.show="hold"----
 linreg_swiss <- visstat(swiss$Examination, swiss$Fertility, conf.level = 0.99)
 
 
-## ----ozone-lm-triage, fig.show='hide', results='hide'-------------------------
+## ----ozone-lm-triage, fig.cap="Default simple linear regression for \\texttt{Ozone} by \\texttt{Wind} in the \\texttt{airquality} dataset. Assumption diagnostics flag non-normal standardised residuals and heteroscedasticity before alternative routes are considered.", out.width="48%", fig.height=4.5, fig.show="hold", results='hide'----
 ozone_lm <- visstat(airquality$Wind, airquality$Ozone)
 
 
@@ -85,7 +90,7 @@ hair_eye_df <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(hair_eye_df$Eye, hair_eye_df$Hair)
 
 
-## ----yates-example, fig.show='hide', results='hide'---------------------------
+## ----yates-example, fig.cap="Pearson's $\\chi^2$ test with Yates' continuity correction for a $2 \\times 2$ subset of \\texttt{HairEyeColor} (black/brown hair and brown/blue eyes). Grouped bar chart of row percentages with the corrected test result.", out.width="60%", fig.height=4.5, fig.show="hold", results='hide'----
 hair_black_brown_eyes_brown_blue <- HairEyeColor[1:2, 1:2, ]
 hair_black_brown_eyes_brown_blue_df <- counts_to_cases(
   as.data.frame(hair_black_brown_eyes_brown_blue))
