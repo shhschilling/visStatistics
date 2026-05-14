@@ -9,7 +9,7 @@ author:
     orcid: 0000-0002-8318-9421
     email: sabineschilling@gmx.ch
 abstract: >
-  `visStatistics` automatically selects and visualises appropriate statistical hypothesis tests comparing two vectors of class `"numeric"`, `"integer"`, `"factor"`, or `"ordered"`. No manual test selection is required: the function determines the appropriate method from the variable classes, distributional assumptions, and sample sizes.
+  `visStatistics` provides an assumption-aware workflow for routine two-variable frequentist inference in R. Given two vectors, or a formula and data frame, the function determines the appropriate method from the variable classes, distributional assumptions, and sample sizes.
 
   The main function `visstat()` visualises the selected test with appropriate graphs, including box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots, and Q-Q plots. These outputs are annotated with relevant test statistics, assumption checks, and post-hoc analyses where applicable.
 
@@ -43,18 +43,18 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-In the frequentest tradition, most routine data analyses reduce to a comparatively small set of
+In the frequentist tradition, most routine data analyses reduce to a comparatively small set of
 inferential frameworks, including group comparisons, regression models and contingency-table
-analyses [@Angrist: 2009,@Hayat:2017, @Sato:2017, @Brodeur:2020]; their correct use depends on assumptions that are often checked informally or not at all. `visStatistics` targets this gap by making routine frequentist test selection explicit, assumption-aware, visual, and reproducible. 
-It selects out a test by
-using a reproducible decision framework based on the data’s
-distributional assumptions and sample size. It visualises its decision
+analyses [@Angrist:2009, @Hayat:2017, @Sato:2017, @Brodeur:2020]; their correct use depends on assumptions that are often checked informally or not at all. `visStatistics` targets this gap by making routine frequentist test selection explicit, assumption-aware, visual, and reproducible. 
+It selects a test by
+using a reproducible decision framework based on the data's
+distributional assumptions and sample size. It visualises this decision
 by, where appropriate, assumption-diagnostic plots and a descriptive plot
 with the main test statistics annotated, and returns an R object whose
 `print()` and `summary()` methods expose the complete test results. The
 scripted workflow is well suited for browser-based applications where
-sensitive data (such as highly confidential medical records) is stored
-securely on a server and can not be directly accessed by users. This
+sensitive data (such as highly confidential medical records) are stored
+securely on a server and cannot be directly accessed by users. This
 approach was already successfully applied to develop a medical scoring
 tool [@Bijlenga:2017]. When selecting tests for group comparisons,
 packages with overlapping scope such as `automatedtests` [@Zeevat:2025]
@@ -70,7 +70,7 @@ linear model framework [@Searle:1971].
 
 # Package overview
 
-\CRANpkg{visStatistics} is available on CRAN, its  main function `vistat()`` accepts input
+\CRANpkg{visStatistics} is available on CRAN; its main function `visstat()` accepts input
 in two equivalent forms:
 
 ``` r
@@ -86,7 +86,7 @@ where `x` and `y` are vectors of class `"numeric"`, `"integer"`, or
 `print()`, `summary()`, and `plot()` methods.
 
 # Decision logic
-The decision logic ``visstatistics()` summarised in  figure \@ref(fig:overview is driven by the class of its input vectors: 
+The decision logic of `visstat()` summarised in Figure \@ref(fig:overview) is driven by the class of its input vectors:
 
 
 ```{r overview, echo=FALSE, fig.cap="Overview of all implemented tests selected based on input class.", fig.alt="Flowchart showing all implemented statistical tests organised by the class of the input vectors."}
@@ -96,11 +96,12 @@ Numeric responses
 with categorical predictors enter the central-tendency branch; two
 unordered factors enter the proportion-comparison branch; two numeric
 variables enter simple linear regression unless `correlation = TRUE`,
-which switches to Spearman rank correlation; and two factors, which inherit the class `ordered`  are analysed as Kendall rank correlation when `correlation = TRUE`.
+which switches to Spearman rank correlation; and two ordered factors
+are analysed as Kendall rank correlation when `correlation = TRUE`.
 Definitions of all implemented test
 statistics and association measures are collected in [Appendix B](#tests).
 
-## Test selection based on the assumptions of the general linear framework
+## Test selection based on the assumptions of the general linear model framework
 
 Student's t-test, Fisher's ANOVA, and simple linear regression all
 belong to the general linear model framework [see Appendix A](#glm) and
@@ -155,12 +156,15 @@ heteroscedasticity.
 ## Both variables numeric: regression or Spearman rank correlation
 
 By default, `visstat()` fits a simple linear regression via `lm()`,
-regardless of whether GLM assumptions are met, and always displays
+regardless of whether linear-model assumptions are met, and always displays
 assumption diagnostics. When `correlation = TRUE` is set explicitly,
 Spearman's $\rho$ is computed via `cor.test(..., method = "spearman")`.
 Because the choice between modelling a directional relationship and
 measuring a monotone association cannot be automated from data types
 alone, Spearman correlation is never triggered automatically.
+Spearman's $\rho$ is Pearson's correlation applied to ranks and provides
+the explicit rank-based alternative when a monotone association is the
+target; see [Appendix C](#rho).
 
 ## Both variables categorical: comparing proportions
 
@@ -315,51 +319,56 @@ kruskal_iris <- visstat(iris$Species, iris$Petal.Width)
 
 ### Simple linear regression
 
-`When both predictor and response are numerical, visstat()` checks the
-standardised residuals from `lm()` graphically and with the
-Shapiro--Wilk and Anderson--Darling tests; the Breusch--Pagan test
-assesses homoscedasticity. Regardless of these diagnostics, a simple
-linear regression fitted and displayed. The graphical shows the fitted
-line $\hat{y} = b_0 + b_1 x$, where $b_0$ is the intercept and $b_1$ the
+When both predictor and response are numerical, `visstat()` fits and
+displays a simple linear regression. The standardised residuals from
+`lm()` are assessed graphically and with the Shapiro--Wilk and
+Anderson--Darling tests; homoscedasticity is assessed with the
+Breusch--Pagan test. The regression plot shows the fitted line
+$\hat{y} = b_0 + b_1 x$, where $b_0$ is the intercept and $b_1$ the
 slope, with pointwise confidence and prediction bands at the specified
 `conf.level`.
 
 The title shows $R^2$, the estimated regression parameters with
 confidence intervals and $p$-values. The returned object contains the
 regression statistics, the residual-normality $p$-values, and pointwise
-estimates of the confidence and prediction bands.
+estimates of the confidence and prediction bands. The regression is
+reported regardless of the diagnostics; in this branch, `visstat()`
+therefore also serves as a model-triage tool.
 
 The `swiss` dataset records standardised fertility and socioeconomic
 indicators for 47 French-speaking Swiss provinces in 1888. We examine
 how the share of draftees achieving the highest army examination score
 (`Examination`) predicts the fertility measure (`Fertility`), with
 `conf.level = 0.99`. Both normality tests pass and the Breusch--Pagan
-test confirms homoscedasticity, validating the linear model.
+test confirms homoscedasticity, supporting the linear model.
 
 ```{r regression-example, fig.cap="Simple linear regression of \\texttt{Fertility} on \\texttt{Examination} for the \\texttt{swiss} dataset (\\texttt{conf.level = 0.99}). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\\% confidence band (dark shading), and 99\\% prediction band (light shading).", out.width="48%", fig.height=4.5, fig.show="hold"}
 linreg_swiss <- visstat(swiss$Examination, swiss$Fertility, conf.level = 0.99)
 ```
 
+The `airquality` ozone example illustrates this triage role. A default
+`visstat()` call for ozone concentration (`Ozone`) as a function of wind
+speed (`Wind`) fits the simple linear model, but the diagnostics flag
+violated residual normality and homoscedasticity. The printed
+recommendation suggests two possible next steps: exploring alternatives
+outside `visstat()`, such as data transformations, generalised linear
+models, or robust regression, or rerunning the analysis with
+`correlation = TRUE` for an assumption-free, non-causal Spearman
+analysis. For these data, a Gamma GLM with log link is one plausible
+follow-up outside `visstat()` because `Ozone` is positive, continuous,
+and shows variance increasing with the mean.
+
 ### Spearman rank correlation
 
-For numeric--numeric input, correlation analysis is never triggered
-automatically; it requires the explicit flag `correlation = TRUE`. With
-wind speed (`Wind`) and ozone concentration (`Ozone`) from the
-`airquality` dataset [@Chambers:2018], a default `visstat()` call fits
-simple linear regression but flags violated normality and
-homoscedasticity. The warning recommends two paths: rerun with
-`correlation = TRUE` within `visstat()`, or switch to a model outside
-it. Staying within `visstat()`, `correlation = TRUE` gives an
-assumption-free Spearman result at the cost of causal interpretability
-(Note that here e.g. a Gamma model with log link
-might be more appropriate to describe the data, as `Ozone` is strictly
-positive and continuous, and its variance grows with the mean ),
+Correlation analysis is never triggered automatically; it requires the
+explicit flag `correlation = TRUE`, because the choice between modelling
+a directional relationship and measuring a monotone association cannot
+be derived from the variable classes alone. For the ozone example,
+staying within `visstat()` gives the following Spearman analysis:
 
 ```{r spearman-example, fig.cap="Spearman rank correlation of \\texttt{Wind} and \\texttt{Ozone} from the \\texttt{airquality} dataset (\\texttt{correlation = TRUE}). Assumption diagnostics and scatter plot of ranked values annotated with $\\rho$ and the $p$-value.", out.width="48%", fig.height=4.5, fig.show="hold"}
 spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 ```
-
-<!-- To preserve causality, we follow the second path and fit a Gamma generalised linear model with log link. The Gamma family is suited here because Ozone is strictly positive and continuous, and its variance grows with the mean — the structure detected by the Breusch--Pagan test.  -->
 
 ## Both variables categorical
 
@@ -470,6 +479,11 @@ family, the link function, or the estimator -- that cannot be automated
 without substantially expanding the decision tree and increasing the
 risk of Type I error inflation.
 
+Effect-size selection is likewise left to the user. The appropriate
+measure depends on the scientific question, measurement scale, and
+selected test. Automated test selection should therefore be interpreted
+together with a suitable effect size.
+
 Within this restricted automated pipeline, the routing depends on
 p-values of assumption tests to select tests of central tendencies. But no single (assumption) test maintains optimal Type I
 error rates and statistical power across all distributions
@@ -549,7 +563,7 @@ subsequent steps.
 automated statistical test selection, execution, and visualisation for
 the most commonly used inferential frameworks in two-variable analyses.
 Its principal contribution is the integration of the full pipeline ---
-data-type detection, distributional assumption checking on GLM
+data-type detection, distributional assumption checking on fitted model
 residuals, test routing, and annotated graphical output --- into a
 reproducible, server-deployable workflow with a minimal dependency
 footprint. The package is available on CRAN at
@@ -578,10 +592,10 @@ testing equality of all group means.
 **Simple linear regression** uses one continuous predictor; testing
 $H_0: \beta_1 = 0$ examines whether a linear relationship exists.
 
-In the two-sample case, the squared test test statistic of the  Student's t-tests
-equals the Fisher's ANOVA test static,  $t^2 = F$, 
+In the two-sample case, the squared test statistic of Student's t-test
+equals the Fisher ANOVA test statistic, $t^2 = F$,
 resulting in identical
-$p$-values for `t.test(var.equal = TRUE)` and `aov()` .
+$p$-values for `t.test(var.equal = TRUE)` and `aov()`.
 
 # Appendix B: The general linear model assumption diagnostics `vis_lm_assumptions()` {#assumptions}
 
@@ -591,7 +605,7 @@ All tests within the linear model framework (see [Appendix A](#glm)) share a com
 
 - Error terms are independent, normally distributed with expectation value 0 and have constant error variance $\sigma^2$
 
-The function `vis_lm_assumptions()` provides a unified visual and statistical framework for validating the [linear model] (#glm) assumptions.
+The function `vis_lm_assumptions()` provides a unified visual and statistical framework for checking the [linear model](#glm) assumptions.
 It fits a linear model using `aov()` and provides four standard diagnostic plots:
 
 1.  **Histogram and Normal Density**: Displays the distribution of standardised residuals with a red normal density curve overlay to visually assess normality.
@@ -615,13 +629,13 @@ These tests compare the spread of data across different factor levels.
 
 For simple linear regression, the Breusch-Pagan test (`bp.test()`) is implemented.
 
-`bartlett.test()` and `bp.test() have standalone implementations in the package to avoid dependencies on external packages (see [Appendix C](#variance)).
+`bartlett.test()` and `bp.test()` have standalone implementations in the package to avoid dependencies on external packages (see [Appendix C](#variance)).
 
 
 # Appendix C: Test statistics and association measures {#tests}
 
 ## Normality tests {#norm}
-The package uses both the Shapiro-Wilk test  as well ass the Anderson-Darling test to check the  normality of the studentised residuals
+The package uses both the Shapiro--Wilk test and the Anderson--Darling test to check the normality of the studentised residuals
 $r_i^* = e_i / (s\sqrt{1-h_{ii}})$, where $e_i$ are the raw residuals,
 $s^2$ is the residual mean square, and $h_{ii}$ is the leverage of
 observation $i$ [@Cook:1982].
@@ -658,7 +672,7 @@ Simulation studies show that the Shapiro--Wilk test has the highest
 power among normality tests for small to moderate sample sizes ($n = 10$
 to $100$) [@Razali:2011]. It drives the parametric/non-parametric
 branching decision in `visstat()`; for groups with more than 50
-observations normality is assumed by the central limit theorem
+observations the normality of the sampling distribution of group means is assumed by the central limit theorem
 [@Lumley:2002; @Rasch:2011].
 
 The implementation uses `shapiro.test()` from \CRANpkg{stats} [@R:2026].
@@ -732,7 +746,7 @@ For simple linear regression, group-based variance tests are not
 applicable. The Breusch--Pagan test [@Breusch:1979] assesses whether the
 variance of the residuals from the regression model depends on the
 predictor values. Let $e_i$ be the residuals from the fitted regression model and
-let $\hat{\sigma}^2 = n^{-1}\sum_{i=1}^n e_i^2$ denote the mean of the squred residuals.  The auxiliary
+let $\hat{\sigma}^2 = n^{-1}\sum_{i=1}^n e_i^2$ denote the mean of the squared residuals. The auxiliary
 regression models $e_i^2 / \hat{\sigma}^2$ as a function of the
 predictors. Let $R^2_\text{aux}$ denote the coefficient of determination from this 
 auxiliary regression. Crucially, while a high $R^2$ is typically a sign of 
@@ -925,6 +939,12 @@ permutations. For larger samples or when ties are present, it uses an
 approximation to the null distribution of the rank association measure
 or its asymptotic transformation. No distributional assumptions on the
 original data are required.
+
+A separate Pearson-correlation branch is not implemented. In simple
+linear regression with an intercept, the two-sided test of zero slope
+and the two-sided test of zero Pearson correlation return the same
+$p$-value. Pearson correlation would therefore not add a separate
+inferential route to the default regression branch.
 
 ### Kendall's $\tau_b$ {#tau}
 

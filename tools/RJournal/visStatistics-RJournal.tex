@@ -17,7 +17,7 @@ The scripted workflow is well suited for browser-based and server-side R applica
 
 In the frequentest tradition, most routine data analyses reduce to a comparatively small set of
 inferential frameworks, including group comparisons, regression models and contingency-table
-analyses \citep[2009,\citet{Hayat:2017}, \citet{Sato:2017}, \citet{Brodeur:2020}]{Angrist}; their correct use depends on assumptions that are often checked informally or not at all. \texttt{visStatistics} targets this gap by making routine frequentist test selection explicit, assumption-aware, visual, and reproducible.
+analyses \citep[\citet{Hayat:2017}, \citet{Sato:2017}, \citet{Brodeur:2020}]{Angrist:2009}; their correct use depends on assumptions that are often checked informally or not at all. \texttt{visStatistics} targets this gap by making routine frequentist test selection explicit, assumption-aware, visual, and reproducible.
 It selects out a test by
 using a reproducible decision framework based on the data's
 distributional assumptions and sample size. It visualises its decision
@@ -197,7 +197,7 @@ t_test_stats <- visstat(mtcars$am, mtcars$mpg)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.32\linewidth]{visStatistics-RJournal_files/figure-latex/ttest-example-1} \includegraphics[width=0.32\linewidth]{visStatistics-RJournal_files/figure-latex/ttest-example-2} \includegraphics[width=0.32\linewidth]{visStatistics-RJournal_files/figure-latex/ttest-example-3} \caption{Welch's t-test applied to the \texttt{mtcars} dataset (\texttt{am} vs.\ \texttt{mpg}). Pooled-residual assumption diagnostics (Shapiro--Wilk, Bartlett, Levene), group-wise normality diagnostics, and box plots of fuel efficiency by transmission type with the Welch t-test result.}\label{fig:ttest-example}
+\includegraphics[width=0.32\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/ttest-example-1} \includegraphics[width=0.32\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/ttest-example-2} \includegraphics[width=0.32\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/ttest-example-3} \caption{Welch's t-test applied to the \texttt{mtcars} dataset (\texttt{am} vs.\ \texttt{mpg}). Pooled-residual assumption diagnostics (Shapiro--Wilk, Bartlett, Levene), group-wise normality diagnostics, and box plots of fuel efficiency by transmission type with the Welch t-test result.}\label{fig:ttest-example}
 \end{figure}
 
 \subsubsection{Wilcoxon rank-sum test}\label{wilcoxon-rank-sum-test}
@@ -220,7 +220,7 @@ wilcoxon_stats <- visstat(grades_gender$sex, grades_gender$grade)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/wilcoxon-example-1} \includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/wilcoxon-example-2} \caption{Wilcoxon rank-sum test applied to examination grades by sex. Assumption diagnostics (Shapiro--Wilk rejected; non-parametric path selected) and box plots with the Wilcoxon test result.}\label{fig:wilcoxon-example}
+\includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/wilcoxon-example-1} \includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/wilcoxon-example-2} \caption{Wilcoxon rank-sum test applied to examination grades by sex. Assumption diagnostics (Shapiro--Wilk rejected; non-parametric path selected) and box plots with the Wilcoxon test result.}\label{fig:wilcoxon-example}
 \end{figure}
 
 \subsection{Numeric response and categorical predictor: more than two groups}\label{numeric-response-and-categorical-predictor-more-than-two-groups}
@@ -275,7 +275,7 @@ anova_npk <- visstat(npk$block, npk$yield, conf.level = 0.95)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/anova-example-1} \includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/anova-example-2} \caption{Fisher's one-way ANOVA applied to the \texttt{npk} dataset (\texttt{block} vs.\ \texttt{yield}). Assumption diagnostics and box plots of pea yield by experimental block; compact letter display (TukeyHSD, $\alpha = 0.05$) shows no significant pairwise differences.}\label{fig:anova-example}
+\includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/anova-example-1} \includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/anova-example-2} \caption{Fisher's one-way ANOVA applied to the \texttt{npk} dataset (\texttt{block} vs.\ \texttt{yield}). Assumption diagnostics and box plots of pea yield by experimental block; compact letter display (TukeyHSD, $\alpha = 0.05$) shows no significant pairwise differences.}\label{fig:anova-example}
 \end{figure}
 
 \subsubsection{Kruskal-Wallis rank sum test}\label{kruskal-wallis-rank-sum-test}
@@ -293,7 +293,7 @@ kruskal_iris <- visstat(iris$Species, iris$Petal.Width)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/kruskal-example-1} \includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/kruskal-example-2} \caption{Kruskal-Wallis test applied to the \texttt{iris} dataset (\texttt{Species} vs.\ \texttt{Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots with the Kruskal-Wallis result; all pairwise post-hoc comparisons significant (all letters differ).}\label{fig:kruskal-example}
+\includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/kruskal-example-1} \includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/kruskal-example-2} \caption{Kruskal-Wallis test applied to the \texttt{iris} dataset (\texttt{Species} vs.\ \texttt{Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots with the Kruskal-Wallis result; all pairwise post-hoc comparisons significant (all letters differ).}\label{fig:kruskal-example}
 \end{figure}
 
 \subsection{Both variables numeric}\label{both-variables-numeric}
@@ -326,7 +326,7 @@ linreg_swiss <- visstat(swiss$Examination, swiss$Fertility, conf.level = 0.99)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/regression-example-1} \includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/regression-example-2} \caption{Simple linear regression of \texttt{Fertility} on \texttt{Examination} for the \texttt{swiss} dataset (\texttt{conf.level = 0.99}). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\% confidence band (dark shading), and 99\% prediction band (light shading).}\label{fig:regression-example}
+\includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/regression-example-1} \includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/regression-example-2} \caption{Simple linear regression of \texttt{Fertility} on \texttt{Examination} for the \texttt{swiss} dataset (\texttt{conf.level = 0.99}). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\% confidence band (dark shading), and 99\% prediction band (light shading).}\label{fig:regression-example}
 \end{figure}
 
 \subsubsection{Spearman rank correlation}\label{spearman-rank-correlation}
@@ -349,7 +349,7 @@ spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/spearman-example-1} \includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/spearman-example-2} \caption{Spearman rank correlation of \texttt{Wind} and \texttt{Ozone} from the \texttt{airquality} dataset (\texttt{correlation = TRUE}). Assumption diagnostics and scatter plot of ranked values annotated with $\rho$ and the $p$-value.}\label{fig:spearman-example}
+\includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/spearman-example-1} \includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/spearman-example-2} \caption{Spearman rank correlation of \texttt{Wind} and \texttt{Ozone} from the \texttt{airquality} dataset (\texttt{correlation = TRUE}). Assumption diagnostics and scatter plot of ranked values annotated with $\rho$ and the $p$-value.}\label{fig:spearman-example}
 \end{figure}
 
 \subsection{Both variables categorical}\label{both-variables-categorical}
@@ -389,7 +389,7 @@ visstat(hair_eye_df$Eye, hair_eye_df$Hair)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/chisq-example-1} \includegraphics[width=0.48\linewidth]{visStatistics-RJournal_files/figure-latex/chisq-example-2} \caption{Pearson's $\chi^2$ test applied to the \texttt{HairEyeColor} dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented).}\label{fig:chisq-example}
+\includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/chisq-example-1} \includegraphics[width=0.48\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/chisq-example-2} \caption{Pearson's $\chi^2$ test applied to the \texttt{HairEyeColor} dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented).}\label{fig:chisq-example}
 \end{figure}
 
 \subsubsection{Fisher's exact test}\label{fishers-exact-test}
@@ -427,7 +427,7 @@ fisher_stats$conf.int   # 95 % CI
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.6\linewidth]{visStatistics-RJournal_files/figure-latex/fisher-exact-example-1} \caption{Fisher's exact test applied to a $2 \times 2$ subset of \texttt{HairEyeColor} (male participants, black/brown hair, hazel/green eyes). Bar chart of absolute counts with the $p$-value; the odds ratio and confidence interval are accessible from the returned object.}\label{fig:fisher-exact-example}
+\includegraphics[width=0.6\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/fisher-exact-example-1} \caption{Fisher's exact test applied to a $2 \times 2$ subset of \texttt{HairEyeColor} (male participants, black/brown hair, hazel/green eyes). Bar chart of absolute counts with the $p$-value; the odds ratio and confidence interval are accessible from the returned object.}\label{fig:fisher-exact-example}
 \end{figure}
 
 \subsection{Ordered factors}\label{ordered-factors-1}
@@ -463,7 +463,7 @@ kendall_result <- visstat(performance, alcohol, correlation = TRUE)
 \end{verbatim}
 
 \begin{figure}
-\includegraphics[width=0.8\linewidth]{visStatistics-RJournal_files/figure-latex/kendall-example-1} \caption{Kendall's $\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance (both five-point ordinal scales). Jittered rank--rank scatter annotated with $\tau_b$ and the $p$-value; the negative monotone association is significant.}\label{fig:kendall-example}
+\includegraphics[width=0.8\linewidth]{/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/tools/RJournal/visStatistics-RJournal_files/figure-latex/kendall-example-1} \caption{Kendall's $\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance (both five-point ordinal scales). Jittered rank--rank scatter annotated with $\tau_b$ and the $p$-value; the negative monotone association is significant.}\label{fig:kendall-example}
 \end{figure}
 
 \section{Limitations}\label{limitations}
