@@ -16,6 +16,11 @@ create_mock_visstat <- function(type = "basic") {
       assumptions = list(
         normality = list(method = "Shapiro-Wilk", p.value = 0.123),
         homogeneity = list(method = "Levene's Test", p.value = 0.456)
+      ),
+      effect_size = list(
+        name = "omega-squared",
+        estimate = 0.12,
+        effect_size_method = "Omega-squared for one-way ANOVA"
       )
     )
   } else if (type == "empty") {
@@ -53,6 +58,7 @@ test_that("print.visstat displays basic information correctly", {
   expect_true(any(grepl("Object of class 'visstat'", output)))
   expect_true(any(grepl("Test used: One-way ANOVA", output)))
   expect_true(any(grepl("p-value: 0.0234", output)))
+  expect_true(any(grepl("Effect size: omega-squared = 0.12", output)))
   expect_true(any(grepl("Available components:", output)))
 })
 
@@ -107,6 +113,7 @@ test_that("summary.visstat displays comprehensive information", {
   # Check that all components are shown
   expect_true(any(grepl("\\$test:", output)))
   expect_true(any(grepl("\\$assumptions:", output)))
+  expect_true(any(grepl("\\$effect_size:", output)))
 })
 
 test_that("summary.visstat handles captured_plots specially", {

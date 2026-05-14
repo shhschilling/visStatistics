@@ -137,7 +137,7 @@ vis_anova <- function(samples,
     col = box_cols,
     ylab = samplename,
     xlab = factorname,
-    las = 2,
+    las = 1,
     outline = !show_jitter  # outliers via boxplot only when jitter is suppressed
   )
 

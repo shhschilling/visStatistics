@@ -33,6 +33,16 @@ print.visstat <- function(x, ...) {
     if (!is.null(x$test) && !is.null(x$test$p.value)) {
       cat("p-value:", signif(x$test$p.value, 3), "\n")
     }
+
+    if (!is.null(x$effect_size) && !is.null(x$effect_size$name)) {
+      cat(
+        "Effect size:",
+        x$effect_size$name,
+        "=",
+        signif(x$effect_size$estimate, 3),
+        "\n"
+      )
+    }
     
     cat("\nAvailable components:\n")
     print(names(x))
