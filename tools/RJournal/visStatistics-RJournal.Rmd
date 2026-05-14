@@ -10,12 +10,12 @@ author:
     email: sabineschilling@gmx.ch
 abstract: >
   `visStatistics` provides an assumption-aware workflow for routine two-variable frequentist inference in R. Given two vectors, or a formula and data frame, the function determines the appropriate method from the variable classes, distributional assumptions, and sample sizes.
-
   The main function `visstat()` visualises the selected test with appropriate graphs, including box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots, and Q-Q plots. These outputs are annotated with relevant test statistics, assumption checks, and post-hoc analyses where applicable.
-
   The package shifts attention from ad-hoc test selection to visual diagnostic assessment and statistical interpretation. This is particularly relevant for routine frequentist tests, where users often select among common procedures without formally checking assumptions such as residual normality, variance homogeneity, sample size requirements, or expected cell counts.
-
   The scripted workflow is well suited for browser-based and server-side R applications, where users interact through a web interface while R handles the data processing. Other typical use cases include quick visualisations, statistical consulting, and teaching settings where transparent test selection and diagnostic feedback are important.
+
+
+
 
 output:
   rjtools::rjournal_pdf_article:
@@ -47,14 +47,14 @@ example_alpha <- 1 - example_conf_level
 
 In the frequentist tradition, most routine data analyses reduce to a comparatively small set of
 inferential frameworks, including group comparisons, regression models and contingency-table
-analyses [@Angrist:2009, @Hayat:2017, @Sato:2017, @Brodeur:2020]; their correct use depends on assumptions that are often checked informally or not at all. `visStatistics` targets this gap by making routine frequentist test selection explicit, assumption-aware, visual, and reproducible. 
-It selects a test by
-using a reproducible decision framework based on the data's
-distributional assumptions and sample size. It visualises this decision
-by, where appropriate, assumption-diagnostic plots and a descriptive plot
-with the main test statistics annotated, and returns an R object whose
-`print()` and `summary()` methods expose the complete test results,
-including the reported effect size. The
+analyses [@Angrist:2009, @Hayat:2017, @Sato:2017, @Brodeur:2020]; their correct use depends on assumptions that are often checked informally or not at all. `visStatistics` targets this gap by making routine frequentist test selection explicit, assumption-aware, visual, and reproducible.
+Rather than requiring users to choose the test function first,
+`visstat()` starts from two variables and routes common two-variable
+settings through a fixed decision workflow. It selects a test from the
+variable classes, distributional assumptions, sample size, and expected
+cell counts; displays the diagnostics that led to the selected route;
+and returns an R object whose `print()` and `summary()` methods expose
+the complete test results, including the reported effect size. The
 scripted workflow is well suited for browser-based applications where
 sensitive data (such as highly confidential medical records) are stored
 securely on a server and cannot be directly accessed by users. This
@@ -70,6 +70,27 @@ to unnecessary switching to non-parametric methods even when the linear
 model assumptions hold globally. In contrast, `visStatistics` assesses
 the normality of the overall model residuals, adhering to the general
 linear model framework [@Searle:1971].
+
+The closest package in scope is `automatedtests` [@Zeevat:2025], which
+also provides a single function for automatic routing among common tests.
+Its routing is broader than that of `visStatistics`, including
+one-sample, paired, repeated-measures, and regression-model cases.
+However, much of this automation is class- and shape-based dispatch: the
+selected procedure is determined from the number and classes of
+variables, the number of factor levels, pairing information, and a small
+set of assumption checks. This breadth should not be confused with
+assumption-aware model selection in all branches: for example, for
+regression-type branches, `automatedtests` constructs a model from the
+input variables, but does not provide the corresponding model-diagnostic
+workflow.
+
+`visStatistics` is narrower by design. It restricts itself to common
+two-variable settings in which the route can be visualised and audited:
+pretesting where applied, residual-based diagnostics for the
+linear-model family, the selected test, full test statistics, effect
+size, result plots, and post-hoc comparisons where required. The
+contribution is therefore not broader automation, but inspectable
+automation for routine two-variable inference.
 
 # Package overview
 
@@ -89,6 +110,10 @@ where `x` and `y` are vectors of class `"numeric"`, `"integer"`, or
 `print()`, `summary()`, and `plot()` methods. The returned object also
 contains an `effect_size` field with the estimate and the effect-size
 method.
+From this single entry point, the package automatically selects among
+the implemented tests: `t.test()`, `wilcox.test()`, `aov()`,
+`oneway.test()`, `kruskal.test()`, `chisq.test()`, `fisher.test()`,
+`lm()`, or `cor.test()`.
 
 # Decision logic
 The decision logic of `visstat()` summarised in Figure \@ref(fig:overview) is driven by the class of its input vectors:
@@ -104,7 +129,7 @@ variables enter simple linear regression unless `correlation = TRUE`,
 which switches to Spearman rank correlation; and two ordered factors
 are analysed as Kendall rank correlation when `correlation = TRUE`.
 Definitions of all implemented test
-statistics and association measures are collected in [Appendix C](#tests).
+statistics and association measures are referenced in [Appendix C](#tests).
 
 ## Test selection based on the assumptions of the general linear model framework
 
@@ -112,7 +137,7 @@ Student's t-test, Fisher's ANOVA, and simple linear regression all belong to the
 thus share a common set of assumptions: the expected value of the
 response is a linear function of the predictors, the error terms are
 independent and normally distributed with expectation 0, and the error
-variance is constant at $\sigma^2$. Test selection for
+variance is constant at $\sigma^2$. Therefore the est selection for
 [tests of central tendencies](#numeric-categoric) is steered by checking
 the fitted model residuals in regard to these assumptions.
 
@@ -130,7 +155,7 @@ knitr::include_graphics("figures/decision_tree.png")
 
 The first split checks group size. When all groups contain more than 50
 observations, the normality of the sampling distribution of the group
-means is assumed by the central limit theorem [@Lumley:2002;
+means can be assumed by the central limit theorem [@Lumley:2002;
 @Rasch:2011], and the residual normality test is bypassed to avoid
 rejecting negligible deviations in large samples [@Ghasemi:2012;
 @Fagerland:2012; @Shatz:2024]. Otherwise, a linear model `lm(y ~ x)`
@@ -157,20 +182,33 @@ normality diagnostics are additionally displayed, since the pooled
 `lm()` residuals are no longer the appropriate diagnostic under
 heteroscedasticity.
 
-For more than two groups, this route leads to `kruskal.test()`,
-Fisher's one-way ANOVA (`aov()`), or Welch's heteroscedastic one-way
-ANOVA (`oneway.test()`). The graphical output consists of two panels. The
-first panel displays standardised residuals versus fitted values and a
-normal Q--Q plot; no more than about 5% of the standardised residuals
-should exceed $|2|$ when residuals are normally distributed, and the
-Q--Q points should approximately follow the red reference line. The
-title reports the Shapiro--Wilk and Anderson--Darling normality tests
-together with Bartlett's and Levene--Brown--Forsythe tests for
-homoscedasticity. The second panel shows the selected omnibus test as
-box plots with sample sizes above each group; for the parametric
-branches, the title also reports the corresponding $F$ statistic. When
-the largest group has no more than 50 observations, jittered points are
-overlaid to show the raw data.
+<!-- For more than two groups, this branch leads to either `kruskal.test()`, -->
+<!-- Fisher's one-way ANOVA (`aov()`), or Welch's heteroscedastic one-way -->
+<!-- ANOVA (`oneway.test()`).  -->
+###  Graphical output {.unnumbered}
+The first panel shows the linear-model assumption diagnostics. It
+contains a histogram of the standardised residuals with a standard
+normal density overlay, a plot of standardised residuals against fitted
+values, a normal Q--Q plot, and a scale-location plot. The latter three
+are inherited from `plot.lm()`, while the histogram is added to make the
+residual distribution directly visible. The title reports the
+Shapiro--Wilk and Anderson--Darling normality tests together with
+Bartlett's and Levene--Brown--Forsythe tests for homoscedasticity.
+
+If homoscedasticity is rejected and a Welch method is selected, an
+additional group-wise normality panel is displayed. For each group, this
+panel shows a histogram with a normal density overlay and a normal Q--Q
+plot. It is added because the pooled `lm()` residuals are no longer the
+appropriate diagnostic under heteroscedasticity.
+
+The final panel shows the selected test as box plots with sample sizes
+above each group. For the parametric branches, the title also reports
+the corresponding $F$ statistic. When the largest group has no more than
+50 observations, jittered points are overlaid to show the raw data.
+
+#### Visualising the post-hoc analysis with significant--letters 
+
+The box plots are enrichted with significant-letters to visualise the post-hoc analysis: 
 
 ANOVA, Welch ANOVA, and Kruskal--Wallis are omnibus tests: a significant
 result tells us that *some* group differs, but not which. To identify
@@ -187,9 +225,10 @@ for each pair, making it the post-hoc procedure for the heteroscedastic
 Welch branch. The Kruskal--Wallis branch uses Holm's step-down
 adjustment for the pairwise Wilcoxon tests. Pairs whose adjusted
 post-hoc $p$-value falls below $\alpha$ are marked with different green
-letters below the box plots; pairs sharing a letter are not
-significantly different. The returned object contains the corresponding
-adjusted $p$-values.
+significant--letters below the box plots; pairs sharing a letter are not
+significantly different.
+<!-- The returned object contains the corresponding -->
+<!-- adjusted $p$-values. -->
 
 ## Both variables numeric: regression or Spearman rank correlation
 
@@ -335,9 +374,9 @@ normality of the pooled residuals and the Levene test does not reject
 homoscedasticity, so `visstat()` applies Fisher's one-way ANOVA followed
 by Tukey HSD post-hoc comparisons. The omnibus F-test is not significant
 at $\alpha = `r example_alpha`$, and all groups share the same
-compact-letter label.
+significant-letter label.
 
-```{r anova-example, fig.cap=paste0("Fisher's one-way ANOVA applied to the \\texttt{npk} dataset (\\texttt{block} vs.\\ \\texttt{yield}). Assumption diagnostics and box plots of pea yield by experimental block; Tukey HSD post-hoc comparisons are shown as compact-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
+```{r anova-example, fig.cap=paste0("Fisher's one-way ANOVA applied to the \\texttt{npk} dataset (\\texttt{block} vs.\\ \\texttt{yield}). Assumption diagnostics and box plots of pea yield by experimental block; Tukey HSD post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
 anova_npk <- visstat(npk$block, npk$yield, conf.level = example_conf_level)
 ```
 
@@ -350,7 +389,7 @@ homoscedasticity. `visstat()` therefore selects Welch's heteroscedastic
 one-way ANOVA (`oneway.test()`), adds group-wise normality diagnostics,
 and applies Games--Howell post-hoc comparisons.
 
-```{r welch-anova-example, fig.cap=paste0("Welch's heteroscedastic one-way ANOVA applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Sepal.Length}). Assumption diagnostics, group-wise normality diagnostics, and box plots; Games--Howell post-hoc comparisons are shown as compact-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="32%", fig.height=4.5, fig.show="hold"}
+```{r welch-anova-example, fig.cap=paste0("Welch's heteroscedastic one-way ANOVA applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Sepal.Length}). Assumption diagnostics, group-wise normality diagnostics, and box plots; Games--Howell post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="32%", fig.height=4.5, fig.show="hold"}
 welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length,
                             conf.level = example_conf_level)
 ```
@@ -363,9 +402,9 @@ and both normality tests return very small $p$-values. Since
 Shapiro--Wilk falls below $\alpha$, `visstat()` switches to
 `kruskal.test()` followed by Holm-adjusted `pairwise.wilcox.test()`. All
 three species differ significantly in petal width, as indicated by
-distinct compact-letter labels.
+distinct significant-letter labels.
 
-```{r kruskal-example, fig.cap=paste0("Kruskal-Wallis test applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots; Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as compact-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
+```{r kruskal-example, fig.cap=paste0("Kruskal-Wallis test applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots; Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
 kruskal_iris <- visstat(iris$Species, iris$Petal.Width,
                         conf.level = example_conf_level)
 ```
@@ -377,7 +416,7 @@ two levels, `visstat()` again converts the ordered response to integer
 level codes and routes the analysis to `kruskal.test()` followed by
 Holm-adjusted `pairwise.wilcox.test()`.
 
-```{r ordinal-kruskal-example, fig.cap=paste0("Kruskal-Wallis test for ordered comfort ratings by customer segment. The ordered response is converted to integer level codes; assumption diagnostics and box plots show the Kruskal-Wallis result; Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as compact-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
+```{r ordinal-kruskal-example, fig.cap=paste0("Kruskal-Wallis test for ordered comfort ratings by customer segment. The ordered response is converted to integer level codes; assumption diagnostics and box plots show the Kruskal-Wallis result; Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
 set.seed(123)
 segment <- factor(rep(c("Budget", "Standard", "Premium"), each = 50))
 comfort_numeric <- c(
@@ -642,7 +681,10 @@ Its principal contribution is the integration of the full pipeline ---
 data-type detection, distributional assumption checking on fitted model
 residuals, test routing, and annotated graphical output --- into a
 reproducible, server-deployable workflow with a minimal dependency
-footprint. The package is available on CRAN at
+footprint. The user receives not only the selected test, but also the
+pretesting results where applied, the full test statistics, the effect
+size, diagnostic and result plots, and post-hoc comparisons where
+required. The package is available on CRAN at
 `https://CRAN.R-project.org/package=visStatistics` and on GitHub at
 `https://github.com/shhschilling/visStatistics`.
 
@@ -909,7 +951,7 @@ $\bar{y}_w = \sum_{i=1}^{k} w_i \bar{y}_i / w$ is the weighted grand
 mean. Degrees of freedom are adjusted via a Satterthwaite-type
 approximation [@Satterthwaite:1946]. Post-hoc comparisons use
 `games.howell()` [@Games:1976], which applies separate variance
-estimates per pair. Compact letter displays are produced by
+estimates per pair. significant letter displays are produced by
 `multcompLetters()` from \CRANpkg{multcompView} [@Graves:2026].
 
 ## Kruskal--Wallis test {#kw}
