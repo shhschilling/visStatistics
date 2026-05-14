@@ -454,6 +454,28 @@ test_that("visstat integrates correctly with different statistical tests", {
   expect_s3_class(result_regression, "visstat")
 })
 
+test_that("visstat returns effect_size for implemented branches", {
+  setup_test_graphics()
+  on.exit(cleanup_test_graphics())
+
+  mtcars$am <- factor(mtcars$am)
+  hair_eye_df <- counts_to_cases(as.data.frame(HairEyeColor))
+
+  results <- list(
+    t_test = visstat(mtcars$am, mtcars$mpg),
+    kruskal = visstat(iris$Species, iris$Petal.Width),
+    regression = visstat(swiss$Examination, swiss$Fertility),
+    spearman = visstat(airquality$Wind, airquality$Ozone, correlation = TRUE),
+    chi_squared = visstat(hair_eye_df$Eye, hair_eye_df$Hair)
+  )
+
+  for (result in results) {
+    expect_s3_class(result, "visstat")
+    expect_true("effect_size" %in% names(result))
+    expect_true(all(c("name", "estimate", "effect_size_method") %in% names(result$effect_size)))
+  }
+})
+
 # Tests for consistency between syntax forms
 test_that("visstat produces consistent results across syntax forms", {
   data <- create_visstat_test_data()

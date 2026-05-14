@@ -49,7 +49,7 @@ Other typical use cases include quick visualisations, and guided statistical tes
 
 In the frequentest tradition, most routine data analyses reduce to a comparatively small set of inferential frameworks, including group comparisons, contingency-table analyses, and regression models [@Angrist: 2009, @Hayat:2017, @Sato:2017].
 `visStatistics` selects out of these most commonly used “right test” by using a reproducible decision framework based on the data’s distributional assumptions and sample size.
-It visualises its decision by, where appropriate, assumption-diagnostic plot and a descriptive plot with the main test statistics annotated, and returns an R object whose `print()` and `summary()` methods expose the complete test results.
+It visualises its decision by, where appropriate, assumption-diagnostic plot and a descriptive plot with the main test statistics annotated, and returns an R object whose `print()` and `summary()` methods expose the complete test results, including the reported effect size.
 The scripted workflow is well suited for browser-based applications where sensitive data (such as highly confidential medical records) is stored securely on a server and can not be directly accessed by users.
 This approach was already successfully applied to develop a medical scoring tool [@Bijlenga:2017].
 When selecting tests for group comparisons, packages with overlapping scope such as `automatedtests` [@Zeevat:2025] and `compareGroups` [@Subirana:2014] base their test selection on group‑wise normality assessments of the response variable. But group-wise testing inflates the [family-wise type I error rate](#post-hoc-analysis): the probability of at least one false rejection of normality grows with the number of compared groups, leading to unnecessary switching to non-parametric methods even when the linear model assumptions hold globally.
@@ -200,8 +200,7 @@ To check whether the assumptions of a general linear model (see [Appendix A](#gl
   Throughout this vignette, *linear model* refers to the classical Gaussian linear model framework [@Searle:1971] underlying t-tests, ANOVA, and linear regression.
   When normality of residuals is met but homoscedasticity is rejected, `visstat()` selects Welch methods and additionally displays group-wise normality diagnostics via `vis_group_normality()`, since Welch's variance estimates are group-specific and the pooled `lm()` residuals are no longer the appropriate diagnostic under heteroscedasticity.
   These diagnostic plots enable users to visually assess whether assumptions are met and manually override the automated p-value-based test selection.
-  The decision logic is based entirely on p-values and distributional assumptions; it does not assess practical relevance.
-  Users should always report and interpret an appropriate effect size measure (e.g. Cohen's $d$ for t-tests, $\omega^2$ for ANOVA, rank-biserial $r$ for Wilcoxon and Kruskal--Wallis tests) alongside the test result.
+  The decision logic is based on p-values and distributional assumptions; users should also inspect the returned `effect_size` field when interpreting practical relevance [@Shatz:2024].
 
 ## Both variables numeric: Simple linear regression (default) or Spearman rank correlation (`correlation = TRUE`)
 
@@ -351,6 +350,19 @@ Otherwise, a normal approximation with continuity correction is used.
 The function returns a list containing the results of the applied test and the summary statistics used to construct the plot.
 
 ### Examples
+
+#### Student's t-test {.unnumbered}
+
+The `ToothGrowth` dataset records odontoblast length in 60 guinea pigs
+given vitamin C by orange juice (`OJ`) or ascorbic acid (`VC`). With
+delivery method as predictor and length as response, residual normality
+and homoscedasticity are not rejected, so `visstat()` selects Student's
+t-test.
+
+```{r student-ttest-example, fig.show='hide', results='hide'}
+ToothGrowth$supp <- as.factor(ToothGrowth$supp)
+student_ttest <- visstat(ToothGrowth$supp, ToothGrowth$len)
+```
 
 #### Welch's t-test {.unnumbered}
 
@@ -621,7 +633,7 @@ The `airquality` dataset contains daily air quality measurements in New York, Ma
 A default call to `visstat()` fits a simple linear regression model, but triggers the following warning:
 
 ```{r, fig.show='hide'}
-result_ozone0 <- visstat(airquality$Ozone~airquality$Wind)
+result_ozone0 <- visstat(airquality$Wind, airquality$Ozone)
 #calculate AIC of simple linear regression
 AIC(lm(Ozone~Wind, data=airquality))
 ```
@@ -907,7 +919,7 @@ Objects returned by `visstat()` are of class `"visstat"` and support the S3 meth
 
 ## `print()` and `summary()`
 
-`print()` displays the test used and the p-value; `summary()` provides the full contents of the returned object, including assumption tests and post-hoc comparisons.
+`print()` displays the test used, the p-value, and the effect size; `summary()` provides the full contents of the returned object, including assumption tests, post-hoc comparisons, and `effect_size`.
 
 ```{r visstat-methods, fig.show='hide', results='hide'}
 iris_kruskal <- visstat(iris$Species, iris$Petal.Width)
@@ -1119,19 +1131,19 @@ branching decision in `visstat()`; for groups with more than 50
 observations normality is assumed by the central limit theorem
 [@Lumley:2002; @Rasch:2011].
 
-The implementation uses `shapiro.test()` from \CRANpkg{stats} [@R:2026].
+The implementation uses `shapiro.test()` from `stats` [@R:2026].
 
 ### Anderson--Darling test `ad.test()`
 
 The Anderson--Darling test [@Anderson:1952] is particularly sensitive to
 deviations in the tails of the distribution [@Razali:2011; @Yap:2011].
 Let $z_i = (x_{(i)} - \bar{x})/s,\; i=1,2,\ldots,n$ be the standardised order statistics of $x_i$
-and $\Phi$ the standard normal cumulattive  densitiy function. The test statistic is
+and $\Phi$ the standard normal cumulative  density function. The test statistic is
 
 $$A^2 = -n - \frac{1}{n}\sum_{i=1}^{n}(2i-1)
         \left[\ln\Phi(z_i) + \ln\!\left(1 - \Phi(z_{n+1-i})\right)\right].$$
 
-The implementation uses `ad.test()` from \CRANpkg{nortest}
+The implementation uses `ad.test()` from `nortest`
 [@Gross:2015]. Albeit the  Anderson--Darling result is shown in all assumption
 plots, it does **not** drive the branching decision; only Shapiro--Wilk
 does.

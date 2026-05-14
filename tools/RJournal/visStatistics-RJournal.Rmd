@@ -51,7 +51,8 @@ using a reproducible decision framework based on the data's
 distributional assumptions and sample size. It visualises this decision
 by, where appropriate, assumption-diagnostic plots and a descriptive plot
 with the main test statistics annotated, and returns an R object whose
-`print()` and `summary()` methods expose the complete test results. The
+`print()` and `summary()` methods expose the complete test results,
+including the reported effect size. The
 scripted workflow is well suited for browser-based applications where
 sensitive data (such as highly confidential medical records) are stored
 securely on a server and cannot be directly accessed by users. This
@@ -83,7 +84,9 @@ visstat(y ~ x, data = dataframe)
 
 where `x` and `y` are vectors of class `"numeric"`, `"integer"`, or
 `"factor"`. The function returns an object of class `"visstat"` with
-`print()`, `summary()`, and `plot()` methods.
+`print()`, `summary()`, and `plot()` methods. The returned object also
+contains an `effect_size` field with the estimate and the effect-size
+method.
 
 # Decision logic
 The decision logic of `visstat()` summarised in Figure \@ref(fig:overview) is driven by the class of its input vectors:
@@ -206,7 +209,9 @@ Welch's t-test or Welch's one-way test; non-normal residuals leading to
 Wilcoxon or Kruskal--Wallis tests, with Holm-adjusted pairwise Wilcoxon
 tests for the multi-group extension; numeric--numeric regression and
 rank correlation; categorical independence tests under and beyond
-Cochran's rule; and ordinal rank correlation.
+Cochran's rule, including Yates' continuity correction for $2 \times 2$
+tables; ordered responses redirected to Wilcoxon or Kruskal--Wallis;
+and ordinal rank correlation.
 
 ## Numeric response and categorical predictor: two groups
 
@@ -215,6 +220,19 @@ on pooled residuals. If Shapiro--Wilk rejects normality, the decision
 path switches to the Wilcoxon rank-sum test. If normality is not
 rejected, the Levene--Brown--Forsythe test decides between Student's
 equal-variance t-test and Welch's unequal-variance t-test.
+
+### Student's t-test
+
+The `ToothGrowth` dataset records odontoblast length in 60 guinea pigs
+given vitamin C by orange juice (`OJ`) or ascorbic acid (`VC`). With
+delivery method as predictor and length as response, residual normality
+and homoscedasticity are not rejected, so `visstat()` selects Student's
+t-test.
+
+```{r student-ttest-example, fig.show='hide', results='hide'}
+ToothGrowth$supp <- as.factor(ToothGrowth$supp)
+student_ttest <- visstat(ToothGrowth$supp, ToothGrowth$len)
+```
 
 ### Welch's t-test
 
@@ -248,6 +266,26 @@ grades_gender <- data.frame(
             17.3, 19.9,  4.4,  2.1)
 )
 wilcoxon_stats <- visstat(grades_gender$sex, grades_gender$grade)
+```
+
+### Wilcoxon rank-sum test with ordered response
+
+When the response is an ordered factor and the predictor has two levels,
+`visstat()` converts the ordered response to integer level codes and
+routes the analysis to the Wilcoxon rank-sum test.
+
+```{r ordinal-wilcoxon-example, fig.show='hide', results='hide'}
+set.seed(123)
+segment <- factor(rep(c("Budget", "Premium"), each = 50))
+satisfaction_numeric <- c(
+  sample(1:5, 50, replace = TRUE, prob = c(0.15, 0.25, 0.30, 0.20, 0.10)),
+  sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.35, 0.30))
+)
+survey_data <- data.frame(
+  segment = segment,
+  satisfaction = ordered(satisfaction_numeric)
+)
+wilcox_ordered <- visstat(survey_data, "satisfaction", "segment")
 ```
 
 ## Numeric response and categorical predictor: more than two groups
@@ -313,6 +351,28 @@ distinct compact-letter labels.
 
 ```{r kruskal-example, fig.cap="Kruskal-Wallis test applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots with the Kruskal-Wallis result; all pairwise post-hoc comparisons significant (all letters differ).", out.width="48%", fig.height=4.5, fig.show="hold"}
 kruskal_iris <- visstat(iris$Species, iris$Petal.Width)
+```
+
+### Kruskal-Wallis test with ordered response
+
+When the response is an ordered factor and the predictor has more than
+two levels, `visstat()` again converts the ordered response to integer
+level codes and routes the analysis to `kruskal.test()` followed by
+Holm-adjusted `pairwise.wilcox.test()`.
+
+```{r ordinal-kruskal-example, fig.show='hide', results='hide'}
+set.seed(123)
+segment <- factor(rep(c("Budget", "Standard", "Premium"), each = 50))
+comfort_numeric <- c(
+  sample(1:5, 50, replace = TRUE, prob = c(0.30, 0.30, 0.20, 0.15, 0.05)),
+  sample(1:5, 50, replace = TRUE, prob = c(0.10, 0.20, 0.40, 0.20, 0.10)),
+  sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.35, 0.30))
+)
+survey_data_3 <- data.frame(
+  segment = segment,
+  comfort = ordered(comfort_numeric)
+)
+kruskal_ordered <- visstat(survey_data_3, "comfort", "segment")
 ```
 
 ## Both variables numeric
@@ -406,6 +466,21 @@ hair_eye_df <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(hair_eye_df$Eye, hair_eye_df$Hair)
 ```
 
+### Pearson's $\chi^2$ test with Yates' continuity correction
+
+Restricting `HairEyeColor` to black or brown hair and brown or blue eyes
+yields a $2 \times 2$ table. Cochran's rule is still satisfied, so
+`visstat()` applies Pearson's $\chi^2$ test with Yates' continuity
+correction.
+
+```{r yates-example, fig.show='hide', results='hide'}
+hair_black_brown_eyes_brown_blue <- HairEyeColor[1:2, 1:2, ]
+hair_black_brown_eyes_brown_blue_df <- counts_to_cases(
+  as.data.frame(hair_black_brown_eyes_brown_blue))
+yates_stats <- visstat(hair_black_brown_eyes_brown_blue_df$Eye,
+                       hair_black_brown_eyes_brown_blue_df$Hair)
+```
+
 ### Fisher's exact test
 
 Restricting `HairEyeColor` to male participants with black or brown hair
@@ -479,10 +554,10 @@ family, the link function, or the estimator -- that cannot be automated
 without substantially expanding the decision tree and increasing the
 risk of Type I error inflation.
 
-Effect-size selection is likewise left to the user. The appropriate
-measure depends on the scientific question, measurement scale, and
-selected test. Automated test selection should therefore be interpreted
-together with a suitable effect size.
+`visstat()` reports an `effect_size` field for the selected test. This
+estimate should be interpreted alongside the \(p\)-value, but it does
+not replace subject-matter judgment about practical relevance
+[@Shatz:2024].
 
 Within this restricted automated pipeline, the routing depends on
 p-values of assumption tests to select tests of central tendencies. But no single (assumption) test maintains optimal Type I

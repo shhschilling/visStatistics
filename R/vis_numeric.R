@@ -220,6 +220,11 @@ vis_numeric <- function(y,
       independent_variable_x = name_of_factor,
       dependent_variable_y = name_of_sample,
       summary_regression = reg_summary,
+      effect_size = effect_size_record(
+        "R-squared",
+        reg_summary$r.squared,
+        "Coefficient of determination for simple linear regression"
+      ),
       assumptions = assumptions,
       warnings = warnings_list,
       r_squared = reg_summary$r.squared,
@@ -304,6 +309,11 @@ vis_numeric <- function(y,
       dependent_variable_y = name_of_sample,
       correlation_test = cor_test,
       correlation_coefficient = cor_coef,
+      effect_size = effect_size_record(
+        "Spearman's rho",
+        unname(cor_coef),
+        "Spearman rank correlation coefficient"
+      ),
       p_value = p_value,
       method_used = method_used,
       assumptions = assumptions,

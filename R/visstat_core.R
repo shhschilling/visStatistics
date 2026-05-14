@@ -266,6 +266,7 @@ visstat_core <- function(dataframe,
       warning("In each group must be at least one member and total sample size >= 3.", call. = FALSE)
       vis_sample_fact <- list(
         error = "Insufficient data",
+        effect_size = effect_size_unavailable("Effect size unavailable for insufficient data."),
         input_summary = list(sample_name = name_of_sample, factor_name = name_of_factor)
       )
       attr(vis_sample_fact, "plot_paths") <- plot_paths
@@ -636,6 +637,12 @@ visstat_core <- function(dataframe,
   
   
   # At the very end:
+  if (!exists("vis_sample_fact") || is.null(vis_sample_fact)) {
+    vis_sample_fact <- list(error = "Analysis completed but no results were generated")
+  }
+  if (is.list(vis_sample_fact) && is.null(vis_sample_fact$effect_size)) {
+    vis_sample_fact$effect_size <- effect_size_for_visstat(vis_sample_fact, samples, fact)
+  }
   attr(vis_sample_fact, "plot_paths") <- plot_paths
   attr(vis_sample_fact, "captured_plots") <- capture_env$captured_plots
   class(vis_sample_fact) <- "visstat"
@@ -645,10 +652,6 @@ visstat_core <- function(dataframe,
     while (!is.null(dev.list())) {
       dev.off()
     }
-  }
-  
-  if (!exists("vis_sample_fact") || is.null(vis_sample_fact)) {
-    vis_sample_fact <- list(error = "Analysis completed but no results were generated")
   }
   
   return(invisible(vis_sample_fact))
