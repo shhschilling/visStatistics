@@ -48,7 +48,7 @@ summary(anova)
 #> 
 #> --- Named components ---
 #> [1] "summary statistics of ANOVA" "post-hoc analysis "         
-#> [3] "conf.level"                 
+#> [3] "conf.level"                  "effect_size"                
 #> 
 #> --- Contents ---
 #> 
@@ -86,4 +86,15 @@ summary(anova)
 #> 
 #> $conf.level:
 #> [1] 0.95
+#> 
+#> $effect_size:
+#> $name
+#> [1] "omega-squared"
+#> 
+#> $estimate
+#> [1] 0.2154794
+#> 
+#> $effect_size_method
+#> [1] "Omega-squared for one-way ANOVA"
+#> 
 ```
