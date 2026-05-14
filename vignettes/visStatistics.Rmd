@@ -520,16 +520,30 @@ Post-hoc analysis with `TukeyHSD()`.
 Note that the omnibus F-test reports p = 0.086 — not significant at $\alpha=0.05$.
 Therefore no pairwise differences are expected in the post-hoc analysis and all groups share the same green letter "a".
 
+#### Welch's heteroscedastic one-way ANOVA {.unnumbered}
+
+In the `iris` dataset, using `Species` as predictor and `Sepal.Length`
+as response, Shapiro--Wilk does not reject normality of the standardised
+residuals, whereas the Levene--Brown--Forsythe test rejects
+homoscedasticity. `visstat()` therefore selects Welch's heteroscedastic
+one-way ANOVA (`oneway.test()`), adds group-wise normality diagnostics,
+and applies Games--Howell post-hoc comparisons.
+
+```{r, results='hide'}
+welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length)
+```
+
 #### Kruskal--Wallis rank sum test {.unnumbered}
 
-The `iris` dataset contains petal width measurements (in cm) for three different iris species.
+For the same dataset, `Petal.Width` by `Species` follows a different
+route.
 
 ```{r,  results='hide'}
 visstat(iris$Species, iris$Petal.Width)
 ```
 
-In this example, scatter plots of the standardised residuals and the Q-Q plot suggest that the residuals are not normally distributed.
-This is confirmed by very small p-values from both the Shapiro--Wilk and Anderson-Darling tests.
+The standardised residuals show clear departures from normality, and
+both normality tests return very small $p$-values.
 
 Since the Shapiro--Wilk p-value is below $\alpha$, `visstat()` switches to the non-parametric `kruskal.test()`.
 Post-hoc analysis using `pairwise.wilcox.test()` shows significant differences in petal width between all three species, as indicated by distinct group labels (all green letters differ).

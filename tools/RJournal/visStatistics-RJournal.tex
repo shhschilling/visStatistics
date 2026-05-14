@@ -251,6 +251,9 @@ ToothGrowth$supp <- as.factor(ToothGrowth$supp)
 student_ttest <- visstat(ToothGrowth$supp, ToothGrowth$len)
 \end{verbatim}
 
+\includegraphics[width=1\linewidth]{visStatistics-RJournal_files/figure-latex/student-ttest-example-1}
+\includegraphics[width=1\linewidth]{visStatistics-RJournal_files/figure-latex/student-ttest-example-2}
+
 \subsubsection{Welch's t-test}\label{welchs-t-test}
 
 The \emph{Motor Trend Car Road Tests} dataset (\texttt{mtcars}) contains 32
@@ -455,10 +458,9 @@ spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 
 \subsubsection{\texorpdfstring{Model exploration outside \texttt{visstat()}}{Model exploration outside visstat()}}\label{model-exploration-outside-visstat}
 
-The second path is model exploration outside \texttt{visstat()}. For these
-data, a Gamma GLM with log link is one plausible follow-up because
-\texttt{Ozone} is positive, continuous, and shows variance increasing with the
-mean.
+For the \texttt{airquality}
+data, a Gamma GLM with log link is one plausible follow-up, because
+\texttt{Ozone} vs \texttt{Wind}is positive, continuous, and shows variance increasing with the mean.
 
 \subsection{Both variables categorical}\label{both-variables-categorical}
 
