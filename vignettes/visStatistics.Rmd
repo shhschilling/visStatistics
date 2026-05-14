@@ -621,7 +621,9 @@ The `airquality` dataset contains daily air quality measurements in New York, Ma
 A default call to `visstat()` fits a simple linear regression model, but triggers the following warning:
 
 ```{r, fig.show='hide'}
-result_ozone0 <- visstat(airquality$Wind, airquality$Ozone)
+result_ozone0 <- visstat(airquality$Ozone~airquality$Wind)
+#calculate AIC of simple linear regression
+AIC(lm(Ozone~Wind, data=airquality))
 ```
 
 The warning reports violated normality and homoscedasticity and recommends two paths: rerun with `correlation = TRUE` within `visstat()`, or switch to a model outside it.
@@ -641,6 +643,7 @@ airquality_clean <- subset(airquality, Ozone > 0)
 # Gamma model with log mapping
 model_gamma <- glm(Ozone ~ Wind, data = airquality_clean, family = Gamma(link = "log"))
 summary(model_gamma)
+model_gamma$aic
 ```
 
 ```{r, echo=FALSE}
@@ -657,7 +660,7 @@ legend("topright", legend = c("Data", "Gamma GLM (log link)"),
        col = c("darkgrey", "red"), pch = c(19, NA), lty = c(NA, 1), lwd = c(NA, 2))
 ```
 
-For a well-fitting Gamma generalised linear model, standardised deviance residuals are asymptotically standard normal; we use Shapiro--Wilk and Anderson--Darling as approximate checks.
+For a well-fitting Gamma generalised linear model, standardised deviance residuals are asymptotically standard normal; we use Shapiro--Wilk and Anderson--Darling as approximate checks confirming that the Gamma distribution is much better suited to fit the data:
 
 ```{r}
 # Extract standardised  residuals
@@ -667,6 +670,11 @@ shapiro.test(std_dev_res)
 # Validate using the Anderson-Darling normality test
 nortest::ad.test(std_dev_res)
 ```
+The Gamma generalised linear model significantly improves the model fit, as evidenced by the drop in Akaike Information Criterion (AIC, [@Akaike:1974])  from 1093.2 (simple linear model) to 1040.0  
+
+
+The Gamma GLM significantly improves the model fit, as evidenced by the drop in the Akaike Information Criterion [@Akaike:1974] from 1093.2 to 1040.0. The increase in the Shapiro–Wilk ‭$p$‬-value from $p_{SW} = 0.0052$‬in the simple linear regression to $p_{SW} = 0.78$‬ indicates that the Gamma GLM successfully corrected the model misspecification. Since the standardised deviance residuals no longer show significant departures from normality, the heteroscedasticity is successfully handled. This comparison demonstrates that when visstat() signals a failure of the Gaussian framework, moving to a GLM provides a statistically superior and valid alternative.
+
 
 ## Both variables categorical: Comparing proportions
 
