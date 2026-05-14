@@ -20,7 +20,7 @@ knitr::include_graphics("figures/overview.png")
 knitr::include_graphics("figures/decision_tree.png")
 
 
-## ----student-ttest-example, fig.show='hide', results='hide'-------------------
+## ----student-ttest-example, results='hide'------------------------------------
 ToothGrowth$supp <- as.factor(ToothGrowth$supp)
 student_ttest <- visstat(ToothGrowth$supp, ToothGrowth$len)
 

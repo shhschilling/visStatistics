@@ -39,6 +39,8 @@ knitr::opts_chunk$set(
   out.width  = "100%",
   echo = TRUE
 )
+example_conf_level <- 0.95
+example_alpha <- 1 - example_conf_level
 ```
 
 # Introduction
@@ -277,7 +279,7 @@ delivery method as predictor and length as response, residual normality
 and homoscedasticity are not rejected, so `visstat()` selects Student's
 t-test.
 
-```{r student-ttest-example, fig.show='hide', results='hide'}
+```{r student-ttest-example, fig.cap="Student's t-test applied to the \\texttt{ToothGrowth} dataset (\\texttt{supp} vs.\\ \\texttt{len}). Assumption diagnostics and box plots of odontoblast length by vitamin C delivery method with the Student t-test result.", out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
 ToothGrowth$supp <- as.factor(ToothGrowth$supp)
 student_ttest <- visstat(ToothGrowth$supp, ToothGrowth$len)
 ```
@@ -316,7 +318,7 @@ individual rows, passenger class is treated as ordered and gender as a
 two-level predictor. `visstat()` converts the ordered response to integer
 level codes and selects the Wilcoxon rank-sum test.
 
-```{r ordinal-wilcoxon-example, fig.show='hide', results='hide'}
+```{r ordinal-wilcoxon-example, fig.cap="Wilcoxon rank-sum test for ordered passenger class by sex in the expanded \\texttt{Titanic} data. Ordered class is converted to integer level codes; assumption diagnostics and box plots show the Wilcoxon result.", out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
 titanic_df <- counts_to_cases(as.data.frame(Titanic))
 titanic_df$Class <- ordered(titanic_df$Class,
                             levels = c("1st", "2nd", "3rd", "Crew"))
@@ -332,10 +334,11 @@ experiment conducted on six blocks. Shapiro--Wilk does not reject
 normality of the pooled residuals and the Levene test does not reject
 homoscedasticity, so `visstat()` applies Fisher's one-way ANOVA followed
 by Tukey HSD post-hoc comparisons. The omnibus F-test is not significant
-at $\alpha = 0.05$, and all groups share the same compact-letter label.
+at $\alpha = `r example_alpha`$, and all groups share the same
+compact-letter label.
 
-```{r anova-example, fig.cap="Fisher's one-way ANOVA applied to the \\texttt{npk} dataset (\\texttt{block} vs.\\ \\texttt{yield}). Assumption diagnostics and box plots of pea yield by experimental block; compact letter display (TukeyHSD, $\\alpha = 0.05$) shows no significant pairwise differences.", out.width="48%", fig.height=4.5, fig.show="hold"}
-anova_npk <- visstat(npk$block, npk$yield, conf.level = 0.95)
+```{r anova-example, fig.cap=paste0("Fisher's one-way ANOVA applied to the \\texttt{npk} dataset (\\texttt{block} vs.\\ \\texttt{yield}). Assumption diagnostics and box plots of pea yield by experimental block; Tukey HSD post-hoc comparisons are shown as compact-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
+anova_npk <- visstat(npk$block, npk$yield, conf.level = example_conf_level)
 ```
 
 ### Welch's heteroscedastic one-way ANOVA
@@ -347,8 +350,9 @@ homoscedasticity. `visstat()` therefore selects Welch's heteroscedastic
 one-way ANOVA (`oneway.test()`), adds group-wise normality diagnostics,
 and applies Games--Howell post-hoc comparisons.
 
-```{r welch-anova-example, fig.cap="Welch's heteroscedastic one-way ANOVA applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Sepal.Length}). Assumption diagnostics, group-wise normality diagnostics, and box plots with Games--Howell post-hoc comparisons.", out.width="32%", fig.height=4.5, fig.show="hold"}
-welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length)
+```{r welch-anova-example, fig.cap=paste0("Welch's heteroscedastic one-way ANOVA applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Sepal.Length}). Assumption diagnostics, group-wise normality diagnostics, and box plots; Games--Howell post-hoc comparisons are shown as compact-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="32%", fig.height=4.5, fig.show="hold"}
+welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length,
+                            conf.level = example_conf_level)
 ```
 
 ### Kruskal-Wallis rank sum test
@@ -361,8 +365,9 @@ Shapiro--Wilk falls below $\alpha$, `visstat()` switches to
 three species differ significantly in petal width, as indicated by
 distinct compact-letter labels.
 
-```{r kruskal-example, fig.cap="Kruskal-Wallis test applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots with the Kruskal-Wallis result; all pairwise post-hoc comparisons significant (all letters differ).", out.width="48%", fig.height=4.5, fig.show="hold"}
-kruskal_iris <- visstat(iris$Species, iris$Petal.Width)
+```{r kruskal-example, fig.cap=paste0("Kruskal-Wallis test applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots; Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as compact-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
+kruskal_iris <- visstat(iris$Species, iris$Petal.Width,
+                        conf.level = example_conf_level)
 ```
 
 ### Kruskal-Wallis test with ordered response
@@ -372,7 +377,7 @@ two levels, `visstat()` again converts the ordered response to integer
 level codes and routes the analysis to `kruskal.test()` followed by
 Holm-adjusted `pairwise.wilcox.test()`.
 
-```{r ordinal-kruskal-example, fig.show='hide', results='hide'}
+```{r ordinal-kruskal-example, fig.cap=paste0("Kruskal-Wallis test for ordered comfort ratings by customer segment. The ordered response is converted to integer level codes; assumption diagnostics and box plots show the Kruskal-Wallis result; Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as compact-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
 set.seed(123)
 segment <- factor(rep(c("Budget", "Standard", "Premium"), each = 50))
 comfort_numeric <- c(
@@ -384,7 +389,8 @@ survey_data_3 <- data.frame(
   segment = segment,
   comfort = ordered(comfort_numeric)
 )
-kruskal_ordered <- visstat(survey_data_3, "comfort", "segment")
+kruskal_ordered <- visstat(survey_data_3, "comfort", "segment",
+                           conf.level = example_conf_level)
 ```
 
 ## Both variables numeric
@@ -409,7 +415,7 @@ outside the automated decision tree. A default
 `visstat()` call for ozone concentration (`Ozone`) as a function of wind
 speed (`Wind`) fits the simple linear model.
 
-```{r ozone-lm-triage, fig.show='hide', results='hide'}
+```{r ozone-lm-triage, fig.cap="Default simple linear regression for \\texttt{Ozone} by \\texttt{Wind} in the \\texttt{airquality} dataset. Assumption diagnostics flag non-normal standardised residuals and heteroscedasticity before alternative routes are considered.", out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
 ozone_lm <- visstat(airquality$Wind, airquality$Ozone)
 ```
 
@@ -435,10 +441,9 @@ spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 
 ### Model exploration outside `visstat()`
 
-The second path is model exploration outside `visstat()`. For these
-data, a Gamma GLM with log link is one plausible follow-up because
-`Ozone` is positive, continuous, and shows variance increasing with the
-mean.
+For the `airquality`
+data, a Gamma GLM with log link is one plausible follow-up, because
+`Ozone` vs `Wind `is positive, continuous, and shows variance increasing with the mean.
 
 ## Both variables categorical
 
@@ -468,7 +473,7 @@ yields a $2 \times 2$ table. Cochran's rule is still satisfied, so
 `visstat()` applies Pearson's $\chi^2$ test with Yates' continuity
 correction.
 
-```{r yates-example, fig.show='hide', results='hide'}
+```{r yates-example, fig.cap="Pearson's $\\chi^2$ test with Yates' continuity correction for a $2 \\times 2$ subset of \\texttt{HairEyeColor} (black/brown hair and brown/blue eyes). Grouped bar chart of row percentages with the corrected test result.", out.width="60%", fig.height=4.5, fig.show="hold", results='hide'}
 hair_black_brown_eyes_brown_blue <- HairEyeColor[1:2, 1:2, ]
 hair_black_brown_eyes_brown_blue_df <- counts_to_cases(
   as.data.frame(hair_black_brown_eyes_brown_blue))
