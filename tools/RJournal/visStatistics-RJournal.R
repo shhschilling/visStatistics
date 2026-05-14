@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 knitr::include_graphics("figures/overview.png")
 
 
-## ----decision-tree, echo=FALSE, fig.cap="Decision tree for tests on central tendencies.", fig.alt="Decision tree selecting among Welch t-test, Student t-test, Wilcoxon, Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests based on sample size, and the p-values of both Shapiro-Wilk and Anderson-Darling test on the .standardized residuals of the linear model."----
+## ----decision-tree, echo=FALSE, fig.cap="Decision tree for tests on central tendencies. If all groups contain more than 50 observations, the formal residual normality test is bypassed and variance homogeneity is assessed directly. Otherwise, Shapiro--Wilk on standardised residuals determines whether the route remains mean-based or switches to rank-based tests; Levene--Brown--Forsythe then selects equal-variance or Welch-type procedures.", fig.alt="Decision tree selecting among Welch t-test, Student t-test, Wilcoxon, Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests based on the all-groups n > 50 rule, the Shapiro-Wilk test on standardised residuals, and the Levene-Brown-Forsythe test for variance homogeneity."----
 knitr::include_graphics("figures/decision_tree.png")
 
 

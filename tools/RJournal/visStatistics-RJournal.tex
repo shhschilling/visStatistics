@@ -7,21 +7,21 @@
 \maketitle
 
 \abstract{%
-\texttt{visStatistics} automatically selects and visualises appropriate statistical tests between two column vectors of class \texttt{"numeric"}, \texttt{"integer"}, or \texttt{"factor"}. No manual test selection is required: the function determines the appropriate method from the data types and distributional properties alone. The choice of test depends on the \texttt{class}, distributional assumptions, and sample size of the vectors.
-The main function \texttt{visstat()} visualises the selected test with appropriate graphs (box plots, bar charts, regression lines with confidence bands, mosaic plots for Pearson's \(\chi^2\) test, residual plots), annotated with the main test results, including visualisations of the assumption checks and post-hoc analyses.
-This scripted workflow is well suited for browser-based applications, where users interact only through a web interface, while server-side R applications handle the data processing.
-Other typical use cases include quick visualisations, and guided statistical test selection, for example in statistical consulting or educational settings.
+\texttt{visStatistics} automatically selects and visualises appropriate statistical hypothesis tests comparing two vectors of class \texttt{"numeric"}, \texttt{"integer"}, \texttt{"factor"}, or \texttt{"ordered"}. No manual test selection is required: the function determines the appropriate method from the variable classes, distributional assumptions, and sample sizes.
+The main function \texttt{visstat()} visualises the selected test with appropriate graphs, including box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots, and Q-Q plots. These outputs are annotated with relevant test statistics, assumption checks, and post-hoc analyses where applicable.
+The package shifts attention from ad-hoc test selection to visual diagnostic assessment and statistical interpretation. This is particularly relevant for routine frequentist tests, where users often select among common procedures without formally checking assumptions such as residual normality, variance homogeneity, sample size requirements, or expected cell counts.
+The scripted workflow is well suited for browser-based and server-side R applications, where users interact through a web interface while R handles the data processing. Other typical use cases include quick visualisations, statistical consulting, and teaching settings where transparent test selection and diagnostic feedback are important.
 }
 
 \section{Introduction}\label{introduction}
 
-Most routine data analyses reduce to a comparatively small set of
-inferential frameworks, including group comparisons, contingency-table
-analyses, and regression models \citep[\citet{Sato:2017}]{Hayat:2017}.
-\texttt{visStatistics} selects out of these most commonly used ``right test'' by
+In the frequentest tradition, most routine data analyses reduce to a comparatively small set of
+inferential frameworks, including group comparisons, regression models and contingency-table
+analyses \citep[2009,\citet{Hayat:2017}, \citet{Sato:2017}, \citet{Brodeur:2020}]{Angrist}; their correct use depends on assumptions that are often checked informally or not at all. \texttt{visStatistics} targets this gap by making routine frequentist test selection explicit, assumption-aware, visual, and reproducible.
+It selects out a test by
 using a reproducible decision framework based on the data's
 distributional assumptions and sample size. It visualises its decision
-by, where appropriate, assumption-diagnostic plot and a descriptive plot
+by, where appropriate, assumption-diagnostic plots and a descriptive plot
 with the main test statistics annotated, and returns an R object whose
 \texttt{print()} and \texttt{summary()} methods expose the complete test results. The
 scripted workflow is well suited for browser-based applications where
@@ -42,7 +42,7 @@ linear model framework \citep{Searle:1971}.
 
 \section{Package overview}\label{package-overview}
 
-\CRANpkg{visStatistics} is available on CRAN. The package accepts input
+\CRANpkg{visStatistics} is available on CRAN, its main function `vistat()`` accepts input
 in two equivalent forms:
 
 \begin{verbatim}
@@ -55,51 +55,54 @@ visstat(y ~ x, data = dataframe)
 
 where \texttt{x} and \texttt{y} are vectors of class \texttt{"numeric"}, \texttt{"integer"}, or
 \texttt{"factor"}. The function returns an object of class \texttt{"visstat"} with
-\texttt{print()}, \texttt{summary()}, and \texttt{plot()} S3 methods, and optionally writes
-graphics to disk via \CRANpkg{Cairo} \citep{Urbanek:2025}.
+\texttt{print()}, \texttt{summary()}, and \texttt{plot()} methods.
 
 \section{Decision logic}\label{decision-logic}
 
-The significance level \(\alpha = 1 - \texttt{conf.level}\) is
-user-controlled (default 0.95). Figure \ref{fig:overview} gives a
-high-level overview of all implemented tests by input class; Figure
-\ref{fig:decision-tree} details the decision path for a numeric
-response and categorical predictor. Definitions of all test
-statistics and association measures are collected in \hyperref[tests]{Appendix B}.
+The decision logic `\texttt{visstatistics()} summarised in figure @ref(fig:overview is driven by the class of its input vectors:
 
 \begin{figure}
 \includegraphics[width=1\linewidth,alt={Flowchart showing all implemented statistical tests organised by the class of the input vectors.}]{figures/overview} \caption{Overview of all implemented tests selected based on input class.}\label{fig:overview}
 \end{figure}
 
-\begin{figure}
-\includegraphics[width=1\linewidth,alt={Decision tree selecting among Welch t-test, Student t-test, Wilcoxon, Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests based on sample size, and the p-values of both Shapiro-Wilk and Anderson-Darling test on the .standardized residuals of the linear model.}]{figures/decision_tree} \caption{Decision tree for tests on central tendencies.}\label{fig:decision-tree}
-\end{figure}
-
-Figure \ref{fig:overview} is read by input class. Numeric responses
+Numeric responses
 with categorical predictors enter the central-tendency branch; two
 unordered factors enter the proportion-comparison branch; two numeric
 variables enter simple linear regression unless \texttt{correlation\ =\ TRUE},
 which switches to Spearman rank correlation; and two factors, which inherit the class \texttt{ordered} are analysed as Kendall rank correlation when \texttt{correlation\ =\ TRUE}.
-Figure \ref{fig:decision-tree} then expands the central-tendency
-branch. Following the linear-model framing introduced above and detailed
-in \hyperref[glm]{Appendix A}, the first split is standardised residual of the fitted linear model
-normality. If Shapiro--Wilk rejects residual normality, \texttt{visstat()}
-selects the non-parametric path (\texttt{wilcox.test()} for two groups,
-\texttt{kruskal.test()} for more than two groups, with pairwise Wilcoxon
-post-hoc comparisons. If residual normality is not rejected,
-Levene--Brown--Forsythe decides between the equal-variance parametric
-path (\texttt{t.test(var.equal\ =\ TRUE)} or \texttt{aov()} with \texttt{TukeyHSD()}) and the
-heteroscedastic Welch path (\texttt{t.test()} or \texttt{oneway.test()} with
-\texttt{games.howell()}).
+Definitions of all implemented test
+statistics and association measures are collected in \hyperref[tests]{Appendix B}.
 
-\subsection{Numeric response and categorical predictor: comparing central tendencies}\label{numeric-response-and-categorical-predictor-comparing-central-tendencies}
+\subsection{Test selection based on the assumptions of the general linear framework}\label{test-selection-based-on-the-assumptions-of-the-general-linear-framework}
 
-A linear model \texttt{lm(y\ \textasciitilde{}\ x)} is fitted and assumption diagnostics are
-always displayed via \texttt{vis\_lm\_assumptions()} (see \hyperref[glm]{Appendix A}).
-The Shapiro--Wilk test \citep{Shapiro:1965} is applied to internally
-studentised residuals from \texttt{rstandard()} \citep{Cook:1982}. When all groups
-contain more than 50 observations, normality is assumed by the central
-limit theorem \citep{Lumley:2002, Rasch:2011}.
+Student's t-test, Fisher's ANOVA, and simple linear regression all
+belong to the general linear model framework \hyperref[glm]{see Appendix A} and
+thus share a common set of assumptions: the expected value of the
+response is a linear function of the predictors, the error terms are
+independent and normally distributed with expectation 0, and the error
+variance is constant at \(\sigma^2\). Test selection for
+\hyperref[numeric-categoric]{tests of central tendencies} is steered by checking
+the fitted model residuals in regard to these assumptions.
+
+In the following subsections, we detail the decision logic following the
+structure of the overview figure \ref{fig:overview}.
+
+\subsection{Numeric response and categorical predictor: comparing central tendencies}\label{numeric-categoric}
+
+Figure \ref{fig:decision-tree} expands the central-tendency branch.
+
+\begin{figure}
+\includegraphics[width=1\linewidth,alt={Decision tree selecting among Welch t-test, Student t-test, Wilcoxon, Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests based on the all-groups n > 50 rule, the Shapiro-Wilk test on standardised residuals, and the Levene-Brown-Forsythe test for variance homogeneity.}]{figures/decision_tree} \caption{Decision tree for tests on central tendencies. If all groups contain more than 50 observations, the formal residual normality test is bypassed and variance homogeneity is assessed directly. Otherwise, Shapiro--Wilk on standardised residuals determines whether the route remains mean-based or switches to rank-based tests; Levene--Brown--Forsythe then selects equal-variance or Welch-type procedures.}\label{fig:decision-tree}
+\end{figure}
+
+The first split checks group size. When all groups contain more than 50
+observations, the normality of the sampling distribution of the group
+means is assumed by the central limit theorem \citep{Lumley:2002, Rasch:2011}, and the residual normality test is bypassed to avoid
+rejecting negligible deviations in large samples \citep{Ghasemi:2012, Fagerland:2012, Shatz:2024}. Otherwise, a linear model \texttt{lm(y\ \textasciitilde{}\ x)}
+(see \hyperref[glm]{Appendix A}) is fitted, assumption diagnostic plots are
+displayed (for details see \hyperref[assumptions]{Assumption diagnostics}), and
+the Shapiro--Wilk (SW) test \citep{Shapiro:1965} is applied to internally
+studentised residuals from \texttt{rstandard()} \citep{Cook:1982}.
 
 If normality is rejected (\(p_\text{SW} \le \alpha\)), non-parametric
 tests are selected: \texttt{wilcox.test()} \citep{Mann:1947} for two groups, or
@@ -108,13 +111,13 @@ tests are selected: \texttt{wilcox.test()} \citep{Mann:1947} for two groups, or
 
 If normality is not rejected, the Levene--Brown--Forsythe test
 \texttt{levene.test()} \citep{Brown:1974} (see \hyperref[tests]{Appendix B}) assesses
-variance homogeneity. For homoscedastic data, Student's
-\texttt{t.test(var.equal\ =\ TRUE)} or Fisher's \texttt{aov()} \citep{Fisher:1990} with
-\texttt{TukeyHSD()} \citep{Hochberg:1987} is applied. For heteroscedastic data,
-Welch's \texttt{t.test()} \citep{Welch:1947, Satterthwaite:1946} or \texttt{oneway.test()}
-\citep{Welch:1951} with \texttt{games.howell()} \citep{Games:1976} is applied. When
-switching to Welch methods, group-wise normality diagnostics are
-additionally displayed via \texttt{vis\_group\_normality()}, since the pooled
+variance homogeneity. For homoscedastic data,
+\texttt{t.test(var.equal\ =\ TRUE)} is applied for two groups, or Fisher's
+\texttt{aov()} with \texttt{TukeyHSD()} for more than two groups. For
+heteroscedastic data, Welch's \texttt{t.test()} \citep{Welch:1947, Satterthwaite:1946} is applied for two groups, or Welch's
+\texttt{oneway.test()} \citep{Welch:1951} with \texttt{games.howell()} \citep{Games:1976} for
+more than two groups. When switching to Welch methods, group-wise
+normality diagnostics are additionally displayed, since the pooled
 \texttt{lm()} residuals are no longer the appropriate diagnostic under
 heteroscedasticity.
 
@@ -463,16 +466,6 @@ kendall_result <- visstat(performance, alcohol, correlation = TRUE)
 \includegraphics[width=0.8\linewidth]{visStatistics-RJournal_files/figure-latex/kendall-example-1} \caption{Kendall's $\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance (both five-point ordinal scales). Jittered rank--rank scatter annotated with $\tau_b$ and the $p$-value; the negative monotone association is significant.}\label{fig:kendall-example}
 \end{figure}
 
-\section{Saving graphical output}\label{saving-graphical-output}
-
-All plots can be saved in any format supported by \CRANpkg{Cairo}
-\citep{Urbanek:2025} --- \texttt{"png"}, \texttt{"pdf"}, \texttt{"svg"}, \texttt{"ps"}, \texttt{"tiff"} --- by
-supplying the \texttt{graphicsoutput} and \texttt{plotDirectory} arguments. File names
-follow the pattern \texttt{testname\_namey\_namex.ext} by default, or a
-user-supplied \texttt{plotName}. The full file paths of generated graphics are
-stored as the \texttt{"plot\_paths"} attribute on the returned \texttt{"visstat"}
-object.
-
 \section{Limitations}\label{limitations}
 
 The main purpose of this package is a decision-logic based automatic
@@ -606,7 +599,48 @@ equals the Fisher's ANOVA test static, \(t^2 = F\),
 resulting in identical
 \(p\)-values for \texttt{t.test(var.equal\ =\ TRUE)} and \texttt{aov()} .
 
-\section{Appendix B: Test statistics and association measures}\label{tests}
+\section{\texorpdfstring{Appendix B: The general linear model assumption diagnostics \texttt{vis\_lm\_assumptions()}}{Appendix B: The general linear model assumption diagnostics vis\_lm\_assumptions()}}\label{assumptions}
+
+All tests within the linear model framework (see \hyperref[glm]{Appendix A}) share a common set of assumptions:
+
+\begin{itemize}
+\item
+  Linearity: The expected value of the response is a linear function of the predictors; assessed by checking for systematic patterns in residual plots.
+\item
+  Error terms are independent, normally distributed with expectation value 0 and have constant error variance \(\sigma^2\)
+\end{itemize}
+
+The function \texttt{vis\_lm\_assumptions()} provides a unified visual and statistical framework for validating the {[}linear model{]} (\#glm) assumptions.
+It fits a linear model using \texttt{aov()} and provides four standard diagnostic plots:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Histogram and Normal Density}: Displays the distribution of standardised residuals with a red normal density curve overlay to visually assess normality.
+\item
+  \textbf{Std. Residuals vs.~Fitted}: It shows the standardised residuals against fitted values with a zero-line to detect non-linearity or heteroscedasticity.
+\item
+  \textbf{Normal Q-Q Plot}: A theoretical quantile-quantile plot using the standardised residuals to identify deviations from the Gaussian distribution.
+\item
+  If \texttt{correlation\ =\ FALSE} (regression mode), the \textbf{Standardised Residuals vs.~Leverage} plot; if \texttt{correlation\ =\ TRUE} (correlation mode), a \textbf{Scale-Location} plot.
+\end{enumerate}
+
+\subsection{Test for normality and homoscedasticity}\label{test-for-normality-and-homoscedasticity}
+
+The diagnostic plots are enhanced by p-values of tests for normality and homoscedasticity, shown in the title of the plot.
+
+\textbf{Normality Assessment}: The function evaluates residual normality using both the Shapiro--Wilk test (\texttt{shapiro.test()}) and the Anderson--Darling test (\texttt{ad.test()}) \citep{Gross:2015}.
+Anderson--Darling is particularly sensitive to tail deviations \citep{Razali:2011, Yap:2011}.
+
+\textbf{Homoscedasticity Assessment}: Variance equality is tested using the Levene-Brown-Forsythe test (\texttt{levene.test()}) \citep{Brown:1974} and Bartlett's test (\texttt{bartlett.test()}) in the ANOVA path.
+
+These tests compare the spread of data across different factor levels.
+
+For simple linear regression, the Breusch-Pagan test (\texttt{bp.test()}) is implemented.
+
+\texttt{bartlett.test()} and `bp.test() have standalone implementations in the package to avoid dependencies on external packages (see \hyperref[variance]{Appendix C}).
+
+\section{Appendix C: Test statistics and association measures}\label{tests}
 
 \subsection{Normality tests}\label{norm}
 
@@ -721,11 +755,14 @@ For simple linear regression, group-based variance tests are not
 applicable. The Breusch--Pagan test \citep{Breusch:1979} assesses whether the
 variance of the residuals from the regression model depends on the
 predictor values. Let \(e_i\) be the residuals from the fitted regression model and
-let \(\hat{\sigma}^2 = n^{-1}\sum_{i=1}^n e_i^2\). The auxiliary
+let \(\hat{\sigma}^2 = n^{-1}\sum_{i=1}^n e_i^2\) denote the mean of the squred residuals. The auxiliary
 regression models \(e_i^2 / \hat{\sigma}^2\) as a function of the
-predictors. If \(R^2_\text{aux}\) denotes the coefficient of determination
-from this auxiliary regression, the Breusch--Pagan statistic is
-
+predictors. Let \(R^2_\text{aux}\) denote the coefficient of determination from this
+auxiliary regression. Crucially, while a high \(R^2\) is typically a sign of
+a strong model, here it indicates a failure of the constant-variance
+assumption: a higher \(R^2_\text{aux}\) means the error variance follows
+a systematic, non-random pattern. The Breusch--Pagan statistic is then
+calculated as:
 \[BP = n R^2_\text{aux},\]
 
 which is compared asymptotically to a \(\chi^2\) distribution with degrees
