@@ -330,7 +330,9 @@ vis_numeric <- function(y,
             "\nAnalysis proceeded but interpret results cautiously.",
             call. = FALSE)
     if (!correlation && any(grepl("Normality|Homoscedasticity", warnings_list))) {
-      message("RECOMMENDATION: Consider exploring alternatives outside visstat() such as data transformations, generalised linear models, or robust regression. For an assumption-free, non-causal alternative consider rerunning with correlation = TRUE.")
+      message("RECOMMENDATION: Consider exploring alternatives outside visstat() such as data transformations,\n",
+              "generalised linear models, or robust regression. For an assumption-free, non-causal alternative\n",
+              "consider rerunning with correlation = TRUE.")
     }
   }
   
