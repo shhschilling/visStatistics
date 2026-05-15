@@ -35,15 +35,12 @@ library(visStatistics)
 
 # Abstract
 
-`visStatistics` automatically selects and visualises appropriate statistical tests between two column vectors of class `"numeric"`, `"integer"`, or `"factor"`.
-No manual test selection is required: the function determines the appropriate method from the data types and distributional properties alone.
-The choice of test depends on the `class`, distributional assumptions, and sample size of the vectors.
-
-The main function `visstat()` visualises the selected test with appropriate graphs (box plots, bar charts, regression lines with confidence bands, mosaic plots for Pearson's $\chi^2$ test, residual plots), annotated with the main test results, including visualisations of the assumption checks and post-hoc analyses.
-
-This scripted workflow is well suited for browser-based applications, where users interact only through a web interface, while server-side R applications handle the data processing.
-
-Other typical use cases include quick visualisations, and guided statistical test selection, for example in statistical consulting or educational settings.
+`visStatistics` provides a workflow for routine two-variable frequentist inference in R.
+Given two vectors, `visstat()` dispatches by variable classes, factor levels, sample sizes, expected cell counts, and explicit user options.
+Its main assumption-driven branch concerns tests of central tendency for a numeric response grouped by a factor.
+There, p-values from tests on pooled standardised residuals from the common linear model guide the choice between rank-based, equal-variance, and Welch-type procedures.
+The output is deliberately visual: diagnostic plots are shown together with assumption-test p-values, the selected test, effect size, and post-hoc results where applicable.
+Because no single assumption test is definitive across sample sizes and distributional deviations, these diagnostics are reported for inspection rather than treated as proof.
 
 # Introduction
 
