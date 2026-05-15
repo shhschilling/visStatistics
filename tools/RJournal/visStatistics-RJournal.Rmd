@@ -24,6 +24,8 @@ output:
     self_contained: yes
     toc: no
 bibliography: ../../vignettes/REFERENCES.bib
+header-includes:
+  - \microtypesetup{nopatch=footnote}
 editor_options: 
   markdown: 
     wrap: 72
@@ -60,44 +62,35 @@ securely on a server and cannot be directly accessed by users. This
 approach was already successfully applied to develop a medical scoring
 tool [@Bijlenga:2017].
 
-When selecting tests for group comparisons, packages with related scope
-such as `automatedtests` [@Zeevat:2025], `autotestR`
-[@autotestR:2026], `boxTest` [@boxTest:2026], and `compareGroups`
-[@Subirana:2014] differ in scope and in how normality is used for
-routing. In these packages, normality decisions are based solely on the
-input numeric vectors. This multiplies normality decisions across
-variables, whereas `visStatistics` bases the central-tendency branch on
-pooled standardised residuals from the common linear model, adhering to
-the general linear model framework [@Searle:1971].
+For group comparisons, packages with related scope include
+`automatedtests` [@Zeevat:2025], `autotestR` [@autotestR:2026],
+`boxTest` [@boxTest:2025], and `compareGroups` [@Subirana:2014].
+For mean-based tests in the general linear-model framework, the
+normality assumption concerns the model errors, not the marginal response
+distribution. None of these packages bases routing on pooled
+standardised residuals from the common linear model. `autotestR` and
+`boxTest` test the response separately within groups, adding a
+multiple-testing problem; `automatedtests` and `compareGroups` test the
+ungrouped numeric response, so group-location differences are included in
+the vector being tested. In contrast, `visStatistics` bases the
+central-tendency branch on pooled standardised residuals, adhering to the
+general linear model framework [@Searle:1971].
 
 `compareGroups` is primarily designed for bivariate descriptive tables
-and reports [@Subirana:2014]. It is therefore related, but not a direct
-competitor for an inspectable test-selection workflow. `boxTest` covers
-only the two-group numeric-response case, selecting between an
-independent two-sample t-test and a Mann--Whitney U test after group-wise
-Shapiro--Wilk tests [@boxTest:2026]. `autotestR` is broader, providing
-automated functions for basic tests, including t-tests, ANOVA,
-correlation, and contingency-table analyses [@autotestR:2026]. Its scope
-is closer to `visStatistics` than `compareGroups`, but it is organised as
-a collection of test-specific functions rather than a single
-two-variable routing interface.
+and reports, not diagnostic plots and test visualisations
+[@Subirana:2014]. `boxTest` covers only the two-group numeric-response
+case [@boxTest:2025]. `autotestR` provides automated recommendations for
+basic tests, including t-tests, ANOVA, correlation, and contingency-table
+analyses [@autotestR:2026].
 
 The closest package in scope is `automatedtests` [@Zeevat:2025], which
 also provides a single function for automatic routing among common tests.
 Its routing is broader than that of `visStatistics`, including
 one-sample, paired, repeated-measures, and regression-model cases.
 However, much of this automation is class- and shape-based dispatch: the
-selected procedure is determined from the number and classes of
+selected procedure is determined only from the number and classes of
 variables, the number of factor levels, pairing information, and a small
-set of assumption checks. This breadth should not be confused with
-assumption-aware model selection in all branches: for example, for
-regression-type branches, `automatedtests` constructs a model from the
-input variables, but does not provide the corresponding model-assumption
-workflow.
-
-
-
-
+set of input-level checks.
 
 `visStatistics` is narrower by design. It restricts itself to common
 two-variable settings in which the route can be visualised and audited:
@@ -639,19 +632,28 @@ sample-size range: with small samples they fail to detect non-normality,
 and with large samples they flag negligible departures from normality as
 significant [@Ghasemi:2012; @Fagerland:2012; @Franc:2025].
 
-For this reason, this package uses $n > 50$ per group as a rule of thumb
-threshold to omit normality testing, assuming parametric tests of
-central tendencies to become robust to non-normality at larger sample
-sizes based on the central limit theorem. The threshold is necessarily
-arbitrary; simulation studies show that the convergence rate depends on
-the skewness and kurtosis of the underlying distribution, with
-moderately skewed distributions requiring roughly 40--50 observations
-for adequate convergence of the sampling distribution of the mean
-[@Fagerland:2012]. Simulation studies suggest that Shapiro--Wilk has the
+This raises the practical question of what should count as a large
+sample in the decision tree. The answer depends on the shape of the
+underlying distribution, especially skewness and tail weight
+[@Lumley:2002]. Simulation studies suggest that moderately skewed
+distributions require roughly 40--50 observations for adequate
+convergence of the sampling distribution of the mean [@Fagerland:2012].
+Based on this range, `visStatistics` uses $n > 50$ per group as a
+rule-of-thumb threshold to bypass residual-normality testing.
+
+Simulation studies suggest that Shapiro--Wilk has the
 highest power among normality tests in small to moderate ($n = 10$ to
 100) sample sizes [@Razali:2011]. Accordingly, Shapiro--Wilk is used to
-select between parametric (ANOVA/Welch's t-test) and non-parametric
-(Kruskal--Wallis/Wilcoxon) methods for groups smaller than 50.
+route between mean-based and rank-based methods when all groups contain
+fewer than 50 observations. For larger groups, however, Shapiro--Wilk,
+as all normality tests, becomes overly sensitive and can reject residual
+normality for deviations that are not decisive for mean-based inference.
+
+The Anderson--Darling test gives more weight to tail deviations
+[@Anderson:1952; @Razali:2011]. This tail sensitivity makes it useful as
+an additional diagnostic when the residual distribution is inspected
+visually; it is therefore reported in the assumption plots but does not
+drive the routing decision.
 
 The same issue extends to combinations of assumption tests. Combining
 tests for normality and homoscedasticity using simple majority voting
@@ -762,7 +764,7 @@ These tests compare the spread of data across different factor levels.
 
 For simple linear regression, the Breusch-Pagan test (`bp.test()`) is implemented.
 
-`bartlett.test()` and `bp.test()` have standalone implementations in the package to avoid dependencies on external packages (see [Appendix C](#variance)).
+`bartlett.test()` and `bp.test()` have standalone implementations in the package to avoid dependencies on external packages (see [Appendix C](#homo)).
 
 
 # Appendix C: Test statistics and association measures {#tests}

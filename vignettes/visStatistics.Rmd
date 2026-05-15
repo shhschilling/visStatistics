@@ -44,13 +44,59 @@ Because no single assumption test is definitive across sample sizes and distribu
 
 # Introduction
 
-In the frequentest tradition, most routine data analyses reduce to a comparatively small set of inferential frameworks, including group comparisons, contingency-table analyses, and regression models [@Angrist: 2009, @Hayat:2017, @Sato:2017].
-`visStatistics` selects out of these most commonly used “right test” by using a reproducible decision framework based on the data’s distributional assumptions and sample size.
-It visualises its decision by, where appropriate, assumption-diagnostic plot and a descriptive plot with the main test statistics annotated, and returns an R object whose `print()` and `summary()` methods expose the complete test results, including the reported effect size.
-The scripted workflow is well suited for browser-based applications where sensitive data (such as highly confidential medical records) is stored securely on a server and can not be directly accessed by users.
-This approach was already successfully applied to develop a medical scoring tool [@Bijlenga:2017].
-When selecting tests for group comparisons, packages with overlapping scope such as `automatedtests` [@Zeevat:2025] and `compareGroups` [@Subirana:2014] base their test selection on group‑wise normality assessments of the response variable. But group-wise testing inflates the [family-wise type I error rate](#post-hoc-analysis): the probability of at least one false rejection of normality grows with the number of compared groups, leading to unnecessary switching to non-parametric methods even when the linear model assumptions hold globally.
-In contrast, `visStatistics` assesses the normality of the overall model residuals, adhering to the general linear model framework [@Searle:1971].
+In the frequentist tradition, most routine data analyses reduce to a comparatively small set of
+inferential frameworks, including group comparisons, regression models and contingency-table
+analyses [@Angrist:2009, @Hayat:2017, @Sato:2017, @Brodeur:2020]; their correct use depends on assumptions that are often checked informally or not at all. `visStatistics` targets this gap by making routine frequentist test selection explicit, assumption-aware, visual, and reproducible.
+Rather than requiring users to choose the test function first,
+`visstat()` starts from two variables and routes common two-variable
+settings through a fixed decision workflow. It selects a test from the
+variable classes, distributional assumptions, sample size, and expected
+cell counts; displays the diagnostics that led to the selected route;
+and returns an R object whose `print()` and `summary()` methods expose
+the complete test results, including the reported effect size. The
+scripted workflow is well suited for browser-based applications where
+sensitive data (such as highly confidential medical records) are stored
+securely on a server and cannot be directly accessed by users. This
+approach was already successfully applied to develop a medical scoring
+tool [@Bijlenga:2017].
+
+For group comparisons, packages with related scope include
+`automatedtests` [@Zeevat:2025], `autotestR` [@autotestR:2026],
+`boxTest` [@boxTest:2025], and `compareGroups` [@Subirana:2014].
+For mean-based tests in the general linear-model framework, the
+normality assumption concerns the model errors, not the marginal response
+distribution. None of these packages bases routing on pooled
+standardised residuals from the common linear model. `autotestR` and
+`boxTest` test the response separately within groups, adding a
+multiple-testing problem; `automatedtests` and `compareGroups` test the
+ungrouped numeric response, so group-location differences are included in
+the vector being tested. In contrast, `visStatistics` bases the
+central-tendency branch on pooled standardised residuals, adhering to the
+general linear model framework [@Searle:1971].
+
+`compareGroups` is primarily designed for bivariate descriptive tables
+and reports, not diagnostic plots and test visualisations
+[@Subirana:2014]. `boxTest` covers only the two-group numeric-response
+case [@boxTest:2025]. `autotestR` provides automated recommendations for
+basic tests, including t-tests, ANOVA, correlation, and contingency-table
+analyses [@autotestR:2026].
+
+The closest package in scope is `automatedtests` [@Zeevat:2025], which
+also provides a single function for automatic routing among common tests.
+Its routing is broader than that of `visStatistics`, including
+one-sample, paired, repeated-measures, and regression-model cases.
+However, much of this automation is class- and shape-based dispatch: the
+selected procedure is determined only from the number and classes of
+variables, the number of factor levels, pairing information, and a small
+set of input-level checks.
+
+`visStatistics` is narrower by design. It restricts itself to common
+two-variable settings in which the route can be visualised and audited:
+pretesting where applied, residual-based diagnostics for the
+linear-model family, the selected test, full test statistics, effect
+size, result plots, and post-hoc comparisons where required. The
+contribution is therefore not broader automation, but inspectable
+automation for routine two-variable inference.
 
 # Getting started
 
