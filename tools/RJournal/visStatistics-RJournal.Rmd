@@ -9,10 +9,9 @@ author:
     orcid: 0000-0002-8318-9421
     email: sabineschilling@gmx.ch
 abstract: >
-  `visStatistics` provides an assumption-aware workflow for routine two-variable frequentist inference in R. Given two vectors, or a formula and data frame, the function determines the appropriate method from the variable classes, distributional assumptions, and sample sizes.
-  The main function `visstat()` visualises the selected test with appropriate graphs, including box plots, bar charts, regression lines with confidence bands, mosaic plots, residual plots, and Q-Q plots. These outputs are annotated with relevant test statistics, assumption checks, and post-hoc analyses where applicable.
-  The package shifts attention from ad-hoc test selection to visual diagnostic assessment and statistical interpretation. This is particularly relevant for routine frequentist tests, where users often select among common procedures without formally checking assumptions such as residual normality, variance homogeneity, sample size requirements, or expected cell counts.
-  The scripted workflow is well suited for browser-based and server-side R applications, where users interact through a web interface while R handles the data processing. Other typical use cases include quick visualisations, statistical consulting, and teaching settings where transparent test selection and diagnostic feedback are important.
+  `visStatistics` provides a workflow for routine two-variable frequentist inference in R. Given two vectors, `visstat()` dispatches by variable classes, factor levels, sample sizes, expected cell counts, and explicit user options.
+  Its main assumption-driven branch concerns tests of central tendency for a numeric response grouped by a factor. There, p-values from tests on pooled standardised residuals from the common linear model guide the choice between rank-based, equal-variance, and Welch-type procedures.
+  The output is deliberately visual: diagnostic plots are shown together with assumption-test p-values, the selected test, effect size, and post-hoc results where applicable. Because no single assumption test is definitive across sample sizes and distributional deviations, these diagnostics are reported for inspection rather than treated as proof.
 
 
 
@@ -81,8 +80,7 @@ variables, the number of factor levels, pairing information, and a small
 set of assumption checks. This breadth should not be confused with
 assumption-aware model selection in all branches: for example, for
 regression-type branches, `automatedtests` constructs a model from the
-input variables, but does not provide the corresponding model-diagnostic
-workflow.
+input variables, but does not provide the corresponding model-assumption workflow.
 
 `visStatistics` is narrower by design. It restricts itself to common
 two-variable settings in which the route can be visualised and audited:
