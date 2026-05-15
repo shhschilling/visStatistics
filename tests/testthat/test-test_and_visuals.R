@@ -241,6 +241,19 @@ test_that("fisher_chi larger table: simulate.p.value, no OR", {
   expect_null(result$estimate)
 })
 
+test_that("vis_chi_squared_test handles simulated Fisher without chi-square statistic", {
+  counts <- matrix(c(1, 2, 1, 2, 1, 2, 1, 2, 1), nrow = 3)
+  dimnames(counts) <- list(c("A", "B", "C"), c("X", "Y", "Z"))
+  df <- counts_to_cases(as.data.frame(as.table(counts)))
+
+  pdf(NULL)
+  on.exit(dev.off())
+
+  expect_no_error(
+    suppressWarnings(vis_chi_squared_test(df$Var2, df$Var1, "Var2", "Var1"))
+  )
+})
+
 test_that("odds_ratio function works correctly", {
   # Test basic odds ratio calculation
   result <- odds_ratio(a = 10, b = 5, c = 8, d = 12, alpha = 0.05)
