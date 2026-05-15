@@ -11,7 +11,7 @@ author:
 abstract: >
   `visStatistics` provides a workflow for routine two-variable frequentist inference in R. Given two vectors, `visstat()` dispatches by variable classes, factor levels, sample sizes, expected cell counts, and explicit user options.
   Its main assumption-driven branch concerns tests of central tendency for a numeric response grouped by a factor. There, p-values from tests on pooled standardised residuals from the common linear model guide the choice between rank-based, equal-variance, and Welch-type procedures.
-  The output is deliberately visual: diagnostic plots are shown together with assumption-test p-values, the selected test, effect size, and post-hoc results where applicable. Because no single assumption test is definitive across sample sizes and distributional deviations, these diagnostics are reported for inspection rather than treated as proof.
+  The output is deliberately visual: diagnostic plots are shown together with assumption-test p-values, the selected test, effect size, and post-hoc results where applicable.
 
 
 
@@ -58,17 +58,29 @@ scripted workflow is well suited for browser-based applications where
 sensitive data (such as highly confidential medical records) are stored
 securely on a server and cannot be directly accessed by users. This
 approach was already successfully applied to develop a medical scoring
-tool [@Bijlenga:2017]. When selecting tests for group comparisons,
-packages with overlapping scope such as `automatedtests` [@Zeevat:2025]
-and `compareGroups` [@Subirana:2014] base their test selection on
-group‑wise normality assessments of the response variable. But
-group-wise testing inflates the [family-wise type I error
-rate](#post-hoc-analysis): the probability of at least one false
-rejection of normality grows with the number of compared groups, leading
-to unnecessary switching to non-parametric methods even when the linear
-model assumptions hold globally. In contrast, `visStatistics` assesses
-the normality of the overall model residuals, adhering to the general
-linear model framework [@Searle:1971].
+tool [@Bijlenga:2017].
+
+When selecting tests for group comparisons, packages with related scope
+such as `automatedtests` [@Zeevat:2025], `autotestR`
+[@autotestR:2026], `boxTest` [@boxTest:2026], and `compareGroups`
+[@Subirana:2014] differ in scope and in how normality is used for
+routing. In these packages, normality decisions are based solely on the
+input numeric vectors. This multiplies normality decisions across
+variables, whereas `visStatistics` bases the central-tendency branch on
+pooled standardised residuals from the common linear model, adhering to
+the general linear model framework [@Searle:1971].
+
+`compareGroups` is primarily designed for bivariate descriptive tables
+and reports [@Subirana:2014]. It is therefore related, but not a direct
+competitor for an inspectable test-selection workflow. `boxTest` covers
+only the two-group numeric-response case, selecting between an
+independent two-sample t-test and a Mann--Whitney U test after group-wise
+Shapiro--Wilk tests [@boxTest:2026]. `autotestR` is broader, providing
+automated functions for basic tests, including t-tests, ANOVA,
+correlation, and contingency-table analyses [@autotestR:2026]. Its scope
+is closer to `visStatistics` than `compareGroups`, but it is organised as
+a collection of test-specific functions rather than a single
+two-variable routing interface.
 
 The closest package in scope is `automatedtests` [@Zeevat:2025], which
 also provides a single function for automatic routing among common tests.
@@ -80,7 +92,12 @@ variables, the number of factor levels, pairing information, and a small
 set of assumption checks. This breadth should not be confused with
 assumption-aware model selection in all branches: for example, for
 regression-type branches, `automatedtests` constructs a model from the
-input variables, but does not provide the corresponding model-assumption workflow.
+input variables, but does not provide the corresponding model-assumption
+workflow.
+
+
+
+
 
 `visStatistics` is narrower by design. It restricts itself to common
 two-variable settings in which the route can be visualised and audited:
