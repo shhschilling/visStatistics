@@ -506,9 +506,18 @@ vis_chi_squared_test <- function(samples,
         ", p-value = ", signif(fisher_chi$p.value, 3)
       )
     } else {
+      or_text <- NULL
+      if (!is.null(fisher_chi$estimate) && !is.null(fisher_chi$conf.int)) {
+        or_text <- paste0(
+          "\nOR = ", signif(unname(fisher_chi$estimate), 3),
+          ", 95% CI [", signif(fisher_chi$conf.int[1], 3),
+          ", ", signif(fisher_chi$conf.int[2], 3), "]"
+        )
+      }
       chi2_fisher_text <- paste0(
         fisher_chi$method,
-        "\np-value = ", signif(fisher_chi$p.value, 3)
+        "\np-value = ", signif(fisher_chi$p.value, 3),
+        or_text
       )
     }
 

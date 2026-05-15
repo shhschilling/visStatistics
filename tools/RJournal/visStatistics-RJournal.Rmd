@@ -365,7 +365,7 @@ individual rows, passenger class is treated as ordered and gender as a
 two-level predictor. `visstat()` converts the ordered response to integer
 level codes and selects the Wilcoxon rank-sum test.
 
-```{r ordinal-wilcoxon-example, fig.cap="Wilcoxon rank-sum test for ordered passenger class by sex in the expanded \\texttt{Titanic} data. Ordered class is converted to integer level codes; assumption diagnostics and box plots show the Wilcoxon result.", out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
+```{r ordinal-wilcoxon-example, fig.cap="Wilcoxon rank-sum test for ordered passenger class by sex in the expanded \\texttt{Titanic} data. Ordered class is converted to integer level codes; box plots show the Wilcoxon test result.", out.width="48%", fig.height=4.5, fig.align="center", fig.show="hold", results='hide'}
 titanic_df <- counts_to_cases(as.data.frame(Titanic))
 titanic_df$Class <- ordered(titanic_df$Class,
                             levels = c("1st", "2nd", "3rd", "Crew"))
@@ -374,7 +374,7 @@ wilcox_ordered <- visstat(titanic_df$Sex, titanic_df$Class)
 
 ## Numeric response and categorical predictor: more than two groups
 
-### One-way ANOVA with Tukey HSD
+### Fisher's one-way ANOVA with Tukey HSD post-hoc comparisons
 
 The `npk` dataset reports the yield of peas from an agricultural
 experiment conducted on six blocks. Shapiro--Wilk does not reject
@@ -388,7 +388,7 @@ significant-letter label.
 anova_npk <- visstat(npk$block, npk$yield, conf.level = example_conf_level)
 ```
 
-### Welch's heteroscedastic one-way ANOVA
+### Welch's heteroscedastic one-way ANOVA with Games--Howell post-hoc comparisons
 
 In the `iris` dataset, using `Species` as predictor and `Sepal.Length`
 as response, Shapiro--Wilk does not reject normality of the standardised
@@ -402,7 +402,7 @@ welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length,
                             conf.level = example_conf_level)
 ```
 
-### Kruskal-Wallis rank sum test
+### Kruskal-Wallis rank sum test with pairwise Wilcoxon post-hoc comparisons
 
 For the same dataset, `Petal.Width` by `Species` follows a different
 route. The standardised residuals show clear departures from normality,
@@ -581,94 +581,56 @@ kendall_result <- visstat(performance, alcohol, correlation = TRUE)
 ```
 
 
-# Limitations {#limitations}
+# Discussion {#discussion}
 
-#### Default parameters {.unnumbered }
+#### Design rationale and scope {.unnumbered}
 
-The main purpose of this package is a decision-logic based automatic
-selection visualisation of the "right" statistical test. Therefore,
-except for the user-adjustable `conf.level` parameter, all statistical
-tests are applied using their default settings from the corresponding
-base R functions. As a consequence, paired tests are currently not
-supported and `visstat()` does not allow to study interactions terms
-between the different levels of an independent variable in an analysis
-of variance. Focusing on the graphical representation of tests, only
-simple linear regression is implemented, as multiple linear regressions
-cannot be visualised. When regression assumptions are violated, the
-package offers Spearman rank correlation (`correlation = TRUE`) as the
-sole alternative to linear regression. Alternative methods such as data
-transformation, generalised linear models or robust regression are not
-implemented: each requires user judgment -- about the transformation
-family, the link function, or the estimator -- that cannot be automated
-without substantially expanding the decision tree and increasing the
-risk of Type I error inflation.
+The design of `visStatistics` prioritises transparent, reproducible
+routing for common two-variable analyses over broad model coverage. This
+scope keeps the decision tree inspectable and the graphical output
+consistent, but it also leaves several modelling choices outside the
+automated workflow. Except for the user-adjustable `conf.level`
+parameter, all statistical tests are applied using their default
+settings from the corresponding base R functions.
+
+As a consequence, paired tests are currently not supported and
+`visstat()` does not support interaction terms between the different
+levels of an independent variable in an analysis of variance. 
+
+Focusing on the graphical representation of tests, only simple linear regression is implemented, as multiple linear regressions cannot be visualised.
+When regression assumptions are violated, the package offers Spearman
+rank correlation (`correlation = TRUE`) as the sole alternative to
+linear regression. Alternative methods such as data transformation,
+generalised linear models or robust regression are not implemented:
+each requires user judgment -- about the transformation family, the link
+function, or the estimator -- that cannot be automated without
+substantially expanding the decision tree and increasing the risk of
+Type I error inflation.
 
 `visstat()` reports an `effect_size` field for the selected test. This
 estimate should be interpreted alongside the \(p\)-value, but it does
 not replace subject-matter judgment about practical relevance
 [@Shatz:2024].
 
-#### Assumption tests{.unnumbered }
+#### Assumption-guided routing and diagnostic transparency {.unnumbered}
 
-To select tests of central tendencies, the routing depends on  
-p-values of assumption tests. But no single (assumption) test maintains optimal Type I
-error rates and statistical power across all distributions
+For tests of central tendency, routing depends on p-values from
+assumption tests. However, no single assumption test maintains optimal
+Type I error rates and statistical power across all distributions
 [@Olejnik:1987], and p-values obtained from these tests may be
 unreliable if their assumptions are violated.
 
-<!-- A solely  p-values driven decision logic  can therefore lead to both type I -->
-<!-- errors (false positives) and type II errors (false negatives). -->
-
-
-In large
-samples, even minor, random deviations from the null hypothesis can
-result in statistically significant p-values, leading to type I errors.
-Conversely, in small samples, substantial violations of the assumption
-may not reach statistical significance, resulting in type II errors
-[@Kozak:2018].
+In large samples, even minor, random deviations from the null hypothesis
+can result in statistically significant p-values, leading to type I
+errors. Conversely, in small samples, substantial violations of the
+assumption may not reach statistical significance, resulting in type II
+errors [@Kozak:2018].
 
 Moreover, assumption tests provide no information on the nature of
 deviations from the expected distribution [@Shatz:2024]. Thus the
 assessment of normality or homoscedasticity should never rely solely on
 p-values but should be complemented by visual inspection of the
 diagnostic plots generated by `visstat()`.
-
-#####  Normality  tests{.unnumbered }
-
-This general limitation is particularly relevant for normality testing.
-Normality tests behave poorly at both ends of the
-sample-size range: with small samples they fail to detect non-normality,
-and with large samples they flag negligible departures from normality as
-significant [@Ghasemi:2012; @Fagerland:2012; @Franc:2025].
-
-This raises the practical question of what should count as a "larger"
-sample in the decision tree. The answer depends on the shape of the
-underlying distribution, especially skewness and tail weight
-[@Lumley:2002]. Simulation studies suggest that moderately skewed
-distributions require roughly 40--50 observations for adequate
-convergence of the sampling distribution of the mean [@Fagerland:2012].
-Based on this range, `visStatistics` uses $n > 50$ per group as a
-rule-of-thumb threshold to bypass residual-normality testing. For smaller
-samples, Shapiro--Wilk is used to route between mean-based and
-rank-based methods, as simulation studies suggest that it has the
-highest power among normality tests in small to moderate ($n = 10$ to
-100) sample sizes [@Razali:2011].
-
-<!-- Accordingly, Shapiro--Wilk is used to -->
-<!-- route between mean-based and rank-based methods when all groups contain -->
-<!-- fewer than 50 observations.  -->
-
-<!-- For larger groups, however, Shapiro--Wilk, -->
-<!-- as all normality tests, becomes overly sensitive and can reject residual -->
-<!-- normality for deviations that are not decisive for mean-based inference. -->
-
-<!-- The Anderson--Darling test gives more weight to tail deviations -->
-<!-- [@Anderson:1952; @Razali:2011]. This tail sensitivity makes it useful as -->
-<!-- an additional diagnostic when the residual distribution is inspected -->
-<!-- visually; it is therefore reported in the assumption plots but does not -->
-<!-- drive the routing decision. -->
-
-#### Combining assumption tests {.unnumbered }
 
 The same issue extends to combinations of assumption tests. Combining
 tests for normality and homoscedasticity using simple majority voting
@@ -678,7 +640,28 @@ of sample distributions provided by `visstat()`. Based on the provided
 diagnostic plots, it may be necessary to override the automated choice
 of test in individual cases.
 
-#### Limited number of tests {.unnumbered }
+#### Normality testing and sample-size rule {.unnumbered}
+
+This general limitation is particularly relevant for normality testing.
+Normality tests behave poorly at both ends of the sample-size range:
+with small samples they fail to detect non-normality, and with large
+samples they flag negligible departures from normality as significant
+[@Ghasemi:2012; @Fagerland:2012; @Franc:2025].
+
+This raises the practical question of what should count as a "larger"
+sample in the decision tree. The answer depends on the shape of the
+underlying distribution, especially skewness and tail weight
+[@Lumley:2002]. Simulation studies suggest that moderately skewed
+distributions require roughly 40--50 observations for adequate
+convergence of the sampling distribution of the mean [@Fagerland:2012].
+Based on this range, `visStatistics` uses $n > 50$ per group as a
+rule-of-thumb threshold to bypass residual-normality testing. For
+smaller samples, Shapiro--Wilk is used to route between mean-based and
+rank-based methods, as simulation studies suggest that it has the
+highest power among normality tests in small to moderate ($n = 10$ to
+100) sample sizes [@Razali:2011].
+
+#### Scope boundaries {.unnumbered}
 
 To avoid further compounding these problems, the automated test
 selection pipeline deliberately restricts its scope to the most
@@ -691,15 +674,15 @@ overall Type I error inflation. Furthermore, expanding the pipeline
 would result in a highly complex decision tree, rendering the underlying
 statistical logic increasingly opaque to the user.
 
-#### Only base R for plotting{.unnumbered }
+#### Dependency footprint and  output design{.unnumbered}
 
-The package depends only on base R graphics with no `ggplot2`
+The package depends only on base R graphics with e.g. no `ggplot2`
 [@Wickham:2016] dependency, keeping the transitive dependency footprint
 minimal. For more polished, annotated plots of chosen statistical tests,
 we refer to packages such as `ggstatsplot` [@Patil:2021] or `ggpubr`
 [@Kassambara:2026].
 
-#### Bootstrapping as alterntive{.unnumbered }
+#### Bootstrapping as alternative {.unnumbered}
 
 Bootstrapping methods [@Wilcox:2021] make minimal distributional
 assumptions and can provide confidence intervals for nearly any
@@ -719,10 +702,10 @@ Its principal contribution is the integration of the full pipeline ---
 data-type detection, distributional assumption checking on fitted model
 residuals, test routing, and annotated graphical output --- into a
 reproducible, server-deployable workflow with a minimal dependency
-footprint. The user receives not only the selected test, but also the
-pretesting results where applied, the full test statistics, the effect
-size, diagnostic and result plots, and post-hoc comparisons where
-required. The package is available on CRAN at
+footprint. Outputs include the selected test, assumption-test results
+where used, full test statistics, effect-size estimates, diagnostic and
+result plots, and post-hoc comparisons where applicable. The package is
+available on CRAN at
 `https://CRAN.R-project.org/package=visStatistics` and on GitHub at
 `https://github.com/shhschilling/visStatistics`.
 
