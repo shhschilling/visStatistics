@@ -12,16 +12,18 @@
 #' @param samples Numeric vector; the dependent variable.
 #' @param fact Factor; the independent variable.
 #' @param cex Numeric; scaling factor for plot text and symbols (default: 1).
-#' @param regression Logical; if TRUE, skips Bartlett's test (for regression diagnostics). Default is FALSE.
+#' @param correlation Logical. If \code{FALSE} and \code{fact} is numeric,
+#'   regression diagnostics are shown. If \code{TRUE}, no regression
+#'   diagnostics are shown. Default is \code{FALSE}.
 #'
 #' @return A list with elements:
 #' \describe{
 #'   \item{summary_anova}{Summary of the ANOVA model.}
 #'   \item{shapiro_test}{Result from \code{shapiro.test()}.}
 #'   \item{ad_test}{Result from \code{nortest::ad.test()} or a character message if n < 7.}
-#'   \item{levene_test}{Result from \code{levene.test()} (only if \code{regression = FALSE}).}
-#'   \item{bartlett_test}{Result from \code{bartlett.test()} (only if \code{regression = FALSE}).}
-#'   \item{bp_test}{Result from \code{bp.test()} (only if \code{regression = TRUE}).}
+#'   \item{levene_test}{Result from \code{levene.test()} (grouped diagnostics only).}
+#'   \item{bartlett_test}{Result from \code{bartlett.test()} (grouped diagnostics only).}
+#'   \item{bp_test}{Result from \code{bp.test()} (regression diagnostics only).}
 #' }
 #'
 #' @examples
@@ -30,7 +32,7 @@
 #'
 #' @export
 
-vis_lm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
+vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
   
   oldpar <- par(no.readonly = TRUE)
   on.exit(par(oldpar))
@@ -64,8 +66,10 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
     ad_test <- "Sample size too small (n < 7) for Anderson-Darling test"
   }
   
-  # Variance tests (only for non-regression)
-  if (!regression) {
+  regression_mode <- !isTRUE(correlation) && (is.numeric(fact) || is.integer(fact))
+  
+  # Variance tests (only for grouped diagnostics)
+  if (!regression_mode) {
     levene_test <- levene.test(samples, fact)
     bartlett_test <- bartlett.test(samples ~ fact)
      bp_test <- NULL
@@ -107,7 +111,7 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
   plot(anova_model, which = 2, cex = cex, caption = "", sub.caption = "", main = "Normal Q-Q Plot")
   
   # Plot 4: Depends on regression vs ANOVA
-  if (regression) {
+  if (regression_mode) {
     # Residuals vs Leverage with Cook's distance (using internal plot.lm method)
     plot(anova_model, which = 5, cex = cex, caption = "", sub.caption = "", main = "Std. Res. vs. Leverage")
   } else {
@@ -119,7 +123,7 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
   p_shapiro <- if (!is.na(shapiro_test$p.value)) signif(shapiro_test$p.value, 2) else "N/A"
   p_AD <- if (is.list(ad_test) && !is.null(ad_test$p.value)) signif(ad_test$p.value, 2) else "N/A"
   
-  if (regression) {
+  if (regression_mode) {
     # Regression title with Breusch-Pagan test - split into two rows
     p_bp <- signif( bp_test$p.value, 2)
     title_line1 <- paste("Linear model assumptions: Shapiro-Wilk p =", p_shapiro, 
@@ -144,9 +148,9 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, regression = FALSE) {
     summary_anova = summary(anova_model),
     shapiro_test = shapiro_test,
     ad_test = ad_test,
-    levene_test = if (!regression) levene_test else NULL,
-    bartlett_test = if (!regression) bartlett_test else NULL,
-    bp_test = if (regression)  bp_test else NULL
+    levene_test = if (!regression_mode) levene_test else NULL,
+    bartlett_test = if (!regression_mode) bartlett_test else NULL,
+    bp_test = if (regression_mode)  bp_test else NULL
   )
   
   class(result) <- "vis_lm_assumptions"

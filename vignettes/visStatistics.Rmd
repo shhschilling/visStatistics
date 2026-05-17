@@ -162,11 +162,11 @@ The function prioritizes interpretable visual output and tests that remain valid
 The following graph gives an overview of all implemented tests based on their `class`:
 
 ```{r fig-overview, echo=FALSE, results='asis'}
-if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "html") {
+if (identical(knitr::opts_knit$get("rmarkdown.pandoc.to"), "html")) {
   cat('
 <div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: center;">
   <img src="figures/overview.png" width="100%"
-       alt="Overview of implemented tests .">
+       alt="Overview of implemented tests.">
   <p style="font-style: italic; font-size: 90%; margin-top: 0.5em;">
     Overview of the implemented statistical tests based on the class of the variables.
   </p>
@@ -191,7 +191,7 @@ if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "html") {
 A graphical summary of the decision logic used for numerical responses and categorical predictors resulting in comparisons of central tendencies is given in the figure below.
 
 ```{r fig-decision-switch, echo=FALSE, results='asis'}
-if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "html") {
+if (identical(knitr::opts_knit$get("rmarkdown.pandoc.to"), "html")) {
   cat('
 <div style="border: 1px solid #666; padding: 10px; display: inline-block; text-align: center;">
   <img src="figures/decision_tree.png" width="100%"
@@ -241,7 +241,6 @@ To check whether the assumptions of a general linear model (see [Appendix A](#gl
 
 - Regardless of sample size, assumption diagnostics are always displayed.
   Throughout this vignette, *linear model* refers to the classical Gaussian linear model framework [@Searle:1971] underlying t-tests, ANOVA, and linear regression.
-  When normality of residuals is met but homoscedasticity is rejected, `visstat()` selects Welch methods and additionally displays group-wise normality diagnostics via `vis_group_normality()`, since Welch's variance estimates are group-specific and the pooled `lm()` residuals are no longer the appropriate diagnostic under heteroscedasticity.
   These diagnostic plots enable users to visually assess whether assumptions are met and manually override the automated p-value-based test selection.
   The decision logic is based on p-values and distributional assumptions; users should also inspect the returned `effect_size` field when interpreting practical relevance [@Shatz:2024].
 
@@ -254,7 +253,7 @@ Assumption diagnostics are always shown, enabling the user to assess whether the
 Correlation analysis is never triggered automatically; it requires the explicit flag `correlation = TRUE`.
 Note that **only one** predictor variable is allowed, as the function is designed for two-dimensional visualisation.
 
-In the linear regression branch, homoscedasticity is assessed using the Breusch–Pagan test `bp.test()` (see [Appendix B](#variance)), which evaluates whether the variance of the raw residuals depends on the predictor variable.
+In the linear regression branch, homoscedasticity is assessed using the Breusch–Pagan test `bp.test()` (see [Appendix C](#variance)), which evaluates whether the variance of the raw residuals depends on the predictor variable.
 
 ### Spearman rank correlation (`correlation = TRUE`)
 
@@ -323,7 +322,7 @@ These tests compare the spread of data across different factor levels.
 
 For simple linear regression, the Breusch-Pagan test (`bp.test()`) is implemented.
 
-These three tests have standalone implementations in the package to avoid dependencies on external packages (see [Appendix B](#variance)).
+These three tests have standalone implementations in the package to avoid dependencies on external packages (see [Appendix C](#variance)).
 
 # Implemented tests with examples
 
@@ -536,12 +535,6 @@ residual distribution directly visible. The title reports the
 Shapiro--Wilk and Anderson--Darling normality tests together with
 Bartlett's and Levene--Brown--Forsythe tests for homoscedasticity.
 
-If homoscedasticity is rejected and a Welch method is selected, an
-additional group-wise normality panel is displayed. For each group, this
-panel shows a histogram with a normal density overlay and a normal Q--Q
-plot. It is added because the pooled `lm()` residuals are no longer the
-appropriate diagnostic under heteroscedasticity.
-
 The final panel shows the selected test as box plots with sample sizes
 above each group. For the parametric branches, the title also reports
 the corresponding $F$ statistic. When the largest group has no more than
@@ -596,8 +589,8 @@ In the `iris` dataset, using `Species` as predictor and `Sepal.Length`
 as response, Shapiro--Wilk does not reject normality of the standardised
 residuals, whereas the Levene--Brown--Forsythe test rejects
 homoscedasticity. `visstat()` therefore selects Welch's heteroscedastic
-one-way ANOVA (`oneway.test()`), adds group-wise normality diagnostics,
-and applies Games--Howell post-hoc comparisons.
+one-way ANOVA (`oneway.test()`) and applies Games--Howell post-hoc
+comparisons.
 
 ```{r, results='hide'}
 welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length)
@@ -660,7 +653,7 @@ where $y$ is the response variable, $x$ is the predictor variable, $b_0$ is the 
 `visstat()` checks the normality of the standardised residuals from `lm()` both with diagnostic plots and using the Shapiro--Wilk and Anderson-Darling tests.
 (via `vis_lm_assumptions()`)
 
-Note, that regardless of the result of the residual analysis, `visstat()` proceeds to perform the regression.
+Note that regardless of the result of the residual analysis, `visstat()` proceeds to perform the regression.
 The title of the graphical output indicates the chosen confidence level (`conf.level`), the estimated regression parameters with their confidence intervals and p-values, and $R^2$.
 The plot displays the raw data, the fitted regression line, and both the confidence and prediction bands corresponding to the specified `conf.level`.
 
@@ -743,7 +736,7 @@ legend("topright", legend = c("Data", "Gamma GLM (log link)"),
 For a well-fitting Gamma generalised linear model, standardised deviance residuals are asymptotically standard normal; we use Shapiro--Wilk and Anderson--Darling as approximate checks confirming that the Gamma distribution is much better suited to fit the data:
 
 ```{r}
-# Extract standardised  residuals
+# Extract standardised residuals
 std_dev_res <- rstandard(model_gamma, type = "deviance")
 # Validate using the Shapiro-Wilk normality test
 shapiro.test(std_dev_res)
@@ -753,7 +746,7 @@ nortest::ad.test(std_dev_res)
 The Gamma generalised linear model significantly improves the model fit, as evidenced by the drop in Akaike Information Criterion (AIC, [@Akaike:1974])  from 1093.2 (simple linear model) to 1040.0  
 
 
-The Gamma GLM significantly improves the model fit, as evidenced by the drop in the Akaike Information Criterion [@Akaike:1974] from 1093.2 to 1040.0. The increase in the Shapiro–Wilk ‭$p$‬-value from $p_{SW} = 0.0052$‬in the simple linear regression to $p_{SW} = 0.78$‬ indicates that the Gamma GLM successfully corrected the model misspecification. Since the standardised deviance residuals no longer show significant departures from normality, the heteroscedasticity is successfully handled. This comparison demonstrates that when visstat() signals a failure of the Gaussian framework, moving to a GLM provides a statistically superior and valid alternative.
+The Gamma GLM significantly improves the model fit, as evidenced by the drop in the Akaike Information Criterion [@Akaike:1974] from 1093.2 to 1040.0. The increase in the Shapiro–Wilk $p$-value from $p_{SW} = 0.0052$ in the simple linear regression to $p_{SW} = 0.78$ indicates that the Gamma GLM successfully corrected the model misspecification. Since the standardised deviance residuals no longer show significant departures from normality, the heteroscedasticity is successfully handled. This comparison demonstrates that when `visstat()` signals a failure of the Gaussian framework, moving to a GLM provides a statistically superior and valid alternative.
 
 
 ## Both variables categorical: Comparing proportions
@@ -949,86 +942,95 @@ performance <- ordered(likert_levels2[ys], levels = likert_levels2)
 kendall_result <- visstat(performance, alcohol, correlation = TRUE)
 ```
 
-# Saving the graphical output
+# The `visstat` methods
 
-All generated graphics can be saved in any file format supported by `Cairo()` [@Urbanek:2025], including "png", "jpeg", "pdf", "svg", "ps", and "tiff" in the user specified `plotDirectory`.
+Objects returned by `visstat()` are of class `"visstat"` and support the
+S3 methods `print()`, `summary()`, and `plot()`.
 
-If the optional argument `plotName` is not given, the naming of the output follows the pattern `"testname_namey_namex."`, where `"testname"` specifies the selected test and `"namey"` and `"namex"` are character strings naming the selected data vectors `y` and `x`, respectively.
-The suffix corresponding to the chosen `graphicsoutput` (e.g., `"pdf"`, `"png"`) is then concatenated to form the complete output file name.
+## `print()`
 
-In the following example, we store the graphics in `png` format in the `plotDirectory` `tempdir()` with the default naming convention:
+`print()` lists the returned components.
 
-```{r fisher-save-graphics}
-# Graphical output written to plotDirectory: In this example
-# a single bar chart showing absolute counts.
-# Output file: chi_squared_or_fisher_Hair_Eye.png
-save_fisher = visstat(black_brown_hazel_green_male$Eye, black_brown_hazel_green_male$Hair,
-        graphicsoutput = "png", plotDirectory = tempdir())
+```{r visstat-methods, fig.show='hide', results='hide'}
+anova_plantgrowth <- visstat(PlantGrowth$group, PlantGrowth$weight)
 ```
 
-The full file path of the generated graphics are stored as the attribute `"plot_paths"` on the returned object of class `"visstat"`.
+```{r visstat-methods-print}
+print(anova_plantgrowth)
+```
 
-```{r show-path2}
-paths <- attr(save_fisher, "plot_paths")
+## `summary()`
+
+`summary()` prints the full returned object, including assumption tests,
+post-hoc comparisons, confidence level, and `effect_size` where available.
+
+```{r visstat-methods-print-summary}
+summary(anova_plantgrowth)
+```
+
+## `plot()`
+
+`plot()` lists available plots by default. With `which`, it either replays a
+captured plot or reports the selected saved file path.
+
+### Interactive mode
+
+When `visstat()` is called without a `graphicsoutput` defined (the default
+interactive mode), the generated plots are captured internally. Calling `plot()`
+without `which` lists all available plots; calling it with `which` replays the
+selected plot in the interactive R session.
+
+```{r visstat-methods-plot}
+plot(anova_plantgrowth)
+```
+
+```{r visstat-methods-plot-replay, eval=FALSE}
+# Interactive only (not executed during vignette build):
+plot(anova_plantgrowth, which = 2)
+```
+
+### Saved graphics
+
+When `visstat()` is called with `graphicsoutput` specified, `plot()`
+lists the generated file paths instead. All generated graphics can be
+saved in any file format supported by `Cairo()` [@Urbanek:2025],
+including "png", "jpeg", "pdf", "svg", "ps", and "tiff". If `plotName`
+is provided, the main result plot uses this name. The
+assumption-diagnostic plot adds the prefix `"glm_assumptions_"`. If
+`plotName` is not provided, file names are generated from the selected
+plot type and the input variable names.
+
+In the following example, we store the graphics in `png` format in the
+`plotDirectory` `tempdir()` using the `PlantGrowth` Fisher's ANOVA example.
+Here, `plotName` is set explicitly so that the output names are stable.
+
+```{r anova-save-graphics}
+anova_plantgrowth_stored <- visstat(
+  PlantGrowth$group,
+  PlantGrowth$weight,
+  graphicsoutput = "png",
+  plotName = "anova_plantgrowth",
+  plotDirectory = tempdir()
+)
+```
+
+The full file paths of the generated graphics are stored as the
+attribute `"plot_paths"` on the returned object of class `"visstat"`.
+
+```{r show-anova-paths}
+paths <- attr(anova_plantgrowth_stored, "plot_paths")
 print(paths)
 ```
 
 Remove the graphical output from `plotDirectory`:
 
-```{r, eval=TRUE}
+```{r cleanup-anova-paths, eval=TRUE}
 file.remove(paths)
-```
-
-When assumptions plots (residual and Q-Q plot) are generated, the corresponding plot has the prefix `"assumption_"`.
-
-# The `visstat` methods
-
-Objects returned by `visstat()` are of class `"visstat"` and support the S3 methods `print()`, `summary()`, and `plot()`.
-
-## `print()` and `summary()`
-
-`print()` displays the test used, the p-value, and the effect size; `summary()` provides the full contents of the returned object, including assumption tests, post-hoc comparisons, and `effect_size`.
-
-```{r visstat-methods, fig.show='hide', results='hide'}
-iris_kruskal <- visstat(iris$Species, iris$Petal.Width)
-```
-
-```{r visstat-methods-print-summary}
-print(iris_kruskal)
-summary(iris_kruskal)
-```
-
-## `plot()`
-
-When `visstat()` is called with `graphicsoutput` specified, `plot()` lists the file paths of the stored graphics:
-
-```{r visstat-methods-plot-paths}
-iris_kruskal_stored <- visstat(iris$Species, iris$Petal.Width,
-                               graphicsoutput = "pdf",
-                               plotName = "iris_kruskal",
-                               plotDirectory = tempdir())
-plot(iris_kruskal_stored)
-```
-
-When `visstat()` is called without `graphicsoutput` (the default interactive mode), the generated plots are captured internally.
-Calling `plot()` without `which` lists the available plots; calling `plot()` with `which` replays the selected plot in the interactive R session:
-
-```{r visstat-methods-plot-replay}
-plot(iris_kruskal)
-```
-
-``` r
-# Interactive only (not executed during vignette build):
-plot(iris_kruskal, which = 2)
-```
-
-```{r visstat-methods-cleanup, echo = FALSE}
-file.remove(attr(iris_kruskal_stored, "plot_paths"))
 ```
 
 # Discussion {#discussion}
 
-#### Scope and defaults {.unnumbered}
+#### Scope and defaults {#limitations .unnumbered}
 
 The design of `visStatistics` prioritises transparent, reproducible
 routing for common two-variable analyses over broad model coverage. This
@@ -1226,8 +1228,8 @@ In this case `visstat()` reports the t-statistic, as it provides sign informatio
 Simple linear regression corresponds to one continuous predictor $x_{i1}$ for observation $i$.
 Testing $H_0: \beta_1 = 0$ examines whether there is a linear relationship between the predictor and the response.
 
-# Appendix B: Tests for homoscedasticity {#variance}
-The package uses both the Shapiro-Wilk test  as well ass the Anderson-Darling test to check the  normality of the studentised residuals
+# Appendix B: Tests for normality {#normality}
+The package uses both the Shapiro-Wilk test and the Anderson-Darling test to check the normality of the studentised residuals
 $r_i^* = e_i / (s\sqrt{1-h_{ii}})$, where $e_i$ are the raw residuals,
 $s^2$ is the residual mean square, and $h_{ii}$ is the leverage of
 observation $i$ [@Cook:1982].
@@ -1278,13 +1280,13 @@ The implementation uses `shapiro.test()` from `stats` [@R:2026].
 The Anderson--Darling test [@Anderson:1952] is particularly sensitive to
 deviations in the tails of the distribution [@Razali:2011; @Yap:2011].
 Let $z_i = (x_{(i)} - \bar{x})/s,\; i=1,2,\ldots,n$ be the standardised order statistics of $x_i$
-and $\Phi$ the standard normal cumulative  density function. The test statistic is
+and $\Phi$ the standard normal cumulative density function. The test statistic is
 
 $$A^2 = -n - \frac{1}{n}\sum_{i=1}^{n}(2i-1)
         \left[\ln\Phi(z_i) + \ln\!\left(1 - \Phi(z_{n+1-i})\right)\right].$$
 
 The implementation uses `ad.test()` from `nortest`
-[@Gross:2015]. Albeit the  Anderson--Darling result is shown in all assumption
+[@Gross:2015]. Although the Anderson--Darling result is shown in all assumption
 plots, it does **not** drive the branching decision; only Shapiro--Wilk
 does.
 

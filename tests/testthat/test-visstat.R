@@ -476,6 +476,17 @@ test_that("visstat returns effect_size for implemented branches", {
   }
 })
 
+test_that("numeric correlation branch skips GLM assumption plot", {
+  setup_test_graphics()
+  on.exit(cleanup_test_graphics())
+
+  regression <- visstat(airquality$Wind, airquality$Ozone)
+  spearman <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
+
+  expect_length(attr(regression, "captured_plots"), 2)
+  expect_length(attr(spearman, "captured_plots"), 1)
+})
+
 # Tests for consistency between syntax forms
 test_that("visstat produces consistent results across syntax forms", {
   data <- create_visstat_test_data()

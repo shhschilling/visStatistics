@@ -23,14 +23,14 @@ test_that("vis_lm_assumptions returns correct structure for ANOVA", {
 })
 
 test_that("vis_lm_assumptions returns correct structure for regression", {
-  # Run function with regression=TRUE
-  result <- vis_lm_assumptions(mtcars$mpg, as.factor(mtcars$cyl), regression = TRUE)
+  # Numeric predictor with default correlation = FALSE gives regression diagnostics
+  result <- vis_lm_assumptions(mtcars$mpg, mtcars$wt)
   
   # Test structure - should have 6 elements
   expect_named(result, c("summary_anova", "shapiro_test", "ad_test", 
                          "levene_test", "bartlett_test", "bp_test"))
   
-  # For regression (regression=TRUE): bp_test exists, levene and bartlett are NULL
+  # For regression diagnostics: bp_test exists, levene and bartlett are NULL
   expect_null(result$levene_test)
   expect_null(result$bartlett_test)
   expect_s3_class(result$bp_test, "htest")
@@ -136,7 +136,7 @@ test_that("vis_lm_assumptions uses plot.lm correctly", {
   # For regression
   expect_no_error({
     pdf(NULL)
-    result <- vis_lm_assumptions(mtcars$mpg, as.factor(mtcars$cyl), regression = TRUE)
+    result <- vis_lm_assumptions(mtcars$mpg, mtcars$wt)
     dev.off()
   })
 })

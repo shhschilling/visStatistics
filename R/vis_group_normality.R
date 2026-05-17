@@ -77,7 +77,8 @@ vis_group_normality <- function(samples,
     cat("===============================================\n")
     cat("  TOO MANY GROUPS FOR VISUAL DISPLAY (k = ", k, ")\n")
     cat("===============================================\n\n")
-    cat("Visual plots are not meaningful with more than 8 groups.\n")
+    cat("Group-wise normality plots are omitted for more than 8 groups\n")
+    cat("to avoid an overcrowded display.\n")
     cat("Providing normality test results in tabular format instead.\n\n")
     
     # Calculate test results for all groups
@@ -145,12 +146,7 @@ vis_group_normality <- function(samples,
     cat("================================\n\n")
     print(results_table, row.names = FALSE)
     
-    cat("\n")
-    cat("Interpretation:\n")
     alpha <- 1 - conf.level
-    cat("  - p >", alpha, ": Data consistent with normality\n")
-    cat("  - p <=", alpha, ": Evidence against normality\n")
-    cat("\n")
     
     # Count how many groups fail normality
     n_fail_shapiro <- sum(results_table$Shapiro_p != "NA" & 
@@ -165,13 +161,6 @@ vis_group_normality <- function(samples,
     cat("  ", n_fail_ad, "out of", k, "groups fail Anderson-Darling test (p <", alpha, ")\n")
     cat("\n")
     
-    if (n_fail_shapiro > 0 || n_fail_ad > 0) {
-      cat("Recommendation: Consider using Kruskal-Wallis test (non-parametric)\n")
-    } else {
-      cat("Recommendation: Normality assumption appears reasonable for Welch ANOVA\n")
-    }
-    cat("\n")
-    
     # Return results invisibly
     result <- list(
       shapiro_tests = shapiro_tests,
@@ -179,7 +168,7 @@ vis_group_normality <- function(samples,
       n_groups = k,
       group_names = group_levels,
       results_table = results_table,
-      note = "Too many groups for visual display"
+      note = "Too many groups for visual display; group-wise tests are diagnostic only."
     )
     
     class(result) <- "vis_group_normality"

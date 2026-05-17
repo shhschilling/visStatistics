@@ -58,7 +58,8 @@ test_that("print.visstat displays basic information correctly", {
   expect_true(any(grepl("Object of class 'visstat'", output)))
   expect_true(any(grepl("Test used: One-way ANOVA", output)))
   expect_true(any(grepl("p-value: 0.0234", output)))
-  expect_true(any(grepl("Effect size: omega-squared = 0.12", output)))
+  expect_false(any(grepl("Effect size:", output)))
+  expect_true(any(grepl("effect_size", output)))
   expect_true(any(grepl("Available components:", output)))
 })
 
