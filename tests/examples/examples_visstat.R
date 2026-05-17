@@ -95,11 +95,11 @@ welch_anova_data <- data.frame(group = factor(rep(c("A", "B", "C"), each = 20)),
                                  rnorm(20, mean = 55, sd = 10),
                                  rnorm(20, mean = 60, sd = 15)
                                ))
-welch_annova = visstat(welch_anova_data$group, welch_anova_data$value)
+welch_anova = visstat(welch_anova_data$group, welch_anova_data$value)
 
 set.seed(123)
 # Welch ANOVA  with 10 groups  -----
-# 
+#
 # Create data with 10 groups
 groups_10 <- data.frame(
   response = c(
@@ -199,7 +199,7 @@ plot(iris_data, which = 1) #replay plot 1
 
 # Replay plots  or file paths of stored graphics------
 
-plot(fisher_stats, which = 1) # column  plot 
+plot(fisher_stats, which = 1) # column  plot
 
 
 # Saving the graphical output to a user specified plotDirectory in user specified graphicsouput format ----

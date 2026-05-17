@@ -329,20 +329,6 @@ visstat_core <- function(dataframe,
       # --- PARAMETRIC BRANCH ---
       var_p <- levene.test(samples, fact)$p.value
       if (nlevels(fact) == 2) {
-        # Group-wise normality diagnostics for Welch t-tests
-        # visualization of normality assumption per group
-        if (var_p < alpha) {
-          openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-          vis_group_normality(samples, fact, conf.level = conf.level, cex = 0.8)
-          
-          if (is.null(plotName)) {
-            filename <- paste("ttest_assumptions_", name_of_sample, "_", name_of_factor, sep = "")
-          } else {
-            filename <- paste("ttest_assumptions_", plotName, sep = "")
-          }
-          plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename, type = graphicsoutput,
-                                                       fileDirectory = plotDirectory, capture_env = capture_env))
-        }
         # Final t-test execution
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 
         vis_sample_fact <- two_sample_t_test(samples, fact, var.equal = (var_p >= alpha), 
@@ -357,20 +343,6 @@ visstat_core <- function(dataframe,
                                                      fileDirectory = plotDirectory, capture_env = capture_env))
       } else {
         # ANOVA execution (Fisher/Welch and Post-hoc handled internally)
-        # 
-        if (var_p < alpha) {
-          # Unequal variances - will use Welch ANOVA, show normality per group
-          openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
-          vis_group_normality(samples, fact, conf.level = conf.level, cex = 0.8)
-          
-          if (is.null(plotName)) {
-            filename <- paste("anova_assumptions_", name_of_sample, "_", name_of_factor, sep = "")
-          } else {
-            filename <- paste("anova_assumptions_", plotName, sep = "")
-          }
-          plot_paths <- c(plot_paths, saveGraphVisstat(fileName = filename, type = graphicsoutput,
-                                                       fileDirectory = plotDirectory, capture_env = capture_env))
-        }
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 
         vis_sample_fact <- vis_anova(samples, fact, samplename = varsample, 
                                      factorname = varfactor, conf.level = conf.level)
@@ -587,28 +559,30 @@ visstat_core <- function(dataframe,
     ) 
     
     
-    normality_residual_assumption <-
-      vis_lm_assumptions(samples, fact,cex = 0.8,regression = TRUE)
-    
-    
-    
-    
-    if (is.null(plotName)) {
-      filename <-
-        paste("glm_assumptions_", varsample, "_", varfactor, sep = "")
-    } else {
-      filename <-  paste("glm_assumptions_",plotName)
-    }
-    
-    plot_paths <- c(
-      plot_paths,
-      saveGraphVisstat(
-        fileName = filename,
-        type = graphicsoutput,
-        fileDirectory = plotDirectory,
-        capture_env = capture_env
+    if (!correlation) {
+      normality_residual_assumption <-
+        vis_lm_assumptions(samples, fact, cex = 0.8, correlation = FALSE)
+      
+      
+      
+      
+      if (is.null(plotName)) {
+        filename <-
+          paste("glm_assumptions_", varsample, "_", varfactor, sep = "")
+      } else {
+        filename <-  paste("glm_assumptions_",plotName)
+      }
+      
+      plot_paths <- c(
+        plot_paths,
+        saveGraphVisstat(
+          fileName = filename,
+          type = graphicsoutput,
+          fileDirectory = plotDirectory,
+          capture_env = capture_env
+        )
       )
-    )
+    }
     
     openGraphCairo(type = graphicsoutput,fileDirectory = plotDirectory) 
     

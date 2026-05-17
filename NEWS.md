@@ -4,6 +4,12 @@ editor_options:
     wrap: 72
 ---
 
+# visStatistics 0.2.1
+
+- Added effect-size output to `visstat()` results for the implemented
+  test branches. The returned `effect_size` field includes the
+  effect-size name, estimate, and method description.
+
 # visStatistics 0.2.0
 
 ## Changes in decision logic
