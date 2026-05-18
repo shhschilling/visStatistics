@@ -116,7 +116,10 @@ visstat(y ~ x, data = dataframe)
 ```
 
 where `x` and `y` are vectors of class `"numeric"`, `"integer"`, or
-`"factor"`. The function returns an object of class `"visstat"` with
+`"factor"`. 
+The visstat parameter `conf.level` defaults to 0.95, equivalent to a default signifcance level of $\alpha=1-$`conf.level.
+
+The function returns an object of class `"visstat"` with
 `print()`, `summary()`, and `plot()` methods. The returned object also
 contains an `effect_size` field with the estimate and the effect-size
 method.
