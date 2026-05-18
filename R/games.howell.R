@@ -1,8 +1,8 @@
 #' Games-Howell Post-Hoc Test
 #'
-#' Performs pairwise comparisons using the Games-Howell test, which does not
-#' assume equal variances or equal sample sizes. This is the appropriate
-#' post-hoc test to use after a significant Welch's ANOVA.
+#' Performs pairwise comparisons using the package's own implementation of a
+#' Games-Howell-type unequal-variance post-hoc procedure. It does not assume
+#' equal variances or equal sample sizes and is used after Welch's ANOVA.
 #'
 #' @param samples Numeric vector; the dependent variable.
 #' @param groups Factor or vector; the grouping variable.
@@ -24,9 +24,9 @@
 #' }
 #'
 #' @details
-#' The Games-Howell test uses the Welch-Satterthwaite approximation for
-#' degrees of freedom and does not pool variances. P-values are adjusted
-#' using the Holm method to control family-wise error rate.
+#' The implementation uses the Welch-Satterthwaite approximation for degrees
+#' of freedom and does not pool variances. P-values are adjusted using the
+#' Holm method to control family-wise error rate.
 #'
 #' @examples
 #' # Convert dose to factor

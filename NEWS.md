@@ -21,7 +21,7 @@ editor_options:
   `rstandard()`.
 
 - **Variance homogeneity test changed from `bartlett.test()` to
-  `levene.test()`.** The Levene-Brown-Forsythe test (using the median)
+  `levene.test()`.** The Brown-Forsythe Levene-type test (using the median)
   is more robust to non-normality than Bartlett's test. The test now
   determines whether Student's t-test (`t.test(var.equal = TRUE)`) or
   Welch's t-test is used in the two-group case, and whether `aov()` or
@@ -61,7 +61,7 @@ editor_options:
 
 - **New exported functions:**
 
-  - `levene.test()`: Levene-Brown-Forsythe test for homogeneity of
+  - `levene.test()`: Brown-Forsythe Levene-type test for homogeneity of
     variance (center = median), mimicking the default behaviour of
     `leveneTest()` in the `car` package.
   - `bp.test()`: Breusch-Pagan test for heteroscedasticity in linear

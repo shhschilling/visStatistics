@@ -39,7 +39,7 @@ test_that("levene.test returns correct structure", {
   expect_named(result$parameter, c("df1", "df2"))
   
   # Check method string
-  expect_equal(result$method, "Levene-Brown-Forsythe Test (center = median)")
+  expect_equal(result$method, "Brown-Forsythe Levene-type Test (center = median)")
 })
 
 test_that("levene.test calculates correct degrees of freedom", {

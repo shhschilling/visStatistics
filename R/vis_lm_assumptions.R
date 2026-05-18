@@ -5,7 +5,7 @@
 #' (t.test,var=EQUAL) 
 #' Fisher oneway ANOVA (aov) or simple linear regression.
 #' Performs the Shapiro-Wilk test and Anderson-Darling test for normality and,
-#' if not a regression, also the Levene-Brown-Forsythe and the Bartlett's test for homogeneity of variances.
+#' if not a regression, also the Brown-Forsythe Levene-type and Bartlett's tests for homogeneity of variances.
 #' It produces a histogram with normal overlay, a residuals vs fitted plot,
 #' and a normal Q-Q plot.
 #'
@@ -136,7 +136,7 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
     # ANOVA title with Levene and Bartlett - split into two rows
     title_line1 <- paste("Linear model assumptions: Shapiro-Wilk p =", p_shapiro,
                          "| Anderson-Darling p =", if(is.numeric(p_AD)) signif(p_AD, 2) else p_AD)
-    title_line2 <- paste("Levene-Brown-Forsythe p =", signif(levene_test$p.value, 2),
+    title_line2 <- paste("Brown-Forsythe Levene-type p =", signif(levene_test$p.value, 2),
                          "| Bartlett p =", signif(bartlett_test$p.value, 2))
     
     mtext(title_line1, side = 3, outer = TRUE, line = 1, cex = 0.7)

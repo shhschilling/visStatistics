@@ -1,7 +1,7 @@
-#' Levene-Brown-Forsythe Test for Homogeneity of Variance (center = median)
+#' Brown-Forsythe Levene-type Test for Homogeneity of Variance (center = median)
 #'
-#' @description Performs Levene's test using the
-#'  Brown-Forsythe modification (median-centred). 
+#' @description Performs Levene's test using the Brown-Forsythe
+#'  median-centred modification. 
 #'  It tests the null hypothesis that all groups 
 #' have equal variances by testing whether the absolute deviations
 #'  from group  medians are equal across groups
@@ -98,7 +98,7 @@ levene.test <- function(y, g, data = NULL) {
       statistic = c(F = f_value),
       parameter = c(df1 = df1, df2 = df2),
       p.value = p_value,
-      method = "Levene-Brown-Forsythe Test (center = median)",
+      method = "Brown-Forsythe Levene-type Test (center = median)",
       data.name = "absolute deviations from group medians (for ANOVA on spread differences)"
     ),
     class = "htest"
