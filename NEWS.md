@@ -6,9 +6,23 @@ editor_options:
 
 # visStatistics 0.2.1
 
-- Added effect-size output to `visstat()` results for the implemented
-  test branches. The returned `effect_size` field includes the
-  effect-size name, estimate, and method description.
+## API
+
+- Reduced the exported standalone API to user-facing functions. Internal
+  routing and plotting helpers are no longer exported or documented as
+  standalone functions.
+- `vis_anova()`, `vis_numeric()`, `vis_group_normality()`,
+  `gh_letters()`, and `pooled_normality_test()` are now internal helpers.
+- `vis_anova_assumptions()` remains as an internal deprecated wrapper for
+  `vis_lm_assumptions()`, but is no longer exported or documented.
+- `effect_size()` is now exported for supported `visstat()` result
+  objects.
+
+## Effect sizes
+
++- Added effect-size output to `visstat()` results for the implemented
++  test branches. The returned `effect_size` field includes the
++  effect-size name, estimate, and method description.
 
 # visStatistics 0.2.0
 
@@ -68,10 +82,6 @@ editor_options:
     regression models.
   - `games.howell()`: Games-Howell post-hoc test for pairwise
     comparisons following Welch's ANOVA.
-  - `vis_numeric()`: Visualisation of numeric-numeric relationships
-    (regression or correlation).
-  - `vis_group_normality()`: Diagnostic plots for the Welch t-test /
-    Welch ANOVA branch.
   - `vis_lm_assumptions()`: Renamed from `vis_anova_assumptions()`, now
     provides unified assumption diagnostics for the general linear model
     (t-test, ANOVA, regression).

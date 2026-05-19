@@ -9,6 +9,7 @@
 #' @param test Character, either "shapiro" or "ad" for Anderson-Darling
 #' @param min_n Minimum sample size per group required (default 3)
 #' @return A list with test results (statistic, p.value, method, data.name)
+#' @noRd
 
 pooled_normality_test <- function(y, g, 
                                   test = c("shapiro", "ad"),

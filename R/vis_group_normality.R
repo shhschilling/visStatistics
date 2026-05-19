@@ -1,48 +1,17 @@
 ### Header vis_group_normality -----
 
-#' Visualisation of the normality assumption for Welch ANOVA/t-test
-#'
-#' \code{vis_group_normality} checks for normality of each group separately using 
-#' the Shapiro-Wilk and Anderson-Darling tests. The null hypothesis is that 
-#' each group is normally distributed. The function generates histograms 
-#' with normal distribution overlays and Q-Q plots to visually assess normality.
-#' The layout is always 2 rows × k columns (histograms on top, Q-Q plots on bottom).
-#'
-#' @param samples Numeric vector; the dependent variable.
-#' @param groups Factor or vector; the grouping variable (2 to 8 groups for visual display).
-#' @param conf.level Numeric; confidence level (default: 0.95). Used to determine 
-#'   alpha = 1 - conf.level for normality test interpretation.
-#' @param samplename Character; label for the y-axis (default: "").
-#' @param groupname Character; label for the x-axis (default: "").
-#' @param cex Numeric; scaling factor for plot text and symbols (default: 1).
-#'
-#' @return A list containing:
-#' \describe{
-#'   \item{shapiro_tests}{List of Shapiro-Wilk test results for each group}
-#'   \item{ad_tests}{List of Anderson-Darling test results for each group}
-#'   \item{n_groups}{Number of groups}
-#'   \item{group_names}{Names of the groups}
-#' }
-#'
-#' @details
-#' Layout is always 2 rows × k columns:
-#' \itemize{
-#'   \item Top row: Histograms with normal overlay for each group
-#'   \item Bottom row: Q-Q plots for each group
-#' }
-#' For more than 8 groups, a tabular summary is provided instead of plots.
-#'
-#' @examples
-#' # Two groups (like t-test)
-#' vis_group_normality(ToothGrowth$len, ToothGrowth$supp)
-#' 
-#' # Three groups
-#' ToothGrowth$dose <- as.factor(ToothGrowth$dose)
-#' vis_group_normality(ToothGrowth$len, ToothGrowth$dose)
-#'
-#' @export
+#' @noRd
+vis_group_normality <- function(samples,
+                                groups,
+                                conf.level = 0.95,
+                                samplename = "",
+                                groupname = "",
+                                cex = 1) {
+  .Deprecated("vis_lm_assumptions")
+  vis_lm_assumptions(samples, groups, cex = cex)
+}
 
-vis_group_normality <- function(samples, 
+.vis_group_normality_impl <- function(samples,
                                 groups, 
                                 conf.level = 0.95, 
                                 samplename = "", 
