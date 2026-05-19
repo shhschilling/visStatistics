@@ -4,28 +4,12 @@ This is a patch release following version 0.2.0.
 
 ## Changes since 0.2.0
 
-- Added effect-size output to `visstat()` results for the implemented
-  test branches. The returned `effect_size` field includes the
-  effect-size name, estimate, and method description.
+- New, exported `effect_size()` function to generate effect-size output 
+- Examples, tests, and vignette documentation include now the effect-size output.
 
-- Updated `vis_lm_assumptions()` to use the `correlation` argument
-  consistently with `visstat()`.
-
-- For numeric-numeric analyses with `correlation = TRUE`, the Spearman
-  branch no longer creates the linear-model assumption diagnostic plot.
-  The default regression branch remains unchanged and still returns the
-  assumption diagnostic plot.
-
-- Updated the corresponding Rd documentation and tests for the changed
-  `vis_lm_assumptions()` argument.
-
-- Added a regression test confirming that the default regression branch
-  returns two captured plots and the Spearman correlation branch returns
-  one captured plot.
-
-- Added `inspectable` to the spelling word list.
-
-- Added `visstatisticsArchive` to `.Rbuildignore` and `.gitignore`.
+- Reduced the set of exported standalone helper functions to the    intended
+  user-facing functions. Internal routing and plotting helpers are no
+  longer exported or documented as standalone functions.
 
 ## Test environment
 
@@ -33,8 +17,6 @@ This is a patch release following version 0.2.0.
 
 ## Check status
 
-- `R CMD check --no-manual --no-build-vignettes .` confirms that
-  code/documentation mismatches are resolved.
-- The spelling test reports: `All Done!`
+- To be filled after the final `R CMD check` run.
 
 Thank you for reviewing this patch release.

@@ -145,6 +145,8 @@ Definitions of all implemented test statistics and association measures are refe
 
 Student's t-test, Fisher's ANOVA, and simple linear regression all belong to the general linear model framework ([see Appendix A](#glm)) and thus share a common set of assumptions: the expected value of the response is a linear function of the predictors, the error terms are independent and normally distributed with expectation 0, and the error variance is constant at $\sigma^2$.
 Therefore the test selection for [tests of central tendencies](#numeric-categoric) is steered by checking the fitted model residuals in regard to these assumptions.
+For the central-tendency branch with numeric responses and for the simple-regression branch, this residual check is also the first visual output: `vis_lm_assumptions()` displays a four-panel diagnostic graphic before the selected test or regression result (see [Appendix B](#assumptions)).
+The panel shows the residual distribution, residuals versus fitted values, normal Q--Q behaviour, and, depending on the branch, scale-location or leverage diagnostics.
 
 In the following subsections, we detail the decision logic following the structure of the overview figure.
 
@@ -159,8 +161,9 @@ knitr::include_graphics("figures/decision_tree.png")
 Unless stated otherwise, R function names refer to functions from the `stats` package distributed with R [@R:2026].
 
 The first split checks group size.
+The diagnostic panel is generated before this split is evaluated.
 When all groups contain more than 50 observations, the normality of the sampling distribution of the group means can be assumed by the central limit theorem [@Lumley:2002; @Rasch:2011], and the residual normality test is bypassed to avoid rejecting negligible deviations in large samples [@Ghasemi:2012; @Fagerland:2012; @Shatz:2024].
-Otherwise, a linear model `lm(y ~ x)` (see [Appendix A](#glm)) is fitted, assumption diagnostic plots are displayed (for details see [Assumption diagnostics](#assumptions)), and the Shapiro--Wilk (SW) test is applied to internally studentised residuals from `rstandard()` [@Cook:1982].
+Otherwise, a linear model `lm(y ~ x)` (see [Appendix A](#glm)) is fitted for the routing decision, and the Shapiro--Wilk (SW) test is applied to internally studentised residuals from `rstandard()` [@Cook:1982].
 
 If normality is rejected ($p_\text{SW} \le \alpha$), non-parametric tests are selected: `wilcox.test()` for two groups, or `kruskal.test()` followed by Holm-adjusted `pairwise.wilcox.test()` for more than two groups.
 
@@ -168,25 +171,6 @@ If normality is not rejected, variance homogeneity is assessed with Levene's tes
 For brevity, we refer to this Brown--Forsythe Levene-type procedure as the Levene test below.
 For homoscedastic data, `t.test(var.equal = TRUE)` is applied for two groups, or Fisher's `aov()` with `TukeyHSD()` for more than two groups.
 For heteroscedastic data, Welch's `t.test()` is applied for two groups, or Welch's `oneway.test()` with the package implementation `games.howell()` ([@Games:1976]; see [Appendix C](#gh)) for more than two groups.
-
-<!-- For more than two groups, this branch leads to either `kruskal.test()`, -->
-
-<!-- Fisher's one-way ANOVA (`aov()`), or Welch's heteroscedastic one-way -->
-
-<!-- ANOVA (`oneway.test()`).  -->
-
-### Graphical output {.unnumbered}
-
-The first panel shows the linear-model assumption diagnostics.
-It contains a histogram of the standardised residuals with a standard normal density overlay, a plot of standardised residuals against fitted values, a normal Q--Q plot, and a scale-location plot (replaced by a standardised residuals vs. leverage plot with Cook's distance contours in the regression branch).
-The latter three are inherited from `plot.lm()`, while the histogram is added to make the residual distribution directly visible.
-The title reports the Shapiro--Wilk and Anderson--Darling normality tests together with Bartlett's and Levene tests for homoscedasticity (Breusch--Pagan in the regression branch).
-Shapiro--Wilk drives the parametric/non-parametric routing decision; Anderson--Darling is shown for reference only.
-The Levene test drives the equal-variance/Welch routing decision; Bartlett is shown for reference only.
-
-The final panel shows the selected test as box plots with sample sizes above each group.
-For the parametric branches, the title also reports the corresponding $F$ statistic.
-When the largest group has no more than 50 observations, jittered points are overlaid to show the raw data.
 
 The box plots are enriched with significance letters to visualise the post-hoc analysis:
 
@@ -619,10 +603,17 @@ where $Y_i$ is the response for observation $i$, $x_{ij}$ is the value of predic
 
 **Fisher's ANOVA** uses $k-1$ indicator variables for $k$ groups; testing $H_0: \beta_1 = \cdots = \beta_{k-1} = 0$ is equivalent to testing equality of all group means.
 
-**Simple linear regression** uses one continuous predictor; testing $H_0: \beta_1 = 0$ examines whether a linear relationship exists.
-For simple linear regression, the effect size is measured by the <span id="r2"></span>coefficient of determination: $R^2 = 1 - SS_\text{res}/SS_\text{tot}$, where $SS_\text{res}=\sum_i(Y_i-\hat{Y}_i)^2$ is the residual sum of squares and $SS_\text{tot}=\sum_i(Y_i-\bar{Y})^2$ is the total sum of squares.
 
 In the two-sample case, the squared test statistic of Student's t-test equals the Fisher ANOVA test statistic, $t^2 = F$, resulting in identical $p$-values for `t.test(var.equal = TRUE)` and `aov()`.
+
+**Simple linear regression** uses one continuous predictor; $H_0: \beta_1 = 0$ examines whether a linear relationship exists.
+For simple linear regression, the effect size is measured by the coefficient of determination: 
+
+$$R^2 = 1 - SS_\text{res}/SS_\text{tot}$$, 
+
+where $SS_\text{res}=\sum_i(Y_i-\hat{Y}_i)^2$ is the residual sum of squares and $SS_\text{tot}=\sum_i(Y_i-\bar{Y})^2$ is the total sum of squares.
+
+
 
 # Appendix B: The general linear model assumption diagnostics `vis_lm_assumptions()` {#assumptions}
 
@@ -633,15 +624,9 @@ All tests within the linear model framework (see [Appendix A](#glm)) share a com
 - Error terms are independent and normally distributed with expectation 0 and constant variance $\sigma^2$
 
 The function `vis_lm_assumptions()` provides a unified visual and statistical framework for checking the [linear model](#glm) assumptions.
-It fits a linear model using `aov()` and provides four standard diagnostic plots:
-
-1.  **Histogram and Normal Density**: Displays the distribution of standardised residuals with a red normal density curve overlay to visually assess normality.
-
-2.  **Std. Residuals vs. Fitted**: Standardised residuals against fitted values with a zero-line to detect non-linearity or heteroscedasticity.
-
-3.  **Normal Q-Q Plot**: A theoretical quantile-quantile plot using the standardised residuals to identify deviations from the Gaussian distribution.
-
-4.  For numeric predictors with `correlation = FALSE`, the **Standardised Residuals vs. Leverage** plot is shown; otherwise, a **Scale-Location** plot is shown.
+It fits a linear model using `aov()` and provides four diagnostic plots.
+The first plot is a histogram of the standardised residuals with a standard normal density overlay.
+The remaining plots are inherited from `plot.lm()`: residuals against fitted values, a normal Q--Q plot, and either a scale-location plot or, for numeric predictors with `correlation = FALSE`, a standardised residuals vs. leverage plot with Cook's distance contours.
 
 ## Tests for normality and homoscedasticity
 
