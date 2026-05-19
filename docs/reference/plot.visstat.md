@@ -56,8 +56,8 @@ anova_path <- visstat(
 )
 
 plot(anova_path)
-#> Plot [1] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpVSm2uQ/glm_assumptions_yield_block.png
-#> Plot [2] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpVSm2uQ/anova_yield_block.png
+#> Plot [1] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpHdxVWK/glm_assumptions_yield_block.png
+#> Plot [2] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//RtmpHdxVWK/anova_yield_block.png
 
 # Interactive output: plot() lists available plots,
 # plot(obj, which = n) replays a specific one
@@ -67,7 +67,7 @@ linreg <- visstat(trees$Height, trees$Girth)
 #> Homoscedasticity violated (Breusch-Pagan p = 0.0158 )
 #> Analysis proceeded but interpret results cautiously.
 #> RECOMMENDATION: Consider exploring alternatives outside visstat() such as data transformations,
-#> generalised linear models, or robust regression. For an assumption-free, non-causal alternative
+#> generalised linear models, or robust regression. For a non-causal alternative
 #> consider rerunning with correlation = TRUE.
 
 plot(linreg)

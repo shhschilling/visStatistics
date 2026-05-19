@@ -43,7 +43,6 @@ anova <- visstat(npk$block, npk$yield)
 
 print(anova)
 #> Object of class 'visstat'
-#> Effect size: omega-squared = 0.215 
 #> 
 #> Available components:
 #> [1] "summary statistics of ANOVA" "post-hoc analysis "         

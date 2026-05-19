@@ -4,14 +4,14 @@ Student's t-test
 (t.test,var=EQUAL)
 Fisher oneway ANOVA (aov) or simple linear regression.
 Performs the Shapiro-Wilk test and Anderson-Darling test for normality and,
-if not a regression, also the Levene-Brown-Forsythe and the Bartlett's test for homogeneity of variances.
+if not a regression, also the Brown-Forsythe Levene-type and Bartlett's tests for homogeneity of variances.
 It produces a histogram with normal overlay, a residuals vs fitted plot,
 and a normal Q-Q plot."><meta property="og:description" content="Checks for normality of the standardised residuals in the general linear model
 Student's t-test
 (t.test,var=EQUAL)
 Fisher oneway ANOVA (aov) or simple linear regression.
 Performs the Shapiro-Wilk test and Anderson-Darling test for normality and,
-if not a regression, also the Levene-Brown-Forsythe and the Bartlett's test for homogeneity of variances.
+if not a regression, also the Brown-Forsythe Levene-type and Bartlett's tests for homogeneity of variances.
 It produces a histogram with normal overlay, a residuals vs fitted plot,
 and a normal Q-Q plot."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -21,7 +21,7 @@ and a normal Q-Q plot."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">visStatistics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,16 +53,14 @@ Student's t-test
 (t.test,var=EQUAL)
 Fisher oneway ANOVA (aov) or simple linear regression.
 Performs the Shapiro-Wilk test and Anderson-Darling test for normality and,
-if not a regression, also the Levene-Brown-Forsythe and the Bartlett's test for homogeneity of variances.
+if not a regression, also the Brown-Forsythe Levene-type and Bartlett's tests for homogeneity of variances.
 It produces a histogram with normal overlay, a residuals vs fitted plot,
 and a normal Q-Q plot.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">vis_lm_assumptions</span><span class="op">(</span><span class="va">samples</span>, <span class="va">fact</span>, cex <span class="op">=</span> <span class="fl">1</span>, regression <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">vis_anova_assumptions</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">vis_lm_assumptions</span><span class="op">(</span><span class="va">samples</span>, <span class="va">fact</span>, cex <span class="op">=</span> <span class="fl">1</span>, correlation <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -81,12 +79,10 @@ and a normal Q-Q plot.</p>
 <dd><p>Numeric; scaling factor for plot text and symbols (default: 1).</p></dd>
 
 
-<dt id="arg-regression">regression<a class="anchor" aria-label="anchor" href="#arg-regression"></a></dt>
-<dd><p>Logical; if TRUE, skips Bartlett's test (for regression diagnostics). Default is FALSE.</p></dd>
-
-
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Arguments passed to <code>vis_lm_assumptions()</code>.</p></dd>
+<dt id="arg-correlation">correlation<a class="anchor" aria-label="anchor" href="#arg-correlation"></a></dt>
+<dd><p>Logical. If <code>FALSE</code> and <code>fact</code> is numeric,
+regression diagnostics are shown. If <code>TRUE</code>, no regression
+diagnostics are shown. Default is <code>FALSE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -101,13 +97,13 @@ and a normal Q-Q plot.</p>
 <dd><p>Result from <code><a href="https://rdrr.io/pkg/nortest/man/ad.test.html" class="external-link">nortest::ad.test()</a></code> or a character message if n &lt; 7.</p></dd>
 
   <dt>levene_test</dt>
-<dd><p>Result from <code><a href="levene.test.html">levene.test()</a></code> (only if <code>regression = FALSE</code>).</p></dd>
+<dd><p>Result from <code><a href="levene.test.html">levene.test()</a></code> (grouped diagnostics only).</p></dd>
 
   <dt>bartlett_test</dt>
-<dd><p>Result from <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code> (only if <code>regression = FALSE</code>).</p></dd>
+<dd><p>Result from <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code> (grouped diagnostics only).</p></dd>
 
   <dt>bp_test</dt>
-<dd><p>Result from <code><a href="bp.test.html">bp.test()</a></code> (only if <code>regression = TRUE</code>).</p></dd>
+<dd><p>Result from <code><a href="bp.test.html">bp.test()</a></code> (regression diagnostics only).</p></dd>
 
 
 </dl></div>

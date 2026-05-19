@@ -177,16 +177,13 @@ visstat(mpg ~ am, data = mtcars)
 
 
 
-
 # Standardised usage
 visstat(mtcars$am, mtcars$mpg)
 
 
 
-
 # Backward-compatible usage (same result as above)
 visstat(mtcars, "mpg", "am")
-
 
 
 
@@ -202,7 +199,6 @@ visstat(df$group,df$weight)
 # When residuals are normally distributed but Levene's test indicates
 # heteroscedasticity, Welch's t-test is used
 visstat(mtcars$am, mtcars$mpg)
-
 
 
 
@@ -234,7 +230,6 @@ set.seed(123)
 values <- c(rnorm(20, 10, 1),rnorm(20, 15, 5),rnorm(20, 12, 2))
 groups <- factor(rep(c("A", "B", "C"), each = 20))
 visstat(groups, values)
-
 
 
 ## Kruskal-Wallis (non-normal, >2 groups)

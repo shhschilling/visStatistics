@@ -1,5 +1,28 @@
 # Changelog
 
+## visStatistics 0.2.1
+
+### Effect sizes
+
+- New, exported
+  [`effect_size()`](https://shhschilling.github.io/visStatistics/reference/effect_size.md)
+  function to generate effect-size output
+- Examples, tests, and vignette documentation include now the
+  effect-size output.
+
+### Reduced the number of exported standalone functions
+
+- Reduced the exported standalone functions to user-facing functions.
+  Internal routing and plotting helpers are no longer exported or
+  documented as standalone functions:
+- `vis_anova()`, `vis_numeric()`, `vis_group_normality()`,
+  `gh_letters()`, and `pooled_normality_test()` are now internal
+  helpers.
+- `vis_anova_assumptions()` remains as an internal deprecated wrapper
+  for
+  [`vis_lm_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md),
+  but is no longer exported or documented.
+
 ## visStatistics 0.2.0
 
 CRAN release: 2026-05-12
@@ -16,8 +39,8 @@ CRAN release: 2026-05-12
 - **Variance homogeneity test changed from
   [`bartlett.test()`](https://rdrr.io/r/stats/bartlett.test.html) to
   [`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md).**
-  The Levene-Brown-Forsythe test (using the median) is more robust to
-  non-normality than Bartlett’s test. The test now determines whether
+  The Brown-Forsythe Levene-type test (using the median) is more robust
+  to non-normality than Bartlett’s test. The test now determines whether
   Student’s t-test (`t.test(var.equal = TRUE)`) or Welch’s t-test is
   used in the two-group case, and whether
   [`aov()`](https://rdrr.io/r/stats/aov.html) or
@@ -65,8 +88,8 @@ CRAN release: 2026-05-12
 - **New exported functions:**
 
   - [`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md):
-    Levene-Brown-Forsythe test for homogeneity of variance (center =
-    median), mimicking the default behaviour of `leveneTest()` in the
+    Brown-Forsythe Levene-type test for homogeneity of variance (center
+    = median), mimicking the default behaviour of `leveneTest()` in the
     `car` package.
   - [`bp.test()`](https://shhschilling.github.io/visStatistics/reference/bp.test.md):
     Breusch-Pagan test for heteroscedasticity in linear regression
@@ -74,21 +97,14 @@ CRAN release: 2026-05-12
   - [`games.howell()`](https://shhschilling.github.io/visStatistics/reference/games.howell.md):
     Games-Howell post-hoc test for pairwise comparisons following
     Welch’s ANOVA.
-  - [`vis_numeric()`](https://shhschilling.github.io/visStatistics/reference/vis_numeric.md):
-    Visualisation of numeric-numeric relationships (regression or
-    correlation).
-  - [`vis_group_normality()`](https://shhschilling.github.io/visStatistics/reference/vis_group_normality.md):
-    Diagnostic plots for the Welch t-test / Welch ANOVA branch.
   - [`vis_lm_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md):
-    Renamed from
-    [`vis_anova_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md),
-    now provides unified assumption diagnostics for the general linear
-    model (t-test, ANOVA, regression).
+    Renamed from `vis_anova_assumptions()`, now provides unified
+    assumption diagnostics for the general linear model (t-test, ANOVA,
+    regression).
 
 ### Breaking changes
 
-- [`vis_anova_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md)
-  has been removed and replaced by
+- `vis_anova_assumptions()` has been removed and replaced by
   [`vis_lm_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md).
   The new function handles both ANOVA and regression diagnostics
   (controlled by the `regression` parameter). For regression, it shows a
@@ -97,8 +113,7 @@ CRAN release: 2026-05-12
 
 ### Deprecated
 
-- [`vis_anova_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md)
-  is provided as a deprecated wrapper for
+- `vis_anova_assumptions()` is provided as a deprecated wrapper for
   [`vis_lm_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md).
   It will be removed in a future version.
 

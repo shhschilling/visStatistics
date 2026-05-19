@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">visStatistics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,11 +33,27 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="visstatistics-021">visStatistics 0.2.1<a class="anchor" aria-label="anchor" href="#visstatistics-021"></a></h2>
+<div class="section level3">
+<h3 id="effect-sizes-0-2-1">Effect sizes<a class="anchor" aria-label="anchor" href="#effect-sizes-0-2-1"></a></h3>
+<ul><li>New, exported <code><a href="../reference/effect_size.html">effect_size()</a></code> function to generate effect-size output</li>
+<li>Examples, tests, and vignette documentation include now the effect-size output.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="reduced-the-number-of-exported-standalone-functions-0-2-1">Reduced the number of exported standalone functions<a class="anchor" aria-label="anchor" href="#reduced-the-number-of-exported-standalone-functions-0-2-1"></a></h3>
+<ul><li>Reduced the exported standalone functions to user-facing functions. Internal routing and plotting helpers are no longer exported or documented as standalone functions:</li>
+<li>
+<code>vis_anova()</code>, <code>vis_numeric()</code>, <code>vis_group_normality()</code>, <code>gh_letters()</code>, and <code>pooled_normality_test()</code> are now internal helpers.</li>
+<li>
+<code>vis_anova_assumptions()</code> remains as an internal deprecated wrapper for <code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code>, but is no longer exported or documented.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="visstatistics-020">visStatistics 0.2.0<a class="anchor" aria-label="anchor" href="#visstatistics-020"></a></h2><p class="text-muted">CRAN release: 2026-05-12</p>
 <div class="section level3">
 <h3 id="changes-in-decision-logic-0-2-0">Changes in decision logic<a class="anchor" aria-label="anchor" href="#changes-in-decision-logic-0-2-0"></a></h3>
 <ul><li><p><strong>Unified normality testing across all branches.</strong> The two-group case (t-test vs Wilcoxon) and the multi-group case (ANOVA vs Kruskal-Wallis) now share the same normality test: <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> applied to the internally studentized residuals from <code>lm(y ~ x)</code> via <code><a href="https://rdrr.io/r/stats/influence.measures.html" class="external-link">rstandard()</a></code>.</p></li>
-<li><p><strong>Variance homogeneity test changed from <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code> to <code><a href="../reference/levene.test.html">levene.test()</a></code>.</strong> The Levene-Brown-Forsythe test (using the median) is more robust to non-normality than Bartlett’s test. The test now determines whether Student’s t-test (<code>t.test(var.equal = TRUE)</code>) or Welch’s t-test is used in the two-group case, and whether <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> or <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> is used in the multi-group case.</p></li>
+<li><p><strong>Variance homogeneity test changed from <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code> to <code><a href="../reference/levene.test.html">levene.test()</a></code>.</strong> The Brown-Forsythe Levene-type test (using the median) is more robust to non-normality than Bartlett’s test. The test now determines whether Student’s t-test (<code>t.test(var.equal = TRUE)</code>) or Welch’s t-test is used in the two-group case, and whether <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> or <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> is used in the multi-group case.</p></li>
 <li><p><strong>Large-sample threshold changed from 30 to 50 per group.</strong> When every group exceeds 50 observations, normality testing is skipped and parametric tests are applied directly (justified by the central limit theorem).</p></li>
 <li><p><strong>Post-hoc test selection.</strong> When <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> (Welch’s ANOVA) is used for unequal variances, <code><a href="../reference/games.howell.html">games.howell()</a></code> is the appropriate post-hoc test, as it does not assume equal variances. <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> remains for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> (Student’s ANOVA).</p></li>
 <li><p><strong>Rank correlation (<code>correlation = TRUE</code>).</strong> Selects the most appropriate rank correlation for the data type: Spearman’s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math> for two numeric variables, Kendall’s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math> when both variables are ordered factors. This is the only test decision not made automatically; it requires an explicit user choice.</p></li>
@@ -50,28 +66,24 @@
 <li>
 <p><strong>New exported functions:</strong></p>
 <ul><li>
-<code><a href="../reference/levene.test.html">levene.test()</a></code>: Levene-Brown-Forsythe test for homogeneity of variance (center = median), mimicking the default behaviour of <code>leveneTest()</code> in the <code>car</code> package.</li>
+<code><a href="../reference/levene.test.html">levene.test()</a></code>: Brown-Forsythe Levene-type test for homogeneity of variance (center = median), mimicking the default behaviour of <code>leveneTest()</code> in the <code>car</code> package.</li>
 <li>
 <code><a href="../reference/bp.test.html">bp.test()</a></code>: Breusch-Pagan test for heteroscedasticity in linear regression models.</li>
 <li>
 <code><a href="../reference/games.howell.html">games.howell()</a></code>: Games-Howell post-hoc test for pairwise comparisons following Welch’s ANOVA.</li>
 <li>
-<code><a href="../reference/vis_numeric.html">vis_numeric()</a></code>: Visualisation of numeric-numeric relationships (regression or correlation).</li>
-<li>
-<code><a href="../reference/vis_group_normality.html">vis_group_normality()</a></code>: Diagnostic plots for the Welch t-test / Welch ANOVA branch.</li>
-<li>
-<code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code>: Renamed from <code><a href="../reference/vis_lm_assumptions.html">vis_anova_assumptions()</a></code>, now provides unified assumption diagnostics for the general linear model (t-test, ANOVA, regression).</li>
+<code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code>: Renamed from <code>vis_anova_assumptions()</code>, now provides unified assumption diagnostics for the general linear model (t-test, ANOVA, regression).</li>
 </ul></li>
 </ul></div>
 <div class="section level3">
 <h3 id="breaking-changes-0-2-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0"></a></h3>
 <ul><li>
-<code><a href="../reference/vis_lm_assumptions.html">vis_anova_assumptions()</a></code> has been removed and replaced by <code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code>. The new function handles both ANOVA and regression diagnostics (controlled by the <code>regression</code> parameter). For regression, it shows a Residuals vs Leverage plot (with Cook’s distance contours) and the Breusch-Pagan test instead of the Bartlett test.</li>
+<code>vis_anova_assumptions()</code> has been removed and replaced by <code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code>. The new function handles both ANOVA and regression diagnostics (controlled by the <code>regression</code> parameter). For regression, it shows a Residuals vs Leverage plot (with Cook’s distance contours) and the Breusch-Pagan test instead of the Bartlett test.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="deprecated-0-2-0">Deprecated<a class="anchor" aria-label="anchor" href="#deprecated-0-2-0"></a></h3>
 <ul><li>
-<code><a href="../reference/vis_lm_assumptions.html">vis_anova_assumptions()</a></code> is provided as a deprecated wrapper for <code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code>. It will be removed in a future version.</li>
+<code>vis_anova_assumptions()</code> is provided as a deprecated wrapper for <code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code>. It will be removed in a future version.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="improvements-0-2-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-2-0"></a></h3>
