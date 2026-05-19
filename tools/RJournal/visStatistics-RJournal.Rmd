@@ -2,7 +2,7 @@
 title: "visStatistics: The right test, visualised"
 author:
   - name: Sabine Schilling
-    affiliation: Institute of Tourism and Mobility, Lucerne University of Applied Sciences and Arts
+    affiliation: Lucerne School of Business, Lucerne University of Applied Sciences and Arts
     address:
     -  6002 Lucerne, Switzerland
     url: https://github.com/shhschilling/visStatistics
@@ -142,8 +142,8 @@ unordered factors enter the proportion-comparison branch; two numeric
 variables enter simple linear regression unless `correlation = TRUE`,
 which switches to Spearman rank correlation; and two ordered factors
 are analysed as Kendall rank correlation when `correlation = TRUE`.
-The package-implemented functions `levene.test()`, `bp.test()`, and
-`games.howell()` are documented in [Appendix C](#tests).
+Technical details for the package-implemented functions `levene.test()`,
+`bp.test()`, and `games.howell()` are provided in the package vignette.
 
 ## Test selection based on the assumptions of the general linear model framework
 
@@ -154,13 +154,17 @@ independent and normally distributed with expectation 0, and the error
 variance is constant at $\sigma^2$. Therefore the test selection for
 [tests of central tendencies](#numeric-categoric) is steered by checking
 the fitted model residuals in regard to these assumptions.
+
+### Graphical output {.unnumbered}
+
 For the central-tendency branch with numeric responses and for the
 simple-regression branch, this residual check is also the first visual
 output: `vis_lm_assumptions()` displays a four-panel diagnostic graphic
 before the selected test or regression result (see
 [Appendix B](#assumptions)). The panel shows the residual distribution,
-residuals versus fitted values, normal Q--Q behaviour, and, depending on
-the branch, scale-location or leverage diagnostics.
+residuals versus fitted values, and normal Q--Q behaviour. The fourth
+plot is a scale-location plot for grouped central-tendency analyses and a
+standardised residuals versus leverage plot for simple regression.
 
 In the following subsections, we detail the decision logic following the
 structure of the overview figure \@ref(fig:overview).
@@ -195,13 +199,13 @@ tests are selected: `wilcox.test()` for two groups, or
 
 If normality is not rejected, variance homogeneity is assessed with
 Levene's test using the Brown--Forsythe median-centred modification
-(`levene.test()`; [@Brown:1974]; see [Appendix C](#lev)). For brevity,
+(`levene.test()`; [@Brown:1974]). For brevity,
 we refer to this Brown--Forsythe Levene-type procedure as the Levene
 test below. For homoscedastic data,
 `t.test(var.equal = TRUE)` is applied for two groups, or Fisher's
 `aov()` with `TukeyHSD()` for more than two groups. For
 heteroscedastic data, Welch's `t.test()` is applied for two groups, or
-Welch's `oneway.test()` with `games.howell()` ([@Games:1976]; see [Appendix C](#gh)) for
+Welch's `oneway.test()` with `games.howell()` [@Games:1976] for
 more than two groups.
 
 The box plots are enriched with significant--letters to visualise the post-hoc analysis:
@@ -232,7 +236,7 @@ When both predictor and response are numerical, `visstat()` fits and
 displays a simple linear regression. The standardised residuals from
 `lm()` are assessed graphically and with the Shapiro--Wilk and
 Anderson--Darling tests; homoscedasticity is assessed with the
-Breusch--Pagan test (`bp.test()`; see [Appendix C](#bp)). The regression plot shows the fitted line
+Breusch--Pagan test (`bp.test()`). The regression plot shows the fitted line
 $\hat{y} = b_0 + b_1 x$ with pointwise confidence and prediction bands
 at the specified `conf.level`. The returned object contains the
 regression statistics, residual-normality tests, pointwise confidence
@@ -283,8 +287,9 @@ assumption-diagnostic panel and a result panel. Tests that have no
 separate assumption diagnostics, such as Kendall's $\tau_b$ for two
 ordered factors, produce a single plot.
 
-All example datasets are distributed with R and were chosen to trigger
-the package branches: normal and homoscedastic residuals leading to Student's t-test or
+Most example datasets are distributed with R; synthetic data are used
+where no suitable base R example is available. The examples were chosen
+to trigger the package branches: normal and homoscedastic residuals leading to Student's t-test or
 one-way ANOVA; normal residuals with unequal variances leading to
 Welch's t-test or Welch's one-way test; non-normal residuals leading to
 Wilcoxon or Kruskal--Wallis tests, with Holm-adjusted pairwise Wilcoxon
@@ -797,7 +802,7 @@ sizes, and plots that should inform that judgment. The package therefore
 serves as a first-line workflow for routine two-variable analyses, while
 leaving model-specific extensions to subsequent analysis.
 
-# Appendix A: The general linear model {#glm}
+# Appendix A: The general linear model {#glm .unnumbered}
 
 The general linear model provides a unified framework underlying Student's t-test, Fisher's ANOVA, and simple linear regression [@Thompson:2015].
 
@@ -824,7 +829,7 @@ $p$-values for `t.test(var.equal = TRUE)` and `aov()`.
 **Simple linear regression** uses one continuous predictor; 
 $H_0: \beta_1 = 0$ examines whether a linear relationship exists.
 
-# Appendix B: The general linear model assumption diagnostics `vis_lm_assumptions()` {#assumptions}
+# Appendix B: The general linear model assumption diagnostics `vis_lm_assumptions()` {#assumptions .unnumbered}
 
 All tests within the linear model framework (see [Appendix A](#glm)) share a common set of assumptions:
 
@@ -833,13 +838,8 @@ All tests within the linear model framework (see [Appendix A](#glm)) share a com
 - Error terms are independent and normally distributed with expectation 0 and constant variance $\sigma^2$
 
 The function `vis_lm_assumptions()` provides a unified visual and statistical framework for checking the [linear model](#glm) assumptions.
-It fits a linear model using `aov()` and provides four diagnostic plots.
-The first plot is a histogram of the standardised residuals with a
-standard normal density overlay. The remaining plots are inherited from
-`plot.lm()`: residuals against fitted values, a normal Q--Q plot, and
-either a scale-location plot or, for numeric predictors with
-`correlation = FALSE`, a standardised residuals vs. leverage plot with
-Cook's distance contours.
+It fits a linear model using `aov()` and reports the residual normality
+and homoscedasticity tests used or displayed by the routing logic.
 
 ## Test for normality and homoscedasticity
 
@@ -856,83 +856,4 @@ observation $i$ [@Cook:1982].
 
 These tests compare the spread of data across different factor levels.
 
-For simple linear regression, the Breusch-Pagan test (`bp.test()`) is implemented.
-
-`levene.test()` and `bp.test()` have standalone implementations in the package to avoid dependencies on external packages (see [Appendix C](#lev)).
-
-
-# Appendix C: Package-implemented functions {#tests}
-
-## The Brown--Forsythe Levene-type test `levene.test()` {#lev}
-
-The package implementation uses Levene's original proposal [@Levene:1960] with the
-Brown--Forsythe median-centred modification [@Brown:1974], making it
-robust to skewed data and outliers [@Allingham:2012].
-The package's own function `levene.test()` is the sole driver of the
-parametric/Welch branching decision.
-
-For each observation $y_{ij}$ in group $i$, the absolute deviation from
-the group median $\tilde{y}_i$ is
-
-$$z_{ij} = |y_{ij} - \tilde{y}_i|.$$
-
-The test statistic is the $F$-statistic from a one-way ANOVA on the
-$z_{ij}$ values:
-
-$$F = \frac{(N-k)\displaystyle\sum_{i=1}^{k} n_i (\bar{z}_i - \bar{z})^2}
-           {(k-1)\displaystyle\sum_{i=1}^{k}\sum_{j=1}^{n_i}(z_{ij} - \bar{z}_i)^2},$$
-
-where $k$ is the number of groups, $N = \sum_{i=1}^k n_i$ is the total
-sample size, $n_i$ is the sample size of group $i$, $\bar{z}_i$ is the
-mean of the absolute deviations within group $i$, and $\bar{z}$ is the
-overall mean of all absolute deviations. Under the null hypothesis of
-equal variances the statistic follows $F(k-1, N-k)$.
-
-## Breusch--Pagan test `bp.test()` {#bp}
-
-For simple linear regression, group-based variance tests are not
-applicable. The package implementation `bp.test()` performs the
-Breusch--Pagan test [@Breusch:1979], which assesses whether the
-variance of the residuals from the regression model depends on the
-predictor values. Let $e_i$ be the residuals from the fitted regression model and
-let $\hat{\sigma}^2 = n^{-1}\sum_{i=1}^n e_i^2$ denote the mean of the squared residuals. The auxiliary
-regression models $e_i^2 / \hat{\sigma}^2$ as a function of the
-predictors. Let $R^2_\text{aux}$ denote the coefficient of determination from this
-auxiliary regression. Crucially, while a high $R^2$ is typically a sign of
-a strong model, here it indicates a failure of the constant-variance
-assumption: a higher $R^2_\text{aux}$ means the error variance follows
-a systematic, non-random pattern. The Breusch--Pagan statistic is then
-calculated as:
-$$BP = n R^2_\text{aux},$$
-
-which is compared asymptotically to a $\chi^2$ distribution with degrees
-of freedom equal to the number of predictors in the auxiliary regression.
-
-## Post-hoc comparison `games.howell()` {#gh}
- 
-Post-hoc comparisons use the package implementation `games.howell()`
-[@Games:1976]. For each pairwise comparison, the two groups are denoted
-as 1 and 2. The function computes
-
-$$d = \bar{y}_1 - \bar{y}_2,$$
-
-with standard error
-
-$$SE = \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}},$$
-
-and test statistic
-
-$$t = \frac{d}{SE}.$$
-
-The degrees of freedom are approximated by the Welch--Satterthwaite
-equation
-
-$$\nu = \frac{\left(\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}\right)^2}
-             {\frac{(s_1^2/n_1)^2}{n_1-1}+\frac{(s_2^2/n_2)^2}{n_2-1}}$$
-
-[@Welch:1947; @Satterthwaite:1946]. Two-sided $p$-values are computed from the corresponding
-$t$ distribution and then adjusted with Holm's method [@Holm:1979].
-Confidence intervals are computed as
-$d \pm t_{1-\alpha/2,\nu}SE$ and are not adjusted for multiple
-comparisons. Significant letter displays are produced by
-`multcompLetters()` from `multcompView` [@Graves:2026].
+For simple linear regression, the Breusch--Pagan test (`bp.test()`) is implemented in the package.

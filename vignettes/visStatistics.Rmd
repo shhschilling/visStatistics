@@ -145,8 +145,12 @@ Definitions of all implemented test statistics and association measures are refe
 
 Student's t-test, Fisher's ANOVA, and simple linear regression all belong to the general linear model framework ([see Appendix A](#glm)) and thus share a common set of assumptions: the expected value of the response is a linear function of the predictors, the error terms are independent and normally distributed with expectation 0, and the error variance is constant at $\sigma^2$.
 Therefore the test selection for [tests of central tendencies](#numeric-categoric) is steered by checking the fitted model residuals in regard to these assumptions.
+
+### Graphical output {.unnumbered}
+
 For the central-tendency branch with numeric responses and for the simple-regression branch, this residual check is also the first visual output: `vis_lm_assumptions()` displays a four-panel diagnostic graphic before the selected test or regression result (see [Appendix B](#assumptions)).
-The panel shows the residual distribution, residuals versus fitted values, normal Q--Q behaviour, and, depending on the branch, scale-location or leverage diagnostics.
+The panel shows the residual distribution, residuals versus fitted values, and normal Q--Q behaviour.
+The fourth plot is a scale-location plot for grouped central-tendency analyses and a standardised residuals versus leverage plot for simple regression.
 
 In the following subsections, we detail the decision logic following the structure of the overview figure.
 
@@ -217,7 +221,7 @@ The number of plots returned by `visstat()` depends on the input types and the o
 Most tests produce two panels: an assumption-diagnostic panel and a result panel.
 Tests that have no separate assumption diagnostics, such as Kendall's $\tau_b$ for two ordered factors, produce a single plot.
 
-All example datasets are distributed with R and were chosen to trigger the package branches: normal and homoscedastic residuals leading to Student's t-test or one-way ANOVA; normal residuals with unequal variances leading to Welch's t-test or Welch's one-way test; non-normal residuals leading to Wilcoxon or Kruskal--Wallis tests, with Holm-adjusted pairwise Wilcoxon tests for the multi-group extension; numeric--numeric regression and rank correlation; categorical independence tests under and beyond Cochran's rule, including Yates' continuity correction for $2 \times 2$ tables; ordered responses redirected to Wilcoxon or Kruskal--Wallis; and ordinal rank correlation.
+Most example datasets are distributed with R; synthetic data are used where no suitable base R example is available. The examples were chosen to trigger the package branches: normal and homoscedastic residuals leading to Student's t-test or one-way ANOVA; normal residuals with unequal variances leading to Welch's t-test or Welch's one-way test; non-normal residuals leading to Wilcoxon or Kruskal--Wallis tests, with Holm-adjusted pairwise Wilcoxon tests for the multi-group extension; numeric--numeric regression and rank correlation; categorical independence tests under and beyond Cochran's rule, including Yates' continuity correction for $2 \times 2$ tables; ordered responses redirected to Wilcoxon or Kruskal--Wallis; and ordinal rank correlation.
 
 ## Numeric response and categorical predictor: two groups
 
@@ -588,7 +592,7 @@ Taken together, these scope decisions define `visStatistics` as a rapid, inspect
 Its value is not that it removes the user's statistical judgment, but that it exposes the assumptions, routing decisions, effect sizes, and plots that should inform that judgment.
 The package therefore serves as a transparent entry point for routine two-variable analyses, leaving model-specific extensions to the analyst.
 
-# Appendix A: The general linear model {#glm}
+# Appendix A: The general linear model {#glm .unnumbered}
 
 The general linear model provides a unified framework underlying Student's t-test, Fisher's ANOVA, and simple linear regression [@Thompson:2015].
 
@@ -615,7 +619,7 @@ where $SS_\text{res}=\sum_i(Y_i-\hat{Y}_i)^2$ is the residual sum of squares and
 
 
 
-# Appendix B: The general linear model assumption diagnostics `vis_lm_assumptions()` {#assumptions}
+# Appendix B: The general linear model assumption diagnostics `vis_lm_assumptions()` {#assumptions .unnumbered}
 
 All tests within the linear model framework (see [Appendix A](#glm)) share a common set of assumptions:
 
@@ -624,9 +628,7 @@ All tests within the linear model framework (see [Appendix A](#glm)) share a com
 - Error terms are independent and normally distributed with expectation 0 and constant variance $\sigma^2$
 
 The function `vis_lm_assumptions()` provides a unified visual and statistical framework for checking the [linear model](#glm) assumptions.
-It fits a linear model using `aov()` and provides four diagnostic plots.
-The first plot is a histogram of the standardised residuals with a standard normal density overlay.
-The remaining plots are inherited from `plot.lm()`: residuals against fitted values, a normal Q--Q plot, and either a scale-location plot or, for numeric predictors with `correlation = FALSE`, a standardised residuals vs. leverage plot with Cook's distance contours.
+It fits a linear model using `aov()` and reports the residual normality and homoscedasticity tests used or displayed by the routing logic.
 
 ## Tests for normality and homoscedasticity
 
@@ -642,7 +644,7 @@ For simple linear regression, the Breusch--Pagan test (`bp.test()`) is implement
 
 `levene.test()` and `bp.test()` have standalone implementations in the package to avoid dependencies on external packages (see [Appendix C](#homo)).
 
-# Appendix C: Test statistics and association measures {#tests}
+# Appendix C: Test statistics and association measures {#tests .unnumbered}
 
 ## Normality tests {#norm}
 
@@ -902,7 +904,7 @@ With few ordered levels (e.g., five-point Likert items), ties are unavoidable; t
 
 `visstat()` calls `cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)` and reports $\tau_b$, the asymptotic test statistic $z = \tau_b / \operatorname{SE}(\tau_b)$, and the two-sided $p$-value.
 
-# Appendix D: Effect size {#effect-size}
+# Appendix D: Effect size {#effect-size .unnumbered}
 
 ```{r effect-size-table-child, child = "effect_size_table.md"}
 ```
