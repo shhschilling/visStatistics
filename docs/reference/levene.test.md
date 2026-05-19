@@ -1,10 +1,10 @@
-# Levene-Brown-Forsythe Test for Homogeneity of Variance (center = median)
+# Brown-Forsythe Levene-type Test for Homogeneity of Variance (center = median)
 
-Performs Levene's test using the Brown-Forsythe modification
-(median-centred). It tests the null hypothesis that all groups have
-equal variances by testing whether the absolute deviations from group
-medians are equal across groups The function reproduces the default
-behaviour of the leveneTest(y,g,center=median,...) of the car-package.
+Performs Levene's test using the Brown-Forsythe median-centred
+modification. It tests the null hypothesis that all groups have equal
+variances by testing whether the absolute deviations from group medians
+are equal across groups The function reproduces the default behaviour of
+the leveneTest(y,g,center=median,...) of the car-package.
 
 ## Usage
 
@@ -95,7 +95,7 @@ y <- c(rnorm(10), rnorm(10, sd = 2), rnorm(10, sd = 0.5))
 g <- factor(rep(1:3, each = 10))
 levene.test(y, g)
 #> 
-#>  Levene-Brown-Forsythe Test (center = median)
+#>  Brown-Forsythe Levene-type Test (center = median)
 #> 
 #> data:  absolute deviations from group medians (for ANOVA on spread differences)
 #> F = 3.3913, df1 = 2, df2 = 27, p-value = 0.04853
@@ -105,7 +105,7 @@ levene.test(y, g)
 df <- data.frame(response = y, group = g)
 levene.test(response, group, data = df)
 #> 
-#>  Levene-Brown-Forsythe Test (center = median)
+#>  Brown-Forsythe Levene-type Test (center = median)
 #> 
 #> data:  absolute deviations from group medians (for ANOVA on spread differences)
 #> F = 3.3913, df1 = 2, df2 = 27, p-value = 0.04853
@@ -117,7 +117,7 @@ y_unequal <- c(rnorm(15, sd = 1), rnorm(15, sd = 5), rnorm(15, sd = 0.2))
 g_unequal <- factor(rep(c("A", "B", "C"), each = 15))
 levene.test(y_unequal, g_unequal)
 #> 
-#>  Levene-Brown-Forsythe Test (center = median)
+#>  Brown-Forsythe Levene-type Test (center = median)
 #> 
 #> data:  absolute deviations from group medians (for ANOVA on spread differences)
 #> F = 31.384, df1 = 2, df2 = 42, p-value = 4.607e-09

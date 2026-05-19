@@ -4,16 +4,14 @@ Checks for normality of the standardised residuals in the general linear
 model Student's t-test (t.test,var=EQUAL) Fisher oneway ANOVA (aov) or
 simple linear regression. Performs the Shapiro-Wilk test and
 Anderson-Darling test for normality and, if not a regression, also the
-Levene-Brown-Forsythe and the Bartlett's test for homogeneity of
+Brown-Forsythe Levene-type and Bartlett's tests for homogeneity of
 variances. It produces a histogram with normal overlay, a residuals vs
 fitted plot, and a normal Q-Q plot.
 
 ## Usage
 
 ``` r
-vis_lm_assumptions(samples, fact, cex = 1, regression = FALSE)
-
-vis_anova_assumptions(...)
+vis_lm_assumptions(samples, fact, cex = 1, correlation = FALSE)
 ```
 
 ## Arguments
@@ -30,14 +28,11 @@ vis_anova_assumptions(...)
 
   Numeric; scaling factor for plot text and symbols (default: 1).
 
-- regression:
+- correlation:
 
-  Logical; if TRUE, skips Bartlett's test (for regression diagnostics).
-  Default is FALSE.
-
-- ...:
-
-  Arguments passed to `vis_lm_assumptions()`.
+  Logical. If `FALSE` and `fact` is numeric, regression diagnostics are
+  shown. If `TRUE`, no regression diagnostics are shown. Default is
+  `FALSE`.
 
 ## Value
 
@@ -62,19 +57,19 @@ A list with elements:
 
   Result from
   [`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
-  (only if `regression = FALSE`).
+  (grouped diagnostics only).
 
 - bartlett_test:
 
   Result from
-  [`bartlett.test()`](https://rdrr.io/r/stats/bartlett.test.html) (only
-  if `regression = FALSE`).
+  [`bartlett.test()`](https://rdrr.io/r/stats/bartlett.test.html)
+  (grouped diagnostics only).
 
 - bp_test:
 
   Result from
   [`bp.test()`](https://shhschilling.github.io/visStatistics/reference/bp.test.md)
-  (only if `regression = TRUE`).
+  (regression diagnostics only).
 
 ## Examples
 
