@@ -187,7 +187,7 @@ visstat_core(mtcars, "mpg", "am")
 #> Homoscedasticity violated (Breusch-Pagan p = 0.0242 )
 #> Analysis proceeded but interpret results cautiously.
 #> RECOMMENDATION: Consider exploring alternatives outside visstat() such as data transformations,
-#> generalised linear models, or robust regression. For an assumption-free, non-causal alternative
+#> generalised linear models, or robust regression. For a non-causal alternative
 #> consider rerunning with correlation = TRUE.
 
 ## Wilcoxon rank sum test (wilcox.test())
@@ -210,7 +210,6 @@ anova_npk <- visstat_core(npk, "yield", "block")
 
 anova_npk # prints summary of tests
 #> Object of class 'visstat'
-#> Effect size: omega-squared = 0.215 
 #> 
 #> Available components:
 #> [1] "summary statistics of ANOVA" "post-hoc analysis "         
