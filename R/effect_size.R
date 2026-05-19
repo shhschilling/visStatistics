@@ -20,7 +20,7 @@ hedges_correction <- function(df) {
   if (!is.finite(df) || df <= 1) {
     return(NA_real_)
   }
-  1 - 3 / (4 * df - 1)
+  exp(lgamma(df / 2) - 0.5 * log(df / 2) - lgamma((df - 1) / 2))
 }
 
 effect_size_t_test <- function(samples, fact, var.equal = FALSE) {
@@ -104,11 +104,11 @@ effect_size_kruskal <- function(samples, fact, result) {
   h <- unname(test$statistic)
   k <- length(unique(fact[!is.na(samples)]))
   n <- sum(!is.na(samples))
-  eps2 <- (h - k + 1) / (n - k)
+  eta2_h <- (h - k + 1) / (n - k)
   effect_size_record(
-    "epsilon-squared",
-    max(0, eps2, na.rm = TRUE),
-    "Epsilon-squared for Kruskal-Wallis rank sum test"
+    "eta-squared based on H",
+    max(0, eta2_h, na.rm = TRUE),
+    "Eta-squared based on H for Kruskal-Wallis rank sum test"
   )
 }
 
@@ -145,7 +145,22 @@ effect_size_kendall <- function(result) {
   )
 }
 
-effect_size_for_visstat <- function(result, samples = NULL, fact = NULL) {
+#' Compute the effect size for a visstat result
+#'
+#' Where a base R \pkg{stats} implementation is available, the effect size is
+#' extracted directly from its output; otherwise the formula is implemented
+#' internally.
+#'
+#' For Welch's one-way test, the approximate omega-squared-type estimate follows
+#' the F-statistic conversion approach used by the \pkg{effectsize} package.
+#'
+#' @param result A list returned internally by \code{visstat()}.
+#' @param samples Numeric vector of observations.
+#' @param fact Factor vector of group labels.
+#' @return A list with components \code{name}, \code{estimate},
+#'   \code{effect_size_method}, and optionally \code{conf.int}.
+#' @export
+effect_size <- function(result, samples = NULL, fact = NULL) {
   if (!is.null(result$effect_size)) {
     return(result$effect_size)
   }

@@ -193,7 +193,7 @@ test below. For homoscedastic data,
 `t.test(var.equal = TRUE)` is applied for two groups, or Fisher's
 `aov()` with `TukeyHSD()` for more than two groups. For
 heteroscedastic data, Welch's `t.test()` is applied for two groups, or
-Welch's `oneway.test()` with `games.howell()` [@Games:1976] for
+Welch's `oneway.test()` with `games.howell()` ([@Games:1976]; see [Appendix C](#gh)) for
 more than two groups.
 
 <!-- For more than two groups, this branch leads to either `kruskal.test()`, -->
@@ -248,7 +248,7 @@ When both predictor and response are numerical, `visstat()` fits and
 displays a simple linear regression. The standardised residuals from
 `lm()` are assessed graphically and with the Shapiro--Wilk and
 Anderson--Darling tests; homoscedasticity is assessed with the
-Breusch--Pagan test. The regression plot shows the fitted line
+Breusch--Pagan test (`bp.test()`; see [Appendix C](#bp)). The regression plot shows the fitted line
 $\hat{y} = b_0 + b_1 x$ with pointwise confidence and prediction bands
 at the specified `conf.level`. The returned object contains the
 regression statistics, residual-normality tests, pointwise confidence
@@ -382,7 +382,7 @@ plant weight as response, Shapiro--Wilk does not reject normality of the
 pooled residuals and `levene.test()` does not reject homoscedasticity,
 so `visstat()` applies Fisher's one-way ANOVA followed by Tukey HSD
 post-hoc comparisons. The omnibus F-test is significant at
-$\alpha = `r example_alpha`$, and the Tukey HSD post-hoc comparison finds no significant difference between the control group and the treatment, but between  `trt1` and `trt2` is significant. 
+$\alpha = `r example_alpha`$, and the Tukey HSD post-hoc comparison finds no significant difference between the control group and either treatment, but the difference between `trt1` and `trt2` is significant. 
 
 ```{r anova-example, fig.cap=paste0("Fisher's one-way ANOVA applied to the \\texttt{PlantGrowth} dataset (\\texttt{group} vs.\\ \\texttt{weight}). Assumption diagnostics and box plots of plant weight by treatment group; Tukey HSD post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
 anova_plantgrowth <- visstat(PlantGrowth$group, PlantGrowth$weight)
