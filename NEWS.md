@@ -6,23 +6,24 @@ editor_options:
 
 # visStatistics 0.2.1
 
-## API
 
-- Reduced the exported standalone API to user-facing functions. Internal
+## Effect sizes
+
+- New, exported `effect_size()` function to generate effect-size output 
+- Examples, tests, and vignette documentation include now the effect-size output.
+
+
+
+## Reduced the number of exported standalone functions
+
+- Reduced the exported standalone functions to user-facing functions. Internal
   routing and plotting helpers are no longer exported or documented as
-  standalone functions.
+  standalone functions:
 - `vis_anova()`, `vis_numeric()`, `vis_group_normality()`,
   `gh_letters()`, and `pooled_normality_test()` are now internal helpers.
 - `vis_anova_assumptions()` remains as an internal deprecated wrapper for
   `vis_lm_assumptions()`, but is no longer exported or documented.
-- `effect_size()` is now exported for supported `visstat()` result
-  objects.
 
-## Effect sizes
-
-+- Added effect-size output to `visstat()` results for the implemented
-+  test branches. The returned `effect_size` field includes the
-+  effect-size name, estimate, and method description.
 
 # visStatistics 0.2.0
 
