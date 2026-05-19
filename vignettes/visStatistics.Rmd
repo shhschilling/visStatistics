@@ -127,7 +127,7 @@ visstat(npk$block,npk$yield)
 `visStatistics` is available on CRAN.
 This vignette corresponds to the current GitHub version (<https://github.com/shhschilling/visStatistics>), which may differ slightly from the latest CRAN release.
 The main function `visstat()` returns an object of class `"visstat"` with `print()`, `summary()`, and `plot()` methods.
-The returned object also contains an `effect_size` field with the effect-size name, numeric estimate, and method description.
+The returned object also contains an `effect_size` field with the effect-size name, numeric estimate, and method description (see [Appendix D](#effect-size)).
 From this single entry point, the package automatically selects among the implemented tests: `t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`, `kruskal.test()`, `chisq.test()`, `fisher.test()`, `lm()`, or `cor.test()`.
 
 # Decision logic
@@ -335,7 +335,7 @@ kruskal_ordered <- visstat(survey_data_3, "comfort", "market")
 
 ## Both variables numeric
 
-### Simple linear regression
+### Simple linear regression {#lin-reg}
 
 The `swiss` dataset records standardised fertility and socioeconomic indicators for 47 French-speaking Swiss provinces in 1888.
 We examine how the share of draftees achieving the highest army examination score (`Examination`) predicts the fertility measure (`Fertility`), with `conf.level = 0.99`.
@@ -620,6 +620,7 @@ where $Y_i$ is the response for observation $i$, $x_{ij}$ is the value of predic
 **Fisher's ANOVA** uses $k-1$ indicator variables for $k$ groups; testing $H_0: \beta_1 = \cdots = \beta_{k-1} = 0$ is equivalent to testing equality of all group means.
 
 **Simple linear regression** uses one continuous predictor; testing $H_0: \beta_1 = 0$ examines whether a linear relationship exists.
+For simple linear regression, the effect size is measured by the <span id="r2"></span>coefficient of determination: $R^2 = 1 - SS_\text{res}/SS_\text{tot}$, where $SS_\text{res}=\sum_i(Y_i-\hat{Y}_i)^2$ is the residual sum of squares and $SS_\text{tot}=\sum_i(Y_i-\bar{Y})^2$ is the total sum of squares.
 
 In the two-sample case, the squared test statistic of Student's t-test equals the Fisher ANOVA test statistic, $t^2 = F$, resulting in identical $p$-values for `t.test(var.equal = TRUE)` and `aov()`.
 
@@ -739,6 +740,7 @@ which is compared asymptotically to a $\chi^2$ distribution with degrees of free
 
 ## Student's t-test and Welch's t-test {#tt}
 
+<span id="student-t"></span>
 The test statistic for Student's t-test (`t.test(..., var.equal = TRUE)`) is
 
 $$t = \frac{\bar{x}_1 - \bar{x}_2}{s_p \sqrt{\dfrac{1}{n_1} + \dfrac{1}{n_2}}},$$
@@ -751,6 +753,7 @@ with $s_1^2$ and $s_2^2$ the sample variances.
 The statistic follows a $t$-distribution with $\nu = n_1 + n_2 - 2$ degrees of freedom.
 
 Welch's t-test (`t.test(..., var.equal = FALSE)`) relaxes the homoscedasticity assumption.
+<span id="welch-t"></span>
 Its statistic is
 
 $$t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{s_1^2/n_1 + s_2^2/n_2}},$$
@@ -775,6 +778,7 @@ An exact $p$-value is computed when both groups contain fewer than 50 observatio
 
 ## Fisher's one-way ANOVA and Welch's heteroscedastic ANOVA {#aov}
 
+<span id="fisher-aov"></span>
 Fisher's ANOVA test statistic is
 
 $$F = \frac{MS_\text{between}}{MS_\text{within}}
@@ -787,6 +791,7 @@ Under the null hypothesis $F \sim F(k-1, N-k)$.
 Post-hoc comparisons use Tukey's Honest Significant Differences `TukeyHSD()`, which controls the family-wise error rate.
 
 Welch's heteroscedastic ANOVA (`oneway.test()`) down-weights groups with large variance.
+<span id="welch-aov"></span>
 Its test statistic is
 
 $$F_W = \frac{\displaystyle\sum_{i=1}^{k} w_i (\bar{y}_i - \bar{y}_w)^2\;/\;(k-1)}
@@ -828,6 +833,7 @@ Post-hoc comparisons use Holm-adjusted `pairwise.wilcox.test()` [@Holm:1979].
 
 ## Pearson's $\chi^2$ test and Fisher's exact test {#chi}
 
+<span id="pearson-chi"></span>
 Let $O_{ij}$ and $E_{ij}$ denote the observed and expected frequencies in row $i$ and column $j$ of an $R \times C$ contingency table, where rows index the $R$ levels of the response $y$ and columns the $C$ levels of the predictor $x$.
 The Pearson residual for cell $(i,j)$ is
 
@@ -843,8 +849,9 @@ For $2\times 2$ tables, Yates' continuity correction is applied by default.
 For general $R \times C$ tables, `visstat()` supplements the bar chart with a mosaic plot in which tiles are coloured by $r_{ij}$ (blue: positive, red: negative).
 
 Fisher's exact test (`fisher.test()`) is applied when Cochran's rule [@Cochran:1954] is violated.
+<span id="fisher-exact"></span>
 The test calculates an exact $p$-value by conditioning on the observed margins of an $R \times C$ contingency table.
-Let $\mathcal{T} = (n_{ij})$ denote the observed table.
+Let $T = (n_{ij})$ denote the observed table.
 To maintain consistency with the `y ~ x` (response \~ predictor) framework used throughout `visStatistics`, rows ($i=1,\ldots,R$) represent the levels of the response variable $y$ and columns ($j=1,\ldots,C$) represent the levels of the predictor $x$.
 The row totals are $n_{i\cdot} = \sum_{j=1}^C n_{ij}$ and the column totals are $n_{\cdot j} = \sum_{i=1}^R n_{ij}$.
 
@@ -856,18 +863,20 @@ $$\begin{array}{c|cc|c}
 y_1 & n_{11} & n_{12} & n_{1\cdot} \\
 y_2 & n_{21} & n_{22} & n_{2\cdot} \\
 \hline
-\text{Column sums} & n_{\cdot 1} & n_{\cdot 2} & n
+\text{Column sums} & n_{\cdot 1} & n_{\cdot 2} & N
 \end{array}$$
 
 The exact probability of observing this table under the null hypothesis of independence, given the fixed margins, is given by the hypergeometric probability mass function:
 
-$$\mathbb{P}(\mathcal{T} \mid n_{1\cdot}, n_{2\cdot}, n_{\cdot 1}, n_{\cdot 2})
-= \frac{\binom{n_{1\cdot}}{n_{11}} \binom{n_{2\cdot}}{n_{21}}}{\binom{n}{n_{\cdot 1}}},$$
+$$\mathbb{P}(T \mid n_{1\cdot}, n_{2\cdot}, n_{\cdot 1}, n_{\cdot 2})
+= \frac{\binom{n_{1\cdot}}{n_{11}} \binom{n_{2\cdot}}{n_{21}}}{\binom{N}{n_{\cdot 1}}},$$
 
-where $n = n_{1\cdot} + n_{2\cdot} = n_{\cdot 1} + n_{\cdot 2}$ is the total sample size.
+where $N = n_{1\cdot} + n_{2\cdot} = n_{\cdot 1} + n_{\cdot 2}$ is the total sample size.
 The $p$-value is computed by summing the probabilities of all tables with the same margins whose probabilities under the null are less than or equal to that of the observed table.
 For general $R \times C$ tables, `fisher.test()` generalises this approach using the multivariate hypergeometric distribution.
-For $2 \times 2$ tables, `fisher.test()` additionally returns the conditional maximum likelihood estimate of the odds ratio $\widehat{\text{OR}} = n_{11}n_{22}/(n_{12}n_{21})$ and its confidence interval.
+For $2 \times 2$ tables, `fisher.test()` additionally returns the conditional maximum likelihood estimate of the odds ratio
+$$\widehat{\text{OR}} = n_{11}n_{22}/(n_{12}n_{21})$$ 
+and its confidence interval.
 
 ## Rank Association Measures
 
@@ -907,5 +916,10 @@ The denominator correction makes $\tau_b$ attain $\pm 1$ even with ties, which S
 With few ordered levels (e.g., five-point Likert items), ties are unavoidable; this is the principal reason to prefer $\tau_b$ over Spearman's $\rho$ in this setting [@Agresti:2010].
 
 `visstat()` calls `cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)` and reports $\tau_b$, the asymptotic test statistic $z = \tau_b / \operatorname{SE}(\tau_b)$, and the two-sided $p$-value.
+
+# Appendix D: Effect size {#effect-size}
+
+```{r effect-size-table-child, child = "effect_size_table.md"}
+```
 
 # Bibliography

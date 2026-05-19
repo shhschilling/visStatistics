@@ -189,7 +189,7 @@ print.games.howell <- function(x, digits = 4, ...) {
 #' letters <- gh_letters(result)
 #' print(letters)
 #'
-#' @export
+#' @noRd
 gh_letters <- function(x, alpha = 0.05) {
   
   if (!inherits(x, "games.howell")) {

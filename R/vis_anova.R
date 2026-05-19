@@ -44,7 +44,7 @@
 #' result2 <- vis_anova(values, groups, 
 #'                      samplename = "Value", factorname = "Group")
 #'
-#' @export
+#' @noRd
 
 vis_anova <- function(samples,
                       fact,

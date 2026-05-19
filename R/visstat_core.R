@@ -615,7 +615,7 @@ visstat_core <- function(dataframe,
     vis_sample_fact <- list(error = "Analysis completed but no results were generated")
   }
   if (is.list(vis_sample_fact) && is.null(vis_sample_fact$effect_size)) {
-    vis_sample_fact$effect_size <- effect_size(vis_sample_fact, samples, fact)
+    vis_sample_fact$effect_size <- effect_size(vis_sample_fact, x = fact, y = samples)
   }
   attr(vis_sample_fact, "plot_paths") <- plot_paths
   attr(vis_sample_fact, "captured_plots") <- capture_env$captured_plots

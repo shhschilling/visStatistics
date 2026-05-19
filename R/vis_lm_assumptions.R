@@ -157,9 +157,7 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
   return(invisible(result))
 }
 
-#' @rdname vis_lm_assumptions
-#' @param ... Arguments passed to \code{vis_lm_assumptions()}.
-#' @export
+#' @noRd
 vis_anova_assumptions <- function(...) {
   .Deprecated("vis_lm_assumptions")
   vis_lm_assumptions(...)

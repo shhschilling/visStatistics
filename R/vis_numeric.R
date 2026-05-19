@@ -49,7 +49,7 @@
 #' @seealso \code{\link{cor.test}}, \code{\link{lm}}, \code{\link{shapiro.test}}
 #' 
 #' @author Sabine Schilling
-#' @export
+#' @noRd
 vis_numeric <- function(y,
                         x,
                         correlation = FALSE,

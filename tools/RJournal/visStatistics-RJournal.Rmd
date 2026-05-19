@@ -122,7 +122,8 @@ The visstat parameter `conf.level` defaults to 0.95, equivalent to a default sig
 The function returns an object of class `"visstat"` with
 `print()`, `summary()`, and `plot()` methods. The returned object also
 contains an `effect_size` field with the estimate and the effect-size
-method.
+method. These estimates are calculated by the exported `effect_size()`
+function; for detailed documentation, see the package vignette.
 From this single entry point, the package automatically selects among
 the implemented tests: `t.test()`, `wilcox.test()`, `aov()`,
 `oneway.test()`, `kruskal.test()`, `chisq.test()`, `fisher.test()`,
@@ -916,5 +917,4 @@ Confidence intervals are computed as
 $d \pm t_{1-\alpha/2,\nu}SE$ and are not adjusted for multiple
 comparisons. Significant letter displays are produced by
 `multcompLetters()` from `multcompView` [@Graves:2026].
-
 
