@@ -158,9 +158,9 @@ vis_anova <- function(samples,
          pch = 16, col = "red", cex = 1.3)
 
   if (n_classes > 6) {
-    n_labels <- c(paste("N =", b$n[1]), as.character(b$n[-1]))
+    n_labels <- c(paste("n =", b$n[1]), as.character(b$n[-1]))
   } else {
-    n_labels <- paste("N =", b$n)
+    n_labels <- paste("n =", b$n)
   }
   text(seq_len(n_classes), ma, n_labels)
   

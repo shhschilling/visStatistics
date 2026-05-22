@@ -157,7 +157,7 @@ two_sample_t_test <- function(samples,
          pch = 16, col = "red", cex = 1.3)
 
   # Sample sizes above box plot
-  text(1:length(b$n), c(ma, ma), paste("N =", b$n))
+  text(1:length(b$n), c(ma, ma), paste("n =", b$n))
 
   t <- t.test(
     x1,
@@ -295,7 +295,7 @@ two_sample_wilcoxon_test <- function(samples,
   }
 
   # Sample sizes above box plot
-  text(1:length(b$n), c(ma, ma), paste("N =", b$n))
+  text(1:length(b$n), c(ma, ma), paste("n =", b$n))
 
   t <- wilcox.test(samples ~ fact, alternative = alternative, na.action = na.omit)
 
@@ -518,7 +518,7 @@ vis_chi_squared_test <- function(samples,
       ma <- 1.3 * max_val_y
       legendsize <- 0.7 * cex
     } else {
-      # Fisher shows N= labels above each bar; 1.2x gives enough headroom so
+      # Fisher shows count labels above each bar; 1.2x gives enough headroom so
       # the label on the tallest bar stays inside the yaxs="i" coordinate range.
       ma <- if (is_fisher) 1.2 * max_val_y else 1.1 * max_val_y
       legendsize <- cex
@@ -539,14 +539,14 @@ vis_chi_squared_test <- function(samples,
       cex.names = labelsize
     )
 
-    # N labels: Fisher branch only — Pearson chi² is followed by a mosaic that
-    # already displays counts. Place "N = <count>" above every individual bar.
+    # Count labels: Fisher branch only — Pearson chi² is followed by a mosaic that
+    # already displays counts. Place "n = <count>" above every individual bar.
     if (is_fisher) {
       bar_x <- as.vector(bp)
       bar_n <- as.vector(counts)
       bar_h <- as.vector(bar_data)
       text(bar_x, bar_h + strheight("N", units = "user"),
-           paste("N =", bar_n),
+           paste("n =", bar_n),
            cex = labelsize * 0.8)
     }
 
@@ -640,9 +640,9 @@ vis_Kruskal_Wallis <- function(samples,
   }
 
   if (n_classes > 6) {
-    n_labels <- c(paste("N =", b$n[1]), as.character(b$n[-1]))
+    n_labels <- c(paste("n =", b$n[1]), as.character(b$n[-1]))
   } else {
-    n_labels <- paste("N =", b$n)
+    n_labels <- paste("n =", b$n)
   }
   text(seq_len(n_classes), ma, n_labels)
 
