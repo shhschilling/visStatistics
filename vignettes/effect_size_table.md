@@ -23,6 +23,7 @@ formulae internally [@Hedges:1981; @Kerby:2014; @Olejnik:2003; @BenShachar:2020;
 
 where
 
+$N$: total sample size,\
 $J$: Hedges' small-sample correction factor, $J = \Gamma((N-2)/2)\,/\,(\sqrt{(N-2)/2}\;\Gamma((N-3)/2))$,\
 $s^{*}$: non-pooled average-variance standardizer, $s^{*} = \sqrt{(s_1^2+s_2^2)/2}$,\
 $\nu_1$, $\nu_2$: numerator and denominator degrees of freedom; for Fisher's ANOVA, $\nu_1=k-1$ and $\nu_2=N-k$; for Welch's ANOVA, $\nu_1$ and $\nu_2$ are returned by `oneway.test()`.

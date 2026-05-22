@@ -41,6 +41,28 @@ knitr::opts_chunk$set(
   echo = TRUE
 )
 example_alpha <- 0.05
+
+make_visstat_panel <- function(result, file, labels = c("A", "B")) {
+  if (!requireNamespace("png", quietly = TRUE)) {
+    stop("The png package is required to build panel figures.")
+  }
+  paths <- attr(result, "plot_paths")
+  if (length(paths) < 2) {
+    stop("Expected at least two saved plot files.")
+  }
+  img_a <- png::readPNG(paths[1])
+  img_b <- png::readPNG(paths[2])
+  png(file, width = 1800, height = 700, res = 120)
+  on.exit(dev.off())
+  par(mar = c(0, 0, 0, 0))
+  plot.new()
+  plot.window(xlim = c(0, 1), ylim = c(0, 1), xaxs = "i", yaxs = "i")
+  rasterImage(as.raster(img_a), 0, 0, 0.495, 0.94)
+  rasterImage(as.raster(img_b), 0.505, 0, 1, 0.94)
+  text(0.2475, 0.975, labels[1], font = 2, cex = 1.8)
+  text(0.7525, 0.975, labels[2], font = 2, cex = 1.8)
+  invisible(file)
+}
 ```
 
 # Introduction
@@ -61,43 +83,32 @@ securely on a server and cannot be directly accessed by users. This
 approach was already successfully applied to develop a medical scoring
 tool [@Bijlenga:2017].
 
-For group comparisons, packages with related scope include
-`automatedtests` [@Zeevat:2025], `autotestR` [@autotestR:2026],
-`boxTest` [@boxTest:2025], and `compareGroups` [@Subirana:2014].
-For mean-based tests in the general linear-model framework, the
-normality assumption concerns the model errors, not the marginal response
-distribution. None of these packages bases routing on pooled
-standardised residuals from the common linear model. `autotestR` and
-`boxTest` test the response separately within groups, adding a
-multiple-testing problem; `automatedtests` and `compareGroups` test the
-ungrouped numeric response, so group-location differences are included in
-the vector being tested. In contrast, `visStatistics` bases the
-central-tendency branch on pooled standardised residuals, adhering to the
-general linear model framework [@Thompson:2015].
+For group comparisons, packages with related scope include `compareGroups`
+[@Subirana:2014], `boxTest` [@Sau:2025], `autotestR` [@Garcia:2026],
+and `automatedtests` [@Zeevat:2025]. `compareGroups` is primarily
+designed for bivariate descriptive tables and reports, not diagnostic
+plots and test visualisations. `boxTest` covers only the two-group
+numeric-response case. `autotestR` provides automated recommendations
+for t-tests, ANOVA, correlation, and contingency-table analyses.
+`automatedtests` provides the broadest routing among these packages,
+including one-sample, paired, repeated-measures, regression, correlation,
+and contingency-table cases.
 
-`compareGroups` is primarily designed for bivariate descriptive tables
-and reports, not diagnostic plots and test visualisations
-[@Subirana:2014]. `boxTest` covers only the two-group numeric-response
-case [@boxTest:2025]. `autotestR` provides automated recommendations for
-basic tests, including t-tests, ANOVA, correlation, and contingency-table
-analyses [@autotestR:2026].
+For mean-based tests in the general linear-model framework, the normality
+assumption concerns the model errors, not the marginal response
+distribution. None of these packages bases routing on pooled standardised
+residuals from the common linear model: `autotestR` and `boxTest` test
+the response separately within groups, whereas `automatedtests` and
+`compareGroups` test the ungrouped numeric response.
 
-The closest package in scope is `automatedtests` [@Zeevat:2025], which
-also provides a single function for automatic routing among common tests.
-Its routing is broader than that of `visStatistics`, including
-one-sample, paired, repeated-measures, and regression-model cases.
-However, much of this automation is class- and shape-based dispatch: the
-selected procedure is determined only from the number and classes of
-variables, the number of factor levels, pairing information, and a small
-set of input-level checks.
-
-`visStatistics` is narrower by design. It restricts itself to common
-two-variable settings in which the route can be visualised and audited:
-pretesting where applied, residual-based diagnostics for the
-linear-model family, the selected test, full test statistics, effect
-size, result plots, and post-hoc comparisons where required. The
-contribution is therefore not broader automation, but inspectable
-automation for routine two-variable inference.
+Among the reviewed automated test-selection packages, `visStatistics` is
+thus the only one that bases the central-tendency route on explicit
+residual diagnostics from the common linear model rather than on marginal
+or groupwise normality checks. The package is deliberately limited to
+common two-variable settings in which the route can be visualised and
+audited: pretesting where applied, residual-based diagnostics for the
+linear-model branch, the selected test, full test statistics, effect
+size, result plots, and post-hoc comparisons where required.
 
 # Package overview
 
@@ -136,16 +147,25 @@ The decision logic of `visstat()` summarised in Figure \@ref(fig:overview) is dr
 ```{r overview, echo=FALSE, fig.cap="Overview of all implemented tests selected based on input class.", fig.alt="Flowchart showing all implemented statistical tests organised by the class of the input vectors."}
 knitr::include_graphics("figures/overview.png")
 ```
-Numeric responses
-with categorical predictors enter the central-tendency branch; two
-unordered factors enter the proportion-comparison branch; two numeric
-variables enter simple linear regression unless `correlation = TRUE`,
-which switches to Spearman rank correlation; and two ordered factors
-are analysed as Kendall rank correlation when `correlation = TRUE`.
+Numeric responses with categorical predictors enter the central-tendency
+branch. Ordered categorical responses with categorical predictors follow
+the non-parametric Wilcoxon or Kruskal--Wallis route; when both variables
+are ordered and `correlation = TRUE`, Kendall rank correlation is used.
+Two numeric variables enter simple linear regression unless
+`correlation = TRUE`, which switches to Spearman rank correlation. Two
+unordered factors enter the proportion-comparison branch.
 Technical details for the package-implemented functions `levene.test()`,
-`bp.test()`, and `games.howell()` are provided in the package vignette.
+`bp.test()`, and `games.howell()` are provided in the package vignette
+(`vignette("visStatistics", package = "visStatistics")`).
+Unless stated otherwise, R function names refer to functions from the `stats`
+package distributed with R [@R:2026].
 
-## Test selection based on the assumptions of the general linear model framework
+
+
+
+
+
+##  Test selection based on the assumptions of the general linear model framework
 
 Student's t-test, Fisher's ANOVA, and simple linear regression all belong to the general linear model framework ([see Appendix A](#glm)) and
 thus share a common set of assumptions: the expected value of the
@@ -153,21 +173,11 @@ response is a linear function of the predictors, the error terms are
 independent and normally distributed with expectation 0, and the error
 variance is constant at $\sigma^2$. Therefore the test selection for
 [tests of central tendencies](#numeric-categoric) is steered by checking
-the fitted model residuals in regard to these assumptions.
+that the internally studentised residuals
+$r_i^* = e_i / (s\sqrt{1-h_{ii}})$, where $e_i$ are the raw residuals,
+$s^2$ is the residual mean square, and $h_{ii}$ is the leverage of
+observation $i$ [@Cook:1982], are normally distributed and homoscedastic.
 
-### Graphical output {.unnumbered}
-
-For the central-tendency branch with numeric responses and for the
-simple-regression branch, this residual check is also the first visual
-output: `vis_lm_assumptions()` displays a four-panel diagnostic graphic
-before the selected test or regression result (see
-[Appendix B](#assumptions)). The panel shows the residual distribution,
-residuals versus fitted values, and normal Q--Q behaviour. The fourth
-plot is a scale-location plot for grouped central-tendency analyses and a
-standardised residuals versus leverage plot for simple regression.
-
-In the following subsections, we detail the decision logic following the
-structure of the overview figure \@ref(fig:overview).
 
 ## Numeric response and categorical predictor: comparing central tendencies {#numeric-categoric}
 
@@ -178,18 +188,14 @@ knitr::include_graphics("figures/decision_tree.png")
 ```
 
 
-Unless stated otherwise, R function names refer to functions from the `stats`
-package distributed with R [@R:2026].
-
-The first split checks group size. The diagnostic panel is generated
-before this split is evaluated. When all groups contain more than 50
+The first split checks group size. When all groups contain more than 50
 observations, the normality of the sampling distribution of the group
 means can be assumed by the central limit theorem [@Lumley:2002;
 @Rasch:2011], and the residual normality test is bypassed to avoid
 rejecting negligible deviations in large samples [@Ghasemi:2012;
 @Fagerland:2012; @Shatz:2024]. Otherwise, a linear model `lm(y ~ x)`
 (see [Appendix A](#glm)) is fitted for the routing decision, and
-the Shapiro--Wilk (SW) test is applied to internally
+the Shapiro--Wilk (SW) normality test is applied to internally
 studentised residuals from `rstandard()`.
 
 If normality is rejected ($p_\text{SW} \le \alpha$), non-parametric
@@ -208,37 +214,11 @@ heteroscedastic data, Welch's `t.test()` is applied for two groups, or
 Welch's `oneway.test()` with `games.howell()` [@Games:1976] for
 more than two groups.
 
-The box plots are enriched with significant--letters to visualise the post-hoc analysis:
-
-ANOVA, Welch ANOVA, and Kruskal--Wallis are omnibus tests: a significant
-result tells us that *some* group differs, but not which. To identify
-the differing pairs, `visstat()` tests all pairwise comparisons among
-the factor levels, defining a family of tests. Because the
-three omnibus tests rest on different assumptions, each branch uses a
-matching post-hoc procedure: `TukeyHSD()` after `aov()`,
-`games.howell()` after `oneway.test()`, and
-`pairwise.wilcox.test(p.adjust.method = "holm")` after `kruskal.test()`.
-`TukeyHSD()` controls the family-wise error rate through the studentised
-range distribution under a common-variance assumption. `games.howell()`
-uses separate variance estimates and Welch-adjusted degrees of freedom
-for each pair, making it the post-hoc procedure for the heteroscedastic
-Welch branch. The Kruskal--Wallis branch uses Holm's step-down
-adjustment for the pairwise Wilcoxon tests. Pairs whose adjusted
-post-hoc $p$-value falls below $\alpha$ are marked with different green
-significant--letters below the box plots; pairs sharing a letter are not
-significantly different.
-<!-- The returned object contains the corresponding -->
-<!-- adjusted $p$-values. -->
 
 ## Both variables numeric: regression or Spearman rank correlation
 
 When both predictor and response are numerical, `visstat()` fits and
-displays a simple linear regression. The standardised residuals from
-`lm()` are assessed graphically and with the Shapiro--Wilk and
-Anderson--Darling tests; homoscedasticity is assessed with the
-Breusch--Pagan test (`bp.test()`). The regression plot shows the fitted line
-$\hat{y} = b_0 + b_1 x$ with pointwise confidence and prediction bands
-at the specified `conf.level`. The returned object contains the
+displays a simple linear regression. The returned object contains the
 regression statistics, residual-normality tests, pointwise confidence
 and prediction bands, and the effect size $R^2$.
 
@@ -249,6 +229,43 @@ measuring a monotone association cannot be automated from data types
 alone, Spearman correlation is never triggered automatically.
 Spearman's $\rho$ is Pearson's correlation applied to ranks and provides
 the explicit rank-based alternative when a monotone association is the target.
+
+## Graphical output in the linear-model branches {.unnumbered}
+
+For the central-tendency branch and the simple-regression branch,
+`visstat()` first displays the linear-model assumption diagnostics
+generated by `vis_lm_assumptions()`. The function fits `lm(y ~ x)` and
+plots internally studentised residuals from `rstandard()`.
+
+The diagnostic panel contains a histogram with normal-density overlay,
+standardised residuals versus fitted values, a normal Q--Q plot, and a
+fourth plot depending on the branch: a scale-location plot for grouped
+central-tendency analyses and a standardised residuals-versus-leverage
+plot for simple regression. The panel title reports the corresponding
+normality and variance checks with their R function names:
+`shapiro.test()`, `ad.test()`, `levene.test()`, `bartlett.test()`, or
+`bp.test()`.
+
+Note that only Shapiro--Wilk and the Brown--Forsythe Levene-type test
+enter the central-tendency routing decision. In simple regression, the
+displayed assumption checks do not trigger an automatic model
+replacement.
+
+The second plot shows the selected analysis. For central-tendency tests,
+this is a box plot annotated with the selected test result and, where
+applicable, post-hoc significant-letter labels. For simple regression,
+it is a scatter plot with the fitted line and pointwise confidence and
+prediction bands.
+
+ANOVA, Welch ANOVA, and Kruskal--Wallis are omnibus tests: a significant
+result tells us that *some* group differs, but not which. To identify
+the differing pairs, `visstat()` tests all pairwise comparisons among
+the factor levels. The matching post-hoc procedures are `TukeyHSD()`
+after `aov()`, `games.howell()` after `oneway.test()`, and
+`pairwise.wilcox.test(p.adjust.method = "holm")` after
+`kruskal.test()`. Pairs whose adjusted post-hoc $p$-value falls below
+$\alpha$ are marked with different green significant-letter labels below
+the box plots; pairs sharing a letter are not significantly different.
 
 ## Both variables categorical: comparing proportions
 
@@ -267,7 +284,7 @@ from \CRANpkg{vcd} [@Meyer:2006; @Meyer:2024] with tiles coloured by
 Pearson residuals. Yates-corrected $2 \times 2$ $\chi^2$ tests show the
 grouped column plot only, because the corrected statistic is not
 decomposed into cell-level residuals. Fisher's exact test shows
-absolute counts with $N$ labels above each bar and the $p$-value in the
+absolute counts with count labels above each bar and the $p$-value in the
 title.
 
 ## Ordered factors
@@ -280,173 +297,88 @@ ties explicitly --- unavoidable with few ordinal levels [@Xu:2013].
 
 # Examples
 
-The examples follow the same order as the decision logic. The number of
-plots returned by `visstat()` depends on the input types and the outcome
-of assumption checks. Most tests produce two panels: an
-assumption-diagnostic panel and a result panel. Tests that have no
-separate assumption diagnostics, such as Kendall's $\tau_b$ for two
-ordered factors, produce a single plot.
+The following examples illustrate selected branches of the decision tree, whereas the package
+vignette (`vignette("visStatistics", package = "visStatistics")`)
+shows examples for all implemented branchings. All examples use datasets distributed with R.
 
-Most example datasets are distributed with R; synthetic data are used
-where no suitable base R example is available. The examples were chosen
-to trigger the package branches: normal and homoscedastic residuals leading to Student's t-test or
-one-way ANOVA; normal residuals with unequal variances leading to
-Welch's t-test or Welch's one-way test; non-normal residuals leading to
-Wilcoxon or Kruskal--Wallis tests, with Holm-adjusted pairwise Wilcoxon
-tests for the multi-group extension; numeric--numeric regression and
-rank correlation; categorical independence tests under and beyond
-Cochran's rule, including Yates' continuity correction for $2 \times 2$
-tables; ordered responses redirected to Wilcoxon or Kruskal--Wallis;
-and ordinal rank correlation.
 
-## Numeric response and categorical predictor: two groups
-
-For two groups, `visstat()` first evaluates the linear-model assumptions
-on pooled residuals. If Shapiro--Wilk rejects normality, the decision
-path switches to the Wilcoxon rank-sum test. If normality is not
-rejected, the Levene test decides between Student's
-equal-variance t-test and Welch's unequal-variance t-test.
-
-### Student's t-test
-
-The `ToothGrowth` dataset records odontoblast length in 60 guinea pigs
-given vitamin C by orange juice (`OJ`) or ascorbic acid (`VC`). With
-delivery method as predictor and length as response, residual normality
-and homoscedasticity are not rejected, so `visstat()` selects Student's
-t-test (Figure \@ref(fig:student-ttest-example)).
-
-```{r student-ttest-example, fig.cap="Student's t-test applied to the \\texttt{ToothGrowth} dataset (\\texttt{supp} vs.\\ \\texttt{len}). Assumption diagnostics and box plots of odontoblast length by vitamin C delivery method with the Student t-test result.", out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
-ToothGrowth$supp <- as.factor(ToothGrowth$supp)
-student_ttest <- visstat(ToothGrowth$supp, ToothGrowth$len)
-```
-
-### Welch's t-test
-
-The *Motor Trend Car Road Tests* dataset (`mtcars`) contains 32
-observations, where `mpg` denotes miles per (US) gallon and `am`
-represents the transmission type (`0` = automatic, `1` = manual). With
-binary factor `am` and continuous response `mpg`, Shapiro--Wilk does not
-reject normality of the pooled residuals, while the
-Levene test detects heteroscedasticity. The routing
-therefore leads to Welch's t-test rather than Student's t-test
-(Figure \@ref(fig:ttest-example)).
-
-```{r ttest-example, fig.cap="Welch's t-test applied to the \\texttt{mtcars} dataset (\\texttt{am} vs.\\ \\texttt{mpg}). Pooled-residual assumption diagnostics (Shapiro--Wilk, Bartlett, Levene test) and box plots of fuel efficiency by transmission type with the Welch t-test result.", out.width="48%", fig.height=4.5, fig.show="hold"}
-mtcars$am <- as.factor(mtcars$am)
-t_test_stats <- visstat(mtcars$am, mtcars$mpg)
-```
-
-### Wilcoxon rank-sum test
-
-The `warpbreaks` dataset records thread breaks during weaving. Using wool
-type (`A` or `B`) as predictor and the number of breaks as response, the
-Shapiro--Wilk test rejects normality of the standardised residuals, so
-`visstat()` selects the Wilcoxon rank-sum test
-(Figure \@ref(fig:wilcoxon-example)).
-
-```{r wilcoxon-example, fig.cap="Wilcoxon rank-sum test applied to the \\texttt{warpbreaks} dataset (\\texttt{wool} vs.\\ \\texttt{breaks}). Assumption diagnostics (Shapiro--Wilk rejected on standardised residuals; non-parametric path selected) and box plots with the Wilcoxon test result.", out.width="48%", fig.height=4.5, fig.show="hold"}
-wilcoxon_stats <- visstat(warpbreaks$wool, warpbreaks$breaks)
-```
-
-### Wilcoxon rank-sum test with ordered response
-
-The `Titanic` dataset contains passenger counts by, among other
-variables, passenger class and gender. After expanding the table to
-individual rows, passenger class is treated as ordered and gender as a
-two-level predictor. `visstat()` converts the ordered response to integer
-level codes and selects the Wilcoxon rank-sum test
-(Figure \@ref(fig:ordinal-wilcoxon-example)).
-
-```{r ordinal-wilcoxon-example, fig.cap="Wilcoxon rank-sum test for ordered passenger class by sex in the expanded \\texttt{Titanic} data. Ordered class is converted to integer level codes; box plots show the Wilcoxon test result.", out.width="48%", fig.height=4.5, fig.align="center", fig.show="hold", results='hide'}
-titanic_df <- counts_to_cases(as.data.frame(Titanic))
-titanic_df$Class <- ordered(titanic_df$Class,
-                            levels = c("1st", "2nd", "3rd", "Crew"))
-wilcox_ordered <- visstat(titanic_df$Sex, titanic_df$Class)
-```
-
-## Numeric response and categorical predictor: more than two groups
+## Numeric response and categorical predictor
 
 ### Fisher's one-way ANOVA with Tukey HSD post-hoc comparisons
 
 The `PlantGrowth` dataset records yields (as measured by dried weight of plants) for a control
 group and two treatment groups. With control and treatment groups as predictor and
-plant weight as response, Shapiro--Wilk does not reject normality of the
+plant weight as response, the diagnostics and selected analysis are shown
+in Figure \@ref(fig:anova-example), panels A and B.
+Shapiro--Wilk does not reject normality of the
 pooled residuals and `levene.test()` does not reject homoscedasticity,
 so `visstat()` applies Fisher's one-way ANOVA followed by Tukey HSD
 post-hoc comparisons. The omnibus F-test is significant at
-$\alpha = `r example_alpha`$, and the Tukey HSD post-hoc comparison finds no significant difference between the control group and either treatment, but the difference between `trt1` and `trt2` is significant (Figure \@ref(fig:anova-example)). 
+$\alpha = `r example_alpha`$, and the Tukey HSD post-hoc comparison finds no significant difference between the control group and either treatment, but the difference between `trt1` and `trt2` is significant.
 
-```{r anova-example, fig.cap=paste0("Fisher's one-way ANOVA applied to the \\texttt{PlantGrowth} dataset (\\texttt{group} vs.\\ \\texttt{weight}). Assumption diagnostics and box plots of plant weight by treatment group; Tukey HSD post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
-anova_plantgrowth <- visstat(PlantGrowth$group, PlantGrowth$weight)
+```{r anova-example, echo=FALSE, fig.cap=paste0("Fisher's one-way ANOVA applied to the \\texttt{PlantGrowth} dataset (\\texttt{group} vs.\\ \\texttt{weight}). A: Assumption diagnostics. B: Box plots of plant weight by treatment group; Tukey HSD post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="100%"}
+anova_plantgrowth_panel <- visstat(
+  PlantGrowth$group,
+  PlantGrowth$weight,
+  graphicsoutput = "png",
+  plotName = "anova_example",
+  plotDirectory = tempdir()
+)
+anova_panel_file <- file.path(tempdir(), "anova_example_panel.png")
+make_visstat_panel(anova_plantgrowth_panel, anova_panel_file)
+knitr::include_graphics(anova_panel_file)
 ```
 
 ### Welch's heteroscedastic one-way ANOVA with Games--Howell post-hoc comparisons
 
 In the `iris` dataset, using `Species` as predictor and `Sepal.Length`
 as response, Shapiro--Wilk does not reject normality of the standardised
-residuals, whereas the Levene test rejects
+residuals (Figure \@ref(fig:welch-anova-example), panel A), whereas the Levene test rejects
 homoscedasticity. `visstat()` therefore selects Welch's heteroscedastic
 one-way ANOVA (`oneway.test()`) and applies Games--Howell post-hoc
-comparisons (Figure \@ref(fig:welch-anova-example)).
+comparisons (Figure \@ref(fig:welch-anova-example), panel B).
 
-```{r welch-anova-example, fig.cap=paste0("Welch's heteroscedastic one-way ANOVA applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Sepal.Length}). Assumption diagnostics and box plots; Games--Howell post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
-welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length)
+```{r welch-anova-example, echo=FALSE, fig.cap=paste0("Welch's heteroscedastic one-way ANOVA applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Sepal.Length}). A: Assumption diagnostics. B: Box plots with Games--Howell post-hoc comparisons shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="100%"}
+welch_anova_iris_panel <- visstat(
+  iris$Species,
+  iris$Sepal.Length,
+  graphicsoutput = "png",
+  plotName = "welch_anova_example",
+  plotDirectory = tempdir()
+)
+welch_anova_panel_file <- file.path(tempdir(), "welch_anova_example_panel.png")
+make_visstat_panel(welch_anova_iris_panel, welch_anova_panel_file)
+knitr::include_graphics(welch_anova_panel_file)
 ```
 
 ### Kruskal-Wallis rank sum test with pairwise Wilcoxon post-hoc comparisons
 
 For the same dataset, `Petal.Width` by `Species` follows a different
 route. The standardised residuals show clear departures from normality,
-and both normality tests return very small $p$-values. Since
+and both normality tests return very small $p$-values
+(Figure \@ref(fig:kruskal-example), panel A). Since
 Shapiro--Wilk falls below $\alpha$, `visstat()` switches to
 `kruskal.test()` followed by Holm-adjusted `pairwise.wilcox.test()`. All
 three species differ significantly in petal width, as indicated by
-distinct significant-letter labels (Figure \@ref(fig:kruskal-example)).
+distinct significant-letter labels (Figure \@ref(fig:kruskal-example),
+panel B).
 
-```{r kruskal-example, fig.cap=paste0("Kruskal-Wallis test applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Petal.Width}). Assumption diagnostics (Shapiro--Wilk rejected) and box plots; Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
-kruskal_iris <- visstat(iris$Species, iris$Petal.Width)
-```
-
-### Kruskal-Wallis test with ordered response
-
-When the response is an ordered factor and the predictor has more than
-two levels, `visstat()` converts the ordered response to integer level
-codes and routes to `kruskal.test()` followed by Holm-adjusted
-`pairwise.wilcox.test()`. A synthetic survey records perceived car
-comfort on a five-point scale across three markets.
-The resulting Kruskal--Wallis output is given in
-Figure \@ref(fig:ordinal-kruskal-example).
-
-```{r ordinal-kruskal-example, fig.cap=paste0("Kruskal-Wallis test for ordered car comfort ratings by market. The ordered response is converted to integer level codes; box plots show the Kruskal-Wallis result; Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
-set.seed(123)
-market <- factor(rep(c("Europe", "North America", "Asia"), each = 50))
-comfort_numeric <- c(
-  sample(1:5, 50, replace = TRUE, prob = c(0.30, 0.30, 0.20, 0.15, 0.05)),
-  sample(1:5, 50, replace = TRUE, prob = c(0.10, 0.20, 0.40, 0.20, 0.10)),
-  sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.35, 0.30))
+```{r kruskal-example, echo=FALSE, fig.cap=paste0("Kruskal-Wallis test applied to the \\texttt{iris} dataset (\\texttt{Species} vs.\\ \\texttt{Petal.Width}). A: Assumption diagnostics with Shapiro--Wilk rejected. B: Box plots with Holm-adjusted pairwise Wilcoxon post-hoc comparisons shown as significant-letter labels ($\\alpha = ", example_alpha, "$)."), out.width="100%"}
+kruskal_iris_panel <- visstat(
+  iris$Species,
+  iris$Petal.Width,
+  graphicsoutput = "png",
+  plotName = "kruskal_example",
+  plotDirectory = tempdir()
 )
-survey_data_3 <- data.frame(
-  market = market,
-  comfort = ordered(comfort_numeric)
-)
-kruskal_ordered <- visstat(survey_data_3$market, survey_data_3$comfort)
+kruskal_panel_file <- file.path(tempdir(), "kruskal_example_panel.png")
+make_visstat_panel(kruskal_iris_panel, kruskal_panel_file)
+knitr::include_graphics(kruskal_panel_file)
 ```
 
 ## Both variables numeric
 
-### Simple linear regression
-
-The `swiss` dataset records standardised fertility and socioeconomic
-indicators for 47 French-speaking Swiss provinces in 1888. We examine
-how the share of draftees achieving the highest army examination score
-(`Examination`) predicts the fertility measure (`Fertility`), with
-`conf.level = 0.99`. Both normality tests pass and the Breusch--Pagan
-test confirms homoscedasticity, supporting the linear model
-(Figure \@ref(fig:regression-example)).
-
-```{r regression-example, fig.cap="Simple linear regression of \\texttt{Fertility} on \\texttt{Examination} for the \\texttt{swiss} dataset (\\texttt{conf.level = 0.99}). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\\% confidence band (dark shading), and 99\\% prediction band (light shading).", out.width="48%", fig.height=4.5, fig.show="hold"}
-linreg_swiss <- visstat(swiss$Examination, swiss$Fertility, conf.level = 0.99)
-```
+### Simple linear regression with assumption warnings
 
 The `airquality` ozone example shows the limits of the automated
 approach when the default linear model is not an adequate final model.
@@ -454,13 +386,23 @@ approach when the default linear model is not an adequate final model.
 outside the automated decision tree. A default
 `visstat()` call for ozone concentration (`Ozone`) as a function of wind
 speed (`Wind`) fits the simple linear model
-(Figure \@ref(fig:ozone-lm-triage)).
+(Figure \@ref(fig:ozone-lm-triage), panels A and B).
 
-```{r ozone-lm-triage, fig.cap="Default simple linear regression for \\texttt{Ozone} by \\texttt{Wind} in the \\texttt{airquality} dataset. Assumption diagnostics flag non-normal standardised residuals and heteroscedasticity before alternative routes are considered.", out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
-ozone_lm <- visstat(airquality$Wind, airquality$Ozone)
+```{r ozone-lm-triage, echo=FALSE, fig.cap="Default simple linear regression for \\texttt{Ozone} by \\texttt{Wind} in the \\texttt{airquality} dataset. A: Assumption diagnostics flag non-normal standardised residuals and heteroscedasticity. B: Fitted regression line with confidence and prediction bands.", out.width="100%"}
+ozone_lm_panel <- visstat(
+  airquality$Wind,
+  airquality$Ozone,
+  graphicsoutput = "png",
+  plotName = "ozone_lm_triage",
+  plotDirectory = tempdir()
+)
+ozone_lm_panel_file <- file.path(tempdir(), "ozone_lm_triage_panel.png")
+make_visstat_panel(ozone_lm_panel, ozone_lm_panel_file)
+knitr::include_graphics(ozone_lm_panel_file)
 ```
 
-The diagnostic output flags non-normal standardised residuals and
+The diagnostic output in Figure \@ref(fig:ozone-lm-triage), panel A,
+flags non-normal standardised residuals and
 heteroscedasticity. The printed
 recommendation suggests two possible next steps: first, rerunning the
 analysis with `correlation = TRUE` for an assumption-free, non-causal
@@ -483,213 +425,44 @@ spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 
 ### Model exploration outside `visstat()`
 
-For the `airquality`
-data, a Gamma GLM with log link is one plausible follow-up, because
-`Ozone` vs `Wind` is positive, continuous, and shows variance increasing with the mean.
+For the `airquality` data, a Gamma generalised linear modelwith log link is one plausible
+follow-up, because `Ozone` vs. `Wind` is positive, continuous, and shows
+variance increasing with the mean.
+This step is deliberately outside `visstat()`: the package flags the
+problem and offers the rank-correlation route, but it does not choose
+among alternative model families.
 
 ## Both variables categorical
-
-The following examples are based on the `HairEyeColor` contingency
-table, which is converted to the column-based data frame expected by
-`visstat()` using `counts_to_cases()`.
 
 ### Pearson's $\chi^2$ test
 
 With `Eye` and `Hair` from `HairEyeColor`, all expected cell counts
 exceed the Cochran thresholds [@Cochran:1954], so the $\chi^2$
-approximation is used. For this $4 \times 4$ table, `visstat()` returns
-both a grouped bar chart of row percentages and a mosaic plot with tiles giving the count per cell coloured by Pearson residuals. The mosaic plot shows which cells drive
+approximation is used. The contingency table is converted with
+`counts_to_cases()` before calling `visstat()`. For this $4 \times 4$
+table, `visstat()` returns
+both a grouped bar chart of row percentages (Figure
+\@ref(fig:chisq-example), panel A) and a mosaic plot with tiles giving
+the count per cell coloured by Pearson residuals (Figure
+\@ref(fig:chisq-example), panel B). The mosaic plot shows which cells drive
 the association: blue tiles indicate observed counts above expectation
-and red tiles indicate observed counts below expectation
-(Figure \@ref(fig:chisq-example)).
+and red tiles indicate observed counts below expectation.
 
-```{r chisq-example, fig.cap="Pearson's $\\chi^2$ test applied to the \\texttt{HairEyeColor} dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented).", out.width="48%", fig.height=4.5, fig.show="hold"}
+```{r chisq-example, echo=FALSE, fig.cap="Pearson's $\\chi^2$ test applied to the \\texttt{HairEyeColor} dataset. A: Grouped bar chart of eye colour by hair colour. B: Mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented).", out.width="100%"}
 hair_eye_df <- counts_to_cases(as.data.frame(HairEyeColor))
-visstat(hair_eye_df$Eye, hair_eye_df$Hair)
-```
-
-### Pearson's $\chi^2$ test with Yates' continuity correction
-
-Restricting `HairEyeColor` to black or brown hair and brown or blue eyes
-yields a $2 \times 2$ table. Cochran's rule is still satisfied, so
-`visstat()` applies Pearson's $\chi^2$ test with Yates' continuity
-correction; Figure \@ref(fig:hair-eye-2x2-wide-panel) contrasts this
-route with Fisher's exact test for a different slice of the same
-contingency table.
-
-```{r hair-eye-2x2-wide-panel-data, include=FALSE}
-if (!requireNamespace("png", quietly = TRUE)) {
-  stop("The png package is required to build this panel figure.")
-}
-panel_file <- "figures/hair-eye-2x2-wide-panel.png"
-panel_a <- tempfile(fileext = ".png")
-panel_b <- tempfile(fileext = ".png")
-
-png(panel_a, width = 900, height = 700, res = 120)
-hair_black_brown_eyes_brown_blue <- HairEyeColor[1:2, 1:2, ]
-hair_black_brown_eyes_brown_blue_df <- counts_to_cases(
-  as.data.frame(hair_black_brown_eyes_brown_blue))
-yates_stats <- visstat(hair_black_brown_eyes_brown_blue_df$Eye,
-                       hair_black_brown_eyes_brown_blue_df$Hair)
-mtext("A", side = 3, adj = 0, line = 1, font = 2)
-dev.off()
-
-png(panel_b, width = 900, height = 700, res = 120)
-hair_eye_male <- HairEyeColor[, , 1]
-black_brown_hazel_green <- hair_eye_male[1:2, 3:4]
-black_brown_hazel_green_df <- counts_to_cases(
-  as.data.frame(black_brown_hazel_green))
-fisher_stats <- visstat(black_brown_hazel_green_df$Eye,
-                        black_brown_hazel_green_df$Hair)
-mtext("B", side = 3, adj = 0, line = 1, font = 2)
-dev.off()
-
-img_a <- png::readPNG(panel_a)
-img_b <- png::readPNG(panel_b)
-png(panel_file, width = 1800, height = 700, res = 120)
-par(mar = c(0, 0, 0, 0))
-plot.new()
-plot.window(xlim = c(0, 1), ylim = c(0, 1), xaxs = "i", yaxs = "i")
-rasterImage(as.raster(img_a), 0, 0, 0.495, 1)
-rasterImage(as.raster(img_b), 0.505, 0, 1, 1)
-dev.off()
-```
-
-```{r hair-eye-2x2-wide-panel, echo=FALSE, out.width="100%", fig.cap="Two $2 \\times 2$ analyses of subsets of the \\texttt{HairEyeColor} dataset. A: Pearson's $\\chi^2$ test with Yates' continuity correction for a $2 \\times 2$ subset of \\texttt{HairEyeColor} (black/brown hair and brown/blue eyes). Grouped bar chart of row percentages with the corrected test result. B: Fisher's exact test applied to a $2 \\times 2$ subset of \\texttt{HairEyeColor} (male participants, black/brown hair, hazel/green eyes). Bar chart of absolute counts with the $p$-value."}
-knitr::include_graphics(panel_file)
-```
-
-### Fisher's exact test
-
-Restricting `HairEyeColor` to male participants with black or brown hair
-and hazel or green eyes yields a $2 \times 2$ table where one expected
-frequency is less than 5, violating Cochran's rule [@Cochran:1954].
-`visstat()` therefore applies Fisher's exact test. For $2 \times 2$
-tables, the returned object also contains the conditional maximum
-likelihood estimate of the odds ratio and its confidence interval.
-
-```{r fisher-exact-output}
-fisher_stats$estimate   # odds ratio
-fisher_stats$conf.int   # 95% CI
-```
-
-## Ordered factors
-
-When the response is ordered and the predictor is categorical,
-`visstat()` converts the response to integer level codes and redirects
-to the non-parametric Wilcoxon or Kruskal--Wallis path above. When both
-variables are ordered factors and `correlation = TRUE`, `visstat()`
-instead tests for a monotone association via Kendall's $\tau_b$.
-The Kendall output is a single jittered
-rank--rank scatter plot that visualises the monotone trend, colour-codes
-points by the predictor level, and annotates the plot with $\tau_b$ and
-the $p$-value (Figure \@ref(fig:kendall-example)).
-
-### Kendall's $\tau_b$
-
-A hypothetical survey of 150 secondary-school students records alcohol
-consumption frequency and academic performance on five-point ordinal
-scales. A negative monotone association is induced by construction:
-students who consume alcohol more frequently tend to have lower academic
-performance.
-
-```{r kendall-example, fig.cap="Kendall's $\\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\\ academic performance (both five-point ordinal scales). Jittered rank--rank scatter annotated with $\\tau_b$ and the $p$-value; the negative monotone association is significant.", out.width="80%", fig.height=4.5, fig.show="hold"}
-set.seed(42)
-n <- 150
-xs <- sample(1:5, n, replace = TRUE)
-ys <- pmin(5, pmax(1, (6 - xs) + sample(-1:1, n, replace = TRUE)))
-likert_alc  <- c("never", "rarely", "sometimes", "often", "always")
-likert_perf <- c("poor",  "fair",   "ok",        "good",  "great")
-alcohol     <- ordered(likert_alc[xs],  levels = likert_alc)
-performance <- ordered(likert_perf[ys], levels = likert_perf)
-kendall_result <- visstat(performance, alcohol, correlation = TRUE)
-```
-
-# The `visstat` methods
-
-Objects returned by `visstat()` are of class `"visstat"` and support the
-S3 methods `print()`, `summary()`, and `plot()`.
-
-## `print()`
-
-`print()` lists the returned components.
-
-```{r visstat-methods, fig.show='hide', results='hide'}
-anova_plantgrowth <- visstat(PlantGrowth$group, PlantGrowth$weight)
-```
-
-```{r visstat-methods-print}
-print(anova_plantgrowth)
-```
-
-## `summary()`
-
-`summary()` prints the full returned object, including assumption tests,
-post-hoc comparisons, confidence level, and `effect_size` where available.
-
-```{r visstat-methods-print-summary, results='hide'}
-summary(anova_plantgrowth)
-```
-
-## `plot()`
-
-`plot()` lists available plots by default. With `which`, it either replays a
-captured plot or reports the selected saved file path.
-
-### Interactive mode
-
-When `visstat()` is called without a `graphicsoutput` defined (the default
-interactive mode), the generated plots are captured internally. Calling `plot()`
-without `which` lists all available plots; calling it with `which` replays the
-selected plot in the interactive R session.
-
-```{r visstat-methods-plot}
-plot(anova_plantgrowth)
-```
-
-```{r visstat-methods-plot-replay, eval=FALSE}
-# Interactive only (not executed during vignette build):
-plot(anova_plantgrowth, which = 2)
-```
-
-### Saved graphics
-
-When `visstat()` is called with `graphicsoutput` specified, `plot()`
-lists the generated file paths instead. All generated graphics can be
-saved in any file format supported by `Cairo()` [@Urbanek:2025],
-including "png", "jpeg", "pdf", "svg", "ps", and "tiff". If `plotName`
-is provided, the main result plot uses this name. The
-assumption-diagnostic plot adds the prefix `"glm_assumptions_"`. If
-`plotName` is not provided, file names are generated from the selected
-plot type and the input variable names.
-
-In the following example, we store the graphics in `png` format in the
-`plotDirectory` `tempdir()` using the `PlantGrowth` Fisher's ANOVA example.
-Here, `plotName` is set explicitly so that the output names are stable.
-
-```{r anova-save-graphics}
-anova_plantgrowth_stored <- visstat(
-  PlantGrowth$group,
-  PlantGrowth$weight,
+chisq_panel <- visstat(
+  hair_eye_df$Eye,
+  hair_eye_df$Hair,
   graphicsoutput = "png",
-  plotName = "anova_plantgrowth",
+  plotName = "chisq_example",
   plotDirectory = tempdir()
 )
+chisq_panel_file <- file.path(tempdir(), "chisq_example_panel.png")
+make_visstat_panel(chisq_panel, chisq_panel_file)
+knitr::include_graphics(chisq_panel_file)
 ```
 
-The full file paths of the generated graphics are stored as the
-attribute `"plot_paths"` on the returned object of class `"visstat"`.
 
-```{r show-anova-paths}
-paths <- attr(anova_plantgrowth_stored, "plot_paths")
-print(basename(paths))
-```
-
-Remove the graphical output from `plotDirectory`:
-
-```{r cleanup-anova-paths, eval=TRUE}
-file.remove(paths)
-```
 
 
 # Discussion {#discussion}
@@ -711,8 +484,12 @@ statistical logic increasingly opaque to the user.
 `visStatistics` instead focuses on the *vis*ualisation of the chosen test and,
 where applicable, its post-hoc and assumption tests.
 
-For tests of central tendency, the decision logic depends on p-values from these
-assumption tests. However, no single assumption test maintains optimal
+# Limitations of p-value driven decison logic 
+
+For tests of central tendency, p-values from assumption tests are used as routing criteria, subject to the large sample-size safeguards for normality testing described below.
+
+
+However, no single assumption test maintains optimal
 Type I error rates and statistical power across all distributions
 [@Olejnik:1987], and p-values obtained from these tests may be
 unreliable if their assumptions are violated.
@@ -755,9 +532,16 @@ underlying distribution, especially skewness and tail weight
 [@Lumley:2002]. Simulation studies suggest that moderately skewed
 distributions require roughly 40--50 observations for adequate
 convergence of the sampling distribution of the mean [@Fagerland:2012].
-Based on this range, `visStatistics` uses $n > 50$ per group as a
-rule-of-thumb threshold to bypass residual-normality testing. For
-smaller samples, Shapiro--Wilk is used to route between mean-based and
+
+
+Based on this range, for  sample sizes above 50, residual normality p-values are still
+reported, but no longer determine automated routing, to avoid inflated
+type I errors caused by the excessive sensitivity of normality tests in
+larger samples.
+
+
+For
+smaller samples, a Shapiro--Wilk test on the is used to route between mean-based and
 rank-based methods, as simulation studies suggest that it has the
 highest power among normality tests in small to moderate ($n = 10$ to
 100) sample sizes [@Razali:2011].
@@ -797,8 +581,8 @@ than a replacement for model-specific statistical analysis.
 
 `visStatistics` is useful where test selection should be reproducible,
 visible, and easy to audit. Its value is not that it removes the user's statistical
-judgment, but that it exposes the assumptions, routing decisions, effect
-sizes, and plots that should inform that judgment. The package therefore
+judgement, but that it exposes the assumptions, routing decisions, effect
+sizes, and plots that should inform that judgement. The package therefore
 serves as a first-line workflow for routine two-variable analyses, while
 leaving model-specific extensions to subsequent analysis.
 
@@ -806,12 +590,12 @@ leaving model-specific extensions to subsequent analysis.
 
 The general linear model provides a unified framework underlying Student's t-test, Fisher's ANOVA, and simple linear regression [@Thompson:2015].
 
-Let $n$ denote the number of observations and $k-1$ the number of predictors.
-The model for observation $i,\;i = 1, \ldots, n$ is:
+Let $N$ denote the number of observations and $k-1$ the number of predictors.
+The general linear model for observation $i,\;i = 1, \ldots, N$ is:
 
-$$Y_i = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_{k-1} x_{i,k-1} + \varepsilon_i, \quad \varepsilon_i \sim N(0, \sigma^2)$$
+$$Y_i = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_{k-1} x_{i,k-1} + \varepsilon_i, \quad \varepsilon_i \sim \mathcal{N}(0, \sigma^2)$$
 
-where $Y_i$ is the response for observation $i$, $x_{ij}$ is the value of predictor $j$ for observation $i$, $\beta_0, \beta_1, \ldots, \beta_{k-1}$ are the $k$ parameters, and $\varepsilon_i$ are independently distributed error terms with constant variance $\sigma^2$.
+where $Y_i$ is the response for observation $i$, $x_{ij}$ is the value of predictor $j$ for observation $i$, $\beta_0, \beta_1, \ldots, \beta_{k-1}$ are the $k$ parameters. In the general linear model the error terms  $\varepsilon_i$ are independent and normally distributed  with expectation value 0 and constant variance $\sigma^2$.
 
 **Student's t-test** uses one binary indicator variable $x_{i1}$;
 testing $H_0: \beta_1 = 0$ is equivalent to testing
@@ -821,39 +605,13 @@ $H_0: \mu_1 = \mu_2$.
 testing $H_0: \beta_1 = \cdots = \beta_{k-1} = 0$ is equivalent to
 testing equality of all group means.
 
-In the two-sample case, the squared test statistic of Student's t-test
-equals the Fisher ANOVA test statistic, $t^2 = F$,
-resulting in identical
-$p$-values for `t.test(var.equal = TRUE)` and `aov()`.
+<!-- In the two-sample case, the squared test statistic of Student's t-test -->
+<!-- equals the Fisher ANOVA test statistic, $t^2 = F$, -->
+<!-- resulting in identical -->
+<!-- $p$-values for `t.test(var.equal = TRUE)` and `aov()`. -->
 
 **Simple linear regression** uses one continuous predictor; 
 $H_0: \beta_1 = 0$ examines whether a linear relationship exists.
 
-# Appendix B: The general linear model assumption diagnostics `vis_lm_assumptions()` {#assumptions .unnumbered}
 
-All tests within the linear model framework (see [Appendix A](#glm)) share a common set of assumptions:
 
-- Linearity: The expected value of the response is a linear function of the predictors; assessed by checking for systematic patterns in residual plots.
-
-- Error terms are independent and normally distributed with expectation 0 and constant variance $\sigma^2$
-
-The function `vis_lm_assumptions()` provides a unified visual and statistical framework for checking the [linear model](#glm) assumptions.
-It fits a linear model using `aov()` and reports the residual normality
-and homoscedasticity tests used or displayed by the routing logic.
-
-## Test for normality and homoscedasticity
-
-The diagnostic plots are enhanced by p-values of tests for normality and homoscedasticity, shown in the title of the plot.
-
-The normality tests operate on internally studentised residuals
-$r_i^* = e_i / (s\sqrt{1-h_{ii}})$, where $e_i$ are the raw residuals,
-$s^2$ is the residual mean square, and $h_{ii}$ is the leverage of
-observation $i$ [@Cook:1982].
-
-**Normality Assessment**: The function evaluates residual normality using both the Shapiro--Wilk test (`shapiro.test()`) and the Anderson--Darling test (`ad.test()`) [@Gross:2015].
-
-**Homoscedasticity Assessment**: Variance equality is tested using the Levene test (`levene.test()`) [@Brown:1974] and Bartlett's test (`bartlett.test()`) in the ANOVA path.
-
-These tests compare the spread of data across different factor levels.
-
-For simple linear regression, the Breusch--Pagan test (`bp.test()`) is implemented in the package.
