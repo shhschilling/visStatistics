@@ -1,0 +1,34 @@
+# Overall strucutere
+```
+1. Numeric responses with categorical predictors enter the central-tendency branch detailed in section
+\ref{sec:numeric-categoric}.
+2a) Ordered categorical responses with categorical predictors follow the non-parametric Wilcoxon or Kruskal--Wallis route; 
+2b  when both variables are ordered and `correlation = TRUE`, Kendall rank correlation is used.
+
+4a) Two numeric variables enter simple linear regression 
+4b) `correlation = TRUE`, which switches to Spearman rank correlation.
+5. Two unordered factors enter the proportion-comparison branch.
+
+
+
+
+# Example structure 
+
+
+Route 1  Numeric response, categorical predictor
+
+ k=2 Students t-test, general case k>2 Fisher Anova
+ k=2 Welch t-test-,  general case k>2Welch Anova
+k=2  Wilcoxn rank-> General casek>2 Kruskal Wallis 
+
+
+Route 2  Ordered response 
+a)  ordered reponse, categorical factor k=2  Wilcoxn rank-> k>2 Kruskal Wallis 
+b) ordered reponse, ordered factor 
+k=2  Wilcoxn rank-> k>2 Kruskal Wallis -> show parallel, or avoid as doubling???
+b+ correlation =TRUE Kendall
+Route 3 Numeric response, numeric predictor 
+a) Linear regression 
+b) with correlation=True Spearman Corrleation 
+Route4  Two unordered factors
+Chi2, Fisher 

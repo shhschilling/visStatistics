@@ -116,10 +116,10 @@ test_that("visstat: homoscedastic vs heteroscedastic comparison", {
   hetero_df <- data.frame(response = hetero_y, group = hetero_g)
   
   # Test homoscedastic data with visstat - shows assumption plots + analysis
-  homo_result <- visstat(homo_df, "response", "group")
+  homo_result <- visstat(response ~ group, data = homo_df)
   
   # Test heteroscedastic data with visstat - shows assumption plots + analysis
-  hetero_result <- visstat(hetero_df, "response", "group")
+  hetero_result <- visstat(response ~ group, data = hetero_df)
   
   # Both should run successfully
   expect_s3_class(homo_result, "visstat")
@@ -139,7 +139,7 @@ test_that("visstat detects mild heteroscedasticity", {
   df <- data.frame(response = mild_hetero_data$y, group = mild_hetero_data$g)
   
   # Shows assumption plots + data analysis
-  result <- visstat(df, "response", "group")
+  result <- visstat(response ~ group, data = df)
   
   expect_s3_class(result, "visstat")
   expect_true(length(result) > 0)
@@ -152,7 +152,7 @@ test_that("visstat detects severe heteroscedasticity", {
   df <- data.frame(response = severe_hetero_data$y, group = severe_hetero_data$g)
   
   # Shows dramatic variance differences in both assumption plots and main analysis
-  result <- visstat(df, "response", "group")
+  result <- visstat(response ~ group, data = df)
   
   expect_s3_class(result, "visstat")
   expect_true(length(result) > 0)
@@ -166,7 +166,7 @@ test_that("visstat with extreme heteroscedasticity", {
   df <- data.frame(response = extreme_data$y, group = extreme_data$g)
   
   # Shows extreme variance differences visually + statistical analysis
-  result <- visstat(df, "response", "group")
+  result <- visstat(response ~ group, data = df)
   
   expect_s3_class(result, "visstat")
   expect_true(length(result) > 0)
@@ -184,7 +184,7 @@ test_that("visstat: Levene robustness with non-normal data", {
   df <- data.frame(response = nonnormal_data$y, group = nonnormal_data$g)
   
   # Shows non-normal distributions + how Levene handles them
-  result <- visstat(df, "response", "group")
+  result <- visstat(response ~ group, data = df)
   
   expect_s3_class(result, "visstat")
   expect_true(length(result) > 0)
@@ -203,9 +203,9 @@ test_that("visstat: Power comparison across effect sizes", {
   large_df <- data.frame(response = large_data$y, group = large_data$g)
   
   # Visual comparison of different effect sizes
-  small_result <- visstat(small_df, "response", "group")
-  medium_result <- visstat(medium_df, "response", "group")
-  large_result <- visstat(large_df, "response", "group")
+  small_result <- visstat(response ~ group, data = small_df)
+  medium_result <- visstat(response ~ group, data = medium_df)
+  large_result <- visstat(response ~ group, data = large_df)
   
   expect_s3_class(small_result, "visstat")
   expect_s3_class(medium_result, "visstat")
@@ -222,7 +222,7 @@ test_that("visstat: Two-group heteroscedastic comparison", {
   df <- data.frame(response = two_group_data$y, group = two_group_data$g)
   
   # Shows two-group variance differences visually + t-test analysis
-  result <- visstat(df, "response", "group")
+  result <- visstat(response ~ group, data = df)
   
   expect_s3_class(result, "visstat")
   expect_true(length(result) > 0)
@@ -246,8 +246,8 @@ test_that("visstat: Sample size effects on heteroscedasticity detection", {
   large_df <- data.frame(response = large_y, group = large_g)
   
   # Visual comparison of sample size effects
-  small_result <- visstat(small_df, "response", "group")
-  large_result <- visstat(large_df, "response", "group")
+  small_result <- visstat(response ~ group, data = small_df)
+  large_result <- visstat(response ~ group, data = large_df)
   
   expect_s3_class(small_result, "visstat")
   expect_s3_class(large_result, "visstat")
@@ -264,7 +264,7 @@ test_that("visstat: Different confidence levels with heteroscedastic data", {
   conf_levels <- c(0.90, 0.95, 0.99)
   
   for (conf_level in conf_levels) {
-    result <- visstat(df, "response", "group", conf.level = conf_level)
+    result <- visstat(response ~ group, data = df, conf.level = conf_level)
     
     expect_s3_class(result, "visstat")
     expect_true(length(result) > 0)
@@ -278,7 +278,7 @@ test_that("visstat: Comprehensive Levene vs Bartlett visual demonstration", {
   df <- data.frame(response = comparison_data$y, group = comparison_data$g)
   
   # Complete visual workflow: assumption plots + statistical analysis
-  result <- visstat(df, "response", "group")
+  result <- visstat(response ~ group, data = df)
   
   expect_s3_class(result, "visstat")
   expect_true(length(result) > 0)
@@ -294,7 +294,7 @@ test_that("visstat integration with vis_anova_assumptions", {
   
   df <- data.frame(response = test_data$y, group = test_data$g)
   
-  result <- visstat(df, "response", "group")
+  result <- visstat(response ~ group, data = df)
   
   expect_s3_class(result, "visstat")
   expect_true(length(result) > 0)
@@ -311,7 +311,7 @@ test_that("visstat comprehensive comparison: Levene vs Bartlett integration", {
   
   df <- data.frame(response = comparison_data$y, group = comparison_data$g)
   
-  result <- visstat(df, "response", "group")
+  result <- visstat(response ~ group, data = df)
   
   expect_s3_class(result, "visstat")
   

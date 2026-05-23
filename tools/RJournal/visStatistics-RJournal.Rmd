@@ -179,6 +179,7 @@ $s^2$ is the residual mean square, and $h_{ii}$ is the leverage of
 observation $i$ [@Cook:1982], are normally distributed and homoscedastic.
 
 
+
 ## Numeric response and categorical predictor: comparing central tendencies {#numeric-categoric}
 
 Figure \@ref(fig:decision-tree) expands the central-tendency branch.
@@ -213,7 +214,6 @@ test below. For homoscedastic data,
 heteroscedastic data, Welch's `t.test()` is applied for two groups, or
 Welch's `oneway.test()` with `games.howell()` [@Games:1976] for
 more than two groups.
-
 
 ## Both variables numeric: regression or Spearman rank correlation
 
@@ -484,22 +484,18 @@ statistical logic increasingly opaque to the user.
 `visStatistics` instead focuses on the *vis*ualisation of the chosen test and,
 where applicable, its post-hoc and assumption tests.
 
-# Limitations of p-value driven decison logic 
+
 
 For tests of central tendency, p-values from assumption tests are used as routing criteria, subject to the large sample-size safeguards for normality testing described below.
-
-
 However, no single assumption test maintains optimal
 Type I error rates and statistical power across all distributions
 [@Olejnik:1987], and p-values obtained from these tests may be
 unreliable if their assumptions are violated.
-
 In large samples, even minor, random deviations from the null hypothesis
 can result in statistically significant p-values, leading to type I
 errors. Conversely, in small samples, substantial violations of the
 assumption may not reach statistical significance, resulting in type II
 errors [@Kozak:2018].
-
 Moreover, assumption tests provide no information on the nature of
 deviations from the expected distribution [@Shatz:2024]. Thus the
 assessment of normality or homoscedasticity should never rely solely on
@@ -534,7 +530,7 @@ distributions require roughly 40--50 observations for adequate
 convergence of the sampling distribution of the mean [@Fagerland:2012].
 
 
-Based on this range, for  sample sizes above 50, residual normality p-values are still
+Based on this range, for $N > 50$, residual normality p-values are still
 reported, but no longer determine automated routing, to avoid inflated
 type I errors caused by the excessive sensitivity of normality tests in
 larger samples.
@@ -543,7 +539,7 @@ larger samples.
 For
 smaller samples, a Shapiro--Wilk test on the is used to route between mean-based and
 rank-based methods, as simulation studies suggest that it has the
-highest power among normality tests in small to moderate ($n = 10$ to
+highest power among normality tests in small to moderate ($N = 10$ to
 100) sample sizes [@Razali:2011].
 
 In the regression branch, violated assumptions are flagged in the output.
@@ -612,6 +608,3 @@ testing equality of all group means.
 
 **Simple linear regression** uses one continuous predictor; 
 $H_0: \beta_1 = 0$ examines whether a linear relationship exists.
-
-
-

@@ -96,7 +96,10 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
   x_seq <- seq(x_min, x_max, length.out = 200)
   lines(x_seq, dnorm(x_seq), col = "red", lwd = 1)
   
-  # Plot 2: Standardized Residuals vs Fitted (manual - plot.lm doesn't use standardized)
+  # Plot 2: Normal Q-Q (using internal plot.lm method)
+  plot(anova_model, which = 2, cex = cex, caption = "", sub.caption = "", main = "Normal Q-Q Plot")
+  
+  # Plot 3: Standardized Residuals vs Fitted (manual - plot.lm doesn't use standardized)
   ylim_res <- extendrange(std_residuals, f = 0.08)
   plot(fitted(anova_model), std_residuals, 
        main = "Std. Res. vs. Fitted",
@@ -104,11 +107,6 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
        ylab = "Std. Residuals",
        ylim = ylim_res)
   abline(h = 0, col = "red", lwd = 1)
-  
-  
-  
-  # Plot 3: Normal Q-Q (using internal plot.lm method)
-  plot(anova_model, which = 2, cex = cex, caption = "", sub.caption = "", main = "Normal Q-Q Plot")
   
   # Plot 4: Depends on regression vs ANOVA
   if (regression_mode) {

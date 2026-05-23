@@ -1,0 +1,64 @@
+---
+title: "prompt redesign"
+output: html_document
+date: "2026-05-23"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+0. Make  a backup of current vignette 
+1. Rewrite the function generating the assumption plots to the agreed design. Guarantee that the regerssion branch has the same look and feel (drop plotl.lm()), where necessary.
+
+2. In the vignette: replace the whole decision logic from levene.test median to leven.test mean. give short sentence why. 
+2b  you must change the internal functon levene.test(). Gauge your result against the existin levene.test() in the car package. change function documentation and examples 
+
+2c: for p-value caluclations of the homoscedasticy test base it on the raw residuals, for normality stick on rstandard
+
+Normality: standardise because scale should not matter.
+Homoscedasticity: do not standardise because scale is the thing being tested.
+In the code make the distinction obvious by 
+
+raw_residuals <- residuals(fit)
+std_residuals <- rstandard(fit)
+
+3. route 1, diagnositc plot 3: to justify it, find paper using this approach. 
+4. route 1, diagnositc plot 4: to justify it, find paper using this approach. 
+   Insert citations 
+ 
+4. change the design of the diagnostic panel to the latest agreed version in you MWE 
+   
+5. change the wording of the current    general linear model diagnostic section to reflect the current design. 
+
+6. check for consistency throughout after the changes 
+
+
+
+8, Change the formula in appendix to mean based Leven test 
+
+9. in vignette, describing panel 3, route 1 : The pooled-residual index panel identifies individual large residuals; in
+general, the x-axis should not be read as an order diagnostic.
+
+labelpanel 3, route 1: Pooled std. residuals
+
+10.Add appropriate sentence
+rstandard() for normality, raw residuals for variance.
+The two choices are not arbitrary; they follow from the same principle — don't let standardisation interfere with the property the test is measuring.
+
+11. vingnette add, where it fits best:  Panels 1--3 display internally studentised residuals for visual comparison.
+In Route 1, the spread panel displays absolute raw residuals scaled by the
+residual standard error. The formal normality and variance p-values in the
+outer title are computed from raw model residuals
+Last: check the whole vignette for consistency. Are all changes everywhere applied 
+homoscedasticity is assessed by testing whether absolute internally
+studentised model residuals differ across groups.
+
+
+Route 1 diagnostic panels display pooled z-scaled model residuals,
+\(e_i/\hat{\sigma}\).
+And:
+Formal normality and variance p-values are computed on raw model residuals;
+because Shapiro--Wilk, Anderson--Darling, Levene, and Bartlett are invariant
+to common scaling, this is equivalent to using \(e_i/\hat{\sigma}\).

@@ -1,0 +1,109 @@
+---
+title: "Route 1 Assumption Plot Notes"
+output: html_document
+---
+
+# Purpose
+
+This note summarises the current design decision for changing the Route 1
+assumption-diagnostic panel in `visStatistics`.
+
+# Core Distinction
+
+- Normality checks ask whether model errors have the expected distributional
+  shape.
+- Homoscedasticity checks ask whether model residual spread is constant.
+- Therefore, normality and homoscedasticity do not have to use the same
+  residual scale.
+
+# Normality Diagnostics
+
+Normality is checked on internally studentised residuals:
+
+```{r, eval=FALSE}
+fit <- lm(y ~ group)
+r <- rstandard(fit)
+shapiro.test(r)
+nortest::ad.test(r)
+```
+
+Rationale:
+
+- raw residuals have leverage-dependent variance;
+- `rstandard()` puts residuals on a comparable scale;
+- Q--Q plots and histograms compare residual shape to a standard normal
+  reference;
+- this is consistent with standard regression diagnostics.
+
+# Homoscedasticity Diagnostics
+
+Variance tests should use raw model residuals:
+
+```{r, eval=FALSE}
+fit <- lm(y ~ group)
+e <- residuals(fit)
+
+bartlett.test(e ~ group)
+summary(aov(abs(e) ~ group))
+```
+
+Rationale:
+
+- homoscedasticity concerns residual spread;
+- spread is the target and should not be removed by standardisation;
+- Bartlett and mean-centred Levene-type tests are defined on residual
+  deviations or variances;
+- using raw residuals keeps the p-values aligned with the model-scale variance
+  assumption.
+
+# Plot Design
+
+Recommended Route 1 diagnostic panel:
+
+- Panel 1: histogram and normal-density overlay of `rstandard(fit)`.
+- Panel 2: Q--Q plot of `rstandard(fit)`.
+- Panel 3: `rstandard(fit)` versus observation index.
+- Panel 4: residual spread by group using `abs(e / sigma(fit))`.
+
+Panel 4 uses:
+
+```{r, eval=FALSE}
+abs(residuals(fit) / sigma(fit))
+```
+
+Rationale:
+
+- dividing by `sigma(fit)` gives a readable standard-error scale;
+- the same scaling is applied to all observations;
+- relative group spread is preserved;
+- unlike `rstandard()`, this does not introduce leverage-dependent scaling.
+
+# Proposed Labels
+
+- Panel 1 title: `Histogram and Normal Density`
+- Panel 1 x-axis: `Std. residuals`
+- Panel 2 title: `Normal Q-Q Plot`
+- Panel 2 y-axis: `Std. residuals`
+- Panel 3 title: `Std. Res. vs. Observation Index`
+- Panel 3 y-axis: `Std. residuals`
+- Panel 4 title: `Residual Spread by Group`
+- Panel 4 y-axis: `Absolute residuals / residual SE`
+
+# Outer Title
+
+Keep the current two-line structure:
+
+```{r, eval=FALSE}
+Linear model assumptions: Shapiro-Wilk p = ... | Anderson-Darling p = ...
+Levene p = ... | Bartlett p = ...
+```
+
+The Levene p-value should refer to the mean-centred Levene-type test on raw
+model residuals. Bartlett should also be calculated on raw model residuals.
+
+# Open Implementation Decision
+
+The current package implementation still uses a Brown--Forsythe
+median-centred `levene.test()`. To align the package with the GLM residual
+claim, this should be replaced or extended by a mean-centred Levene-type test
+on raw model residuals.
