@@ -1,5 +1,9 @@
 # AGENTS.md instructions
 
+- **Always refer to the latest version on disk.** Before quoting,
+  diffing, proposing, or applying any edit, re-read the target file.
+  Never rely on in-memory copies from earlier turns — the user may have
+  edited the file manually in the meantime.
 - Minimal edits to existing code.
 - Minimal edits to existing texts in Rmd or other text format.
 - Less wordy. Use bullet points where useful.
@@ -31,6 +35,21 @@
 - Avoid function calls in abstracts.
 - Show a diff before applying unless the user explicitly says “apply”.
 - Preserve the statistical mechanism before improving prose.
+- Re-read the target lines on every edit turn; do not trust in-memory
+  file state across user turns.
+- No edit unless a concrete defect can be named. “Smoother”, “tighter”,
+  or stylistic preference is not enough. If the original reads cleanly,
+  say so and propose no change.
+- Inference is not redundancy. Only flag a sentence as redundant with
+  prior text if the prior text states the same claim literally, not by
+  implication.
+- Preserve existing manuscript terminology verbatim when smoothing. Do
+  not replace established phrases (e.g. “enter automated routing”) with
+  weaker verbs (“do”, “do so”) for compression.
+- Diff first, rationale second. Keep rationale to three lines maximum;
+  no per-substitution bullet lists, no “Notes:” headings.
+- One proposal per turn, with conviction. If uncertain, propose “leave
+  as-is” instead of floating a weaker alternative.
 
 ## Citation Rules
 
@@ -53,6 +72,19 @@
 
 - All approved edits go to the main source tree of the project, never to
   the worktree at `.claude/worktrees/epic-pike-e0d2dc/`.
+
+## Archive before structural edits
+
+- Before any structural reordering of `vignettes/visStatistics.Rmd`
+  (e.g. moving sections, merging Decision logic with Examples, large
+  refactors), first copy the current file to
+  `visstatisticsArchive/YYYYMMDD_visStatistics.Rmd` using today’s date
+  in `YYYYMMDD` format. This matches the existing convention
+  (e.g. `20260518_visStatistics.Rmd`).
+- Only after the archive copy is in place, re-read the source from disk
+  and begin the reordering.
+- This rule applies to structural edits only, not to small prose or
+  paragraph-level smoothing.
 
 ## R idioms — not discrepancies
 

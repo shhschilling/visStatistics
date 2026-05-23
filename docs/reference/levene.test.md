@@ -95,20 +95,20 @@ y <- c(rnorm(10), rnorm(10, sd = 2), rnorm(10, sd = 0.5))
 g <- factor(rep(1:3, each = 10))
 levene.test(y, g)
 #> 
-#>  Brown-Forsythe Levene-type Test (center = median)
+#>  Mean-centred Levene Test
 #> 
-#> data:  absolute deviations from group medians (for ANOVA on spread differences)
-#> F = 3.3913, df1 = 2, df2 = 27, p-value = 0.04853
+#> data:  absolute deviations from group means
+#> F = 4.3375, df1 = 2, df2 = 27, p-value = 0.02325
 #> 
 
 # Usage with data frame
 df <- data.frame(response = y, group = g)
 levene.test(response, group, data = df)
 #> 
-#>  Brown-Forsythe Levene-type Test (center = median)
+#>  Mean-centred Levene Test
 #> 
-#> data:  absolute deviations from group medians (for ANOVA on spread differences)
-#> F = 3.3913, df1 = 2, df2 = 27, p-value = 0.04853
+#> data:  absolute deviations from group means
+#> F = 4.3375, df1 = 2, df2 = 27, p-value = 0.02325
 #> 
 
 # Example with unequal variances (should reject null hypothesis)
@@ -117,10 +117,10 @@ y_unequal <- c(rnorm(15, sd = 1), rnorm(15, sd = 5), rnorm(15, sd = 0.2))
 g_unequal <- factor(rep(c("A", "B", "C"), each = 15))
 levene.test(y_unequal, g_unequal)
 #> 
-#>  Brown-Forsythe Levene-type Test (center = median)
+#>  Mean-centred Levene Test
 #> 
-#> data:  absolute deviations from group medians (for ANOVA on spread differences)
-#> F = 31.384, df1 = 2, df2 = 42, p-value = 4.607e-09
+#> data:  absolute deviations from group means
+#> F = 35.937, df1 = 2, df2 = 42, p-value = 8.004e-10
 #> 
 
 
