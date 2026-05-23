@@ -292,13 +292,13 @@ visstat_core <- function(dataframe,
       
       # Decision logic gate
       all_groups_large <- all(counts_per_level > 50)
+      current_model <- lm(samples ~ fact)
+      raw_residuals <- residuals(current_model)
       
       if (all_groups_large) {
         normality_met <- TRUE 
       } else {
-        current_model <- lm(samples ~ fact)
-        std_resids <- rstandard(current_model) #this is already part of the output of vis_lm_assumptions
-        normality_met <- shapiro.test(std_resids)$p.value >= alpha
+        normality_met <- shapiro.test(raw_residuals)$p.value >= alpha
       }
     }
     
@@ -327,7 +327,11 @@ visstat_core <- function(dataframe,
                                                    fileDirectory = plotDirectory, capture_env = capture_env))
     } else {
       # --- PARAMETRIC BRANCH ---
-      var_p <- levene.test(samples, fact)$p.value
+      if (!exists("raw_residuals", inherits = FALSE)) {
+        current_model <- lm(samples ~ fact)
+        raw_residuals <- residuals(current_model)
+      }
+      var_p <- levene.test(raw_residuals, fact)$p.value
       if (nlevels(fact) == 2) {
         # Final t-test execution
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 

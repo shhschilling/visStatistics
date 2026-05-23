@@ -117,13 +117,14 @@ vis_numeric <- function(y,
     # Fit regression model
     reg <- lm(y ~ x)
     reg_summary <- summary(reg)
+    raw_residuals <- residuals(reg)
     
     # Check regression assumptions
     assumptions <- list()
     
     # 1. Normality of residuals
     if (n >= 3 && n <= 5000) {
-      assumptions$shapiro_residuals <- shapiro.test(rstandard(reg))
+      assumptions$shapiro_residuals <- shapiro.test(raw_residuals)
       if (assumptions$shapiro_residuals$p.value < alpha) {
         warnings_list <- c(warnings_list, 
                            paste("Normality of residuals violated (Shapiro-Wilk p =", 

@@ -73,12 +73,13 @@ vis_anova <- function(samples,
   m <- tapply(samples, fact, meanna)
   # tests
   an <- aov(samples ~ fact)
+  raw_residuals <- residuals(an)
   summaryAnova <- summary(an)
   oneway <- oneway.test(samples ~ fact)
   # check for homogeneity
-  bartlett_test <- bartlett.test(samples ~ fact)
+  bartlett_test <- bartlett.test(raw_residuals ~ fact)
   p_bart <- bartlett_test$p.value
-  levene_test <- levene.test(samples,fact)
+  levene_test <- levene.test(raw_residuals, fact)
   p_levene <- levene_test$p.value
   
   
@@ -155,7 +156,7 @@ vis_anova <- function(samples,
 
   # Group means -- parametric branch tests means, so mark them explicitly
   points(seq_len(n_classes), m,
-         pch = 16, col = "red", cex = 1.3)
+         pch = 18, col = "red", cex = 1.3)
 
   if (n_classes > 6) {
     n_labels <- c(paste("n =", b$n[1]), as.character(b$n[-1]))
@@ -196,7 +197,7 @@ vis_anova <- function(samples,
          legend = c("group mean",
                     "a, b, ...: significance letters",
                     paste0("(", posthoc_name, ", alpha = ", signif(alpha, 2), ")")),
-         pch = c(16, NA, NA),
+         pch = c(18, NA, NA),
          col = c("red", NA, NA),
          text.col = c("red", colors()[81], colors()[81]),
          bty = "n",

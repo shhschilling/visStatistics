@@ -122,7 +122,7 @@ test_that("bp_test gives reasonable results", {
   expect_true(result2$p.value < 0.05)  # Should reject for heteroscedastic data
 })
 
-test_that("vis_lm_assumptions uses plot.lm correctly", {
+test_that("vis_lm_assumptions draws diagnostic panels", {
   # Test that plots are generated without errors
   ToothGrowth$dose <- as.factor(ToothGrowth$dose)
   

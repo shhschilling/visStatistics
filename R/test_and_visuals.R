@@ -154,7 +154,7 @@ two_sample_t_test <- function(samples,
 
   # Group means -- parametric test compares means, so mark them explicitly
   points(c(1, 2), c(mean(x1), mean(x2)),
-         pch = 16, col = "red", cex = 1.3)
+         pch = 18, col = "red", cex = 1.3)
 
   # Sample sizes above box plot
   text(1:length(b$n), c(ma, ma), paste("n =", b$n))
@@ -183,7 +183,7 @@ two_sample_t_test <- function(samples,
   # Legend: just the mean marker (no significance letters in the 2-group case)
   legend("bottomleft",
          legend = "group mean",
-         pch = 16,
+         pch = 18,
          col = "red",
          text.col = "red",
          bty = "n",
@@ -833,7 +833,7 @@ vis_resid <- function(resid, fitted) {
 
 ###### Visualize Regression ###############################
 
-# only normality assumptions of standardised residuals
+# only normality assumptions of raw model residuals
 vis_normality_assumptions <- function(y, x, conf.level = 0.95) {
   oldparreg <- par(no.readonly = TRUE)
   on.exit(par(oldparreg))
@@ -853,24 +853,26 @@ vis_normality_assumptions <- function(y, x, conf.level = 0.95) {
   
   reg <- lm(y ~ x)
   resreg <- summary(reg)
+  raw_residuals <- residuals(reg)
+  scaled_residuals <- raw_residuals / sigma(reg)
   
   
   par(mfrow = c(1, 2), oma = c(0, 0, 4, 0))
   plot(
     reg$fitted,
-    rstandard(reg),
-    main = "std. Residuals vs. Fitted",
+    scaled_residuals,
+    main = "z-transformed residuals vs. Fitted",
     xlab = "Fitted Values",
-    ylab = "standardised Residuals"
+    ylab = "z-transformed residuals"
   )
   abline(h = 0, col = 1, lwd = 2)
   
-  qqnorm(rstandard(reg), ylab = "Sample Quantiles of Std. Residuals")
-  qqline(rstandard(reg), col = "red", lwd = 2)
+  qqnorm(scaled_residuals, ylab = "Sample Quantiles of z-transformed residuals")
+  qqline(scaled_residuals, col = "red", lwd = 2)
   
-  AD <- ad.test(rstandard(lm(y ~ x)))
+  AD <- ad.test(raw_residuals)
   p_AD <- signif(AD$p.value, 2)
-  SH <- shapiro.test(rstandard(lm(y ~ x)))
+  SH <- shapiro.test(raw_residuals)
   p_SH <- signif(SH$p.value, 2)
   if (p_SH < alpha) {
     mtext(
