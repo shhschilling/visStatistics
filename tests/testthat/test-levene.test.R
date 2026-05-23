@@ -39,7 +39,7 @@ test_that("levene.test returns correct structure", {
   expect_named(result$parameter, c("df1", "df2"))
   
   # Check method string
-  expect_equal(result$method, "Brown-Forsythe Levene-type Test (center = median)")
+  expect_equal(result$method, "Mean-centred Levene Test")
 })
 
 test_that("levene.test calculates correct degrees of freedom", {
@@ -173,7 +173,7 @@ test_that("levene.test numerical accuracy", {
 #   our_result <- levene.test(test_data$equal_var$y, test_data$equal_var$g)
 #   
 #   # Compare with car package result
-#   car_result <- car::leveneTest(test_data$equal_var$y, test_data$equal_var$g, center = median)
+#   car_result <- car::leveneTest(test_data$equal_var$y, test_data$equal_var$g, center = mean)
 #   
 #   # Test statistics should be very close (allowing for small numerical differences)
 #   expect_equal(our_result$statistic[["F"]], car_result$`F value`[1], tolerance = 1e-10)

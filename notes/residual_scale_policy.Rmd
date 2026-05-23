@@ -1,0 +1,104 @@
+---
+title: "Residual Scale Policy for Assumption Diagnostics"
+output: html_document
+---
+
+# Purpose
+
+Defines the residual scale used for assumption-test p-values and for
+diagnostic plots in `visStatistics`. Applies to Route 1 (numeric
+response, categorical predictor) and Route 3 (numeric response, numeric
+predictor).
+
+# Principle
+
+The general linear model assumes errors `epsilon_i ~ N(0, sigma^2)`,
+i.i.d. Raw model residuals `e_i = y_i - yhat_i` are the direct
+sample-level estimate of these errors. Internally studentised residuals
+`r_i = e_i / (sigma_hat * sqrt(1 - h_ii))` rescale residuals by leverage
+to make magnitudes comparable across observations; they are a diagnostic
+device, not the object the model assumption is about.
+
+Therefore:
+
+- Assumption-test p-values are computed on raw residuals `residuals(fit)`
+  in both routes.
+- Diagnostic plots may display a scaled form, chosen by route, to make
+  residual magnitudes comparable across observations.
+
+# Policy
+
+| Route | Tests | Plots | Reason for plot scale |
+|---|---|---|---|
+| 1 (numeric ~ categorical) | `residuals(fit)` | `residuals(fit) / sigma(fit)` | Leverage `h_ii = 1/n_g` is group-size bookkeeping. Standardising by `sqrt(1 - h_ii)` would inflate small-group residuals and distort per-group spread comparisons. |
+| 3 (numeric ~ numeric) | `residuals(fit)` | `rstandard(fit)` | Leverage `h_ii = 1/n + (x_i - x_bar)^2 / sum((x_j - x_bar)^2)` is predictor geometry; high-leverage points are extreme in x and pull the fitted line. The leverage adjustment in `rstandard()` is part of the diagnostic, and the leverage panel plots `rstandard()` against `h_ii`. |
+
+# Tests in scope
+
+All computed on `residuals(fit)`:
+
+- Shapiro--Wilk (gated on at least one group with `n <= 50`)
+- Anderson--Darling
+- Bartlett
+- Mean-centred Levene-type
+- Breusch--Pagan (Route 3 only)
+
+# Implementation pattern
+
+```{r, eval=FALSE}
+fit <- lm(y ~ group)            # Route 1
+# fit <- lm(y ~ x)              # Route 3
+
+e <- residuals(fit)             # input to all assumption tests
+
+shapiro.test(e)
+nortest::ad.test(e)
+bartlett.test(e ~ group)        # Route 1
+# mean-centred Levene-type      # Route 1
+# Breusch-Pagan                 # Route 3
+
+# Plot residuals:
+# Route 1:
+plot_resid <- e / sigma(fit)
+# Route 3:
+# plot_resid <- rstandard(fit)
+```
+
+# Suggested vignette wording
+
+> Assumption-test p-values are computed from raw model residuals
+> `residuals(fit)`. Some diagnostic panels display residuals on a scaled
+> form -- `residuals(fit) / sigma(fit)` in Route 1, `rstandard(fit)` in
+> Route 3 -- to make magnitudes comparable across observations.
+
+# Rationale notes
+
+- **Testing the proxy.** `e_i` is the direct sample-level analogue of
+  `epsilon_i`. Testing `e_i` against normality tests the assumption that
+  motivates the model, not a derived quantity.
+- **Route 1 raw heteroscedasticity is bounded.**
+  `Var(e_i) = sigma^2 (1 - 1/n_g)`; factor in `[0.8, 1]` for typical
+  `n_g >= 5`. The distortion to Shapiro--Wilk is small.
+- **Route 3 raw heteroscedasticity is unbounded** (`h_ii` can approach 1
+  at extreme x). The plot uses `rstandard()` to make individual residuals
+  visually comparable; the test still runs on raw residuals because the
+  test is about the underlying error distribution, not the
+  leverage-adjusted diagnostic.
+- **Small-sample studentisation distortion.** `rstandard()` is
+  approximately t-distributed rather than normal; in the `n <= 50`
+  Shapiro--Wilk gate this would over-reject under true normality.
+  Testing raw residuals avoids this.
+- **Plot-test coherence.** In both routes, the residual scale on the plot
+  is a one-to-one transformation of the residual scale used by the tests
+  (a constant in Route 1, a per-observation leverage factor in Route 3).
+  The displayed object and the tested object are not arbitrarily
+  detached.
+
+# Out of scope
+
+- Routing logic (which test fires, what triggers Welch). Covered
+  elsewhere.
+- Panel layout decisions (3 panels for Route 1, 4 for Route 3). Covered
+  in `assumption_plot_route1_notes.Rmd`.
+- Labelling conventions for the outer title and Levene-variant
+  disambiguation.

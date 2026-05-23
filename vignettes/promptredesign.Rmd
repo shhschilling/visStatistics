@@ -9,26 +9,23 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-0. Make  a backup of current vignette 
-1. Rewrite the function generating the assumption plots to the agreed design. Guarantee that the regerssion branch has the same look and feel (drop plotl.lm()), where necessary.
+01. Rewrite the function generating the assumption plots to the agreed design. Guarantee that the regerssion branch has the same look and feel (drop plotl.lm()), where necessary.
 
 2. In the vignette: replace the whole decision logic from levene.test median to leven.test mean. give short sentence why. 
 2b  you must change the internal functon levene.test(). Gauge your result against the existin levene.test() in the car package. change function documentation and examples 
 
-2c: for p-value caluclations of the homoscedasticy test base it on the raw residuals, for normality stick on rstandard
+2c: for p-value calculations in the assumption diagnostics  use always raw residuasl 
 
-Normality: standardise because scale should not matter.
-Homoscedasticity: do not standardise because scale is the thing being tested.
 In the code make the distinction obvious by 
 
 raw_residuals <- residuals(fit)
 std_residuals <- rstandard(fit)
 
-3. route 1, diagnositc plot 3: to justify it, find paper using this approach. 
-4. route 1, diagnositc plot 4: to justify it, find paper using this approach. 
-   Insert citations 
- 
+Make one sentence in vignette to justify  this design choice 
+
 4. change the design of the diagnostic panel to the latest agreed version in you MWE 
+Justify in vignette the different design choices for the display of the residuals: 
+especially route1 : z-residuals route3: internally studentized residuals for grpahical displya 
    
 5. change the wording of the current    general linear model diagnostic section to reflect the current design. 
 
@@ -36,16 +33,11 @@ std_residuals <- rstandard(fit)
 
 
 
-8, Change the formula in appendix to mean based Leven test 
+8, Change the formula in appendix to mean based Levene test 
 
-9. in vignette, describing panel 3, route 1 : The pooled-residual index panel identifies individual large residuals; in
-general, the x-axis should not be read as an order diagnostic.
 
-labelpanel 3, route 1: Pooled std. residuals
 
-10.Add appropriate sentence
-rstandard() for normality, raw residuals for variance.
-The two choices are not arbitrary; they follow from the same principle — don't let standardisation interfere with the property the test is measuring.
+1
 
 11. vingnette add, where it fits best:  Panels 1--3 display internally studentised residuals for visual comparison.
 In Route 1, the spread panel displays absolute raw residuals scaled by the
@@ -62,3 +54,19 @@ And:
 Formal normality and variance p-values are computed on raw model residuals;
 because Shapiro--Wilk, Anderson--Darling, Levene, and Bartlett are invariant
 to common scaling, this is equivalent to using \(e_i/\hat{\sigma}\).
+
+
+add something like
+### Residual scale used for tests and plots
+
+Route 1: raw residuals for tests; e/sigma(fit) for plots
+Route 3: raw residuals for SW/AD/BP p-values; rstandard() for plots
+
+
+#use diamanods for all enas, also in the box pltos of fihser, welch and t-test variants 
+
+
+Route 1 diagnostic panel: 1×3
+Route 3 diagnostic panel: 2×2
+
+content as last mwe.

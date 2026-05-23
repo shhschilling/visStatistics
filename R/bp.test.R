@@ -15,8 +15,8 @@
 #' \item{data.name}{a character string giving the name of the model.}
 #'
 #' @details 
-#' The Breusch-Pagan test regresses the squared standardized residuals on 
-#' the fitted values. The test statistic is:
+#' The Breusch-Pagan test regresses the squared raw residuals on the fitted
+#' values. The test statistic is:
 #' 
 #' \deqn{BP = n \cdot R^2}
 #' 
@@ -64,22 +64,18 @@ bp.test <- function(model) {
   }
   
   # Extract residuals and fitted values
-  residuals <- residuals(model)
+  raw_residuals <- residuals(model)
   fitted_values <- fitted(model)
-  n <- length(residuals)
+  n <- length(raw_residuals)
   
   # Number of parameters (including intercept)
   p <- length(coef(model))
   
-  # Standardize residuals
-  sigma2 <- sum(residuals^2) / n
-  std_residuals <- residuals / sqrt(sigma2)
+  # Square the raw residuals
+  sq_raw_residuals <- raw_residuals^2
   
-  # Square the standardized residuals
-  sq_std_residuals <- std_residuals^2
-  
-  # Auxiliary regression: sq_std_residuals ~ fitted_values
-  aux_model <- lm(sq_std_residuals ~ fitted_values)
+  # Auxiliary regression: sq_raw_residuals ~ fitted_values
+  aux_model <- lm(sq_raw_residuals ~ fitted_values)
   
   # Get R-squared from auxiliary regression
   r_squared <- summary(aux_model)$r.squared

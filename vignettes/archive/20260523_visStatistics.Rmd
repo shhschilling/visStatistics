@@ -82,10 +82,7 @@ For group comparisons, packages with related scope include `compareGroups` [@Sub
 `automatedtests` provides the broadest routing among these packages, including one-sample, paired, repeated-measures, regression, correlation, and contingency-table cases.
 
 For mean-based tests in the general linear-model framework, the normality assumption concerns the model errors, not the marginal response distribution.
-None of these packages bases routing on pooled model residuals from the common
-linear model: `autotestR` and `boxTest` test the response separately within
-groups, whereas `automatedtests` and `compareGroups` test the ungrouped numeric
-response.
+None of these packages bases routing on pooled internally studentised residuals from the common linear model: `autotestR` and `boxTest` test the response separately within groups, whereas `automatedtests` and `compareGroups` test the ungrouped numeric response.
 
 Among the reviewed automated test-selection packages, `visStatistics` is thus the only one that bases the central-tendency route on explicit residual diagnostics from the common linear model rather than on marginal or groupwise normality checks.
 The package is deliberately limited to common two-variable settings in which the route can be visualised and audited: pretesting where applied, residual-based diagnostics for the linear-model branch, the selected test, full test statistics, effect size, result plots, and post-hoc comparisons where required.
@@ -181,55 +178,25 @@ In both the "numeric response with categorical predictor" and the "simple linear
 
 ### Visualisation the general linear model assumptions {#sec:graphical}
 
-A core output of `visStatistics` is a diagnostic graphic generated in Route 1
-and Route 3 (if `correlation = FALSE`) before the selected test or regression
-result is shown.
+A core output of `visStatistics` is a four-panel diagnostic graphic generated in Route 1 and 3 (if `correlation = FALSE` ) before the selected test or regression result is shown. 
 
-It fits the corresponding linear model and computes raw model residuals.
+It fits the corresponding linear model and computes internally studentised residuals with `rstandard()`.
 
-#### Residual scale used for tests and plots {-}
+The diagnostic panel shows residual distribution with a normal-density
+overlay, normal Q--Q behaviour, and residuals versus fitted values.
+The fourth plot is a scale-location plot for grouped central-tendency analyses (Route 1) or a plot of internally studentised residuals versus leverage for simple regression (Route 3)
+All plots, besides the first residual/normality comparison plot are inherited from 
+ `plot.lm()`.
 
-Formal assumption-test p-values are computed from raw model residuals. For
-display only, both Route 1 and Route 3 use the same pooled z-scaled residuals
-to facilitate model comparison. Because these p-values are shown in the same
-graphic as the diagnostics, the displayed residuals are kept on a constant
-rescaling of the same residuals:
+The first row of the outer title reports p-values of residual-normality checks with the Shapiro--Wilk and Anderson--Darling test. 
+The second row reports p-values of variance checks: Brown--Forsythe Levene-type and Bartlett for grouped central-tendency analyses, or Breusch--Pagan for simple regression.
 
-\begin{equation}
-z_i = \frac{e_i}{SE_\text{res}},
-\; \mathrm{with} \;
-SE_\text{res} =
-\sqrt{\frac{\sum_i e_i^2}{N-k}} .
-(\#eq:z-residual)
-\end{equation}
-
-Here \(N\) is the total sample size, \(k\) is the number of fitted model
-parameters, and $SE_\text{res}$ is the residual standard error. Note that in Route 1
-$SE_\text{res}$ equals  $\sqrt{MS_\text{within}}$, with \(MS_\text{within}\)
-defined in Equation \@ref(eq:fisher-f).
-
- 
-
-Route 1 displays the residual histogram, the normal Q--Q plot, and absolute
-residual spread by group. Route 3 displays the residual histogram, the normal
-Q--Q plot, z-scaled residuals versus fitted values, and z-scaled residuals
-versus leverage.
-
-The Route 3 leverage panel therefore differs from the standard `plot.lm()`
-panel, which uses internally studentised residuals. To retain the influence
-diagnostic on the common z residual scale, Cook's distance contours are
-transformed accordingly (see Appendix \@ref(sec:norm)).
-
-The first row of the outer title reports p-values of residual-normality checks
-with the Shapiro--Wilk and Anderson--Darling tests. The second row reports
-p-values of variance checks: Levene and Bartlett for grouped central-tendency
-analyses, or Breusch--Pagan for simple regression.
 
 Among the displayed assumption tests, only the Shapiro--Wilk and
-Levene test results enter automated routing, and only in the
-central-tendency branch. Within that branch, Shapiro--Wilk is used only
-when at least one group has 50 or fewer observations (see
-[Route 1](#sec:route-1));
+Brown--Forsythe Levene-type test results enter automated routing,
+and only in the central-tendency branch. Within that branch,
+Shapiro--Wilk is used only when at least one group has 50 or fewer
+observations (see [Route 1](#sec:route-1));
 <!-- Anderson--Darling, Bartlett, and -->
 <!-- Breusch--Pagan are diagnostic output only. -->
 
@@ -271,7 +238,7 @@ In the central-tendency branch, the diagnostic panel (see
 \@ref(sec:graphical)) is always generated as first visual output.
 Figure \@ref(fig:decision-tree) expands the subsequent routing logic.
 
-```{r decision-tree, echo=FALSE, fig.cap="Decision tree for tests on central tendencies. If all group-specific sample sizes are greater than 50, the formal residual normality test is bypassed and variance homogeneity is assessed directly. Otherwise, Shapiro--Wilk on raw model residuals determines whether the route remains mean-based or switches to rank-based tests; the Levene test then selects equal-variance or Welch-type procedures.", fig.alt="Decision tree selecting among Welch t-test, Student t-test, Wilcoxon, Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests based on the all-groups n_i > 50 rule, the Shapiro-Wilk test on raw model residuals, and the Levene test for variance homogeneity."}
+```{r decision-tree, echo=FALSE, fig.cap="Decision tree for tests on central tendencies. If all group-specific sample sizes are greater than 50, the formal residual normality test is bypassed and variance homogeneity is assessed directly. Otherwise, Shapiro--Wilk on internally studentised residuals determines whether the route remains mean-based or switches to rank-based tests; the Levene test then selects equal-variance or Welch-type procedures.", fig.alt="Decision tree selecting among Welch t-test, Student t-test, Wilcoxon, Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests based on the all-groups n_i > 50 rule, the Shapiro-Wilk test on internally studentised residuals, and the Levene test for variance homogeneity."}
 knitr::include_graphics("figures/decision_tree.png")
 ```
 
@@ -282,22 +249,16 @@ group means can be assumed by the central limit theorem [@Lumley:2002;
 determine routing, to avoid rejecting negligible deviations in large
 samples [@Ghasemi:2012; @Fagerland:2012; @Shatz:2024].
 
-Otherwise, the Shapiro--Wilk (SW) p-value computed on raw model residuals
-determines whether the route remains mean-based.
+Otherwise, the Shapiro--Wilk (SW) p-value from the displayed
+residual-normality check determines whether the route remains
+mean-based.
 
-If normality is rejected ($p_\text{SW} \le \alpha$), non-parametric tests are
-selected: `wilcox.test()` for two groups, or `kruskal.test()` followed by
-Holm-adjusted `pairwise.wilcox.test()` for more than two groups.
+If normality is rejected ($p_\text{SW} \le \alpha$), non-parametric tests are selected: `wilcox.test()` for two groups, or `kruskal.test()` followed by Holm-adjusted `pairwise.wilcox.test()` for more than two groups.
 
-If normality is not rejected, variance homogeneity is assessed with the
-package-implemented mean-centred Levene test on raw model residuals
-([@Levene:1960]; see Section \@ref(sec:lev)).
-This aligns the variance gate with the fitted general linear model.
-For homoscedastic data, `t.test(var.equal = TRUE)` is applied for two groups,
-or Fisher's `aov()` with `TukeyHSD()` for more than two groups.
-For heteroscedastic data, Welch's `t.test()` is applied for two groups, or
-Welch's `oneway.test()` with the package implementation `games.howell()`
-([@Games:1976]; see Section \@ref(sec:gh)) for more than two groups.
+If normality is not rejected, variance homogeneity is assessed with Levene's test using the Brown--Forsythe median-centred modification (package-implemented `levene.test()`; [@Brown:1974]; see Section \@ref(sec:lev)).
+For brevity, we refer to this Brown--Forsythe Levene-type procedure as the Levene test below.
+For homoscedastic data, `t.test(var.equal = TRUE)` is applied for two groups, or Fisher's `aov()` with `TukeyHSD()` for more than two groups.
+For heteroscedastic data, Welch's `t.test()` is applied for two groups, or Welch's `oneway.test()` with the package implementation `games.howell()` ([@Games:1976]; see Section \@ref(sec:gh)) for more than two groups.
 
 The box plots are enriched with significance letters to visualise the post-hoc analysis:
 
@@ -373,17 +334,8 @@ student_ttest <- visstat(ToothGrowth$supp, ToothGrowth$len)
 
 #### Fisher's one-way ANOVA with Tukey HSD post-hoc comparisons
 
-The `PlantGrowth` dataset records yields (as measured by dried weight of
-plants) for a control group and two treatment groups.
-With control and treatment groups as predictor and plant weight as response,
-the assumption-diagnostic panel shows that Shapiro--Wilk does not reject
-normality of the raw model residuals and `levene.test()` does not reject
-homoscedasticity. `visstat()` therefore applies Fisher's one-way ANOVA
-followed by Tukey HSD post-hoc comparisons. The result panel shows the box
-plots and post-hoc significance letters. The omnibus F-test is significant at
-$\alpha = `r example_alpha`$, and the Tukey HSD post-hoc comparison finds no
-significant difference between the control group and either treatment, but the
-difference between `trt1` and `trt2` is significant.
+The `PlantGrowth` dataset records yields (as measured by dried weight of plants) for a control group and two treatment groups.
+With control and treatment groups as predictor and plant weight as response, the assumption-diagnostic panel shows that Shapiro--Wilk does not reject normality of the internally studentised residuals and `levene.test()` does not reject homoscedasticity. `visstat()` therefore applies Fisher's one-way ANOVA followed by Tukey HSD post-hoc comparisons. The result panel shows the box plots and post-hoc significance letters. The omnibus F-test is significant at $\alpha = `r example_alpha`$, and the Tukey HSD post-hoc comparison finds no significant difference between the control group and either treatment, but the difference between `trt1` and `trt2` is significant.
 
 ```{r anova-example, fig.cap=paste0("Fisher's one-way ANOVA applied to the `PlantGrowth` dataset (`weight` vs.\\ `group`). Assumption diagnostics and box plots of plant weight by treatment group; Tukey HSD post-hoc comparisons are shown as significance letters ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
 anova_plantgrowth <- visstat(PlantGrowth$group, PlantGrowth$weight)
@@ -394,14 +346,8 @@ anova_plantgrowth <- visstat(PlantGrowth$group, PlantGrowth$weight)
 
 #### Welch's t-test
 
-The *Motor Trend Car Road Tests* dataset (`mtcars`) contains 32 observations,
-where `mpg` denotes miles per (US) gallon and `am` represents the transmission
-type (`0` = automatic, `1` = manual).
-With binary factor `am` and continuous response `mpg`, the
-assumption-diagnostic panel shows that Shapiro--Wilk does not reject normality
-of the raw model residuals, while the Levene test detects heteroscedasticity.
-The routing therefore leads to Welch's t-test rather than Student's t-test, and
-the result panel shows the corresponding two-group comparison.
+The *Motor Trend Car Road Tests* dataset (`mtcars`) contains 32 observations, where `mpg` denotes miles per (US) gallon and `am` represents the transmission type (`0` = automatic, `1` = manual).
+With binary factor `am` and continuous response `mpg`, the assumption-diagnostic panel shows that Shapiro--Wilk does not reject normality of the internally studentised residuals, while the Levene test detects heteroscedasticity. The routing therefore leads to Welch's t-test rather than Student's t-test, and the result panel shows the corresponding two-group comparison.
 
 ```{r ttest-example, fig.cap="Welch's t-test applied to the `mtcars` dataset (`mpg` vs.\\ `am`). Pooled-residual assumption diagnostics (Shapiro--Wilk, Bartlett, Levene test) and box plots of fuel efficiency by transmission type with the Welch t-test result.", out.width="48%", fig.height=4.5, fig.show="hold"}
 mtcars$am <- as.factor(mtcars$am)
@@ -410,13 +356,7 @@ t_test_stats <- visstat(mtcars$am, mtcars$mpg)
 
 #### Welch's heteroscedastic one-way ANOVA with Games--Howell post-hoc comparisons {#sec:welch-anova-iris}
 
-In the `iris` dataset, using `Species` as predictor and `Sepal.Length` as
-response, the assumption-diagnostic panel shows that Shapiro--Wilk does not
-reject normality of the raw model residuals, whereas the Levene test rejects
-homoscedasticity at given $\alpha = 5 \%$. `visstat()` therefore selects
-Welch's heteroscedastic one-way ANOVA (`oneway.test()`) and applies
-Games--Howell post-hoc comparisons. The result panel shows the box plots and
-Games--Howell significance letters.
+In the `iris` dataset, using `Species` as predictor and `Sepal.Length` as response, the assumption-diagnostic panel shows that Shapiro--Wilk does not reject normality of the internally studentised residuals, whereas the Levene test rejects homoscedasticity at given $\alpha = 5 \%$. `visstat()` therefore selects Welch's heteroscedastic one-way ANOVA (`oneway.test()`) and applies Games--Howell post-hoc comparisons. The result panel shows the box plots and Games--Howell significance letters.
 
 ```{r welch-anova-example, fig.cap=paste0("Welch's heteroscedastic one-way ANOVA applied to the `iris` dataset (`Sepal.Length` vs.\\ `Species`). Assumption diagnostics and box plots; Games--Howell post-hoc comparisons are shown as significance letters ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
 welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length)
@@ -428,13 +368,9 @@ welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length)
 #### Wilcoxon rank-sum test
 
 The `warpbreaks` dataset records thread breaks during weaving.
-Using wool type (`A` or `B`) as predictor and the number of breaks as response,
-the assumption-diagnostic panel shows that the Shapiro--Wilk test rejects
-normality of the raw model residuals. `visstat()` therefore selects the
-Wilcoxon rank-sum test, and the result panel shows the rank-based two-group
-comparison.
+Using wool type (`A` or `B`) as predictor and the number of breaks as response, the assumption-diagnostic panel shows that the Shapiro--Wilk test rejects normality of the internally studentised residuals. `visstat()` therefore selects the Wilcoxon rank-sum test, and the result panel shows the rank-based two-group comparison.
 
-```{r wilcoxon-example, fig.cap="Wilcoxon rank-sum test applied to the `warpbreaks` dataset (`breaks` vs.\\ `wool`). Assumption diagnostics (Shapiro--Wilk rejected on raw model residuals; non-parametric path selected) and box plots with the Wilcoxon test result.", out.width="48%", fig.height=4.5, fig.show="hold"}
+```{r wilcoxon-example, fig.cap="Wilcoxon rank-sum test applied to the `warpbreaks` dataset (`breaks` vs.\\ `wool`). Assumption diagnostics (Shapiro--Wilk rejected on internally studentised residuals; non-parametric path selected) and box plots with the Wilcoxon test result.", out.width="48%", fig.height=4.5, fig.show="hold"}
 wilcoxon_stats <- visstat(warpbreaks$wool, warpbreaks$breaks)
 ```
 
@@ -531,7 +467,7 @@ A negative monotone association is induced by construction: students who consume
 The Kendall result is shown in Figure \@ref(fig:kendall-spearman-example),
 left.
 
-```{r kendall-spearman-example, fig.cap="Rank-based correlations: Left: Kendall's $\\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\\ academic performance (left). Right:  Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots  annotate the corresponding effect measure and $p$-value.", out.width="48%", fig.height=4.5, fig.show="hold"}
+```{r kendall-spearman-example, fig.cap="Kendall's $\\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\\ academic performance (left), and Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots show rank-based association and annotate the corresponding effect measure and $p$-value.", out.width="48%", fig.height=4.5, fig.show="hold"}
 set.seed(42)
 n <- 150
 xs <- sample(1:5, n, replace = TRUE)
@@ -560,11 +496,11 @@ The `airquality` ozone example shows the limits of the automated approach when t
 `visstat()` identifies assumption violations and points to analyses outside the automated decision tree.
 A default `visstat()` call for ozone concentration (`Ozone`) as a function of wind speed (`Wind`) fits the simple linear model.
 
-```{r ozone-lm-triage, fig.cap="Default simple linear regression for `Ozone` by `Wind` in the `airquality` dataset. Assumption diagnostics flag non-normal raw model residuals and heteroscedasticity before alternative routes are considered.", fig.height=4.5, fig.show="hold", out.width="48%"}
+```{r ozone-lm-triage, fig.cap="Default simple linear regression for `Ozone` by `Wind` in the `airquality` dataset. Assumption diagnostics flag non-normal internally studentised residuals and heteroscedasticity before alternative routes are considered.", fig.height=4.5, fig.show="hold", out.width="48%"}
 ozone_lm <- visstat(airquality$Wind, airquality$Ozone)
 ```
 
-The diagnostic output flags non-normal raw model residuals and
+The diagnostic output flags non-normal internally studentised residuals and
 heteroscedasticity. The next examples show two distinct choices: an explicit
 rank-correlation analysis within `visstat()` (`correlation = TRUE`), and a
 Gamma generalised linear model outside `visstat()`.
@@ -897,13 +833,7 @@ In grouped and contingency-table formulae below, $N$ denotes the pooled total sa
 
 ## Normality tests {#sec:norm}
 
-The package displays both the Shapiro--Wilk test and the Anderson--Darling
-test to check the normality of raw model residuals $e_i$. The diagnostic
-panels show the constant-rescaled residuals \(z_i\) defined in
-Equation \@ref(eq:z-residual). In the Route 3 leverage panel,
-Cook's distance is displayed on this same scale as
-\(D_i = z_i^2h_{ii}/\{k(1-h_{ii})^2\}\), where \(h_{ii}\) is the \(i\)th
-diagonal element of the hat matrix [@Cook:1982].
+The package displays both the Shapiro--Wilk test and the Anderson--Darling test to check the normality of the internally studentised residuals $r_i^* = e_i / (s\sqrt{1-h_{ii}})$, where $e_i$ are the raw residuals, $s^2$ is the residual mean square, and $h_{ii}$ is the leverage of observation $i$ [@Cook:1982].
 
 ### Shapiro--Wilk test `shapiro.test()` {#sec:shap}
 
@@ -946,23 +876,16 @@ The implementation uses `ad.test()` from `nortest` [@Gross:2015].
 
 ## Homoscedasticity tests {#sec:homo}
 
-### The mean-centred Levene test `levene.test()` {#sec:lev}
+### The Brown--Forsythe Levene-type test `levene.test()` {#sec:lev}
 
-The package implementation uses Levene's original mean-centred proposal
-[@Levene:1960].
-The package's own function `levene.test()` is the sole driver of the
-parametric/Welch branching decision.
+The package implementation uses Levene's original proposal [@Levene:1960] with the Brown--Forsythe median-centred modification [@Brown:1974], making it robust to skewed data and outliers [@Allingham:2012].
+The package's own function `levene.test()` is the sole driver of the parametric/Welch branching decision.
 
-For each observation $y_{ij}$ in group $i$, the absolute deviation from the
-group mean $\bar{y}_i$ is
+For each observation $y_{ij}$ in group $i$, the absolute deviation from the group median $\tilde{y}_i$ is
 
-$$z_{ij} = |y_{ij} - \bar{y}_i|.$$
+$$z_{ij} = |y_{ij} - \tilde{y}_i|.$$
 
-In Route 1 the same calculation is applied to raw model residuals; the group
-means of these residuals are zero by construction.
-
-The test statistic is the $F$-statistic from a one-way ANOVA on the $z_{ij}$
-values:
+The test statistic is the $F$-statistic from a one-way ANOVA on the $z_{ij}$ values:
 
 \begin{equation}
 F = \frac{(N-k)\displaystyle\sum_{i=1}^{k} n_i (\bar{z}_i - \bar{z})^2}
@@ -975,7 +898,7 @@ Under the null hypothesis of equal variances the statistic follows $F(k-1, N-k)$
 
 ### Bartlett's test `bartlett.test()` {#sec:bart}
 
-Bartlett's test [@Bartlett:1937] has greater power than Levene's test when normality holds [@Allingham:2012].
+Bartlett's test [@Bartlett:1937] has greater power than the Brown--Forsythe Levene-type test when normality holds [@Allingham:2012].
 Its test statistic is
 
 \begin{equation}
@@ -994,8 +917,8 @@ Under the null hypothesis the statistic approximately follows $\chi^2(k-1)$.
 
 For simple linear regression, group-based variance tests are not applicable.
 The package implementation `bp.test()` performs the Breusch--Pagan test [@Breusch:1979], which assesses whether the variance of the residuals from the regression model depends on the predictor values.
-Let $e_i$ be the residuals from the fitted regression model.
-The auxiliary regression models $e_i^2$ as a function of the predictors.
+Let $e_i$ be the residuals from the fitted regression model and let $\hat{\sigma}^2 = n^{-1}\sum_{i=1}^n e_i^2$ denote the mean of the squared residuals.
+The auxiliary regression models $e_i^2 / \hat{\sigma}^2$ as a function of the predictors.
 Let $R^2_\text{aux}$ denote the coefficient of determination from this auxiliary regression.
 Crucially, while a high $R^2$ is typically a sign of a strong model, here it indicates a failure of the constant-variance assumption: a higher $R^2_\text{aux}$ means the error variance follows a systematic, non-random pattern.
 The Breusch--Pagan statistic is then calculated as:
