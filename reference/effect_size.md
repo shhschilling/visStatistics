@@ -128,14 +128,30 @@ x <- ToothGrowth$supp
 y <- ToothGrowth$len
 tt <- list("t-test-statistics" = t.test(y ~ x, var.equal = TRUE))
 effect_size(tt, x = x, y = y)
-#> Error in effect_size(tt, x = x, y = y): unused arguments (x = x, y = y)
+#> $name
+#> [1] "Hedges' g"
+#> 
+#> $estimate
+#> [1] 0.4880931
+#> 
+#> $effect_size_method
+#> [1] "Hedges' g using pooled standard deviation"
+#> 
 
 kw <- list(
   "Kruskal Wallis rank sum test" = kruskal.test(Petal.Width ~ Species,
                                                data = iris)
 )
 effect_size(kw, x = iris$Species, y = iris$Petal.Width)
-#> Error in effect_size(kw, x = iris$Species, y = iris$Petal.Width): unused arguments (x = iris$Species, y = iris$Petal.Width)
+#> $name
+#> [1] "eta-squared based on H"
+#> 
+#> $estimate
+#> [1] 0.8788121
+#> 
+#> $effect_size_method
+#> [1] "Eta-squared based on H for Kruskal-Wallis rank sum test"
+#> 
 
 tab <- matrix(c(10, 5, 4, 12), nrow = 2)
 effect_size(chisq.test(tab))

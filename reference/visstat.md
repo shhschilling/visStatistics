@@ -184,6 +184,7 @@ visstat(mtcars$am, mtcars$mpg)
 
 # Backward-compatible usage (same result as above)
 visstat(mtcars, "mpg", "am")
+#> Warning: The backward-compatible form visstat(dataframe, "y", "x") will no longer be supported in a future version. Use visstat(y ~ x, data = dataframe) or visstat(x, y) instead.
 
 
 
