@@ -6,7 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>visStatistics • visStatistics</title>
-<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -154,7 +160,7 @@
 <li><p>If both are numeric, a simple linear regression model is fitted with <code>y</code> as the response and <code>x</code> as the predictor.</p></li>
 <li><p>If both are factors (and not both ordered), a test of association is performed (Chi-squared or Fisher’s exact). The test is symmetric, but the plot layout depends on which variable is supplied as <code>x</code>.</p></li>
 <li><p>If both are factors and <code>y</code> is additionally of class <code>ordered</code>, a non parametric test is performed: a Wilcoxon test in the case of two factor levels in <code>x</code>, a Kruskal-Wallis-Test for more than two factor levels in <code>x</code>.</p></li>
-<li><p>If <strong>both</strong> <code>x</code> and <code>y</code> are of class <code>ordered</code>, the order of the levels carries information that Chi-squared / Fisher would discard. <code><a href="reference/visstat.html">visstat()</a></code> instead tests for a monotone association via Kendall’s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math> (<code>cor.test(..., method = "kendall")</code>) and visualises the relationship with a jittered rank–rank scatter plus a mosaic plot.</p></li>
+<li><p>If <strong>both</strong> <code>x</code> and <code>y</code> are of class <code>ordered</code>, the order of the levels carries information that Chi-squared / Fisher would discard. <code><a href="reference/visstat.html">visstat()</a></code> instead tests for a monotone association via Kendall’s <span class="math inline">\(\tau_b\)</span> (<code>cor.test(..., method = "kendall")</code>) and visualises the relationship with a jittered rank–rank scatter plus a mosaic plot.</p></li>
 </ul>
 </div>
 <div class="section level1">
@@ -328,7 +334,7 @@ For a detailed description of the underlying decision logic, please refer to the
 <div class="section level2">
 <h2 id="both-variables-ordered-rank-correlation">Both variables ordered: Rank correlation<a class="anchor" aria-label="anchor" href="#both-variables-ordered-rank-correlation"></a>
 </h2>
-<p>When both predictor and response are of class <code>ordered</code>, <code><a href="reference/visstat.html">visstat()</a></code> tests for a monotone association via Kendall’s <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>b</mi></msub><annotation encoding="application/x-tex">\tau_b</annotation></semantics></math> and produces a jittered rank–rank scatter together with a mosaic plot.</p>
+<p>When both predictor and response are of class <code>ordered</code>, <code><a href="reference/visstat.html">visstat()</a></code> tests for a monotone association via Kendall’s <span class="math inline">\(\tau_b\)</span> and produces a jittered rank–rank scatter together with a mosaic plot.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">120</span></span>

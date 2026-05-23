@@ -3,6 +3,7 @@
 - Minimal edits to existing code.
 - Minimal edits to existing texts in Rmd or other text format.
 - Less wordy. Use bullet points where useful.
+- Avoid long, nonsensical, or speculative responses.
 - All claims based on citations with verifiable DOIs. Check DOIs
   internally before displaying.
 - Never edit `vignettes/REFERENCES.bib`; the user maintains the
@@ -27,6 +28,10 @@
 
 ## Manuscript Editing Protocol
 
+- Before proposing changes to the paper, read the whole current paper
+  source, not only the local paragraph, and keep the full structure,
+  existing definitions, figure references, appendices, and neighbouring
+  sections in view.
 - Before editing vignette text, or auxiliary Rmd intended for the
   vignette, read the current whole vignette source and keep existing
   definitions, notation, and neighbouring sections in view.
@@ -54,6 +59,11 @@
 - Use existing manuscript terminology where possible.
 - Avoid function calls in abstracts.
 - Show a diff before applying unless the user explicitly says “apply”.
+- Wrap proposed manuscript diffs and text snippets at about 80
+  characters per line so they are readable in chat.
+- In proposed manuscript diffs, wrap both removed (`-`) and added (`+`)
+  lines at about 80 characters where possible; do not show unreadably
+  long deletion lines.
 - Preserve the statistical mechanism before improving prose.
 
 ## Surgical Manuscript Editing

@@ -138,7 +138,7 @@ The interpretation of `x` and `y` depends on their classes:
 - If **both** `x` and `y` are of class `ordered`, the order of the
   levels carries information that Chi-squared / Fisher would discard.
   [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-  instead tests for a monotone association via Kendall’s $`\tau_b`$
+  instead tests for a monotone association via Kendall’s \\\tau_b\\
   (`cor.test(..., method = "kendall")`) and visualises the relationship
   with a jittered rank–rank scatter plus a mosaic plot.
 
@@ -401,7 +401,7 @@ sizes.](reference/figures/README-haireye-fisher-1.png)
 
 When both predictor and response are of class `ordered`,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-tests for a monotone association via Kendall’s $`\tau_b`$ and produces a
+tests for a monotone association via Kendall’s \\\tau_b\\ and produces a
 jittered rank–rank scatter together with a mosaic plot.
 
 ``` r

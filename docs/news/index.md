@@ -62,8 +62,8 @@ CRAN release: 2026-05-12
   ANOVA).
 
 - **Rank correlation (`correlation = TRUE`).** Selects the most
-  appropriate rank correlation for the data type: Spearman’s $`\rho`$
-  for two numeric variables, Kendall’s $`\tau_b`$ when both variables
+  appropriate rank correlation for the data type: Spearman’s \\\rho\\
+  for two numeric variables, Kendall’s \\\tau_b\\ when both variables
   are ordered factors. This is the only test decision not made
   automatically; it requires an explicit user choice.
 
@@ -77,12 +77,12 @@ CRAN release: 2026-05-12
   [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
   converts it to numeric ranks and applies Wilcoxon or Kruskal-Wallis.
   When both variables are ordered and `correlation = TRUE`, Kendall’s
-  $`\tau_b`$ is used instead.
+  \\\tau_b\\ is used instead.
 
 - **Correlation analysis:** New parameter `correlation` in
   [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md).
   When set to `TRUE`, selects Spearman rank correlation for numeric
-  variables or Kendall’s $`\tau_b`$ for two ordered factors, instead of
+  variables or Kendall’s \\\tau_b\\ for two ordered factors, instead of
   fitting a regression model.
 
 - **New exported functions:**
@@ -159,7 +159,7 @@ CRAN release: 2025-05-28
   function interface has been updated to accept two vectors directly,
   enabling a more concise and idiomatic usage. For example:
 
-  visstat(trees$`Girth, trees`$Height)
+  visstat(trees\\Girth, trees\\Height)
 
   yields the same result as the original form:
 
