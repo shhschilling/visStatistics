@@ -123,7 +123,10 @@ test_that("visstat backward-compatible syntax works correctly", {
   on.exit(cleanup_test_graphics())
   
   # Test with data frame and column names
-  result <- visstat(data$test_df, "height", "group")
+  expect_warning(
+    result <- visstat(data$test_df, "height", "group"),
+    "will no longer be supported"
+  )
   
   expect_type(result, "list")
   expect_s3_class(result, "visstat")
@@ -137,7 +140,10 @@ test_that("visstat backward-compatible syntax handles numeric columns", {
   on.exit(cleanup_test_graphics())
   
   # Regression with backward-compatible syntax
-  result <- visstat(data$test_df, "weight", "height")
+  expect_warning(
+    result <- visstat(data$test_df, "weight", "height"),
+    "will no longer be supported"
+  )
   
   expect_type(result, "list")
   expect_s3_class(result, "visstat")
@@ -155,8 +161,10 @@ test_that("visstat backward-compatible syntax handles categorical columns", {
   setup_test_graphics()
   on.exit(cleanup_test_graphics())
   
-  # Suppress warnings about residuals being zero (expected for some balanced datasets)
-  result <- suppressWarnings(visstat(balanced_df, "cat1", "cat2"))
+  expect_warning(
+    result <- visstat(balanced_df, "cat1", "cat2"),
+    "will no longer be supported"
+  )
   
   expect_type(result, "list")
   expect_s3_class(result, "visstat")
@@ -502,7 +510,10 @@ test_that("visstat produces consistent results across syntax forms", {
   
   # Test both syntax forms
   result_standard <- visstat(test_df$x_var, test_df$y_var)
-  result_legacy <- visstat(test_df, "y_var", "x_var")
+  expect_warning(
+    result_legacy <- visstat(test_df, "y_var", "x_var"),
+    "will no longer be supported"
+  )
   
   # Both should be visstat objects
   expect_s3_class(result_standard, "visstat")

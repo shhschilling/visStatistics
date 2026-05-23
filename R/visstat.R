@@ -60,7 +60,8 @@
 #' (3) Backward-compatible form: \code{visstat(dataframe, "name_of_y", "name_of_x")}, 
 #' where the first character string refers to the response variable and the 
 #' second to the predictor or grouping variable. Both must be column names in 
-#' \code{dataframe}.
+#' \code{dataframe}. This form gives a warning and may be removed in a future
+#' version.
 #'
 #' The interpretation of \code{x} and \code{y} depends on the variable classes. 
 #' Throughout, data of class \code{numeric} or \code{integer} are referred to 
@@ -114,9 +115,6 @@
 #'
 #' # Standardised usage
 #' visstat(mtcars$am, mtcars$mpg)
-#'
-#' # Backward-compatible usage (same result as above)
-#' visstat(mtcars, "mpg", "am")
 #'
 #' ## Student's t-test (equal variances, two groups)
 #' # When residuals are normally distributed and Levene's test indicates
@@ -240,6 +238,12 @@ visstat <- function(x,
     varsample <- y                                    # first string: response
     varfactor <- eval(args[[3]], parent.frame())      # second string: predictor
     dataframe <- x
+    warning(
+      "The backward-compatible form visstat(dataframe, \"y\", \"x\") ",
+      "will no longer be supported in a future version. Use ",
+      "visstat(y ~ x, data = dataframe) or visstat(x, y) instead.",
+      call. = FALSE
+    )
     return(visstat_core(
       dataframe = dataframe,
       varsample = varsample,

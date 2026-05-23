@@ -423,8 +423,8 @@ visstat_core <- function(dataframe,
       axis(2, at = seq_along(levels(samples)), labels = levels(samples), las = 1)
       mtext(name_of_sample, side = 2, line = ylab_line, las = 0)
       mtext(bquote("Kendall's" ~ tau[b] ~ "=" ~
-                     .(round(kendall_test$estimate, 3))), line = 2)
-      mtext(bquote("p =" ~ .(signif(kendall_test$p.value, 3))),  line = 1)
+                     .(round(kendall_test$estimate, 3)) ~
+                     ", p =" ~ .(signif(kendall_test$p.value, 3))))
       par(op)
 
       if (is.null(plotName)) {

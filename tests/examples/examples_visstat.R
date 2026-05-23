@@ -119,7 +119,7 @@ groups_10 <- data.frame(
 
 
 
-result_10 <- visstat(groups_10, "response", "group")
+result_10 <- visstat(response ~ group, data = groups_10)
 
 
 # Kruskal-Wallis test: iris----
@@ -177,7 +177,7 @@ blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
 
 
 blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
-fisher_stats <- visstat(blackBrownHazelGreen, "Hair", "Eye")
+fisher_stats <- visstat(Hair ~ Eye, data = blackBrownHazelGreen)
 
 # Fisher-test 2x2: tea-tasting example (Fisher 1935)
 # Small cell counts -> Cochran violated -> exact Fisher -> OR and CI in output
