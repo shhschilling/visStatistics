@@ -32,7 +32,7 @@ editor_options:
 - **Unified normality testing across all branches.** The two-group case
   (t-test vs Wilcoxon) and the multi-group case (ANOVA vs
   Kruskal-Wallis) now share the same normality test: `shapiro.test()`
-  applied to the internally studentized residuals from `lm(y ~ x)` via
+  applied to the internally studentised residuals from `lm(y ~ x)` via
   `rstandard()`.
 
 - **Variance homogeneity test changed from `bartlett.test()` to
@@ -119,7 +119,7 @@ editor_options:
   - Complete decision logic rewritten to reflect the new test selection
     algorithm.
   - The general linear model framework (Appendix A) introduced.
-  - Clarified that `rstandard()` computes internally studentized
+  - Clarified that `rstandard()` computes internally studentised
     residuals, with reference to Cook and Weisberg (1982).
   - Bibliography extended.
 
