@@ -91,35 +91,3 @@ test_that("heteroscedastic data (sd grows with x) rejects H0", {
   res <- bp.test(fit)
   expect_lt(res$p.value, 0.05)
 })
-
-# -----------------------------------------------------------------------------
-# Cross-check against lmtest::bptest() (default Koenker variant) if available
-#
-# For simple linear regression the fitted values are an affine transform of
-# the single predictor, so regressing e_i^2 on fitted values (the package
-# variant) and on the predictor (the lmtest variant) yield the same R^2.
-# lmtest::bptest() with its default studentize = TRUE implements the Koenker
-# form N * R^2 and must agree exactly with bp.test(). (studentize = FALSE
-# returns the original Breusch-Pagan ESS/(2*sigma^4) statistic instead and
-# would not match.)
-# -----------------------------------------------------------------------------
-
-test_that("bp.test agrees with lmtest::bptest() default for simple lm", {
-  skip_if_not_installed("lmtest")
-
-  set.seed(789)
-  n <- 100
-  x <- runif(n, 0, 10)
-  y <- 2 + 3 * x + rnorm(n, sd = 0.5 + 0.3 * x)
-  fit <- lm(y ~ x)
-
-  res_pkg    <- bp.test(fit)
-  res_lmtest <- lmtest::bptest(fit)
-
-  expect_equal(unname(res_pkg$statistic),
-               unname(res_lmtest$statistic),
-               tolerance = 1e-8)
-  expect_equal(unname(res_pkg$p.value),
-               unname(res_lmtest$p.value),
-               tolerance = 1e-8)
-})

@@ -175,7 +175,9 @@ The main branching logic consists of four routes:
 A numeric response with a categorical predictor asks whether the response differs across groups formed by the predictor levels.
 `visstat()` selects from six central-tendency tests: For parametric tests, Student's t-test for $k = 2$ groups generalises to Fisher's one-way ANOVA for more than two groups; the Welch alternative, Welch's t-test for $k = 2$ groups, generalises to Welch's heteroscedastic one-way ANOVA for more than two groups.
 For non-parametric tests, the Wilcoxon rank-sum test for $k = 2$ groups generalises to the Kruskal--Wallis test for more than two groups.
-The specific test choice is governed by group-specific sample size, as well as residual normality, and residual variance homogeneity of a fitted linear model, the test selection rationale is detailed in \@ref(sec:assumptions)
+The specific test choice is governed by group-specific sample size, residual
+normality, and residual variance homogeneity of a fitted linear model; the test
+selection rationale is detailed in Section \@ref(sec:assumptions).
 
 ## Route 2: Ordered response
 
@@ -203,26 +205,29 @@ Student's t-test, Fisher's ANOVA, and simple linear regression all belong to the
 
 Because the general linear model's error terms are unobservable, `visstat()` checks and visualises these assumptions on the raw residuals from a fitted linear model --- the direct sample-level estimates of the model error terms.
 
-In Route 1, the p-values from normality and homoscedasticity tests (Section \@ref(sec:assumption-tests)).
-steer test selection (Section \@ref(sec:route-1)).
+In Route 1, the p-values from normality and homoscedasticity tests
+(Section \@ref(sec:assumption-tests)) steer test selection
+(Section \@ref(sec:route-1)).
 
 ## General linear model assumption tests {#sec:assumption-tests}
 
 ### Normality tests {.unnumbered}
 
-The normality of the residuals is assessed using both the Shapiro--Wilk test [@Shapiro:1965] (`shapiro.test()`; Eq.
-\@ref(eq:shapiro-w)) and the Anderson--Darling test [@Anderson:1952] (`ad.test()`; Eq.
-\@ref(eq:anderson-a2)).
-In the central-tendency decision logic (Section \@ref(sec:route-1)), the Shapiro--Wilk test is used as the normality gateway for smaller samples ( at least one group has 50 or fewer observations); this matches simulation studies reporting high power for small to moderate samples [@Razali:2011].
+The normality of the residuals is assessed using both the Shapiro--Wilk test
+[@Shapiro:1965] (`shapiro.test()`; Eq. \@ref(eq:shapiro-w)) and the
+Anderson--Darling test [@Anderson:1952] (`ad.test()`;
+Eq. \@ref(eq:anderson-a2)).
+In the central-tendency decision logic (Section \@ref(sec:route-1)), the Shapiro--Wilk test is used as the normality gateway for smaller samples (at least one group has 50 or fewer observations); this matches simulation studies reporting high power for small to moderate samples [@Razali:2011].
 The Anderson--Darling test adds sensitivity to deviations in the tails of the distribution [@Yap:2011].
 
 ### Homoscedasticity tests {.unnumbered}
 
 <!-- Homoscedasticity is assessed differently for grouped central-tendency analyses and simple linear regression. -->
 
-For grouped central-tendency analyses, variance homogeneity is assessed using the package-implemented mean-centred Levene test [@Levene:1960] (`levene.test()`; Eq.
-\@ref(eq:levene-f)) and Bartlett's test [@Bartlett:1937] (`bartlett.test()`; Eq.
-\@ref(eq:bartlett-k2)).
+For grouped central-tendency analyses, variance homogeneity is assessed using
+the package-implemented mean-centred Levene test [@Levene:1960]
+(`levene.test()`; Eq. \@ref(eq:levene-f)) and Bartlett's test [@Bartlett:1937]
+(`bartlett.test()`; Eq. \@ref(eq:bartlett-k2)).
 Bartlett's test has greater power when normality holds, whereas the Levene test is used as the variance gate in the automated workflow [@Allingham:2012].
 
 For simple linear regression, group-based variance tests are not applicable.
@@ -245,8 +250,9 @@ SE_\text{res} =
 \end{equation}
 
 Here $N$ is the total sample size, $k$ is the number of fitted model parameters, and $SE_\text{res}$ is the residual standard error.
-For numeric responses with categorical predictors, $SE_\text{res}$ equals $\sqrt{MS_\text{within}}$, with $MS_\text{within}$ defined in Eq.
-(\@ref(eq:fisher-f)).
+For numeric responses with categorical predictors, $SE_\text{res}$ equals
+$\sqrt{MS_\text{within}}$, with $MS_\text{within}$ defined in
+Eq. \@ref(eq:fisher-f).
 
 Because the displayed z-residuals are a constant rescaling of the residuals fed to the assumption tests, the visual evidence and the displayed p-values refer to the same residual object.
 
@@ -266,7 +272,7 @@ The second row reports p-values of variance checks: Levene and Bartlett for grou
 Note that among the displayed assumption tests, only the Shapiro--Wilk and Levene test results enter automated routing, and only in the central-tendency branch.
 Within that branch, Shapiro--Wilk is used only when at least one group has 50 or fewer observations (see Section \@ref(sec:route-1)); <!-- Anderson--Darling, Bartlett, and --> <!-- Breusch--Pagan are diagnostic output only. -->
 
-The Route 1 and Route 3 diagnostic-panel designs is illustrated in the worked examples in Figures \@ref(fig:welch-anova-example), left, and \@ref(fig:regression-example), left.
+The Route 1 and Route 3 diagnostic-panel designs are illustrated in the worked examples in Figures \@ref(fig:welch-anova-example), left, and \@ref(fig:regression-example), left.
 
 <!-- `levene.test()` and `bp.test()` have standalone implementations in the package to avoid dependencies on external packages (see Section @ref(sec:homo)). -->
 
@@ -300,9 +306,16 @@ The box plots are enriched with significance letters to visualise the post-hoc a
 
 ANOVA, Welch ANOVA, and Kruskal--Wallis are omnibus tests: a significant result tells us that *some* group differs, but not which.
 To identify the differing pairs, `visstat()` tests all pairwise comparisons among the factor levels, defining a family of tests.
-Because the three omnibus tests rest on different assumptions, each branch uses a matching post-hoc procedure: `TukeyHSD()` (after `aov()`, `games.howell()` after `oneway.test()`, and `pairwise.wilcox.test(p.adjust.method = "holm")` after `kruskal.test()`.
-`TukeyHSD()` (Eq. \@ref(eq:tukey-hsd-q)) controls the family-wise error rate through the studentised range distribution under a common-variance assumption.
-The package implemented Games--Howell-test `games.howell()`(Eq. \@ref(eq:games-howell-t)) uses separate variance estimates and Welch-adjusted degrees of freedom for each pair, making it the post-hoc procedure for the heteroscedastic Welch branch.
+Because the three omnibus tests rest on different assumptions, each branch uses
+a matching post-hoc procedure: `TukeyHSD()` (Eq. \@ref(eq:tukey-hsd-q)) after
+`aov()`, `games.howell()` (Eq. \@ref(eq:games-howell-t)) after
+`oneway.test()`, and `pairwise.wilcox.test(p.adjust.method = "holm")` after
+`kruskal.test()`.
+`TukeyHSD()` controls the family-wise error rate through the studentised range
+distribution under a common-variance assumption.
+The package implementation `games.howell()` uses separate variance estimates
+and Welch-adjusted degrees of freedom for each pair, making it the post-hoc
+procedure for the heteroscedastic Welch branch.
 The Kruskal--Wallis branch uses Holm's step-down adjustment for the pairwise Wilcoxon tests.
 
 Pairs whose adjusted post-hoc $p$-value falls below $\alpha$ are marked with different green significance letters below the box plots; pairs sharing a letter are not significantly different.
@@ -310,8 +323,9 @@ Pairs whose adjusted post-hoc $p$-value falls below $\alpha$ are marked with dif
 
 # Examples
 
-The examples follow the routes outlined in Section \@ref(sec:top-level) and are chosen such, that all branchings are triggered. Where needed, they add interpretive details on
-the graphical output, such as post-hoc letters, regression bands, or mosaic
+The examples follow the routes outlined in Section \@ref(sec:top-level) and
+are chosen to trigger every branch. Where needed, they add interpretive details
+on the graphical output, such as post-hoc letters, regression bands, or mosaic
 plots.
 Within the group-comparison routes, examples are paired so that the two-group case is followed by its generalisation to more than two groups: Student's t-test by Fisher's one-way ANOVA, Welch's t-test by Welch's one-way ANOVA, and Wilcoxon rank-sum by Kruskal--Wallis.
 <!-- The number of plots returned by `visstat()` depends on the input types and the outcome of assumption checks. --> <!-- Central-tendency examples and simple linear regression produce an assumption-diagnostic panel followed by the result panel. -->
@@ -359,7 +373,7 @@ t_test_stats <- visstat(mtcars$am, mtcars$mpg)
 
 #### Welch's heteroscedastic one-way ANOVA with Games--Howell post-hoc comparisons {#sec:welch-anova-iris}
 
-In the `iris` dataset, using `Species` as predictor and `Sepal.Length` as response, the assumption-diagnostic panel shows that Shapiro--Wilk does not reject normality of the raw model residuals, whereas the Levene test rejects homoscedasticity at given $\alpha = 5 \%$.
+In the `iris` dataset, using `Species` as predictor and `Sepal.Length` as response, the assumption-diagnostic panel shows that Shapiro--Wilk does not reject normality of the raw model residuals, whereas the Levene test rejects homoscedasticity at the given $\alpha = 5\%$.
 `visstat()` therefore selects Welch's heteroscedastic one-way ANOVA (`oneway.test()`) and applies Games--Howell post-hoc comparisons.
 The result panel shows the box plots and Games--Howell significance letters.
 
@@ -555,13 +569,13 @@ The following examples are based on the `HairEyeColor` contingency table, which 
 
  $R \times C$ Pearson $\chi^2$ tests show a grouped column plot of row percentages with the $p$-value in the title, followed by a mosaic plot from `vcd` [@Meyer:2006; @Meyer:2024] with tiles coloured by Pearson residuals showing which cells drive the association: blue tiles indicate observed counts above expectation and red tiles indicate observed counts below expectation.
 
-With `Eye` and `Hair` from `HairEyeColor`, all expected cell counts exceed the Cochran thresholds [@Cochran:1954], so  $4 \times 4 \; \chi^2$ approximation is used.
+With `Eye` and `Hair` from `HairEyeColor`, all expected cell counts exceed the Cochran thresholds [@Cochran:1954], so the $4 \times 4$ $\chi^2$ approximation is used.
 
 ```{r chisq-example, fig.cap="Pearson's $\\chi^2$ test applied to the `HairEyeColor` dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented).", out.width="48%", fig.height=4.5, fig.show="hold"}
 hair_eye_df <- counts_to_cases(as.data.frame(HairEyeColor))
 visstat(hair_eye_df$Eye, hair_eye_df$Hair)
 ```
-Here, cells for black hair and brown hair, as well as blond hair and blue eyes show counts above the expectation. 
+Here, cells for black hair and brown hair, as well as blond hair and blue eyes, show counts above the expectation. 
 
 
 ### Pearson's $\chi^2$ test with Yates' continuity correction
@@ -816,8 +830,9 @@ The implementation uses `ad.test()` from `nortest` [@Gross:2015].
 
 The package implementation uses Levene's original mean-centred proposal [@Levene:1960].
 
-The Levene test statistic is the one-way ANOVA $F$ statistic, computed on the absolute residuals $|e_{ij}|$ in place of the responses $x_{ij}$; the corresponding Fisher ANOVA formula is given in Eq.
-(\@ref(eq:fisher-f)):
+The Levene test statistic is the one-way ANOVA $F$ statistic, computed on the
+absolute residuals $|e_{ij}|$ in place of the responses $x_{ij}$; the
+corresponding Fisher ANOVA formula is given in Eq. \@ref(eq:fisher-f):
 
 \begin{equation}
 F_L = \frac{\displaystyle\sum_{i=1}^{k} n_i (\overline{|e|}_i - \overline{|e|})^2\;/\;(k-1)}
@@ -855,7 +870,7 @@ BP = N R^2_\text{aux}
 (\#eq:breusch-pagan-bp),
 \end{equation}
 
-where $R^2_\text{aux}$ denote the coefficient of determination from regressing $e_i^2$ on $\hat{y}_i$ :
+where $R^2_\text{aux}$ denotes the coefficient of determination from regressing $e_i^2$ on $\hat{y}_i$ :
 
 $$R^2_\text{aux}
 = 1 -
@@ -866,7 +881,7 @@ Here $\widehat{e_i^2}$ are the fitted values from this auxiliary regression and 
 
 Under the null hypothesis of homoscedasticity, $BP$ is compared asymptotically to a $\chi^2(k-1)$ distribution.
 
-```{r test-statistics-child, child = "_test_statistics.Rmd"}
+```{r test-statistics-child, child = "_test_statistics.md"}
 ```
 
 # Effect size {#sec:effect-size}
