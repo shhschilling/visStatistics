@@ -57,8 +57,9 @@ The following estimates are computed internally:
     \eqn{\nu_2=N-k}. Negative estimates are truncated to zero.
   \item Welch's one-way test: a package-defined approximate
     omega-squared-type estimate
-    \eqn{\nu_1(F_W-1)/(\nu_1F_W+\nu_2+1)}, where \eqn{F_W}, \eqn{\nu_1},
-    and the usually fractional \eqn{\nu_2} are taken from
+    \eqn{\nu_1(F_W-1)/(\nu_1F_W+\nu_2+1)}, where \eqn{F_W} is the
+    Welch ANOVA statistic, \eqn{\nu_1=k-1}, and \eqn{\nu_2} is the
+    usually fractional denominator degree of freedom returned by
     \code{oneway.test()}. Negative estimates are truncated to zero.
   \item Kruskal-Wallis test: Kelley-adjusted eta-squared based on
     \eqn{H}, \eqn{\eta_H^2=(H-k+1)/(N-k)}, where \eqn{H} is the

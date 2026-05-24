@@ -56,6 +56,27 @@ test_that("levene.test calculates correct degrees of freedom", {
   expect_equal(result2$parameter[["df2"]], 42) # N-k = 45-3 = 42
 })
 
+test_that("levene.test equals Fisher ANOVA on absolute model residuals", {
+  g <- factor(c(rep("A", 4), rep("B", 5), rep("C", 6)))
+  y <- c(5.1, 5.4, 4.9, 5.2,
+         6.3, 6.8, 5.9, 6.6, 6.2,
+         8.1, 7.4, 8.6, 7.9, 8.3, 7.7)
+  fit <- lm(y ~ g)
+  abs_residuals <- abs(residuals(fit))
+  fisher_on_abs_residuals <- summary(aov(abs_residuals ~ g))[[1]]
+
+  result <- levene.test(y, g)
+
+  expect_equal(unname(result$statistic),
+               fisher_on_abs_residuals[["F value"]][1],
+               tolerance = 1e-12)
+  expect_equal(unname(result$p.value),
+               fisher_on_abs_residuals[["Pr(>F)"]][1],
+               tolerance = 1e-12)
+  expect_equal(unname(result$parameter),
+               fisher_on_abs_residuals[["Df"]][1:2])
+})
+
 test_that("levene.test works with data frame argument", {
   test_data <- create_test_data()
   df <- data.frame(
