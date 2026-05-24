@@ -128,7 +128,8 @@ the predictor or grouping variable and `y` is the response variable.
 `visstat(dataframe, "name_of_y", "name_of_x")`, where the first
 character string refers to the response variable and the second to the
 predictor or grouping variable. Both must be column names in
-`dataframe`.
+`dataframe`. This form gives a warning and may be removed in a future
+version.
 
 The interpretation of `x` and `y` depends on the variable classes.
 Throughout, data of class `numeric` or `integer` are referred to as
@@ -179,12 +180,6 @@ visstat(mpg ~ am, data = mtcars)
 
 # Standardised usage
 visstat(mtcars$am, mtcars$mpg)
-
-
-
-# Backward-compatible usage (same result as above)
-visstat(mtcars, "mpg", "am")
-#> Warning: The backward-compatible form visstat(dataframe, "y", "x") will no longer be supported in a future version. Use visstat(y ~ x, data = dataframe) or visstat(x, y) instead.
 
 
 

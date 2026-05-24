@@ -29,7 +29,6 @@ data frame of cases of dimension (total number of counts as sum of
 ## Examples
 
 ``` r
-
 counts_to_cases(as.data.frame(HairEyeColor[, , 1]), countcol = "Freq")
 #>        Hair   Eye
 #> 1     Black Brown

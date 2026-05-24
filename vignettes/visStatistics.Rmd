@@ -3,16 +3,16 @@ title: 'visStatistics: The right test, visualised'
 author: Sabine Schilling
 date: "`r Sys.Date()`"
 output:
+  bookdown::pdf_document2:
+    toc: true
+    number_sections: true
+    latex_engine: xelatex
   bookdown::html_document2:
     base_format: rmarkdown::html_vignette
     toc: true
     number_sections: true
     toc_depth: 3
     fig_caption: true
-  bookdown::pdf_document2:
-    toc: true
-    number_sections: true
-    latex_engine: xelatex
 link-citations: true
 colorlinks: true
 linkcolor: blue
@@ -22,9 +22,9 @@ header-includes:
   - \usepackage{array}
 bibliography: REFERENCES.bib
 vignette: >
+  %\VignetteEncoding{UTF-8}
   %\VignetteIndexEntry{visStatistics: The right test, visualised}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 editor_options:
   markdown:
     wrap: sentence
@@ -918,7 +918,7 @@ Here $\widehat{e_i^2}$ are the fitted values from this auxiliary regression and 
 Under the null hypothesis of homoscedasticity, $BP$ is compared asymptotically to a $\chi^2(k-1)$ distribution.
 
 
-```{r test-statistics-child, child = "test_statistics.Rmd"}
+```{r test-statistics-child, child = "_test_statistics.Rmd"}
 ```
 
 # Effect size {#sec:effect-size}
