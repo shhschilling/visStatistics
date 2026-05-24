@@ -611,6 +611,13 @@ This comparison illustrates how assumption warnings from `visstat()` can motivat
 ## Route 4: Two unordered factors
 
 The following examples are based on the `HairEyeColor` contingency table, which is converted to the column-based data frame expected by `visstat()` using `counts_to_cases()`.
+The graphical output depends on the selected test.
+General $R \times C$ Pearson $\chi^2$ tests show a grouped column plot of row percentages with the $p$-value in the title, followed by a mosaic plot from `vcd` [@Meyer:2006; @Meyer:2024] with tiles coloured by Pearson residuals.
+Yates-corrected $2 \times 2$ $\chi^2$ tests show the grouped column plot only, because the corrected statistic is not decomposed into cell-level residuals.
+Fisher's exact test shows absolute counts with count labels above each
+bar and the $p$-value in the title, so the small cell counts that
+trigger the exact test remain visible.
+
 
 ### Pearson's $\chi^2$ test
 
