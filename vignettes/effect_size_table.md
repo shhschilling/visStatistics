@@ -89,11 +89,11 @@ $\widehat{\mathrm{OR}}=n_{11}n_{22}/(n_{12}n_{21})$ &
 | [Welch's ANOVA](#eq:welch-f) | $\omega^2$ (approx.) | $\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)$ | [@BenShachar:2020] |
 | [Kruskal--Wallis](#eq:kruskal-h) | Kelley-adjusted $\eta_H^2$ | $(H - k + 1)/(N - k)$ | [@Kelley:1935] |
 | Linear regression | $R^2$ | $R^2 = 1 - SS_\text{res}/SS_\text{tot}$ | `summary(lm())$r.squared` |
-| [Spearman](#eq:spearman-rho) | $\rho$ | $\rho = r(\operatorname{rank}(x),\operatorname{rank}(y))$, Eq. (\@ref(eq:spearman-rho)) | `cor.test()$estimate` |
-| [Kendall](#eq:kendall-tau-b) | $\tau_b$ | $\tau_b = (C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$, Eq. (\@ref(eq:kendall-tau-b)) | `cor.test()$estimate` |
+| [Spearman](#eq:spearman-rho) | $\rho$ | $\rho = r(\operatorname{rank}(x),\operatorname{rank}(y))$, Eq. \@ref(eq:spearman-rho) | `cor.test()$estimate` |
+| [Kendall](#eq:kendall-tau-b) | $\tau_b$ | $\tau_b = (C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$, Eq. \@ref(eq:kendall-tau-b) | `cor.test()$estimate` |
 | [Pearson $\chi^2$ ($R\times C$)](#eq:pearson-chi) | Cramér's $V$ | $V_{R\times C} = \sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}$ | [@Bergsma:2013] |
 | [Pearson $\chi^2$ ($2\times 2$)](#eq:pearson-chi) | $\phi$ | $V_{2\times 2} = \sqrt{\chi^2/N}$ | [@Bergsma:2013] |
-| [Fisher's exact ($2\times 2$)](#eq:fisher-exact) | odds ratio | $\widehat{\text{OR}} = n_{11}n_{22}/(n_{12}n_{21})$, Eq. (\@ref(eq:odds-ratio)) | `fisher.test()$estimate` |
+| [Fisher's exact ($2\times 2$)](#eq:fisher-exact) | odds ratio | $\widehat{\text{OR}} = n_{11}n_{22}/(n_{12}n_{21})$, Eq. \@ref(eq:odds-ratio) | `fisher.test()$estimate` |
 )")
 }
 ```
