@@ -59,13 +59,8 @@
       <h1>visStatistics: The right test, visualised</h1>
                         <h4 data-toc-skip class="author">Sabine
 Schilling</h4>
-            <address class="author_afil">
-      Institute of Tourism and Mobility, Lucerne University of Applied
-Sciences and
-Arts<br><a class="author_email" href="mailto:#"></a><a href="mailto:sabineschilling@gmx.ch" class="email">sabineschilling@gmx.ch</a>
-      </address>
-                  
-            <h4 data-toc-skip class="date">2026-05-23</h4>
+            
+            <h4 data-toc-skip class="date">2026-05-24</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/HEAD/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -91,36 +86,50 @@ figcaption {
   font-style: italic;
   line-height: 1.35;
 }
+
+table a {
+  color: #0645ad;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 </style>
 <div class="section level2">
 <h2 id="abstract">Abstract<a class="anchor" aria-label="anchor" href="#abstract"></a>
 </h2>
-<p><code>visStatistics</code> provides a workflow for routine
-two-variable frequentist inference in R. Given two vectors,
-<code><a href="../reference/visstat.html">visstat()</a></code> dispatches by variable classes, factor levels,
-sample sizes, expected cell counts, and explicit user options. Its main
-assumption-driven branch concerns tests of central tendency for a
-numeric response grouped by a factor. There, large groups are routed as
-normal; otherwise, residual normality guides the choice between
-rank-based and mean-based procedures. A Levene test then selects between
-equal-variance and Welch-type variants. The output is deliberately
-visual: diagnostic plots are shown together with assumption-test
-p-values, the selected test, effect size, and post-hoc results where
-applicable.</p>
+<p><code>visStatistics</code> automatically selects and visualises
+statistical tests for two input vectors in R. The package is designed
+for routine analyses where test choice, assumption checks, and graphical
+output should be shown together rather than handled in separate manual
+steps.</p>
+<p>The main function <code><a href="../reference/visstat.html">visstat()</a></code> selects among common
+two-variable tests from the input data and user options. For group
+comparisons with a numeric response, the choice is guided by sample
+size, residual normality, and variance homogeneity.</p>
+<p>The output is deliberately visual: diagnostic plots are shown
+together with assumption-test p-values, the selected test, effect size,
+and post-hoc results where applicable. This shifts attention from ad-hoc
+test selection to visual diagnostic assessment and statistical
+interpretation.</p>
+<p>The automated workflow of <code>visStatistics</code> is particularly
+suited for server-side R applications, where users select variables
+through a web interface and receive a complete visual statistical
+analysis. It also supports time-constrained work such as statistical
+consulting, where less time spent on test selection leaves more room for
+interpretation.</p>
 </div>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>In the frequentist tradition, most routine data analyses reduce to a
 comparatively small set of inferential frameworks, including group
-comparisons, regression models and contingency-table analyses <span class="citation">(<a href="#ref-Hayat:2017">Hayat et al. 2017</a>; <a href="#ref-Sato:2017">Sato et al. 2017</a>; <a href="#ref-Brodeur:2020">Brodeur et al. 2020</a>)</span>; their correct
-use depends on assumptions that are often checked informally or not at
-all. <code>visStatistics</code> targets this gap by making routine
-frequentist test selection explicit, assumption-aware, visual, and
-reproducible. Rather than requiring users to choose the test function
-first, <code><a href="../reference/visstat.html">visstat()</a></code> starts from two variables and routes
-common two-variable settings through a fixed decision workflow. It
-selects a test from the variable classes, distributional assumptions,
+comparisons, regression models and contingency-table analyses <span class="citation">(<a href="#ref-Hayat:2017">Hayat et al. 2017</a>; <a href="#ref-Sato:2017">Sato et al. 2017</a>; <a href="#ref-Brodeur:2020">Brodeur, Cook, and Heyes 2020</a>)</span>;
+their correct use depends on assumptions that are often checked
+informally or not at all. <code>visStatistics</code> targets this gap by
+making routine frequentist test selection explicit, assumption-aware,
+visual, and reproducible. Rather than requiring users to choose the test
+function first, <code><a href="../reference/visstat.html">visstat()</a></code> starts from two variables and
+routes common two-variable settings through a fixed decision workflow.
+It selects a test from the variable classes, distributional assumptions,
 sample size, and expected cell counts; displays the diagnostics that led
 to the selected route; and returns an R object whose
 <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> methods expose the
@@ -131,10 +140,10 @@ on a server and cannot be directly accessed by users. This approach was
 already successfully applied to develop a medical scoring tool <span class="citation">(<a href="#ref-Bijlenga:2017">Bijlenga et al.
 2017</a>)</span>.</p>
 <p>For group comparisons, packages with related scope include
-<code>compareGroups</code> <span class="citation">(<a href="#ref-Subirana:2014">Subirana et al. 2014</a>)</span>,
-<code>boxTest</code> <span class="citation">(<a href="#ref-Sau:2025">Sau
-et al. 2025</a>)</span>, <code>autotestR</code> <span class="citation">(<a href="#ref-Garcia:2026">Garcia 2026</a>)</span>,
-and <code>automatedtests</code> <span class="citation">(<a href="#ref-Zeevat:2025">Zeevat 2025</a>)</span>.
+<code>compareGroups</code> <span class="citation">(<a href="#ref-Subirana:2014">Subirana, Sanz, and Vila 2014</a>)</span>,
+<code>boxTest</code> <span class="citation">(<a href="#ref-Sau:2025">Sau, Phadikar, and Bhakta 2025</a>)</span>,
+<code>autotestR</code> <span class="citation">(<a href="#ref-Garcia:2026">Garcia 2026</a>)</span>, and
+<code>automatedtests</code> <span class="citation">(<a href="#ref-Zeevat:2025">Zeevat 2025</a>)</span>.
 <code>compareGroups</code> is primarily designed for bivariate
 descriptive tables and reports, not diagnostic plots and test
 visualisations. <code>boxTest</code> covers only the two-group
@@ -196,9 +205,7 @@ significance level of <span class="math inline">\(\alpha =
 relationship, where <code>y</code> is the response variable and
 <code>x</code> is the predictor, with both being column names in
 <code>dataframe</code>.</p>
-<div class="section level6">
-<h6 class="unnumbered" id="exemplary-function-call">Exemplary function call<a class="anchor" aria-label="anchor" href="#exemplary-function-call"></a>
-</h6>
+<p><strong>Exemplary function call.</strong></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Standardised form</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span><span class="op">$</span><span class="va">block</span>,<span class="va">npk</span><span class="op">$</span><span class="va">yield</span><span class="op">)</span></span></code></pre></div>
@@ -207,94 +214,170 @@ relationship, where <code>y</code> is the response variable and
 <span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">yield</span><span class="op">~</span><span class="va">block</span>,data<span class="op">=</span><span class="va">npk</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
-</div>
 <div class="section level2">
 <h2 id="package-overview">Package overview<a class="anchor" aria-label="anchor" href="#package-overview"></a>
 </h2>
 <p><code>visStatistics</code> is available on CRAN. This vignette
 corresponds to the current GitHub version (<a href="https://github.com/shhschilling/visStatistics" class="external-link uri">https://github.com/shhschilling/visStatistics</a>), which
-may differ slightly from the latest CRAN release. The main function
-<code><a href="../reference/visstat.html">visstat()</a></code> returns an object of class <code>"visstat"</code>
-with <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>, <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, and
-<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods. The returned object also contains an
-<code>effect_size</code> field with the effect-size name, numeric
-estimate, and method description (see Appendix @ref(sec:effect-size)).
-From this single entry point, the package automatically selects among
-the implemented tests: <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>,
-<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>, <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>,
+may differ slightly from the latest CRAN release.</p>
+<p>The main function <code><a href="../reference/visstat.html">visstat()</a></code> returns an object of class
+<code>"visstat"</code> with <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>,
+<code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods (see Section
+@ref(sec:visstat-methods)).</p>
+<p>From this single entry point, <code><a href="../reference/visstat.html">visstat()</a></code> automatically
+selects among the implemented test or model functions:
+<code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>, <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>,
 <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>,
 <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code>, <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>,
 <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>, or <code><a href="https://rdrr.io/r/stats/cor.test.html" class="external-link">cor.test()</a></code>.</p>
+<p>Definitions of all implemented test statistics and rank-correlation
+coefficients are given in Appendices
+@ref(sec:tests)–@ref(sec:rank-correlations). As an additional output
+component, <code><a href="../reference/visstat.html">visstat()</a></code> returns an <code>effect_size</code>
+field with the effect-size name, numeric estimate, and method
+description (see Appendix @ref(sec:effect-size)).</p>
+<p>Unless stated otherwise, R function names for selected tests refer to
+functions from the <code>stats</code> package distributed with R <span class="citation">(<a href="#ref-R:2026">R Core Team 2026</a>)</span>. To
+reduce dependencies on other packages, <code>visStatistics</code>
+implements <code><a href="../reference/levene.test.html">levene.test()</a></code> for the variance gate in grouped
+mean-based tests (Eq. (@ref(eq:levene-f))), <code><a href="../reference/bp.test.html">bp.test()</a></code> for
+regression diagnostics (Eq. (@ref(eq:breusch-pagan-bp))), and
+<code><a href="../reference/games.howell.html">games.howell()</a></code> for Welch-ANOVA post-hoc comparisons (Eq.
+(@ref(eq:games-howell-t))).</p>
 </div>
 <div class="section level2">
 <h2 id="decision-logic">Decision logic<a class="anchor" aria-label="anchor" href="#decision-logic"></a>
 </h2>
-<p>The top-level class split defines the admissible analysis family. For
-numeric responses with categorical predictors, the subsequent test
-selection is governed by group-specific sample size, residual normality,
-and residual variance homogeneity.</p>
-<div class="section level3">
-<h3 id="sec:top-level">Top-level routing by input class<a class="anchor" aria-label="anchor" href="#sec:top-level"></a>
-</h3>
-<p>On the highest level, the decision logic of <code><a href="../reference/visstat.html">visstat()</a></code> is
-driven by the class of its input vectors, as depicted in Figure
-@ref(fig:overview). The main branching logic consists of four
-routes:</p>
-<ul>
-<li>Route 1. Numeric responses with categorical predictors enter the
-central-tendency branch detailed in <a href="#sec:route-1">Route
-1</a>.</li>
-<li>Route 2. Ordered categorical responses with categorical predictors
-follow the non-parametric Wilcoxon or Kruskal–Wallis route; when both
-variables are ordered and <code>correlation = TRUE</code>, Kendall rank
-correlation is used.</li>
-<li>Route 3. Two numeric variables enter simple linear regression unless
-<code>correlation = TRUE</code>, which switches to Spearman rank
-correlation.</li>
-<li>Route 4. Two unordered factors enter the proportion-comparison
-branch.</li>
-</ul>
+<p>The decision logic of <code><a href="../reference/visstat.html">visstat()</a></code> summarised in Figure
+@ref(fig:overview) is driven by the class of its input vectors:</p>
 <div class="figure">
 <img src="figures/overview.png" class="r-plt" alt="Flowchart showing all implemented statistical tests organised by the class of the input vectors." width="100%"><p class="caption">
 Overview of all implemented tests selected based on input class.
 </p>
 </div>
-<p>Definitions of all implemented test statistics and association
-measures are referenced in Appendix @ref(sec:tests). Unless stated
-otherwise, R function names refer to functions from the
-<code>stats</code> package distributed with R <span class="citation">(<a href="#ref-R:2026">R Core Team 2026</a>)</span>.</p>
+<p>The main branching logic consists of four routes:</p>
+<div class="section level3">
+<h3 id="route-1-numeric-response-categorical-predictor">Route 1: Numeric response, categorical predictor<a class="anchor" aria-label="anchor" href="#route-1-numeric-response-categorical-predictor"></a>
+</h3>
+<p>A numeric response with a categorical predictor asks whether the
+response differs across groups formed by the predictor levels.
+<code><a href="../reference/visstat.html">visstat()</a></code> selects from six central-tendency tests: For
+parametric tests, Student’s t-test for <span class="math inline">\(k =
+2\)</span> groups generalises to Fisher’s one-way ANOVA for more than
+two groups; the Welch alternative, Welch’s t-test for <span class="math inline">\(k = 2\)</span> groups, generalises to Welch’s
+heteroscedastic one-way ANOVA for more than two groups. For
+non-parametric tests, the Wilcoxon rank-sum test for <span class="math inline">\(k = 2\)</span> groups generalises to the
+Kruskal–Wallis test for more than two groups. The specific test choice
+is governed by group-specific sample size, as well as residual
+normality, and residual variance homogeneity of a fitted linear model,
+the test selection rationale is detailed in @ref(sec:assumptions)</p>
 </div>
 <div class="section level3">
-<h3 id="sec:assumptions">General linear model diagnostics<a class="anchor" aria-label="anchor" href="#sec:assumptions"></a>
+<h3 id="route-2-ordered-response">Route 2: Ordered response<a class="anchor" aria-label="anchor" href="#route-2-ordered-response"></a>
 </h3>
+<p>An ordered categorical response with a categorical predictor or
+ordered categorical predictor is treated as a rank-based group
+comparison. The ordered response is converted to integer level codes and
+analysed with the Wilcoxon rank-sum test for two groups or the
+Kruskal–Wallis test for more than two groups.</p>
+<p>When both variables are ordered and <code>correlation = TRUE</code>,
+Kendall’s <span class="math inline">\(\tau_b\)</span> (Eq.
+(@ref(eq:kendall-tau-b))), explicitly correcting for ties present with
+few ordinal levels, is computed instead <span class="citation">(<a href="#ref-Xu:2013">Xu et al. 2013</a>)</span>.</p>
+</div>
+<div class="section level3">
+<h3 id="route-3-numeric-response-numeric-predictor">Route 3: Numeric response, numeric predictor<a class="anchor" aria-label="anchor" href="#route-3-numeric-response-numeric-predictor"></a>
+</h3>
+<p>Two numeric variables ask whether a numeric response changes with a
+numeric predictor. By default, <code><a href="../reference/visstat.html">visstat()</a></code> fits simple linear
+regression. If <code>correlation = TRUE</code> is set explicitly, the
+analysis switches to Spearman’s <span class="math inline">\(\rho\)</span> (Eq. (@ref(eq:spearman-rho))),
+computed via <code>cor.test(..., method = "spearman")</code>. Because
+the choice between modelling a directional relationship and measuring a
+monotone association cannot be automated from data types alone, Spearman
+correlation is never triggered automatically.</p>
+</div>
+<div class="section level3">
+<h3 id="route-4-two-unordered-factors">Route 4: Two unordered factors<a class="anchor" aria-label="anchor" href="#route-4-two-unordered-factors"></a>
+</h3>
+<p>Two unordered factors ask whether two categorical variables are
+independent. <code><a href="../reference/visstat.html">visstat()</a></code> uses Pearson’s <span class="math inline">\(\chi^2\)</span> test or Fisher’s exact test,
+depending on expected cell counts following Cochran’s rule <span class="citation">(<a href="#ref-Cochran:1954">Cochran 1954</a>)</span>:
+the <span class="math inline">\(\chi^2\)</span> approximation is used if
+no expected cell count is less than 1 and no more than 20% of cells have
+expected counts below 5. Yates’ continuity correction is applied by
+default to <span class="math inline">\(2 \times 2\)</span> tables when
+the <span class="math inline">\(\chi^2\)</span> approximation is
+used.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="sec:assumptions">Test selection based on the assumptions of the general linear model
+framework<a class="anchor" aria-label="anchor" href="#sec:assumptions"></a>
+</h2>
 <p>Student’s t-test, Fisher’s ANOVA, and simple linear regression all
 belong to the general linear model framework <span class="citation">(<a href="#ref-Thompson:2015">Thompson 2015</a>)</span> and thus share a
 common set of assumptions: the expected value of the response is a
-linear function of the predictors, the error terms are mutually
+linear function of the predictors, the model error terms are mutually
 independent and normally distributed with expectation 0, and the error
-variance is constant at <span class="math inline">\(\sigma^2\)</span>
-(see Appendix @ref(sec:general-linear-model)).</p>
-<p>In both the “numeric response with categorical predictor” and the
-“simple linear regression” branches, these assumptions are
-<em>vis</em>ualised, but their diagnostic role differs: in the former, a
-subset of the displayed diagnostics drives test selection (see <a href="#sec:route-1">Route 1</a>); in the latter, they only trigger
-warnings and recommendations.</p>
+variance is constant.</p>
+<p>Because the general linear model’s error terms are unobservable,
+<code><a href="../reference/visstat.html">visstat()</a></code> checks and visualises these assumptions on the
+raw residuals from a fitted linear model — the direct sample-level
+estimates of the model error terms.</p>
+<p>In Route 1, the p-values from normality and homoscedasticity tests
+(Section @ref(sec:assumption-tests)). steer test selection (Section
+@ref(sec:route-1)).</p>
+<div class="section level3">
+<h3 id="sec:assumption-tests">General linear model assumption tests<a class="anchor" aria-label="anchor" href="#sec:assumption-tests"></a>
+</h3>
 <div class="section level4">
-<h4 id="sec:graphical">Visualisation the general linear model assumptions<a class="anchor" aria-label="anchor" href="#sec:graphical"></a>
+<h4 class="unnumbered" id="normality-tests">Normality tests<a class="anchor" aria-label="anchor" href="#normality-tests"></a>
 </h4>
-<p>A core output of <code>visStatistics</code> is a diagnostic graphic
-generated in Route 1 and Route 3 (if <code>correlation = FALSE</code>)
-before the selected test or regression result is shown.</p>
-<p>It fits the corresponding linear model and computes raw model
-residuals.</p>
-<div class="section level5">
-<h5 class="unnumbered" id="residual-scale-used-for-tests-and-plots">Residual scale used for tests and plots<a class="anchor" aria-label="anchor" href="#residual-scale-used-for-tests-and-plots"></a>
-</h5>
-<p>Formal assumption-test p-values are computed from raw model
-residuals. For display only, both Route 1 and Route 3 use the same
-pooled z-scaled residuals to facilitate model comparison. Because these
-p-values are shown in the same graphic as the diagnostics, the displayed
-residuals are kept on a constant rescaling of the same residuals:</p>
+<p>The normality of the residuals is assessed using both the
+Shapiro–Wilk test <span class="citation">(<a href="#ref-Shapiro:1965">Shapiro and Wilk 1965</a>)</span>
+(<code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code>; Eq. (@ref(eq:shapiro-w))) and the
+Anderson–Darling test <span class="citation">(<a href="#ref-Anderson:1952">Anderson and Darling 1952</a>)</span>
+(<code>ad.test()</code>; Eq. (@ref(eq:anderson-a2))). In the
+central-tendency decision logic (Section @ref(sec:route-1)), the
+Shapiro–Wilk test is used as the normality gateway for smaller samples (
+at least one group has 50 or fewer observations); this matches
+simulation studies reporting high power for small to moderate samples
+<span class="citation">(<a href="#ref-Razali:2011">Razali and Wah
+2011</a>)</span>. The Anderson–Darling test adds sensitivity to
+deviations in the tails of the distribution <span class="citation">(<a href="#ref-Yap:2011">Yap and Sim 2011</a>)</span>.</p>
+</div>
+<div class="section level4">
+<h4 class="unnumbered" id="homoscedasticity-tests">Homoscedasticity tests<a class="anchor" aria-label="anchor" href="#homoscedasticity-tests"></a>
+</h4>
+<!-- Homoscedasticity is assessed differently for grouped central-tendency analyses and simple linear regression. -->
+<p>For grouped central-tendency analyses, variance homogeneity is
+assessed using the package-implemented mean-centred Levene test <span class="citation">(<a href="#ref-Levene:1960">Levene 1960</a>)</span>
+(<code><a href="../reference/levene.test.html">levene.test()</a></code>; Eq. (@ref(eq:levene-f))) and Bartlett’s
+test <span class="citation">(<a href="#ref-Bartlett:1937">Bartlett
+1937</a>)</span> (<code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code>; Eq.
+(@ref(eq:bartlett-k2))). Bartlett’s test has greater power when
+normality holds, whereas the Levene test is used as the variance gate in
+the automated workflow <span class="citation">(<a href="#ref-Allingham:2012">Allingham and Rayner 2012</a>)</span>.</p>
+<p>For simple linear regression, group-based variance tests are not
+applicable. There, <code>visStatistics</code> uses its package
+implementation <code><a href="../reference/bp.test.html">bp.test()</a></code> of the Breusch–Pagan test <span class="citation">(<a href="#ref-Breusch:1979">Breusch and Pagan
+1979</a>)</span> (Eq. (@ref(eq:breusch-pagan-bp))).</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="sec:graphical">Visualisation of the general linear model assumptions<a class="anchor" aria-label="anchor" href="#sec:graphical"></a>
+</h3>
+<p>For numeric responses with categorical predictors (Route 1) and for
+simple linear regression (<code>correlation = FALSE</code>) (Route 3),
+<code>visStatistics</code> first shows a diagnostic panel assessing the
+assumptions of the general linear model.</p>
+<p>It fits a simple linear model between response and predictor, from
+which it extracts the raw model residuals, used to compute the formal
+assumption-test p-values from the assumption tests in Section
+@ref(sec:assumption-tests).</p>
+<p>From the raw residuals, pooled z-scaled residuals are calculated to
+facilitate model comparison:</p>
 <p><span class="math display">\[\begin{equation}
 z_i = \frac{e_i}{SE_\text{res}},
 \; \mathrm{with} \;
@@ -305,47 +388,51 @@ SE_\text{res} =
 <p>Here <span class="math inline">\(N\)</span> is the total sample size,
 <span class="math inline">\(k\)</span> is the number of fitted model
 parameters, and <span class="math inline">\(SE_\text{res}\)</span> is
-the residual standard error. Note that in Route 1 <span class="math inline">\(SE_\text{res}\)</span> equals <span class="math inline">\(\sqrt{MS_\text{within}}\)</span>, with <span class="math inline">\(MS_\text{within}\)</span> defined in Equation
-@ref(eq:fisher-f).</p>
-<p>Route 1 displays the residual histogram, the normal Q–Q plot, and
-absolute residual spread by group. Route 3 displays the residual
-histogram, the normal Q–Q plot, z-scaled residuals versus fitted values,
-and z-scaled residuals versus leverage.</p>
-<p>The Route 3 leverage panel therefore differs from the standard
+the residual standard error. For numeric responses with categorical
+predictors, <span class="math inline">\(SE_\text{res}\)</span> equals
+<span class="math inline">\(\sqrt{MS_\text{within}}\)</span>, with <span class="math inline">\(MS_\text{within}\)</span> defined in Eq.
+(@ref(eq:fisher-f)).</p>
+<p>Because the displayed z-residuals are a constant rescaling of the
+residuals fed to the assumption tests, the visual evidence and the
+displayed p-values refer to the same residual object.</p>
+<div class="section level4">
+<h4 class="unnumbered" id="layout-of-the-diagnostic-panel">Layout of the diagnostic panel<a class="anchor" aria-label="anchor" href="#layout-of-the-diagnostic-panel"></a>
+</h4>
+<p><strong>Route 1</strong> For numeric responses with categorical
+predictors, the panel displays the residual histogram, the normal Q–Q
+plot, and absolute residual spread by group.</p>
+<p><strong>Route 3</strong> For simple linear regression, the panel
+displays the residual histogram, the normal Q–Q plot, z-scaled residuals
+versus fitted values, and z-scaled residuals versus leverage. The Route
+3 leverage panel therefore differs from the standard
 <code>plot.lm()</code> panel, which uses internally studentised
 residuals. To retain the influence diagnostic on the common z residual
 scale, Cook’s distance contours are transformed accordingly (see
 Appendix @ref(sec:norm)).</p>
+<p><strong>Outer title for both routes</strong></p>
 <p>The first row of the outer title reports p-values of
 residual-normality checks with the Shapiro–Wilk and Anderson–Darling
 tests. The second row reports p-values of variance checks: Levene and
 Bartlett for grouped central-tendency analyses, or Breusch–Pagan for
 simple regression.</p>
-<p>Among the displayed assumption tests, only the Shapiro–Wilk and
-Levene test results enter automated routing, and only in the
+<p>Note that among the displayed assumption tests, only the Shapiro–Wilk
+and Levene test results enter automated routing, and only in the
 central-tendency branch. Within that branch, Shapiro–Wilk is used only
-when at least one group has 50 or fewer observations (see <a href="#sec:route-1">Route 1</a>);
-<!-- Anderson--Darling, Bartlett, and -->
+when at least one group has 50 or fewer observations (see Section
+@ref(sec:route-1)); <!-- Anderson--Darling, Bartlett, and -->
 <!-- Breusch--Pagan are diagnostic output only. --></p>
-<p>The Route 1 and Route 3 diagnostic-panel designs are illustrated in
+<p>The Route 1 and Route 3 diagnostic-panel designs is illustrated in
 the worked examples in Figures @ref(fig:welch-anova-example), left, and
 @ref(fig:regression-example), left.</p>
-<p>The following route-specific sections describe which checks are used
-for test selection.</p>
-<!-- `levene.test()` and `bp.test()` have standalone implementations in the package to avoid dependencies on external packages (see Section \@ref(sec:homo)). -->
-</div>
+<!-- `levene.test()` and `bp.test()` have standalone implementations in the package to avoid dependencies on external packages (see Section @ref(sec:homo)). -->
 </div>
 </div>
 <div class="section level3">
-<h3 id="route-specific-decision-rules">Route-specific decision rules<a class="anchor" aria-label="anchor" href="#route-specific-decision-rules"></a>
+<h3 id="sec:route-1">Test selection in Route 1<a class="anchor" aria-label="anchor" href="#sec:route-1"></a>
 </h3>
-<div class="section level4">
-<h4 class="unnumbered" id="sec:route-1">Route 1: Numeric response, categorical
-predictor<a class="anchor" aria-label="anchor" href="#sec:route-1"></a>
-</h4>
-<p>In the central-tendency branch, the diagnostic panel (see
-@ref(sec:graphical)) is always generated as first visual output. Figure
-@ref(fig:decision-tree) expands the subsequent routing logic.</p>
+<p>In Route 1, the diagnostic panel (see Section @ref(sec:graphical)) is
+always generated as first visual output. Figure @ref(fig:decision-tree)
+expands the subsequent routing logic.</p>
 <div class="figure">
 <img src="figures/decision_tree.png" class="r-plt" alt="Decision tree selecting among Welch t-test, Student t-test, Wilcoxon, Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests based on the all-groups n_i &gt; 50 rule, the Shapiro-Wilk test on raw model residuals, and the Levene test for variance homogeneity." width="100%"><p class="caption">
 Decision tree for tests on central tendencies. If all group-specific
@@ -358,29 +445,34 @@ equal-variance or Welch-type procedures.
 </div>
 <p>The first split checks group size. When all group-specific sample
 sizes are greater than 50, the normality of the sampling distribution of
-the group means can be assumed by the central limit theorem <span class="citation">(<a href="#ref-Lumley:2002">Lumley et al. 2002</a>; <a href="#ref-Rasch:2011">Rasch et al. 2011</a>)</span>. The displayed
-residual-normality p-values then no longer determine routing, to avoid
-rejecting negligible deviations in large samples <span class="citation">(<a href="#ref-Ghasemi:2012">Ghasemi and Zahediasl
+the group means can be assumed by the central limit theorem <span class="citation">(<a href="#ref-Lumley:2002">Lumley et al. 2002</a>; <a href="#ref-Rasch:2011">Rasch, Kubinger, and Moder 2011</a>)</span>. The
+displayed residual-normality p-values then no longer determine routing,
+to avoid rejecting negligible deviations in large samples <span class="citation">(<a href="#ref-Ghasemi:2012">Ghasemi and Zahediasl
 2012</a>; <a href="#ref-Fagerland:2012">Fagerland 2012</a>; <a href="#ref-Shatz:2024">Shatz 2024</a>)</span>.</p>
-<p>Otherwise, the Shapiro–Wilk (SW) p-value computed on raw model
-residuals determines whether the route remains mean-based.</p>
+<p>Otherwise, the Shapiro–Wilk (SW) test [<span class="citation">Shapiro
+and Wilk (<a href="#ref-Shapiro:1965">1965</a>)</span>; Eq.
+(@ref(eq:shapiro-w))] is applied to raw model residuals. Its p-value
+determines whether the route remains mean-based.</p>
 <p>If normality is rejected (<span class="math inline">\(p_\text{SW} \le
 \alpha\)</span>), non-parametric tests are selected:
-<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> for two groups, or
-<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> followed by Holm-adjusted
-<code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> for more than two groups.</p>
-<p>If normality is not rejected, variance homogeneity is assessed with
-the package-implemented mean-centred Levene test on raw model residuals
-(<span class="citation">(<a href="#ref-Levene:1960">Levene
-1960</a>)</span>; see Section @ref(sec:lev)). This aligns the variance
-gate with the fitted general linear model. For homoscedastic data,
-<code>t.test(var.equal = TRUE)</code> is applied for two groups, or
-Fisher’s <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> with <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> for more than
-two groups. For heteroscedastic data, Welch’s <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> is
-applied for two groups, or Welch’s <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> with the
-package implementation <code><a href="../reference/games.howell.html">games.howell()</a></code> (<span class="citation">(<a href="#ref-Games:1976">Games and Howell
-1976</a>)</span>; see Section @ref(sec:gh)) for more than two
+<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> (Eq. (@ref(eq:wilcoxon-w))) for two groups,
+or <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> (Eq. (@ref(eq:kruskal-h))) followed by
+Holm-adjusted <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> for more than two
 groups.</p>
+<p>If normality is not rejected, variance homogeneity is assessed with
+the package-implemented mean-centred Levene test (L) on raw model
+residuals <span class="citation">(<a href="#ref-Levene:1960">Levene
+1960</a>)</span> (Eq. (@ref(eq:levene-f))). This aligns the variance
+gate with the fitted general linear model. For homoscedastic data,
+<code>t.test(var.equal = TRUE)</code> (Eq. (@ref(eq:student-t))) is
+applied for two groups, or Fisher’s <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> (Eq.
+(@ref(eq:fisher-f))) with <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> (Eq.
+(@ref(eq:tukey-hsd-q))) for more than two groups. For heteroscedastic
+data, Welch’s <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> (Eq. (@ref(eq:welch-t))) is applied
+for two groups, or Welch’s <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> (Eq.
+(@ref(eq:welch-f))) with the package implementation
+<code><a href="../reference/games.howell.html">games.howell()</a></code> (<span class="citation">(<a href="#ref-Games:1976">Games and Howell 1976</a>)</span>; see Section
+@ref(sec:gh)) for more than two groups.</p>
 <p>The box plots are enriched with significance letters to visualise the
 post-hoc analysis:</p>
 <p>ANOVA, Welch ANOVA, and Kruskal–Wallis are omnibus tests: a
@@ -404,69 +496,11 @@ significantly different.
 <!-- The returned object contains the corresponding -->
 <!-- adjusted $p$-values. --></p>
 </div>
-<div class="section level4">
-<h4 class="unnumbered" id="sec:route-2">Route 2: Ordered response<a class="anchor" aria-label="anchor" href="#sec:route-2"></a>
-</h4>
-<p>By default, an ordered response is converted to integer level codes
-and follows the non-parametric Wilcoxon/Kruskal–Wallis path for
-categorical predictors above, see <a href="#sec:route-1">Route 1</a>.
-When both variables are ordered and <code>correlation = TRUE</code>,
-Kendall’s <span class="math inline">\(\tau_b\)</span> is computed
-instead, as it corrects for ties explicitly — unavoidable with few
-ordinal levels <span class="citation">(<a href="#ref-Xu:2013">Xu et al.
-2013</a>)</span>.</p>
-</div>
-<div class="section level4">
-<h4 class="unnumbered" id="sec:route-3">Route 3: Both variables numeric<a class="anchor" aria-label="anchor" href="#sec:route-3"></a>
-</h4>
-<p>When both predictor and response are numerical,
-<code><a href="../reference/visstat.html">visstat()</a></code> fits and displays a simple linear regression. The
-assumption-diagnostic panel described above is displayed, but its checks
-do not trigger automatic model replacement. The regression plot shows
-the fitted line <span class="math inline">\(\hat{y} = b_0 + b_1
-x\)</span> with pointwise confidence and prediction bands at the
-specified <code>conf.level</code>. The returned object contains the
-regression statistics, residual-normality tests, pointwise confidence
-and prediction bands, and the coefficient of determination <span class="math inline">\(R^2\)</span> as effect size (see Appendix
-@ref(sec:effect-size)).</p>
-<p>However, when <code>correlation = TRUE</code> is set explicitly,
-Spearman’s <span class="math inline">\(\rho\)</span> is computed via
-<code>cor.test(..., method = "spearman")</code>.</p>
-<p>Because the choice between modelling a directional relationship and
-measuring a monotone association cannot be automated from data types
-alone, Spearman correlation is never triggered automatically. Spearman’s
-<span class="math inline">\(\rho\)</span> is Pearson’s correlation
-applied to ranks; see Section @ref(sec:rho).</p>
-</div>
-<div class="section level4">
-<h4 class="unnumbered" id="sec:route-4">Route 4: Both variables categorical<a class="anchor" aria-label="anchor" href="#sec:route-4"></a>
-</h4>
-<p>When both variables are of class <code>factor</code>,
-<code><a href="../reference/visstat.html">visstat()</a></code> tests the variables’ independence using Pearson’s
-<span class="math inline">\(\chi^2\)</span> test
-(<code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code>) or Fisher’s exact test
-(<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>), depending on expected cell counts
-following Cochran’s rule <span class="citation">(<a href="#ref-Cochran:1954">Cochran 1954</a>)</span>: the <span class="math inline">\(\chi^2\)</span> approximation is used if no
-expected cell count is less than 1 and no more than 20% of cells have
-expected counts below 5. Yates’ continuity correction is applied by
-default to <span class="math inline">\(2 \times
-2\)</span> tables. The graphical output depends on the selected test.
-General <span class="math inline">\(R \times C\)</span> Pearson <span class="math inline">\(\chi^2\)</span> tests show a grouped column plot
-of row percentages with the <span class="math inline">\(p\)</span>-value
-in the title, followed by a mosaic plot from <code>vcd</code> <span class="citation">(<a href="#ref-Meyer:2006">Meyer et al. 2006</a>, <a href="#ref-Meyer:2024">2024</a>)</span> with tiles coloured by Pearson
-residuals. Yates-corrected <span class="math inline">\(2 \times
-2\)</span> <span class="math inline">\(\chi^2\)</span> tests show the
-grouped column plot only, because the corrected statistic is not
-decomposed into cell-level residuals. Fisher’s exact test shows absolute
-counts with count labels above each bar and the <span class="math inline">\(p\)</span>-value in the title, so the small cell
-counts that trigger the exact test remain visible.</p>
-</div>
-</div>
 </div>
 <div class="section level2">
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h2>
-<p>The examples follow the the routes outlined in Section
+<p>The examples follow the routes outlined in Section
 @ref(sec:top-level) and are chosen such, that all branchings are
 triggered. Within the group-comparison routes, examples are paired so
 that the two-group case is followed by its generalisation to more than
@@ -476,7 +510,7 @@ by Welch’s one-way ANOVA, and Wilcoxon rank-sum by Kruskal–Wallis.
 <!-- Central-tendency examples and simple linear regression produce an assumption-diagnostic panel followed by the result panel. --></p>
 <!-- Most example datasets are distributed with R; synthetic data are used where no suitable base R example is available. -->
 <div class="section level3">
-<h3 id="route-1-numeric-response-categorical-predictor">Route 1: Numeric response, categorical predictor<a class="anchor" aria-label="anchor" href="#route-1-numeric-response-categorical-predictor"></a>
+<h3 id="route-1-numeric-response-categorical-predictor-1">Route 1: Numeric response, categorical predictor<a class="anchor" aria-label="anchor" href="#route-1-numeric-response-categorical-predictor-1"></a>
 </h3>
 <div class="section level4">
 <h4 id="students-t-test-and-fishers-one-way-anova">Student’s t-test and Fisher’s one-way ANOVA<a class="anchor" aria-label="anchor" href="#students-t-test-and-fishers-one-way-anova"></a>
@@ -639,7 +673,7 @@ pairwise Wilcoxon post-hoc comparisons are shown as significance letters
 </div>
 </div>
 <div class="section level3">
-<h3 id="route-2-ordered-response">Route 2: Ordered response<a class="anchor" aria-label="anchor" href="#route-2-ordered-response"></a>
+<h3 id="route-2-ordered-response-1">Route 2: Ordered response<a class="anchor" aria-label="anchor" href="#route-2-ordered-response-1"></a>
 </h3>
 <p>The following examples show the two ordered-response cases: an
 ordered response with a categorical predictor, and two ordered variables
@@ -735,9 +769,9 @@ lower academic performance. The Kendall result is shown in Figure
 <span><span class="va">kendall_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">performance</span>, <span class="va">alcohol</span>, correlation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">spearman_air</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">$</span><span class="va">Wind</span>, <span class="va">airquality</span><span class="op">$</span><span class="va">Ozone</span>, correlation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="visStatistics_files/figure-html/kendall-spearman-example-1.png" class="r-plt" alt="Rank-based correlations: Left: Kendall's $\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance (left). Right:  Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots  annotate the corresponding effect measure and $p$-value." width="48%"><img src="visStatistics_files/figure-html/kendall-spearman-example-2.png" class="r-plt" alt="Rank-based correlations: Left: Kendall's $\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance (left). Right:  Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots  annotate the corresponding effect measure and $p$-value." width="48%"><p class="caption">
+<img src="visStatistics_files/figure-html/kendall-spearman-example-1.png" class="r-plt" alt="Rank-based correlations: Left: Kendall's $\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance. Right:  Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots  annotate the corresponding effect measure and $p$-value." width="48%"><img src="visStatistics_files/figure-html/kendall-spearman-example-2.png" class="r-plt" alt="Rank-based correlations: Left: Kendall's $\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance. Right:  Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots  annotate the corresponding effect measure and $p$-value." width="48%"><p class="caption">
 Rank-based correlations: Left: Kendall’s <span class="math inline">\(\tau_b\)</span> for a hypothetical survey (<span class="math inline">\(n = 150\)</span>): alcohol consumption frequency
-vs. academic performance (left). Right: Spearman rank correlation of
+vs. academic performance. Right: Spearman rank correlation of
 <code>Wind</code> and <code>Ozone</code> from the
 <code>airquality</code> dataset (<code>correlation = TRUE</code>;
 right). Both plots annotate the corresponding effect measure and <span class="math inline">\(p\)</span>-value.
@@ -747,7 +781,7 @@ right). Both plots annotate the corresponding effect measure and <span class="ma
 </div>
 </div>
 <div class="section level3">
-<h3 id="route-3-numeric-response-numeric-predictor">Route 3: Numeric response, numeric predictor<a class="anchor" aria-label="anchor" href="#route-3-numeric-response-numeric-predictor"></a>
+<h3 id="route-3-numeric-response-numeric-predictor-1">Route 3: Numeric response, numeric predictor<a class="anchor" aria-label="anchor" href="#route-3-numeric-response-numeric-predictor-1"></a>
 </h3>
 <div class="section level4">
 <h4 id="sec:lin-reg">Linear regression<a class="anchor" aria-label="anchor" href="#sec:lin-reg"></a>
@@ -759,7 +793,14 @@ examination score (<code>Examination</code>) predicts the fertility
 measure (<code>Fertility</code>), with <code>conf.level = 0.99</code>.
 The diagnostic panel in Figure @ref(fig:regression-example), left, shows
 that both normality tests pass and the Breusch–Pagan test confirms
-homoscedasticity, supporting the linear model.</p>
+homoscedasticity, supporting the linear model. The assumption-diagnostic
+panel is displayed, but its checks do not trigger automatic model
+replacement. The regression plot shows the fitted line <span class="math inline">\(\hat{y} = b_0 + b_1 x\)</span> with pointwise
+confidence and prediction bands at the specified
+<code>conf.level</code>. The returned object contains the regression
+statistics, residual-normality tests, pointwise confidence and
+prediction bands, and the coefficient of determination <span class="math inline">\(R^2\)</span> as effect size (see Appendix
+@ref(sec:effect-size)).</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linreg_swiss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">swiss</span><span class="op">$</span><span class="va">Examination</span>, <span class="va">swiss</span><span class="op">$</span><span class="va">Fertility</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
@@ -867,11 +908,11 @@ exploration outside the automated decision tree.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 id="route-4-two-unordered-factors">Route 4: Two unordered factors<a class="anchor" aria-label="anchor" href="#route-4-two-unordered-factors"></a>
+<h3 id="route-4-two-unordered-factors-1">Route 4: Two unordered factors<a class="anchor" aria-label="anchor" href="#route-4-two-unordered-factors-1"></a>
 </h3>
 <p>The following examples are based on the <code>HairEyeColor</code>
 contingency table, which is converted to the column-based data frame
-expected by <code><a href="../reference/visstat.html">visstat()</a></code> using
+expected by <code><a href="../reference/visstat.html">visstat()</a></code> using the helper function
 <code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code>.</p>
 <div class="section level4">
 <h4 id="pearsons-chi2-test">Pearson’s <span class="math inline">\(\chi^2\)</span> test<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test"></a>
@@ -948,7 +989,7 @@ percentages; the Fisher plot shows absolute counts.
 </div>
 </div>
 <div class="section level2">
-<h2 id="the-visstat-methods">The <code>visstat</code> methods<a class="anchor" aria-label="anchor" href="#the-visstat-methods"></a>
+<h2 id="sec:visstat-methods">The <code>visstat</code> methods<a class="anchor" aria-label="anchor" href="#sec:visstat-methods"></a>
 </h2>
 <p>Objects returned by <code><a href="../reference/visstat.html">visstat()</a></code> are of class
 <code>"visstat"</code> and support the S3 methods <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>,
@@ -1085,8 +1126,8 @@ attribute <code>"plot_paths"</code> on the returned object of class
 </h2>
 <p>The design of <code>visStatistics</code> prioritises transparent,
 reproducible routing for common two-variable analyses <span class="citation">(<a href="#ref-Strasak:2007">Strasak et al. 2007</a>;
-<a href="#ref-Sato:2017">Sato et al. 2017</a>; <a href="#ref-Chicco:2025">Chicco et al. 2025</a>)</span> over broad model
-coverage.</p>
+<a href="#ref-Sato:2017">Sato et al. 2017</a>; <a href="#ref-Chicco:2025">Chicco, Sichenze, and Jurman 2025</a>)</span>
+over broad model coverage.</p>
 <p>This scope keeps the decision tree inspectable and the graphical
 output consistent, but it also leaves several modelling choices
 (e.g. paired tests, interaction terms, multiple linear regression)
@@ -1104,13 +1145,14 @@ post-hoc and assumption tests.</p>
 used as routing criteria, subject to the large sample-size safeguards
 for normality testing described below. However, no single assumption
 test maintains optimal Type I error rates and statistical power across
-all distributions <span class="citation">(<a href="#ref-Olejnik:1987">Olejnik and Algina 1987</a>)</span>, and
-p-values obtained from these tests may be unreliable if their
-assumptions are violated. In large samples, even minor, random
-deviations from the null hypothesis can result in statistically
-significant p-values, leading to type I errors. Conversely, in small
-samples, substantial violations of the assumption may not reach
-statistical significance, resulting in type II errors <span class="citation">(<a href="#ref-Kozak:2018">Kozak and Piepho
+all distributions <span class="citation">(<a href="#ref-Olejnik:1987">S.
+F. Olejnik and Algina 1987</a>)</span>, and p-values obtained from these
+tests may be unreliable if their assumptions are violated. In large
+samples, even minor, random deviations from the null hypothesis can
+result in statistically significant p-values, leading to type I errors.
+Conversely, in small samples, substantial violations of the assumption
+may not reach statistical significance, resulting in type II errors
+<span class="citation">(<a href="#ref-Kozak:2018">Kozak and Piepho
 2018</a>)</span>. Moreover, assumption tests provide no information on
 the nature of deviations from the expected distribution <span class="citation">(<a href="#ref-Shatz:2024">Shatz 2024</a>)</span>. Thus
 the assessment of normality or homoscedasticity should never rely solely
@@ -1197,6 +1239,7 @@ extensions to the analyst.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="appendix-appendix">(APPENDIX) Appendix<a class="anchor" aria-label="anchor" href="#appendix-appendix"></a>
 </h2>
+
 </div>
 <div class="section level2">
 <h2 id="sec:general-linear-model">The general linear model<a class="anchor" aria-label="anchor" href="#sec:general-linear-model"></a>
@@ -1232,26 +1275,20 @@ is equivalent to testing equality of all group means.</p>
 <p><strong>Simple linear regression</strong> uses one continuous
 predictor; <span class="math inline">\(H_0: \beta_1 = 0\)</span>
 examines whether a linear relationship exists.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="sec:tests">Test statistics and association measures<a class="anchor" aria-label="anchor" href="#sec:tests"></a>
-</h2>
 <p>In grouped and contingency-table formulae below, <span class="math inline">\(N\)</span> denotes the pooled total sample size
 and <span class="math inline">\(n_i\)</span> group-specific sample
 sizes.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="sec:assumption-statistics">Assumption tests<a class="anchor" aria-label="anchor" href="#sec:assumption-statistics"></a>
+</h2>
 <div class="section level3">
 <h3 id="sec:norm">Normality tests<a class="anchor" aria-label="anchor" href="#sec:norm"></a>
 </h3>
 <p>The package displays both the Shapiro–Wilk test and the
 Anderson–Darling test to check the normality of raw model residuals
-<span class="math inline">\(e_i\)</span>. The diagnostic panels show the
-constant-rescaled residuals <span class="math inline">\(z_i\)</span>
-defined in Equation @ref(eq:z-residual). In the Route 3 leverage panel,
-Cook’s distance is displayed on this same scale as <span class="math inline">\(D_i = z_i^2h_{ii}/\{k(1-h_{ii})^2\}\)</span>,
-where <span class="math inline">\(h_{ii}\)</span> is the <span class="math inline">\(i\)</span>th diagonal element of the hat matrix
-<span class="citation">(<a href="#ref-Cook:1982">Cook and Weisberg
-1982</a>)</span>.</p>
+<span class="math inline">\(e_i\)</span>.</p>
 <div class="section level4">
 <h4 id="sec:shap">Shapiro–Wilk test <code>shapiro.test()</code><a class="anchor" aria-label="anchor" href="#sec:shap"></a>
 </h4>
@@ -1315,39 +1352,25 @@ A^2 = -n - \frac{1}{n}\sum_{i=1}^{n}(2i-1)
 </h4>
 <p>The package implementation uses Levene’s original mean-centred
 proposal <span class="citation">(<a href="#ref-Levene:1960">Levene
-1960</a>)</span>. The package’s own function <code><a href="../reference/levene.test.html">levene.test()</a></code>
-is the sole driver of the parametric/Welch branching decision.</p>
-<p>For each observation <span class="math inline">\(y_{ij}\)</span> in
-group <span class="math inline">\(i\)</span>, the absolute deviation
-from the group mean <span class="math inline">\(\bar{y}_i\)</span>
-is</p>
-<p><span class="math display">\[z_{ij} = |y_{ij} -
-\bar{y}_i|.\]</span></p>
-<p>In Route 1 the same calculation is applied to raw model residuals;
-the group means of these residuals are zero by construction.</p>
-<p>The test statistic is the <span class="math inline">\(F\)</span>-statistic from a one-way ANOVA on the
-<span class="math inline">\(z_{ij}\)</span> values:</p>
+1960</a>)</span>.</p>
+<p>The Levene test statistic is the one-way ANOVA <span class="math inline">\(F\)</span> statistic, computed on the absolute
+residuals <span class="math inline">\(|e_{ij}|\)</span> in place of the
+responses <span class="math inline">\(x_{ij}\)</span>; the corresponding
+Fisher ANOVA formula is given in Eq. (@ref(eq:fisher-f)):</p>
 <p><span class="math display">\[\begin{equation}
-F = \frac{(N-k)\displaystyle\sum_{i=1}^{k} n_i (\bar{z}_i - \bar{z})^2}
-           {(k-1)\displaystyle\sum_{i=1}^{k}\sum_{j=1}^{n_i}(z_{ij} -
-\bar{z}_i)^2},
+F_L = \frac{\displaystyle\sum_{i=1}^{k} n_i (\overline{|e|}_i -
+\overline{|e|})^2\;/\;(k-1)}
+         {\displaystyle\sum_{i=1}^{k}\sum_{j=1}^{n_i}(|e_{ij}| -
+\overline{|e|}_i)^2\;/\;(N-k)},
 (\#eq:levene-f)
 \end{equation}\]</span></p>
-<p>where <span class="math inline">\(k\)</span> is the number of groups,
-<span class="math inline">\(N = \sum_{i=1}^k n_i\)</span> is the total
-sample size, <span class="math inline">\(n_i\)</span> is the sample size
-of group <span class="math inline">\(i\)</span>, <span class="math inline">\(\bar{z}_i\)</span> is the mean of the absolute
-deviations within group <span class="math inline">\(i\)</span>, and
-<span class="math inline">\(\bar{z}\)</span> is the overall mean of all
-absolute deviations. Under the null hypothesis of equal variances the
-statistic follows <span class="math inline">\(F(k-1, N-k)\)</span>.</p>
+<p>where <span class="math inline">\(\overline{|e|}_i\)</span> is the
+within-group mean of the absolute residuals and <span class="math inline">\(\overline{|e|}\)</span> is their overall mean.</p>
 </div>
 <div class="section level4">
 <h4 id="sec:bart">Bartlett’s test <code>bartlett.test()</code><a class="anchor" aria-label="anchor" href="#sec:bart"></a>
 </h4>
-<p>Bartlett’s test <span class="citation">(<a href="#ref-Bartlett:1937">Bartlett 1937</a>)</span> has greater power
-than Levene’s test when normality holds <span class="citation">(<a href="#ref-Allingham:2012">Allingham and Rayner 2012</a>)</span>. Its
-test statistic is</p>
+<p>Bartlett’s test statistic <span class="citation">(<a href="#ref-Bartlett:1937">Bartlett 1937</a>)</span> is</p>
 <p><span class="math display">\[\begin{equation}
 K^2 = \frac{(N-k)\ln s_p^2 - \displaystyle\sum_{i=1}^k (n_i-1)\ln s_i^2}
 {1 + \dfrac{1}{3(k-1)}\!\left(\displaystyle\sum_{i=1}^k \frac{1}{n_i-1}
@@ -1368,66 +1391,226 @@ of group <span class="math inline">\(i\)</span>, <span class="math inline">\(s_i
 </h4>
 <p>For simple linear regression, group-based variance tests are not
 applicable. The package implementation <code><a href="../reference/bp.test.html">bp.test()</a></code> performs
-the Breusch–Pagan test <span class="citation">(<a href="#ref-Breusch:1979">Breusch and Pagan 1979</a>)</span>, which
-assesses whether the variance of the residuals from the regression model
-depends on the predictor values. Let <span class="math inline">\(e_i\)</span> be the residuals from the fitted
-regression model. The auxiliary regression models <span class="math inline">\(e_i^2\)</span> as a function of the predictors.
-Let <span class="math inline">\(R^2_\text{aux}\)</span> denote the
-coefficient of determination from this auxiliary regression. Crucially,
-while a high <span class="math inline">\(R^2\)</span> is typically a
-sign of a strong model, here it indicates a failure of the
-constant-variance assumption: a higher <span class="math inline">\(R^2_\text{aux}\)</span> means the error variance
-follows a systematic, non-random pattern. The Breusch–Pagan statistic is
-then calculated as:</p>
+the Koenker variant <span class="citation">(<a href="#ref-Koenker:1981">Koenker 1981</a>)</span> of the Breusch–Pagan
+test <span class="citation">(<a href="#ref-Breusch:1979">Breusch and
+Pagan 1979</a>)</span>, which tests whether the <span class="math inline">\(N\)</span> squared residuals <span class="math inline">\(e_i^2\)</span> vary systematically with the fitted
+values from the regression model <span class="math inline">\(\hat{y}_i\)</span>.</p>
+<p>The Breusch–Pagan statistic is defined as:</p>
 <p><span class="math display">\[\begin{equation}
-BP = n R^2_\text{aux}
-(\#eq:breusch-pagan-bp)
+BP = N R^2_\text{aux}
+(\#eq:breusch-pagan-bp),
 \end{equation}\]</span></p>
-<p>which is compared asymptotically to a <span class="math inline">\(\chi^2\)</span> distribution with degrees of
-freedom equal to the number of predictors in the auxiliary
-regression.</p>
+<p>where <span class="math inline">\(R^2_\text{aux}\)</span> denote the
+coefficient of determination from regressing <span class="math inline">\(e_i^2\)</span> on <span class="math inline">\(\hat{y}_i\)</span> :</p>
+<p><span class="math display">\[R^2_\text{aux}
+= 1 -
+\frac{\sum_{i=1}^{N} (e_i^2 - \widehat{e_i^2})^2}
+     {\sum_{i=1}^{N} (e_i^2 - \overline{e^2})^2}.\]</span></p>
+<p>Here <span class="math inline">\(\widehat{e_i^2}\)</span> are the
+fitted values from this auxiliary regression and <span class="math inline">\(\overline{e^2}\)</span> is the mean of the squared
+residuals.</p>
+<p>Under the null hypothesis of homoscedasticity, <span class="math inline">\(BP\)</span> is compared asymptotically to a <span class="math inline">\(\chi^2(k-1)\)</span> distribution.</p>
 </div>
 </div>
+</div>
+<div class="section level2">
+<h2 id="sec:tests">Parametric tests<a class="anchor" aria-label="anchor" href="#sec:tests"></a>
+</h2>
+<p>In the numeric-response, categorical-predictor branch (Route 1),
+parametric tests are selected when residual normality is not rejected,
+or when all group-specific sample sizes are greater than 50. The Levene
+variance gate then separates equal-variance tests from Welch-type
+tests.</p>
 <div class="section level3">
-<h3 id="sec:tt">Student’s t-test and Welch’s t-test<a class="anchor" aria-label="anchor" href="#sec:tt"></a>
+<h3 id="students-t-test-and-fishers-one-way-anova-1">Student’s t-test and Fisher’s one-way ANOVA<a class="anchor" aria-label="anchor" href="#students-t-test-and-fishers-one-way-anova-1"></a>
 </h3>
-<p>The test statistic for Student’s t-test
+<div class="section level4">
+<h4 id="sec:tt">Student’s t-test<a class="anchor" aria-label="anchor" href="#sec:tt"></a>
+</h4>
+<p>Student’s t-test tests the null hypothesis that the means of two
+unpaired groups are equal. The test statistic for Student’s t-test
 (<code>t.test(..., var.equal = TRUE)</code>) is</p>
 <p><span class="math display">\[\begin{equation}
-t = \frac{\bar{x}_1 - \bar{x}_2}{s_p \sqrt{\dfrac{1}{n_1} +
-\dfrac{1}{n_2}}},
+t = \frac{\bar{x}_1 - \bar{x}_2}
+{s_p \sqrt{\dfrac{1}{n_1} + \dfrac{1}{n_2}}},
 (\#eq:student-t)
 \end{equation}\]</span></p>
 <p>where <span class="math inline">\(\bar{x}_1\)</span> and <span class="math inline">\(\bar{x}_2\)</span> are the sample means, <span class="math inline">\(n_1\)</span> and <span class="math inline">\(n_2\)</span> the sample sizes, and <span class="math inline">\(s_p\)</span> the pooled standard deviation</p>
-<p><span class="math display">\[s_p = \sqrt{\frac{(n_1-1)s_1^2 +
-(n_2-1)s_2^2}{n_1+n_2-2}},\]</span></p>
+<p><span class="math display">\[s_p =
+\sqrt{\frac{(n_1-1)s_1^2 + (n_2-1)s_2^2}{n_1+n_2-2}},\]</span></p>
 <p>with <span class="math inline">\(s_1^2\)</span> and <span class="math inline">\(s_2^2\)</span> the sample variances. The statistic
 follows a <span class="math inline">\(t\)</span>-distribution with <span class="math inline">\(\nu = n_1 + n_2 - 2\)</span> degrees of
 freedom.</p>
-<p>Welch’s t-test (<code>t.test(..., var.equal = FALSE)</code>) relaxes
-the homoscedasticity assumption. Its statistic is</p>
+</div>
+<div class="section level4">
+<h4 id="sec:fisher-aov">Fisher’s one-way ANOVA<a class="anchor" aria-label="anchor" href="#sec:fisher-aov"></a>
+</h4>
+<p>Fisher’s one-way ANOVA generalises the mean comparison to more than
+two groups. Fisher’s one-way ANOVA tests the null hypothesis that the
+means of <span class="math inline">\(k\)</span> groups are equal.
+Fisher’s ANOVA test statistic is</p>
 <p><span class="math display">\[\begin{equation}
-t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{s_1^2/n_1 + s_2^2/n_2}}
+\begin{aligned}
+F &amp;= \frac{MS_\text{between}}{MS_\text{within}}
+   = \frac{SS_\text{between}/(k-1)}{SS_\text{within}/(N-k)}
+   = \frac{\displaystyle\sum_{i=1}^{k} n_i
+          (\bar{x}_i - \bar{x})^2\;/\;(k-1)}
+          {\displaystyle\sum_{i=1}^{k}\sum_{j=1}^{n_i}
+          (x_{ij}-\bar{x}_i)^2\;/\;(N-k)}
+\end{aligned},
+(\#eq:fisher-f)
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(MS_\text{between}\)</span> and
+<span class="math inline">\(MS_\text{within}\)</span> are the
+between-group and within-group mean squares, <span class="math inline">\(SS_\text{between}\)</span> and <span class="math inline">\(SS_\text{within}\)</span> are the corresponding
+sums of squares, <span class="math inline">\(k\)</span> is the number of
+groups, <span class="math inline">\(N = \sum_{i=1}^k n_i\)</span> is the
+total sample size, <span class="math inline">\(\bar{x}_i\)</span> is the
+mean of group <span class="math inline">\(i\)</span>, <span class="math inline">\(\bar{x}\)</span> is the overall mean, and <span class="math inline">\(x_{ij}\)</span> is observation <span class="math inline">\(j\)</span> in group <span class="math inline">\(i\)</span>.</p>
+<p>From Eq. (@ref(eq:fisher-f)) follows that in the two-sample case
+(<span class="math inline">\(k=2\)</span>), the squared test statistic
+of Student’s t-test equals the Fisher ANOVA test statistic, <span class="math inline">\(t^2 = F\)</span>, resulting in identical <span class="math inline">\(p\)</span>-values for
+<code>t.test(var.equal = TRUE)</code> and <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>.</p>
+<p>Under <span class="math inline">\(H_0: \mu_1 = \cdots =
+\mu_k\)</span>, the statistic follows <span class="math inline">\(F(k-1,
+N-k)\)</span>.</p>
+<div class="section level5">
+<h5 id="sec:tukey">Post-hoc comparison<a class="anchor" aria-label="anchor" href="#sec:tukey"></a>
+</h5>
+<p><code><a href="../reference/visstat.html">visstat()</a></code> follows <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> with Tukey’s Honest
+Significant Differences procedure <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> <span class="citation">(<a href="#ref-Tukey:1949">Tukey 1949</a>)</span>. The
+procedure is designed for pairwise mean comparisons following ANOVA.</p>
+<p><code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> returns adjusted p-values and confidence
+intervals for all pairwise differences between factor-level means. For
+two groups <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, let <span class="math inline">\(d_{ij}
+= \bar{x}_i - \bar{x}_j\)</span>. The studentised range statistic is</p>
+<p><span class="math display">\[\begin{equation}
+q_{ij} =
+\frac{|d_{ij}|}
+{\sqrt{\dfrac{MS_\text{within}}{2}
+\left(\dfrac{1}{n_i} + \dfrac{1}{n_j}\right)}},
+(\#eq:tukey-hsd-q)
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(MS_\text{within}\)</span> is
+defined in Eq. (@ref(eq:fisher-f)). Adjusted p-values are computed from
+the studentised range distribution with <span class="math inline">\(k\)</span> groups and <span class="math inline">\(N-k\)</span> residual degrees of freedom.</p>
+</div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="welchs-t-test-and-welchs-heteroscedastic-anova">Welch’s t-test and Welch’s heteroscedastic ANOVA<a class="anchor" aria-label="anchor" href="#welchs-t-test-and-welchs-heteroscedastic-anova"></a>
+</h3>
+<p>Welch’s heteroscedastic ANOVA generalises the unequal-variance mean
+comparison to more than two groups.</p>
+<div class="section level4">
+<h4 id="sec:welch-tt">Welch’s t-test<a class="anchor" aria-label="anchor" href="#sec:welch-tt"></a>
+</h4>
+<p>Welch’s t-test (<code>t.test(..., var.equal = FALSE)</code>) compares
+the means of two independent groups when homogeneous variances cannot be
+assumed. Its statistic is</p>
+<p><span class="math display">\[\begin{equation}
+t = \frac{\bar{x}_1 - \bar{x}_2}
+{\sqrt{s_1^2/n_1 + s_2^2/n_2}}
 (\#eq:welch-t)
 \end{equation}\]</span></p>
 <p>with degrees of freedom approximated by the Welch–Satterthwaite
-equation:</p>
-<p><span class="math display">\[\nu \approx
+equation <span class="citation">(<a href="#ref-Welch:1947">Welch
+1947</a>; <a href="#ref-Satterthwaite:1946">Satterthwaite
+1946</a>)</span>:</p>
+<p><span class="math display">\[\begin{equation}
+\nu \approx
 \frac{\left(\dfrac{s_1^2}{n_1} + \dfrac{s_2^2}{n_2}\right)^2}
-{\dfrac{(s_1^2/n_1)^2}{n_1-1} +
-\dfrac{(s_2^2/n_2)^2}{n_2-1}}.\]</span></p>
+{\dfrac{(s_1^2/n_1)^2}{n_1-1}
++ \dfrac{(s_2^2/n_2)^2}{n_2-1}}.
+(\#eq:welch-satterthwaite-df)
+\end{equation}\]</span></p>
 <p>Welch’s methods outperform their classical counterparts when
 variances differ <span class="citation">(<a href="#ref-Moser:1992">Moser
 and Stevens 1992</a>; <a href="#ref-Fagerland:2009">Fagerland and
-Sandvik 2009</a>; <a href="#ref-Delacre:2017">Delacre et al.
+Sandvik 2009</a>; <a href="#ref-Delacre:2017">Delacre, Lakens, and Leys
 2017</a>)</span>.</p>
 </div>
+<div class="section level4">
+<h4 id="sec:welch-aov">Welch’s heteroscedastic ANOVA<a class="anchor" aria-label="anchor" href="#sec:welch-aov"></a>
+</h4>
+<p>Welch’s heteroscedastic ANOVA (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>)
+generalises Welch’s t-test to more than two groups by down-weighting
+groups with large variance. It compares group means using weights based
+on sample sizes and variances when homogeneous variances cannot be
+assumed. Its test statistic is</p>
+<p><span class="math display">\[\begin{equation}
+F_W =
+\frac{\displaystyle\sum_{i=1}^{k} w_i
+(\bar{y}_i - \bar{y}_w)^2\;/\;(k-1)}
+{1 + \dfrac{2(k-2)}{k^2-1}
+\displaystyle\sum_{i=1}^{k} \dfrac{(1-w_i/w)^2}{n_i-1}},
+(\#eq:welch-f)
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(w_i = n_i/s_i^2\)</span> are the
+inverse-variance weights, <span class="math inline">\(w = \sum_{i=1}^{k}
+w_i\)</span>, and <span class="math inline">\(\bar{y}_w = \sum_{i=1}^{k}
+w_i \bar{y}_i / w\)</span> is the weighted grand mean. The numerator
+degree of freedom is <span class="math inline">\(k-1\)</span>; the
+denominator degree of freedom is the Satterthwaite-type approximation
+returned by <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>.</p>
+<div class="section level5">
+<h5 id="sec:gh">Post-hoc comparison<a class="anchor" aria-label="anchor" href="#sec:gh"></a>
+</h5>
+<p>Post-hoc comparisons use the package implementation
+<code><a href="../reference/games.howell.html">games.howell()</a></code> <span class="citation">(<a href="#ref-Games:1976">Games and Howell 1976</a>)</span>. The
+Games–Howell procedure is used for pairwise mean comparisons under
+unequal variances and unequal sample sizes. For each pairwise
+comparison, the two groups are denoted as 1 and 2. The function
+computes</p>
+<p><span class="math display">\[d = \bar{y}_1 - \bar{y}_2,\]</span></p>
+<p>with standard error</p>
+<p><span class="math display">\[SE = \sqrt{\frac{s_1^2}{n_1} +
+\frac{s_2^2}{n_2}}\]</span></p>
+<p>and test statistic</p>
+<p><span class="math display">\[\begin{equation}
+t = \frac{d}{SE}.
+(\#eq:games-howell-t)
+\end{equation}\]</span></p>
+<p>The pairwise degrees of freedom use the two-group Welch–Satterthwaite
+equation @ref(eq:welch-satterthwaite-df). Two-sided <span class="math inline">\(p\)</span>-values are computed from the
+corresponding <span class="math inline">\(t\)</span> distribution and
+then adjusted with Holm’s method <span class="citation">(<a href="#ref-Holm:1979">Holm 1979</a>)</span>. Confidence intervals are
+computed as <span class="math inline">\(d \pm
+t_{1-\alpha/2,\nu}SE\)</span> and are not adjusted for multiple
+comparisons. Significant letter displays are produced by
+<code>multcompLetters()</code> from <code>multcompView</code> <span class="citation">(<a href="#ref-Graves:2026">Graves, Piepho, and Selzer
+2026</a>)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="non-parametric-tests">Non-parametric tests<a class="anchor" aria-label="anchor" href="#non-parametric-tests"></a>
+</h2>
+<p>In the numeric-response, categorical-predictor branch, non-parametric
+tests are selected when residual normality is rejected. They are also
+used for an ordered response with a categorical predictor.</p>
 <div class="section level3">
-<h3 id="sec:wilc">Wilcoxon rank-sum test<a class="anchor" aria-label="anchor" href="#sec:wilc"></a>
+<h3 id="wilcoxon-rank-sum-test-and-kruskalwallis-test-1">Wilcoxon rank-sum test and Kruskal–Wallis test<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test-and-kruskalwallis-test-1"></a>
 </h3>
-<p>The two-level factor <code>x</code> defines two groups with sample
-sizes <span class="math inline">\(n_1\)</span> and <span class="math inline">\(n_2\)</span>. All <span class="math inline">\(N =
-n_1 + n_2\)</span> observations are pooled and assigned ranks <span class="math inline">\(1\)</span> to <span class="math inline">\(N\)</span>. Let <span class="math inline">\(W_1 =
+<p>The Wilcoxon rank-sum test is a two-group rank-based location test;
+Kruskal–Wallis generalises this location comparison to more than two
+groups.</p>
+<div class="section level4">
+<h4 id="sec:wilc">Wilcoxon rank-sum test<a class="anchor" aria-label="anchor" href="#sec:wilc"></a>
+</h4>
+<p>The two-sample Wilcoxon rank-sum test, also known as the Mann–Whitney
+test, tests for a difference in location between two independent
+distributions.
+<!-- The Wilcoxon rank-sum test should not generally be read as a median -->
+<!-- test. -->
+<!-- Only under additional distributional assumptions, such as a common-shape -->
+<!-- location shift, does a location-shift interpretation also imply a median -->
+<!-- shift [@Fay:2010]. --></p>
+<p>To compare the two groups on one common rank scale, all observations
+are pooled before ranking. For two independent groups with sample sizes
+<span class="math inline">\(n_1\)</span> and <span class="math inline">\(n_2\)</span>, all <span class="math inline">\(N =
+n_1 + n_2\)</span> observations are assigned ranks <span class="math inline">\(1\)</span> to <span class="math inline">\(N\)</span>. Let <span class="math inline">\(W_1 =
 \sum_{i=1}^{n_1} R(x_{1,i})\)</span> denote the rank sum of the first
 group, where <span class="math inline">\(R(x_{1,i})\)</span> is the rank
 of observation <span class="math inline">\(x_{1,i}\)</span> in the
@@ -1444,106 +1627,64 @@ when both groups contain fewer than 50 observations and the data contain
 no ties; otherwise a normal approximation with continuity correction is
 used.</p>
 </div>
-<div class="section level3">
-<h3 id="sec:aov">Fisher’s one-way ANOVA and Welch’s heteroscedastic ANOVA<a class="anchor" aria-label="anchor" href="#sec:aov"></a>
-</h3>
-<p>Fisher’s ANOVA test statistic is</p>
-<p><span class="math display">\[\begin{equation}
-\begin{aligned}
-F &amp;= \frac{MS_\text{between}}{MS_\text{within}}
-   = \frac{SS_\text{between}/(k-1)}{SS_\text{within}/(N-k)}
-   = \frac{\displaystyle\sum_{i=1}^{k} n_i (\bar{x}_i -
-\bar{x})^2\;/\;(k-1)}
-          {\displaystyle\sum_{i=1}^{k}\sum_{j=1}^{n_i}(x_{ij}-\bar{x}_i)^2\;/\;(N-k)},
-\end{aligned}
-(\#eq:fisher-f)
-\end{equation}\]</span></p>
-<p>where <span class="math inline">\(MS_\text{between}\)</span> and
-<span class="math inline">\(MS_\text{within}\)</span> are the
-between-group and within-group mean squares, <span class="math inline">\(SS_\text{between}\)</span> and <span class="math inline">\(SS_\text{within}\)</span> are the corresponding
-sums of squares, <span class="math inline">\(k\)</span> is the number of
-groups, <span class="math inline">\(N = \sum_{i=1}^k n_i\)</span> is the
-total sample size, <span class="math inline">\(\bar{x}_i\)</span> is the
-mean of group <span class="math inline">\(i\)</span>, <span class="math inline">\(\bar{x}\)</span> is the overall mean, and <span class="math inline">\(x_{ij}\)</span> is observation <span class="math inline">\(j\)</span> in group <span class="math inline">\(i\)</span>.</p>
-<p>From Equation @ref(eq:fisher-f) follows that in the two-sample case
-(<span class="math inline">\(k=2\)</span>), the squared test statistic
-of Student’s t-test equals the Fisher ANOVA test statistic, <span class="math inline">\(t^2 = F\)</span>, resulting in identical <span class="math inline">\(p\)</span>-values for
-<code>t.test(var.equal = TRUE)</code> and <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>.</p>
-<p>Under the null hypothesis <span class="math inline">\(F \sim F(k-1,
-N-k)\)</span>, post-hoc comparisons use Tukey’s Honest Significant
-Differences <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>, which controls the family-wise
-error rate.</p>
-<p>Welch’s heteroscedastic ANOVA (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>)
-down-weights groups with large variance. Its test statistic is</p>
-<p><span class="math display">\[\begin{equation}
-F_W = \frac{\displaystyle\sum_{i=1}^{k} w_i (\bar{y}_i -
-\bar{y}_w)^2\;/\;(k-1)}
-{1 + \dfrac{2(k-2)}{k^2-1} \displaystyle\sum_{i=1}^{k}
-\dfrac{(1-w_i/w)^2}{n_i-1}},
-(\#eq:welch-f)
-\end{equation}\]</span></p>
-<p>where <span class="math inline">\(w_i = n_i/s_i^2\)</span> are the
-inverse-variance weights, <span class="math inline">\(w = \sum_{i=1}^{k}
-w_i\)</span>, and <span class="math inline">\(\bar{y}_w = \sum_{i=1}^{k}
-w_i \bar{y}_i / w\)</span> is the weighted grand mean. Degrees of
-freedom are adjusted via a Satterthwaite-type approximation.</p>
 <div class="section level4">
-<h4 id="sec:gh">Post-hoc comparison <code>games.howell()</code><a class="anchor" aria-label="anchor" href="#sec:gh"></a>
+<h4 id="sec:kw">Kruskal–Wallis test<a class="anchor" aria-label="anchor" href="#sec:kw"></a>
 </h4>
-<p>Post-hoc comparisons use the package implementation
-<code><a href="../reference/games.howell.html">games.howell()</a></code> <span class="citation">(<a href="#ref-Games:1976">Games and Howell 1976</a>)</span>. For each
-pairwise comparison, the two groups are denoted as 1 and 2. The function
-computes</p>
-<p><span class="math display">\[d = \bar{y}_1 - \bar{y}_2,\]</span></p>
-<p>with standard error</p>
-<p><span class="math display">\[SE = \sqrt{\frac{s_1^2}{n_1} +
-\frac{s_2^2}{n_2}}\]</span></p>
-<p>and test statistic</p>
-<p><span class="math display">\[t = \frac{d}{SE}.\]</span></p>
-<p>The degrees of freedom use the Welch–Satterthwaite equation given
-above. Two-sided <span class="math inline">\(p\)</span>-values are
-computed from the corresponding <span class="math inline">\(t\)</span>
-distribution and then adjusted with Holm’s method <span class="citation">(<a href="#ref-Holm:1979">Holm 1979</a>)</span>.
-Confidence intervals are computed as <span class="math inline">\(d \pm
-t_{1-\alpha/2,\nu}SE\)</span> and are not adjusted for multiple
-comparisons. Significant letter displays are produced by
-<code>multcompLetters()</code> from <code>multcompView</code> <span class="citation">(<a href="#ref-Graves:2026">Graves et al.
-2026</a>)</span>.</p>
-</div>
-</div>
-<div class="section level3">
-<h3 id="sec:kw">Kruskal–Wallis test<a class="anchor" aria-label="anchor" href="#sec:kw"></a>
-</h3>
-<p>When normality is rejected, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> tests whether
-the groups come from the same population based on ranks:</p>
+<p>The Kruskal–Wallis test compares group distributions based on ranked
+values and tests the null hypothesis that the groups come from the same
+population, specifically that the distributions have the same location
+<span class="citation">(<a href="#ref-Kruskal:1952">Kruskal and Wallis
+1952</a>)</span>. If the group distributions are sufficiently similar in
+shape and scale, the test can be interpreted as testing equality of
+medians across groups <span class="citation">(<a href="#ref-Hollander:2014">Hollander, Chicken, and Wolfe
+2014</a>)</span>.</p>
 <p><span class="math display">\[\begin{equation}
-H = \frac{12}{N(N+1)} \sum_{i=1}^{k} n_i \left(\bar{R}_i -
-\bar{R}\right)^2,
+H = \frac{12}{N(N+1)} \sum_{i=1}^{k}
+n_i \left(\bar{R}_i - \bar{R}\right)^2,
 (\#eq:kruskal-h)
 \end{equation}\]</span></p>
 <p>where <span class="math inline">\(n_i\)</span> is the sample size of
 group <span class="math inline">\(i\)</span>, <span class="math inline">\(k\)</span> is the number of groups, <span class="math inline">\(\bar{R}_i\)</span> is the average rank of group
 <span class="math inline">\(i\)</span>, <span class="math inline">\(N\)</span> is the total sample size, and <span class="math inline">\(\bar{R} = (N+1)/2\)</span> is the expected average
 rank under the null hypothesis. The statistic approximately follows
-<span class="math inline">\(\chi^2(k-1)\)</span>. Post-hoc comparisons
-use Holm-adjusted <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> <span class="citation">(<a href="#ref-Holm:1979">Holm 1979</a>)</span>.</p>
+<span class="math inline">\(\chi^2(k-1)\)</span>.</p>
+<div class="section level5">
+<h5 id="sec:pairwise-wilcox">Post-hoc comparison<a class="anchor" aria-label="anchor" href="#sec:pairwise-wilcox"></a>
+</h5>
+<p><code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> compares each pair of factor
+levels via the Wilcoxon rank-sum test on ranks rather than means. The
+resulting p-values are adjusted for multiplicity using Holm’s step-down
+method <span class="citation">(<a href="#ref-Holm:1979">Holm
+1979</a>)</span>.</p>
 </div>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="tests-for-comparing-proportions">Tests for comparing proportions<a class="anchor" aria-label="anchor" href="#tests-for-comparing-proportions"></a>
+</h2>
+<p>For two unordered factors (route 4), <code><a href="../reference/visstat.html">visstat()</a></code> tests the
+null hypothesis that the variables are independent using Pearson’s <span class="math inline">\(\chi^2\)</span> test or Fisher’s exact test,
+depending on expected cell counts following Cochran’s rule <span class="citation">(<a href="#ref-Cochran:1954">Cochran
+1954</a>)</span>.</p>
 <div class="section level3">
-<h3 id="sec:chi">Pearson’s <span class="math inline">\(\chi^2\)</span> test and
-Fisher’s exact test<a class="anchor" aria-label="anchor" href="#sec:chi"></a>
+<h3 id="sec:chi">Pearson’s <span class="math inline">\(\chi^2\)</span> test<a class="anchor" aria-label="anchor" href="#sec:chi"></a>
 </h3>
-<p>Let <span class="math inline">\(O_{ij}\)</span> and <span class="math inline">\(E_{ij}\)</span> denote the observed and expected
+<p>Pearson’s <span class="math inline">\(\chi^2\)</span> test evaluates
+the null hypothesis that two categorical variables are independent. Let
+<span class="math inline">\(O_{ij}\)</span> and <span class="math inline">\(E_{ij}\)</span> denote the observed and expected
 frequencies in row <span class="math inline">\(i\)</span> and column
 <span class="math inline">\(j\)</span> of an <span class="math inline">\(R \times C\)</span> contingency table, where rows
 index the <span class="math inline">\(R\)</span> levels of the response
 <span class="math inline">\(y\)</span> and columns the <span class="math inline">\(C\)</span> levels of the predictor <span class="math inline">\(x\)</span>. The Pearson residual for cell <span class="math inline">\((i,j)\)</span> is</p>
 <p><span class="math display">\[r_{ij} = \frac{O_{ij} -
-E_{ij}}{\sqrt{E_{ij}}}, \quad i = 1,\ldots,R,\quad j =
-1,\ldots,C.\]</span></p>
+E_{ij}}{\sqrt{E_{ij}}},
+\quad i = 1,\ldots,R,\quad j = 1,\ldots,C.\]</span></p>
 <p>The test statistic of Pearson’s <span class="math inline">\(\chi^2\)</span> test is</p>
 <p><span class="math display">\[\begin{equation}
 \chi^2 = \sum_{i=1}^{R}\sum_{j=1}^{C} r_{ij}^2
-       = \sum_{i=1}^{R}\sum_{j=1}^{C} \frac{(O_{ij}-E_{ij})^2}{E_{ij}}
+       = \sum_{i=1}^{R}\sum_{j=1}^{C}
+         \frac{(O_{ij}-E_{ij})^2}{E_{ij}}
 (\#eq:pearson-chi)
 \end{equation}\]</span></p>
 <p>compared to <span class="math inline">\(\chi^2\!\left((R-1)(C-1)\right)\)</span>. For
@@ -1552,14 +1693,19 @@ correction is applied by default. For general <span class="math inline">\(R \tim
 supplements the bar chart with a mosaic plot in which tiles are coloured
 by <span class="math inline">\(r_{ij}\)</span> (blue: positive, red:
 negative).</p>
+</div>
+<div class="section level3">
+<h3 id="sec:fisher-exact-test">Fisher’s exact test<a class="anchor" aria-label="anchor" href="#sec:fisher-exact-test"></a>
+</h3>
 <p>Fisher’s exact test (<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>) is applied when
 Cochran’s rule <span class="citation">(<a href="#ref-Cochran:1954">Cochran 1954</a>)</span> is violated. The test
 calculates an exact <span class="math inline">\(p\)</span>-value by
 conditioning on the observed margins of an <span class="math inline">\(R
-\times C\)</span> contingency table. Let <span class="math inline">\(T =
-(n_{ij})\)</span> denote the observed table. To maintain consistency
-with the <code>y ~ x</code> (response ~ predictor) framework used
-throughout <code>visStatistics</code>, rows (<span class="math inline">\(i=1,\ldots,R\)</span>) represent the levels of the
+\times C\)</span> contingency table under the null hypothesis of
+independence. Let <span class="math inline">\(T = (n_{ij})\)</span>
+denote the observed table. To maintain consistency with the
+<code>y ~ x</code> (response ~ predictor) framework used throughout
+<code>visStatistics</code>, rows (<span class="math inline">\(i=1,\ldots,R\)</span>) represent the levels of the
 response variable <span class="math inline">\(y\)</span> and columns
 (<span class="math inline">\(j=1,\ldots,C\)</span>) represent the levels
 of the predictor <span class="math inline">\(x\)</span>. The row totals
@@ -1581,11 +1727,11 @@ hypergeometric probability mass function:</p>
 <p><span class="math display">\[\begin{equation}
 \mathbb{P}(T \mid n_{1\cdot}, n_{2\cdot}, n_{\cdot 1}, n_{\cdot 2})
 = \frac{\binom{n_{1\cdot}}{n_{11}}
-\binom{n_{2\cdot}}{n_{21}}}{\binom{N}{n_{\cdot 1}}},
+        \binom{n_{2\cdot}}{n_{21}}}{\binom{N}{n_{\cdot 1}}},
 (\#eq:fisher-exact)
 \end{equation}\]</span></p>
-<p>where <span class="math inline">\(N = n_{1\cdot} + n_{2\cdot} =
-n_{\cdot 1} + n_{\cdot 2}\)</span> is the total sample size. The <span class="math inline">\(p\)</span>-value is computed by summing the
+<p>where <span class="math inline">\(N = n_{1\cdot} + n_{2\cdot}
+= n_{\cdot 1} + n_{\cdot 2}\)</span> is the total sample size. The <span class="math inline">\(p\)</span>-value is computed by summing the
 probabilities of all tables with the same margins whose probabilities
 under the null are less than or equal to that of the observed table. For
 general <span class="math inline">\(R \times C\)</span> tables,
@@ -1599,17 +1745,51 @@ likelihood estimate of the odds ratio</p>
 \end{equation}\]</span></p>
 <p>and its confidence interval.</p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="sec:rank-correlations">Rank correlations<a class="anchor" aria-label="anchor" href="#sec:rank-correlations"></a>
+</h2>
+<p>Rank correlations are used when <code>correlation = TRUE</code>.</p>
 <div class="section level3">
-<h3 id="rank-association-measures">Rank Association Measures<a class="anchor" aria-label="anchor" href="#rank-association-measures"></a>
+<h3 id="sec:tau">Kendall rank correlation<a class="anchor" aria-label="anchor" href="#sec:tau"></a>
 </h3>
-<div class="section level4">
-<h4 id="sec:rho">Spearman rank correlation<a class="anchor" aria-label="anchor" href="#sec:rho"></a>
-</h4>
+<p>Kendall’s <span class="math inline">\(\tau_b\)</span> tests the null
+hypothesis of no monotone association between two ordered variables. For
+two ordinal variables with <span class="math inline">\(n\)</span> joint
+observations, let <span class="math inline">\(C\)</span> denote the
+number of concordant pairs (those whose ranks agree in both variables)
+and <span class="math inline">\(D\)</span> the number of discordant
+pairs. Kendall’s <span class="math inline">\(\tau_b\)</span> is defined
+as</p>
+<p><span class="math display">\[\begin{equation}
+\tau_b \;=\; \frac{C - D}
+{\sqrt{\left(n_0 - n_1\right)\left(n_0 - n_2\right)}},
+(\#eq:kendall-tau-b)
+\end{equation}\]</span></p>
+<p>where <span class="math inline">\(n_0 = n(n-1)/2\)</span> is the
+total number of observation pairs, <span class="math inline">\(n_1 =
+\sum_i t_i(t_i-1)/2\)</span> is the number of pairs tied in the
+response, and <span class="math inline">\(n_2 = \sum_j
+u_j(u_j-1)/2\)</span> is the number of pairs tied in the predictor. The
+denominator correction makes <span class="math inline">\(\tau_b\)</span>
+attain <span class="math inline">\(\pm 1\)</span> even with ties, which
+Spearman’s <span class="math inline">\(\rho\)</span> does not <span class="citation">(<a href="#ref-Kendall:1945">Kendall 1945</a>)</span>.
+With few ordered levels (e.g., five-point Likert items), ties are
+unavoidable; this is the principal reason to prefer <span class="math inline">\(\tau_b\)</span> over Spearman’s <span class="math inline">\(\rho\)</span> in this setting <span class="citation">(<a href="#ref-Agresti:2010">Agresti
+2010</a>)</span>.</p>
+<p><code><a href="../reference/visstat.html">visstat()</a></code> calls
+<code>cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)</code>
+and reports <span class="math inline">\(\tau_b\)</span>, the asymptotic
+test statistic <span class="math inline">\(z = \tau_b /
+\operatorname{SE}(\tau_b)\)</span>, and the two-sided <span class="math inline">\(p\)</span>-value.</p>
+</div>
+<div class="section level3">
+<h3 id="sec:rho">Spearman rank correlation<a class="anchor" aria-label="anchor" href="#sec:rho"></a>
+</h3>
 <p>For two numeric variables with <code>correlation = TRUE</code>,
 <code><a href="../reference/visstat.html">visstat()</a></code> calls
-<code>cor.test(x, y, method = "spearman")</code> to measure the
-monotonic association between <span class="math inline">\(x\)</span> and
-<span class="math inline">\(y\)</span> using ranks. Spearman’s <span class="math inline">\(\rho\)</span> is Pearson’s <span class="math inline">\(r\)</span> applied to the ranks:</p>
+<code>cor.test(x, y, method = "spearman")</code> to test for a monotone
+association between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> using ranks. Spearman’s <span class="math inline">\(\rho\)</span> is Pearson’s <span class="math inline">\(r\)</span> applied to the ranks:</p>
 <p><span class="math display">\[\begin{equation}
 \rho = r(\operatorname{rank}(x), \operatorname{rank}(y)),
 (\#eq:spearman-rho)
@@ -1637,38 +1817,6 @@ and the two-sided test of zero Pearson correlation return the same <span class="
 therefore not add a separate inferential route to the default regression
 branch.</p>
 </div>
-<div class="section level4">
-<h4 id="sec:tau">Kendall’s <span class="math inline">\(\tau_b\)</span><a class="anchor" aria-label="anchor" href="#sec:tau"></a>
-</h4>
-<p>For two ordinal variables with <span class="math inline">\(n\)</span>
-joint observations, let <span class="math inline">\(C\)</span> denote
-the number of concordant pairs (those whose ranks agree in both
-variables) and <span class="math inline">\(D\)</span> the number of
-discordant pairs. Kendall’s <span class="math inline">\(\tau_b\)</span>
-is defined as</p>
-<p><span class="math display">\[\begin{equation}
-\tau_b \;=\; \frac{C - D}
-{\sqrt{\left(n_0 - n_1\right)\left(n_0 - n_2\right)}},
-(\#eq:kendall-tau-b)
-\end{equation}\]</span></p>
-<p>where <span class="math inline">\(n_0 = n(n-1)/2\)</span> is the
-total number of observation pairs, <span class="math inline">\(n_1 =
-\sum_i t_i(t_i-1)/2\)</span> is the number of pairs tied in the
-response, and <span class="math inline">\(n_2 = \sum_j
-u_j(u_j-1)/2\)</span> is the number of pairs tied in the predictor. The
-denominator correction makes <span class="math inline">\(\tau_b\)</span>
-attain <span class="math inline">\(\pm 1\)</span> even with ties, which
-Spearman’s <span class="math inline">\(\rho\)</span> does not <span class="citation">(<a href="#ref-Kendall:1945">Kendall 1945</a>)</span>.
-With few ordered levels (e.g., five-point Likert items), ties are
-unavoidable; this is the principal reason to prefer <span class="math inline">\(\tau_b\)</span> over Spearman’s <span class="math inline">\(\rho\)</span> in this setting <span class="citation">(<a href="#ref-Agresti:2010">Agresti
-2010</a>)</span>.</p>
-<p><code><a href="../reference/visstat.html">visstat()</a></code> calls
-<code>cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)</code>
-and reports <span class="math inline">\(\tau_b\)</span>, the asymptotic
-test statistic <span class="math inline">\(z = \tau_b /
-\operatorname{SE}(\tau_b)\)</span>, and the two-sided <span class="math inline">\(p\)</span>-value.</p>
-</div>
-</div>
 </div>
 <div class="section level2">
 <h2 id="sec:effect-size">Effect size<a class="anchor" aria-label="anchor" href="#sec:effect-size"></a>
@@ -1680,18 +1828,17 @@ regardless of sample size <span class="citation">(<a href="#ref-Levine:2002">Lev
 extracts, where possible, the effect sizes from base R
 <code>stats</code> output where available and implements the remaining
 formulae internally <span class="citation">(<a href="#ref-Hedges:1981">Hedges 1981</a>; <a href="#ref-Kerby:2014">Kerby
-2014</a>; <a href="#ref-Olejnik:2003">Olejnik and Algina 2003</a>; <a href="#ref-BenShachar:2020">Ben-Shachar et al. 2020</a>; <a href="#ref-Kelley:1935">Kelley 1935</a>; <a href="#ref-Bergsma:2013">Bergsma 2013</a>)</span>.</p>
+2014</a>; <a href="#ref-Olejnik:2003">S. Olejnik and Algina 2003</a>; <a href="#ref-BenShachar:2020">Ben-Shachar, Lüdecke, and Makowski 2020</a>;
+<a href="#ref-Kelley:1935">Kelley 1935</a>; <a href="#ref-Bergsma:2013">Bergsma 2013</a>)</span>.</p>
 <table class="table">
 <colgroup>
-<col width="20%">
-<col width="20%">
-<col width="20%">
-<col width="20%">
-<col width="20%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">Analysis</th>
-<th align="left">R call</th>
 <th align="left">Effect size</th>
 <th align="left">Formula</th>
 <th align="left">Source</th>
@@ -1699,7 +1846,6 @@ formulae internally <span class="citation">(<a href="#ref-Hedges:1981">Hedges 19
 <tbody>
 <tr class="odd">
 <td align="left"><a href="#eq:student-t">Student’s <span class="math inline">\(t\)</span>-test</a></td>
-<td align="left"><code>t.test(..., var.equal = TRUE)</code></td>
 <td align="left">Hedges’ <span class="math inline">\(g_{s_p}\)</span>
 (pooled)</td>
 <td align="left"><span class="math inline">\(g_{s_p} =
@@ -1708,7 +1854,6 @@ J\cdot(\bar{x}_1-\bar{x}_2)/s_p\)</span></td>
 </tr>
 <tr class="even">
 <td align="left"><a href="#eq:welch-t">Welch’s <span class="math inline">\(t\)</span>-test</a></td>
-<td align="left"><code>t.test(..., var.equal = FALSE)</code></td>
 <td align="left">Hedges’ <span class="math inline">\(g_{s^{*}}\)</span>
 (non-pooled)</td>
 <td align="left"><span class="math inline">\(g_{s^{*}} =
@@ -1717,7 +1862,6 @@ J\cdot(\bar{x}_1-\bar{x}_2)/s^{*}\)</span></td>
 </tr>
 <tr class="odd">
 <td align="left"><a href="#eq:wilcoxon-w">Wilcoxon rank-sum</a></td>
-<td align="left"><code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code></td>
 <td align="left">rank-biserial <span class="math inline">\(r\)</span>
 </td>
 <td align="left"><span class="math inline">\(r = 2\cdot W/(n_1\cdot n_2)
@@ -1727,25 +1871,24 @@ J\cdot(\bar{x}_1-\bar{x}_2)/s^{*}\)</span></td>
 </tr>
 <tr class="even">
 <td align="left"><a href="#eq:fisher-f">Fisher’s ANOVA</a></td>
-<td align="left"><code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code></td>
 <td align="left"><span class="math inline">\(\omega^2\)</span></td>
 <td align="left"><span class="math inline">\(\nu_1\cdot(F-1)/(\nu_1\cdot
 F + \nu_2 + 1)\)</span></td>
-<td align="left"><span class="citation">(<a href="#ref-Olejnik:2003">Olejnik and Algina 2003</a>)</span></td>
+<td align="left"><span class="citation">(<a href="#ref-Olejnik:2003">S.
+Olejnik and Algina 2003</a>)</span></td>
 </tr>
 <tr class="odd">
 <td align="left"><a href="#eq:welch-f">Welch’s ANOVA</a></td>
-<td align="left"><code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code></td>
 <td align="left">
 <span class="math inline">\(\omega^2\)</span>
 (approx.)</td>
 <td align="left"><span class="math inline">\(\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 +
 1)\)</span></td>
-<td align="left"><span class="citation">(<a href="#ref-BenShachar:2020">Ben-Shachar et al. 2020</a>)</span></td>
+<td align="left"><span class="citation">(<a href="#ref-BenShachar:2020">Ben-Shachar, Lüdecke, and Makowski
+2020</a>)</span></td>
 </tr>
 <tr class="even">
 <td align="left"><a href="#eq:kruskal-h">Kruskal–Wallis</a></td>
-<td align="left"><code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code></td>
 <td align="left">Kelley-adjusted <span class="math inline">\(\eta_H^2\)</span>
 </td>
 <td align="left"><span class="math inline">\((H - k + 1)/(N -
@@ -1754,7 +1897,6 @@ k)\)</span></td>
 </tr>
 <tr class="odd">
 <td align="left">Linear regression</td>
-<td align="left"><code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code></td>
 <td align="left"><span class="math inline">\(R^2\)</span></td>
 <td align="left"><span class="math inline">\(R^2 = 1 -
 SS_\text{res}/SS_\text{tot}\)</span></td>
@@ -1762,36 +1904,32 @@ SS_\text{res}/SS_\text{tot}\)</span></td>
 </tr>
 <tr class="even">
 <td align="left"><a href="#eq:spearman-rho">Spearman</a></td>
-<td align="left"><code>cor.test(method = "spearman")</code></td>
 <td align="left"><span class="math inline">\(\rho\)</span></td>
 <td align="left">
 <span class="math inline">\(\rho =
 r(\operatorname{rank}(x),\operatorname{rank}(y))\)</span>, Eq.
-@ref(eq:spearman-rho)</td>
+(@ref(eq:spearman-rho))</td>
 <td align="left"><code>cor.test()$estimate</code></td>
 </tr>
 <tr class="odd">
 <td align="left"><a href="#eq:kendall-tau-b">Kendall</a></td>
-<td align="left"><code>cor.test(method = "kendall")</code></td>
 <td align="left"><span class="math inline">\(\tau_b\)</span></td>
 <td align="left">
 <span class="math inline">\(\tau_b =
-(C-D)/\sqrt{(n_0-n_1)(n_0-n_2)}\)</span>, Eq.
-@ref(eq:kendall-tau-b)</td>
+(C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}\)</span>, Eq.
+(@ref(eq:kendall-tau-b))</td>
 <td align="left"><code>cor.test()$estimate</code></td>
 </tr>
 <tr class="even">
 <td align="left"><a href="#eq:pearson-chi">Pearson <span class="math inline">\(\chi^2\)</span> (<span class="math inline">\(R\times C\)</span>)</a></td>
-<td align="left"><code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code></td>
 <td align="left">Cramér’s <span class="math inline">\(V\)</span>
 </td>
 <td align="left"><span class="math inline">\(V_{R\times C} =
-\sqrt{\chi^2/(N\cdot(\min(R,C)-1))}\)</span></td>
+\sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}\)</span></td>
 <td align="left"><span class="citation">(<a href="#ref-Bergsma:2013">Bergsma 2013</a>)</span></td>
 </tr>
 <tr class="odd">
 <td align="left"><a href="#eq:pearson-chi">Pearson <span class="math inline">\(\chi^2\)</span> (<span class="math inline">\(2\times 2\)</span>)</a></td>
-<td align="left"><code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code></td>
 <td align="left"><span class="math inline">\(\phi\)</span></td>
 <td align="left"><span class="math inline">\(V_{2\times 2} =
 \sqrt{\chi^2/N}\)</span></td>
@@ -1799,11 +1937,10 @@ r(\operatorname{rank}(x),\operatorname{rank}(y))\)</span>, Eq.
 </tr>
 <tr class="even">
 <td align="left"><a href="#eq:fisher-exact">Fisher’s exact (<span class="math inline">\(2\times 2\)</span>)</a></td>
-<td align="left"><code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code></td>
 <td align="left">odds ratio</td>
 <td align="left">
 <span class="math inline">\(\widehat{\text{OR}} =
-n_{11}n_{22}/(n_{12}n_{21})\)</span>, Eq. @ref(eq:odds-ratio)</td>
+n_{11}n_{22}/(n_{12}n_{21})\)</span>, Eq. (@ref(eq:odds-ratio))</td>
 <td align="left"><code>fisher.test()$estimate</code></td>
 </tr>
 </tbody>
@@ -1820,7 +1957,8 @@ average-variance standardizer, <span class="math inline">\(s^{*} =
 \sqrt{(s_1^2+s_2^2)/2}\)</span>.</li>
 <li>
 <span class="math inline">\(\nu_1\)</span>, <span class="math inline">\(\nu_2\)</span>: numerator and denominator degrees
-of freedom; for Fisher’s ANOVA, <span class="math inline">\(\nu_1=k-1\)</span> and <span class="math inline">\(\nu_2=N-k\)</span>; for Welch’s ANOVA, <span class="math inline">\(\nu_1\)</span> and <span class="math inline">\(\nu_2\)</span> are returned by
+of freedom; for Fisher’s ANOVA, <span class="math inline">\(\nu_1=k-1\)</span> and <span class="math inline">\(\nu_2=N-k\)</span>; for Welch’s ANOVA, <span class="math inline">\(\nu_1=k-1\)</span> and <span class="math inline">\(\nu_2\)</span> is the usually fractional
+denominator degree of freedom returned by
 <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>.</li>
 <li>
 <span class="math inline">\(SS_\text{res}=\sum_i(Y_i-\hat{Y}_i)^2\)</span> is
@@ -1836,7 +1974,7 @@ corresponding “Analysis” section.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-Agresti:2010" class="csl-entry">
 Agresti, Alan. 2010. <em>Analysis of <span>Ordinal Categorical
 Data</span></em>. 1st ed. Wiley <span>Series</span> in
@@ -1877,11 +2015,12 @@ Bergsma, Wicher. 2013. <span>“A Bias-Correction for Cramer’s
 the Korean Statistical Society</em> 42 (3): 323–28. <a href="https://doi.org/10.1016/j.jkss.2012.10.002" class="external-link">https://doi.org/10.1016/j.jkss.2012.10.002</a>.
 </div>
 <div id="ref-Bijlenga:2017" class="csl-entry">
-Bijlenga, Philippe, Renato Gondar, Sabine Schilling, et al. 2017.
-<span>“<span>PHASES Score</span> for the <span>Management</span> of
-<span>Intracranial Aneurysm</span>: <span>A Cross-Sectional
-Population-Based Retrospective Study</span>.”</span> <em>Stroke</em> 48
-(8): 2105–12. <a href="https://doi.org/10.1161/STROKEAHA.117.017391" class="external-link">https://doi.org/10.1161/STROKEAHA.117.017391</a>.
+Bijlenga, Philippe, Renato Gondar, Sabine Schilling, Sandrine Morel,
+Sven Hirsch, Johanna Cuony, Marco-Vincenzo Corniola, Fabienne Perren,
+Daniel Rüfenacht, and Karl Schaller. 2017. <span>“<span>PHASES
+Score</span> for the <span>Management</span> of <span>Intracranial
+Aneurysm</span>: <span>A Cross-Sectional Population-Based Retrospective
+Study</span>.”</span> <em>Stroke</em> 48 (8): 2105–12. <a href="https://doi.org/10.1161/STROKEAHA.117.017391" class="external-link">https://doi.org/10.1161/STROKEAHA.117.017391</a>.
 </div>
 <div id="ref-Breusch:1979" class="csl-entry">
 Breusch, T. S., and A. R. Pagan. 1979. <span>“A <span>Simple Test</span>
@@ -1910,15 +2049,10 @@ Cochran, William G. 1954. <span>“The <span>Combination</span> of
 <span>Estimates</span> from <span>Different Experiments</span>.”</span>
 <em>Biometrics</em> 10 (1): 101. <a href="https://doi.org/10.2307/3001666" class="external-link">https://doi.org/10.2307/3001666</a>.
 </div>
-<div id="ref-Cook:1982" class="csl-entry">
-Cook, R. Dennis, and Sanford Weisberg. 1982. <em>Residuals and
-<span>Influence</span> in <span>Regression</span></em>. <span>New York:
-Chapman and Hall</span>.
-</div>
 <div id="ref-Davison:1997" class="csl-entry">
 Davison, Anthony Christopher, and David Victor Hinkley. 1997.
-<em>Bootstrap Methods and Their Applications</em>. Cambridge University
-Press. <a href="https://doi.org/10.1017/CBO9780511802843" class="external-link">https://doi.org/10.1017/CBO9780511802843</a>.
+<em>Bootstrap Methods and Their Applications</em>. Cambridge: Cambridge
+University Press. <a href="https://doi.org/10.1017/CBO9780511802843" class="external-link">https://doi.org/10.1017/CBO9780511802843</a>.
 </div>
 <div id="ref-Delacre:2017" class="csl-entry">
 Delacre, Marie, Daniël Lakens, and Christophe Leys. 2017. <span>“Why
@@ -1948,7 +2082,7 @@ Medicine</span>.”</span> <em>Prehospital and Disaster Medicine</em> 40
 Games, Paul A., and John F. Howell. 1976. <span>“Pairwise Multiple
 Comparison Procedures with Unequal <span>N</span>’s and/or Variances:
 <span>A Monte Carlo</span> Study.”</span> <em>Journal of Educational
-Statistics</em> (US) 1 (2): 113–25. <a href="https://doi.org/10.2307/1164979" class="external-link">https://doi.org/10.2307/1164979</a>.
+Statistics</em> 1 (2): 113–25. <a href="https://doi.org/10.2307/1164979" class="external-link">https://doi.org/10.2307/1164979</a>.
 </div>
 <div id="ref-Garcia:2026" class="csl-entry">
 Garcia, Luiz. 2026. <em><span class="nocase">autotestR</span>:
@@ -1982,6 +2116,12 @@ Hedges, Larry V. 1981. <span>“Distribution Theory for
 Estimators.”</span> <em>Journal of Educational Statistics</em> 6 (2):
 107–28. <a href="https://doi.org/10.3102/10769986006002107" class="external-link">https://doi.org/10.3102/10769986006002107</a>.
 </div>
+<div id="ref-Hollander:2014" class="csl-entry">
+Hollander, Myles, Eric Chicken, and Douglas A. Wolfe. 2014.
+<em>Nonparametric Statistical Methods</em>. Third edition. Wiley Series
+in Probability and Statistics. Hoboken, New Jersey: John Wiley &amp;
+Sons, Inc.
+</div>
 <div id="ref-Holm:1979" class="csl-entry">
 Holm, Sture. 1979. <span>“A <span>Simple Sequentially Rejective Multiple
 Test Procedure</span>.”</span> <em>Scandinavian Journal of
@@ -2006,6 +2146,11 @@ Kerby, Dave S. 2014. <span>“The Simple Difference Formula:
 <span>An</span> Approach to Teaching Nonparametric Correlation.”</span>
 <em>Comprehensive Psychology</em> 3. <a href="https://doi.org/10.2466/11.IT.3.1" class="external-link">https://doi.org/10.2466/11.IT.3.1</a>.
 </div>
+<div id="ref-Koenker:1981" class="csl-entry">
+Koenker, Roger. 1981. <span>“A Note on Studentizing a Test for
+Heteroscedasticity.”</span> <em>Journal of Econometrics</em> 17 (1):
+107–12. <a href="https://doi.org/10.1016/0304-4076(81)90062-2" class="external-link">https://doi.org/10.1016/0304-4076(81)90062-2</a>.
+</div>
 <div id="ref-Kozak:2018" class="csl-entry">
 Kozak, M., and H.-P. Piepho. 2018. <span>“What’s Normal Anyway?
 <span>Residual</span> Plots Are More Telling Than Significance Tests
@@ -2013,11 +2158,17 @@ When Checking <span><span class="smallcaps">ANOVA</span></span>
 Assumptions.”</span> <em>Journal of Agronomy and Crop Science</em> 204
 (1): 86–98. <a href="https://doi.org/10.1111/jac.12220" class="external-link">https://doi.org/10.1111/jac.12220</a>.
 </div>
+<div id="ref-Kruskal:1952" class="csl-entry">
+Kruskal, William H., and W. Allen Wallis. 1952. <span>“Use of
+<span>Ranks</span> in <span>One-Criterion Variance
+Analysis</span>.”</span> <em>Journal of the American Statistical
+Association</em> 47 (260): 583–621. <a href="https://doi.org/10.2307/2280779" class="external-link">https://doi.org/10.2307/2280779</a>.
+</div>
 <div id="ref-Levene:1960" class="csl-entry">
 Levene, Howard. 1960. <span>“Robust Tests for Equality of
 Variances.”</span> In <em>Contributions to Probability and Statistics:
 <span>Essays</span> in Honor of Harold Hotelling</em>, edited by Ingram
-Olkin. Stanford University Press.
+Olkin, 278–92. Stanford, CA: Stanford University Press.
 </div>
 <div id="ref-Levine:2002" class="csl-entry">
 Levine, Timothy R., and Craig R. Hullett. 2002. <span>“Eta Squared,
@@ -2036,16 +2187,6 @@ Mann, Henry B., and Donald R. Whitney. 1947. <span>“On a Test of Whether
 One of Two Random Variables Is Stochastically Larger Than the
 Other.”</span> <em>The Annals of Mathematical Statistics</em> 18 (1):
 50–60. <a href="https://doi.org/10.1214/aoms/1177730491" class="external-link">https://doi.org/10.1214/aoms/1177730491</a>.
-</div>
-<div id="ref-Meyer:2006" class="csl-entry">
-Meyer, David, Achim Zeileis, and Kurt Hornik. 2006. <span>“The Strucplot
-Framework: <span>Visualizing</span> Multi-Way Contingency Tables with
-Vcd.”</span> <em>Journal of Statistical Software</em> 17 (3): 1–48. <a href="https://doi.org/10.18637/jss.v017.i03" class="external-link">https://doi.org/10.18637/jss.v017.i03</a>.
-</div>
-<div id="ref-Meyer:2024" class="csl-entry">
-Meyer, David, Achim Zeileis, Kurt Hornik, and Michael Friendly. 2024.
-<em><span class="nocase">vcd</span>: <span>Visualizing</span>
-Categorical Data</em>. Manual. <a href="https://doi.org/10.32614/CRAN.package.vcd" class="external-link">https://doi.org/10.32614/CRAN.package.vcd</a>.
 </div>
 <div id="ref-Moser:1992" class="csl-entry">
 Moser, B K, and G. R. Stevens. 1992. <span>“Homogeneity of Variance in
@@ -2072,7 +2213,8 @@ Source Software</em> 6 (61): 3167. <a href="https://doi.org/10.21105/joss.03167"
 </div>
 <div id="ref-R:2026" class="csl-entry">
 R Core Team. 2026. <em>R: A Language and Environment for Statistical
-Computing</em>. Manual. R Foundation for Statistical Computing. <a href="https://doi.org/10.32614/R.manuals" class="external-link">https://doi.org/10.32614/R.manuals</a>.
+Computing</em>. Manual. Vienna, Austria: R Foundation for Statistical
+Computing. <a href="https://doi.org/10.32614/R.manuals" class="external-link">https://doi.org/10.32614/R.manuals</a>.
 </div>
 <div id="ref-Rasch:2011" class="csl-entry">
 Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. <span>“The
@@ -2090,6 +2232,12 @@ Sato, Yasunori, Masahiko Gosho, Kengo Nagashima, Sho Takahashi, James H.
 Ware, and Nan M. Laird. 2017. <span>“Statistical Methods in the
 <span>Journal</span>; an Update.”</span> <em>New England Journal of
 Medicine</em> 376 (11): 1086–87. <a href="https://doi.org/10.1056/NEJMc1616211" class="external-link">https://doi.org/10.1056/NEJMc1616211</a>.
+</div>
+<div id="ref-Satterthwaite:1946" class="csl-entry">
+Satterthwaite, F. E. 1946. <span>“An <span>Approximate
+Distribution</span> of <span>Estimates</span> of <span>Variance
+Components</span>.”</span> <em>Biometrics Bulletin</em> 2 (6): 110–14.
+<a href="https://doi.org/10.2307/3002019" class="external-link">https://doi.org/10.2307/3002019</a>.
 </div>
 <div id="ref-Sau:2025" class="csl-entry">
 Sau, Arkaprabha, Santanu Phadikar, and Ishita Bhakta. 2025. <em><span class="nocase">boxTest</span>: <span>Boxplot</span> and Significance
@@ -2128,12 +2276,22 @@ Statistics</span> and <span>Psychometric Theory</span>.”</span>
 <em>Journal of Methods and Measurement in the Social Sciences</em> 6
 (2). <a href="https://doi.org/10.2458/v6i2.18801" class="external-link">https://doi.org/10.2458/v6i2.18801</a>.
 </div>
+<div id="ref-Tukey:1949" class="csl-entry">
+Tukey, John W. 1949. <span>“Comparing <span>Individual Means</span> in
+the <span>Analysis</span> of <span>Variance</span>.”</span>
+<em>Biometrics</em> 5 (2): 99. <a href="https://doi.org/10.2307/3001913" class="external-link">https://doi.org/10.2307/3001913</a>.
+</div>
 <div id="ref-Urbanek:2025" class="csl-entry">
 Urbanek, Simon, and Jeffrey Horner. 2025. <em>Cairo: <span>R</span>
 Graphics Device Using Cairo Graphics Library for Creating High-Quality
 Bitmap (<span>PNG</span>, <span>JPEG</span>, <span>TIFF</span>), Vector
 (<span>PDF</span>, <span>SVG</span>, <span>PostScript</span>) and
 Display (<span>X11</span> and Win32) Output</em>. Manual. <a href="https://doi.org/10.32614/CRAN.package.Cairo" class="external-link">https://doi.org/10.32614/CRAN.package.Cairo</a>.
+</div>
+<div id="ref-Welch:1947" class="csl-entry">
+Welch, B. L. 1947. <span>“The Generalization of <span>‘Student’s’</span>
+Problem When Several Different Population Variances Are
+Involved.”</span> <em>Biometrika</em> 34 (1–2): 28–35. <a href="https://doi.org/10.1093/biomet/34.1-2.28" class="external-link">https://doi.org/10.1093/biomet/34.1-2.28</a>.
 </div>
 <div id="ref-Wickham:2016" class="csl-entry">
 Wickham, Hadley. 2016. <em>Ggplot2: <span>Elegant</span> Graphics for
