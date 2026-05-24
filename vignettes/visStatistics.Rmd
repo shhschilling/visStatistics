@@ -13,6 +13,10 @@ output:
     number_sections: true
     toc_depth: 3
     fig_caption: true
+  bookdown::pdf_document2:
+    toc: true
+    number_sections: true
+    latex_engine: xelatex
 link-citations: true
 bibliography: REFERENCES.bib
 vignette: >
@@ -61,9 +65,7 @@ figcaption {
 `visStatistics` provides a workflow for routine two-variable frequentist inference in R.
 Given two vectors, `visstat()` dispatches by variable classes, factor levels, sample sizes, expected cell counts, and explicit user options.
 Its main assumption-driven branch concerns tests of central tendency for a numeric response grouped by a factor.
-There, large groups are routed as normal; otherwise, residual normality
-guides the choice between rank-based and mean-based procedures. A
-Levene test then selects between equal-variance and Welch-type variants.
+There, sample size and residual diagnostics from a fitted linear model choose between rank-based and mean-based tests and, within the latter, between equal-variance and Welch-type variants.
 The output is deliberately visual: diagnostic plots are shown together with assumption-test p-values, the selected test, effect size, and post-hoc results where applicable.
 
 # Introduction
@@ -92,19 +94,19 @@ The package is deliberately limited to common two-variable settings in which the
 
 # Getting started
 
-#### 1. Install the latest development version from GITHUB {-}
+#### 1. Install the latest development version from GITHUB {.unnumbered}
 
 ```{r install-github, eval = FALSE}
 install_github("shhschilling/visStatistics")
 ```
 
-#### 2. Load the package {-}
+#### 2. Load the package  {.unnumbered}
 
 ```{r load, eval = FALSE}
 library(visStatistics)
 ```
 
-#### 3. Minimal function call {-}
+#### 3. Minimal function call  {.unnumbered}
 
 The function `visstat()` accepts input in two ways:
 
@@ -122,7 +124,7 @@ The `visstat()` parameter `conf.level` defaults to 0.95, equivalent to a default
 In the formula interface, `y ~ x` specifies the relationship, where `y` is the response variable and `x` is the predictor, with both being column names in `dataframe`.
 
 
-##### Exemplary function call {-}
+**Exemplary function call.**
 
 ```{r npk, fig.show='hide'}
 #Standardised form
@@ -135,15 +137,20 @@ visstat(npk$block,npk$yield)
 
 `visStatistics` is available on CRAN.
 This vignette corresponds to the current GitHub version (<https://github.com/shhschilling/visStatistics>), which may differ slightly from the latest CRAN release.
+
+
 The main function `visstat()` returns an object of class `"visstat"` with `print()`, `summary()`, and `plot()` methods.
 The returned object also contains an `effect_size` field with the effect-size name, numeric estimate, and method description (see Appendix \@ref(sec:effect-size)).
 From this single entry point, the package automatically selects among the implemented tests: `t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`, `kruskal.test()`, `chisq.test()`, `fisher.test()`, `lm()`, or `cor.test()`.
+
+Definitions of all implemented test statistics and association measures are referenced in Appendix \@ref(sec:tests).
+Unless stated otherwise, R function names refer to functions from the `stats` package distributed with R [@R:2026].
 
 # Decision logic
 
 The top-level class split defines the admissible analysis family.
 For numeric responses with categorical predictors, the subsequent test
-selection is governed by group-specific sample size, residual normality,
+selection (see Section \@ref(sec:top-level)) is governed by group-specific sample size, residual normality,
 and residual variance homogeneity.
 
 ## Top-level routing by input class {#sec:top-level}
@@ -151,17 +158,51 @@ and residual variance homogeneity.
 On the highest level, the decision logic of `visstat()` is driven by the class of its input vectors, as
 depicted in Figure \@ref(fig:overview). The main branching logic consists of four routes:
 
-- Route 1. Numeric responses with categorical predictors enter the
-   central-tendency branch detailed in
-   [Route 1](#sec:route-1).
-- Route 2. Ordered categorical responses with categorical predictors
-   follow the non-parametric Wilcoxon or Kruskal--Wallis route; when
-   both variables are ordered and `correlation = TRUE`, Kendall rank
-   correlation is used.
-- Route 3. Two numeric variables enter simple linear regression unless
-   `correlation = TRUE`, which switches to Spearman rank correlation.
--  Route 4. Two unordered factors enter the proportion-comparison
-   branch.
+<!-- - Route 1. Numeric responses with categorical predictors enter the -->
+<!--    central-tendency branch detailed in -->
+<!--    Section \@ref(sec:route-1). -->
+<!-- - Route 2. Ordered categorical responses with categorical predictors -->
+<!--    follow the non-parametric Wilcoxon or Kruskal--Wallis route; when -->
+<!--    both variables are ordered and `correlation = TRUE`, Kendall rank -->
+<!--    correlation is used. -->
+<!-- - Route 3. Two numeric variables enter simple linear regression unless -->
+<!--    `correlation = TRUE`, which switches to Spearman rank correlation. -->
+<!-- - Route 4. Two unordered factors enter the proportion-comparison -->
+<!--    branch. -->
+
+
+
+The main branching logic consists of four routes:
+
+- Route 1. A numeric response with a categorical predictor asks whether
+  the response differs across the groups defined by the predictor
+  levels. For two groups, `visstat()` selects among Student's t-test,
+  Welch's t-test, and the Wilcoxon rank-sum test. For more than two
+  groups, it selects among
+  Fisher's one-way ANOVA, Welch's heteroscedastic one-way ANOVA, and the
+  Kruskal--Wallis test. The choice is governed by group-specific sample
+  size, residual normality, and residual variance homogeneity; details
+  are given in
+  Section \@ref(sec:route-rules).
+- Route 2. An ordered categorical response with a categorical predictor
+  is treated as a rank-based group comparison. The ordered response is
+  converted to integer level codes and analysed with the Wilcoxon
+  rank-sum test for two groups or the Kruskal--Wallis test for more than
+  two groups. When both variables are ordered and `correlation = TRUE`,
+  Kendall's $\tau_b$ is computed instead [@Xu:2013].
+- Route 3. Two numeric variables ask whether a numeric response changes
+  with a numeric predictor. By default, `visstat()` fits simple linear
+  regression and displays the fitted line, confidence and prediction
+  bands. If `correlation = TRUE`, the analysis switches to Spearman rank
+  correlation.
+- Route 4. Two unordered factors ask whether two categorical variables
+  are independent. `visstat()` uses Pearson's $\chi^2$ test or Fisher's
+  exact test, depending on expected cell counts following Cochran's rule
+  [@Cochran:1954]. Yates' continuity correction is applied by default to
+  $2 \times 2$ tables when the $\chi^2$ approximation is used.
+
+
+
 
 
 ```{r overview, echo=FALSE, fig.cap="Overview of all implemented tests selected based on input class.", fig.alt="Flowchart showing all implemented statistical tests organised by the class of the input vectors."}
@@ -169,14 +210,13 @@ knitr::include_graphics("figures/overview.png")
 ```
 
 
-Definitions of all implemented test statistics and association measures are referenced in Appendix \@ref(sec:tests).
-Unless stated otherwise, R function names refer to functions from the `stats` package distributed with R [@R:2026].
+
 
 ## General linear model diagnostics {#sec:assumptions}
 
 Student's t-test, Fisher's ANOVA, and simple linear regression all belong to the general linear model framework [@Thompson:2015] and thus share a common set of assumptions: the expected value of the response is a linear function of the predictors, the error terms are mutually independent and normally distributed with expectation 0, and the error variance is constant at $\sigma^2$ (see Appendix \@ref(sec:general-linear-model)).
 
-In both the "numeric response with categorical predictor" and the "simple linear regression" branches, these assumptions are *vis*ualised, but their diagnostic role differs: in the former, a subset of the displayed diagnostics drives test selection (see [Route 1](#sec:route-1)); in the latter, they only trigger warnings and recommendations.
+In both the "numeric response with categorical predictor" and the "simple linear regression" branches, these assumptions are *vis*ualised in a diagnostic panel; assumption-test p-values are additionally reported in the panel title. The role of those p-values differs by route: in the former, the Shapiro--Wilk and Levene p-values drive test selection (see Section \@ref(sec:route-rules)); in the latter, all displayed p-values only trigger warnings and recommendations.
 
 
 ### Visualisation the general linear model assumptions {#sec:graphical}
@@ -229,30 +269,13 @@ Among the displayed assumption tests, only the Shapiro--Wilk and
 Levene test results enter automated routing, and only in the
 central-tendency branch. Within that branch, Shapiro--Wilk is used only
 when at least one group has 50 or fewer observations (see
-[Route 1](#sec:route-1));
+Section \@ref(sec:route-rules));
 <!-- Anderson--Darling, Bartlett, and -->
 <!-- Breusch--Pagan are diagnostic output only. -->
 
-Figure \@ref(fig:assumption-panels) shows representative diagnostic
-panels: the Route 1 panel for the `iris` Welch ANOVA example
-(see Section \@ref(sec:welch-anova-iris)) on the left, and the Route 3 panel
-for the `swiss` example (see Section \@ref(sec:lin-reg)) on the right. The
-data and resulting test-selection steps are described in the
-corresponding example sections.
-
-```{r assumption-panel-caption, echo=FALSE}
-assumption_panels_cap <- paste(
-  "Representative diagnostic panels for Route 1 and Route 3.",
-  "Left: `iris` Welch ANOVA example from Section",
-  "\\@ref(sec:welch-anova-iris).",
-  "Right: `swiss` example from Section \\@ref(sec:lin-reg)."
-)
-```
-
-```{r assumption-panels, echo=FALSE, fig.cap=assumption_panels_cap, out.width="48%", fig.height=4.5, fig.show="hold"}
-vis_lm_assumptions(iris$Sepal.Length, iris$Species)
-vis_lm_assumptions(swiss$Fertility, swiss$Examination)
-```
+The Route 1 and Route 3 diagnostic-panel designs are illustrated in
+the worked examples in Figures \@ref(fig:welch-anova-example), left,
+and \@ref(fig:regression-example), left.
 
 
 
@@ -263,12 +286,12 @@ The following route-specific sections describe which checks are used for test se
 
 <!-- `levene.test()` and `bp.test()` have standalone implementations in the package to avoid dependencies on external packages (see Section \@ref(sec:homo)). -->
 
-## Route-specific decision rules
+## Route-specific decision rules {#sec:route-rules}
 
 ### Route 1: Numeric response, categorical predictor {#sec:route-1 .unnumbered}
 
 In the central-tendency branch, the diagnostic panel (see
-\@ref(sec:graphical)) is always generated as first visual output.
+Section \@ref(sec:graphical)) is always generated as first visual output.
 Figure \@ref(fig:decision-tree) expands the subsequent routing logic.
 
 ```{r decision-tree, echo=FALSE, fig.cap="Decision tree for tests on central tendencies. If all group-specific sample sizes are greater than 50, the formal residual normality test is bypassed and variance homogeneity is assessed directly. Otherwise, Shapiro--Wilk on raw model residuals determines whether the route remains mean-based or switches to rank-based tests; the Levene test then selects equal-variance or Welch-type procedures.", fig.alt="Decision tree selecting among Welch t-test, Student t-test, Wilcoxon, Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests based on the all-groups n_i > 50 rule, the Shapiro-Wilk test on raw model residuals, and the Levene test for variance homogeneity."}
@@ -314,7 +337,7 @@ Pairs whose adjusted post-hoc $p$-value falls below $\alpha$ are marked with dif
 
 By default, an ordered response is converted to integer level codes and
 follows the non-parametric Wilcoxon/Kruskal--Wallis path for categorical
-predictors above, see [Route 1](#sec:route-1).
+predictors described in Section \@ref(sec:route-rules).
 When both variables are ordered and `correlation = TRUE`, Kendall's $\tau_b$ is computed instead, as it corrects for ties explicitly --- unavoidable with few ordinal levels [@Xu:2013].
 
 ### Route 3: Both variables numeric {#sec:route-3 .unnumbered}
@@ -531,7 +554,7 @@ A negative monotone association is induced by construction: students who consume
 The Kendall result is shown in Figure \@ref(fig:kendall-spearman-example),
 left.
 
-```{r kendall-spearman-example, fig.cap="Rank-based correlations: Left: Kendall's $\\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\\ academic performance (left). Right:  Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots  annotate the corresponding effect measure and $p$-value.", out.width="48%", fig.height=4.5, fig.show="hold"}
+```{r kendall-spearman-example, fig.cap="Rank-based correlations: Left: Kendall's $\\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\\ academic performance (left). Right:  Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots  annotate the corresponding effect measure and $p$-value.", out.width="48%", fig.height=4.5, fig.show="hold", fig.crop=FALSE}
 set.seed(42)
 n <- 150
 xs <- sample(1:5, n, replace = TRUE)
@@ -550,7 +573,9 @@ spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 
 The `swiss` dataset records standardised fertility and socioeconomic indicators for 47 French-speaking Swiss provinces in 1888.
 We examine how the share of draftees achieving the highest army examination score (`Examination`) predicts the fertility measure (`Fertility`), with `conf.level = 0.99`.
-The diagnostic panel of Fig. \@ref{figregression-example} shows that both normality tests pass and the Breusch--Pagan test confirms homoscedasticity, supporting the linear model.
+The diagnostic panel in Figure \@ref(fig:regression-example), left,
+shows that both normality tests pass and the Breusch--Pagan test confirms
+homoscedasticity, supporting the linear model.
 
 ```{r regression-example, fig.cap="Simple linear regression of `Fertility` on `Examination` for the `swiss` dataset (`conf.level = 0.99`). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\\% confidence band (dark shading), and 99\\% prediction band (light shading).", out.width="48%", fig.height=4.5, fig.show="hold"}
 linreg_swiss <- visstat(swiss$Examination, swiss$Fertility, conf.level = 0.99)
@@ -866,7 +891,7 @@ The general linear model for observation $i,\;i = 1, \ldots, N$ is then
 $$Y_i = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_{k-1} x_{i,k-1} + \varepsilon_i,$$
 
 where $Y_i$ is the response for observation $i$, $x_{ij}$ is the value of predictor $j$ for observation $i$, $\beta_0, \beta_1, \ldots, \beta_{k-1}$ are the $k$ parameters. The model error terms $\varepsilon_i$ are assumed to be independent and normally distributed with expectation 0 and constant variance $\sigma^2$, in short 
-$$\varepsilon_i \sim \mathcal{N}(0, \sigma^2), \quad\mathrm{mutally\; independent} $$
+$$\varepsilon_i \sim \mathcal{N}(0, \sigma^2), \quad\mathrm{mutually\; independent} $$
 
 ## Student's t-test, Fisher's ANOVA, and simple linear regression as general linear model
 

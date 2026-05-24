@@ -268,8 +268,6 @@ two_sample_wilcoxon_test <- function(samples,
     x2
   )))))
   
-  par(oma = c(0, 0, 2, 0)) # outer margin above: 2 lines..
-
   show_jitter  <- max(length(x1), length(x2)) <= jitter_max_n
 
   b <- boxplot(

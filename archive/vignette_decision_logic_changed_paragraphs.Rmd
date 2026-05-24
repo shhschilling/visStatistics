@@ -1,0 +1,111 @@
+---
+title: "Changed paragraphs only: vignette Decision logic"
+output: html_document
+---
+
+## Top-level routing by input class
+
+On the highest level, the decision logic of `visstat()` is driven by the
+class of its input vectors:
+
+Numeric responses with categorical predictors enter the central-tendency
+branch.
+Ordered categorical responses with categorical predictors follow the
+non-parametric Wilcoxon or Kruskal--Wallis route; when both variables are
+ordered and `correlation = TRUE`, Kendall rank correlation is used.
+Two numeric variables enter simple linear regression unless
+`correlation = TRUE`, which switches to Spearman rank correlation.
+Two unordered factors enter the proportion-comparison branch.
+Definitions of all implemented test statistics and association measures
+are referenced in [Appendix B](#tests).
+
+This class-based split defines which analysis family is admissible; it
+is not the distinctive statistical routing step. That step starts inside
+the central-tendency branch, where group-specific sample size determines
+whether residual normality is tested formally before variance
+homogeneity separates equal-variance from Welch-type procedures.
+
+Unless stated otherwise, R function names refer to functions from the
+`stats` package distributed with R [@R:2026].
+
+## General linear model diagnostics shared by two branches
+
+Although the highest-level routing is class-based, two branches share
+the general linear model framework: the mean-based central-tendency
+tests and the default numeric--numeric simple-regression branch.
+The assumptions of this framework are visualised before the
+branch-specific decision logic is described.
+Their role differs by branch: in the central-tendency branch, selected
+diagnostics can affect test selection; in the simple-regression branch,
+the diagnostics guide model assessment but do not trigger automatic
+model replacement.
+
+Student's t-test, Fisher's ANOVA, and simple linear regression all belong
+to the general linear model framework [@Thompson:2015] and thus share a
+common set of assumptions: the expected value of the response is a
+linear function of the predictors, the error terms are independent and
+normally distributed with expectation 0, and the error variance is
+constant at $\sigma^2$ (see [Appendix A](#general-linear-model)).
+
+For the central-tendency branch with numeric responses and for the
+simple-regression branch, `vis_lm_assumptions()` displays a four-panel
+diagnostic graphic before the selected test or regression result.
+It fits the corresponding linear model and computes internally
+studentised residuals with `rstandard()`.
+
+The diagnostic panel shows the residual distribution with a
+normal-density overlay, residuals versus fitted values, and normal Q--Q
+behaviour.
+The fourth plot is a scale-location plot for grouped central-tendency
+analyses and a standardised residuals versus leverage plot for simple
+regression.
+
+The outer title reports the displayed assumption checks and their
+$p$-values in two rows.
+The first row reports residual-normality checks: Shapiro--Wilk and
+Anderson--Darling.
+The second row reports variance checks: Brown--Forsythe Levene-type and
+Bartlett for grouped central-tendency analyses, or Breusch--Pagan for
+simple regression.
+
+Not all displayed checks enter automated routing.
+The following branch-specific sections describe which checks are used
+for test selection.
+
+`levene.test()` and `bp.test()` have standalone implementations in the
+package to avoid dependencies on external packages (see
+[Appendix B](#homo)).
+
+## Numeric response and categorical predictor
+
+The following figure expands the central-tendency branch.
+
+The first split checks group size.
+The diagnostic panel is generated before this split is evaluated.
+When all group-specific sample sizes are greater than 50, the normality
+of the sampling distribution of the group means can be assumed by the
+central limit theorem [@Lumley:2002; @Rasch:2011], and the residual
+normality test is bypassed to avoid rejecting negligible deviations in
+large samples [@Ghasemi:2012; @Fagerland:2012; @Shatz:2024].
+Otherwise, a linear model `lm(y ~ x)` (see
+[Appendix A](#general-linear-model)) is fitted for the routing decision,
+and the Shapiro--Wilk (SW) test is applied to internally studentised
+residuals from `rstandard()` [@Cook:1982].
+
+## Both variables numeric
+
+When both predictor and response are numerical, `visstat()` fits and
+displays a simple linear regression.
+The assumption-diagnostic panel described above is displayed, but its
+checks do not trigger automatic model replacement.
+
+## Read-through check
+
+- Hierarchy: headings now separate top-level class routing, shared general linear model
+  diagnostics, and branch-specific routing.
+- Logical flow: class routing is explained first; general linear model diagnostics are
+  introduced only after the two relevant branches are named.
+- Connecting sentences: the general linear model bridge explains why the diagnostics
+  section follows the class-routing paragraph.
+- Repetition: the old duplicated general linear model sentence in the central-tendency
+  section is removed; graphical output is described once.

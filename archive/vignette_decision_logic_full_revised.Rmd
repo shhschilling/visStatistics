@@ -1,0 +1,222 @@
+---
+title: "Revised vignette Decision logic block"
+output: html_document
+---
+
+# Decision logic
+
+## Top-level routing by input class
+
+On the highest level, the decision logic of `visstat()` is driven by the
+class of its input vectors:
+
+```{r overview, echo=FALSE, fig.cap="Overview of all implemented tests selected based on input class.", fig.alt="Flowchart showing all implemented statistical tests organised by the class of the input vectors."}
+knitr::include_graphics("figures/overview.png")
+```
+
+Numeric responses with categorical predictors enter the central-tendency
+branch.
+Ordered categorical responses with categorical predictors follow the
+non-parametric Wilcoxon or Kruskal--Wallis route; when both variables are
+ordered and `correlation = TRUE`, Kendall rank correlation is used.
+Two numeric variables enter simple linear regression unless
+`correlation = TRUE`, which switches to Spearman rank correlation.
+Two unordered factors enter the proportion-comparison branch.
+Definitions of all implemented test statistics and association measures
+are referenced in [Appendix B](#tests).
+
+This class-based split defines which analysis family is admissible; it
+is not the distinctive statistical routing step. That step starts inside
+the central-tendency branch, where group-specific sample size determines
+whether residual normality is tested formally before variance
+homogeneity separates equal-variance from Welch-type procedures.
+
+Unless stated otherwise, R function names refer to functions from the
+`stats` package distributed with R [@R:2026].
+
+## General linear model diagnostics shared by two branches {#assumptions}
+
+Although the highest-level routing is class-based, two branches share
+the general linear model framework: the mean-based central-tendency
+tests and the default numeric--numeric simple-regression branch.
+The assumptions of this framework are visualised before the
+branch-specific decision logic is described.
+Their role differs by branch: in the central-tendency branch, selected
+diagnostics can affect test selection; in the simple-regression branch,
+the diagnostics guide model assessment but do not trigger automatic
+model replacement.
+
+### General linear model framework
+
+Student's t-test, Fisher's ANOVA, and simple linear regression all belong
+to the general linear model framework [@Thompson:2015] and thus share a
+common set of assumptions: the expected value of the response is a
+linear function of the predictors, the error terms are independent and
+normally distributed with expectation 0, and the error variance is
+constant at $\sigma^2$ (see [Appendix A](#general-linear-model)).
+
+### Graphical output from `vis_lm_assumptions()`
+
+For the central-tendency branch with numeric responses and for the
+simple-regression branch, `vis_lm_assumptions()` displays a four-panel
+diagnostic graphic before the selected test or regression result.
+It fits the corresponding linear model and computes internally
+studentised residuals with `rstandard()`.
+
+The diagnostic panel shows the residual distribution with a
+normal-density overlay, residuals versus fitted values, and normal Q--Q
+behaviour.
+The fourth plot is a scale-location plot for grouped central-tendency
+analyses and a standardised residuals versus leverage plot for simple
+regression.
+
+The outer title reports the displayed assumption checks and their
+$p$-values in two rows.
+The first row reports residual-normality checks: Shapiro--Wilk and
+Anderson--Darling.
+The second row reports variance checks: Brown--Forsythe Levene-type and
+Bartlett for grouped central-tendency analyses, or Breusch--Pagan for
+simple regression.
+
+Not all displayed checks enter automated routing.
+The following branch-specific sections describe which checks are used
+for test selection.
+
+`levene.test()` and `bp.test()` have standalone implementations in the
+package to avoid dependencies on external packages (see
+[Appendix B](#homo)).
+
+## Numeric response and categorical predictor: comparing central tendencies {#numeric-categoric}
+
+The following figure expands the central-tendency branch.
+
+```{r decision-tree, echo=FALSE, fig.cap="Decision tree for tests on central tendencies. If all group-specific sample sizes are greater than 50, the formal residual normality test is bypassed and variance homogeneity is assessed directly. Otherwise, Shapiro--Wilk on standardised residuals determines whether the route remains mean-based or switches to rank-based tests; the Levene test then selects equal-variance or Welch-type procedures.", fig.alt="Decision tree selecting among Welch t-test, Student t-test, Wilcoxon, Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests based on the all-groups n_i > 50 rule, the Shapiro-Wilk test on standardised residuals, and the Levene test for variance homogeneity."}
+knitr::include_graphics("figures/decision_tree.png")
+```
+
+The first split checks group size.
+The diagnostic panel is generated before this split is evaluated.
+When all group-specific sample sizes are greater than 50, the normality
+of the sampling distribution of the group means can be assumed by the
+central limit theorem [@Lumley:2002; @Rasch:2011], and the residual
+normality test is bypassed to avoid rejecting negligible deviations in
+large samples [@Ghasemi:2012; @Fagerland:2012; @Shatz:2024].
+Otherwise, a linear model `lm(y ~ x)` (see [Appendix A](#general-linear-model)) is fitted
+for the routing decision, and the Shapiro--Wilk (SW) test is applied to
+internally studentised residuals from `rstandard()` [@Cook:1982].
+
+If normality is rejected ($p_\text{SW} \le \alpha$), non-parametric
+tests are selected: `wilcox.test()` for two groups, or `kruskal.test()`
+followed by Holm-adjusted `pairwise.wilcox.test()` for more than two
+groups.
+
+If normality is not rejected, variance homogeneity is assessed with
+Levene's test using the Brown--Forsythe median-centred modification
+(package-implemented `levene.test()`; [@Brown:1974]; see
+[Appendix B](#lev)).
+For brevity, we refer to this Brown--Forsythe Levene-type procedure as
+the Levene test below.
+For homoscedastic data, `t.test(var.equal = TRUE)` is applied for two
+groups, or Fisher's `aov()` with `TukeyHSD()` for more than two groups.
+For heteroscedastic data, Welch's `t.test()` is applied for two groups,
+or Welch's `oneway.test()` with the package implementation
+`games.howell()` ([@Games:1976]; see [Appendix B](#gh)) for more than
+two groups.
+
+The box plots are enriched with significance letters to visualise the
+post-hoc analysis:
+
+ANOVA, Welch ANOVA, and Kruskal--Wallis are omnibus tests: a significant
+result tells us that *some* group differs, but not which.
+To identify the differing pairs, `visstat()` tests all pairwise
+comparisons among the factor levels, defining a family of tests.
+Because the three omnibus tests rest on different assumptions, each
+branch uses a matching post-hoc procedure: `TukeyHSD()` after `aov()`,
+`games.howell()` after `oneway.test()`, and
+`pairwise.wilcox.test(p.adjust.method = "holm")` after
+`kruskal.test()`.
+`TukeyHSD()` controls the family-wise error rate through the studentised
+range distribution under a common-variance assumption.
+`games.howell()` uses separate variance estimates and Welch-adjusted
+degrees of freedom for each pair, making it the post-hoc procedure for
+the heteroscedastic Welch branch.
+The Kruskal--Wallis branch uses Holm's step-down adjustment for the
+pairwise Wilcoxon tests.
+Pairs whose adjusted post-hoc $p$-value falls below $\alpha$ are marked
+with different green significance letters below the box plots; pairs
+sharing a letter are not significantly different.
+
+## Both variables numeric: regression or Spearman rank correlation
+
+When both predictor and response are numerical, `visstat()` fits and
+displays a simple linear regression.
+The assumption-diagnostic panel described above is displayed, but its
+checks do not trigger automatic model replacement.
+The regression plot shows the fitted line $\hat{y} = b_0 + b_1 x$ with
+pointwise confidence and prediction bands at the specified `conf.level`.
+The returned object contains the regression statistics,
+residual-normality tests, pointwise confidence and prediction bands, and
+the coefficient of determination, its effect size
+
+\begin{equation}
+R^2 = 1 - SS_\text{res}/SS_\text{tot}
+(\#eq:linear-r2)
+\end{equation}
+
+where $SS_\text{res}=\sum_i(Y_i-\hat{Y}_i)^2$ is the residual sum of
+squares and $SS_\text{tot}=\sum_i(Y_i-\bar{Y})^2$ is the total sum of
+squares.
+
+However, when `correlation = TRUE` is set explicitly, Spearman's $\rho$
+is computed via `cor.test(..., method = "spearman")`.
+
+Because the choice between modelling a directional relationship and
+measuring a monotone association cannot be automated from data types
+alone, Spearman correlation is never triggered automatically.
+Spearman's $\rho$ is Pearson's correlation applied to ranks; see
+[Appendix B](#rho).
+
+## Both variables categorical: comparing proportions
+
+Observed frequencies are arranged in a contingency table, where rows
+index the levels of the response and columns index the levels of the
+predictor.
+`visstat()` tests independence using Pearson's $\chi^2$ test
+(`chisq.test()`) or Fisher's exact test (`fisher.test()`), depending on
+expected cell counts following Cochran's rule [@Cochran:1954]: the
+$\chi^2$ approximation is used if no expected cell count is less than 1
+and no more than 20% of cells have expected counts below 5.
+Yates' continuity correction is applied by default to $2 \times 2$
+tables.
+The graphical output depends on the selected test.
+General $R \times C$ Pearson $\chi^2$ tests show a grouped column plot
+of row percentages with the $p$-value in the title, followed by a mosaic
+plot from `vcd` [@Meyer:2006; @Meyer:2024] with tiles coloured by
+Pearson residuals.
+Yates-corrected $2 \times 2$ $\chi^2$ tests show the grouped column plot
+only, because the corrected statistic is not decomposed into cell-level
+residuals.
+Fisher's exact test shows absolute counts with count labels above each
+bar and the $p$-value in the title.
+
+## Ordered factors
+
+When the response is an ordered factor, `visstat()` converts it to
+integer level codes and follows the non-parametric path.
+When both variables are ordered and `correlation = TRUE`, Kendall's
+$\tau_b$ is computed instead, as it corrects for ties explicitly ---
+unavoidable with few ordinal levels [@Xu:2013].
+
+## Read-through check
+
+- Hierarchy: one `# Decision logic` section, followed by same-level `##`
+  branch sections; general linear model details are nested under the shared diagnostics
+  section.
+- Logical flow: class routing -> shared general linear model diagnostics -> branch-specific
+  routing.
+- Connecting sentences: the general linear model bridge explains why diagnostics are
+  introduced after class routing; the diagnostics section points forward
+  to branch-specific routing.
+- Repetition: the general linear model assumption statement appears once; the graphical
+  output is described once; the central-tendency section contains only
+  routing and post-hoc logic.
