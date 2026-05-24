@@ -1,12 +1,13 @@
-# Visualisation of the normality distribution of the standardised residuals
+# Visualisation of linear model assumption diagnostics
 
-Checks for normality of the standardised residuals in the general linear
-model Student's t-test (t.test,var=EQUAL) Fisher oneway ANOVA (aov) or
-simple linear regression. Performs the Shapiro-Wilk test and
-Anderson-Darling test for normality and, if not a regression, also the
-Brown-Forsythe Levene-type and Bartlett's tests for homogeneity of
-variances. It produces a histogram with normal overlay, a residuals vs
-fitted plot, and a normal Q-Q plot.
+Checks the residual diagnostics in the general linear model Student's
+t-test (t.test,var=EQUAL) Fisher oneway ANOVA (aov) or simple linear
+regression. Performs the Shapiro-Wilk test and Anderson-Darling test for
+normality and, if not a regression, also Levene's and Bartlett's tests
+for homogeneity of variances. Formal p-values are computed from raw
+model residuals. The plots display the same residuals divided by the
+residual standard error. In regression mode, Cook's distance contours
+are transformed to this residual scale.
 
 ## Usage
 
@@ -70,6 +71,15 @@ A list with elements:
   Result from
   [`bp.test()`](https://shhschilling.github.io/visStatistics/reference/bp.test.md)
   (regression diagnostics only).
+
+## Details
+
+In regression mode, the leverage panel does not use internally
+studentised residuals as in `plot.lm()`. With \\z_i = e_i / SE_res\\,
+where \\SE_res\\ is the residual standard error, Cook's distance
+contours are drawn as \$\$D_i = z_i^2 h\_{ii} / (k(1 - h\_{ii})^2),\$\$
+where \\h\_{ii}\\ is the leverage of observation \\i\\ and \\k\\ is the
+number of fitted model parameters.
 
 ## Examples
 

@@ -1,10 +1,10 @@
-# Brown-Forsythe Levene-type Test for Homogeneity of Variance (center = median)
+# Mean-centred Levene Test for Homogeneity of Variance
 
-Performs Levene's test using the Brown-Forsythe median-centred
-modification. It tests the null hypothesis that all groups have equal
-variances by testing whether the absolute deviations from group medians
-are equal across groups The function reproduces the default behaviour of
-the leveneTest(y,g,center=median,...) of the car-package.
+Performs Levene's original mean-centred test. It tests the null
+hypothesis that all groups have equal variances by testing whether the
+absolute deviations from group means are equal across groups. The
+function reproduces the behaviour of leveneTest(y, g, center = mean,
+...) of the car package.
 
 ## Usage
 
@@ -54,11 +54,11 @@ An object of class `"htest"` with components:
 ## Details
 
 For each observation \\y\_{ij}\\ in group \\i\\, compute the absolute
-deviation from the group median:
+deviation from the group mean:
 
-\$\$z\_{ij} = \|y\_{ij} - \tilde{y}\_i\|\$\$
+\$\$z\_{ij} = \|y\_{ij} - \bar{y}\_i\|\$\$
 
-where \\\tilde{y}\_i\\ is the median of group \\i\\.
+where \\\bar{y}\_i\\ is the mean of group \\i\\.
 
 The test statistic is the F-statistic from a one-way ANOVA on the
 \\z\_{ij}\\ values:
@@ -83,9 +83,9 @@ an F-distribution: \\F \sim F(k-1, N-k)\\.
 
 ## References
 
-Brown, M. B., and Forsythe, A. B. (1974). Robust tests for the equality
-of variances. Journal of the American Statistical Association, 69(346),
-364–367. DOI: 10.1080/01621459.1974.10482955
+Levene, H. (1960). Robust tests for equality of variances. In I. Olkin
+(Ed.), Contributions to Probability and Statistics (pp. 278-292).
+Stanford University Press.
 
 ## Examples
 

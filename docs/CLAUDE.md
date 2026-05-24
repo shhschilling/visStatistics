@@ -73,6 +73,13 @@
 - All approved edits go to the main source tree of the project, never to
   the worktree at `.claude/worktrees/epic-pike-e0d2dc/`.
 
+## Vignette structure is final
+
+- The structure of `vignettes/visStatistics.Rmd` is final and approved
+  by the author. Do not suggest, propose, or hint at any restructuring —
+  no section reordering, merging, splitting, or reorganisation of any
+  kind.
+
 ## Archive before structural edits
 
 - Before any structural reordering of `vignettes/visStatistics.Rmd`
@@ -93,3 +100,27 @@
   fit. Do not flag wording like “fits using
   [`aov()`](https://rdrr.io/r/stats/aov.html)” vs “fits with
   [`lm()`](https://rdrr.io/r/stats/lm.html)” as a contradiction.
+
+## Terminology rules
+
+- **Never abbreviate “general linear model” as “GLM”.** In statistics,
+  “GLM” universally denotes *generalized* linear model (different model
+  class: link function, exponential-family error distribution). Always
+  write “general linear model” in full. This rule applies to prose,
+  abstracts, headings, and figure captions. Section labels and code
+  identifiers (e.g. `#sec:glm`) are exempt because they are never
+  rendered as visible text.
+
+## Thesis check before flagging
+
+- Before flagging any notation, terminology, or symbol re-use as
+  inconsistent, restate the paper’s central unifying claim in one line.
+- If the apparent inconsistency is actually the unified expression of
+  that claim (e.g. `k` denoting both groups in one-way ANOVA and
+  parameters in the general linear model, because they coincide under
+  the general linear model unification), do not flag.
+- If you cannot articulate the connection to the paper’s thesis, do not
+  propose the edit.
+- Same check applies to apparent prose redundancy, repeated phrases, and
+  visual/numerical separations: ask first whether the repetition or
+  coupling is itself the contribution being made.

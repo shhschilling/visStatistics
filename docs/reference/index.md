@@ -13,8 +13,7 @@
 - [`games.howell()`](https://shhschilling.github.io/visStatistics/reference/games.howell.md)
   : Games-Howell Post-Hoc Test
 - [`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
-  : Brown-Forsythe Levene-type Test for Homogeneity of Variance (center
-  = median)
+  : Mean-centred Levene Test for Homogeneity of Variance
 - [`openGraphCairo()`](https://shhschilling.github.io/visStatistics/reference/openGraphCairo.md)
   : Cairo wrapper function with plot capture capability
 - [`plot(`*`<visstat>`*`)`](https://shhschilling.github.io/visStatistics/reference/plot.visstat.md)
@@ -26,8 +25,7 @@
 - [`summary(`*`<visstat>`*`)`](https://shhschilling.github.io/visStatistics/reference/summary.visstat.md)
   : Summary method for visstat objects
 - [`vis_lm_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md)
-  : Visualisation of the normality distribution of the standardised
-  residuals
+  : Visualisation of linear model assumption diagnostics
 - [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
   : Wrapper for visstat_core Allowing Three Different Input Styles
 - [`visstat_core()`](https://shhschilling.github.io/visStatistics/reference/visstat_core.md)

@@ -44,8 +44,9 @@ An object of class `"htest"` with components:
 
 ## Details
 
-The Breusch-Pagan test regresses the squared standardized residuals on
-the fitted values. The test statistic is:
+Implements the Koenker variant of the Breusch-Pagan test, which
+regresses the squared raw residuals on the fitted values. The test
+statistic is:
 
 \$\$BP = n \cdot R^2\$\$
 
@@ -57,7 +58,7 @@ where:
   \\e_i^2\\ on \\\hat{y}\_i\\
 
 Under the null hypothesis of homoscedasticity, the test statistic
-follows a chi-squared distribution: \\BP \sim \chi^2(p-1)\\ where \\p\\
+follows a chi-squared distribution: \\BP \sim \chi^2(k-1)\\ where \\k\\
 is the number of parameters in the model (including intercept).
 
 Large values of the test statistic (small p-values) provide evidence
@@ -68,6 +69,10 @@ against homoscedasticity.
 Breusch, T. S., and Pagan, A. R. (1979). A simple test for
 heteroscedasticity and random coefficient variation. Econometrica,
 47(5), 1287-1294. DOI: 10.2307/1911963
+
+Koenker, R. (1981). A note on studentizing a test for
+heteroscedasticity. Journal of Econometrics, 17(1), 107-112. DOI:
+10.1016/0304-4076(81)90062-2
 
 ## Examples
 

@@ -68,8 +68,9 @@ The following estimates are computed internally:
   are truncated to zero.
 
 - Welch's one-way test: a package-defined approximate omega-squared-type
-  estimate \\\nu_1(F_W-1)/(\nu_1F_W+\nu_2+1)\\, where \\F_W\\,
-  \\\nu_1\\, and the usually fractional \\\nu_2\\ are taken from
+  estimate \\\nu_1(F_W-1)/(\nu_1F_W+\nu_2+1)\\, where \\F_W\\ is the
+  Welch ANOVA statistic, \\\nu_1=k-1\\, and \\\nu_2\\ is the usually
+  fractional denominator degree of freedom returned by
   [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html). Negative
   estimates are truncated to zero.
 
