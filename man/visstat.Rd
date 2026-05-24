@@ -104,7 +104,8 @@ response variable.
 (3) Backward-compatible form: \code{visstat(dataframe, "name_of_y", "name_of_x")}, 
 where the first character string refers to the response variable and the 
 second to the predictor or grouping variable. Both must be column names in 
-\code{dataframe}.
+\code{dataframe}. This form gives a warning and may be removed in a future
+version.
 
 The interpretation of \code{x} and \code{y} depends on the variable classes. 
 Throughout, data of class \code{numeric} or \code{integer} are referred to 
@@ -140,9 +141,6 @@ visstat(mpg ~ am, data = mtcars)
 
 # Standardised usage
 visstat(mtcars$am, mtcars$mpg)
-
-# Backward-compatible usage (same result as above)
-visstat(mtcars, "mpg", "am")
 
 ## Student's t-test (equal variances, two groups)
 # When residuals are normally distributed and Levene's test indicates

@@ -55,9 +55,22 @@ test_that("effect_size agrees with formulae in the effect-size table", {
   y <- iris$Sepal.Length
   g <- iris$Species
   ow <- oneway.test(y ~ g)
+  welch_anova_den_df <- function(y, g) {
+    g <- factor(g)
+    n_i <- tapply(y, g, length)
+    s2_i <- tapply(y, g, var)
+    w_i <- n_i / s2_i
+    k <- length(n_i)
+    tmp <- sum((1 - w_i / sum(w_i))^2 / (n_i - 1)) / (k^2 - 1)
+    1 / (3 * tmp)
+  }
   f_value <- unname(ow$statistic)
-  nu1 <- unname(ow$parameter[1])
-  nu2 <- unname(ow$parameter[2])
+  expect_named(ow$parameter, c("num df", "denom df"))
+  nu1 <- unname(ow$parameter[["num df"]])
+  nu2 <- unname(ow$parameter[["denom df"]])
+  expect_equal(nu1, length(unique(g)) - 1, tolerance = 1e-12)
+  expect_equal(nu2, welch_anova_den_df(y, g), tolerance = 1e-12)
+  expect_false(nu2 == round(nu2))
   ref <- max(0, nu1 * (f_value - 1) / (nu1 * f_value + nu2 + 1))
   res <- list("summary statistics of ANOVA" = ow)
   expect_equal(effect_size(res, x = g, y = y)$estimate, ref, tolerance = 1e-12)
@@ -129,4 +142,32 @@ test_that("effect_size agrees with formulae in the effect-size table", {
   got <- effect_size(ft)
   expect_equal(got$estimate, unname(ft$estimate), tolerance = 1e-12)
   expect_equal(got$conf.int, unname(ft$conf.int), tolerance = 1e-12)
+})
+
+test_that("Welch-Satterthwaite df matches oneway.test for two groups", {
+  welch_satterthwaite_df <- function(y, g) {
+    x <- split(y, g)
+    n1 <- length(x[[1]])
+    n2 <- length(x[[2]])
+    s1 <- stats::var(x[[1]])
+    s2 <- stats::var(x[[2]])
+    ((s1 / n1 + s2 / n2)^2) /
+      ((s1 / n1)^2 / (n1 - 1) + (s2 / n2)^2 / (n2 - 1))
+  }
+
+  y <- mtcars$mpg
+  for (g in list(factor(mtcars$am),
+                 factor(mtcars$am, levels = c("1", "0")))) {
+    ow <- stats::oneway.test(y ~ g)
+    df_from_equation <- welch_satterthwaite_df(y, g)
+    df_from_oneway <- unname(ow$parameter[["denom df"]])
+
+    # oneway.test() returns c("num df", "denom df"); the equation is denom df.
+    expect_named(ow$parameter, c("num df", "denom df"))
+    expect_equal(unname(ow$parameter[["num df"]]), 1, tolerance = 1e-12)
+    expect_equal(df_from_oneway, df_from_equation, tolerance = 1e-12)
+    expect_equal(df_from_oneway,
+                 unname(stats::t.test(y ~ g)$parameter),
+                 tolerance = 1e-12)
+  }
 })

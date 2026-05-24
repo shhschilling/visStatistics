@@ -14,9 +14,10 @@
 #' \item{method}{a character string indicating the test performed.}
 #' \item{data.name}{a character string giving the name of the model.}
 #'
-#' @details 
-#' The Breusch-Pagan test regresses the squared raw residuals on the fitted
-#' values. The test statistic is:
+#' @details
+#' Implements the Koenker variant of the Breusch-Pagan test, which
+#' regresses the squared raw residuals on the fitted values. The test
+#' statistic is:
 #' 
 #' \deqn{BP = n \cdot R^2}
 #' 
@@ -27,18 +28,22 @@
 #'         \eqn{e_i^2} on \eqn{\hat{y}_i}
 #' }
 #' 
-#' Under the null hypothesis of homoscedasticity, the test statistic follows 
-#' a chi-squared distribution: \eqn{BP \sim \chi^2(p-1)} where \eqn{p} is the 
+#' Under the null hypothesis of homoscedasticity, the test statistic follows
+#' a chi-squared distribution: \eqn{BP \sim \chi^2(k-1)} where \eqn{k} is the
 #' number of parameters in the model (including intercept).
 #' 
 #' Large values of the test statistic (small p-values) provide evidence against 
 #' homoscedasticity.
 #' 
 #' @references
-#' Breusch, T. S., and Pagan, A. R. (1979). A simple test for heteroscedasticity 
+#' Breusch, T. S., and Pagan, A. R. (1979). A simple test for heteroscedasticity
 #' and random coefficient variation. Econometrica, 47(5), 1287-1294.
 #' DOI: 10.2307/1911963
-#' 
+#'
+#' Koenker, R. (1981). A note on studentizing a test for heteroscedasticity.
+#' Journal of Econometrics, 17(1), 107-112.
+#' DOI: 10.1016/0304-4076(81)90062-2
+#'
 #' @examples
 #' # Example with homoscedastic errors
 #' set.seed(123)
@@ -69,7 +74,7 @@ bp.test <- function(model) {
   n <- length(raw_residuals)
   
   # Number of parameters (including intercept)
-  p <- length(coef(model))
+  k <- length(coef(model))
   
   # Square the raw residuals
   sq_raw_residuals <- raw_residuals^2
@@ -85,7 +90,7 @@ bp.test <- function(model) {
   
   # Degrees of freedom (number of predictors in auxiliary regression)
   # For simple linear regression with 1 predictor, df = 1
-  df <- p - 1
+  df <- k - 1
   
   # Calculate p-value from chi-squared distribution
   p_value <- pchisq(bp_statistic, df = df, lower.tail = FALSE)
