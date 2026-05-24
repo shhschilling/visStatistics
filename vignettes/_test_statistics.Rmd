@@ -58,7 +58,7 @@ number of groups, $N = \sum_{i=1}^k n_i$ is the total sample size,
 $\bar{x}_i$ is the mean of group $i$, $\bar{x}$ is the overall mean,
 and $x_{ij}$ is observation $j$ in group $i$.
 
-From Eq. (\@ref(eq:fisher-f)) follows that in the two-sample case
+From Eq. \@ref(eq:fisher-f) follows that in the two-sample case
 ($k=2$), the squared test statistic of Student's t-test equals the
 Fisher ANOVA test statistic, $t^2 = F$, resulting in identical
 $p$-values for `t.test(var.equal = TRUE)` and `aov()`.
@@ -85,7 +85,7 @@ q_{ij} =
 (\#eq:tukey-hsd-q)
 \end{equation}
 
-where \(MS_\text{within}\) is defined in Eq. (\@ref(eq:fisher-f)).
+where \(MS_\text{within}\) is defined in Eq. \@ref(eq:fisher-f).
 Adjusted p-values are computed from the studentised range distribution
 with \(k\) groups and \(N-k\) residual degrees of freedom.
 
