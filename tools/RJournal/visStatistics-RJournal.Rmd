@@ -582,29 +582,4 @@ sizes, and plots that should inform that judgement. The package therefore
 serves as a first-line workflow for routine two-variable analyses, while
 leaving model-specific extensions to subsequent analysis.
 
-# Appendix A: The general linear model {#glm .unnumbered}
 
-The general linear model provides a unified framework underlying Student's t-test, Fisher's ANOVA, and simple linear regression [@Thompson:2015].
-
-Let $N$ denote the number of observations and $k-1$ the number of predictors.
-The general linear model for observation $i,\;i = 1, \ldots, N$ is:
-
-$$Y_i = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_{k-1} x_{i,k-1} + \varepsilon_i, \quad \varepsilon_i \sim \mathcal{N}(0, \sigma^2)$$
-
-where $Y_i$ is the response for observation $i$, $x_{ij}$ is the value of predictor $j$ for observation $i$, $\beta_0, \beta_1, \ldots, \beta_{k-1}$ are the $k$ parameters. In the general linear model the error terms  $\varepsilon_i$ are independent and normally distributed  with expectation value 0 and constant variance $\sigma^2$.
-
-**Student's t-test** uses one binary indicator variable $x_{i1}$;
-testing $H_0: \beta_1 = 0$ is equivalent to testing
-$H_0: \mu_1 = \mu_2$.
-
-**Fisher's ANOVA** uses $k-1$ indicator variables for $k$ groups;
-testing $H_0: \beta_1 = \cdots = \beta_{k-1} = 0$ is equivalent to
-testing equality of all group means.
-
-<!-- In the two-sample case, the squared test statistic of Student's t-test -->
-<!-- equals the Fisher ANOVA test statistic, $t^2 = F$, -->
-<!-- resulting in identical -->
-<!-- $p$-values for `t.test(var.equal = TRUE)` and `aov()`. -->
-
-**Simple linear regression** uses one continuous predictor; 
-$H_0: \beta_1 = 0$ examines whether a linear relationship exists.

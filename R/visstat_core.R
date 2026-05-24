@@ -400,7 +400,7 @@ visstat_core <- function(dataframe,
       label_lines   <- ceiling(max_ylabel_in / par("csi"))  # lines for tick text
       ylab_line     <- label_lines + 1                       # ylab 1 line beyond
       left_mar      <- max(5, ylab_line + 1)                 # margin + 1 buffer
-      op <- par(oma = c(0, 0, 3, 0), mar = c(5, left_mar, 4, 2) + 0.1)
+      op <- par(mar = c(5, left_mar, 4, 2) + 0.1)
 
       # Colour by x-axis group (fact levels), consistent with boxplot/Kruskal.
       # Semi-transparency preserved so overlapping points show as darker shades.
