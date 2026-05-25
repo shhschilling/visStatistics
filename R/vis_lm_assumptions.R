@@ -1,3 +1,18 @@
+.simple_regression_leverage <- function(model) {
+  model_data <- model.frame(model)
+  predictor <- as.numeric(model_data[[2]])
+  n_obs <- length(predictor)
+  predictor_centered <- predictor - mean(predictor)
+  predictor_ss <- sum(predictor_centered^2)
+  if (is.finite(predictor_ss) && predictor_ss > 0) {
+    leverage <- 1 / n_obs + predictor_centered^2 / predictor_ss
+  } else {
+    leverage <- rep(1 / n_obs, n_obs)
+  }
+  names(leverage) <- rownames(model_data)
+  leverage
+}
+
 #' Visualisation of linear model assumption diagnostics
 #'
 #' Checks the residual diagnostics in the general linear model
@@ -23,9 +38,13 @@
 #' residuals as in \code{plot.lm()}. With
 #' \eqn{z_i = e_i / SE_res}, where \eqn{SE_res} is the residual standard
 #' error, Cook's distance contours are drawn as
-#' \deqn{D_i = z_i^2 h_{ii} / (k(1 - h_{ii})^2),}
-#' where \eqn{h_{ii}} is the leverage of observation \eqn{i} and \eqn{k}
-#' is the number of fitted model parameters.
+#' \deqn{D_i = z_i^2 h_i / (k(1 - h_i)^2),}
+#' with simple-regression leverage
+#' \deqn{h_i = 1/N + (x_i - \bar{x})^2 /
+#'       \sum_{r=1}^{N}(x_r - \bar{x})^2.}
+#' Here \eqn{x_i} is the predictor value of observation \eqn{i},
+#' \eqn{N} is the total sample size, and \eqn{k = 2} is the number of
+#' fitted model parameters.
 #'
 #' @return A list with elements:
 #' \describe{
@@ -70,6 +89,13 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
   if (length(raw_residuals) >= 3 && length(raw_residuals) <= 5000) {
     shapiro_test <- shapiro.test(raw_residuals)
   } else {
+    if (length(raw_residuals) > 5000) {
+      warning(
+        "Shapiro-Wilk test cannot be computed for more than 5000 ",
+        "model residuals; p-value set to NA.",
+        call. = FALSE
+      )
+    }
     shapiro_test <- list(
       method = "Shapiro-Wilk normality test",
       statistic = NA,
@@ -142,7 +168,7 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
   }
   
   plot_residuals_vs_leverage <- function() {
-    leverage <- hatvalues(anova_model)
+    leverage <- .simple_regression_leverage(anova_model)
     y_lim <- extendrange(c(scaled_residuals, -3, 3), f = 0.08)
     y_ticks <- seq(floor(y_lim[1]), ceiling(y_lim[2]), by = 1)
     x_lim <- c(0, min(1, max(leverage, na.rm = TRUE) * 1.15))
@@ -227,7 +253,7 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
   }
   
   # Add overall title with test results
-  p_shapiro <- if (!is.na(shapiro_test$p.value)) signif(shapiro_test$p.value, 2) else "N/A"
+  p_shapiro <- if (!is.na(shapiro_test$p.value)) signif(shapiro_test$p.value, 2) else "NA"
   p_AD <- if (is.list(ad_test) && !is.null(ad_test$p.value)) signif(ad_test$p.value, 2) else "N/A"
   
   if (regression_mode) {

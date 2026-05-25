@@ -297,6 +297,8 @@ visstat_core <- function(dataframe,
       
       if (all_groups_large) {
         normality_met <- TRUE 
+      } else if (length(raw_residuals) > 5000) {
+        normality_met <- TRUE
       } else {
         normality_met <- shapiro.test(raw_residuals)$p.value >= alpha
       }

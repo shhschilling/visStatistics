@@ -98,6 +98,26 @@ effect_size(kw, x = iris$Species, y = iris$Petal.Width)
 
 tab <- matrix(c(10, 5, 4, 12), nrow = 2)
 effect_size(chisq.test(tab))
+
+\dontrun{
+## Large-sample example with a statistically significant Student's
+## t-test p-value but a small effect size, measured by Hedges' g
+## using the pooled standard deviation. A small mean shift is added
+## to noisy normal data. Because N is large, the t-test p-value
+## becomes small, while Hedges' g remains close to zero.
+## The residual Shapiro-Wilk p-value in the diagnostic panel is NA
+## because shapiro.test() is limited to n <= 5000.
+set.seed(20260525)
+n <- 2501
+mean_shift <- 0.1
+group <- factor(rep(c("control", "treatment"), each = n))
+response <- rnorm(2 * n) + rep(c(0, mean_shift), each = n)
+res <- visstat(group, response)
+res[["t-test-statistics"]]$method
+res[["t-test-statistics"]]$p.value
+res$effect_size$effect_size_method
+res$effect_size$estimate
+}
 }
 \references{
 Hedges, L. V. (1981). Distribution theory for Glass's estimator of effect
