@@ -110,9 +110,33 @@ two_sample_t_test <- function(samples,
   x <- twosamples$sample1and2
   x1 <- twosamples$sample1
   x2 <- twosamples$sample2
-  # Check normality of both samples-----
-  p1 <- test_norm(twosamples$sample1)
-  p2 <- test_norm(twosamples$sample2)
+  # Legacy per-group Shapiro output; not used for routing.
+  if (length(x1) > 5000) {
+    p1 <- structure(
+      list(
+        statistic = c(W = NA_real_),
+        p.value = NA_real_,
+        method = "Shapiro-Wilk normality test",
+        data.name = "sample 1; n > 5000"
+      ),
+      class = "htest"
+    )
+  } else {
+    p1 <- test_norm(twosamples$sample1)
+  }
+  if (length(x2) > 5000) {
+    p2 <- structure(
+      list(
+        statistic = c(W = NA_real_),
+        p.value = NA_real_,
+        method = "Shapiro-Wilk normality test",
+        data.name = "sample 2; n > 5000"
+      ),
+      class = "htest"
+    )
+  } else {
+    p2 <- test_norm(twosamples$sample2)
+  }
   
   # margins of y -axis
   lower <- 0.2

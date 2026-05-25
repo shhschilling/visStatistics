@@ -484,6 +484,57 @@ test_that("visstat returns effect_size for implemented branches", {
   }
 })
 
+test_that("large residual panel reports NA Shapiro above R limit", {
+  setup_test_graphics()
+  on.exit(cleanup_test_graphics())
+
+  n <- 2501
+  base <- qnorm((seq_len(n) - 0.5) / n)
+  group <- factor(rep(c("control", "treatment"), each = n))
+  response <- c(base, base + 0.1)
+
+  expect_warning(
+    result <- visstat(group, response),
+    "more than 5000 model residuals"
+  )
+
+  expect_s3_class(result, "visstat")
+  expect_equal(result[["t-test-statistics"]]$method, " Two Sample t-test")
+  expect_true(result[["t-test-statistics"]]$p.value < 0.001)
+  expect_equal(result$effect_size$name, "Hedges' g")
+  expect_lt(abs(result$effect_size$estimate), 0.11)
+  expect_s3_class(result[["Shapiro-Wilk-test_sample1"]], "htest")
+  expect_s3_class(result[["Shapiro-Wilk-test_sample2"]], "htest")
+  expect_false(is.na(result[["Shapiro-Wilk-test_sample1"]]$p.value))
+  expect_false(is.na(result[["Shapiro-Wilk-test_sample2"]]$p.value))
+})
+
+test_that("legacy t-test Shapiro fields stay valid above group limit", {
+  setup_test_graphics()
+  on.exit(cleanup_test_graphics())
+
+  n <- 5001
+  base <- qnorm((seq_len(n) - 0.5) / n)
+  group <- factor(rep(c("control", "treatment"), each = n))
+  response <- c(base, base + 0.1)
+
+  expect_warning(
+    result <- visstat(group, response),
+    "more than 5000 model residuals"
+  )
+
+  expect_s3_class(result, "visstat")
+  expect_s3_class(result[["Shapiro-Wilk-test_sample1"]], "htest")
+  expect_s3_class(result[["Shapiro-Wilk-test_sample2"]], "htest")
+  expect_true(is.na(result[["Shapiro-Wilk-test_sample1"]]$p.value))
+  expect_true(is.na(result[["Shapiro-Wilk-test_sample2"]]$p.value))
+  expect_equal(result[["Shapiro-Wilk-test_sample1"]]$data.name,
+               "sample 1; n > 5000")
+  expect_equal(result[["Shapiro-Wilk-test_sample2"]]$data.name,
+               "sample 2; n > 5000")
+  expect_s3_class(result[["t-test-statistics"]], "htest")
+})
+
 test_that("numeric correlation branch skips GLM assumption plot", {
   setup_test_graphics()
   on.exit(cleanup_test_graphics())

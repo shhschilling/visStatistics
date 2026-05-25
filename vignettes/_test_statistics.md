@@ -58,7 +58,7 @@ number of groups, $N = \sum_{i=1}^k n_i$ is the total sample size,
 $\bar{x}_i$ is the mean of group $i$, $\bar{x}$ is the overall mean,
 and $x_{ij}$ is observation $j$ in group $i$.
 
-From Eq. \@ref(eq:fisher-f) follows that in the two-sample case
+From Eq.\ \@ref(eq:fisher-f) follows that in the two-sample case
 ($k=2$), the squared test statistic of Student's t-test equals the
 Fisher ANOVA test statistic, $t^2 = F$, resulting in identical
 $p$-values for `t.test(var.equal = TRUE)` and `aov()`.
@@ -85,7 +85,7 @@ q_{ij} =
 (\#eq:tukey-hsd-q)
 \end{equation}
 
-where \(MS_\text{within}\) is defined in Eq. \@ref(eq:fisher-f).
+where \(MS_\text{within}\) is defined in Eq.\ \@ref(eq:fisher-f).
 Adjusted p-values are computed from the studentised range distribution
 with \(k\) groups and \(N-k\) residual degrees of freedom.
 
@@ -132,7 +132,7 @@ Its test statistic is
 \begin{equation}
 F_W =
 \frac{\displaystyle\sum_{i=1}^{k} w_i
-(\bar{y}_i - \bar{y}_w)^2\;/\;(k-1)}
+(\bar{x}_i - \bar{x}_w)^2\;/\;(k-1)}
 {1 + \dfrac{2(k-2)}{k^2-1}
 \displaystyle\sum_{i=1}^{k} \dfrac{(1-w_i/w)^2}{n_i-1}},
 (\#eq:welch-f)
@@ -140,7 +140,7 @@ F_W =
 
 where $w_i = n_i/s_i^2$ are the inverse-variance weights,
 $w = \sum_{i=1}^{k} w_i$, and
-$\bar{y}_w = \sum_{i=1}^{k} w_i \bar{y}_i / w$ is the weighted grand
+$\bar{x}_w = \sum_{i=1}^{k} w_i \bar{x}_i / w$ is the weighted grand
 mean. The numerator degree of freedom is $k-1$; the denominator degree
 of freedom is the Satterthwaite-type approximation returned by
 `oneway.test()`.
@@ -152,29 +152,21 @@ Post-hoc comparisons use the package implementation `games.howell()`
 The Games--Howell procedure is used for pairwise mean comparisons under
 unequal variances and unequal sample sizes.
 For each pairwise comparison, the two groups are denoted as 1 and 2.
-The function computes
-
-$$d = \bar{y}_1 - \bar{y}_2,$$
-
-with standard error
-
-$$SE = \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}$$
-
-and test statistic
+The test statistic is
 
 \begin{equation}
-t = \frac{d}{SE}.
+t = \frac{d}{SE},
 (\#eq:games-howell-t)
 \end{equation}
 
-The pairwise degrees of freedom use the two-group
-Welch--Satterthwaite equation \@ref(eq:welch-satterthwaite-df).
-Two-sided $p$-values are computed from the corresponding $t$ distribution
-and then adjusted with Holm's method [@Holm:1979].
-Confidence intervals are computed as
-$d \pm t_{1-\alpha/2,\nu}SE$ and are not adjusted for multiple
-comparisons. Significant letter displays are produced by
-`multcompLetters()` from `multcompView` [@Graves:2026].
+where $d = \bar{x}_1 - \bar{x}_2$ is the mean difference and
+$SE = \sqrt{s_1^2/n_1 + s_2^2/n_2}$ its standard error.
+
+Eq.\ \@ref(eq:games-howell-t) is evaluated against a $t$ distribution
+with $\nu$ degrees of freedom from the Welch--Satterthwaite
+approximation in Eq.\ \@ref(eq:welch-satterthwaite-df).
+The resulting two-sided $p$-values are adjusted with Holm's method
+[@Holm:1979].
 
 # Non-parametric tests
 
@@ -256,6 +248,7 @@ Cochran's rule [@Cochran:1954].
 
 Pearson's \(\chi^2\) test evaluates the null hypothesis that two
 categorical variables are independent.
+
 Let $O_{ij}$ and $E_{ij}$ denote the observed and expected frequencies in
 row $i$ and column $j$ of an $R \times C$ contingency table, where rows
 index the $R$ levels of the response $y$ and columns the $C$ levels of
@@ -264,6 +257,51 @@ The Pearson residual for cell $(i,j)$ is
 
 $$r_{ij} = \frac{O_{ij} - E_{ij}}{\sqrt{E_{ij}}},
 \quad i = 1,\ldots,R,\quad j = 1,\ldots,C.$$
+
+For Pearson's $\chi^2$ tests, `visstat()` also generates a mosaic plot
+in which cell colours represent Pearson residual values (see Section
+\@ref(sec:route-4-examples)) on a blue--red colour scale.
+
+
+The test statistic of Pearson's $\chi^2$ test is
+
+\begin{equation}
+\chi^2 = \sum_{i=1}^{R}\sum_{j=1}^{C} r_{ij}^2,
+(\#eq:pearson-chi)
+\end{equation}
+
+Under the null hypothesis of independence, the statistic is compared with a
+\(\chi^2\) distribution with $(R-1)(C-1)$ degrees of freedom.
+
+
+For $2\times 2$ tables, Yates' continuity correction is applied by
+default.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pearson's \(\chi^2\) test evaluates the null hypothesis that two
+categorical variables are independent.
+Let $O_{ij}$ and $E_{ij}$ denote the observed and expected frequencies in
+row $i$ and column $j$ of an $R \times C$ contingency table, where rows
+index the $R$ levels of the response $y$ and columns the $C$ levels of
+the predictor $x$.
+The Pearson residual for cell $(i,j)$ is
+
+$$r_{ij} = \frac{O_{ij} - E_{ij}}{\sqrt{E_{ij}}},
+\quad i = 1,\ldots,R,\quad j = 1,\ldots,C.$$
+
+From this $$r_{ij} the  p-values, shown in the mosaic plots link are generated 
+
 
 The test statistic of Pearson's $\chi^2$ test is
 
@@ -328,7 +366,7 @@ For $2 \times 2$ tables, `fisher.test()` additionally returns the
 conditional maximum likelihood estimate of the odds ratio
 
 \begin{equation}
-\widehat{\text{OR}} = n_{11}n_{22}/(n_{12}n_{21})
+\widehat{\mathrm{OR}} = n_{11}n_{22}/(n_{12}n_{21})
 (\#eq:odds-ratio)
 \end{equation}
 
