@@ -1,3 +1,110 @@
+# (APPENDIX) Appendix {.unnumbered}
+
+```{=latex}
+\numberwithin{equation}{section}
+```
+
+# Assumption tests {#sec:assumption-statistics}
+
+## Normality tests {#sec:norm}
+
+The package displays both the Shapiro--Wilk test and the Anderson--Darling test to check the normality of raw model residuals $e_i$.
+
+### Shapiro--Wilk test `shapiro.test()` {#sec:shap}
+
+The Shapiro--Wilk test evaluates whether a sample $x_1,\ldots,x_n$ comes from a normal distribution.
+Let $x_{(1)}\le \cdots \le x_{(n)}$ be its order statistics.
+Introduce a reference sample $Z_1,\ldots,Z_n$ of independent standard normal random variables, i.e. $Z_i \sim N(0,1)$ for all $i$, and let $Z_{(1)}\le \cdots \le Z_{(n)}$ be their order statistics used to construct the Shapiro--Wilk weights.
+
+Let $m_i = \operatorname{E}(Z_{(i)})$ and $v_{ij} = \operatorname{Cov}(Z_{(i)}, Z_{(j)})$ for $i,j = 1,\ldots,n$.
+Define $\mathbf{m} = (m_1,\ldots,m_n)^\top$ and $V = (v_{ij})_{i,j=1}^n$.
+
+The vector $\mathbf{m}$ contains the expected standard-normal order statistics, and $V$ is their covariance matrix.
+Let $\mathbf{a}=(a_1,\ldots,a_n)^\top$ be the resulting vector of normalised weights for the ordered observed sample values
+
+$$\mathbf{a}
+=\frac{V^{-1}\mathbf{m}}
+{\sqrt{\left(\mathbf{m}^\top V^{-1}V^{-1}\mathbf{m}\right)}}.$$ Then the Shapiro--Wilk statistic [@Shapiro:1965] is
+
+\begin{equation}
+W=\frac{\left(\sum_{i=1}^{n} a_i x_{(i)}\right)^2}
+{\sum_{i=1}^{n} (x_i-\bar{x})^2}
+(\#eq:shapiro-w)
+\end{equation}
+
+$W$ takes values in $(0, 1]$; values close to 1 indicate normality.
+
+### Anderson--Darling test `ad.test()` {#sec:adar}
+
+The Anderson--Darling test [@Anderson:1952] is particularly sensitive to deviations in the tails of the distribution [@Razali:2011; @Yap:2011].
+Let $z_i = (x_{(i)} - \bar{x})/s,\; i=1,2,\ldots,n$ be the standardised order statistics of $x_i$, where $s$ is the sample standard deviation, and let $\Phi$ denote the standard normal cumulative distribution function.
+The test statistic is
+
+\begin{equation}
+A^2 = -n - \frac{1}{n}\sum_{i=1}^{n}(2i-1)
+        \left[\ln\Phi(z_i) + \ln\!\left(1 - \Phi(z_{n+1-i})\right)\right]
+(\#eq:anderson-a2)
+\end{equation}
+
+The implementation uses `ad.test()` from `nortest` [@Gross:2015].
+
+## Homoscedasticity tests {#sec:homo}
+
+### The mean-centred Levene test `levene.test()` {#sec:lev}
+
+The package implementation uses Levene's original mean-centred proposal [@Levene:1960].
+
+The Levene test statistic is the one-way ANOVA $F$ statistic, computed on the
+absolute residuals $|e_{ij}|$ in place of the responses $x_{ij}$; the
+corresponding Fisher ANOVA formula is given in Eq.\ \@ref(eq:fisher-f):
+
+\begin{equation}
+F_L = \frac{\displaystyle\sum_{i=1}^{k} n_i (\overline{|e|}_i - \overline{|e|})^2\;/\;(k-1)}
+         {\displaystyle\sum_{i=1}^{k}\sum_{j=1}^{n_i}(|e_{ij}| - \overline{|e|}_i)^2\;/\;(N-k)},
+(\#eq:levene-f)
+\end{equation}
+
+where $\overline{|e|}_i$ is the within-group mean of the absolute residuals and $\overline{|e|}$ is their overall mean.
+
+### Bartlett's test `bartlett.test()` {#sec:bart}
+
+Bartlett's test statistic [@Bartlett:1937] is
+
+\begin{equation}
+K^2 = \frac{(N-k)\ln s_p^2 - \displaystyle\sum_{i=1}^k (n_i-1)\ln s_i^2}
+{1 + \dfrac{1}{3(k-1)}\!\left(\displaystyle\sum_{i=1}^k \frac{1}{n_i-1} - \frac{1}{N-k}\right)},
+(\#eq:bartlett-k2)
+\end{equation}
+
+where $k$ is the number of groups, $N = \sum_{i=1}^k n_i$ is the total sample size, $n_i$ is the sample size of group $i$, $s_i^2$ is the sample variance of group $i$, and $s_p^2$ is the pooled variance
+
+$$s_p^2 = \frac{1}{N-k}\sum_{i=1}^k (n_i-1)\,s_i^2.$$
+
+Under the null hypothesis the statistic approximately follows $\chi^2(k-1)$.
+
+### Breusch--Pagan test `bp.test()` {#sec:bp}
+
+For simple linear regression, group-based variance tests are not applicable.
+The package implementation `bp.test()` performs the Koenker variant [@Koenker:1981] of the Breusch--Pagan test [@Breusch:1979], which tests whether the $N$ squared residuals $e_i^2$ vary systematically with the fitted values from the regression model $\hat{y}_i$.
+
+The Breusch--Pagan statistic is defined as:
+
+\begin{equation}
+BP = N R^2_\text{aux}
+(\#eq:breusch-pagan-bp),
+\end{equation}
+
+where $R^2_\text{aux}$ denotes the coefficient of determination from regressing $e_i^2$ on $\hat{y}_i$ :
+
+$$R^2_\text{aux}
+= 1 -
+\frac{\sum_{i=1}^{N} (e_i^2 - \widehat{e_i^2})^2}
+     {\sum_{i=1}^{N} (e_i^2 - \overline{e^2})^2}.$$
+
+Here $\widehat{e_i^2}$ are the fitted values from this auxiliary regression and $\overline{e^2}$ is the mean of the squared residuals.
+
+Under the null hypothesis of homoscedasticity, $BP$ is compared asymptotically to a $\chi^2(k-1)$ distribution.
+
 # Parametric tests {#sec:tests}
 
 In the numeric-response, categorical-predictor branch (Route 1), parametric tests
@@ -6,7 +113,6 @@ group-specific sample sizes are greater than 50. The Levene variance gate
 then separates equal-variance tests from Welch-type tests.
 
 ## Student's t-test and Fisher's one-way ANOVA
-
 
 ### Student's t-test {#sec:tt}
 
@@ -254,15 +360,16 @@ row $i$ and column $j$ of an $R \times C$ contingency table, where rows
 index the $R$ levels of the response $y$ and columns the $C$ levels of
 the predictor $x$.
 The Pearson residual for cell $(i,j)$ is
-
-$$r_{ij} = \frac{O_{ij} - E_{ij}}{\sqrt{E_{ij}}},
-\quad i = 1,\ldots,R,\quad j = 1,\ldots,C.$$
-
-For Pearson's $\chi^2$ tests, `visstat()` also generates a mosaic plot
-in which cell colours represent Pearson residual values (see Section
-\@ref(sec:route-4-examples)) on a blue--red colour scale.
-
-
+\begin{equation}
+r_{ij} = \frac{O_{ij} - E_{ij}}{\sqrt{E_{ij}}},
+\quad i = 1,\ldots,R,\quad j = 1,\ldots,C.
+(\#eq:pearson-residual)
+\end{equation}
+<!--
+# The tiles in the mosaic plots [@Meyer:2006; @Meyer:2024] accompanying 
+# Pearson's $\chi^2$ tests selection 
+# represent Pearson residual values on a blue--red colour scale.
+-->
 The test statistic of Pearson's $\chi^2$ test is
 
 \begin{equation}
@@ -273,50 +380,10 @@ The test statistic of Pearson's $\chi^2$ test is
 Under the null hypothesis of independence, the statistic is compared with a
 \(\chi^2\) distribution with $(R-1)(C-1)$ degrees of freedom.
 
-
 For $2\times 2$ tables, Yates' continuity correction is applied by
 default.
 
 
-
-
-
-
-
-
-
-
-
-
-
-Pearson's \(\chi^2\) test evaluates the null hypothesis that two
-categorical variables are independent.
-Let $O_{ij}$ and $E_{ij}$ denote the observed and expected frequencies in
-row $i$ and column $j$ of an $R \times C$ contingency table, where rows
-index the $R$ levels of the response $y$ and columns the $C$ levels of
-the predictor $x$.
-The Pearson residual for cell $(i,j)$ is
-
-$$r_{ij} = \frac{O_{ij} - E_{ij}}{\sqrt{E_{ij}}},
-\quad i = 1,\ldots,R,\quad j = 1,\ldots,C.$$
-
-From this $$r_{ij} the  p-values, shown in the mosaic plots link are generated 
-
-
-The test statistic of Pearson's $\chi^2$ test is
-
-\begin{equation}
-\chi^2 = \sum_{i=1}^{R}\sum_{j=1}^{C} r_{ij}^2
-       = \sum_{i=1}^{R}\sum_{j=1}^{C}
-         \frac{(O_{ij}-E_{ij})^2}{E_{ij}}
-(\#eq:pearson-chi)
-\end{equation}
-
-compared to $\chi^2\!\left((R-1)(C-1)\right)$.
-For $2\times 2$ tables, Yates' continuity correction is applied by
-default. For general $R \times C$ tables, `visstat()` supplements the bar
-chart with a mosaic plot in which tiles are coloured by $r_{ij}$
-(blue: positive, red: negative).
 
 ## Fisher's exact test {#sec:fisher-exact-test}
 
@@ -441,3 +508,175 @@ In simple linear regression with an intercept, the two-sided test of zero
 slope and the two-sided test of zero Pearson correlation return the same
 $p$-value. Pearson correlation would therefore not add a separate
 inferential route to the default regression branch.
+
+# Influence diagnostics: Cook's distance {#sec:cooks-distance}
+
+For simple linear regression, the leverage plot visualises whether individual
+observations may exert disproportionate influence on the fitted line. Cook's
+distance combines residual size and leverage for this purpose [@Cook:1982].
+In `visStatistics`, the contours are drawn on the z residual scale used in the
+diagnostic panel. With $z_i$ defined in Eq.\ \@ref(eq:z-residual), Cook's
+distance for observation $i$ is
+
+\begin{equation}
+D_i = \frac{z_i^2 h_i}{k(1-h_i)^2},
+(\#eq:cooks-distance-z)
+\end{equation}
+
+with leverage
+
+\begin{equation}
+h_i = \frac{1}{N} +
+      \frac{(x_i-\bar{x})^2}{\sum_{r=1}^{N}(x_r-\bar{x})^2}.
+(\#eq:leverage-simple-regression)
+\end{equation}
+
+Here $x_i$ is the predictor value of observation $i$, $\bar{x}$ is the
+predictor mean, $N$ is the total sample size, and $k = 2$ is the number of
+fitted model parameters.
+
+# Effect size {#sec:effect-size}
+
+Statistical significance is strongly affected by sample size, while effect-size
+estimates are intended to support comparisons across studies regardless of
+sample size [@Levine:2002].
+
+To avoid additional package dependencies, `effect_size()` extracts, where possible, the effect sizes
+from base R `stats` output where available and implements the remaining
+formulae internally [@Hedges:1981; @Kerby:2014; @Olejnik:2003; @BenShachar:2020; @Kelley:1935; @Bergsma:2013].
+
+```{r effect-size-table, echo=FALSE, results='asis'}
+if (knitr::is_latex_output()) {
+  cat(r"(
+\begin{table}[!htbp]
+\caption{Effect sizes returned by \texttt{effect\_size()}.}
+\label{tab:effect-size-formulae}
+\centering
+\begingroup
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\setlength{\arrayrulewidth}{0.2pt}
+\renewcommand{\arraystretch}{1.18}
+\newcommand{\tbdoi}[2]{\href{https://doi.org/#1}{#2}}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.23\textwidth}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.37\textwidth}>{\raggedright\arraybackslash}p{0.19\textwidth}@{}}
+\hline
+\textbf{Analysis} & \textbf{Effect size} & \textbf{Formula} &
+\textbf{Source} \\
+\hline
+Student's $t$-test, Eq.~\eqref{eq:student-t} &
+Hedges' $g_{s_p}$ & $g_{s_p}=J(\bar{x}_1-\bar{x}_2)/s_p$ &
+\tbdoi{10.3102/10769986006002107}{Hedges, 1981} \\
+\hline
+Welch's $t$-test, Eq.~\eqref{eq:welch-t} &
+Hedges' $g_{s^{*}}$ & $g_{s^{*}}=J(\bar{x}_1-\bar{x}_2)/s^{*}$ &
+\tbdoi{10.3102/10769986006002107}{Hedges, 1981} \\
+\hline
+Wilcoxon rank-sum, Eq.~\eqref{eq:wilcoxon-w} &
+rank-biserial $r$ & $r=2W/(n_1n_2)-1$ &
+\tbdoi{10.2466/11.IT.3.1}{Kerby, 2014} \\
+\hline
+Fisher's ANOVA, Eq.~\eqref{eq:fisher-f} & $\omega^2$ &
+$\nu_1(F-1)/(\nu_1F+\nu_2+1)$ &
+\tbdoi{10.1037/1082-989X.8.4.434}{Olejnik and Algina, 2003} \\
+\hline
+Welch's ANOVA, Eq.~\eqref{eq:welch-f} &
+$\omega^2$ (approx.) &
+$\nu_1(F_W-1)/(\nu_1F_W+\nu_2+1)$ &
+\tbdoi{10.21105/joss.02815}{Ben-Shachar et al., 2020} \\
+\hline
+Kruskal--Wallis, Eq.~\eqref{eq:kruskal-h} &
+Kelley-adjusted $\eta_H^2$ & $(H-k+1)/(N-k)$ &
+\tbdoi{10.1073/pnas.21.9.554}{Kelley, 1935} \\
+\hline
+Simple linear regression, Section~\ref{sec:lin-reg} &
+$R^2$ &
+$R^2=1-SS_\text{res}/SS_\text{tot}$, Eq.~\eqref{eq:r-squared} &
+\texttt{summary(lm())\$r.squared} \\
+\hline
+Spearman, Eq.~\eqref{eq:spearman-rho} &
+$\rho$ &
+$\rho=r(\operatorname{rank}(x),\operatorname{rank}(y))$ &
+\texttt{cor.test()} \\
+\hline
+Kendall, Eq.~\eqref{eq:kendall-tau-b} &
+$\tau_b$ &
+$\tau_b=(C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$ &
+\texttt{cor.test()} \\
+\hline
+Pearson $\chi^2$ ($R\times C$), Eq.~\eqref{eq:pearson-chi} &
+Cramer's $V$ &
+$V_{R\times C}=\sqrt{\chi^2/\left(N\left(\min(R,C)-1\right)\right)}$ &
+\tbdoi{10.1016/j.jkss.2012.10.002}{Bergsma, 2013} \\
+\hline
+Pearson $\chi^2$ ($2\times2$), Eq.~\eqref{eq:pearson-chi} &
+$\phi$ & $V_{2\times2}=\sqrt{\chi^2/N}$ &
+\tbdoi{10.1016/j.jkss.2012.10.002}{Bergsma, 2013} \\
+\hline
+Fisher's exact ($2\times2$), Eq.~\eqref{eq:fisher-exact} &
+odds ratio &
+$\widehat{\mathrm{OR}}=n_{11}n_{22}/(n_{12}n_{21})$ &
+\texttt{fisher.test()} \\
+\hline
+\end{tabular}
+\endgroup
+\end{table}
+)")
+} else {
+  cat(r"(
+Table: (\#tab:effect-size-formulae) Effect sizes returned by `effect_size()`.
+
+| Analysis | Effect size | Formula | Source |
+|:---|:---|:---|:---|
+| [Student's $t$-test](#eq:student-t) | Hedges' $g_{s_p}$ (pooled) | $g_{s_p} = J\cdot(\bar{x}_1-\bar{x}_2)/s_p$ | [@Hedges:1981] |
+| [Welch's $t$-test](#eq:welch-t) | Hedges' $g_{s^{*}}$ (non-pooled) | $g_{s^{*}} = J\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$ | [@Hedges:1981] |
+| [Wilcoxon rank-sum](#eq:wilcoxon-w) | rank-biserial $r$ | $r = 2\cdot W/(n_1\cdot n_2) - 1$ | [@Kerby:2014] |
+| [Fisher's ANOVA](#eq:fisher-f) | $\omega^2$ | $\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)$ | [@Olejnik:2003] |
+| [Welch's ANOVA](#eq:welch-f) | $\omega^2$ (approx.) | $\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)$ | [@BenShachar:2020] |
+| [Kruskal--Wallis](#eq:kruskal-h) | Kelley-adjusted $\eta_H^2$ | $(H - k + 1)/(N - k)$ | [@Kelley:1935] |
+| [Simple linear regression](#sec:lin-reg) | $R^2$ | $R^2 = 1 - SS_\text{res}/SS_\text{tot}$, Eq.~\@ref(eq:r-squared) | `summary(lm())$r.squared` |
+| [Spearman](#eq:spearman-rho) | $\rho$ | $\rho = r(\operatorname{rank}(x),\operatorname{rank}(y))$, Eq.~\@ref(eq:spearman-rho) | `cor.test()$estimate` |
+| [Kendall](#eq:kendall-tau-b) | $\tau_b$ | $\tau_b = (C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$, Eq.~\@ref(eq:kendall-tau-b) | `cor.test()$estimate` |
+| [Pearson $\chi^2$ ($R\times C$)](#eq:pearson-chi) | Cramér's $V$ | $V_{R\times C} = \sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}$ | [@Bergsma:2013] |
+| [Pearson $\chi^2$ ($2\times 2$)](#eq:pearson-chi) | $\phi$ | $V_{2\times 2} = \sqrt{\chi^2/N}$ | [@Bergsma:2013] |
+| [Fisher's exact ($2\times 2$)](#eq:fisher-exact) | odds ratio | $\widehat{\mathrm{OR}} = n_{11}n_{22}/(n_{12}n_{21})$, Eq.~\@ref(eq:odds-ratio) | `fisher.test()$estimate` |
+)")
+}
+```
+
+Here, Hedges' small-sample correction factor is
+
+\begin{equation*}
+J =
+\frac{\Gamma((N-2)/2)}
+     {\sqrt{(N-2)/2}\;\Gamma((N-3)/2)},
+\end{equation*}
+
+where $J$ denotes Hedges' correction factor.
+
+The non-pooled average-variance standardizer is
+
+\begin{equation*}
+s^{*} = \sqrt{\frac{s_1^2+s_2^2}{2}},
+\end{equation*}
+
+where $s^{*}$ denotes the average-variance standardizer.
+
+$\nu_1$ and $\nu_2$ denote the numerator and denominator degrees of
+freedom; for Fisher's ANOVA, $\nu_1=k-1$ and $\nu_2=N-k$; for Welch's
+ANOVA, $\nu_1=k-1$ and $\nu_2$ is the usually fractional denominator
+degree of freedom returned by `oneway.test()`.
+
+For simple linear regression, the coefficient of determination is
+
+\begin{equation}
+R^2 = 1 - \frac{SS_\text{res}}{SS_\text{tot}},
+(\#eq:r-squared)
+\end{equation}
+
+where $SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2$ is the residual
+sum of squares, $\hat{y}_i$ is the predicted value, and
+$SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2$ is the total sum of
+squares.
+
+All other variables used in Table \@ref(tab:effect-size-formulae) are
+defined in the corresponding "Analysis" section.
