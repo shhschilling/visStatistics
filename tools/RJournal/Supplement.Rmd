@@ -1,4 +1,37 @@
-# (APPENDIX) Appendix {.unnumbered}
+---
+title: "Supplement: visStatistics"
+author:
+  - name: Sabine Schilling
+    affiliation: Lucerne School of Business, Lucerne University of Applied Sciences and Arts
+    address:
+    - 6002 Lucerne, Switzerland
+    url: https://github.com/shhschilling/visStatistics
+    orcid: 0000-0002-8318-9421
+    email: sabineschilling@gmx.ch
+date: "2026-05-26"
+output:
+  rjtools::rjournal_pdf_article:
+    self_contained: yes
+    toc: no
+  rjtools::rjournal_web_article:
+    self_contained: yes
+    toc: no
+bibliography: ../../vignettes/REFERENCES.bib
+link-citations: true
+header-includes:
+  - \microtypesetup{nopatch=footnote}
+  - \usepackage{array}
+  - \usepackage{mathrsfs}
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = normalizePath(dirname(knitr::current_input(dir = TRUE))))
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 
 ```{=latex}
 \numberwithin{equation}{section}
@@ -94,7 +127,7 @@ BP = N R^2_\text{aux}
 (\#eq:breusch-pagan-bp),
 \end{equation}
 
-where $R^2_\text{aux}$ denotes the coefficient of determination from regressing $e_i^2$ on $\hat{y}_i$ :
+where $R^2_\text{aux}$ denotes the coefficient of determination from regressing $e_i^2$ on $\hat{y}_i$:
 
 $$R^2_\text{aux}
 = 1 -
@@ -140,8 +173,7 @@ $\nu = n_1 + n_2 - 2$ degrees of freedom.
 ### Fisher's one-way ANOVA {#sec:fisher-aov}
 
 Fisher's one-way ANOVA generalises the mean comparison to more than two
-groups.
-Fisher's one-way ANOVA tests the null hypothesis that the means of
+groups and tests the null hypothesis that the means of
 \(k\) groups are equal.
 Fisher's ANOVA test statistic is
 
@@ -515,7 +547,7 @@ For simple linear regression, the leverage plot visualises whether individual
 observations may exert disproportionate influence on the fitted line. Cook's
 distance combines residual size and leverage for this purpose [@Cook:1982].
 In `visStatistics`, the contours are drawn on the z residual scale used in the
-diagnostic panel. With $z_i$ defined in Eq.\ \@ref(eq:z-residual), Cook's
+diagnostic panel. With $z_i=e_i/SE_\text{res}$, where $SE_\text{res}=\sqrt{\sum_{r=1}^{N} e_r^2/(N-k)}$, Cook's
 distance for observation $i$ is
 
 \begin{equation}
@@ -536,11 +568,11 @@ predictor mean, $N$ is the total sample size, and $k = 2$ is the number of
 fitted model parameters.
 
 # Effect size {#sec:effect-size}
-
+<!--
 Statistical significance is strongly affected by sample size, while effect-size
 estimates are intended to support comparisons across studies regardless of
 sample size [@Levine:2002].
-
+-->
 To avoid additional package dependencies, `effect_size()` extracts, where possible, the effect sizes
 from base R `stats` output where available and implements the remaining
 formulae internally [@Hedges:1981; @Kerby:2014; @Olejnik:2003; @BenShachar:2020; @Kelley:1935; @Bergsma:2013].
@@ -588,7 +620,7 @@ Kruskal--Wallis, Eq.~\eqref{eq:kruskal-h} &
 Kelley-adjusted $\eta_H^2$ & $(H-k+1)/(N-k)$ &
 \tbdoi{10.1073/pnas.21.9.554}{Kelley, 1935} \\
 \hline
-Simple linear regression, Section~\ref{sec:lin-reg} &
+Simple linear regression &
 $R^2$ &
 $R^2=1-SS_\text{res}/SS_\text{tot}$, Eq.~\eqref{eq:r-squared} &
 \texttt{summary(lm())\$r.squared} \\
@@ -633,7 +665,7 @@ Table: (\#tab:effect-size-formulae) Effect sizes returned by `effect_size()`.
 | [Fisher's ANOVA](#eq:fisher-f) | $\omega^2$ | $\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)$ | [@Olejnik:2003] |
 | [Welch's ANOVA](#eq:welch-f) | $\omega^2$ (approx.) | $\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)$ | [@BenShachar:2020] |
 | [Kruskal--Wallis](#eq:kruskal-h) | Kelley-adjusted $\eta_H^2$ | $(H - k + 1)/(N - k)$ | [@Kelley:1935] |
-| [Simple linear regression](#sec:lin-reg) | $R^2$ | $R^2 = 1 - SS_\text{res}/SS_\text{tot}$, Eq.~\@ref(eq:r-squared) | `summary(lm())$r.squared` |
+| Simple linear regression | $R^2$ | $R^2 = 1 - SS_\text{res}/SS_\text{tot}$, Eq.~\@ref(eq:r-squared) | `summary(lm())$r.squared` |
 | [Spearman](#eq:spearman-rho) | $\rho$ | $\rho = r(\operatorname{rank}(x),\operatorname{rank}(y))$, Eq.~\@ref(eq:spearman-rho) | `cor.test()$estimate` |
 | [Kendall](#eq:kendall-tau-b) | $\tau_b$ | $\tau_b = (C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$, Eq.~\@ref(eq:kendall-tau-b) | `cor.test()$estimate` |
 | [Pearson $\chi^2$ ($R\times C$)](#eq:pearson-chi) | Cramér's $V$ | $V_{R\times C} = \sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}$ | [@Bergsma:2013] |
@@ -680,3 +712,5 @@ squares.
 
 All other variables used in Table \@ref(tab:effect-size-formulae) are
 defined in the corresponding "Analysis" section.
+
+# References {.unnumbered}
