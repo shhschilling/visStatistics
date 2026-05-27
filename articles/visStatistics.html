@@ -60,7 +60,7 @@
                         <h4 data-toc-skip class="author">Sabine
 Schilling</h4>
             
-            <h4 data-toc-skip class="date">2026-05-27</h4>
+            <h4 data-toc-skip class="date">2026-05-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/HEAD/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -141,10 +141,10 @@ on a server and cannot be directly accessed by users. This approach was
 already successfully applied to develop a medical scoring tool <span class="citation">(<a href="#ref-Bijlenga:2017">Bijlenga et al.
 2017</a>)</span>.</p>
 <p>For group comparisons, packages with related scope include
-<code>compareGroups</code> <span class="citation">(<a href="#ref-Subirana:2014">Subirana, Sanz, and Vila 2014</a>)</span>,
-<code>boxTest</code> <span class="citation">(<a href="#ref-Sau:2025">Sau, Phadikar, and Bhakta 2025</a>)</span>,
-<code>autotestR</code> <span class="citation">(<a href="#ref-Garcia:2026">Garcia 2026</a>)</span>, and
-<code>automatedtests</code> <span class="citation">(<a href="#ref-Zeevat:2025">Zeevat 2025</a>)</span>.
+<code>compareGroups</code> <span class="citation">(<a href="#ref-Subirana:2014">Subirana et al. 2014</a>)</span>,
+<code>boxTest</code> <span class="citation">(<a href="#ref-Sau:2025">Sau
+et al. 2025</a>)</span>, <code>autotestR</code> <span class="citation">(<a href="#ref-Garcia:2026">Garcia 2026</a>)</span>,
+and <code>automatedtests</code> <span class="citation">(<a href="#ref-Zeevat:2025">Zeevat 2025</a>)</span>.
 <code>compareGroups</code> is primarily designed for bivariate
 descriptive tables and reports, not diagnostic plots and test
 visualisations. <code>boxTest</code> covers only the two-group
@@ -173,10 +173,11 @@ comparisons where required.</p>
 <div class="section level2">
 <h2 id="package-overview">Package overview<a class="anchor" aria-label="anchor" href="#package-overview"></a>
 </h2>
-<p><code>visStatistics</code> <span class="citation">(<a href="#ref-Schilling:2026">Schilling 2026</a>)</span> is available on
-CRAN as the latest stable release. This article refers to the latest
-development state in the GitHub repository <span class="citation">(<a href="#ref-SchillingPkgdown:2026">Schilling and Kauf 2026</a>)</span>,
-which may include minor changes between CRAN submissions.</p>
+<p><code>visStatistics</code> <span class="citation">(<a href="#ref-Schilling:2026">Schilling 2026</a>)</span> is available on <a href="https://CRAN.R-project.org/package=visStatistics" class="external-link">CRAN</a> as the
+latest stable release. This article refers to the latest development
+state in the <a href="https://github.com/shhschilling/visStatistics" class="external-link">GitHub
+repository</a>, which may include minor changes between CRAN
+submissions.</p>
 <p>Given two input vectors <code>x</code> and <code>y</code> of class
 <code>"numeric"</code>, <code>"integer"</code>, or
 <code>"factor"</code>, its main function <code><a href="../reference/visstat.html">visstat()</a></code> can be
@@ -201,7 +202,7 @@ the implemented hypothesis tests,</p>
 @ref(sec:decision). The function returns an object of class
 <code>"visstat"</code> with <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>,
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods described in
-Section (sec:visstat-methods}</p>
+Section @ref(sec:visstat-methods)</p>
 <p>Among the returned components, <code><a href="../reference/visstat.html">visstat()</a></code> reports the
 p-value of the selected test and an <code>effect_size</code> field
 (Section @ref(sec:p-values-effect-sizes)).</p>
@@ -398,17 +399,19 @@ computed on the same z-residual scale (see Section
 @ref(sec:cooks-distance)).</p>
 <p><strong>Outer title for both routes</strong></p>
 <p>The first row of the outer title reports p-values of
-residual-normality checks with the Shapiro–Wilk and Anderson–Darling
-tests. The second row reports p-values of variance checks: Levene and
-Bartlett for grouped central-tendency analyses, or Breusch–Pagan for
-simple regression.</p>
+residual-normality checks with the Shapiro–Wilk Shapiro–Wilk test and
+Anderson–Darling tests. The second row reports p-values of variance
+checks: Levene and Bartlett for grouped central-tendency analyses, or
+Breusch–Pagan for simple regression.</p>
+<p>Note that among the displayed assumption tests, only the Shapiro–Wilk
+and Levene test results enter automated routing, and only in the
+central-tendency branch (see Section @ref(sec:route-1)).
+Anderson–Darling, Bartlett, and Breusch–Pagan are diagnostic output
+only.</p>
 <p>Because the displayed z-residuals are a constant rescaling of the raw
 residuals fed to the assumption tests, the visual evidence and the
 displayed p-values in the outer titles refer to the same residual
 object.</p>
-<!-- Note that among the displayed assumption tests, only the Shapiro--Wilk and Levene test results enter automated routing, and only in the central-tendency branch. -->
-<!-- Within that branch, Shapiro--Wilk is used only when at least one group has 50 or fewer observations (see Section \@ref(sec:route-1)); <!-- Anderson--Darling, Bartlett, and -->
-<!-- Breusch--Pagan are diagnostic output only. -->
 <p>The Route 1 and Route 3 diagnostic-panel designs are illustrated in
 the examples in Figures @ref(fig:welch-anova-example), left, and
 @ref(fig:regression-example), left.</p>
@@ -426,10 +429,6 @@ are detailed below.</p>
 <div class="section level4">
 <h4 id="sec:route-1">Route 1: Numeric response, categorical predictor<a class="anchor" aria-label="anchor" href="#sec:route-1"></a>
 </h4>
-<!-- A numeric response with a categorical predictor asks whether the response differs across groups formed by the predictor levels. -->
-<!-- `visstat()` selects from six central-tendency tests: For parametric tests, Student's t-test for $k = 2$ groups generalises to Fisher's one-way ANOVA for more than two groups; the Welch alternative, Welch's t-test for $k = 2$ groups, generalises to Welch's heteroscedastic one-way ANOVA for more than two groups. -->
-<!-- For non-parametric tests, the Wilcoxon rank-sum test for $k = 2$ groups generalises to the Kruskal--Wallis test for more than two groups (gray box in Figure @ref(fig:overview)). -->
-<!-- The diagnostic panel (see Section @ref(sec:graphical)) is always generated as first visual output. -->
 <p>Figure @ref(fig:decision-tree) summarises the test decision logic in
 the central-tendency branch.</p>
 <div class="figure">
@@ -442,34 +441,26 @@ mean-based or switches to rank-based tests; the Levene test then selects
 equal-variance or Welch-type procedures.
 </p>
 </div>
-<p>The first split checks group size: When all group-specific sample
-sizes are greater than 50, the sampling distribution of the group means
-is treated as sufficiently close to normal by the central limit theorem
-<span class="citation">(<a href="#ref-Lumley:2002">Lumley et al.
-2002</a>; <a href="#ref-Rasch:2011">Rasch, Kubinger, and Moder
-2011</a>)</span>. In this case, test selection is independent of the
-residual-normality p-values displayed in the assumption panel. This
-avoids switching to rank-based tests because of negligible
+<p>The first split checks group size. If all groups contain more than 50
+observations, <code><a href="../reference/visstat.html">visstat()</a></code> treats the parametric (mean-based)
+path as justified by the Central Limit Theorem <span class="citation">(<a href="#ref-Lumley:2002">Lumley et al. 2002</a>; <a href="#ref-Rasch:2011">Rasch et al. 2011</a>)</span>. This avoids
+switching to non-parametric (rank-based) tests because of negligible
 residual-normality deviations in large samples <span class="citation">(<a href="#ref-Ghasemi:2012">Ghasemi and Zahediasl
-2012</a>; <a href="#ref-Fagerland:2012">Fagerland 2012</a>; <a href="#ref-Shatz:2024">Shatz 2024</a>)</span>.</p>
-<p>Otherwise, the Shapiro–Wilk (SW) test [<span class="citation">Shapiro
-and Wilk (<a href="#ref-Shapiro:1965">1965</a>)</span>;
-Eq. @ref(eq:shapiro-w)] is applied to model residuals. Its p-value
-determines whether the route remains mean-based.</p>
-<p>If normality is rejected (<span class="math inline">\(p_\text{SW} \le
-\alpha\)</span>), non-parametric tests are selected:
-<code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> (Eq. @ref(eq:wilcoxon-w)) for two groups, or
-<code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> (Eq. @ref(eq:kruskal-h)) followed by
-Holm-adjusted <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> for more than two
-groups.</p>
-<p>If normality is not rejected, variance homogeneity is assessed with
-the package-implemented mean-centred Levene test (L) on model residuals
-<span class="citation">(<a href="#ref-Levene:1960">Levene
-1960</a>)</span> (Eq. @ref(eq:levene-f)). This aligns the variance gate
-with the fitted general linear model. For homoscedastic data,
-<code>t.test(var.equal = TRUE)</code> (Eq. @ref(eq:student-t)) is
-applied for two groups, or Fisher’s <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>
-(Eq. @ref(eq:fisher-f)) with <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>
+2012</a>; <a href="#ref-Fagerland:2012">Fagerland 2012</a>; <a href="#ref-Shatz:2024">Shatz 2024</a>)</span>.
+<!-- Note that in this large sample case  -->
+<!-- the p-value of the  Shapiro--Wilk (SW) test [@Shapiro:1965; Eq. \@ref(eq:shapiro-w)] does not decide routing. --></p>
+<p>Otherwise, the p-value of the Shapiro–Wilk (SW) test determines
+whether the route remains mean-based: If normality is rejected (<span class="math inline">\(p_\text{SW} \le \alpha\)</span>), rank-based tests
+are selected: <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> (Eq. @ref(eq:wilcoxon-w)) for
+two groups, or <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> (Eq. @ref(eq:kruskal-h))
+followed by Holm-adjusted <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> for more
+than two groups. If normality is not rejected, variance homogeneity is
+assessed with the package-implemented mean-centred Levene test (L) on
+model residuals <span class="citation">(<a href="#ref-Levene:1960">Levene 1960</a>)</span>
+(Eq. @ref(eq:levene-f)).</p>
+<p>For homoscedastic data, <code>t.test(var.equal = TRUE)</code>
+(Eq. @ref(eq:student-t)) is applied for two groups, or Fisher’s
+<code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> (Eq. @ref(eq:fisher-f)) with <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>
 (Eq. @ref(eq:tukey-hsd-q)) for more than two groups. For heteroscedastic
 data, Welch’s <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> (Eq. @ref(eq:welch-t)) is applied
 for two groups, or Welch’s <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>
@@ -579,7 +570,7 @@ these estimates; implemented formulae are given in Appendix
 <p>The p-value quantifies evidence against the null hypothesis, whereas
 the effect-size estimate describes the magnitude of the selected
 comparison, association, or model fit on the scale defined in Appendix
-@ref(sec:effect-size) <span class="citation">(<a href="#ref-Fritz:2012">Fritz, Morris, and Richler 2012</a>; <a href="#ref-Levine:2002">Levine and Hullett 2002</a>)</span>.</p>
+@ref(sec:effect-size) <span class="citation">(<a href="#ref-Fritz:2012">Fritz et al. 2012</a>; <a href="#ref-Levine:2002">Levine and Hullett 2002</a>)</span>.</p>
 </div>
 </div>
 <div class="section level2">
@@ -967,11 +958,10 @@ response levels and <span class="math inline">\(C\)</span> predictor
 levels, Pearson’s <span class="math inline">\(\chi^2\)</span> test (Eq.
 @ref(eq:pearson-chi)) shows a grouped column plot of row percentages
 with the <span class="math inline">\(p\)</span>-value in the title,
-followed by a mosaic plot from <code>vcd</code> <span class="citation">(<a href="#ref-Meyer:2006">Meyer, Zeileis, and Hornik
-2006</a>; <a href="#ref-Meyer:2024">Meyer et al. 2024</a>)</span>. Each
-tile corresponds to one cell of the contingency table. The tile colour
-represents the Pearson residual value (Eq. @ref(eq:pearson-residual)) on
-a blue–red colour scale; the tile size reflects the cell count.</p>
+followed by a mosaic plot from <code>vcd</code> <span class="citation">(<a href="#ref-Meyer:2006">Meyer et al. 2006</a>, <a href="#ref-Meyer:2024">2024</a>)</span>. Each tile corresponds to one
+cell of the contingency table. The tile colour represents the Pearson
+residual value (Eq. @ref(eq:pearson-residual)) on a blue–red colour
+scale; the tile size reflects the cell count.</p>
 <p>With <code>Eye</code> and <code>Hair</code> from
 <code>HairEyeColor</code>, all expected cell counts exceed the Cochran
 thresholds <span class="citation">(<a href="#ref-Cochran:1954">Cochran
@@ -1234,86 +1224,90 @@ attribute <code>"plot_paths"</code> on the returned object of class
 <div class="section level2">
 <h2 id="sec:discussion">Discussion<a class="anchor" aria-label="anchor" href="#sec:discussion"></a>
 </h2>
-<p>For tests of central tendency, p-values from assumption tests are
-used as routing criteria, subject to the large sample-size safeguards
-for normality testing. However, no single assumption test maintains
-optimal Type I error rates and statistical power across all
-distributions <span class="citation">(<a href="#ref-Olejnik:1987">S. F.
-Olejnik and Algina 1987</a>)</span> and sample sizes, and p-values
-obtained from these tests may be unreliable if their assumptions are
-violated.</p>
-<p>In large samples, even minor, random deviations from the null
-hypothesis can result in statistically significant p-values, leading to
-type I errors <span class="citation">(<a href="#ref-Shatz:2024">Shatz
-2024</a>)</span>. Conversely, in small samples, substantial violations
-of the assumption may not reach statistical significance, resulting in
-type II errors <span class="citation">(<a href="#ref-Kozak:2018">Kozak
-and Piepho 2018</a>)</span>.</p>
-<p>The same problem becomes even more pronounced, when several
-assumption tests are combined. Combining tests for normality and
-homoscedasticity using simple majority voting inflates the overall Type
-I error rate. Moreover, assumption tests provide no information on the
-nature of deviations from the expected distribution <span class="citation">(<a href="#ref-Shatz:2024">Shatz 2024</a>)</span>.
-Therefore, automated test selection based on assumption-test p-values
-cannot replace visual inspection of the diagnostic plots generated by
-<code><a href="../reference/visstat.html">visstat()</a></code>.</p>
-<p>The limitation of p-value-based routing is particularly relevant for
-normality testing. Normality tests behave poorly at both ends of the
-sample-size range: with small samples they fail to detect non-normality,
-and with large samples they flag negligible departures from normality as
-significant <span class="citation">(<a href="#ref-Ghasemi:2012">Ghasemi
-and Zahediasl 2012</a>; <a href="#ref-Fagerland:2012">Fagerland
-2012</a>; <a href="#ref-Franc:2025">Franc 2025</a>)</span>. This raises
-the practical question of what should count as a “larger” group in the
-decision tree. The answer depends on the shape of the underlying
-distribution, especially skewness and tail weight <span class="citation">(<a href="#ref-Lumley:2002">Lumley et al.
-2002</a>)</span>. Simulation studies suggest that moderately skewed
-distributions require roughly 40–50 observations for adequate
-convergence of the sampling distribution of the mean <span class="citation">(<a href="#ref-Fagerland:2012">Fagerland
-2012</a>)</span>.</p>
-<p><code><a href="../reference/visstat.html">visstat()</a></code> therefore uses 50 observations per group as
-the gateway: only if every group contains more than 50 observations, the
-residual-normality p-value does not further steer automated routing, but
-is still reported.</p>
+<p>The design of <code>visStatistics</code> prioritises transparent,
+reproducible routing for common two-variable analyses <span class="citation">(<a href="#ref-Strasak:2007">Strasak et al. 2007</a>;
+<a href="#ref-Sato:2017">Sato et al. 2017</a>; <a href="#ref-Chicco:2025">Chicco et al. 2025</a>)</span> over broad model
+coverage.</p>
+<p>This scope keeps the decision tree inspectable and the graphical
+output consistent, but it also leaves several modelling choices
+(e.g. paired tests, interaction terms, multiple linear regression)
+outside the automated workflow. While one of R’s greatest strengths is
+the sheer volume of statistical methods available, incorporating a wider
+array of methods would require additional preliminary assumption checks,
+which in turn would exacerbate the risk of overall Type I error
+inflation. Furthermore, expanding the pipeline would result in a highly
+complex decision tree, rendering the underlying statistical logic
+increasingly opaque to the user.</p>
+<p><code>visStatistics</code> instead focuses on the
+<em>vis</em>ualisation of the chosen test and, where applicable, its
+post-hoc and assumption tests.</p>
+<p>For tests of central tendency, p-values from assumption tests of
+normality and homoscedasticity are used as routing criteria, subject to
+the large sample-size safeguards discussed below for normality testing.
+However, no single assumption test maintains optimal Type I error rates
+and statistical power across all distributions <span class="citation">(<a href="#ref-Olejnik:1987">Olejnik and Algina
+1987</a>)</span> and sample sizes, and p-values obtained from these
+tests may be unreliable if their assumptions are violated.</p>
+<p>Assumption tests are imperfect routing gates: In small samples,
+substantial violations of the assumption may not reach statistical
+significance, resulting in type II errors, whereas in large samples,
+even minor, random deviations from the null hypothesis can result in
+statistically significant p-values, leading to type I errors <span class="citation">Franc (<a href="#ref-Franc:2025">2025</a>)</span></p>
+<p>Only for residual normality, the Central Limit Theorem provides an
+exit from this problem for large samples. This raises the practical
+question of what should count as a “large” sample in normality testing.
+The answer depends on the shape of the underlying distribution,
+especially skewness and tail weight <span class="citation">(<a href="#ref-Lumley:2002">Lumley et al. 2002</a>)</span>. Simulation
+studies suggest that moderately skewed distributions require roughly
+40–50 observations for adequate convergence of the sampling distribution
+of the mean <span class="citation">(<a href="#ref-Fagerland:2012">Fagerland 2012</a>)</span>.</p>
+<p>Therefore, based on the Central Limit Theorem, normality tests of
+residuals do not steer automated routing in the decision logic of
+<code><a href="../reference/visstat.html">visstat()</a></code>, if all group-specific sample sizes are greater
+than 50.</p>
 <p>For smaller group-specific sample sizes, a Shapiro–Wilk test is used
 to route between mean-based and rank-based methods, as simulation
 studies suggest that it has the highest power among normality tests in
 small to moderate (<span class="math inline">\(n = 10\)</span> to 100)
 sample sizes <span class="citation">(<a href="#ref-Razali:2011">Razali
 and Wah 2011</a>)</span>.</p>
-<p>In the regression branch, violated assumptions are only flagged in
-the output. When this occurs, the package offers Spearman rank
-correlation (<code>correlation = TRUE</code>) as a non-causal
-alternative to linear regression.</p>
-<p>The same restriction applies to methods outside the automated
-decision tree. Further alternative methods such as data transformation,
-generalised linear models or robust regression are not implemented: each
-requires user judgment – about the transformation family, the link
-function, or the estimator – that cannot be automated without
-substantially expanding the decision tree and increasing the risk of
-Type I error inflation.</p>
-<p>Bootstrapping represents another possible alternative to
-assumption-guided routing. As implemented for example in the R package
-<code>boot</code> <span class="citation">(<a href="#ref-boot:2025">Canty
-and Ripley 2025</a>; <a href="#ref-Davison:1997">Davison and Hinkley
-1997</a>)</span>, it can provide confidence intervals for a wide range
-of statistics. However, bootstrapping often requires thousands of
-resamples and may perform poorly with very small sample sizes. This runs
-counter to the purpose of the <code>visStatistics</code> package, which
-is designed to offer a rapid overview of the data, laying the groundwork
-for deeper analysis in subsequent steps.</p>
-<p>At the graphical level, this design is also kept deliberately
-low-dependency. The package uses base R graphics and avoids a
-<code>ggplot2</code> <span class="citation">(<a href="#ref-Wickham:2016">Wickham 2016</a>)</span> dependency, keeping
-the transitive dependency footprint minimal. For more polished,
-annotated plots of chosen statistical tests, we refer to packages such
-as <code>ggstatsplot</code> <span class="citation">(<a href="#ref-Patil:2021">Patil 2021</a>)</span> or <code>ggpubr</code>
+<p>If the assumptions of parametric tests are violated,
+<code><a href="../reference/visstat.html">visstat()</a></code> automatically falls back to non-parametric tests.
+In the regression branch, violated assumptions are solely flagged, and
+the package offers Spearman rank correlation as a non-causal alternative
+to linear regression. Further alternative methods such as data
+transformation, generalised linear models, or robust regression are not
+implemented: each requires user judgment – about the transformation
+family, the link function, or the estimator – that cannot be automated
+without substantially expanding the decision tree and increasing the
+risk of Type I error inflation.</p>
+<p>Assumption tests provide no information on the nature of deviations
+from the expected distribution <span class="citation">(<a href="#ref-Shatz:2024">Shatz 2024</a>)</span> and cannot replace visual
+inspection of the diagnostic plots generated by <code><a href="../reference/visstat.html">visstat()</a></code>,
+which may indicate cases where the automatic test choice should be
+overridden.</p>
+<p>Bootstrapping represents an alternative to assumption-guided routing.
+As implemented for example in the R package <code>boot</code> <span class="citation">(<a href="#ref-boot:2025">Canty and Ripley 2025</a>; <a href="#ref-Davison:1997">Davison and Hinkley 1997</a>)</span>, it can
+provide confidence intervals for a wide range of statistics. However,
+bootstrapping often requires thousands of resamples and may perform
+poorly with very small sample sizes. This runs counter to the purpose of
+the <code>visStatistics</code> package, which is designed to offer a
+rapid overview of the data, laying the groundwork for deeper analysis in
+subsequent steps.</p>
+<p>At the graphical level, the design is also kept deliberately
+low-dependency. The package uses mostly R graphics, keeping the
+transitive dependency footprint minimal. For more polished, annotated
+plots of chosen statistical tests, we refer to packages such as
+<code>ggstatsplot</code> <span class="citation">(<a href="#ref-Patil:2021">Patil 2021</a>)</span> or <code>ggpubr</code>
 <span class="citation">(<a href="#ref-Kassambara:2026">Kassambara
 2026</a>)</span>.</p>
 <p>Taken together, these scope decisions define
 <code>visStatistics</code> as a rapid, inspectable first-line workflow
 for routine two-variable inference rather than a replacement for
 model-specific statistical analysis.</p>
+<!-- `visstat()` also reports an `effect_size` field for each selected test. -->
+<!-- This estimate should be interpreted alongside the $p$-value, but it does not -->
+<!-- replace subject-matter judgment about practical relevance [@Shatz:2024]. -->
 </div>
 <div class="section level2">
 <h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
@@ -1576,7 +1570,7 @@ equation <span class="citation">(<a href="#ref-Welch:1947">Welch
 <p>Welch’s methods outperform their classical counterparts when
 variances differ <span class="citation">(<a href="#ref-Moser:1992">Moser
 and Stevens 1992</a>; <a href="#ref-Fagerland:2009">Fagerland and
-Sandvik 2009</a>; <a href="#ref-Delacre:2017">Delacre, Lakens, and Leys
+Sandvik 2009</a>; <a href="#ref-Delacre:2017">Delacre et al.
 2017</a>)</span>.</p>
 </div>
 <div class="section level4">
@@ -1679,8 +1673,7 @@ population, specifically that the distributions have the same location
 <span class="citation">(<a href="#ref-Kruskal:1952">Kruskal and Wallis
 1952</a>)</span>. If the group distributions are sufficiently similar in
 shape and scale, the test can be interpreted as testing equality of
-medians across groups <span class="citation">(<a href="#ref-Hollander:2014">Hollander, Chicken, and Wolfe
-2014</a>)</span>.</p>
+medians across groups <span class="citation">(<a href="#ref-Hollander:2014">Hollander et al. 2014</a>)</span>.</p>
 <p><span class="math display">\[\begin{equation}
 H = \frac{12}{N(N+1)} \sum_{i=1}^{k}
 n_i \left(\bar{R}_i - \bar{R}\right)^2,
@@ -1897,8 +1890,7 @@ regardless of sample size <span class="citation">(<a href="#ref-Levine:2002">Lev
 extracts, where possible, the effect sizes from base R
 <code>stats</code> output, Otherwise it implements the remaining
 formulae internally <span class="citation">(<a href="#ref-Hedges:1981">Hedges 1981</a>; <a href="#ref-Kerby:2014">Kerby
-2014</a>; <a href="#ref-Olejnik:2003">S. Olejnik and Algina 2003</a>; <a href="#ref-BenShachar:2020">Ben-Shachar, Lüdecke, and Makowski 2020</a>;
-<a href="#ref-Kelley:1935">Kelley 1935</a>; <a href="#ref-Bergsma:2013">Bergsma 2013</a>)</span>.</p>
+2014</a>; <a href="#ref-Olejnik:2003">Olejnik and Algina 2003</a>; <a href="#ref-BenShachar:2020">Ben-Shachar et al. 2020</a>; <a href="#ref-Kelley:1935">Kelley 1935</a>; <a href="#ref-Bergsma:2013">Bergsma 2013</a>)</span>.</p>
 <p>The following tables summarises the statistical analysis with their
 respective effect sizes and formulae.
 <!-- The internal function  `effect_size()` extracts, where possible, the effect sizes -->
@@ -2059,7 +2051,7 @@ defined in the corresponding “Analysis” section.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-Agresti:2010" class="csl-entry">
 Agresti, Alan. 2010. <em>Analysis of <span>Ordinal Categorical
 Data</span></em>. 1st ed. Wiley <span>Series</span> in
@@ -2100,12 +2092,11 @@ Bergsma, Wicher. 2013. <span>“A Bias-Correction for Cramer’s
 the Korean Statistical Society</em> 42 (3): 323–28. <a href="https://doi.org/10.1016/j.jkss.2012.10.002" class="external-link">https://doi.org/10.1016/j.jkss.2012.10.002</a>.
 </div>
 <div id="ref-Bijlenga:2017" class="csl-entry">
-Bijlenga, Philippe, Renato Gondar, Sabine Schilling, Sandrine Morel,
-Sven Hirsch, Johanna Cuony, Marco-Vincenzo Corniola, Fabienne Perren,
-Daniel Rüfenacht, and Karl Schaller. 2017. <span>“<span>PHASES
-Score</span> for the <span>Management</span> of <span>Intracranial
-Aneurysm</span>: <span>A Cross-Sectional Population-Based Retrospective
-Study</span>.”</span> <em>Stroke</em> 48 (8): 2105–12. <a href="https://doi.org/10.1161/STROKEAHA.117.017391" class="external-link">https://doi.org/10.1161/STROKEAHA.117.017391</a>.
+Bijlenga, Philippe, Renato Gondar, Sabine Schilling, et al. 2017.
+<span>“<span>PHASES Score</span> for the <span>Management</span> of
+<span>Intracranial Aneurysm</span>: <span>A Cross-Sectional
+Population-Based Retrospective Study</span>.”</span> <em>Stroke</em> 48
+(8): 2105–12. <a href="https://doi.org/10.1161/STROKEAHA.117.017391" class="external-link">https://doi.org/10.1161/STROKEAHA.117.017391</a>.
 </div>
 <div id="ref-Breusch:1979" class="csl-entry">
 Breusch, T. S., and A. R. Pagan. 1979. <span>“A <span>Simple Test</span>
@@ -2123,6 +2114,12 @@ Bias</span> in <span>Causal Analysis</span> in
 Canty, Angelo, and Brian Ripley. 2025. <em>Boot: <span>Bootstrap</span>
 Functions</em>. Manual. <a href="https://doi.org/10.32614/CRAN.package.boot" class="external-link">https://doi.org/10.32614/CRAN.package.boot</a>.
 </div>
+<div id="ref-Chicco:2025" class="csl-entry">
+Chicco, Davide, Andrea Sichenze, and Giuseppe Jurman. 2025. <span>“A
+Simple Guide to the Use of <span>Student</span>’s t-Test,
+<span>Mann-Whitney U</span> Test, <span class="nocase">Chi-squared</span> Test, and <span>Kruskal-Wallis</span>
+Test in Biostatistics.”</span> <em>BioData Mining</em> 18 (1): 56. <a href="https://doi.org/10.1186/s13040-025-00465-6" class="external-link">https://doi.org/10.1186/s13040-025-00465-6</a>.
+</div>
 <div id="ref-Cochran:1954" class="csl-entry">
 Cochran, William G. 1954. <span>“The <span>Combination</span> of
 <span>Estimates</span> from <span>Different Experiments</span>.”</span>
@@ -2130,7 +2127,7 @@ Cochran, William G. 1954. <span>“The <span>Combination</span> of
 </div>
 <div id="ref-Cohen:2013" class="csl-entry">
 Cohen, Jacob. 2013. <em>Statistical <span>Power Analysis</span> for the
-<span>Behavioral Sciences</span></em>. 2nd ed. New York: Routledge. <a href="https://doi.org/10.4324/9780203771587" class="external-link">https://doi.org/10.4324/9780203771587</a>.
+<span>Behavioral Sciences</span></em>. 2nd ed. Routledge. <a href="https://doi.org/10.4324/9780203771587" class="external-link">https://doi.org/10.4324/9780203771587</a>.
 </div>
 <div id="ref-Cook:1982" class="csl-entry">
 Cook, R. Dennis, and Sanford Weisberg. 1982. <em>Residuals and
@@ -2139,8 +2136,8 @@ Chapman and Hall</span>.
 </div>
 <div id="ref-Davison:1997" class="csl-entry">
 Davison, Anthony Christopher, and David Victor Hinkley. 1997.
-<em>Bootstrap Methods and Their Applications</em>. Cambridge: Cambridge
-University Press. <a href="https://doi.org/10.1017/CBO9780511802843" class="external-link">https://doi.org/10.1017/CBO9780511802843</a>.
+<em>Bootstrap Methods and Their Applications</em>. Cambridge University
+Press. <a href="https://doi.org/10.1017/CBO9780511802843" class="external-link">https://doi.org/10.1017/CBO9780511802843</a>.
 </div>
 <div id="ref-Delacre:2017" class="csl-entry">
 Delacre, Marie, Daniël Lakens, and Christophe Leys. 2017. <span>“Why
@@ -2176,7 +2173,7 @@ General</em> 141 (1): 2–18. <a href="https://doi.org/10.1037/a0024338" class="
 Games, Paul A., and John F. Howell. 1976. <span>“Pairwise Multiple
 Comparison Procedures with Unequal <span>N</span>’s and/or Variances:
 <span>A Monte Carlo</span> Study.”</span> <em>Journal of Educational
-Statistics</em> 1 (2): 113–25. <a href="https://doi.org/10.2307/1164979" class="external-link">https://doi.org/10.2307/1164979</a>.
+Statistics</em> (US) 1 (2): 113–25. <a href="https://doi.org/10.2307/1164979" class="external-link">https://doi.org/10.2307/1164979</a>.
 </div>
 <div id="ref-Garcia:2026" class="csl-entry">
 Garcia, Luiz. 2026. <em><span class="nocase">autotestR</span>:
@@ -2209,8 +2206,7 @@ Estimators.”</span> <em>Journal of Educational Statistics</em> 6 (2):
 <div id="ref-Hollander:2014" class="csl-entry">
 Hollander, Myles, Eric Chicken, and Douglas A. Wolfe. 2014.
 <em>Nonparametric Statistical Methods</em>. Third edition. Wiley Series
-in Probability and Statistics. Hoboken, New Jersey: John Wiley &amp;
-Sons, Inc.
+in Probability and Statistics. John Wiley &amp; Sons, Inc.
 </div>
 <div id="ref-Holm:1979" class="csl-entry">
 Holm, Sture. 1979. <span>“A <span>Simple Sequentially Rejective Multiple
@@ -2258,7 +2254,7 @@ Association</em> 47 (260): 583–621. <a href="https://doi.org/10.2307/2280779" 
 Levene, Howard. 1960. <span>“Robust Tests for Equality of
 Variances.”</span> In <em>Contributions to Probability and Statistics:
 <span>Essays</span> in Honor of Harold Hotelling</em>, edited by Ingram
-Olkin, 278–92. Stanford, CA: Stanford University Press.
+Olkin. Stanford University Press.
 </div>
 <div id="ref-Levine:2002" class="csl-entry">
 Levine, Timothy R., and Craig R. Hullett. 2002. <span>“Eta Squared,
@@ -2313,8 +2309,7 @@ Source Software</em> 6 (61): 3167. <a href="https://doi.org/10.21105/joss.03167"
 </div>
 <div id="ref-R:2026" class="csl-entry">
 R Core Team. 2026. <em>R: A Language and Environment for Statistical
-Computing</em>. Manual. Vienna, Austria: R Foundation for Statistical
-Computing. <a href="https://doi.org/10.32614/R.manuals" class="external-link">https://doi.org/10.32614/R.manuals</a>.
+Computing</em>. Manual. R Foundation for Statistical Computing. <a href="https://doi.org/10.32614/R.manuals" class="external-link">https://doi.org/10.32614/R.manuals</a>.
 </div>
 <div id="ref-Rasch:2011" class="csl-entry">
 Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. <span>“The
@@ -2346,11 +2341,7 @@ Test for Two Groups</em>. Manual. <a href="https://doi.org/10.32614/CRAN.package
 <div id="ref-Schilling:2026" class="csl-entry">
 Schilling, Sabine. 2026. <em><span class="nocase">visStatistics</span>:
 <span>Automated</span> Selection and Visualisation of Statistical
-Hypothesis Tests</em>. Manual.
-</div>
-<div id="ref-SchillingPkgdown:2026" class="csl-entry">
-Schilling, Sabine, and Peter Kauf. 2026. <span>“<span class="nocase">visStatistics</span>: <span>Automated</span> Selection
-and Visualisation of Statistical Hypothesis Tests.”</span>
+Hypothesis Tests</em>. <a href="https://doi.org/10.32614/CRAN.package.visStatistics" class="external-link">https://doi.org/10.32614/CRAN.package.visStatistics</a>.
 </div>
 <div id="ref-Shapiro:1965" class="csl-entry">
 Shapiro, S. S., and M. B. Wilk. 1965. <span>“An Analysis of Variance
@@ -2362,6 +2353,14 @@ Shatz, Itamar. 2024. <span>“Assumption-Checking Rather Than (Just)
 Testing: <span>The</span> Importance of Visualization and Effect Size in
 Statistical Diagnostics.”</span> <em>Behavior Research Methods</em> 56
 (2): 826–45. <a href="https://doi.org/10.3758/s13428-023-02072-x" class="external-link">https://doi.org/10.3758/s13428-023-02072-x</a>.
+</div>
+<div id="ref-Strasak:2007" class="csl-entry">
+Strasak, Alexander M., Qamruz Zaman, Gerhard Marinell, Karl P. Pfeiffer,
+and Hanno Ulmer. 2007. <span>“The <span>Use</span> of
+<span>Statistics</span> in <span>Medical Research</span>: <span>A
+Comparison</span> of "<span>The New England Journal</span> of
+<span>Medicine</span>" and "<span>Nature Medicine</span>".”</span>
+<em>The American Statistician</em> 61 (1): 47–55. <a href="https://www.jstor.org/stable/27643837" class="external-link">https://www.jstor.org/stable/27643837</a>.
 </div>
 <div id="ref-Subirana:2014" class="csl-entry">
 Subirana, Isaac, Héctor Sanz, and Joan Vila. 2014. <span>“Building
@@ -2393,10 +2392,6 @@ Display (<span>X11</span> and Win32) Output</em>. Manual. <a href="https://doi.o
 Welch, B. L. 1947. <span>“The Generalization of <span>‘Student’s’</span>
 Problem When Several Different Population Variances Are
 Involved.”</span> <em>Biometrika</em> 34 (1–2): 28–35. <a href="https://doi.org/10.1093/biomet/34.1-2.28" class="external-link">https://doi.org/10.1093/biomet/34.1-2.28</a>.
-</div>
-<div id="ref-Wickham:2016" class="csl-entry">
-Wickham, Hadley. 2016. <em>Ggplot2: <span>Elegant</span> Graphics for
-Data Analysis</em>. Springer-Verlag New York.
 </div>
 <div id="ref-Xu:2013" class="csl-entry">
 Xu, Weichao, Yunhe Hou, Y. S. Hung, and Yuexian Zou. 2013. <span>“A
