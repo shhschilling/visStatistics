@@ -77,9 +77,11 @@ A list with elements:
 In regression mode, the leverage panel does not use internally
 studentised residuals as in `plot.lm()`. With \\z_i = e_i / SE_res\\,
 where \\SE_res\\ is the residual standard error, Cook's distance
-contours are drawn as \$\$D_i = z_i^2 h\_{ii} / (k(1 - h\_{ii})^2),\$\$
-where \\h\_{ii}\\ is the leverage of observation \\i\\ and \\k\\ is the
-number of fitted model parameters.
+contours are drawn as \$\$D_i = z_i^2 h_i / (k(1 - h_i)^2),\$\$ with
+simple-regression leverage \$\$h_i = 1/N + (x_i - \bar{x})^2 /
+\sum\_{r=1}^{N}(x_r - \bar{x})^2.\$\$ Here \\x_i\\ is the predictor
+value of observation \\i\\, \\N\\ is the total sample size, and \\k =
+2\\ is the number of fitted model parameters.
 
 ## Examples
 
