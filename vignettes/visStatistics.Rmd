@@ -3,16 +3,16 @@ title: 'visStatistics: The right test, visualised'
 author: Sabine Schilling
 date: "`r Sys.Date()`"
 output:
-  bookdown::pdf_document2:
-    toc: true
-    number_sections: true
-    latex_engine: xelatex
   bookdown::html_document2:
     base_format: rmarkdown::html_vignette
     toc: true
     number_sections: true
     toc_depth: 3
     fig_caption: true
+  bookdown::pdf_document2:
+    toc: true
+    number_sections: true
+    latex_engine: xelatex
 link-citations: true
 colorlinks: true
 linkcolor: blue
@@ -108,9 +108,10 @@ The package is deliberately limited to common two-variable settings in which the
 
 # Package overview
 
-`visStatistics` [@Schilling:2026] is available on CRAN as the latest stable
+`visStatistics` [@Schilling:2026] is available on
+[CRAN](https://CRAN.R-project.org/package=visStatistics) as the latest stable
 release. This article refers to the latest development state in the
-GitHub repository [@SchillingPkgdown:2026],
+[GitHub repository](https://github.com/shhschilling/visStatistics),
 which may include minor changes between CRAN submissions. 
 
 Given two input vectors  `x` and `y`  of class `"numeric"`, `"integer"`, or
@@ -140,7 +141,8 @@ the implemented hypothesis tests,
 The underlying selection algorithm is detailed in 
 Section \@ref(sec:decision).
 The function returns an object of class `"visstat"` with
-`print()`, `summary()`, and `plot()` methods described in Section \ref(sec:visstat-methods}
+`print()`, `summary()`, and `plot()` methods described in
+Section \@ref(sec:visstat-methods)
 
 Among the returned components, `visstat()` reports the p-value of the
 selected test and an `effect_size` field (Section
@@ -335,17 +337,22 @@ Figure \@ref(fig:decision-tree) summarises the test decision logic in the centra
 knitr::include_graphics("figures/decision_tree.png")
 ```
 
-The first split checks group size: When all group-specific sample sizes are greater than 50, the sampling distribution of the group means is treated as sufficiently close to normal by the central limit theorem [@Lumley:2002; @Rasch:2011].
-In this case, test selection is independent of the residual-normality p-values displayed in the assumption panel.
-This avoids switching to rank-based tests because of negligible residual-normality deviations in large samples [@Ghasemi:2012; @Fagerland:2012; @Shatz:2024].
 
-Otherwise, the Shapiro--Wilk (SW) test [@Shapiro:1965; Eq. \@ref(eq:shapiro-w)] is applied to  model residuals.
-Its p-value determines whether the route remains mean-based.
+The first split checks group size. If all groups contain more than 50
+observations, `visstat()` treats the parametric (mean-based) path as justified by the
+Central Limit Theorem [@Lumley:2002; @Rasch:2011], this avoids switching to non-parametric (rank-based) tests because of
+negligible residual-normality deviations in large samples
+[@Ghasemi:2012; @Fagerland:2012; @Shatz:2024]. 
+<!-- Note that in this large sample case  -->
+<!-- the p-value of the  Shapiro--Wilk (SW) test [@Shapiro:1965; Eq. \@ref(eq:shapiro-w)] does not decide routing. -->
 
-If normality is rejected ($p_\text{SW} \le \alpha$), non-parametric tests are selected: `wilcox.test()` (Eq. \@ref(eq:wilcoxon-w)) for two groups, or `kruskal.test()` (Eq. \@ref(eq:kruskal-h)) followed by Holm-adjusted `pairwise.wilcox.test()` for more than two groups.
 
+Otherwise, the p-value of the Shapiro--Wilk (SW) test [@Shapiro:1965; Eq. \@ref(eq:shapiro-w)]
+determines whether the route remains mean-based: 
+If normality is rejected ($p_\text{SW} \le \alpha$), rank-based tests are selected: `wilcox.test()` (Eq. \@ref(eq:wilcoxon-w)) for two groups, or `kruskal.test()` (Eq. \@ref(eq:kruskal-h)) followed by Holm-adjusted `pairwise.wilcox.test()` for more than two groups.
 If normality is not rejected, variance homogeneity is assessed with the package-implemented mean-centred Levene test (L) on  model residuals [@Levene:1960] (Eq. \@ref(eq:levene-f)).
-This aligns the variance gate with the fitted general linear model.
+
+
 For homoscedastic data, `t.test(var.equal = TRUE)` (Eq. \@ref(eq:student-t)) is applied for two groups, or Fisher's `aov()` (Eq. \@ref(eq:fisher-f)) with `TukeyHSD()` (Eq. \@ref(eq:tukey-hsd-q)) for more than two groups.
 For heteroscedastic data, Welch's `t.test()` (Eq. \@ref(eq:welch-t)) is applied for two groups, or Welch's `oneway.test()` (Eq. \@ref(eq:welch-f)) with the package implementation `games.howell()` ([@Games:1976]; see Section \@ref(sec:gh)) for more than two groups.
 
@@ -837,65 +844,63 @@ file.remove(paths)
 
 # Discussion {#sec:discussion}
 
-For tests of central tendency, p-values from assumption tests are used as
-routing criteria, subject to the large sample-size safeguards for normality
-testing.
-However, no single assumption test maintains optimal Type I error rates and
+The design of `visStatistics` prioritises transparent, reproducible routing for common two-variable analyses [@Strasak:2007; @Sato:2017; @Chicco:2025] over broad model coverage.
+
+This scope keeps the decision tree inspectable and the graphical output consistent, but it also leaves several modelling choices (e.g. paired tests, interaction terms, multiple linear regression) outside the automated workflow.
+While one of R's greatest strengths is the sheer volume of statistical methods available, incorporating a wider array of methods would require additional preliminary assumption checks, which in turn would exacerbate the risk of overall Type I error inflation.
+Furthermore, expanding the pipeline would result in a highly complex decision tree, rendering the underlying statistical logic increasingly opaque to the user.
+
+`visStatistics` instead focuses on the *vis*ualisation of the chosen test and, where applicable, its post-hoc and assumption tests.
+
+For tests of central tendency, p-values from assumption tests of normality and 
+homoscedasticity are used as
+routing criteria, subject to the large sample-size safeguards discussed below 
+for normality testing. However, no single assumption test maintains optimal Type I error rates and
 statistical power across all distributions [@Olejnik:1987] and sample sizes,
 and p-values obtained from these tests may be unreliable if their assumptions
 are violated.
 
-In large samples, even minor, random deviations from the null hypothesis can
-result in statistically significant p-values, leading to type I errors
-[@Shatz:2024].
-Conversely, in small samples, substantial violations of the assumption may not
-reach statistical significance, resulting in type II errors [@Kozak:2018].
+Assumption tests are imperfect routing gates: 
+In small samples, substantial violations of the assumption may not
+reach statistical significance, resulting in type II errors, whereas 
+in large samples, even minor, random deviations from the null hypothesis can
+result in statistically significant p-values, leading to type I errors [@Ghasemi:2012; @Fagerland:2012;@Kozak:2018, @Franc:2025]
 
-The same problem becomes even more pronounced, when several
-assumption tests are combined.
-Combining tests for normality and homoscedasticity using simple majority
-voting inflates the overall Type I error rate.
-Moreover, assumption tests provide no information on the nature of deviations
-from the expected distribution [@Shatz:2024].
-Therefore, automated test selection based on assumption-test p-values cannot
-replace visual inspection of the diagnostic plots generated by `visstat()`.
 
-The limitation of p-value-based routing is particularly relevant for normality
-testing.
-Normality tests behave poorly at both ends of the sample-size range: with
-small samples they fail to detect non-normality, and with large samples they
-flag negligible departures from normality as significant
-[@Ghasemi:2012; @Fagerland:2012; @Franc:2025].
-This raises the practical question of what should count as a "larger" group
-in the decision tree.
-The answer depends on the shape of the underlying distribution, especially
+Only for residual normality, the Central Limit Theorem provides an exit from
+this problem for large samples. This raises the practical question of what should count as a
+"large" sample in normality testing. The answer depends on the shape of the underlying distribution, especially
 skewness and tail weight [@Lumley:2002].
 Simulation studies suggest that moderately skewed distributions require
 roughly 40--50 observations for adequate convergence of the sampling
-distribution of the mean [@Fagerland:2012].
+distribution of the mean [@Fagerland:2012]. 
 
-`visstat()` therefore uses 50 observations per group as the gateway: only if
-every group contains more than 50 observations, the residual-normality p-value does not further steer automated routing, but is still reported. 
 
+Therefore, based on the Central Limit Theorem, normality tests of residuals do not steer
+automated routing in the decision logic of `visstat()`,  if all group-specific
+sample sizes are greater than 50.
 
 For smaller group-specific sample sizes, a Shapiro--Wilk test is used to route
 between mean-based and rank-based methods, as simulation studies suggest that
 it has the highest power among normality tests in small to moderate
 ($n = 10$ to 100) sample sizes [@Razali:2011].
 
-In the regression branch, violated assumptions are only flagged in the output.
-When this occurs, the package offers Spearman rank correlation
-(`correlation = TRUE`) as a non-causal alternative to linear regression.
+If the assumptions of parametric tests are violated, `visstat()`
+automatically falls back to non-parametric tests. In the regression branch,
+violated assumptions are solely flagged, and the package offers Spearman rank
+correlation as a non-causal alternative to linear regression. Further
+alternative methods such as data transformation, generalised linear models, or
+robust regression are not implemented: each requires user judgment -- about
+the transformation family, the link function, or the estimator -- that cannot
+be automated without substantially expanding the decision tree and increasing
+the risk of Type I error inflation.
 
-The same restriction applies to methods outside the
-automated decision tree.
-Further alternative methods such as data transformation, generalised linear
-models or robust regression are not implemented: each requires user judgment
--- about the transformation family, the link function, or the estimator --
-that cannot be automated without substantially expanding the decision tree and
-increasing the risk of Type I error inflation.
+Assumption tests provide no information on the nature of deviations
+from the expected distribution [@Shatz:2024] and cannot 
+replace visual inspection of the diagnostic plots generated by `visstat()`,
+which may indicate cases where the automatic test choice should be overridden.
 
-Bootstrapping represents another possible alternative to assumption-guided
+Bootstrapping represents an  alternative to assumption-guided
 routing.
 As implemented for example in the R package `boot`
 [@boot:2025; @Davison:1997], it can provide confidence intervals for a wide
@@ -906,9 +911,8 @@ This runs counter to the purpose of the `visStatistics` package, which is
 designed to offer a rapid overview of the data, laying the groundwork for
 deeper analysis in subsequent steps.
 
-At the graphical level, this design is also kept deliberately low-dependency.
-The package uses base R graphics and avoids a `ggplot2` [@Wickham:2016]
-dependency, keeping the transitive dependency footprint minimal.
+At the graphical level, the  design is also kept deliberately low-dependency.
+The package uses mostly  R graphics, keeping the transitive dependency footprint minimal.
 For more polished, annotated plots of chosen statistical tests, we refer to
 packages such as `ggstatsplot` [@Patil:2021] or `ggpubr` [@Kassambara:2026].
 
@@ -917,7 +921,9 @@ inspectable first-line workflow for routine two-variable inference rather than
 a replacement for model-specific statistical analysis.
 
 
-
+<!-- `visstat()` also reports an `effect_size` field for each selected test. -->
+<!-- This estimate should be interpreted alongside the $p$-value, but it does not -->
+<!-- replace subject-matter judgment about practical relevance [@Shatz:2024]. -->
 
 # Conclusion
 

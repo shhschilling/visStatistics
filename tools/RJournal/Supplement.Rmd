@@ -8,7 +8,7 @@ author:
     url: https://github.com/shhschilling/visStatistics
     orcid: 0000-0002-8318-9421
     email: sabineschilling@gmx.ch
-date: "2026-05-26"
+date: "2026-05-27"
 output:
   rjtools::rjournal_pdf_article:
     self_contained: yes
@@ -16,14 +16,15 @@ output:
   rjtools::rjournal_web_article:
     self_contained: yes
     toc: no
-bibliography:
-  - ../../vignettes/REFERENCES.bib
-  - supplement_references.bib
+bibliography: ../../vignettes/REFERENCES.bib
 link-citations: true
 header-includes:
   - \microtypesetup{nopatch=footnote}
   - \usepackage{array}
   - \usepackage{mathrsfs}
+  - \renewcommand{\theequation}{S.\arabic{equation}}
+  - \renewcommand{\thefigure}{S\arabic{figure}}
+  - \renewcommand{\thetable}{S\arabic{table}}
 editor_options:
   markdown:
     wrap: 72
@@ -32,13 +33,17 @@ editor_options:
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = normalizePath(dirname(knitr::current_input(dir = TRUE))))
 knitr::opts_chunk$set(echo = TRUE)
+main_article_link <- function(text = "main article") {
+  if (knitr::is_latex_output()) {
+    sprintf("\\href{visStatistics-RJournal.pdf}{%s}", text)
+  } else {
+    sprintf("[%s](visStatistics-RJournal.html)", text)
+  }
+}
 ```
 
+This supplement accompanies `r main_article_link("the main article")`.
 
-```{=latex}
-\renewcommand{\theequation}{S.\arabic{equation}}
-\setcounter{equation}{0}
-```
 
 # Assumption tests {#sec:assumption-statistics}
 
@@ -152,7 +157,7 @@ then separates equal-variance tests from Welch-type tests.
 
 ### Student's t-test {#sec:tt}
 
-Student's t-test [@Student:1908] tests the null hypothesis that the means of two
+Student's t-test tests the null hypothesis that the means of two
 unpaired groups are equal.
 The test statistic for Student's t-test
 (`t.test(..., var.equal = TRUE)`) is
@@ -178,7 +183,7 @@ $\nu = n_1 + n_2 - 2$ degrees of freedom.
 Fisher's one-way ANOVA generalises the mean comparison to more than two
 groups and tests the null hypothesis that the means of
 \(k\) groups are equal.
-Fisher's ANOVA test statistic [@Fisher:1990] is
+Fisher's ANOVA test statistic is
 
 \begin{equation}
 \begin{aligned}
@@ -263,9 +268,9 @@ differ [@Moser:1992; @Fagerland:2009; @Delacre:2017].
 
 ### Welch's heteroscedastic ANOVA {#sec:welch-aov}
 
-Welch's heteroscedastic ANOVA (`oneway.test()`) [@Welch:1951]
-generalises Welch's t-test to more than two groups by down-weighting
-groups with large variance.
+Welch's heteroscedastic ANOVA (`oneway.test()`) generalises Welch's
+t-test to more than two groups by down-weighting groups with large
+variance.
 It compares group means using weights based on sample sizes and
 variances when homogeneous variances cannot be assumed.
 Its test statistic is
@@ -405,7 +410,7 @@ r_{ij} = \frac{O_{ij} - E_{ij}}{\sqrt{E_{ij}}},
 # Pearson's $\chi^2$ tests selection 
 # represent Pearson residual values on a blue--red colour scale.
 -->
-The test statistic of Pearson's $\chi^2$ test [@Pearson:1900] is
+The test statistic of Pearson's $\chi^2$ test is
 
 \begin{equation}
 \chi^2 = \sum_{i=1}^{R}\sum_{j=1}^{C} r_{ij}^2,
@@ -422,10 +427,10 @@ default.
 
 ## Fisher's exact test {#sec:fisher-exact-test}
 
-Fisher's exact test [@Fisher:1970] (`fisher.test()`) is applied when
-Cochran's rule [@Cochran:1954] is violated. The test calculates an exact
-$p$-value by conditioning on the observed margins of an $R \times C$
-contingency table under the null hypothesis of independence.
+Fisher's exact test (`fisher.test()`) is applied when Cochran's rule
+[@Cochran:1954] is violated. The test calculates an exact $p$-value by
+conditioning on the observed margins of an $R \times C$ contingency
+table under the null hypothesis of independence.
 Let $T = (n_{ij})$ denote the observed table.
 To maintain consistency with the `y ~ x` (response \~ predictor)
 framework used throughout `visStatistics`, rows ($i=1,\ldots,R$)
@@ -550,8 +555,8 @@ For simple linear regression, the leverage plot visualises whether individual
 observations may exert disproportionate influence on the fitted line. Cook's
 distance combines residual size and leverage for this purpose [@Cook:1982].
 In `visStatistics`, the contours are drawn on the z residual scale used in the
-diagnostic panel. With $z_i=e_i/SE_\text{res}$, where $SE_\text{res}=\sqrt{\sum_{r=1}^{N} e_r^2/(N-k)}$, Cook's
-distance for observation $i$ is
+diagnostic panel. With $z_i = e_i / SE_\text{res}$, Cook's distance for
+observation $i$ is
 
 \begin{equation}
 D_i = \frac{z_i^2 h_i}{k(1-h_i)^2},
@@ -571,14 +576,21 @@ predictor mean, $N$ is the total sample size, and $k = 2$ is the number of
 fitted model parameters.
 
 # Effect size {#sec:effect-size}
-<!--
+
 Statistical significance is strongly affected by sample size, while effect-size
 estimates are intended to support comparisons across studies regardless of
 sample size [@Levine:2002].
--->
-To avoid additional package dependencies, `effect_size()` extracts, where possible, the effect sizes
-from base R `stats` output where available and implements the remaining
+
+To avoid additional package dependencies, `effect_size()` 
+extracts, where possible, the effect sizes 
+from base R `stats` output, Otherwise it implements the remaining
 formulae internally [@Hedges:1981; @Kerby:2014; @Olejnik:2003; @BenShachar:2020; @Kelley:1935; @Bergsma:2013].
+
+
+The following tables summarises the statistical analysis with their respective effect sizes and formulae. 
+<!-- The internal function  `effect_size()` extracts, where possible, the effect sizes -->
+<!-- from base R `stats` output, Otherwise it implements the remaining -->
+<!-- formulae internally [@Hedges:1981; @Kerby:2014; @Olejnik:2003; @BenShachar:2020; @Kelley:1935; @Bergsma:2013]. -->
 
 ```{r effect-size-table, echo=FALSE, results='asis'}
 if (knitr::is_latex_output()) {
@@ -641,11 +653,11 @@ $\tau_b=(C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$ &
 Pearson $\chi^2$ ($R\times C$), Eq.~\eqref{eq:pearson-chi} &
 Cramer's $V$ &
 $V_{R\times C}=\sqrt{\chi^2/\left(N\left(\min(R,C)-1\right)\right)}$ &
-\tbdoi{10.1016/j.jkss.2012.10.002}{Bergsma, 2013} \\
+\tbdoi{10.4324/9780203771587}{Cohen 2013, p. 223} \\
 \hline
 Pearson $\chi^2$ ($2\times2$), Eq.~\eqref{eq:pearson-chi} &
 $\phi$ & $V_{2\times2}=\sqrt{\chi^2/N}$ &
-\tbdoi{10.1016/j.jkss.2012.10.002}{Bergsma, 2013} \\
+\tbdoi{10.4324/9780203771587}{Cohen 2013, p. 223} \\
 \hline
 Fisher's exact ($2\times2$), Eq.~\eqref{eq:fisher-exact} &
 odds ratio &
@@ -662,17 +674,17 @@ Table: (\#tab:effect-size-formulae) Effect sizes returned by `effect_size()`.
 
 | Analysis | Effect size | Formula | Source |
 |:---|:---|:---|:---|
-| [Student's $t$-test](#eq:student-t) | Hedges' $g_{s_p}$ (pooled) | $g_{s_p} = J\cdot(\bar{x}_1-\bar{x}_2)/s_p$ | [@Hedges:1981] |
-| [Welch's $t$-test](#eq:welch-t) | Hedges' $g_{s^{*}}$ (non-pooled) | $g_{s^{*}} = J\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$ | [@Hedges:1981] |
-| [Wilcoxon rank-sum](#eq:wilcoxon-w) | rank-biserial $r$ | $r = 2\cdot W/(n_1\cdot n_2) - 1$ | [@Kerby:2014] |
-| [Fisher's ANOVA](#eq:fisher-f) | $\omega^2$ | $\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)$ | [@Olejnik:2003] |
-| [Welch's ANOVA](#eq:welch-f) | $\omega^2$ (approx.) | $\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)$ | [@BenShachar:2020] |
-| [Kruskal--Wallis](#eq:kruskal-h) | Kelley-adjusted $\eta_H^2$ | $(H - k + 1)/(N - k)$ | [@Kelley:1935] |
+| [Student's $t$-test](#eq:student-t) | Hedges' $g_{s_p}$ (pooled) | $g_{s_p} = J\cdot(\bar{x}_1-\bar{x}_2)/s_p$ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
+| [Welch's $t$-test](#eq:welch-t) | Hedges' $g_{s^{*}}$ (non-pooled) | $g_{s^{*}} = J\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
+| [Wilcoxon rank-sum](#eq:wilcoxon-w) | rank-biserial $r$ | $r = 2\cdot W/(n_1\cdot n_2) - 1$ | [Kerby 2014](https://doi.org/10.2466/11.IT.3.1) |
+| [Fisher's ANOVA](#eq:fisher-f) | $\omega^2$ | $\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)$ | [Olejnik and Algina 2003](https://doi.org/10.1037/1082-989X.8.4.434) |
+| [Welch's ANOVA](#eq:welch-f) | $\omega^2$ (approx.) | $\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)$ | [Ben-Shachar et al. 2020](https://doi.org/10.21105/joss.02815) |
+| [Kruskal--Wallis](#eq:kruskal-h) | Kelley-adjusted $\eta_H^2$ | $(H - k + 1)/(N - k)$ | [Kelley 1935](https://doi.org/10.1073/pnas.21.9.554) |
 | Simple linear regression | $R^2$ | $R^2 = 1 - SS_\text{res}/SS_\text{tot}$, Eq.~\@ref(eq:r-squared) | `summary(lm())$r.squared` |
 | [Spearman](#eq:spearman-rho) | $\rho$ | $\rho = r(\operatorname{rank}(x),\operatorname{rank}(y))$, Eq.~\@ref(eq:spearman-rho) | `cor.test()$estimate` |
 | [Kendall](#eq:kendall-tau-b) | $\tau_b$ | $\tau_b = (C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$, Eq.~\@ref(eq:kendall-tau-b) | `cor.test()$estimate` |
-| [Pearson $\chi^2$ ($R\times C$)](#eq:pearson-chi) | Cramér's $V$ | $V_{R\times C} = \sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}$ | [@Bergsma:2013] |
-| [Pearson $\chi^2$ ($2\times 2$)](#eq:pearson-chi) | $\phi$ | $V_{2\times 2} = \sqrt{\chi^2/N}$ | [@Bergsma:2013] |
+| [Pearson $\chi^2$ ($R\times C$)](#eq:pearson-chi) | Cramér's $V$ | $V_{R\times C} = \sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}$ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
+| [Pearson $\chi^2$ ($2\times 2$)](#eq:pearson-chi) | $\phi$ | $\phi = V_{2\times 2} = \sqrt{\chi^2/N}$ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
 | [Fisher's exact ($2\times 2$)](#eq:fisher-exact) | odds ratio | $\widehat{\mathrm{OR}} = n_{11}n_{22}/(n_{12}n_{21})$, Eq.~\@ref(eq:odds-ratio) | `fisher.test()$estimate` |
 )")
 }
@@ -715,5 +727,3 @@ squares.
 
 All other variables used in Table \@ref(tab:effect-size-formulae) are
 defined in the corresponding "Analysis" section.
-
-# References {.unnumbered}
