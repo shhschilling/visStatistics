@@ -16,11 +16,12 @@ editor_options:
 
 ## Reduced the number of exported standalone functions
 
-- Reduced the exported standalone functions to user-facing functions. Internal
+- Reduced the exported standalone functions. The following 
   routing and plotting helpers are no longer exported or documented as
   standalone functions:
-- `vis_anova()`, `vis_numeric()`, `vis_group_normality()`,
-  `gh_letters()`, and `pooled_normality_test()` are now internal helpers.
+- `vis_anova()`, `vis_numeric()`, and `gh_letters()` are now internal
+  helpers. Legacy normality helpers `vis_group_normality()` and
+  `pooled_normality_test()` were archived and are no longer shipped.
 - `vis_anova_assumptions()` remains as an internal deprecated wrapper for
   `vis_lm_assumptions()`, but is no longer exported or documented.
 

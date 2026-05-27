@@ -612,11 +612,11 @@ $\tau_b=(C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$ &
 Pearson $\chi^2$ ($R\times C$), Eq.~\eqref{eq:pearson-chi} &
 Cramer's $V$ &
 $V_{R\times C}=\sqrt{\chi^2/\left(N\left(\min(R,C)-1\right)\right)}$ &
-\tbdoi{10.1016/j.jkss.2012.10.002}{Bergsma, 2013} \\
+\tbdoi{10.4324/9780203771587}{Cohen 2013, p. 223} \\
 \hline
 Pearson $\chi^2$ ($2\times2$), Eq.~\eqref{eq:pearson-chi} &
 $\phi$ & $V_{2\times2}=\sqrt{\chi^2/N}$ &
-\tbdoi{10.1016/j.jkss.2012.10.002}{Bergsma, 2013} \\
+\tbdoi{10.4324/9780203771587}{Cohen 2013, p. 223} \\
 \hline
 Fisher's exact ($2\times2$), Eq.~\eqref{eq:fisher-exact} &
 odds ratio &
@@ -633,17 +633,17 @@ Table: (\#tab:effect-size-formulae) Effect sizes returned by `effect_size()`.
 
 | Analysis | Effect size | Formula | Source |
 |:---|:---|:---|:---|
-| [Student's $t$-test](#eq:student-t) | Hedges' $g_{s_p}$ (pooled) | $g_{s_p} = J\cdot(\bar{x}_1-\bar{x}_2)/s_p$ | [@Hedges:1981] |
-| [Welch's $t$-test](#eq:welch-t) | Hedges' $g_{s^{*}}$ (non-pooled) | $g_{s^{*}} = J\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$ | [@Hedges:1981] |
-| [Wilcoxon rank-sum](#eq:wilcoxon-w) | rank-biserial $r$ | $r = 2\cdot W/(n_1\cdot n_2) - 1$ | [@Kerby:2014] |
-| [Fisher's ANOVA](#eq:fisher-f) | $\omega^2$ | $\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)$ | [@Olejnik:2003] |
-| [Welch's ANOVA](#eq:welch-f) | $\omega^2$ (approx.) | $\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)$ | [@BenShachar:2020] |
-| [Kruskal--Wallis](#eq:kruskal-h) | Kelley-adjusted $\eta_H^2$ | $(H - k + 1)/(N - k)$ | [@Kelley:1935] |
+| [Student's $t$-test](#eq:student-t) | Hedges' $g_{s_p}$ (pooled) | $g_{s_p} = J\cdot(\bar{x}_1-\bar{x}_2)/s_p$ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
+| [Welch's $t$-test](#eq:welch-t) | Hedges' $g_{s^{*}}$ (non-pooled) | $g_{s^{*}} = J\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
+| [Wilcoxon rank-sum](#eq:wilcoxon-w) | rank-biserial $r$ | $r = 2\cdot W/(n_1\cdot n_2) - 1$ | [Kerby 2014](https://doi.org/10.2466/11.IT.3.1) |
+| [Fisher's ANOVA](#eq:fisher-f) | $\omega^2$ | $\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)$ | [Olejnik and Algina 2003](https://doi.org/10.1037/1082-989X.8.4.434) |
+| [Welch's ANOVA](#eq:welch-f) | $\omega^2$ (approx.) | $\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)$ | [Ben-Shachar et al. 2020](https://doi.org/10.21105/joss.02815) |
+| [Kruskal--Wallis](#eq:kruskal-h) | Kelley-adjusted $\eta_H^2$ | $(H - k + 1)/(N - k)$ | [Kelley 1935](https://doi.org/10.1073/pnas.21.9.554) |
 | [Simple linear regression](#sec:lin-reg) | $R^2$ | $R^2 = 1 - SS_\text{res}/SS_\text{tot}$, Eq.~\@ref(eq:r-squared) | `summary(lm())$r.squared` |
 | [Spearman](#eq:spearman-rho) | $\rho$ | $\rho = r(\operatorname{rank}(x),\operatorname{rank}(y))$, Eq.~\@ref(eq:spearman-rho) | `cor.test()$estimate` |
 | [Kendall](#eq:kendall-tau-b) | $\tau_b$ | $\tau_b = (C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$, Eq.~\@ref(eq:kendall-tau-b) | `cor.test()$estimate` |
-| [Pearson $\chi^2$ ($R\times C$)](#eq:pearson-chi) | Cramér's $V$ | $V_{R\times C} = \sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}$ | [@Bergsma:2013] |
-| [Pearson $\chi^2$ ($2\times 2$)](#eq:pearson-chi) | $\phi$ | $V_{2\times 2} = \sqrt{\chi^2/N}$ | [@Bergsma:2013] |
+| [Pearson $\chi^2$ ($R\times C$)](#eq:pearson-chi) | Cramér's $V$ | $V_{R\times C} = \sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}$ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
+| [Pearson $\chi^2$ ($2\times 2$)](#eq:pearson-chi) | $\phi$ | $\phi = V_{2\times 2} = \sqrt{\chi^2/N}$ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
 | [Fisher's exact ($2\times 2$)](#eq:fisher-exact) | odds ratio | $\widehat{\mathrm{OR}} = n_{11}n_{22}/(n_{12}n_{21})$, Eq.~\@ref(eq:odds-ratio) | `fisher.test()$estimate` |
 )")
 }

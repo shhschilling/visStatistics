@@ -52,7 +52,32 @@ inst/extdata/*
 !inst/extdata/*.rda
 
 # Vignette outputs
+vignettes/*.html
 vignettes/*.pdf
+vignettes/*.aux
+vignettes/*.log
+vignettes/*.toc
+vignettes/*.out
+vignettes/*.tex
+vignettes/*.bbl
+vignettes/*.blg
+vignettes/*.fls
+vignettes/*.fdb_latexmk
+vignettes/*.synctex.gz
+vignettes/*.lof
+vignettes/*.lot
+vignettes/*.nav
+vignettes/*.snm
+vignettes/*.vrb
+vignettes/*.bcf
+vignettes/*.run.xml
+vignettes/*.idx
+vignettes/*.ilg
+vignettes/*.ind
+vignettes/*_files/
+vignettes/*_cache/
+vignettes/cache/
+vignettes/figure-latex/
 figure/
 
 # Test-related files
@@ -95,6 +120,8 @@ Rplots.pdf
 # Agent files
 AGENTS.md
 CLAUDE.md
+docs/AGENTS.*
+docs/CLAUDE.*
 
 # Ensure the website folder is NOT ignored
 !docs/

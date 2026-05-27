@@ -42,6 +42,7 @@ jobs:
       - name: Build site
         run: |
           xvfb-run Rscript -e 'pkgdown::build_site(install = FALSE)'
+          Rscript tools/helperfunctions/clean_pkgdown_private_pages.R
 
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4
