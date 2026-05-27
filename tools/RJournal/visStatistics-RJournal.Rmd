@@ -114,6 +114,8 @@ visstat(npk$block,npk$yield)
  visstat(yield~block,data=npk)
 ```
 
+
+
 # Package overview
 
 `visStatistics` is available on CRAN.
@@ -355,7 +357,7 @@ The `ToothGrowth` dataset records odontoblast length in 60 guinea pigs given vit
 With delivery method as predictor and length as response, the assumption-diagnostic panel shows no residual-normality or variance-homogeneity violation.
 `visstat()` therefore selects Student's t-test, and the result panel shows the two-group box plot with the selected test result.
 
-```{r student-ttest-example, fig.cap="Student's t-test applied to the `ToothGrowth` dataset (`len` vs.\\ `supp`). Assumption diagnostics and box plots of odontoblast length by vitamin C delivery method with the Student t-test result.", out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
+```{r student-ttest-example, fig.cap="Student's t-test applied to the `ToothGrowth` dataset (`len` vs.\\ `supp`). Assumption diagnostics (Shapiro--Wilk and Levene not rejected; equal-variance mean-based path selected) and box plots with the Student t-test result.", out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
 student_ttest <- visstat(ToothGrowth$supp, ToothGrowth$len)
 ```
 
@@ -379,7 +381,7 @@ The *Motor Trend Car Road Tests* dataset (`mtcars`) contains 32 observations, wh
 With binary factor `am` and continuous response `mpg`, the assumption-diagnostic panel shows that Shapiro--Wilk does not reject normality of the raw model residuals, while the Levene test detects heteroscedasticity.
 The routing therefore leads to Welch's t-test rather than Student's t-test, and the result panel shows the corresponding two-group comparison.
 
-```{r ttest-example, fig.cap="Welch's t-test applied to the `mtcars` dataset (`mpg` vs.\\ `am`). Pooled-residual assumption diagnostics (Shapiro--Wilk, Bartlett, Levene test) and box plots of fuel efficiency by transmission type with the Welch t-test result.", out.width="48%", fig.height=4.5, fig.show="hold"}
+```{r ttest-example, fig.cap="Welch's t-test applied to the `mtcars` dataset (`mpg` vs.\\ `am`). Assumption diagnostics (Shapiro--Wilk not rejected; Levene rejected; Welch path selected) and box plots with the Welch t-test result.", out.width="48%", fig.height=4.5, fig.show="hold"}
 mtcars$am <- as.factor(mtcars$am)
 t_test_stats <- visstat(mtcars$am, mtcars$mpg)
 ```
@@ -413,7 +415,7 @@ The assumption-diagnostic panel shows clear departures from normality, and both 
 Since Shapiro--Wilk falls below $\alpha$, `visstat()` switches to `kruskal.test()` followed by Holm-adjusted `pairwise.wilcox.test()`.
 The result panel shows the box plots and Holm-adjusted significance letters; all three species differ significantly in petal width, as indicated by distinct letters.
 
-```{r kruskal-example, fig.cap=paste0("Kruskal-Wallis test applied to the `iris` dataset (`Petal.Width` vs.\\ `Species`). Assumption diagnostics (Shapiro--Wilk rejected) and box plots; Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significance letters ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
+```{r kruskal-example, fig.cap=paste0("Kruskal-Wallis test applied to the `iris` dataset (`Petal.Width` vs.\\ `Species`). Assumption diagnostics (Shapiro--Wilk rejected on model residuals; non-parametric path selected) and box plots with Holm-adjusted pairwise Wilcoxon significance letters ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
 kruskal_iris <- visstat(iris$Species, iris$Petal.Width)
 ```
 

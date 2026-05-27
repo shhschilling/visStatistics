@@ -338,7 +338,10 @@ test_that("visstat works with built-in datasets", {
   expect_s3_class(result_iris, "visstat")
   
   # Test with regression
-  result_trees <- visstat(trees$Height, trees$Girth)
+  expect_warning(
+    result_trees <- visstat(trees$Height, trees$Girth),
+    "Statistical assumptions violated"
+  )
   expect_s3_class(result_trees, "visstat")
 })
 
@@ -539,11 +542,131 @@ test_that("numeric correlation branch skips GLM assumption plot", {
   setup_test_graphics()
   on.exit(cleanup_test_graphics())
 
-  regression <- visstat(airquality$Wind, airquality$Ozone)
+  expect_warning(
+    regression <- visstat(airquality$Wind, airquality$Ozone),
+    "Statistical assumptions violated"
+  )
   spearman <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 
   expect_length(attr(regression, "captured_plots"), 2)
   expect_length(attr(spearman, "captured_plots"), 1)
+})
+
+test_that("correlation request is only valid for rank-correlation routes", {
+  setup_test_graphics()
+  on.exit(cleanup_test_graphics())
+
+  capture_warnings <- function(expr) {
+    warnings <- character()
+    value <- withCallingHandlers(
+      expr,
+      warning = function(w) {
+        warnings <<- c(warnings, conditionMessage(w))
+        invokeRestart("muffleWarning")
+      }
+    )
+    list(value = value, warnings = warnings)
+  }
+
+  valid_cases <- list(
+    numeric_numeric = list(
+      x = as.numeric(1:20),
+      y = as.numeric(20:1),
+      expected = "spearman"
+    ),
+    numeric_integer = list(
+      x = as.numeric(1:20),
+      y = as.integer(20:1),
+      expected = "spearman"
+    ),
+    integer_numeric = list(
+      x = as.integer(1:20),
+      y = as.numeric(20:1),
+      expected = "spearman"
+    ),
+    integer_integer = list(
+      x = as.integer(1:20),
+      y = as.integer(20:1),
+      expected = "spearman"
+    ),
+    ordered_ordered = list(
+      x = ordered(rep(1:4, each = 6)),
+      y = ordered(rep(c(1, 2, 2, 3), each = 6)),
+      expected = "kendall"
+    )
+  )
+
+  for (case_name in names(valid_cases)) {
+    case <- valid_cases[[case_name]]
+    caught <- capture_warnings(
+      visstat(case$x, case$y, correlation = TRUE)
+    )
+    expect_length(caught$warnings, 0)
+    expect_s3_class(caught$value, "visstat")
+    if (case$expected == "spearman") {
+      expect_equal(caught$value$analysis_type, "spearman correlation")
+    } else {
+      expect_equal(caught$value$test$method,
+                   "Kendall's rank correlation tau")
+    }
+  }
+
+  ignored_cases <- list(
+    factor_numeric = list(
+      x = factor(mtcars$am),
+      y = mtcars$mpg,
+      expected = "Welch Two Sample t-test",
+      method = function(result) result[["t-test-statistics"]]$method
+    ),
+    factor_integer = list(
+      x = factor(rep(c("A", "B"), each = 10)),
+      y = as.integer(c(1:10, 11:20)),
+      expected = "Two Sample t-test",
+      method = function(result) result[["t-test-statistics"]]$method
+    ),
+    ordered_numeric = list(
+      x = ordered(rep(c("A", "B"), each = 10)),
+      y = as.numeric(c(1:10, 11:20)),
+      expected = "Two Sample t-test",
+      method = function(result) result[["t-test-statistics"]]$method
+    ),
+    factor_ordered = list(
+      x = factor(rep(c("A", "B"), each = 12)),
+      y = ordered(rep(1:4, each = 6)),
+      expected = "Wilcoxon rank sum exact test",
+      method = function(result) result[["statsWilcoxon"]]$method
+    ),
+    factor_factor = list(
+      x = factor(rep(c("A", "B"), each = 25)),
+      y = factor(rep(c("X", "Y"), 25)),
+      expected = "Pearson's Chi-squared test with Yates",
+      method = function(result) result$method
+    ),
+    ordered_factor = list(
+      x = ordered(rep(c("A", "B"), each = 12)),
+      y = factor(c(rep("yes", 8), rep("no", 4),
+                   rep("yes", 5), rep("no", 7))),
+      expected = "Pearson's Chi-squared test with Yates",
+      method = function(result) result$method
+    )
+  )
+
+  for (case_name in names(ignored_cases)) {
+    case <- ignored_cases[[case_name]]
+    caught <- capture_warnings(
+      visstat(case$x, case$y, correlation = TRUE)
+    )
+    expect_s3_class(caught$value, "visstat")
+    expect_match(case$method(caught$value), case$expected)
+    ignored_warning <- grepl("correlation = TRUE was ignored",
+                             caught$warnings)
+    if (any(ignored_warning)) {
+      expect_true(any(grepl(
+        paste0("correlation = TRUE was ignored.*", case$expected),
+        caught$warnings
+      )))
+    }
+  }
 })
 
 # Tests for consistency between syntax forms

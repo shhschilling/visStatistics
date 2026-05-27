@@ -16,7 +16,9 @@ output:
   rjtools::rjournal_web_article:
     self_contained: yes
     toc: no
-bibliography: ../../vignettes/REFERENCES.bib
+bibliography:
+  - ../../vignettes/REFERENCES.bib
+  - supplement_references.bib
 link-citations: true
 header-includes:
   - \microtypesetup{nopatch=footnote}
@@ -34,7 +36,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{=latex}
-\numberwithin{equation}{section}
+\renewcommand{\theequation}{S.\arabic{equation}}
+\setcounter{equation}{0}
 ```
 
 # Assumption tests {#sec:assumption-statistics}
@@ -149,7 +152,7 @@ then separates equal-variance tests from Welch-type tests.
 
 ### Student's t-test {#sec:tt}
 
-Student's t-test tests the null hypothesis that the means of two
+Student's t-test [@Student:1908] tests the null hypothesis that the means of two
 unpaired groups are equal.
 The test statistic for Student's t-test
 (`t.test(..., var.equal = TRUE)`) is
@@ -175,7 +178,7 @@ $\nu = n_1 + n_2 - 2$ degrees of freedom.
 Fisher's one-way ANOVA generalises the mean comparison to more than two
 groups and tests the null hypothesis that the means of
 \(k\) groups are equal.
-Fisher's ANOVA test statistic is
+Fisher's ANOVA test statistic [@Fisher:1990] is
 
 \begin{equation}
 \begin{aligned}
@@ -260,9 +263,9 @@ differ [@Moser:1992; @Fagerland:2009; @Delacre:2017].
 
 ### Welch's heteroscedastic ANOVA {#sec:welch-aov}
 
-Welch's heteroscedastic ANOVA (`oneway.test()`) generalises Welch's
-t-test to more than two groups by down-weighting groups with large
-variance.
+Welch's heteroscedastic ANOVA (`oneway.test()`) [@Welch:1951]
+generalises Welch's t-test to more than two groups by down-weighting
+groups with large variance.
 It compares group means using weights based on sample sizes and
 variances when homogeneous variances cannot be assumed.
 Its test statistic is
@@ -402,7 +405,7 @@ r_{ij} = \frac{O_{ij} - E_{ij}}{\sqrt{E_{ij}}},
 # Pearson's $\chi^2$ tests selection 
 # represent Pearson residual values on a blue--red colour scale.
 -->
-The test statistic of Pearson's $\chi^2$ test is
+The test statistic of Pearson's $\chi^2$ test [@Pearson:1900] is
 
 \begin{equation}
 \chi^2 = \sum_{i=1}^{R}\sum_{j=1}^{C} r_{ij}^2,
@@ -419,10 +422,10 @@ default.
 
 ## Fisher's exact test {#sec:fisher-exact-test}
 
-Fisher's exact test (`fisher.test()`) is applied when Cochran's rule
-[@Cochran:1954] is violated. The test calculates an exact $p$-value by
-conditioning on the observed margins of an $R \times C$ contingency
-table under the null hypothesis of independence.
+Fisher's exact test [@Fisher:1970] (`fisher.test()`) is applied when
+Cochran's rule [@Cochran:1954] is violated. The test calculates an exact
+$p$-value by conditioning on the observed margins of an $R \times C$
+contingency table under the null hypothesis of independence.
 Let $T = (n_{ij})$ denote the observed table.
 To maintain consistency with the `y ~ x` (response \~ predictor)
 framework used throughout `visStatistics`, rows ($i=1,\ldots,R$)

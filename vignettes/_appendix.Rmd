@@ -535,14 +535,21 @@ predictor mean, $N$ is the total sample size, and $k = 2$ is the number of
 fitted model parameters.
 
 # Effect size {#sec:effect-size}
-<!--
+
 Statistical significance is strongly affected by sample size, while effect-size
 estimates are intended to support comparisons across studies regardless of
 sample size [@Levine:2002].
--->
-To avoid additional package dependencies, `effect_size()` extracts, where possible, the effect sizes
-from base R `stats` output where available and implements the remaining
+
+To avoid additional package dependencies, `effect_size()` 
+extracts, where possible, the effect sizes 
+from base R `stats` output, Otherwise it implements the remaining
 formulae internally [@Hedges:1981; @Kerby:2014; @Olejnik:2003; @BenShachar:2020; @Kelley:1935; @Bergsma:2013].
+
+
+The following tables summarises the statistical analysis with their respective effect sizes and formulae. 
+<!-- The internal function  `effect_size()` extracts, where possible, the effect sizes -->
+<!-- from base R `stats` output, Otherwise it implements the remaining -->
+<!-- formulae internally [@Hedges:1981; @Kerby:2014; @Olejnik:2003; @BenShachar:2020; @Kelley:1935; @Bergsma:2013]. -->
 
 ```{r effect-size-table, echo=FALSE, results='asis'}
 if (knitr::is_latex_output()) {
