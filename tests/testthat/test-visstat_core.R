@@ -53,7 +53,10 @@ test_that("visstat_core - Error Handling for insufficient data", {
   
   # 3.1: Total samples < 3
   tiny_df <- data.frame(val = c(1, 2), grp = factor(c("A", "B")))
-  res_err <- suppress_graphics(visstat_core(tiny_df, "val", "grp"))
+  expect_warning(
+    res_err <- suppress_graphics(visstat_core(tiny_df, "val", "grp")),
+    "In each group must be at least one member"
+  )
   
   expect_equal(res_err$error, "Insufficient data")
   
@@ -62,8 +65,10 @@ test_that("visstat_core - Error Handling for insufficient data", {
     val = rnorm(10),
     grp = factor(rep("A", 10), levels = c("A", "B"))
   )
-  res_empty <- suppress_graphics(visstat_core(empty_df, "val", "grp"))
+  expect_warning(
+    res_empty <- suppress_graphics(visstat_core(empty_df, "val", "grp")),
+    "In each group must be at least one member"
+  )
   
   expect_equal(res_empty$error, "Insufficient data")
 })
-
