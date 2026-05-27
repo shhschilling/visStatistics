@@ -100,6 +100,13 @@ visstat(x, y)
 visstat(y ~ x, data = dataframe)
 ```
 
+An examplary function call is
+
+``` r
+#Standardised form
+visstat(npk$block,npk$yield)
+```
+
 From this single entry point, the package automatically selects among
 the implemented hypothesis tests,
 
@@ -238,10 +245,10 @@ variables for \\k\\ groups; testing \\H_0: \beta_1 = \cdots =
 \beta_1 = 0\\ examines whether a linear relationship exists.
 
 The model error terms \\\varepsilon_i\\ in Eq.  @ref(eq:glm) are not
-observed. They observable counterpart are the residuals:  
+observed. They observable counterpart are the residuals.  
 After fitting the corresponding linear model, the residual is
 
-\\\begin{equation} e_i = y_i - \hat{y}\_i, (\\eq:-residual)
+\\\begin{equation} e_i = y_i - \hat{y}\_i, (\\eq:raw-residual)
 \end{equation}\\
 
 where \\y_i\\ is the observed value and \\\hat{y}\_i\\ the fitted value
@@ -291,9 +298,10 @@ z_i = \frac{e_i}{SE\_\text{res}}, \\ \mathrm{with} \\ SE\_\text{res} =
 \sqrt{\frac{\sum\_{r=1}^{N} e_r^2}{N-k}}, (\\eq:z-residual)
 \end{equation}\\
 
-Here \\e_i\\ is the raw model residual for observation \\i\\, \\N\\ is
-the total sample size, \\k\\ is the number of fitted linear model
-parameters, and \\SE\_\text{res}\\ is the residual standard error.  
+Here \\e_i\\ is the raw model residual for observation \\i\\ defined in
+Eq. @ref(eq:raw-residual), \\N\\ is the total sample size, \\k\\ is the
+number of fitted linear model parameters, and \\SE\_\text{res}\\ is the
+residual standard error.  
 
 ##### Layout of the diagnostic panel
 
@@ -814,56 +822,6 @@ Kruskal-Wallis test for ordered car comfort ratings by market (right).
 Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as
 significance letters for the Kruskal-Wallis example (\\\alpha = 0.05\\).
 
-#### Ordered response, ordered factor
-
-The default `correlation = FALSE` path redirects to the
-Wilcoxon/Kruskal–Wallis route and is not repeated as a separate example.
-The Kendall output for `correlation = TRUE` is a single jittered
-rank–rank scatter plot that visualises the monotone trend, colour-codes
-points by the predictor level, and annotates the plot with \\\tau_b\\
-and the \\p\\-value.
-
-##### Kendall rank correlation with `correlation = TRUE`
-
-A hypothetical survey of 150 secondary-school students records alcohol
-consumption frequency and academic performance on five-point ordinal
-scales. A negative monotone association is induced by construction:
-students who consume alcohol more frequently tend to have lower academic
-performance. The Kendall result is shown in Figure
-@ref(fig:kendall-spearman-example), left.
-
-``` r
-set.seed(42)
-n <- 150
-xs <- sample(1:5, n, replace = TRUE)
-ys <- pmin(5, pmax(1, (6 - xs) + sample(-1:1, n, replace = TRUE)))
-likert_alc  <- c("never", "rarely", "sometimes", "often", "always")
-likert_perf <- c("poor",  "fair",   "ok",        "good",  "great")
-alcohol     <- ordered(likert_alc[xs],  levels = likert_alc)
-performance <- ordered(likert_perf[ys], levels = likert_perf)
-kendall_result <- visstat(performance, alcohol, correlation = TRUE)
-spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
-```
-
-![Rank-based correlations: Left: Kendall's \$\tau_b\$ for a hypothetical
-survey (\$n = 150\$): alcohol consumption frequency vs.\\ academic
-performance. Right: Spearman rank correlation of \`Wind\` and \`Ozone\`
-from the \`airquality\` dataset (\`correlation = TRUE\`; right). Both
-plots annotate the corresponding effect measure and
-\$p\$-value.](visStatistics_files/figure-html/kendall-spearman-example-1.png)![Rank-based
-correlations: Left: Kendall's \$\tau_b\$ for a hypothetical survey (\$n
-= 150\$): alcohol consumption frequency vs.\\ academic performance.
-Right: Spearman rank correlation of \`Wind\` and \`Ozone\` from the
-\`airquality\` dataset (\`correlation = TRUE\`; right). Both plots
-annotate the corresponding effect measure and
-\$p\$-value.](visStatistics_files/figure-html/kendall-spearman-example-2.png)
-
-Rank-based correlations: Left: Kendall’s \\\tau_b\\ for a hypothetical
-survey (\\n = 150\\): alcohol consumption frequency vs. academic
-performance. Right: Spearman rank correlation of `Wind` and `Ozone` from
-the `airquality` dataset (`correlation = TRUE`; right). Both plots
-annotate the corresponding effect measure and \\p\\-value.
-
 ### Route 3: Numeric response, numeric predictor
 
 #### Linear regression
@@ -951,19 +909,10 @@ residuals and heteroscedasticity before alternative routes are
 considered.
 
 The diagnostic output flags non-normal model residuals and
-heteroscedasticity. The next examples show two distinct choices: an
-explicit rank-correlation analysis within
-[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-(`correlation = TRUE`), and a Gamma generalised linear model outside
+heteroscedasticity. The optional Spearman analysis for the same dataset
+is shown in Section @ref(sec:examples-rank-correlation-mode). The
+following example shows a Gamma generalised linear model outside
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md).
-
-#### Spearman rank correlation with `correlation = TRUE`
-
-Correlation analysis requires the explicit flag `correlation = TRUE`.
-For the ozone example, staying within
-[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-gives the Spearman analysis shown in Figure
-@ref(fig:kendall-spearman-example), right.
 
 #### Model exploration outside `visstat()`
 
@@ -1090,6 +1039,34 @@ applies Pearson’s \\\chi^2\\ test with Yates’ continuity correction. The
 resulting grouped column plot is shown in Figure
 @ref(fig:yates-fisher-example), left.
 
+``` r
+hair_black_brown_eyes_brown_blue <- HairEyeColor[1:2, 1:2, ]
+hair_black_brown_eyes_brown_blue_df <- counts_to_cases(
+  as.data.frame(hair_black_brown_eyes_brown_blue))
+yates_stats <- visstat(hair_black_brown_eyes_brown_blue_df$Eye,
+                       hair_black_brown_eyes_brown_blue_df$Hair)
+```
+
+``` r
+yates_stats$effect_size
+```
+
+    ## $name
+    ## [1] "phi"
+    ## 
+    ## $estimate
+    ## [1] 0.1709571
+    ## 
+    ## $effect_size_method
+    ## [1] "Phi coefficient for 2 x 2 contingency table"
+
+The returned effect size is \\\phi = 0.17\\, which, using Cohen’s
+benchmarks for \\2 \times 2\\ tables ([Cohen 2013,
+227](#ref-Cohen:2013)), is a small association. The p-value instead is
+below \\\alpha = 0.05\\ (\\p = 0.0035\\) and thus significant. This
+example underlines the importance of effect sizes: a significant p-value
+can be accompanied with a small effect size measure.
+
 #### Fisher’s exact test
 
 Restricting `HairEyeColor` to male participants with black or brown hair
@@ -1103,12 +1080,6 @@ the title, so the small cell counts that trigger the exact test remain
 visible (see Figure @ref(fig:yates-fisher-example), right).
 
 ``` r
-hair_black_brown_eyes_brown_blue <- HairEyeColor[1:2, 1:2, ]
-hair_black_brown_eyes_brown_blue_df <- counts_to_cases(
-  as.data.frame(hair_black_brown_eyes_brown_blue))
-yates_stats <- visstat(hair_black_brown_eyes_brown_blue_df$Eye,
-                       hair_black_brown_eyes_brown_blue_df$Hair)
-
 hair_eye_male <- HairEyeColor[, , 1]
 black_brown_hazel_green <- hair_eye_male[1:2, 3:4]
 black_brown_hazel_green_df <- counts_to_cases(
@@ -1138,6 +1109,58 @@ and brown/blue eyes; left), and Fisher’s exact test when expected counts
 are too small (male participants, black/brown hair, hazel/green eyes;
 right). The Yates-corrected plot shows row percentages; the Fisher plot
 shows absolute counts.
+
+### Optional rank-correlation mode
+
+Correlation analysis requires the explicit flag `correlation = TRUE`.
+
+#### Kendall rank correlation with `correlation = TRUE`
+
+A hypothetical survey of 150 secondary-school students records alcohol
+consumption frequency and academic performance on five-point ordinal
+scales. A negative monotone association is induced by construction:
+students who consume alcohol more frequently tend to have lower academic
+performance. The Kendall result is shown in Figure
+@ref(fig:kendall-spearman-example), left.
+
+``` r
+set.seed(42)
+n <- 150
+xs <- sample(1:5, n, replace = TRUE)
+ys <- pmin(5, pmax(1, (6 - xs) + sample(-1:1, n, replace = TRUE)))
+likert_alc  <- c("never", "rarely", "sometimes", "often", "always")
+likert_perf <- c("poor",  "fair",   "ok",        "good",  "great")
+alcohol     <- ordered(likert_alc[xs],  levels = likert_alc)
+performance <- ordered(likert_perf[ys], levels = likert_perf)
+kendall_result <- visstat(performance, alcohol, correlation = TRUE)
+spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
+```
+
+![Rank-based correlations: Left: Kendall's \$\tau_b\$ for a hypothetical
+survey (\$n = 150\$): alcohol consumption frequency vs.\\ academic
+performance. Right: Spearman rank correlation of \`Wind\` and \`Ozone\`
+from the \`airquality\` dataset (\`correlation = TRUE\`; right). Both
+plots annotate the corresponding effect measure and
+\$p\$-value.](visStatistics_files/figure-html/kendall-spearman-example-1.png)![Rank-based
+correlations: Left: Kendall's \$\tau_b\$ for a hypothetical survey (\$n
+= 150\$): alcohol consumption frequency vs.\\ academic performance.
+Right: Spearman rank correlation of \`Wind\` and \`Ozone\` from the
+\`airquality\` dataset (\`correlation = TRUE\`; right). Both plots
+annotate the corresponding effect measure and
+\$p\$-value.](visStatistics_files/figure-html/kendall-spearman-example-2.png)
+
+Rank-based correlations: Left: Kendall’s \\\tau_b\\ for a hypothetical
+survey (\\n = 150\\): alcohol consumption frequency vs. academic
+performance. Right: Spearman rank correlation of `Wind` and `Ozone` from
+the `airquality` dataset (`correlation = TRUE`; right). Both plots
+annotate the corresponding effect measure and \\p\\-value.
+
+#### Spearman rank correlation with `correlation = TRUE`
+
+For the ozone example introduced in Section @ref(sec:lin-reg), staying
+within `visstat(,)` with the flag `correlation = TRUE` gives the
+Spearman analysis shown in Figure @ref(fig:kendall-spearman-example),
+right.
 
 ## The `visstat` methods
 
@@ -1904,17 +1927,17 @@ respective effect sizes and formulae.
 
 | Analysis | Effect size | Formula | Source |
 |:---|:---|:---|:---|
-| [Student’s \\t\\-test](#eq:student-t) | Hedges’ \\g\_{s_p}\\ (pooled) | \\g\_{s_p} = J\cdot(\bar{x}\_1-\bar{x}\_2)/s_p\\ | ([Hedges 1981](#ref-Hedges:1981)) |
-| [Welch’s \\t\\-test](#eq:welch-t) | Hedges’ \\g\_{s^{\*}}\\ (non-pooled) | \\g\_{s^{\*}} = J\cdot(\bar{x}\_1-\bar{x}\_2)/s^{\*}\\ | ([Hedges 1981](#ref-Hedges:1981)) |
-| [Wilcoxon rank-sum](#eq:wilcoxon-w) | rank-biserial \\r\\ | \\r = 2\cdot W/(n_1\cdot n_2) - 1\\ | ([Kerby 2014](#ref-Kerby:2014)) |
-| [Fisher’s ANOVA](#eq:fisher-f) | \\\omega^2\\ | \\\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)\\ | ([S. Olejnik and Algina 2003](#ref-Olejnik:2003)) |
-| [Welch’s ANOVA](#eq:welch-f) | \\\omega^2\\ (approx.) | \\\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)\\ | ([Ben-Shachar, Lüdecke, and Makowski 2020](#ref-BenShachar:2020)) |
-| [Kruskal–Wallis](#eq:kruskal-h) | Kelley-adjusted \\\eta_H^2\\ | \\(H - k + 1)/(N - k)\\ | ([Kelley 1935](#ref-Kelley:1935)) |
+| [Student’s \\t\\-test](#eq:student-t) | Hedges’ \\g\_{s_p}\\ (pooled) | \\g\_{s_p} = J\cdot(\bar{x}\_1-\bar{x}\_2)/s_p\\ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
+| [Welch’s \\t\\-test](#eq:welch-t) | Hedges’ \\g\_{s^{\*}}\\ (non-pooled) | \\g\_{s^{\*}} = J\cdot(\bar{x}\_1-\bar{x}\_2)/s^{\*}\\ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
+| [Wilcoxon rank-sum](#eq:wilcoxon-w) | rank-biserial \\r\\ | \\r = 2\cdot W/(n_1\cdot n_2) - 1\\ | [Kerby 2014](https://doi.org/10.2466/11.IT.3.1) |
+| [Fisher’s ANOVA](#eq:fisher-f) | \\\omega^2\\ | \\\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)\\ | [Olejnik and Algina 2003](https://doi.org/10.1037/1082-989X.8.4.434) |
+| [Welch’s ANOVA](#eq:welch-f) | \\\omega^2\\ (approx.) | \\\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)\\ | [Ben-Shachar et al. 2020](https://doi.org/10.21105/joss.02815) |
+| [Kruskal–Wallis](#eq:kruskal-h) | Kelley-adjusted \\\eta_H^2\\ | \\(H - k + 1)/(N - k)\\ | [Kelley 1935](https://doi.org/10.1073/pnas.21.9.554) |
 | [Simple linear regression](#sec:lin-reg) | \\R^2\\ | \\R^2 = 1 - SS\_\text{res}/SS\_\text{tot}\\, Eq.~@ref(eq:r-squared) | `summary(lm())$r.squared` |
 | [Spearman](#eq:spearman-rho) | \\\rho\\ | \\\rho = r(\operatorname{rank}(x),\operatorname{rank}(y))\\, Eq.~@ref(eq:spearman-rho) | `cor.test()$estimate` |
 | [Kendall](#eq:kendall-tau-b) | \\\tau_b\\ | \\\tau_b = (C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}\\, Eq.~@ref(eq:kendall-tau-b) | `cor.test()$estimate` |
-| [Pearson \\\chi^2\\ (\\R\times C\\)](#eq:pearson-chi) | Cramér’s \\V\\ | \\V\_{R\times C} = \sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}\\ | ([Bergsma 2013](#ref-Bergsma:2013)) |
-| [Pearson \\\chi^2\\ (\\2\times 2\\)](#eq:pearson-chi) | \\\phi\\ | \\V\_{2\times 2} = \sqrt{\chi^2/N}\\ | ([Bergsma 2013](#ref-Bergsma:2013)) |
+| [Pearson \\\chi^2\\ (\\R\times C\\)](#eq:pearson-chi) | Cramér’s \\V\\ | \\V\_{R\times C} = \sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}\\ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
+| [Pearson \\\chi^2\\ (\\2\times 2\\)](#eq:pearson-chi) | \\\phi\\ | \\\phi = V\_{2\times 2} = \sqrt{\chi^2/N}\\ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
 | [Fisher’s exact (\\2\times 2\\)](#eq:fisher-exact) | odds ratio | \\\widehat{\mathrm{OR}} = n\_{11}n\_{22}/(n\_{12}n\_{21})\\, Eq.~@ref(eq:odds-ratio) | `fisher.test()$estimate` |
 
 (#tab:effect-size-formulae) Effect sizes returned by
@@ -2009,6 +2032,10 @@ Manual. <https://doi.org/10.32614/CRAN.package.boot>.
 Cochran, William G. 1954. “The Combination of Estimates from Different
 Experiments.” *Biometrics* 10 (1): 101.
 <https://doi.org/10.2307/3001666>.
+
+Cohen, Jacob. 2013. *Statistical Power Analysis for the Behavioral
+Sciences*. 2nd ed. New York: Routledge.
+<https://doi.org/10.4324/9780203771587>.
 
 Cook, R. Dennis, and Sanford Weisberg. 1982. *Residuals and Influence in
 Regression*. New York: Chapman and Hall.

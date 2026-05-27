@@ -47,9 +47,9 @@
 </ul></div>
 <div class="section level3">
 <h3 id="reduced-the-number-of-exported-standalone-functions-0-2-1">Reduced the number of exported standalone functions<a class="anchor" aria-label="anchor" href="#reduced-the-number-of-exported-standalone-functions-0-2-1"></a></h3>
-<ul><li>Reduced the exported standalone functions to user-facing functions. Internal routing and plotting helpers are no longer exported or documented as standalone functions:</li>
+<ul><li>Reduced the exported standalone functions. The following routing and plotting helpers are no longer exported or documented as standalone functions:</li>
 <li>
-<code>vis_anova()</code>, <code>vis_numeric()</code>, <code>vis_group_normality()</code>, <code>gh_letters()</code>, and <code>pooled_normality_test()</code> are now internal helpers.</li>
+<code>vis_anova()</code>, <code>vis_numeric()</code>, and <code>gh_letters()</code> are now internal helpers. Legacy normality helpers <code>vis_group_normality()</code> and <code>pooled_normality_test()</code> were archived and are no longer shipped.</li>
 <li>
 <code>vis_anova_assumptions()</code> remains as an internal deprecated wrapper for <code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code>, but is no longer exported or documented.</li>
 </ul></div>
