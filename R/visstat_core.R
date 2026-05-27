@@ -2,6 +2,36 @@
 # Copyright (c) 2020 Sabine Schilling
 # Feedback highly welcome: sabineschilling@gmx.ch
 
+selected_test_title <- function(result) {
+  if (!is.null(result[["t-test-statistics"]]$method)) {
+    return(trimws(result[["t-test-statistics"]]$method))
+  }
+  if (!is.null(result[["statsWilcoxon"]]$method)) {
+    return(trimws(result[["statsWilcoxon"]]$method))
+  }
+  if (!is.null(result[["Kruskal Wallis rank sum test"]]$method)) {
+    return("Kruskal-Wallis test")
+  }
+  if (!is.null(result[["summary statistics of ANOVA"]])) {
+    anova_result <- result[["summary statistics of ANOVA"]]
+    if (inherits(anova_result, "htest") &&
+        grepl("Welch", anova_result$method)) {
+      return("Welch's one-way ANOVA")
+    }
+    return("Fisher's one-way ANOVA")
+  }
+  if (!is.null(result$method)) {
+    return(trimws(result$method))
+  }
+  if (!is.null(result$analysis_type)) {
+    return(trimws(result$analysis_type))
+  }
+  if (!is.null(result$test$method)) {
+    return(trimws(result$test$method))
+  }
+  "selected test"
+}
+
 # Header visstat_core -----
 #'
 #' Automated Visualization of Statistical Hypothesis Testing
@@ -211,7 +241,11 @@ visstat_core <- function(dataframe,
   # numeric ranks and route to the non-parametric pathway.
   ordinal_response <- FALSE
   both_ordered <- is.ordered(samples) && is.ordered(fact)
+  both_numeric_integer <- (is.numeric(samples) || is.integer(samples)) &&
+    (is.numeric(fact) || is.integer(fact))
   use_kendall   <- both_ordered && correlation
+  correlation_ignored <- isTRUE(correlation) &&
+    !both_ordered && !both_numeric_integer
 
   if (both_ordered && !correlation && nlevels(fact) > 4) {
     warning(
@@ -622,6 +656,15 @@ visstat_core <- function(dataframe,
   }
   if (is.list(vis_sample_fact) && is.null(vis_sample_fact$effect_size)) {
     vis_sample_fact$effect_size <- effect_size(vis_sample_fact, x = fact, y = samples)
+  }
+  if (isTRUE(correlation_ignored) && is.null(vis_sample_fact$error)) {
+    selected_title <- selected_test_title(vis_sample_fact)
+    warning(
+      "correlation = TRUE was ignored; visstat() returned ",
+      selected_title,
+      ".",
+      call. = FALSE
+    )
   }
   attr(vis_sample_fact, "plot_paths") <- plot_paths
   attr(vis_sample_fact, "captured_plots") <- capture_env$captured_plots

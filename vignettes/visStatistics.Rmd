@@ -3,16 +3,16 @@ title: 'visStatistics: The right test, visualised'
 author: Sabine Schilling
 date: "`r Sys.Date()`"
 output:
+  bookdown::pdf_document2:
+    toc: true
+    number_sections: true
+    latex_engine: xelatex
   bookdown::html_document2:
     base_format: rmarkdown::html_vignette
     toc: true
     number_sections: true
     toc_depth: 3
     fig_caption: true
-  bookdown::pdf_document2:
-    toc: true
-    number_sections: true
-    latex_engine: xelatex
 link-citations: true
 colorlinks: true
 linkcolor: blue
@@ -124,6 +124,12 @@ visstat(x, y)
 # Formula interface:
 visstat(y ~ x, data = dataframe)
 ```
+An examplary function call is 
+
+```{r npk, fig.show='hide', results='hide'}
+#Standardised form
+visstat(npk$block,npk$yield)
+```
 From this single entry point, the package automatically selects among
 the implemented hypothesis tests, 
 
@@ -136,11 +142,9 @@ Section \@ref(sec:decision).
 The function returns an object of class `"visstat"` with
 `print()`, `summary()`, and `plot()` methods described in Section \ref(sec:visstat-methods}
 
-The returned object contains an `effect_size` field with the effect-size name, numeric estimate, and method description (see Section \@ref(sec:effect-size)). 
-The effect size
-complements the reported p-value by describing the
-magnitude of the selected comparison, association, or model fit
-[@Fritz:2012; @Levine:2002].
+Among the returned components, `visstat()` reports the p-value of the
+selected test and an `effect_size` field (Section
+\@ref(sec:p-values-effect-sizes)).
 
 
 
@@ -240,12 +244,12 @@ Testing $H_0: \beta_1 = 0$ is therefore equivalent to testing $H_0: \mu_1 = \mu_
 **Simple linear regression** uses one continuous predictor; $H_0: \beta_1 = 0$ examines whether a linear relationship exists.
 
 The model error terms $\varepsilon_i$ in Eq. 
-\@ref(eq:glm) are not observed. They observable counterpart are the residuals:  
+\@ref(eq:glm) are not observed. They observable counterpart are the residuals.  
 After fitting the corresponding linear model, the residual is
 
 \begin{equation}
 e_i = y_i - \hat{y}_i,
-(\#eq:-residual)
+(\#eq:raw-residual)
 \end{equation}
 
 where $y_i$ is the observed value and $\hat{y}_i$ the fitted value for observation $i$.
@@ -283,7 +287,7 @@ SE_\text{res} =
 \end{equation}
   
 
-Here $e_i$ is the  raw model residual for observation $i$, $N$ is the total sample size, $k$ is the number of fitted linear model parameters, and $SE_\text{res}$ is the residual standard error.
+Here $e_i$ is the  raw model residual for observation $i$ defined in Eq. \@ref(eq:raw-residual), $N$ is the total sample size, $k$ is the number of fitted linear model parameters, and $SE_\text{res}$ is the residual standard error.
 <!-- For numeric responses with categorical predictors, $SE_\text{res}$ equals $\sqrt{MS_\text{within}}$, with $MS_\text{within}$ defined in Eq.  --> <!-- @ref(eq:fisher-f). --> <!-- All panels in both layouts are based on the z-residuals defined in Eq.  --> <!-- @ref(eq:z-residual). --> \
 
 #### Layout of the diagnostic panel {.unnumbered}
@@ -405,6 +409,20 @@ correlation test return the same $p$-value.
 
 <!-- Spearman's $\rho$ therefore -->
 <!-- provides the rank-based alternative to the default regression path. -->
+
+## Reported p-values and effect sizes {#sec:p-values-effect-sizes}
+
+The selected test output includes the p-value for the corresponding null
+hypothesis. As a complementary output component, the `effect_size` field
+reports the effect-size name, numeric estimate, and method description.
+
+The exported package function `effect_size()` computes these estimates;
+implemented formulae are given in Appendix \@ref(sec:effect-size).
+
+The p-value quantifies evidence against the null hypothesis, whereas the
+effect-size estimate describes the magnitude of the selected comparison,
+association, or model fit on the scale defined in Appendix
+\@ref(sec:effect-size) [@Fritz:2012; @Levine:2002].
 
 # Examples
 
@@ -550,30 +568,6 @@ visstat(titanic_df$Sex, titanic_df$Class)
 visstat(comfort ~ market, data = survey_data_3)
 ```
 
-### Ordered response, ordered factor {#sec:route-2-ordered-correlation}
-
-The default `correlation = FALSE` path redirects to the Wilcoxon/Kruskal--Wallis route and is not repeated as a separate example.
-The Kendall output for `correlation = TRUE` is a single jittered rank--rank scatter plot that visualises the monotone trend, colour-codes points by the predictor level, and annotates the plot with $\tau_b$ and the $p$-value.
-
-#### Kendall rank correlation with `correlation = TRUE`
-
-A hypothetical survey of 150 secondary-school students records alcohol consumption frequency and academic performance on five-point ordinal scales.
-A negative monotone association is induced by construction: students who consume alcohol more frequently tend to have lower academic performance.
-The Kendall result is shown in Figure \@ref(fig:kendall-spearman-example), left.
-
-```{r kendall-spearman-example, fig.cap="Rank-based correlations: Left: Kendall's $\\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\\ academic performance. Right: Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots annotate the corresponding effect measure and $p$-value.", out.width="48%", fig.height=4.5, fig.show="hold", fig.crop=FALSE}
-set.seed(42)
-n <- 150
-xs <- sample(1:5, n, replace = TRUE)
-ys <- pmin(5, pmax(1, (6 - xs) + sample(-1:1, n, replace = TRUE)))
-likert_alc  <- c("never", "rarely", "sometimes", "often", "always")
-likert_perf <- c("poor",  "fair",   "ok",        "good",  "great")
-alcohol     <- ordered(likert_alc[xs],  levels = likert_alc)
-performance <- ordered(likert_perf[ys], levels = likert_perf)
-kendall_result <- visstat(performance, alcohol, correlation = TRUE)
-spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
-```
-
 ## Route 3: Numeric response, numeric predictor
 
 ### Linear regression {#sec:lin-reg}
@@ -606,12 +600,10 @@ ozone_lm <- visstat(airquality$Wind, airquality$Ozone)
 ```
 
 The diagnostic output flags non-normal  model residuals and heteroscedasticity.
-The next examples show two distinct choices: an explicit rank-correlation analysis within `visstat()` (`correlation = TRUE`), and a Gamma generalised linear model outside `visstat()`.
-
-### Spearman rank correlation with `correlation = TRUE`
-
-Correlation analysis requires the explicit flag `correlation = TRUE`.
-For the ozone example, staying within `visstat()` gives the Spearman analysis shown in Figure \@ref(fig:kendall-spearman-example), right.
+The optional Spearman analysis for the same dataset is shown in
+Section \@ref(sec:examples-rank-correlation-mode).
+The following example shows a Gamma generalised linear model outside
+`visstat()`.
 
 ### Model exploration outside `visstat()` {#sec:model-comparisons}
 
@@ -684,21 +676,40 @@ Here, cells for black hair and brown hair, as well as blond hair and blue eyes, 
 
 Restricting `HairEyeColor` to black or brown hair and brown or blue eyes yields a $2 \times 2$ table.
 Cochran's rule is still satisfied, so `visstat()` applies Pearson's $\chi^2$ test with Yates' continuity correction.
-The resulting grouped column plot is shown in Figure \@ref(fig:yates-fisher-example), left.
+The resulting grouped column plot is shown in Figure
+\@ref(fig:yates-fisher-example), left.
 
-### Fisher's exact test
-
-Restricting `HairEyeColor` to male participants with black or brown hair and hazel or green eyes yields a $2 \times 2$ table where one expected frequency is less than 5, violating Cochran's rule [@Cochran:1954].
-`visstat()` therefore applies Fisher's exact test.
-The graphical output shows absolute counts with count labels above each bar and the $p$-value in the title, so the small cell counts that trigger the exact test remain visible (see Figure \@ref(fig:yates-fisher-example), right).
-
-```{r yates-fisher-example, fig.cap="Two $2 \\times 2$ categorical routes in `HairEyeColor`: Yates-corrected Pearson $\\chi^2$ when Cochran's rule is satisfied (black/brown hair and brown/blue eyes; left), and Fisher's exact test when expected counts are too small (male participants, black/brown hair, hazel/green eyes; right). The Yates-corrected plot shows row percentages; the Fisher plot shows absolute counts.", out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
+```{r yates-example, fig.show='hide', results='hide'}
 hair_black_brown_eyes_brown_blue <- HairEyeColor[1:2, 1:2, ]
 hair_black_brown_eyes_brown_blue_df <- counts_to_cases(
   as.data.frame(hair_black_brown_eyes_brown_blue))
 yates_stats <- visstat(hair_black_brown_eyes_brown_blue_df$Eye,
                        hair_black_brown_eyes_brown_blue_df$Hair)
+```
 
+```{r yates-effect-size}
+yates_stats$effect_size
+```
+
+The returned effect size is
+\(\phi = `r round(yates_stats$effect_size$estimate, 2)`\), which,
+using Cohen's benchmarks for \(2 \times 2\) tables [@Cohen:2013, p. 227],
+is a small association. The p-value instead is below
+\(\alpha = `r example_alpha`\)
+(\(p = `r signif(yates_stats$p.value, 2)`\)) and thus significant.
+This example underlines the importance of effect sizes: a significant p-value
+can be accompanied  with a small effect size measure.
+
+### Fisher's exact test
+
+Restricting `HairEyeColor` to male participants with black or brown hair and hazel or green eyes yields a $2 \times 2$ table where one expected frequency is less than 5, violating Cochran's rule [@Cochran:1954].
+`visstat()` therefore applies Fisher's exact test.
+The graphical output shows absolute counts with count labels above each bar
+and the $p$-value in the title, so the small cell counts that trigger the
+exact test remain visible (see Figure
+\@ref(fig:yates-fisher-example), right).
+
+```{r fisher-example, fig.show='hide', results='hide'}
 hair_eye_male <- HairEyeColor[, , 1]
 black_brown_hazel_green <- hair_eye_male[1:2, 3:4]
 black_brown_hazel_green_df <- counts_to_cases(
@@ -706,6 +717,46 @@ black_brown_hazel_green_df <- counts_to_cases(
 fisher_stats <- visstat(black_brown_hazel_green_df$Eye,
                         black_brown_hazel_green_df$Hair)
 ```
+
+```{r yates-fisher-example, echo=FALSE, fig.cap="Two $2 \\times 2$ categorical routes in `HairEyeColor`: Yates-corrected Pearson $\\chi^2$ when Cochran's rule is satisfied (black/brown hair and brown/blue eyes; left), and Fisher's exact test when expected counts are too small (male participants, black/brown hair, hazel/green eyes; right). The Yates-corrected plot shows row percentages; the Fisher plot shows absolute counts.", out.width="48%", fig.height=4.5, fig.show="hold", results='hide'}
+plot(yates_stats, which = 1)
+plot(fisher_stats, which = 1)
+```
+
+## Optional rank-correlation mode {#sec:examples-rank-correlation-mode}
+
+Correlation analysis requires the explicit flag `correlation = TRUE`.
+
+### Kendall rank correlation with `correlation = TRUE`
+
+A hypothetical survey of 150 secondary-school students records alcohol
+consumption frequency and academic performance on five-point ordinal scales.
+A negative monotone association is induced by construction: students who
+consume alcohol more frequently tend to have lower academic performance.
+The Kendall result is shown in Figure \@ref(fig:kendall-spearman-example),
+left.
+```{r kendall-spearman-example, fig.cap="Rank-based correlations: Left: Kendall's $\\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\\ academic performance. Right: Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots annotate the corresponding effect measure and $p$-value.", out.width="48%", fig.height=4.5, fig.show="hold", fig.crop=FALSE}
+set.seed(42)
+n <- 150
+xs <- sample(1:5, n, replace = TRUE)
+ys <- pmin(5, pmax(1, (6 - xs) + sample(-1:1, n, replace = TRUE)))
+likert_alc  <- c("never", "rarely", "sometimes", "often", "always")
+likert_perf <- c("poor",  "fair",   "ok",        "good",  "great")
+alcohol     <- ordered(likert_alc[xs],  levels = likert_alc)
+performance <- ordered(likert_perf[ys], levels = likert_perf)
+kendall_result <- visstat(performance, alcohol, correlation = TRUE)
+spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
+```
+
+
+
+### Spearman rank correlation with `correlation = TRUE`
+
+For the ozone example introduced in Section \@ref(sec:lin-reg), staying within
+`visstat(,)` with the flag `correlation = TRUE` gives the Spearman analysis shown in Figure
+\@ref(fig:kendall-spearman-example), right.
+
+
 
 # The `visstat` methods {#sec:visstat-methods}
 
@@ -874,7 +925,7 @@ a replacement for model-specific statistical analysis.
 Its value is not that it removes the user's statistical judgment, but that it exposes the assumptions, routing decisions, effect sizes, and plots that should inform that judgment.
 The package therefore serves as a transparent entry point for routine two-variable analyses, leaving model-specific extensions to the analyst.
 
-```{r appendix-child, child = "_appendix.Rmd"}
+```{r appendix-child, child = "_appendix.md"}
 ```
 
 # References {.unnumbered}

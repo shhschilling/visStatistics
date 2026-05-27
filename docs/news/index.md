@@ -25,15 +25,13 @@
 
 ## visStatistics 0.2.0
 
-CRAN release: 2026-05-12
-
 ### Changes in decision logic
 
 - **Unified normality testing across all branches.** The two-group case
   (t-test vs Wilcoxon) and the multi-group case (ANOVA vs
   Kruskal-Wallis) now share the same normality test:
   [`shapiro.test()`](https://rdrr.io/r/stats/shapiro.test.html) applied
-  to the internally studentized residuals from `lm(y ~ x)` via
+  to the internally studentised residuals from `lm(y ~ x)` via
   [`rstandard()`](https://rdrr.io/r/stats/influence.measures.html).
 
 - **Variance homogeneity test changed from
@@ -138,15 +136,13 @@ CRAN release: 2026-05-12
   - The general linear model framework (Appendix A) introduced.
   - Clarified that
     [`rstandard()`](https://rdrr.io/r/stats/influence.measures.html)
-    computes internally studentized residuals, with reference to Cook
+    computes internally studentised residuals, with reference to Cook
     and Weisberg (1982).
   - Bibliography extended.
 
 - DESCRIPTION rewritten to reflect the updated test selection algorithm.
 
 ## visStatistics 0.1.7
-
-CRAN release: 2025-05-28
 
 - No user-visible changes relative to 0.1.6.
 
@@ -182,8 +178,6 @@ CRAN release: 2025-05-28
 
 ## visStatistics 0.1.5
 
-CRAN release: 2025-05-24
-
 ### News
 
 - Extended vignette: all implemented tests are explained in greater
@@ -199,8 +193,6 @@ CRAN release: 2025-05-24
   incorrectly states that it displays group means.
 
 ## visStatistics 0.1.3
-
-CRAN release: 2025-05-12
 
 ### News
 
