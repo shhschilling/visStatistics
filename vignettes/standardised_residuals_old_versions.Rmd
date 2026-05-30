@@ -1,0 +1,358 @@
+# Standardised residuals: older vignette source excerpts
+
+## Source: `visstatisticsArchive/20260518_visStatistics.Rmd`
+
+There, p-values from tests on pooled standardised residuals from the common linear model guide the choice between rank-based, equal-variance, and Welch-type procedures.
+
+For mean-based tests in the general linear-model framework, the
+normality assumption concerns the model errors, not the marginal response
+distribution. None of these packages bases routing on pooled
+standardised residuals from the common linear model. `autotestR` and
+`boxTest` test the response separately within groups, adding a
+multiple-testing problem; `automatedtests` and `compareGroups` test the
+ungrouped numeric response, so group-location differences are included in
+the vector being tested. In contrast, `visStatistics` bases the
+central-tendency branch on pooled standardised residuals, adhering to the
+general linear model framework [@Thompson:2015].
+
+# Assumption diagnostics: `vis_lm_assumptions()` {#assumption-diagnostics-vis_lm_assumptions}
+
+All tests within the linear model framework (see [Appendix A](#glm)) share the same set of assumptions:
+
+- Linearity: The expected value of the response is a linear function of the predictors; assessed by checking for systematic patterns in residual plots.
+
+- Error terms are independent, normally distributed with expectation value 0 and have constant error variance $\sigma^2$
+
+The function `vis_lm_assumptions()` provides a unified visual and statistical framework for validating the linear model assumptions.
+It fits a linear model using `aov()` and provides four standard diagnostic plots:
+
+1.  **Histogram and Normal Density**: Displays the distribution of standardised residuals with a red normal density curve overlay to visually assess normality.
+
+2.  **Std. Residuals vs. Fitted**: It shows the standardised residuals against fitted values with a zero-line to detect non-linearity or heteroscedasticity.
+
+3.  **Normal Q-Q Plot**: A theoretical quantile-quantile plot using the standardised residuals to identify deviations from the Gaussian distribution.
+
+4.  If `correlation = FALSE` (regression mode), the **Standardised Residuals vs. Leverage** plot; if `correlation = TRUE` (correlation mode), a **Scale-Location** plot.
+
+### Graphical output {.unnumbered}
+
+The first panel shows the linear-model assumption diagnostics. It
+contains a histogram of the standardised residuals with a standard
+normal density overlay, a plot of standardised residuals against fitted
+values, a normal Q--Q plot, and a scale-location plot. The latter three
+are inherited from `plot.lm()`, while the histogram is added to make the
+residual distribution directly visible. The title reports the
+Shapiro--Wilk and Anderson--Darling normality tests together with
+Bartlett's and Levene tests for homoscedasticity.
+
+## Source: `visstatisticsArchive/20260521_1600_visStatistics.Rmd`
+
+There, p-values from a normality test on pooled standardised residuals from a linear model fitted to all groups guide the choice between rank-based and mean-based procedures; a Levene test then selects between equal-variance and Welch-type variants.
+
+For mean-based tests in the general linear-model framework, the normality assumption concerns the model errors, not the marginal response distribution.
+None of these packages bases routing on pooled standardised residuals from a linear model fitted to all groups.
+`autotestR` and `boxTest` test the response separately within groups, adding a multiple-testing problem; `automatedtests` and `compareGroups` test the ungrouped numeric response, so group-location differences are included in the vector being tested.
+In contrast, `visStatistics` bases the central-tendency branch on pooled standardised residuals, adhering to the general linear model framework [@Thompson:2015].
+
+## Decision logic based on the assumptions of the general linear model framework {#routing}
+
+Student's t-test, Fisher's ANOVA, and simple linear regression all belong to the general linear model framework ([see Appendix A](#glm)) and thus share a common set of assumptions: the expected value of the response is a linear function of the predictors, the error terms are independent and normally distributed with expectation 0, and the error variance is constant at $\sigma^2$.
+Therefore the test selection for [tests of central tendencies](#numeric-categoric) is steered by checking the fitted model residuals in regard to these assumptions.
+
+### Graphical output {.unnumbered}
+
+For the central-tendency branch with numeric responses and for the simple-regression branch, this residual check is also the first visual output: `vis_lm_assumptions()` displays a four-panel diagnostic graphic before the selected test or regression result (see [Appendix B](#assumptions)).
+The panel shows the residual distribution, residuals versus fitted values, and normal Q--Q behaviour.
+The fourth plot is a scale-location plot for grouped central-tendency analyses and a standardised residuals versus leverage plot for simple regression.
+
+
+
+Otherwise, a linear model `lm(y ~ x)` (see [Appendix A](#glm)) is fitted for the routing decision, and the Shapiro--Wilk (SW) test is applied to internally studentised residuals from `rstandard()` [@Cook:1982].
+
+When both predictor and response are numerical, `visstat()` fits and displays a simple linear regression.
+The standardised residuals from `lm()` are assessed graphically and with the Shapiro--Wilk and Anderson--Darling tests; homoscedasticity is assessed with the package-implemented Breusch--Pagan test (`bp.test()`; see [Appendix C](#bp)).
+
+## Source: `visstatisticsArchive/20260521_1600_visStatistics-RJournal.Rmd`
+
+There, p-values from a normality test on pooled standardised residuals from a linear model fitted to all groups guide the choice between rank-based and mean-based procedures; a Levene test then selects between equal-variance and Welch-type variants.
+
+Student's t-test, Fisher's ANOVA, and simple linear regression all belong to the general linear model framework ([see Appendix A](#glm)) and thus share a common set of assumptions: the expected value of the response is a linear function of the predictors, the error terms are independent and normally distributed with expectation 0, and the error variance is constant at $\sigma^2$.
+Therefore the test selection for [tests of central tendencies](#numeric-categoric) is steered by checking the fitted model residuals in regard to these assumptions.
+
+For the central-tendency branch with numeric responses and for the simple-regression branch, this residual check is also the first visual output: `vis_lm_assumptions()` displays a four-panel diagnostic graphic before the selected test or regression result (see [Appendix B](#assumptions)).
+The panel shows the residual distribution, residuals versus fitted values, and normal Q--Q behaviour.
+The fourth plot is a scale-location plot for grouped central-tendency analyses and a standardised residuals versus leverage plot for simple regression.
+
+Otherwise, a linear model `lm(y ~ x)` (see [Appendix A](#glm)) is fitted for the routing decision, and the Shapiro--Wilk (SW) test is applied to internally studentised residuals from `rstandard()` [@Cook:1982].
+
+## Source: `visstatisticsArchive/20260524_3651f526_visStatistics.Rmd`
+
+### Visualisation the general linear model assumptions {#sec:graphical}
+
+A core output of `visStatistics` is a diagnostic graphic generated in Route 1
+and Route 3 (if `correlation = FALSE`) before the selected test or regression
+result is shown.
+
+It fits the corresponding linear model and computes raw model residuals.
+
+#### Residual scale used for tests and plots {-}
+
+Formal assumption-test p-values are computed from raw model residuals. For
+display only, both Route 1 and Route 3 use the same pooled z-scaled residuals
+to facilitate model comparison. Because these p-values are shown in the same
+graphic as the diagnostics, the displayed residuals are kept on a constant
+rescaling of the same residuals:
+
+\begin{equation}
+z_i = \frac{e_i}{SE_\text{res}},
+\; \mathrm{with} \;
+SE_\text{res} =
+\sqrt{\frac{\sum_i e_i^2}{N-k}} .
+(\#eq:z-residual)
+\end{equation}
+
+Here \(N\) is the total sample size, \(k\) is the number of fitted model
+parameters, and $SE_\text{res}$ is the residual standard error. Note that in Route 1
+$SE_\text{res}$ equals  $\sqrt{MS_\text{within}}$, with \(MS_\text{within}\)
+defined in Equation \@ref(eq:fisher-f).
+
+Route 1 displays the residual histogram, the normal Q--Q plot, and absolute
+residual spread by group. Route 3 displays the residual histogram, the normal
+Q--Q plot, z-scaled residuals versus fitted values, and z-scaled residuals
+versus leverage.
+
+The Route 3 leverage panel therefore differs from the standard `plot.lm()`
+panel, which uses internally studentised residuals. To retain the influence
+diagnostic on the common z residual scale, Cook's distance contours are
+transformed accordingly (see Appendix \@ref(sec:norm)).
+
+The first row of the outer title reports p-values of residual-normality checks
+with the Shapiro--Wilk and Anderson--Darling tests. The second row reports
+p-values of variance checks: Levene and Bartlett for grouped central-tendency
+analyses, or Breusch--Pagan for simple regression.
+
+## Source: `visstatisticsArchive/20260524_visStatistics.Rmd`
+
+### Visualisation the general linear model assumptions {#sec:graphical}
+
+For numeric responses with categorical predictors and for simple linear
+regression (`correlation = FALSE`), `visStatistics` first shows a
+diagnostic panel assessing the assumptions of the general linear model.
+
+It fits a simple linear model between response and predictor, from which it extracts the raw model residuals, used to compute the formal assumption-test p-values.
+
+#### Residual scale used for tests and plots {.unnumbered}
+
+For display only, pooled z-scaled residuals to facilitate model comparison.
+Because these p-values are shown in the same graphic as the diagnostics, the displayed residuals are kept on a constant rescaling of the same residuals:
+
+\begin{equation}
+z_i = \frac{e_i}{SE_\text{res}},
+\; \mathrm{with} \;
+SE_\text{res} =
+\sqrt{\frac{\sum_i e_i^2}{N-k}} .
+(\#eq:z-residual)
+\end{equation}
+
+Here $N$ is the total sample size, $k$ is the number of fitted model parameters, and $SE_\text{res}$ is the residual standard error.
+For numeric responses with categorical predictors, $SE_\text{res}$ equals
+$\sqrt{MS_\text{within}}$, with $MS_\text{within}$ defined in Equation
+\@ref(eq:fisher-f).
+
+For numeric responses with categorical predictors, the panel displays the
+residual histogram, the normal Q--Q plot, and absolute residual spread by
+group.
+For simple linear regression, the panel displays the residual histogram,
+the normal Q--Q plot, z-scaled residuals versus fitted values, and
+z-scaled residuals versus leverage.
+
+The Route 3 leverage panel therefore differs from the standard `plot.lm()` panel, which uses internally studentised residuals.
+To retain the influence diagnostic on the common z residual scale, Cook's distance contours are transformed accordingly (see Appendix \@ref(sec:norm)).
+
+## Source: `visstatisticsArchive/20260525_before_glm_front_visStatistics.Rmd`
+
+### General linear model diagnostic panel {#sec:graphical}
+
+For numeric responses with categorical predictors (Route 1) and for simple
+linear regression (`correlation = FALSE`) (Route 3), `visStatistics` first
+shows a diagnostic panel for the fitted general linear model.
+
+It fits a simple linear model between response and predictor, from which it extracts the raw model residuals, used to compute the formal assumption-test p-values from the assumption tests in Section \@ref(sec:assumption-tests).
+
+From the raw residuals, pooled z-scaled residuals are calculated to facilitate model comparison:
+
+\begin{equation}
+z_i = \frac{e_i}{SE_\text{res}},
+\; \mathrm{with} \;
+SE_\text{res} =
+\sqrt{\frac{\sum_{r=1}^{N} e_r^2}{N-k}} .
+(\#eq:z-residual)
+\end{equation}
+
+Here $e_i$ is the raw model residual for observation $i$, $N$ is the total
+sample size, $k$ is the number of fitted model parameters, and
+$SE_\text{res}$ is the residual standard error.
+For numeric responses with categorical predictors, $SE_\text{res}$ equals
+$\sqrt{MS_\text{within}}$, with $MS_\text{within}$ defined in
+Eq.\ \@ref(eq:fisher-f).
+
+Because the displayed z-residuals are a constant rescaling of the residuals fed to the assumption tests, the visual evidence and the displayed p-values refer to the same residual object.
+
+#### Layout of the diagnostic panel {.unnumbered}
+
+All panels in both layouts are based on the z-residuals defined in
+Eq.\ \@ref(eq:z-residual).
+
+**Route 1** For numeric responses with categorical predictors, the diagnostic
+panel displays the residual histogram, the normal Q--Q plot, and absolute
+z-residual spread by group.
+
+**Route 3** For simple linear regression, the diagnostic panel displays the
+residual histogram, the normal Q--Q plot, z-scaled residuals versus fitted
+values, and z-scaled residuals versus leverage.
+Unlike the standard `plot.lm()` leverage plot, which plots leverage against
+internally studentised residuals, `visStatistics` plots leverage
+(Eq.\ \@ref(eq:leverage-simple-regression)) against the z-residuals used
+throughout the diagnostic panel. Cook's distance contours are transformed
+accordingly (see Section \@ref(sec:cooks-distance)).
+
+## Source: `visstatisticsArchive/20260525_before_appendix_child_visStatistics.Rmd`
+
+### General linear model diagnostic panel {#sec:graphical}
+
+For numeric responses with categorical predictors (Route 1) and for simple
+linear regression (`correlation = FALSE`) (Route 3), `visStatistics` first
+shows a diagnostic panel for the fitted general linear model.
+
+It fits a simple linear model between response and predictor, from which it extracts the raw model residuals, used to compute the formal assumption-test p-values from the assumption tests in Section \@ref(sec:assumption-tests).
+
+From the raw residuals, pooled z-scaled residuals are calculated to facilitate model comparison:
+
+\begin{equation}
+z_i = \frac{e_i}{SE_\text{res}},
+\; \mathrm{with} \;
+SE_\text{res} =
+\sqrt{\frac{\sum_{r=1}^{N} e_r^2}{N-k}} .
+(\#eq:z-residual)
+\end{equation}
+
+Here $e_i$ is the raw model residual for observation $i$, $N$ is the total
+sample size, $k$ is the number of fitted model parameters, and
+$SE_\text{res}$ is the residual standard error.
+For numeric responses with categorical predictors, $SE_\text{res}$ equals
+$\sqrt{MS_\text{within}}$, with $MS_\text{within}$ defined in
+Eq.\ \@ref(eq:fisher-f).
+
+Because the displayed z-residuals are a constant rescaling of the residuals fed to the assumption tests, the visual evidence and the displayed p-values refer to the same residual object.
+
+#### Layout of the diagnostic panel {.unnumbered}
+
+All panels in both layouts are based on the z-residuals defined in
+Eq.\ \@ref(eq:z-residual).
+
+**Route 1** For numeric responses with categorical predictors, the diagnostic
+panel displays the residual histogram, the normal Q--Q plot, and absolute
+z-residual spread by group.
+
+**Route 3** For simple linear regression, the diagnostic panel displays the
+residual histogram, the normal Q--Q plot, z-scaled residuals versus fitted
+values, and z-scaled residuals versus leverage.
+Unlike the standard `plot.lm()` leverage plot, which plots leverage against
+internally studentised residuals, `visStatistics` plots leverage
+(Eq.\ \@ref(eq:leverage-simple-regression)) against the z-residuals used
+throughout the diagnostic panel. Cook's distance contours are transformed
+accordingly (see Section \@ref(sec:cooks-distance)).
+
+## Source: `visstatisticsArchive/20260525_before_old_structure_revert_visStatistics.Rmd`
+
+All panels in both layouts are based on the z-residuals defined in
+Eq.\ \@ref(eq:z-residual).
+
+**Route 1** For numeric responses with categorical predictors, the diagnostic
+panel displays the residual histogram, the normal Q--Q plot, and absolute
+z-residual spread by group.
+
+**Route 3** For simple linear regression, the diagnostic panel displays the
+residual histogram, the normal Q--Q plot, z-scaled residuals versus fitted
+values, and z-scaled residuals versus leverage.
+Unlike the standard `plot.lm()` leverage plot, which plots leverage against
+internally studentised residuals, `visStatistics` plots leverage
+(Eq.\ \@ref(eq:leverage-simple-regression)) against the z-residuals used
+throughout the diagnostic panel. Cook's distance contours are transformed
+accordingly (see Section \@ref(sec:cooks-distance)).
+
+## Source: `visstatisticsArchive/20260525_visStatistics.Rmd`
+
+## Visualisation of the general linear model assumptions {#sec:graphical}
+
+For numeric responses with categorical predictors (Route 1) and for simple linear regression (`correlation = FALSE`) (Route 3), `visStatistics` first shows a diagnostic panel assessing the assumptions of the general linear model.
+
+It fits a simple linear model between response and predictor, from which it extracts the raw model residuals, used to compute the formal assumption-test p-values from the assumption tests in Section \@ref(sec:assumption-tests).
+
+From the raw residuals, pooled z-scaled residuals are calculated to facilitate model comparison:
+
+\begin{equation}
+z_i = \frac{e_i}{SE_\text{res}},
+\; \mathrm{with} \;
+SE_\text{res} =
+\sqrt{\frac{\sum_i e_i^2}{N-k}} .
+(\#eq:z-residual)
+\end{equation}
+
+Here $N$ is the total sample size, $k$ is the number of fitted model parameters, and $SE_\text{res}$ is the residual standard error.
+For numeric responses with categorical predictors, $SE_\text{res}$ equals
+$\sqrt{MS_\text{within}}$, with $MS_\text{within}$ defined in
+Eq. \@ref(eq:fisher-f).
+
+Because the displayed z-residuals are a constant rescaling of the residuals fed to the assumption tests, the visual evidence and the displayed p-values refer to the same residual object.
+
+### Layout of the diagnostic panel {.unnumbered}
+
+All panels in both layouts are based on the z-residuals defined in
+Eq. \@ref(eq:z-residual).
+
+**Route 1** For numeric responses with categorical predictors, the diagnostic
+panel displays the residual histogram, the normal Q--Q plot, and absolute
+z-residual spread by group.
+
+**Route 3** For simple linear regression, the diagnostic panel displays the
+residual histogram, the normal Q--Q plot, z-scaled residuals versus fitted
+values, and z-scaled residuals versus leverage. 
+Unlike the standard `plot.lm()` leverage plot, it is based on the z residual
+scale used throughout the diagnostic panel. To retain the influence diagnostic
+on this common scale, Cook's distance contours are transformed accordingly.
+
+## Source: `visstatisticsArchive/20260527_visStatistics.Rmd`
+
+### Visualisation of the assumptions of the general linear model {#sec:graphical}
+
+`visstat()` *vis*ualises the assumptions of the underlying linear model for the selection of tests of central tendency (Route 1) and for simple linear regression (`correlation = FALSE`) (Route 3).
+
+It fits a simple linear model between response and predictor and extracts the model residuals.
+Standardising the pooled raw model residuals with their standard error, we obtain the z-residuals used in the diagnostic plots to facilitate model comparison: 
+\begin{equation}
+z_i = \frac{e_i}{SE_\text{res}},
+\; \mathrm{with} \;
+SE_\text{res} =
+\sqrt{\frac{\sum_{r=1}^{N} e_r^2}{N-k}},
+(\#eq:z-residual)
+\end{equation}
+  
+
+Here $e_i$ is the  raw model residual for observation $i$, $N$ is the total sample size, $k$ is the number of fitted linear model parameters, and $SE_\text{res}$ is the residual standard error.
+<!-- For numeric responses with categorical predictors, $SE_\text{res}$ equals $\sqrt{MS_\text{within}}$, with $MS_\text{within}$ defined in Eq.  --> <!-- @ref(eq:fisher-f). --> <!-- All panels in both layouts are based on the z-residuals defined in Eq.  --> <!-- @ref(eq:z-residual). --> \
+
+#### Layout of the diagnostic panel {.unnumbered}
+
+In Route 1 and Route 3, `visstat()` always generates a diagnostic panel of the model residuals. 
+
+**Route 1** For numeric responses with categorical predictors, the diagnostic panel displays the residual histogram, the normal Q--Q plot, and the absolute z-residuals $|z_i|$ (Eq. \@ref(eq:z-residual)) by group. The last panel shows whether residual spread is comparable across factor levels, the pattern assessed formally by the Levene and Bartlett variance checks.
+
+**Route 3** For simple linear regression, the diagnostic panel displays the residual histogram, the normal Q--Q plot, z-scaled residuals versus fitted values, and z-scaled residuals versus leverage (Eq. \@ref(eq:leverage-simple-regression) with Cook's distance contours computed on the same z-residual scale (see Section \@ref(sec:cooks-distance)).
+
+**Outer title for both routes**
+
+The first row of the outer title reports p-values of residual-normality checks with the Shapiro--Wilk and Anderson--Darling tests.
+The second row reports p-values of variance checks: Levene and Bartlett for grouped central-tendency analyses, or Breusch--Pagan for simple regression.
+
+Because the displayed z-residuals are a constant rescaling of the raw residuals fed to the assumption tests, the visual evidence and the displayed p-values in the outer titles refer to the same residual object.

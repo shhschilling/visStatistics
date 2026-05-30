@@ -1,0 +1,30 @@
+---
+title: "Draft: minimal addition to the Discussion"
+output: html_document
+bibliography: REFERENCES.bib
+---
+
+<!--
+Suggestion only. Not applied to visStatistics.Rmd. Two sentences,
+proposed for the Discussion, to be inserted after the existing
+"imperfect routing gates" paragraph (current line 836) and before the
+Central Limit Theorem paragraph (current line 838).
+
+Why here: lines 834/836 already frame the gate's imperfection as a
+power/sample-size problem (the iid-sample view). The residual-object
+problem — residuals are non-iid and supernormal by construction — is
+not yet stated. These two sentences add it without restructuring.
+Citations read in full: Cook & Weisberg 1982 p. 14; Das & Imon 2016 p. 10.
+-->
+
+## Proposed insertion (after current line 836)
+
+> A further limitation is specific to residual-based gates: fitting the
+> linear model renders the residuals heteroscedastic and mutually
+> correlated by construction and pulls their distribution toward
+> normality ("supernormality"), so a normality test applied to
+> residuals tends to under-reject [@Cook:1982, p. 14; @Das:2016, p. 10].
+> The diagnostic plots therefore remain the primary safeguard against
+> this conservative bias.
+
+# References {.unnumbered}

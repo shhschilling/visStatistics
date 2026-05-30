@@ -188,7 +188,7 @@ called in two equivalent forms:</p>
 <span></span>
 <span><span class="co"># Formula interface:</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span>, data <span class="op">=</span> <span class="va">dataframe</span><span class="op">)</span></span></code></pre></div>
-<p>An examplary function call is</p>
+<p>An exemplary function call is</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Standardised form</span></span>
 <span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">npk</span><span class="op">$</span><span class="va">block</span>,<span class="va">npk</span><span class="op">$</span><span class="va">yield</span><span class="op">)</span></span></code></pre></div>
@@ -316,7 +316,7 @@ is equivalent to testing equality of all group means.</p>
 predictor; <span class="math inline">\(H_0: \beta_1 = 0\)</span>
 examines whether a linear relationship exists.</p>
 <p>The model error terms <span class="math inline">\(\varepsilon_i\)</span> in Eq.  @ref(eq:glm) are
-not observed. They observable counterpart are the residuals.<br>
+not observed. Their observable counterparts are the residuals.<br>
 After fitting the corresponding linear model, the residual is</p>
 <p><span class="math display">\[\begin{equation}
 e_i = y_i - \hat{y}_i,
@@ -399,7 +399,7 @@ computed on the same z-residual scale (see Section
 @ref(sec:cooks-distance)).</p>
 <p><strong>Outer title for both routes</strong></p>
 <p>The first row of the outer title reports p-values of
-residual-normality checks with the Shapiro–Wilk Shapiro–Wilk test and
+residual-normality checks with the Shapiro–Wilk test and
 Anderson–Darling tests. The second row reports p-values of variance
 checks: Levene and Bartlett for grouped central-tendency analyses, or
 Breusch–Pagan for simple regression.</p>
@@ -429,8 +429,12 @@ are detailed below.</p>
 <div class="section level4">
 <h4 id="sec:route-1">Route 1: Numeric response, categorical predictor<a class="anchor" aria-label="anchor" href="#sec:route-1"></a>
 </h4>
-<p>Figure @ref(fig:decision-tree) summarises the test decision logic in
-the central-tendency branch.</p>
+<p>A numeric response with a categorical predictor asks whether the
+response differs between “factor levels”, henceforth “groups”.
+<!-- In the central-tendency branch, the diagnostic panel (see -->
+<!-- \@ref(sec:graphical)) is always generated as first visual output. --></p>
+<p>Figure @ref(fig:decision-tree) expands the routing logic for tests of
+central tendencies.</p>
 <div class="figure">
 <img src="figures/decision_tree.png" class="r-plt" alt="Decision tree selecting among Welch t-test, Student t-test, Wilcoxon, Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests based on the all-groups n_i &gt; 50 rule, the Shapiro-Wilk test on model residuals, and the Levene test for variance homogeneity." width="100%"><p class="caption">
 Decision tree for tests of central tendency. If all group-specific
@@ -441,32 +445,39 @@ mean-based or switches to rank-based tests; the Levene test then selects
 equal-variance or Welch-type procedures.
 </p>
 </div>
-<p>The first split checks group size. If all groups contain more than 50
-observations, <code><a href="../reference/visstat.html">visstat()</a></code> treats the parametric (mean-based)
-path as justified by the Central Limit Theorem <span class="citation">(<a href="#ref-Lumley:2002">Lumley et al. 2002</a>; <a href="#ref-Rasch:2011">Rasch et al. 2011</a>)</span>. This avoids
-switching to non-parametric (rank-based) tests because of negligible
-residual-normality deviations in large samples <span class="citation">(<a href="#ref-Ghasemi:2012">Ghasemi and Zahediasl
-2012</a>; <a href="#ref-Fagerland:2012">Fagerland 2012</a>; <a href="#ref-Shatz:2024">Shatz 2024</a>)</span>.
-<!-- Note that in this large sample case  -->
-<!-- the p-value of the  Shapiro--Wilk (SW) test [@Shapiro:1965; Eq. \@ref(eq:shapiro-w)] does not decide routing. --></p>
-<p>Otherwise, the p-value of the Shapiro–Wilk (SW) test determines
-whether the route remains mean-based: If normality is rejected (<span class="math inline">\(p_\text{SW} \le \alpha\)</span>), rank-based tests
-are selected: <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> (Eq. @ref(eq:wilcoxon-w)) for
-two groups, or <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> (Eq. @ref(eq:kruskal-h))
+<p>The first split checks group size:</p>
+<p>If all groups of the categorical predictor contain more than 50
+observations, the sampling distribution of each group mean is treated as
+sufficiently normal by the Central Limit Theorem <span class="citation">(<a href="#ref-Lumley:2002">Lumley et al. 2002</a>; <a href="#ref-Rasch:2011">Rasch et al. 2011</a>)</span>. For large samples,
+formal testing of residual normality of the general linear model is
+bypassed to avoid type I errors caused by negligible deviations from
+normality in large samples <span class="citation">(<a href="#ref-Ghasemi:2012">Ghasemi and Zahediasl 2012</a>; <a href="#ref-Fagerland:2012">Fagerland 2012</a>; <a href="#ref-Shatz:2024">Shatz 2024</a>)</span>.</p>
+<p>Otherwise, a linear model of Eq. @ref(eq:glm) is fitted between the
+numeric response and the categorical predictor, and the model residuals
+of Eq. @ref(eq:raw-residual) are extracted.</p>
+<p>The Shapiro–Wilk (SW) normality test is then applied as the
+residual-normality gate, because simulation studies report high power
+for small to moderate sample sizes <span class="citation">(<a href="#ref-Razali:2011">Razali and Wah 2011</a>)</span>.</p>
+<p>If the SW-test rejects residual normality (<span class="math inline">\(p_\text{SW} \le \alpha\)</span>), non-parametric
+tests are selected: <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> (Eq. @ref(eq:wilcoxon-w))
+for two groups, or <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> (Eq. @ref(eq:kruskal-h))
 followed by Holm-adjusted <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> for more
-than two groups. If normality is not rejected, variance homogeneity is
-assessed with the package-implemented mean-centred Levene test (L) on
-model residuals <span class="citation">(<a href="#ref-Levene:1960">Levene 1960</a>)</span>
+than two groups.</p>
+<p>If the normality of the model residuals is not rejected, their
+variance homogeneity is assessed with the package-implemented
+mean-centred Levene test (L) <span class="citation">(<a href="#ref-Levene:1960">Levene 1960</a>)</span>
 (Eq. @ref(eq:levene-f)).</p>
-<p>For homoscedastic data, <code>t.test(var.equal = TRUE)</code>
+<p>For homoscedastic data (<span class="math inline">\(p_\text{L} &gt;
+\alpha\)</span>), <code>t.test(var.equal = TRUE)</code>
 (Eq. @ref(eq:student-t)) is applied for two groups, or Fisher’s
 <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> (Eq. @ref(eq:fisher-f)) with <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code>
 (Eq. @ref(eq:tukey-hsd-q)) for more than two groups. For heteroscedastic
-data, Welch’s <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> (Eq. @ref(eq:welch-t)) is applied
-for two groups, or Welch’s <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>
-(Eq. @ref(eq:welch-f)) with the package implementation
-<code><a href="../reference/games.howell.html">games.howell()</a></code> (<span class="citation">(<a href="#ref-Games:1976">Games and Howell 1976</a>)</span>; see Section
-@ref(sec:gh)) for more than two groups.</p>
+data (<span class="math inline">\(p_\text{L} \le \alpha\)</span>),
+Welch’s <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> (Eq. @ref(eq:welch-t)) is applied for two
+groups, or Welch’s <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> (Eq. @ref(eq:welch-f))
+with the package implementation <code><a href="../reference/games.howell.html">games.howell()</a></code> (<span class="citation">(<a href="#ref-Games:1976">Games and Howell
+1976</a>)</span>; see Section @ref(sec:gh)) for more than two
+groups.</p>
 <div class="section level5">
 <h5 class="unnumbered" id="post-hoc-tests">Post-hoc tests<a class="anchor" aria-label="anchor" href="#post-hoc-tests"></a>
 </h5>
@@ -505,8 +516,8 @@ a letter are not significantly different.</p>
 </h4>
 <p>An ordered categorical response with a categorical predictor or
 ordered categorical predictor is treated as a rank-based group
-comparison . The ordered response is converted to integer level codes
-and analysed with the Wilcoxon rank-sum test for two groups or the
+comparison. The ordered response is converted to integer level codes and
+analysed with the Wilcoxon rank-sum test for two groups or the
 Kruskal–Wallis test for more than two groups.</p>
 </div>
 <div class="section level4">

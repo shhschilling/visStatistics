@@ -1,0 +1,104 @@
+# Internally studentised residuals: older vignette source excerpts
+
+## Source: `visstatisticsArchive/20260518_visStatistics.Rmd`
+
+- Normality testing of the residuals: The Shapiro--Wilk test
+  (`shapiro.test()`) is performed on internally studentised residuals computed
+  by `rstandard()`, which scales the raw residuals with an estimate of their
+  standard deviation that accounts for the leverage of each observation
+  [@Cook:1982].
+
+The package uses both the Shapiro-Wilk test and the Anderson-Darling test to
+check the normality of the studentised residuals
+
+\[
+r_i^* = e_i / (s\sqrt{1-h_{ii}}),
+\]
+
+where \(e_i\) are the raw residuals, \(s^2\) is the residual mean square, and
+\(h_{ii}\) is the leverage of observation \(i\) [@Cook:1982].
+
+## Source: `visstatisticsArchive/20260521_1600_visStatistics.Rmd`
+
+Otherwise, a linear model `lm(y ~ x)` (see [Appendix A](#glm)) is fitted for
+the routing decision, and the Shapiro--Wilk (SW) test is applied to internally
+studentised residuals from `rstandard()` [@Cook:1982].
+
+The standardised residuals from `lm()` are assessed graphically and with the
+Shapiro--Wilk and Anderson--Darling tests; homoscedasticity is assessed with
+the package-implemented Breusch--Pagan test (`bp.test()`; see
+[Appendix C](#bp)).
+
+The package displays both the Shapiro--Wilk test and the Anderson--Darling test
+to check the normality of the studentised residuals
+\(r_i^* = e_i / (s\sqrt{1-h_{ii}})\), where \(e_i\) are the raw residuals,
+\(s^2\) is the residual mean square, and \(h_{ii}\) is the leverage of
+observation \(i\) [@Cook:1982].
+
+## Source: `visstatisticsArchive/archive/20260523_visStatistics.Rmd`
+
+It fits the corresponding linear model and computes internally studentised
+residuals with `rstandard()`.
+
+The diagnostic panel shows residual distribution with a normal-density
+overlay, normal Q--Q behaviour, and residuals versus fitted values.
+The fourth plot is a scale-location plot for grouped central-tendency analyses
+(Route 1) or a plot of internally studentised residuals versus leverage for
+simple regression (Route 3).
+
+The package displays both the Shapiro--Wilk test and the Anderson--Darling test
+to check the normality of the internally studentised residuals
+\(r_i^* = e_i / (s\sqrt{1-h_{ii}})\), where \(e_i\) are the raw residuals,
+\(s^2\) is the residual mean square, and \(h_{ii}\) is the leverage of
+observation \(i\) [@Cook:1982].
+
+## Source: `visstatisticsArchive/archive/visStatistics_20260520_reference.Rmd`
+
+The package displays both the Shapiro--Wilk test and the Anderson--Darling test
+to check the normality of the studentised residuals
+\(r_i^* = e_i / (s\sqrt{1-h_{ii}})\), where \(e_i\) are the raw residuals,
+\(s^2\) is the residual mean square, and \(h_{ii}\) is the leverage of
+observation \(i\) [@Cook:1982].
+
+## Source: `visstatisticsArchive/archive/visStatistics-RJournalalt.Rmd`
+
+Both normality tests are applied to the internally studentised residuals
+\(r_i^* = e_i / (s\sqrt{1-h_{ii}})\), where \(e_i\) are the raw residuals,
+\(s^2\) is the residual mean square, and \(h_{ii}\) is the leverage of
+observation \(i\) [@Cook:1982].
+
+## Later related Cook's-distance wording
+
+### Source: `visstatisticsArchive/archive/20260523complete-visStatistics.Rmd`
+
+The package displays both the Shapiro--Wilk test and the Anderson--Darling
+test to check the normality of raw model residuals \(e_i\). The diagnostic
+panels show the constant-rescaled residuals \(z_i\) defined in
+Equation \@ref(eq:z-residual). In the Route 3 leverage panel,
+Cook's distance is displayed on this same scale as
+\(D_i = z_i^2h_{ii}/\{k(1-h_{ii})^2\}\), where \(h_{ii}\) is the \(i\)th
+diagonal element of the hat matrix [@Cook:1982].
+
+### Source: `visstatisticsArchive/20260525_before_glm_front_visStatistics.Rmd`
+
+For simple linear regression, the leverage plot visualises whether individual
+observations may exert disproportionate influence on the fitted line. Cook's
+distance combines residual size and leverage for this purpose [@Cook:1982].
+In `visStatistics`, the contours are drawn on the z residual scale used in the
+diagnostic panel. With \(z_i\) defined in Eq.\ \@ref(eq:z-residual), Cook's
+distance for observation \(i\) is
+
+\[
+D_i = \frac{z_i^2 h_i}{k(1-h_i)^2},
+\]
+
+with leverage
+
+\[
+h_i = \frac{1}{N} +
+      \frac{(x_i-\bar{x})^2}{\sum_{r=1}^{N}(x_r-\bar{x})^2}.
+\]
+
+Here \(x_i\) is the predictor value of observation \(i\), \(\bar{x}\) is the
+predictor mean, \(N\) is the total sample size, and \(k = 2\) is the number of
+fitted model parameters.
