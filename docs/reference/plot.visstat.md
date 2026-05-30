@@ -56,14 +56,14 @@ anova_path <- visstat(
 )
 
 plot(anova_path)
-#> Plot [1] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp5QrYKQ/glm_assumptions_yield_block.png
-#> Plot [2] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmp5QrYKQ/anova_yield_block.png
+#> Plot [1] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpiecuvg/glm_assumptions_yield_block.png
+#> Plot [2] stored in /var/folders/5c/n85wqnh95l50qbp3s9l0rp_w0000gn/T//Rtmpiecuvg/anova_yield_block.png
 
 # Interactive output: plot() lists available plots,
 # plot(obj, which = n) replays a specific one
 linreg <- visstat(trees$Height, trees$Girth)
 #> Warning: Statistical assumptions violated:
-#> Normality of residuals violated (Shapiro-Wilk p = 0.0305 )
+#> Normality of residuals violated (Shapiro-Wilk p = 0.0373 )
 #> Homoscedasticity violated (Breusch-Pagan p = 0.0158 )
 #> Analysis proceeded but interpret results cautiously.
 #> RECOMMENDATION: Consider exploring alternatives outside visstat() such as data transformations,
