@@ -11,7 +11,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/shhschilling/visStatistics/blob/HEAD/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/shhschilling/visStatistics/blob/master/DESCRIPTION)
 
 Schilling S (2026). *visStatistics: Automated Selection and
 Visualisation of Statistical Hypothesis Tests*. R package version 0.2.1,

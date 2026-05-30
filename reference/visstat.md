@@ -1,14 +1,11 @@
 # Wrapper for visstat_core Allowing Three Different Input Styles
 
-`visstat()` is a wrapper around
-[`visstat_core`](https://shhschilling.github.io/visStatistics/reference/visstat_core.md)
-that provides three alternative input styles: a formula interface, a
-standardised vector interface, and a backward-compatible data frame
-interface.
-[`visstat_core`](https://shhschilling.github.io/visStatistics/reference/visstat_core.md)
-defines the decision logic for statistical hypothesis testing and
-visualisation between two variables of class `"numeric"`, `"integer"`,
-or `"factor"`.
+`visstat()` is a wrapper around `visstat_core` that provides three
+alternative input styles: a formula interface, a standardised vector
+interface, and a backward-compatible data frame interface.
+`visstat_core` defines the decision logic for statistical hypothesis
+testing and visualisation between two variables of class `"numeric"`,
+`"integer"`, or `"factor"`.
 
 ## Usage
 
@@ -148,9 +145,8 @@ Fisher's exact) is used. The test result is invariant to variable order,
 but visualisations (e.g., axis layout, bar orientation) depend on the
 roles of `x` and `y`.
 
-This wrapper standardises the input and calls
-[`visstat_core`](https://shhschilling.github.io/visStatistics/reference/visstat_core.md),
-which selects and executes the appropriate test with visual output and
+This wrapper standardises the input and calls `visstat_core`, which
+selects and executes the appropriate test with visual output and
 assumption diagnostics.
 
 ## Note
@@ -162,8 +158,7 @@ plot window, or reducing the `cex` parameter.
 
 ## See also
 
-[`visstat_core`](https://shhschilling.github.io/visStatistics/reference/visstat_core.md)
-defining the decision logic, the package's vignette
+`visstat_core` defining the decision logic, the package's vignette
 [`vignette("visStatistics")`](https://shhschilling.github.io/visStatistics/articles/visStatistics.md)
 explaining the decision logic accompanied by illustrative examples, and
 the accompanying webpage

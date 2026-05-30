@@ -5,7 +5,7 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Changelog"></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Changelog"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -35,7 +35,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/shhschilling/visStatistics/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
@@ -51,7 +51,7 @@
 <li>
 <code>vis_anova()</code>, <code>vis_numeric()</code>, and <code>gh_letters()</code> are now internal helpers. Legacy normality helpers <code>vis_group_normality()</code> and <code>pooled_normality_test()</code> were archived and are no longer shipped.</li>
 <li>
-<code>vis_anova_assumptions()</code> remains as an internal deprecated wrapper for <code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code>, but is no longer exported or documented.</li>
+<code>vis_anova_assumptions()</code> remains as an internal deprecated wrapper for <code>vis_lm_assumptions()</code>, but is no longer exported or documented.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -59,9 +59,9 @@
 <div class="section level3">
 <h3 id="changes-in-decision-logic-0-2-0">Changes in decision logic<a class="anchor" aria-label="anchor" href="#changes-in-decision-logic-0-2-0"></a></h3>
 <ul><li><p><strong>Unified normality testing across all branches.</strong> The two-group case (t-test vs Wilcoxon) and the multi-group case (ANOVA vs Kruskal-Wallis) now share the same normality test: <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> applied to the internally studentised residuals from <code>lm(y ~ x)</code> via <code><a href="https://rdrr.io/r/stats/influence.measures.html" class="external-link">rstandard()</a></code>.</p></li>
-<li><p><strong>Variance homogeneity test changed from <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code> to <code><a href="../reference/levene.test.html">levene.test()</a></code>.</strong> The Brown-Forsythe Levene-type test (using the median) is more robust to non-normality than Bartlett’s test. The test now determines whether Student’s t-test (<code>t.test(var.equal = TRUE)</code>) or Welch’s t-test is used in the two-group case, and whether <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> or <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> is used in the multi-group case.</p></li>
+<li><p><strong>Variance homogeneity test changed from <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code> to <code>levene.test()</code>.</strong> The Brown-Forsythe Levene-type test (using the median) is more robust to non-normality than Bartlett’s test. The test now determines whether Student’s t-test (<code>t.test(var.equal = TRUE)</code>) or Welch’s t-test is used in the two-group case, and whether <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> or <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> is used in the multi-group case.</p></li>
 <li><p><strong>Large-sample threshold changed from 30 to 50 per group.</strong> When every group exceeds 50 observations, normality testing is skipped and parametric tests are applied directly (justified by the central limit theorem).</p></li>
-<li><p><strong>Post-hoc test selection.</strong> When <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> (Welch’s ANOVA) is used for unequal variances, <code><a href="../reference/games.howell.html">games.howell()</a></code> is the appropriate post-hoc test, as it does not assume equal variances. <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> remains for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> (Student’s ANOVA).</p></li>
+<li><p><strong>Post-hoc test selection.</strong> When <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> (Welch’s ANOVA) is used for unequal variances, <code>games.howell()</code> is the appropriate post-hoc test, as it does not assume equal variances. <code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> remains for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> (Student’s ANOVA).</p></li>
 <li><p><strong>Rank correlation (<code>correlation = TRUE</code>).</strong> Selects the most appropriate rank correlation for the data type: Spearman’s <span class="math inline">\(\rho\)</span> for two numeric variables, Kendall’s <span class="math inline">\(\tau_b\)</span> when both variables are ordered factors. This is the only test decision not made automatically; it requires an explicit user choice.</p></li>
 </ul></div>
 <div class="section level3">
@@ -72,30 +72,30 @@
 <li>
 <p><strong>New exported functions:</strong></p>
 <ul><li>
-<code><a href="../reference/levene.test.html">levene.test()</a></code>: Brown-Forsythe Levene-type test for homogeneity of variance (center = median), mimicking the default behaviour of <code>leveneTest()</code> in the <code>car</code> package.</li>
+<code>levene.test()</code>: Brown-Forsythe Levene-type test for homogeneity of variance (center = median), mimicking the default behaviour of <code>leveneTest()</code> in the <code>car</code> package.</li>
 <li>
-<code><a href="../reference/bp.test.html">bp.test()</a></code>: Breusch-Pagan test for heteroscedasticity in linear regression models.</li>
+<code>bp.test()</code>: Breusch-Pagan test for heteroscedasticity in linear regression models.</li>
 <li>
-<code><a href="../reference/games.howell.html">games.howell()</a></code>: Games-Howell post-hoc test for pairwise comparisons following Welch’s ANOVA.</li>
+<code>games.howell()</code>: Games-Howell post-hoc test for pairwise comparisons following Welch’s ANOVA.</li>
 <li>
-<code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code>: Renamed from <code>vis_anova_assumptions()</code>, now provides unified assumption diagnostics for the general linear model (t-test, ANOVA, regression).</li>
+<code>vis_lm_assumptions()</code>: Renamed from <code>vis_anova_assumptions()</code>, now provides unified assumption diagnostics for the general linear model (t-test, ANOVA, regression).</li>
 </ul></li>
 </ul></div>
 <div class="section level3">
 <h3 id="breaking-changes-0-2-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0"></a></h3>
 <ul><li>
-<code>vis_anova_assumptions()</code> has been removed and replaced by <code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code>. The new function handles both ANOVA and regression diagnostics (controlled by the <code>regression</code> parameter). For regression, it shows a Residuals vs Leverage plot (with Cook’s distance contours) and the Breusch-Pagan test instead of the Bartlett test.</li>
+<code>vis_anova_assumptions()</code> has been removed and replaced by <code>vis_lm_assumptions()</code>. The new function handles both ANOVA and regression diagnostics (controlled by the <code>regression</code> parameter). For regression, it shows a Residuals vs Leverage plot (with Cook’s distance contours) and the Breusch-Pagan test instead of the Bartlett test.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="deprecated-0-2-0">Deprecated<a class="anchor" aria-label="anchor" href="#deprecated-0-2-0"></a></h3>
 <ul><li>
-<code>vis_anova_assumptions()</code> is provided as a deprecated wrapper for <code><a href="../reference/vis_lm_assumptions.html">vis_lm_assumptions()</a></code>. It will be removed in a future version.</li>
+<code>vis_anova_assumptions()</code> is provided as a deprecated wrapper for <code>vis_lm_assumptions()</code>. It will be removed in a future version.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="improvements-0-2-0">Improvements<a class="anchor" aria-label="anchor" href="#improvements-0-2-0"></a></h3>
 <ul><li>Diagnostic plot title now reads “Linear model assumptions” with all test p-values on two lines.</li>
 <li>
-<code><a href="../reference/plot.visstat.html">plot.visstat()</a></code> method added to the <code>visstat</code> class.</li>
+<code>plot.visstat()</code> method added to the <code>visstat</code> class.</li>
 <li>Diagnostic plots for normality now include a histogram overlaid with the normal density curve.</li>
 <li>All assumption plots are saved with the prefix “assumption”.</li>
 </ul></div>
@@ -133,9 +133,9 @@
 <ul><li>The <code><a href="../reference/visstat.html">visstat()</a></code> function now returns an object of class <code>"visstat"</code>, enabling consistent method dispatch.</li>
 <li>New S3 methods added:
 <ul><li>
-<code><a href="../reference/print.visstat.html">print.visstat()</a></code> – shows a concise summary,</li>
+<code>print.visstat()</code> – shows a concise summary,</li>
 <li>
-<code><a href="../reference/summary.visstat.html">summary.visstat()</a></code> – prints the full test and post hoc summaries.</li>
+<code>summary.visstat()</code> – prints the full test and post hoc summaries.</li>
 </ul></li>
 </ul></div>
 </div>
