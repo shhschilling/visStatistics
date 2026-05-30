@@ -22,6 +22,8 @@ header-includes:
   - \usepackage{array}
   - \usepackage{mathrsfs}
 bibliography: REFERENCES.bib
+pkgdown:
+  as_is: true
 vignette: >
   %\VignetteEncoding{UTF-8}
   %\VignetteIndexEntry{visStatistics: The right test, visualised}
@@ -106,7 +108,7 @@ For group comparisons, packages with related scope include `compareGroups` [@Sub
 For tests within the  general linear-model framework
 like Student's t-test or  Fisher's ANOVA and linear regression,
 the normality assumption concerns the model residual errors  (each observation minus its predicted value), but none of these packages checks normality on the residuals of the fitted linear model.
-Instead,  `autotestR` and `boxTest` test the response separately within groups, whereas `automatedtests` and `compareGroups` the response variable as a whole, ignoring the grouping.
+Instead,  `autotestR` and `boxTest` test the response separately within groups, whereas `automatedtests` and `compareGroups` test the response variable as a whole, ignoring the grouping.
 
 Among the reviewed automated test-selection packages, `visStatistics` is thus the only one that bases the central-tendency route on explicit residual diagnostics from the common linear model rather than on marginal or groupwise normality checks.
 The package is deliberately limited to common two-variable settings in which the route can be visualised and audited: pretesting where applied, residual-based diagnostics for the linear-model branch, the selected test, full test statistics, effect size, result plots, and post-hoc comparisons where required.
@@ -114,12 +116,12 @@ The package is deliberately limited to common two-variable settings in which the
 
 # Purpose of the vignette
 
-The purpose  of this vignette is two-fold: On the one hand side it explains  the
+The purpose  of this vignette is two-fold: On the one hand it explains  the
 decision logic of `visstat()` (Section \@ref(sec:decision)) and illustrates it
 on examples for each branch of the decision logic (Section \@ref(sec:examples)).
-On the other side it serves as a text-book like reference of all implmented
-tests, correlationd and effect-sizes (Appendices \@ref(sec:tests)--\@ref(sec:effect-size)),
-thus that the user easily understands the output with out having to consult the
+On the other side it serves as a text-book like reference of all implemented
+tests, correlations and effect-sizes (Appendices \@ref(sec:tests)--\@ref(sec:effect-size)),
+so that the user easily understands the output without having to consult the
 code or  literature.
 
 # Package overview
@@ -149,7 +151,7 @@ From this single entry point, the package automatically selects among the implem
 `t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`, `kruskal.test()`, `chisq.test()`, `fisher.test()`, `lm()`.
 
 The underlying selection algorithm is detailed in Section \@ref(sec:decision).
-The function returns an object of class `"visstat"` with `print()`, `summary()`, and `plot()` methods described in Section \@ref(sec:visstat-methods)
+The function returns an object of class `"visstat"` with `print()`, `summary()`, and `plot()` methods described in Section \@ref(sec:visstat-methods).
 
 Among the returned components, `visstat()` reports the p-value of the selected test and an `effect_size` field (Section \@ref(sec:p-values-effect-sizes)).
 
@@ -216,7 +218,7 @@ where $Y_i$ is the response for observation $i$, $x_{ij}$ is the value of predic
 The model error terms $\varepsilon_i$ are assumed to be independent and normally distributed with expectation 0 and constant variance $\sigma^2$, in short $$\varepsilon_i \sim \mathscr{N}(0, \sigma^2),
 \quad\mathrm{mutually\; independent} $$
 
-The variance $\sigma^2$ represents the variation of the data on the regression , $Var(Y_i)=\sigma^2$, as both the (unknown) model parameters as well as predictors are not random. 
+The variance $\sigma^2$ represents the variation of the data on the regression, $Var(Y_i)=\sigma^2$, as both the (unknown) model parameters and predictors are not random.
 
 
 From Eq. 
@@ -248,7 +250,7 @@ where $y_i$ is the observed value and $\hat{y}_i$ the fitted value for observati
 \hat{y}_i = b_0 + b_1 x_{i1} + \cdots +
       b_{k-1} x_{i,k-1}
 \end{equation}
- with the estimates values $b_0, b_1, \ldots, b_{k-1}$ for the unknown model parameters $\beta_0, \beta_1, \ldots, \beta_{k-1}$. 
+ with the estimated values $b_0, b_1, \ldots, b_{k-1}$ for the unknown model parameters $\beta_0, \beta_1, \ldots, \beta_{k-1}$.
 
 
 
@@ -337,7 +339,7 @@ There, `visStatistics` uses its package implementation `bp.test()` of the Breusc
 
 ### Visualisation of the assumptions of the general linear model {#sec:graphical}
 
-Since algorithmic logic based on p-values of assumptions tests, cannot replace expert visual judgment,  
+Since algorithmic logic based on p-values of assumption tests cannot replace expert visual judgment,
 `visstat()` *vis*ualises the assumptions of the underlying linear model for the selection of tests of central tendency (Route 1) and for simple linear regression (`correlation = FALSE`) (Route 3).
 
 
@@ -373,7 +375,7 @@ Within the selected route, additional rules determine the selected test and outp
 
 ### Route 1: Numeric response, categorical predictor {#sec:route-1}
 
-A numeric response with a categorical predictor with $k$ "levels" ( in the following "groups" ) asks whether the response differs between groups.
+A numeric response with a categorical predictor with $k$ "levels" (in the following "groups") asks whether the response differs between groups.
 <!-- In the central-tendency branch, the diagnostic panel (see --> <!-- @ref(sec:graphical)) is always generated as first visual output. -->
 
 Figure \@ref(fig:decision-tree) expands the routing logic for tests of central tendencies.
@@ -384,7 +386,7 @@ knitr::include_graphics("figures/decision_tree.png")
 
 The first split checks group size: 
 
-When all group-specific sample sizes are greater than 50, the sampling distribution of the group means is treated as sufficiently close to normal by the central limit theorem [@Lumley:2002]. In this case, the test selection is independent of the residual-normality p-values, albeit the corresponding p-values area still reported and displayd in the diagnostic panels (Setion \@ref(sec:graphical)).
+When all group-specific sample sizes are greater than 50, the sampling distribution of the group means is treated as sufficiently close to normal by the central limit theorem [@Lumley:2002]. In this case, the test selection is independent of the residual-normality p-values, albeit the corresponding p-values are still reported and displayed in the diagnostic panels (Section \@ref(sec:graphical)).
 
  <!-- In this casel, formal testing of residual normality of the general linear model does not steer test selection to avoid type I errors caused by negligible deviations from normality in large samples [@Ghasemi:2012; @Fagerland:2012; @Shatz:2024],  albeit the corresponding p-values area still displayd in the diagnostic panels (Section \@ref(sec:graphical)) and reported.  -->
 This avoids switching to rank-based tests because of negligible residual-normality deviations in large samples [@Ghasemi:2012; @Fagerland:2012; @Shatz:2024].
@@ -448,7 +450,7 @@ For ordered--ordered and numeric--numeric input vectors, the user can instead re
 Both optional analyses test monotone association and are computed by `cor.test()`: Kendall's $\tau_b$ (Eq. \@ref(eq:kendall-tau-b)) with `method = "kendall", exact = FALSE` for two ordered variables, and Spearman's $\rho$ (Eq. \@ref(eq:spearman-rho)) with `method = "spearman"` for two numeric variables.
 Kendall's $\tau_b$ corrects for ties present with few ordered levels [@Agresti:2010; @Xu:2013].
 
-Note, that for numeric--numeric input, Pearson correlation is not implemented as a separate optional mode as in simple linear regression with an intercept, the two-sided test of zero slope and the two-sided Pearson correlation test return the same $p$-value.
+Note that for numeric--numeric input, Pearson correlation is not implemented as a separate optional mode as in simple linear regression with an intercept, the two-sided test of zero slope and the two-sided Pearson correlation test return the same $p$-value.
 
 <!-- Spearman's $\rho$ therefore -->
 
@@ -645,7 +647,7 @@ The following example shows a Gamma generalised linear model outside `visstat()`
 ### Model exploration outside `visstat()` {#sec:model-comparisons}
 
 As a model outside of `visstat()`, we fit a Gamma generalised linear model with log link.
-The Gamma family is suited here because Ozone is strictly positive and continuous, and its variance grows with the fitte values — the structure detected by the Breusch--Pagan test.
+The Gamma family is suited here because Ozone is strictly positive and continuous, and its variance grows with the fitted values — the structure detected by the Breusch--Pagan test.
 The log link guarantees positive fitted values.
 
 ```{r}
@@ -914,12 +916,11 @@ Taken together, these scope decisions define `visStatistics` as a rapid, inspect
 
 # Conclusion
 
-Many routine statistical analysis reduce to a relatively small number of tests. Under those tests parametric tests like t-tests, analysis of variance or regression belong to the family of general linear models, which's  assumptions are frequently not tested at all or not tested properly [@Hoekstra:2012; @Ernst:2017; @Jones:2025; @Kery:2003].
+Many routine statistical analyses reduce to a relatively small number of tests. Under those tests parametric tests like t-tests, analysis of variance or regression belong to the family of general linear models, whose assumptions are frequently not tested at all or not tested properly [@Hoekstra:2012; @Ernst:2017; @Jones:2025; @Kery:2003].
 
 
-`visStatistics`  addresses this gap: Its automated test selection relying on the data type, size and p-values of assumption tests of the model residuals  is fully transparent, but addresses the inherent shortcomings of test selection based on the p-values by assumptions tests [@Lumley:2002; @Fagerland:2012; @Franc:2025; @Kozak:2018; @Shatz:2024]  by supplementing the output with diagnostic plots of the assumption tests. 
+`visStatistics`  addresses this gap: Its automated test selection relying on the data type, size and p-values of assumption tests of the model residuals  is fully transparent, but addresses the inherent shortcomings of test selection based on the p-values of assumption tests [@Lumley:2002; @Fagerland:2012; @Franc:2025; @Kozak:2018; @Shatz:2024]  by supplementing the output with diagnostic plots of the assumption tests.
 
-.
 Its value is not that it removes the user's statistical judgment, but that it exposes the assumptions, routing decisions, effect sizes, and plots that should inform that judgment.
 The package therefore serves as a transparent entry point for routine two-variable analyses, leaving model-specific extensions to the analyst.
 

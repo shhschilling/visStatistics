@@ -86,7 +86,7 @@ set up plot capture when `capture_env` is provided.
 openGraphCairo(fileName = "normal_dist", type = "pdf", fileDirectory = tempdir())
 plot(rnorm(4000), rnorm(4000), col = "#ff000018", pch = 19, cex = 2)
 dev.off() # creates a file 'normal_dist.pdf' in the directory specified in fileDirectory
-#> agg_record_b6ca72e8f732
+#> agg_record_ce17459f50ec
 #>                       2
 # ## remove the plot from fileDirectory
 file.remove(file.path(tempdir(), "normal_dist.pdf"))
