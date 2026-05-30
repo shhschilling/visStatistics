@@ -86,7 +86,12 @@ selected_test_title <- function(result) {
 #'   \item Normality: \code{shapiro.test()} and \code{ad.test()}
 #'   \item Heteroscedasticity: \code{bartlett.test()} and \code{levene.test()} and \code{bp_test()}
 #' }
-#' 
+#'
+#' For the general linear model the Shapiro-Wilk, Anderson-Darling, Levene and
+#' Bartlett tests are applied to the internally studentised residuals
+#' r_i = e_i / (SE_res sqrt(1 - h_i)), which remove the leverage-dependent
+#' variance of the raw residuals (Var(e_i) = sigma^2 (1 - h_i)).
+#'
 #' Implemented post hoc tests:
 #' \itemize{
 #'   \item \code{TukeyHSD()} for \code{aov()} 
@@ -328,13 +333,18 @@ visstat_core <- function(dataframe,
       all_groups_large <- all(counts_per_level > 50)
       current_model <- lm(samples ~ fact)
       raw_residuals <- residuals(current_model)
-      
+      # Internally studentised residuals for the normality gate, matching the
+      # residual scale shown by vis_lm_assumptions().
+      scaled_residuals <- rstandard(current_model)
+      if (any(!is.finite(scaled_residuals)))
+        scaled_residuals <- raw_residuals / max(sigma(current_model), 1e-8)
+
       if (all_groups_large) {
-        normality_met <- TRUE 
+        normality_met <- TRUE
       } else if (length(raw_residuals) > 5000) {
         normality_met <- TRUE
       } else {
-        normality_met <- shapiro.test(raw_residuals)$p.value >= alpha
+        normality_met <- shapiro.test(scaled_residuals)$p.value >= alpha
       }
     }
     
@@ -363,11 +373,17 @@ visstat_core <- function(dataframe,
                                                    fileDirectory = plotDirectory, capture_env = capture_env))
     } else {
       # --- PARAMETRIC BRANCH ---
-      if (!exists("raw_residuals", inherits = FALSE)) {
+      if (!exists("scaled_residuals", inherits = FALSE)) {
         current_model <- lm(samples ~ fact)
         raw_residuals <- residuals(current_model)
+        scaled_residuals <- rstandard(current_model)
+        if (any(!is.finite(scaled_residuals)))
+          scaled_residuals <- raw_residuals / max(sigma(current_model), 1e-8)
       }
-      var_p <- levene.test(raw_residuals, fact)$p.value
+      # Internally studentised residuals remove the leverage-induced
+      # heteroscedasticity of the raw residuals (Var(e_i) = sigma^2 (1 - h_i)),
+      # matching the |r_i| spread panel of vis_lm_assumptions().
+      var_p <- levene.test(scaled_residuals, fact)$p.value
       if (nlevels(fact) == 2) {
         # Final t-test execution
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 

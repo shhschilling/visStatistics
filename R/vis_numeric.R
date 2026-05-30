@@ -118,13 +118,18 @@ vis_numeric <- function(y,
     reg <- lm(y ~ x)
     reg_summary <- summary(reg)
     raw_residuals <- residuals(reg)
-    
+    # Internally studentised residuals for the normality test, matching the
+    # residual scale shown by vis_lm_assumptions().
+    scaled_residuals <- rstandard(reg)
+    if (any(!is.finite(scaled_residuals)))
+      scaled_residuals <- raw_residuals / max(sigma(reg), 1e-8)
+
     # Check regression assumptions
     assumptions <- list()
-    
+
     # 1. Normality of residuals
     if (n >= 3 && n <= 5000) {
-      assumptions$shapiro_residuals <- shapiro.test(raw_residuals)
+      assumptions$shapiro_residuals <- shapiro.test(scaled_residuals)
       if (assumptions$shapiro_residuals$p.value < alpha) {
         warnings_list <- c(warnings_list, 
                            paste("Normality of residuals violated (Shapiro-Wilk p =", 

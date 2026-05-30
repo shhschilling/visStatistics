@@ -19,7 +19,10 @@
 #' }
 #'
 #' @details
-#' The function first tests for homogeneity of variance using Levene's test.
+#' The function first tests for homogeneity of variance using Levene's and
+#' Bartlett's tests applied to the internally studentised residuals
+#' r_i = e_i / (SE_res sqrt(1 - h_i)), which remove the leverage-dependent
+#' variance of the raw residuals (Var(e_i) = sigma^2 (1 - h_i)).
 #' If variances are equal (p > alpha), Fisher's one-way ANOVA with Tukey's HSD
 #' post-hoc is performed. If variances are unequal (p <= alpha), Welch's
 #' one-way ANOVA with Games-Howell post-hoc is performed.
@@ -74,12 +77,17 @@ vis_anova <- function(samples,
   # tests
   an <- aov(samples ~ fact)
   raw_residuals <- residuals(an)
+  # Internally studentised residuals remove the leverage-induced
+  # heteroscedasticity of the raw residuals (Var(e_i) = sigma^2 (1 - h_i)).
+  scaled_residuals <- rstandard(an)
+  if (any(!is.finite(scaled_residuals)))
+    scaled_residuals <- raw_residuals / max(sigma(an), 1e-8)
   summaryAnova <- summary(an)
   oneway <- oneway.test(samples ~ fact)
   # check for homogeneity
-  bartlett_test <- bartlett.test(raw_residuals ~ fact)
+  bartlett_test <- bartlett.test(scaled_residuals ~ fact)
   p_bart <- bartlett_test$p.value
-  levene_test <- levene.test(raw_residuals, fact)
+  levene_test <- levene.test(scaled_residuals, fact)
   p_levene <- levene_test$p.value
   
   

@@ -117,7 +117,7 @@ then separates equal-variance tests from Welch-type tests.
 
 ## Student's t-test and Fisher's one-way ANOVA
 
-### Student's t-test {#sec:tt}
+### Student's t-test `t.test(..., var.equal = TRUE)`{#sec:tt}
 
 Student's t-test tests the null hypothesis that the means of two
 unpaired groups are equal.
@@ -140,7 +140,7 @@ with $s_1^2$ and $s_2^2$ the sample variances.
 The statistic follows a $t$-distribution with
 $\nu = n_1 + n_2 - 2$ degrees of freedom.
 
-### Fisher's one-way ANOVA {#sec:fisher-aov}
+### Fisher's one-way ANOVA `aov()`{#sec:fisher-aov}
 
 Fisher's one-way ANOVA generalises the mean comparison to more than two
 groups and tests the null hypothesis that the means of
@@ -202,7 +202,7 @@ with \(k\) groups and \(N-k\) residual degrees of freedom.
 Welch's heteroscedastic ANOVA generalises the unequal-variance mean
 comparison to more than two groups.
 
-### Welch's t-test {#sec:welch-tt}
+### Welch's t-test `t.test()`{#sec:welch-tt}
 
 Welch's t-test (`t.test(..., var.equal = FALSE)`) compares the means of
 two independent groups when homogeneous variances cannot be assumed.
@@ -228,7 +228,7 @@ equation [@Welch:1947; @Satterthwaite:1946]:
 Welch's methods outperform their classical counterparts when variances
 differ [@Moser:1992; @Fagerland:2009; @Delacre:2017].
 
-### Welch's heteroscedastic ANOVA {#sec:welch-aov}
+### Welch's heteroscedastic ANOVA `oneway.test()`{#sec:welch-aov}
 
 Welch's heteroscedastic ANOVA (`oneway.test()`) generalises Welch's
 t-test to more than two groups by down-weighting groups with large
@@ -253,7 +253,7 @@ mean. The numerator degree of freedom is $k-1$; the denominator degree
 of freedom is the Satterthwaite-type approximation returned by
 `oneway.test()`.
 
-#### Post-hoc comparison {#sec:gh}
+#### Post-hoc comparison `games.howell()`{#sec:gh}
 
 Post-hoc comparisons use the package implementation `games.howell()`
 [@Games:1976].
@@ -288,7 +288,7 @@ The Wilcoxon rank-sum test is a two-group rank-based location test;
 Kruskal--Wallis generalises this location comparison to more than two
 groups.
 
-### Wilcoxon rank-sum test {#sec:wilc}
+### Wilcoxon rank-sum test `wilxoc.test()`{#sec:wilc}
 
 The two-sample Wilcoxon rank-sum test, also known as the Mann--Whitney
 test, tests for a difference in location between two independent
@@ -317,7 +317,7 @@ An exact $p$-value is computed when both groups contain fewer than
 50 observations and the data contain no ties; otherwise a normal
 approximation with continuity correction is used.
 
-### Kruskal--Wallis test {#sec:kw}
+### Kruskal--Wallis test `kruskal.test()`{#sec:kw}
 
 The Kruskal--Wallis test compares group distributions based on ranked
 values and tests the null hypothesis that the groups come from the same
@@ -338,7 +338,7 @@ $\bar{R}_i$ is the average rank of group $i$, $N$ is the total sample
 size, and $\bar{R} = (N+1)/2$ is the expected average rank under the
 null hypothesis. The statistic approximately follows $\chi^2(k-1)$.
 
-#### Post-hoc comparison {#sec:pairwise-wilcox}
+#### Post-hoc comparison `pairwise.wilcox.test()`{#sec:pairwise-wilcox}
 
 `pairwise.wilcox.test()` compares each pair of factor levels via the
 Wilcoxon rank-sum test on ranks rather than means.
@@ -352,7 +352,7 @@ the variables are independent using Pearson's \(\chi^2\) test or
 Fisher's exact test, depending on expected cell counts following
 Cochran's rule [@Cochran:1954].
 
-## Pearson's $\chi^2$ test {#sec:chi}
+## Pearson's $\chi^2$ test `chisq.test()`{#sec:chi}
 
 Pearson's \(\chi^2\) test evaluates the null hypothesis that two
 categorical variables are independent.
@@ -387,7 +387,7 @@ default.
 
 
 
-## Fisher's exact test {#sec:fisher-exact-test}
+## Fisher's exact test `fisher.test()` {#sec:fisher-exact-test}
 
 Fisher's exact test (`fisher.test()`) is applied when Cochran's rule
 [@Cochran:1954] is violated. The test calculates an exact $p$-value by
@@ -445,7 +445,7 @@ and its confidence interval.
 
 Rank correlations are used when `correlation = TRUE`.
 
-## Kendall rank correlation {#sec:tau}
+## Kendall rank correlation `cor.test(..., method="kendall")`{#sec:tau}
 
 Kendall's \(\tau_b\) tests the null hypothesis of no monotone
 association between two ordered variables.
@@ -474,7 +474,7 @@ Spearman's $\rho$ in this setting [@Agresti:2010].
 exact = FALSE)` and reports $\tau_b$, the asymptotic test statistic
 $z = \tau_b / \operatorname{SE}(\tau_b)$, and the two-sided $p$-value.
 
-## Spearman rank correlation {#sec:rho}
+## Spearman rank correlation `cor.test(..., method="spearman")` {#sec:rho}
 
 For two numeric variables with `correlation = TRUE`, `visstat()` calls
 `cor.test(x, y, method = "spearman")` to test for a monotone
@@ -511,6 +511,8 @@ slope and the two-sided test of zero Pearson correlation return the same
 $p$-value. Pearson correlation would therefore not add a separate
 inferential route to the default regression branch.
 
+
+<!--
 # Influence diagnostics: Cook's distance {#sec:cooks-distance}
 
 For simple linear regression, the leverage plot visualises whether individual
@@ -536,15 +538,16 @@ h_i = \frac{1}{N} +
 Here $x_i$ is the predictor value of observation $i$, $\bar{x}$ is the
 predictor mean, $N$ is the total sample size, and $k = 2$ is the number of
 fitted model parameters.
+-->
 
-# Effect size {#sec:effect-size}
+# Effect size `effect_size()` {#sec:effect-size}
 
 
 
-The effect size  takes the value zero when the null hypothesis is true and some other, test- specific non-zero value when the null hypothesis is false, it is an an index of degree of departure from the null hypothesis [@Cohen:2018; page 10]
+The effect size  takes the value zero when the null hypothesis is true and some other, test- specific non-zero value when the null hypothesis is false, it is an an index of degree of departure from the null hypothesis [@Cohen:2013; page 10]
 
 While  statistical significance is strongly affected by sample size, effect-size, estimates are intended to support comparisons across studies regardless of
-sample size [@Levine:2002]   Effect size is therefore an important determinant of power or required sample size or both  [@Cohen:2018; page 10].
+sample size [@Levine:2002]   Effect size is therefore an important determinant of power or required sample size or both  [@Cohen:2013; page 10].
 
 To avoid additional package dependencies, `effect_size()` 
 extracts, where possible, the effect sizes 
@@ -575,56 +578,56 @@ if (knitr::is_latex_output()) {
 \textbf{Analysis} & \textbf{Effect size} & \textbf{Formula} &
 \textbf{Source} \\
 \hline
-Student's $t$-test, Eq.~\eqref{eq:student-t} &
+Student's $t$-test &
 Hedges' $g_{s_p}$ & $g_{s_p}=J(N-2)(\bar{x}_1-\bar{x}_2)/s_p$ &
-\tbdoi{10.3102/10769986006002107}{Hedges, 1981, pp. 110, 113--114} \\
+\tbdoi{10.3102/10769986006002107}{Hedges, 1981} \\
 \hline
-Welch's $t$-test, Eq.~\eqref{eq:welch-t} &
+Welch's $t$-test &
 Hedges' $g_{s^{*}}$ & $g_{s^{*}}=J(\nu^{*})(\bar{x}_1-\bar{x}_2)/s^{*}$ &
-\tbdoi{10.31234/osf.io/tu6mp}{Delacre et al., 2021, Eq.~16} \\
+\tbdoi{10.31234/osf.io/tu6mp}{Delacre et al., 2021} \\
 \hline
-Wilcoxon rank-sum, Eq.~\eqref{eq:wilcoxon-w} &
+Wilcoxon rank-sum &
 rank-biserial $r$ & $r=2W/(n_1n_2)-1$ &
-\tbdoi{10.2466/11.IT.3.1}{Kerby, 2014} \\
+\cite{Kerby:2014} \\
 \hline
-Fisher's ANOVA, Eq.~\eqref{eq:fisher-f} & $\omega^2$ &
+Fisher's ANOVA & $\omega^2$ &
 $\nu_1(F-1)/(\nu_1F+\nu_2+1)$ &
 \tbdoi{10.1016/j.jesp.2017.09.004}{Albers and Lakens, 2018, Appendix A} \\
 \hline
-Welch's ANOVA, Eq.~\eqref{eq:welch-f} &
+Welch's ANOVA &
 $\omega^2$ (approx.) &
 $\nu_1(F_W-1)/(\nu_1F_W+\nu_2+1)$ &
 \tbdoi{10.1016/j.jesp.2017.09.004}{F-form from Albers and Lakens, 2018, Appendix A} \\
 \hline
-Kruskal--Wallis, Eq.~\eqref{eq:kruskal-h} &
+Kruskal--Wallis &
 $\eta_H^2$ & $(H-k+1)/(N-k)$ &
-\tbdoi{10.1073/pnas.21.9.554}{Kelley, 1935, pp. 556--557} \\
+\tbdoi{10.1073/pnas.21.9.554}{Kelley, 1935} \\
 \hline
-Simple linear regression, Section~\ref{sec:lin-reg} &
+Simple linear regression &
 $R^2$ &
-$R^2=1-SS_\text{res}/SS_\text{tot}$, Eq.~\eqref{eq:r-squared} &
+$R^2=1-SS_\text{res}/SS_\text{tot}$ &
 \texttt{summary(lm())\$r.squared} \\
 \hline
-Spearman, Eq.~\eqref{eq:spearman-rho} &
+Spearman &
 $\rho$ &
 $\rho=r(\operatorname{rank}(x),\operatorname{rank}(y))$ &
 \texttt{cor.test()} \\
 \hline
-Kendall, Eq.~\eqref{eq:kendall-tau-b} &
+Kendall &
 $\tau_b$ &
 $\tau_b=(C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$ &
 \texttt{cor.test()} \\
 \hline
-Pearson $\chi^2$ ($R\times C$), Eq.~\eqref{eq:pearson-chi} &
+Pearson $\chi^2$ ($R\times C$) &
 Cramer's $V$ &
 $V_{R\times C}=\sqrt{\chi^2/\left(N\left(\min(R,C)-1\right)\right)}$ &
 \tbdoi{10.4324/9780203771587}{Cohen 2013, p. 223} \\
 \hline
-Pearson $\chi^2$ ($2\times2$), Eq.~\eqref{eq:pearson-chi} &
-$\phi$ & $V_{2\times2}=\sqrt{\chi^2/N}$ &
+Pearson $\chi^2$ ($2\times2$) &
+$\phi$ & $\phi=\sqrt{\chi^2/N}$ &
 \tbdoi{10.4324/9780203771587}{Cohen 2013, p. 223} \\
 \hline
-Fisher's exact ($2\times2$), Eq.~\eqref{eq:fisher-exact} &
+Fisher's exact ($2\times2$) &
 odds ratio &
 $\widehat{\mathrm{OR}}=n_{11}n_{22}/(n_{12}n_{21})$ &
 \texttt{fisher.test()} \\
@@ -639,18 +642,18 @@ Table: (\#tab:effect-size-formulae) Effect sizes returned by `effect_size()`.
 
 | Analysis | Effect size | Formula | Source |
 |:---|:---|:---|:---|
-| [Student's $t$-test](#eq:student-t) | Hedges' $g_{s_p}$ (pooled) | $g_{s_p} = J(N-2)\cdot(\bar{x}_1-\bar{x}_2)/s_p$ | [Hedges 1981, pp. 110, 113--114](https://doi.org/10.3102/10769986006002107) |
-| [Welch's $t$-test](#eq:welch-t) | Hedges' $g_{s^{*}}$ (non-pooled) | $g_{s^{*}} = J(\nu^{*})\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$ | [Delacre et al. 2021, Eq. 16](https://doi.org/10.31234/osf.io/tu6mp) |
-| [Wilcoxon rank-sum](#eq:wilcoxon-w) | rank-biserial $r$ | $r = 2\cdot W/(n_1\cdot n_2) - 1$ | [Kerby 2014](https://doi.org/10.2466/11.IT.3.1) |
-| [Fisher's ANOVA](#eq:fisher-f) | $\omega^2$ | $\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)$ | [Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
-| [Welch's ANOVA](#eq:welch-f) | $\omega^2$ (approx.) | $\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)$ | [F-form from Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
-| [Kruskal--Wallis](#eq:kruskal-h) | $\eta_H^2$ | $(H - k + 1)/(N - k)$ | [Kelley 1935, pp. 556--557](https://doi.org/10.1073/pnas.21.9.554) |
-| [Simple linear regression](#sec:lin-reg) | $R^2$ | $R^2 = 1 - SS_\text{res}/SS_\text{tot}$, Eq.~\@ref(eq:r-squared) | `summary(lm())$r.squared` |
-| [Spearman](#eq:spearman-rho) | $\rho$ | $\rho = r(\operatorname{rank}(x),\operatorname{rank}(y))$, Eq.~\@ref(eq:spearman-rho) | `cor.test()$estimate` |
-| [Kendall](#eq:kendall-tau-b) | $\tau_b$ | $\tau_b = (C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$, Eq.~\@ref(eq:kendall-tau-b) | `cor.test()$estimate` |
-| [Pearson $\chi^2$ ($R\times C$)](#eq:pearson-chi) | Cramér's $V$ | $V_{R\times C} = \sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}$ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
-| [Pearson $\chi^2$ ($2\times 2$)](#eq:pearson-chi) | $\phi$ | $\phi = V_{2\times 2} = \sqrt{\chi^2/N}$ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
-| [Fisher's exact ($2\times 2$)](#eq:fisher-exact) | odds ratio | $\widehat{\mathrm{OR}} = n_{11}n_{22}/(n_{12}n_{21})$, Eq.~\@ref(eq:odds-ratio) | `fisher.test()$estimate` |
+| Student's $t$-test | Hedges' $g_{s_p}$ (pooled) | $g_{s_p} = J(N-2)\cdot(\bar{x}_1-\bar{x}_2)/s_p$ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
+| Welch's $t$-test | Hedges' $g_{s^{*}}$ (non-pooled) | $g_{s^{*}} = J(\nu^{*})\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$ | [Delacre et al. 2021](https://doi.org/10.31234/osf.io/tu6mp) |
+| Wilcoxon rank-sum | rank-biserial $r$ | $r = 2\cdot W/(n_1\cdot n_2) - 1$ | [@Kerby:2014] |
+| Fisher's ANOVA | $\omega^2$ | $\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)$ | [Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
+| Welch's ANOVA | $\omega^2$ (approx.) | $\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)$ | [F-form from Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
+| Kruskal--Wallis | $\eta_H^2$ | $(H - k + 1)/(N - k)$ | [Kelley 1935](https://doi.org/10.1073/pnas.21.9.554) |
+| Simple linear regression | $R^2$ | $R^2 = 1 - SS_\text{res}/SS_\text{tot}$ | `summary(lm())$r.squared` |
+| Spearman | $\rho$ | $\rho = r(\operatorname{rank}(x),\operatorname{rank}(y))$ | `cor.test()$estimate` |
+| Kendall | $\tau_b$ | $\tau_b = (C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$ | `cor.test()$estimate` |
+| Pearson $\chi^2$ ($R\times C$) | Cramér's $V$ | $V_{R\times C} = \sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}$ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
+| Pearson $\chi^2$ ($2\times 2$) | $\phi$ | $\phi = \sqrt{\chi^2/N}$ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
+| Fisher's exact ($2\times 2$) | odds ratio | $\widehat{\mathrm{OR}} = n_{11}n_{22}/(n_{12}n_{21})$ | `fisher.test()$estimate` |
 )")
 }
 ```
