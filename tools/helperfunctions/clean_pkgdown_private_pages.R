@@ -1,10 +1,14 @@
 clean_pkgdown_private_pages <- function(docs_dir = "docs") {
   private_pages <- c("AGENTS", "CLAUDE")
   private_articles <- c(
+    "discussion_addition_draft",
     "internally_studentised_residuals_old_versions",
+    "residual_covariance_draft",
     "residualtest",
     "standardised_residuals_old_versions",
-    "sw_on_residuals_research"
+    "sw_on_residuals_research",
+    "visStatistics_redlined",
+    "visStatistics202512"
   )
   private_paths <- file.path(
     docs_dir,
@@ -45,6 +49,14 @@ clean_pkgdown_private_pages <- function(docs_dir = "docs") {
       auto_unbox = TRUE,
       null = "null"
     )
+  }
+
+  metadata <- file.path(docs_dir, "pkgdown.yml")
+  if (file.exists(metadata)) {
+    lines <- readLines(metadata, warn = FALSE)
+    private_article_pattern <- paste(private_articles, collapse = "|")
+    keep <- !grepl(paste0("^  (", private_article_pattern, "): "), lines)
+    writeLines(lines[keep], metadata, useBytes = TRUE)
   }
 }
 
