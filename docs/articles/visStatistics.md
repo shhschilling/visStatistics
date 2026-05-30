@@ -101,7 +101,7 @@ visstat(x, y)
 visstat(y ~ x, data = dataframe)
 ```
 
-An examplary function call is
+An exemplary function call is
 
 ``` r
 
@@ -247,7 +247,7 @@ variables for \\k\\ groups; testing \\H_0: \beta_1 = \cdots =
 \beta_1 = 0\\ examines whether a linear relationship exists.
 
 The model error terms \\\varepsilon_i\\ in Eq.  @ref(eq:glm) are not
-observed. They observable counterpart are the residuals.  
+observed. Their observable counterparts are the residuals.  
 After fitting the corresponding linear model, the residual is
 
 \\\begin{equation} e_i = y_i - \hat{y}\_i, (\\eq:raw-residual)
@@ -328,10 +328,9 @@ computed on the same z-residual scale (see Section
 **Outer title for both routes**
 
 The first row of the outer title reports p-values of residual-normality
-checks with the Shapiro–Wilk Shapiro–Wilk test and Anderson–Darling
-tests. The second row reports p-values of variance checks: Levene and
-Bartlett for grouped central-tendency analyses, or Breusch–Pagan for
-simple regression.
+checks with the Shapiro–Wilk test and Anderson–Darling tests. The second
+row reports p-values of variance checks: Levene and Bartlett for grouped
+central-tendency analyses, or Breusch–Pagan for simple regression.
 
 Note that among the displayed assumption tests, only the Shapiro–Wilk
 and Levene test results enter automated routing, and only in the
@@ -357,8 +356,11 @@ are detailed below.
 
 #### Route 1: Numeric response, categorical predictor
 
-Figure @ref(fig:decision-tree) summarises the test decision logic in the
-central-tendency branch.
+A numeric response with a categorical predictor asks whether the
+response differs between “factor levels”, henceforth “groups”.
+
+Figure @ref(fig:decision-tree) expands the routing logic for tests of
+central tendencies.
 
 ![Decision tree selecting among Welch t-test, Student t-test, Wilcoxon,
 Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests based on the
@@ -372,36 +374,49 @@ Shapiro–Wilk on model residuals determines whether the route remains
 mean-based or switches to rank-based tests; the Levene test then selects
 equal-variance or Welch-type procedures.
 
-The first split checks group size. If all groups contain more than 50
-observations,
-[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-treats the parametric (mean-based) path as justified by the Central
-Limit Theorem ([Lumley et al. 2002](#ref-Lumley:2002); [Rasch et al.
-2011](#ref-Rasch:2011)). This avoids switching to non-parametric
-(rank-based) tests because of negligible residual-normality deviations
-in large samples ([Ghasemi and Zahediasl 2012](#ref-Ghasemi:2012);
-[Fagerland 2012](#ref-Fagerland:2012); [Shatz 2024](#ref-Shatz:2024)).
+The first split checks group size:
 
-Otherwise, the p-value of the Shapiro–Wilk (SW) test determines whether
-the route remains mean-based: If normality is rejected (\\p\_\text{SW}
-\le \alpha\\), rank-based tests are selected:
+If all groups of the categorical predictor contain more than 50
+observations, the sampling distribution of each group mean is treated as
+sufficiently normal by the Central Limit Theorem ([Lumley et al.
+2002](#ref-Lumley:2002); [Rasch et al. 2011](#ref-Rasch:2011)). For
+large samples, formal testing of residual normality of the general
+linear model is bypassed to avoid type I errors caused by negligible
+deviations from normality in large samples ([Ghasemi and Zahediasl
+2012](#ref-Ghasemi:2012); [Fagerland 2012](#ref-Fagerland:2012); [Shatz
+2024](#ref-Shatz:2024)).
+
+Otherwise, a linear model of Eq. @ref(eq:glm) is fitted between the
+numeric response and the categorical predictor, and the model residuals
+of Eq. @ref(eq:raw-residual) are extracted.
+
+The Shapiro–Wilk (SW) normality test is then applied as the
+residual-normality gate, because simulation studies report high power
+for small to moderate sample sizes ([Razali and Wah
+2011](#ref-Razali:2011)).
+
+If the SW-test rejects residual normality (\\p\_\text{SW} \le \alpha\\),
+non-parametric tests are selected:
 [`wilcox.test()`](https://rdrr.io/r/stats/wilcox.test.html)
 (Eq. @ref(eq:wilcoxon-w)) for two groups, or
 [`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html)
 (Eq. @ref(eq:kruskal-h)) followed by Holm-adjusted
 [`pairwise.wilcox.test()`](https://rdrr.io/r/stats/pairwise.wilcox.test.html)
-for more than two groups. If normality is not rejected, variance
-homogeneity is assessed with the package-implemented mean-centred Levene
-test (L) on model residuals ([Levene 1960](#ref-Levene:1960))
-(Eq. @ref(eq:levene-f)).
+for more than two groups.
 
-For homoscedastic data, `t.test(var.equal = TRUE)`
-(Eq. @ref(eq:student-t)) is applied for two groups, or Fisher’s
-[`aov()`](https://rdrr.io/r/stats/aov.html) (Eq. @ref(eq:fisher-f)) with
+If the normality of the model residuals is not rejected, their variance
+homogeneity is assessed with the package-implemented mean-centred Levene
+test (L) ([Levene 1960](#ref-Levene:1960)) (Eq. @ref(eq:levene-f)).
+
+For homoscedastic data (\\p\_\text{L} \> \alpha\\),
+`t.test(var.equal = TRUE)` (Eq. @ref(eq:student-t)) is applied for two
+groups, or Fisher’s [`aov()`](https://rdrr.io/r/stats/aov.html)
+(Eq. @ref(eq:fisher-f)) with
 [`TukeyHSD()`](https://rdrr.io/r/stats/TukeyHSD.html)
 (Eq. @ref(eq:tukey-hsd-q)) for more than two groups. For heteroscedastic
-data, Welch’s [`t.test()`](https://rdrr.io/r/stats/t.test.html)
-(Eq. @ref(eq:welch-t)) is applied for two groups, or Welch’s
+data (\\p\_\text{L} \le \alpha\\), Welch’s
+[`t.test()`](https://rdrr.io/r/stats/t.test.html) (Eq. @ref(eq:welch-t))
+is applied for two groups, or Welch’s
 [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html)
 (Eq. @ref(eq:welch-f)) with the package implementation
 [`games.howell()`](https://shhschilling.github.io/visStatistics/reference/games.howell.md)
@@ -447,7 +462,7 @@ a letter are not significantly different.
 #### Route 2: Ordered response
 
 An ordered categorical response with a categorical predictor or ordered
-categorical predictor is treated as a rank-based group comparison . The
+categorical predictor is treated as a rank-based group comparison. The
 ordered response is converted to integer level codes and analysed with
 the Wilcoxon rank-sum test for two groups or the Kruskal–Wallis test for
 more than two groups.

@@ -8,7 +8,10 @@
 
 ## Normality tests {#sec:norm}
 
-The package displays both the Shapiro--Wilk test and the Anderson--Darling test to check the normality of raw model residuals $e_i$.
+
+
+
+
 
 ### Shapiro--Wilk test `shapiro.test()` {#sec:shap}
 
@@ -36,7 +39,7 @@ $W$ takes values in $(0, 1]$; values close to 1 indicate normality.
 
 ### Anderson--Darling test `ad.test()` {#sec:adar}
 
-The Anderson--Darling test [@Anderson:1952] is particularly sensitive to deviations in the tails of the distribution [@Razali:2011; @Yap:2011].
+
 Let $z_i = (x_{(i)} - \bar{x})/s,\; i=1,2,\ldots,n$ be the standardised order statistics of $x_i$, where $s$ is the sample standard deviation, and let $\Phi$ denote the standard normal cumulative distribution function.
 The test statistic is
 
@@ -536,20 +539,23 @@ fitted model parameters.
 
 # Effect size {#sec:effect-size}
 
-Statistical significance is strongly affected by sample size, while effect-size
-estimates are intended to support comparisons across studies regardless of
-sample size [@Levine:2002].
+
+
+The effect size  takes the value zero when the null hypothesis is true and some other, test- specific non-zero value when the null hypothesis is false, it is an an index of degree of departure from the null hypothesis [@Cohen:2018; page 10]
+
+While  statistical significance is strongly affected by sample size, effect-size, estimates are intended to support comparisons across studies regardless of
+sample size [@Levine:2002]   Effect size is therefore an important determinant of power or required sample size or both  [@Cohen:2018; page 10].
 
 To avoid additional package dependencies, `effect_size()` 
 extracts, where possible, the effect sizes 
 from base R `stats` output, Otherwise it implements the remaining
-formulae internally [@Hedges:1981; @Kerby:2014; @Olejnik:2003; @BenShachar:2020; @Kelley:1935; @Bergsma:2013].
+formulae internally.
 
 
 The following tables summarises the statistical analysis with their respective effect sizes and formulae. 
 <!-- The internal function  `effect_size()` extracts, where possible, the effect sizes -->
 <!-- from base R `stats` output, Otherwise it implements the remaining -->
-<!-- formulae internally [@Hedges:1981; @Kerby:2014; @Olejnik:2003; @BenShachar:2020; @Kelley:1935; @Bergsma:2013]. -->
+<!-- formulae internally. -->
 
 ```{r effect-size-table, echo=FALSE, results='asis'}
 if (knitr::is_latex_output()) {
@@ -570,12 +576,12 @@ if (knitr::is_latex_output()) {
 \textbf{Source} \\
 \hline
 Student's $t$-test, Eq.~\eqref{eq:student-t} &
-Hedges' $g_{s_p}$ & $g_{s_p}=J(\bar{x}_1-\bar{x}_2)/s_p$ &
-\tbdoi{10.3102/10769986006002107}{Hedges, 1981} \\
+Hedges' $g_{s_p}$ & $g_{s_p}=J(N-2)(\bar{x}_1-\bar{x}_2)/s_p$ &
+\tbdoi{10.3102/10769986006002107}{Hedges, 1981, pp. 110, 113--114} \\
 \hline
 Welch's $t$-test, Eq.~\eqref{eq:welch-t} &
-Hedges' $g_{s^{*}}$ & $g_{s^{*}}=J(\bar{x}_1-\bar{x}_2)/s^{*}$ &
-\tbdoi{10.3102/10769986006002107}{Hedges, 1981} \\
+Hedges' $g_{s^{*}}$ & $g_{s^{*}}=J(\nu^{*})(\bar{x}_1-\bar{x}_2)/s^{*}$ &
+\tbdoi{10.31234/osf.io/tu6mp}{Delacre et al., 2021, Eq.~16} \\
 \hline
 Wilcoxon rank-sum, Eq.~\eqref{eq:wilcoxon-w} &
 rank-biserial $r$ & $r=2W/(n_1n_2)-1$ &
@@ -583,16 +589,16 @@ rank-biserial $r$ & $r=2W/(n_1n_2)-1$ &
 \hline
 Fisher's ANOVA, Eq.~\eqref{eq:fisher-f} & $\omega^2$ &
 $\nu_1(F-1)/(\nu_1F+\nu_2+1)$ &
-\tbdoi{10.1037/1082-989X.8.4.434}{Olejnik and Algina, 2003} \\
+\tbdoi{10.1016/j.jesp.2017.09.004}{Albers and Lakens, 2018, Appendix A} \\
 \hline
 Welch's ANOVA, Eq.~\eqref{eq:welch-f} &
 $\omega^2$ (approx.) &
 $\nu_1(F_W-1)/(\nu_1F_W+\nu_2+1)$ &
-\tbdoi{10.21105/joss.02815}{Ben-Shachar et al., 2020} \\
+\tbdoi{10.1016/j.jesp.2017.09.004}{F-form from Albers and Lakens, 2018, Appendix A} \\
 \hline
 Kruskal--Wallis, Eq.~\eqref{eq:kruskal-h} &
-Kelley-adjusted $\eta_H^2$ & $(H-k+1)/(N-k)$ &
-\tbdoi{10.1073/pnas.21.9.554}{Kelley, 1935} \\
+$\eta_H^2$ & $(H-k+1)/(N-k)$ &
+\tbdoi{10.1073/pnas.21.9.554}{Kelley, 1935, pp. 556--557} \\
 \hline
 Simple linear regression, Section~\ref{sec:lin-reg} &
 $R^2$ &
@@ -633,12 +639,12 @@ Table: (\#tab:effect-size-formulae) Effect sizes returned by `effect_size()`.
 
 | Analysis | Effect size | Formula | Source |
 |:---|:---|:---|:---|
-| [Student's $t$-test](#eq:student-t) | Hedges' $g_{s_p}$ (pooled) | $g_{s_p} = J\cdot(\bar{x}_1-\bar{x}_2)/s_p$ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
-| [Welch's $t$-test](#eq:welch-t) | Hedges' $g_{s^{*}}$ (non-pooled) | $g_{s^{*}} = J\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
+| [Student's $t$-test](#eq:student-t) | Hedges' $g_{s_p}$ (pooled) | $g_{s_p} = J(N-2)\cdot(\bar{x}_1-\bar{x}_2)/s_p$ | [Hedges 1981, pp. 110, 113--114](https://doi.org/10.3102/10769986006002107) |
+| [Welch's $t$-test](#eq:welch-t) | Hedges' $g_{s^{*}}$ (non-pooled) | $g_{s^{*}} = J(\nu^{*})\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$ | [Delacre et al. 2021, Eq. 16](https://doi.org/10.31234/osf.io/tu6mp) |
 | [Wilcoxon rank-sum](#eq:wilcoxon-w) | rank-biserial $r$ | $r = 2\cdot W/(n_1\cdot n_2) - 1$ | [Kerby 2014](https://doi.org/10.2466/11.IT.3.1) |
-| [Fisher's ANOVA](#eq:fisher-f) | $\omega^2$ | $\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)$ | [Olejnik and Algina 2003](https://doi.org/10.1037/1082-989X.8.4.434) |
-| [Welch's ANOVA](#eq:welch-f) | $\omega^2$ (approx.) | $\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)$ | [Ben-Shachar et al. 2020](https://doi.org/10.21105/joss.02815) |
-| [Kruskal--Wallis](#eq:kruskal-h) | Kelley-adjusted $\eta_H^2$ | $(H - k + 1)/(N - k)$ | [Kelley 1935](https://doi.org/10.1073/pnas.21.9.554) |
+| [Fisher's ANOVA](#eq:fisher-f) | $\omega^2$ | $\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)$ | [Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
+| [Welch's ANOVA](#eq:welch-f) | $\omega^2$ (approx.) | $\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)$ | [F-form from Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
+| [Kruskal--Wallis](#eq:kruskal-h) | $\eta_H^2$ | $(H - k + 1)/(N - k)$ | [Kelley 1935, pp. 556--557](https://doi.org/10.1073/pnas.21.9.554) |
 | [Simple linear regression](#sec:lin-reg) | $R^2$ | $R^2 = 1 - SS_\text{res}/SS_\text{tot}$, Eq.~\@ref(eq:r-squared) | `summary(lm())$r.squared` |
 | [Spearman](#eq:spearman-rho) | $\rho$ | $\rho = r(\operatorname{rank}(x),\operatorname{rank}(y))$, Eq.~\@ref(eq:spearman-rho) | `cor.test()$estimate` |
 | [Kendall](#eq:kendall-tau-b) | $\tau_b$ | $\tau_b = (C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$, Eq.~\@ref(eq:kendall-tau-b) | `cor.test()$estimate` |
@@ -652,12 +658,20 @@ Table: (\#tab:effect-size-formulae) Effect sizes returned by `effect_size()`.
 Here, Hedges' small-sample correction factor is
 
 \begin{equation*}
-J =
-\frac{\Gamma((N-2)/2)}
-     {\sqrt{(N-2)/2}\;\Gamma((N-3)/2)},
+J(\nu) =
+\frac{\Gamma(\nu/2)}
+     {\sqrt{\nu/2}\;\Gamma((\nu-1)/2)},
 \end{equation*}
 
-where $J$ denotes Hedges' correction factor.
+where $J$ denotes Hedges' correction factor. For Student's $t$-test,
+$\nu=N-2$; for Welch's $t$-test,
+$\nu=\nu^{*}$, with
+
+\begin{equation*}
+\nu^{*} =
+\frac{(n_1-1)(n_2-1)(s_1^2+s_2^2)^2}
+     {(n_2-1)s_1^4+(n_1-1)s_2^4}.
+\end{equation*}
 
 The non-pooled average-variance standardizer is
 

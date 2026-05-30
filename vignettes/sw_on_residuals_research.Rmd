@@ -1,0 +1,466 @@
+---
+title: "Shapiro–Wilk on regression residuals: research notes"
+author: Sabine Schilling (notes compiled with Claude)
+date: "2026-05-29"
+output:
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
+    toc: true
+    number_sections: true
+    toc_depth: 3
+---
+
+# Purpose of this document
+
+Internal reference, not part of the CRAN vignette. Records the
+literature review and theoretical reasoning behind the package's
+choice of residual type fed to `shapiro.test()` and `ad.test()` in
+the linear-model assumption check.
+
+Current package behaviour (as of 2026-05-29):
+`shapiro.test(raw_residuals)` and `ad.test(raw_residuals)`, called at
+
+- `R/visstat_core.R:337`
+- `R/vis_lm_assumptions.R:90`
+- `R/test_and_visuals.R:813, 841, 897`
+- `R/vis_numeric.R:127`
+
+# Question
+
+When checking the normality assumption of a fitted linear model,
+should the Shapiro–Wilk (SW) and Anderson–Darling (AD) tests be
+applied to
+
+- raw residuals $e_i = y_i - \hat y_i$, or
+- internally Studentized residuals $r_i = e_i / [\hat\sigma\sqrt{1-h_i}]$?
+
+# Residual definitions
+
+For the fitted general linear model with hat matrix
+$\mathbf{V} = \mathbf{X}(\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'$,
+let $h_i = v_{ii}$ be the leverage of observation $i$ and
+$\hat\sigma^2 = SE_\text{res}^2 = \sum e_i^2 / (n-k)$ the residual mean
+square.
+
+| Symbol | Name | Formula |
+|---|---|---|
+| $e_i$ | raw residual | $y_i - \hat y_i$ |
+| $z_i$ | z-residual | $e_i / SE_\text{res}$ |
+| $r_i$ | internally Studentized / "standardised" | $e_i / [SE_\text{res}\sqrt{1-h_i}] = z_i/\sqrt{1-h_i}$ |
+| $t_i$ | externally Studentized | $e_i / [\hat\sigma_{(i)}\sqrt{1-h_i}]$ |
+| recursive | Brown–Durbin–Evans | sequential (see §6) |
+
+Cook & Weisberg (1982) notation correspondence:
+
+| Cook & Weisberg | Vignette | R |
+|---|---|---|
+| $\hat\sigma$ | $SE_\text{res}$ | "Residual standard error" in `summary(lm)` |
+| $v_{ii}$ | $h_i$ | `hatvalues()` |
+| $r_i$ (internally Studentized) | $r_i$ (standardised) | `rstandard()` |
+| $t_i$ (externally Studentized) | — | `rstudent()` |
+
+# Theoretical setup
+
+## Distribution of raw residuals
+
+Under the model $\mathbf{Y} = \mathbf{X}\boldsymbol\beta + \boldsymbol\varepsilon$
+with $\boldsymbol\varepsilon \sim \mathcal{N}(0, \sigma^2\mathbf{I})$:
+
+$$\mathbf{e} = (\mathbf{I} - \mathbf{V})\boldsymbol\varepsilon$$
+
+So $\mathbf{e}$ is singular multivariate normal with
+
+$$\operatorname{Var}(\mathbf{e}) = \sigma^2(\mathbf{I} - \mathbf{V})$$
+
+In scalar form:
+
+- $\operatorname{Var}(e_i) = \sigma^2(1 - h_i)$ — **heteroscedastic**
+- $\operatorname{Cov}(e_i, e_j) = -\sigma^2 h_{ij}$ for $i\neq j$ — **correlated**
+
+Reference: Cook & Weisberg (1982) §2.1.2, p. 14, Eq. (2.1.3).
+
+## Distribution of internally Studentized residuals
+
+$r_i = e_i / [\hat\sigma\sqrt{1-h_i}]$ has
+
+- $\operatorname{Var}(r_i) \approx 1$ — variance correction works
+- non-zero off-diagonal covariance survives: rescaling diagonally
+  does not zero off-diagonals of $\mathbf{I}-\mathbf{V}$
+- additional weak dependence through the shared $\hat\sigma$
+
+So studentization fixes the heteroscedasticity problem but **not** the
+correlation problem.
+
+## What this means for the SW null distribution
+
+Shapiro & Wilk (1965) derive $W$'s null distribution assuming the
+input is an **iid sample** from $\mathcal{N}(\mu, \sigma^2)$. Neither
+$e_i$ nor $r_i$ satisfies this. Specifically:
+
+- $-\sigma^2 h_{ij}$ off-diagonals are typically negative (sum-to-zero
+  constraint of OLS residuals)
+- SW applied to negatively-correlated draws **under-rejects** —
+  i.e. it is conservative under $H_0$ (test rejects normality less
+  often than the nominal $\alpha$)
+
+Operational consequence: `shapiro.test(resid(model))` and
+`shapiro.test(rstandard(model))` both deliver $p$-values that are
+conservative approximations, not exact $p$-values. Switching between
+the two does **not** restore the validity of the null distribution.
+
+# Bibliography sweep (Zotero, 2026-05-29)
+
+12 papers read in full (or to sufficient depth, flagged below). All
+PDFs in `~/Library/.../storage/`. No web snippets cited (CLAUDE.md
+rule). Cook & Weisberg (1982) Chapter 2 read in detail in earlier
+session.
+
+| # | Reference | BibKey | Pages read | Addresses residual choice? |
+|---|---|---|---|---|
+| 1 | Cook & Weisberg, *Residuals and Influence in Regression* (1982) | `Cook:1982` | Ch. 2 | Yes — defines Studentized; gold-standard text |
+| 2 | Kozak & Piepho, J Agro Crop Sci (2018) | `Kozak:2018` | Full | Yes — explicit recommendation |
+| 3 | Shatz, Behav Res Methods (2024) | `Shatz:2024` | Full | Yes — implicit (uses standardised); supernormality caveat |
+| 4 | Knief & Forstmeier, Behav Res Methods (2021) | not yet in bib | Full | Uses Studentized in workflow |
+| 5 | Razali & Wah, J Stat Modeling (2011) | `Razali:2011` | Full | No — iid sample context |
+| 6 | Royston, Appl Stat (1982) | `Royston:1982` | Full | No — iid methodology |
+| 7 | Shapiro & Wilk, Biometrika (1965) | `Shapiro:1965` | 10 of 22 | No — iid "complete sample" |
+| 8 | Anderson & Darling, Ann Math Stat (1952) | `Anderson:1952` | 6 of 20 | No — iid context |
+| 9 | Lumley et al., Annu Rev Public Health (2002) | `Lumley:2002` | Full | No — CLT robustness focus |
+| 10 | Fagerland, BMC Med Res Methodol (2012) | `Fagerland:2012` | Full | No — against gatekeeping |
+| 11 | Ghasemi & Zahediasl, Int J Endocrinol Metab (2012) | `Ghasemi:2012` | Full | No — tests raw data |
+| 12 | Franc, Prehosp Disaster Med (2025) | `Franc:2025` | Full | No — against gatekeeping |
+| 13 | Das & Imon, Am J Theor Appl Stat (2016) | not yet in bib | Full | **Yes — direct counter-case: SW/JB on residuals "not appropriate"; recommends Rescaled Moments test** |
+| 14 | Tanadini, *Linear Models 4: Residual analysis Lab*, ETHZ HS19 (teaching handout, no DOI) | **not citable** | Full (17 pp.) | Group B — "tests... should not be used"; graphical tools use standardised residuals |
+| 15 | Kéry & Hatfield, Bull Ecol Soc Am (2003) | not yet in bib (DOI to verify) | Full (pp. 92–94) | No on residual scale; canonical "test residuals, not raw data"; permissive on formal tests |
+
+## Bibliography defect found
+
+The file
+`storage/BP34C34R/Yap und Sim - 2011 - Comparisons of various types of normality tests.pdf`
+is **mislabeled** in Zotero. Its actual content is
+Ruiz & Carranza (2018), *Inteligencia emocional, género y clima
+familiar en adolescentes peruanos* (Acta Colombiana de Psicología).
+The genuine Yap & Sim (2011) paper is **not** in local storage. The
+bib entry `Yap:2011` therefore points to a file whose content does
+not match its metadata. Action: re-import the correct PDF before
+relying on this citation.
+
+## What each Group A paper says
+
+- **Cook & Weisberg (1982)**, p. 18, Eq. (2.2.1): defines
+  $r_i = e_i / [\hat\sigma\sqrt{1-v_{ii}}]$ as the canonical
+  internally Studentized residual. "The Studentized residuals are
+  used as replacements for the ordinary residuals in graphical
+  procedures" (p. 20).
+- **Kozak & Piepho (2018)**, p. 12 (Conclusion): *"Generally,
+  standardized or studentized residuals are better for checking
+  assumptions than raw residuals, because the latter may display
+  heterogeneous variance even when errors have constant variance
+  (though for the special case of a balanced one-way both are equally
+  suitable)."* Reasoning is heteroscedasticity-based. Does not
+  engage with the correlation problem.
+- **Shatz (2024)**, p. 826, footnote 1: *"This assumption actually
+  pertains to the models' errors, which cannot be directly observed,
+  and which are therefore estimated using the residuals … this
+  approach has some flaws, like the problem of supernormality, where
+  residuals appear to be normal even if the errors are not normal
+  … recursive residuals … may sometimes be better suited for
+  diagnostic purposes than raw residuals."* Author uses standardised
+  residuals in all diagnostic figures.
+- **Knief & Forstmeier (2021)**, p. 2581 (Methods): "we further
+  calculated studentized residuals ($R$), hat values ($H$) and Cook's
+  distances ($D$)". Their main thesis is unrelated to the choice —
+  they argue Gaussian models are robust to non-normality except in
+  the presence of influential outliers.
+
+## What Group B papers say
+
+- **Shapiro & Wilk (1965)**, p. 592 §2.2: $W$ is derived for "a sample
+  from a normal distribution with unknown mean $\mu$ and unknown
+  variance $\sigma^2$" — iid.
+- **Anderson & Darling (1952)**, p. 193 §1: tests
+  "$n$ independent, identically distributed random variables".
+- **Royston (1982)**, **Razali & Wah (2011)**: extend / compare W on
+  iid simulated samples; not residuals.
+- **Lumley et al. (2002)**, p. 166: *"Formal statistical tests for
+  Normality are especially undesirable as they will have low power
+  in the small samples where the distribution matters and high power
+  only in large samples where the distribution is unimportant."*
+- **Fagerland (2012)**, p. 6: *"We strongly advise against [using a
+  test for normality to decide between t-test and WMW]."*
+- **Franc (2025)**, p. 242: *"The reliance on normality tests as a
+  preliminary step for determining whether to employ parametric or
+  non-parametric methods is both theoretically unfounded and
+  practically problematic."*
+- **Ghasemi & Zahediasl (2012)**: applied SPSS guide; tests raw
+  outcome variables in worked examples; recommends SW over KS for
+  generic normality assessment.
+- **Tanadini (ETHZ teaching lab, HS19).** States plainly that formal
+  normality tests "should not be used to test assumptions about the
+  errors of a linear model" (p. 14), for two reasons: an infinite
+  regress of testing (each test has its own assumptions), and the
+  power/sample-size asymmetry (low $n$ misses real non-normality, high
+  $n$ flags trivial deviations). Its recommended graphical tools
+  (`plot.lm()`, `plregr()`) use standardised residuals, but it takes no
+  position on raw-vs-studentized for a formal test because it rejects
+  the test outright. *Grey literature — internal reference only, not
+  citable in the vignette or paper (no DOI, course handout).*
+
+# Why studentization is not the fix
+
+The user-flagged correction (2026-05-29):
+
+> Observed residuals are neither independent nor homoscedastic. $r$
+> corrects for the latter; the first is not fixed.
+
+Restated formally:
+
+| Choice | Variance | Independent under $H_0$? | iid normal? | SW null distribution applies? |
+|---|---|---|---|---|
+| Raw $e_i$ | heteroscedastic | no | no | no — conservative |
+| Studentized $r_i$ | $\approx 1$ | no | no | no — conservative |
+| Recursive $w_i$ | constant | yes (under $H_0$) | yes | yes |
+| Errors $\varepsilon_i$ | constant | yes | yes | yes, but unobservable |
+
+The Kozak & Piepho recommendation and the Cook & Weisberg / Shatz /
+Knief & Forstmeier convention all favour Studentized for
+**plot-alignment and variance-scale** reasons, not because the SW
+null distribution applies. None of them claim Studentized residuals
+satisfy SW's iid assumption.
+
+# Recursive residuals — the one type for which SW is exactly valid
+
+Brown, Durbin & Evans (1975), JRSS-B, 37(2), 149–192.
+
+- Defined recursively: fit model to first $p$ observations, predict
+  $(p+1)$-th, the standardised forecast error is the first recursive
+  residual. Iterate to get $n - p$ residuals.
+- Under $H_0$ (normal errors), recursive residuals are iid
+  $\mathcal{N}(0, \sigma^2)$ — proper iid normal sample.
+- Available in R via `strucchange::recresid()`.
+- **Order-dependent**: requires a meaningful ordering of observations.
+  In time series this is given; in cross-sectional regression like
+  `visstat()`'s setting, ordering is arbitrary, so different orderings
+  give different $W$ statistics. Not a clean answer for `visStatistics`.
+
+Shatz (2024) footnote pointed at recursive residuals as the
+theoretical fix; the order-dependence is why it isn't routine practice
+in cross-sectional packages.
+
+# Practical magnitude of the dependence
+
+For balanced one-way ANOVA with $g$ groups of size $n_g$:
+
+- Hat matrix is block-diagonal with within-block leverage $h_i = 1/n_g$
+- Within-block off-diagonal: $h_{ij} = 1/n_g$ for $i\neq j$ same group
+- Across-group: $h_{ij} = 0$
+- So residuals are correlated only within group, with covariance
+  $-\sigma^2/n_g$
+
+For $n_g \geq 10$ the within-group correlation is $\leq -0.1$, weak
+enough that SW's empirical type-I error stays close to nominal.
+
+For simple linear regression, off-diagonal $h_{ij}$ depends on
+$(x_i-\bar x)(x_j-\bar x) / \sum(x_k-\bar x)^2$. Structure is more
+complex and not obviously small. This is where the correlation issue
+is least benign — but the package does not use SW for routing in
+Route 3 (only warnings — see `vignettes/visStatistics.Rmd`, Section
+`sec:route-3`).
+
+# Routing implications for `visStatistics`
+
+Per `vignettes/visStatistics.Rmd` (verified 2026-05-29):
+
+- **Route 1** (numeric response, categorical predictor): SW on pooled
+  residuals is a routing gate, *but only when all $n_g \leq 50$*. For
+  any group with $n_g > 50$, the normality gate is bypassed entirely
+  on CLT grounds (Lumley, Fagerland).
+- **Route 3** (two numeric variables, simple linear regression): SW
+  result triggers a warning; it does **not** drive routing. Vignette,
+  Section `sec:route-3`: *"If general linear model assumptions are
+  violated, the corresponding p-values trigger warnings and
+  recommendations, but no automatic model replacement."*
+
+So the residual-choice question only affects routing in **one
+sub-case**: Route 1 with $\min_g n_g \leq 50$. Everywhere else it's
+a display/warning issue.
+
+# Honest summary
+
+1. SW assumes iid normal. Neither raw nor internally Studentized
+   regression residuals are iid normal.
+2. The correlation $-\sigma^2 h_{ij}$ is structural and survives
+   studentization. Off-diagonals do not vanish under any standard
+   transformation of $\mathbf{e}$.
+3. Sign of correlation makes SW conservative on residuals; the test
+   "behaves reasonably" not because the violation is small but
+   because its direction is forgiving.
+4. The literature that explicitly addresses the choice
+   (Cook & Weisberg, Kozak & Piepho, Shatz, Knief & Forstmeier) all
+   prefer Studentized residuals. The reason is plot-alignment and
+   variance scaling, not test validity.
+5. The literature that addresses the bigger question
+   (Lumley, Fagerland, Franc) argues against SW as a gate at all.
+   Package partially honours this via the $n_g > 50$ bypass.
+6. Recursive residuals are the only iid-under-$H_0$ choice but are
+   order-dependent and unsuitable for cross-sectional automation.
+
+# Das & Imon (2016): the direct counter-case
+
+Das, K. R. & Imon, A. H. M. R. (2016). *A Brief Review of Tests for
+Normality.* Am J Theor Appl Stat 5(1):5-12.
+doi:10.11648/j.ajtas.20160501.12. Read in full.
+
+§4 ("Supernormality and Rescaled Moments Test", p. 10) names three
+drawbacks of feeding residuals to a normality test:
+
+1. **always correlated** — "even when the true errors are independent,
+   their corresponding residuals are always correlated";
+2. **non-constant variance** (heteroscedastic);
+3. **supernormality** — the residual distribution "is always closer to
+   normal form than is the probability distribution of the true
+   errors, when the errors are not normal".
+
+Studentization (`rstandard()`) fixes only (2). The correlation (1) and
+supernormality (3) survive it. Crucially, Das & Imon attribute the
+correlation to substituting residuals for unobservable errors — the
+projection itself — not to model structure and not to interaction
+terms. This is independent, textbook-grade confirmation that the
+residual covariance is a first-order, structural problem present in
+every general linear model fit, with or without interaction terms.
+
+Their conclusion (p. 11): "both Shapiro-Wilk and Jarque-Bera tests are
+not appropriate when we test normality of residuals in regression
+and/or design of experiments. We recommend using the rescaled moments
+test in this regard." The Rescaled Moments (RM) statistic of Imon
+(2003) is a Jarque–Bera variant with a $c=n/(n-k)$ correction:
+$$\mathrm{RM} = \frac{n\,c^3}{6}\Big[S^2 + \tfrac{c(K-3)^2}{4}\Big],
+\quad c=\tfrac{n}{n-k}.$$
+
+**Bearing on this package.** Das & Imon adds a third position distinct
+from Groups A and B: SW/AD on residuals — raw *or* studentized — are
+inappropriate, and the remedy is a regression-specific test, not a
+change of residual scale. It therefore *weakens* the case for the
+raw → `rstandard()` switch (Option B fixes one of three flaws) and
+*strengthens* the Group B view (Option C) that the gate itself, not
+the residual scale, is the substantive issue. Adopting RM would be an
+architectural change (different machinery from SW/AD) — noted, not
+recommended for this question.
+
+# Kéry & Hatfield (2003): residuals, not raw data
+
+Kéry, M. & Hatfield, J. S. (2003). Normality of Raw Data in General
+Linear Models: the Most Widespread Myth in Statistics. *Bull Ecol Soc
+Am* 84(2):92-94. Read in full. (Apparent DOI
+10.1890/0012-9623(2003)84[92:NORDIG]2.0.CO;2 — verify before citing.)
+
+Thesis: in general linear models (t test, regression, ANOVA, ANCOVA)
+the normality assumption is on the residuals, not the raw response;
+treating the raw response is "the most widespread myth in statistics".
+Two worked examples show non-normal raw data with normal residuals.
+
+Bearing on this package: confirms that `visstat()` correctly tests
+residuals rather than the raw outcome, and supplies a citable,
+correctly-termed "general linear model" precedent for the vignette's
+framing. Silent on raw-vs-studentized residuals and on residual
+covariance, so it does not touch those sub-questions. Permissive (not
+hostile) on formal tests, so it is not a Group B gate-keeping source.
+
+# Options for the package
+
+## Option A: Keep raw residuals, document the limitation
+
+- Minimal change.
+- Add one sentence to vignette Section `sec:assumption-tests`
+  acknowledging that the test is approximate either way.
+- Honest about the heuristic nature of the gate.
+
+## Option B: Switch to `rstandard()`, document honestly
+
+- Align test input with the residual scale plotted (z-residuals).
+- Cite Cook & Weisberg (1982) p. 18 and Kozak & Piepho (2018) p. 12.
+- Must still say the residuals remain correlated, so the p-value is
+  approximate.
+- Code change at 5 sites; existing routing decisions unlikely to
+  change at routing-precision level for worked examples (worth
+  verifying with `devtools::test()`).
+
+## Option C: Drop SW as a gate altogether
+
+- Most aligned with Lumley, Fagerland, Franc, Shatz.
+- Larger architectural change to `visstat()`'s decision logic.
+- Out of scope for this question.
+
+# Candidate vignette sentence (drafted but not applied)
+
+For Section `\@ref(sec:assumption-tests)`:
+
+> Both Shapiro–Wilk and Anderson–Darling assume an iid normal sample.
+> Model residuals violate this regardless of the residual type
+> chosen: raw residuals are heteroscedastic with variance
+> $\sigma^2(1-h_i)$, and internally Studentized residuals correct
+> this but remain negatively correlated through the
+> $\mathbf{I}-\mathbf{V}$ structure of the hat matrix. The displayed
+> $p$-values are therefore conservative approximations, used as
+> routing screens rather than strict tests of normality
+> [@Cook:1982, p. 18; @Lumley:2002].
+
+# Open items
+
+- **No edit applied** to `R/` or `vignettes/visStatistics.Rmd` from
+  this discussion. Decision deferred to the user.
+- Knief & Forstmeier (2021) is a useful Group A citation; add to
+  `REFERENCES.bib` if any of the options above is adopted.
+- Das & Imon (2016) is the strongest direct citation for the
+  residual-in-SW question; add to `REFERENCES.bib` if Option A's
+  limitation sentence or Option C is adopted.
+- Re-import correct Yap & Sim (2011) PDF into Zotero before relying
+  on `Yap:2011`.
+- If Route 1 SW gate is kept, consider whether `rstandard()` should
+  feed both SW and AD; both currently use raw residuals at the same
+  code sites.
+
+# References (read for this note)
+
+- Anderson, T. W. & Darling, D. A. (1952). Asymptotic Theory of
+  Certain Goodness of Fit Criteria Based on Stochastic Processes.
+  *Ann Math Stat*, 23(2), 193–212.
+- Brown, R. L., Durbin, J. & Evans, J. M. (1975). Techniques for
+  Testing the Constancy of Regression Relationships over Time.
+  *JRSS-B*, 37(2), 149–192. *Not read in full this session — cited
+  here as the source of recursive residuals; theoretical claim
+  verified via Shatz 2024 footnote which references the development
+  via Kianifard & Swallow (1996).*
+- Cook, R. D. & Weisberg, S. (1982). *Residuals and Influence in
+  Regression*. New York: Chapman and Hall.
+- Das, K. R. & Imon, A. H. M. R. (2016). A Brief Review of Tests for
+  Normality. *Am J Theor Appl Stat*, 5(1), 5–12.
+  doi:10.11648/j.ajtas.20160501.12.
+- Fagerland, M. W. (2012). t-tests, non-parametric tests, and large
+  studies — a paradox of statistical practice? *BMC Med Res
+  Methodol*, 12, 78.
+- Franc, J. M. (2025). The Misuse of Normality Tests as Gatekeepers
+  for Research in Prehospital and Disaster Medicine. *Prehosp
+  Disaster Med*, 40(5), 241–242.
+- Ghasemi, A. & Zahediasl, S. (2012). Normality Tests for Statistical
+  Analysis: A Guide for Non-Statisticians. *Int J Endocrinol Metab*,
+  10(2), 486–489.
+- Knief, U. & Forstmeier, W. (2021). Violating the normality
+  assumption may be the lesser of two evils. *Behav Res Methods*,
+  53(6), 2576–2590.
+- Kozak, M. & Piepho, H.-P. (2018). What's normal anyway? Residual
+  plots are more telling than significance tests when checking ANOVA
+  assumptions. *J Agro Crop Sci*, 204(1), 86–98.
+- Lumley, T., Diehr, P., Emerson, S. & Chen, L. (2002). The
+  Importance of the Normality Assumption in Large Public Health Data
+  Sets. *Annu Rev Public Health*, 23, 151–169.
+- Razali, N. M. & Wah, Y. B. (2011). Power comparisons of
+  Shapiro-Wilk, Kolmogorov-Smirnov, Lilliefors and Anderson-Darling
+  tests. *J Stat Modeling Anal*, 2(1), 21–33.
+- Royston, J. P. (1982). An Extension of Shapiro and Wilk's W Test
+  for Normality to Large Samples. *Appl Stat*, 31(2), 115–124.
+- Shapiro, S. S. & Wilk, M. B. (1965). An analysis of variance test
+  for normality (complete samples). *Biometrika*, 52(3/4), 591–611.
+- Shatz, I. (2024). Assumption-checking rather than (just) testing:
+  The importance of visualization and effect size in statistical
+  diagnostics. *Behav Res Methods*, 56, 826–845.

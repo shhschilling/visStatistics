@@ -36,13 +36,13 @@ jobs:
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::.
+          extra-packages: any::pkgdown, any::jsonlite, local::.
           needs: website
 
       - name: Build site
         run: |
           xvfb-run Rscript -e 'pkgdown::build_site(install = FALSE)'
-          Rscript tools/helperfunctions/clean_pkgdown_private_pages.R
+          Rscript tools/helperfunctions/clean_pkgdown_private_pages.R docs
 
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4

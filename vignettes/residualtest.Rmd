@@ -1,0 +1,115 @@
+---
+title: "residualtest"
+output: html_document
+date: "2026-05-28"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+# Standardised residuals and the residual variance estimate
+
+This note drafts the residual-scaling logic for inspection.
+
+## Factual decision logic
+
+- The model errors \(\varepsilon_i\) are unobservable; the raw residuals
+  \(e_i = y_i - \hat{y}_i\) are their observable counterparts.
+- A global residual standard error estimates the unobservable \(\sigma\), but
+  the variance of each raw residual also depends on its leverage.
+- Standardised residuals divide each raw residual by an estimate of its own
+  residual standard deviation.
+
+## Raw residuals
+
+After fitting the corresponding linear model, the raw residual for observation
+\(i\) is
+
+\begin{equation}
+e_i = y_i - \hat{y}_i,
+(\#eq:raw-residual)
+\end{equation}
+
+where \(y_i\) is the observed response and \(\hat{y}_i\) is the fitted value.
+
+The residual standard error estimates the unobservable model error standard
+deviation \(\sigma\):
+
+\begin{equation}
+SE_\text{res} =
+\sqrt{\frac{\sum_{r=1}^{N} e_r^2}{N-k}},
+(\#eq:residual-standard-error)
+\end{equation}
+
+where \(N\) is the total sample size and \(k\) is the number of fitted model
+parameters.
+
+## Standardised residuals
+
+The raw residuals are not all equally variable. For observation \(i\),
+
+\begin{equation}
+\operatorname{Var}(e_i) = \sigma^2(1-h_i),
+(\#eq:residual-variance-leverage)
+\end{equation}
+
+where \(h_i\) is the leverage of observation \(i\). Thus, using only
+\(SE_\text{res}\) standardises all residuals by the same global estimate of
+\(\sigma\), but does not account for the observation-specific leverage term.
+
+The internally standardised residual is therefore
+
+\begin{equation}
+r_i =
+\frac{e_i}{SE_\text{res}\sqrt{1-h_i}}.
+(\#eq:standardised-residual)
+\end{equation}
+
+This is the residual scale returned by `rstandard()` for a fitted `lm` object.
+
+## Leverage in simple linear regression
+
+For simple linear regression with one numeric predictor, the leverage has the
+closed form
+
+\begin{equation}
+h_i = \frac{1}{N} +
+      \frac{(x_i-\bar{x})^2}{\sum_{r=1}^{N}(x_r-\bar{x})^2}.
+(\#eq:leverage-simple-regression)
+\end{equation}
+
+Here \(x_i\) is the predictor value of observation \(i\), and \(\bar{x}\) is
+the predictor mean.
+
+## Cook's distance on the standardised-residual scale
+
+With \(r_i\) defined in Eq. \@ref(eq:standardised-residual), Cook's distance
+can be written as
+
+\begin{equation}
+D_i =
+\frac{r_i^2 h_i}{k(1-h_i)}.
+(\#eq:cooks-distance-standardised)
+\end{equation}
+
+For simple linear regression, \(k = 2\). This form combines the size of the
+standardised residual with the leverage of the observation.
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

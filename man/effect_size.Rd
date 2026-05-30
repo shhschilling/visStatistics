@@ -45,9 +45,10 @@ The following estimates are computed internally:
     \eqn{s_p = \sqrt{((n_1-1)s_1^2+(n_2-1)s_2^2)/(N-2)}} and
     \eqn{J(\nu) = \Gamma(\nu/2)/(\sqrt{\nu/2}\Gamma((\nu-1)/2))}.
   \item Welch's two-sample \code{t.test(..., var.equal = FALSE)}:
-    Hedges' \eqn{g_{s^*} = J(N-2)(\bar{y}_1-\bar{y}_2)/s^*}, where
-    \eqn{s^* = \sqrt{(s_1^2+s_2^2)/2}}. This is the package's
-    average-variance standardizer.
+    Hedges' \eqn{g_{s^*} = J(\nu^*)(\bar{y}_1-\bar{y}_2)/s^*}, where
+    \eqn{s^* = \sqrt{(s_1^2+s_2^2)/2}} and
+    \eqn{\nu^* = ((n_1-1)(n_2-1)(s_1^2+s_2^2)^2)/
+    ((n_2-1)s_1^4+(n_1-1)s_2^4)}.
   \item Wilcoxon rank-sum test: signed rank-biserial correlation
     \eqn{r = 2W/(n_1 n_2)-1}, where \eqn{W} is the statistic returned by
     \code{wilcox.test()} for the first group.
@@ -55,8 +56,7 @@ The following estimates are computed internally:
     \eqn{\omega^2 = \nu_1(F-1)/(\nu_1F+\nu_2+1)}, where \eqn{F} is the
     ordinary one-way ANOVA statistic, \eqn{\nu_1=k-1}, and
     \eqn{\nu_2=N-k}. Negative estimates are truncated to zero.
-  \item Welch's one-way test: a package-defined approximate
-    omega-squared-type estimate
+  \item Welch's one-way test: approximate omega-squared-type estimate
     \eqn{\nu_1(F_W-1)/(\nu_1F_W+\nu_2+1)}, where \eqn{F_W} is the
     Welch ANOVA statistic, \eqn{\nu_1=k-1}, and \eqn{\nu_2} is the
     usually fractional denominator degree of freedom returned by
@@ -124,25 +124,23 @@ Hedges, L. V. (1981). Distribution theory for Glass's estimator of effect
 size and related estimators. \emph{Journal of Educational Statistics},
 6(2), 107--128. doi:10.3102/10769986006002107.
 
+Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why Hedges'
+g*s based on the non-pooled standard deviation should be reported with
+Welch's t-test. \emph{PsyArXiv}. doi:10.31234/osf.io/tu6mp.
+
 Kerby, D. S. (2014). The simple difference formula: An approach to teaching
 nonparametric correlation. \emph{Comprehensive Psychology}, 3.
 doi:10.2466/11.IT.3.1.
 
-Olejnik, S., & Algina, J. (2003). Generalized eta and omega squared
-statistics: Measures of effect size for some common research designs.
-\emph{Psychological Methods}, 8(4), 434--447.
-doi:10.1037/1082-989X.8.4.434.
-
-Ben-Shachar, M. S., Ludecke, D., & Makowski, D. (2020). effectsize:
-Estimation of effect size indices and standardized parameters.
-\emph{Journal of Open Source Software}, 5(56), 2815.
-doi:10.21105/joss.02815.
+Albers, C., & Lakens, D. (2018). When power analyses based on pilot data are
+biased: Inaccurate effect size estimators and follow-up bias.
+\emph{Journal of Experimental Social Psychology}, 74, 187--195.
+doi:10.1016/j.jesp.2017.09.004.
 
 Kelley, T. L. (1935). An unbiased correlation ratio measure.
 \emph{Proceedings of the National Academy of Sciences}, 21(9), 554--559.
 doi:10.1073/pnas.21.9.554.
 
-Bergsma, W. (2013). A bias-correction for Cramer's V and Tschuprow's T.
-\emph{Journal of the Korean Statistical Society}, 42(3), 323--328.
-doi:10.1016/j.jkss.2012.10.002.
+Cohen, J. (2013). \emph{Statistical power analysis for the behavioral
+sciences}. Routledge. doi:10.4324/9780203771587.
 }
