@@ -1,6 +1,6 @@
 # visStatistics: The right test, visualised
 
-## Abstract
+## 1 Abstract
 
 `visStatistics` provides a workflow for routine two-variable frequentist
 inference in R. Given two vectors,
@@ -26,7 +26,7 @@ interface and receive a complete visual statistical analysis. It also
 supports time-constrained work such as statistical consulting, where
 less time spent on test selection leaves more room for interpretation.
 
-## Introduction
+## 2 Introduction
 
 In the frequentist tradition, most routine data analyses reduce to a
 comparatively small set of inferential frameworks, including group
@@ -68,7 +68,8 @@ concerns the model residual errors (each observation minus its predicted
 value), but none of these packages checks normality on the residuals of
 the fitted linear model. Instead, `autotestR` and `boxTest` test the
 response separately within groups, whereas `automatedtests` and
-`compareGroups` the response variable as a whole, ignoring the grouping.
+`compareGroups` test the response variable as a whole, ignoring the
+grouping.
 
 Among the reviewed automated test-selection packages, `visStatistics` is
 thus the only one that bases the central-tendency route on explicit
@@ -80,20 +81,19 @@ diagnostics for the linear-model branch, the selected test, full test
 statistics, effect size, result plots, and post-hoc comparisons where
 required.
 
-## Purpose of the vignette
+## 3 Purpose of the vignette
 
-The purpose of this vignette is two-fold: On the one hand side it
-explains the decision logic of
+The purpose of this vignette is two-fold: On the one hand it explains
+the decision logic of
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-(Section @ref(sec:decision)) and illustrates it on examples for each
-branch of the decision logic (Section @ref(sec:examples)). On the other
-side it serves as a text-book like reference of all implmented tests,
-correlationd and effect-sizes (Appendices
-@ref(sec:tests)–@ref(sec:effect-size)), thus that the user easily
-understands the output with out having to consult the code or
-literature.
+(Section [5](#sec:decision)) and illustrates it on examples for each
+branch of the decision logic (Section [6](#sec:examples)). On the other
+side it serves as a text-book like reference of all implemented tests,
+correlations and effect-sizes (Appendices
+[B](#sec:tests)–[F](#sec:effect-size)), so that the user easily
+understands the output without having to consult the code or literature.
 
-## Package overview
+## 4 Package overview
 
 `visStatistics` ([Schilling 2026](#ref-Schilling:2026)) is available on
 [CRAN](https://CRAN.R-project.org/package=visStatistics) as the latest
@@ -136,16 +136,16 @@ the implemented hypothesis tests,
 [`lm()`](https://rdrr.io/r/stats/lm.html).
 
 The underlying selection algorithm is detailed in Section
-@ref(sec:decision). The function returns an object of class `"visstat"`
+[5](#sec:decision). The function returns an object of class `"visstat"`
 with [`print()`](https://rdrr.io/r/base/print.html),
 [`summary()`](https://rdrr.io/r/base/summary.html), and
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods
-described in Section @ref(sec:visstat-methods)
+described in Section [7](#sec:visstat-methods).
 
 Among the returned components,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 reports the p-value of the selected test and an `effect_size` field
-(Section @ref(sec:p-values-effect-sizes)).
+(Section [5.4](#sec:p-values-effect-sizes)).
 
 Unless stated otherwise, R function names for selected tests refer to
 functions from the `stats` package distributed with R ([R Core Team
@@ -153,41 +153,41 @@ functions from the `stats` package distributed with R ([R Core Team
 
 To reduce dependencies on other packages, `visStatistics` implements
 `levene.test()` for the variance gate in grouped mean-based tests
-(Eq. @ref(eq:levene-f)), `bp.test()` for regression diagnostics
-(Eq. @ref(eq:breusch-pagan-bp)), and `games.howell()` for Welch-ANOVA
-post-hoc comparisons (Eq. @ref(eq:games-howell-t)).
+(Eq. [(A.3)](#eq:levene-f)), `bp.test()` for regression diagnostics
+(Eq. [(A.5)](#eq:breusch-pagan-bp)), and `games.howell()` for
+Welch-ANOVA post-hoc comparisons (Eq. [(B.7)](#eq:games-howell-t)).
 
 Definitions of all implemented test statistics, rank-correlation
 coefficients, and effect sizes are given in Appendices
-@ref(sec:tests)–@ref(sec:rank-correlations).
+[B](#sec:tests)–[E](#sec:rank-correlations).
 
-## Decision logic
+## 5 Decision logic
 
 The decision logic of
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 is layered: The general branching, summarised in Figure
-@ref(fig:overview), is driven by the `class` and number of factor levels
-of its input vectors.
+[5.1](#fig:overview), is driven by the `class` and number of factor
+levels of its input vectors.
 
 Only for a numeric response with a categorical predictor, the selection
 among tests of central tendency further depends on group-specific sample
 size and residual diagnostics from a fitted linear model (Section
-@ref(sec:route-1)).
+[5.3.1](#sec:route-1)).
 
-### Top-level routing by input class
+### 5.1 Top-level routing by input class
 
 The main branching logic consists of four default routes summarised in
-Figure @ref(fig:overview).
+Figure [5.1](#fig:overview).
 
 - Route 1. Numeric responses with categorical predictors enter the
-  central-tendency branch detailed in Section @ref(sec:route-1).
+  central-tendency branch detailed in Section [5.3.1](#sec:route-1).
 - Route 2. Ordered categorical responses with categorical predictors
   follow the non-parametric Wilcoxon or Kruskal–Wallis route (Section
-  @ref(sec:route-2)).
+  [5.3.2](#sec:route-2)).
 - Route 3. Two numeric variables enter simple linear regression (Section
-  @ref(sec:route-3)).
+  [5.3.3](#sec:route-3)).
 - Route 4. Two unordered factors enter the proportion-comparison branch
-  (Section @ref(sec:route-4)).
+  (Section [5.3.4](#sec:route-4)).
 
 Rank-correlation analyses are optional user-requested alternatives for
 ordered–ordered and numeric–numeric inputs. They are reached only when
@@ -196,9 +196,10 @@ ordered–ordered and numeric–numeric inputs. They are reached only when
 ![Flowchart showing all implemented statistical tests organised by the
 class of the input vectors.](figures/overview.png)
 
-Overview of all implemented tests selected based on input class.
+Figure 5.1: Overview of all implemented tests selected based on input
+class.
 
-### General linear model framework
+### 5.2 General linear model framework
 
 Student’s t-test, Fisher’s ANOVA (both belonging to Route 1) and simple
 linear regression (in Route 3) are special cases of the general linear
@@ -211,23 +212,23 @@ constant.
 Residuals are the empirical realisations of these error terms. To check
 whether the residuals fulfil the linear model assumptions,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-both *vis*ualises (see Section @ref(sec:graphical)) and formally
+both *vis*ualises (see Section [5.2.3](#sec:graphical)) and formally
 assesses the normality and homoscedasticity of the residuals by
-assumption tests (see Section @ref(sec:assumption-tests)) for tests
+assumption tests (see Section [5.2.2](#sec:assumption-tests)) for tests
 belonging to Route 1 and Route 3. Note that only in Route 1,
 \\p\\-values derived from these assumption tests influence the test
-selection (Section @ref(sec:route-1)).
+selection (Section [5.3.1](#sec:route-1)).
 
-Below, Section @ref(sec:math-glm) formally defines the general linear
-model framework in the context of the implemented tests.
+Below, Section [5.2.1](#sec:math-glm) formally defines the general
+linear model framework in the context of the implemented tests.
 
-#### Model definition
+#### 5.2.1 Model definition
 
 In the general linear model, a response \\Y\\ is modelled as a linear
 combination of \\k-1\\ predictors \\x_j\\. The general linear model for
 observation \\i,\\i = 1, \ldots, N\\ is then
 
-\\\begin{equation} (\\eq:glm) Y_i = \beta_0 + \beta_1 x\_{i1} + \cdots +
+\\\begin{equation} \tag{5.1} Y_i = \beta_0 + \beta_1 x\_{i1} + \cdots +
 \beta\_{k-1} x\_{i,k-1} + \varepsilon_i, \end{equation}\\
 
 where \\Y_i\\ is the response for observation \\i\\, \\x\_{ij}\\ is the
@@ -239,10 +240,10 @@ and constant variance \\\sigma^2\\, in short \\\varepsilon_i \sim
 \mathscr{N}(0, \sigma^2), \quad\mathrm{mutually\\ independent} \\
 
 The variance \\\sigma^2\\ represents the variation of the data on the
-regression , \\Var(Y_i)=\sigma^2\\, as both the (unknown) model
-parameters as well as predictors are not random.
+regression, \\Var(Y_i)=\sigma^2\\, as both the (unknown) model
+parameters and predictors are not random.
 
-From Eq.  @ref(eq:glm), the special cases used by
+From Eq.  [(5.1)](#eq:glm), the special cases used by
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 follow from the predictor structure:
 
@@ -261,20 +262,19 @@ variables for \\k\\ groups; testing \\H_0: \beta_1 = \cdots =
 **Simple linear regression** uses one continuous predictor; \\H_0:
 \beta_1 = 0\\ examines whether a linear relationship exists.
 
-##### Residuals
+##### 5.2.1.1 Residuals
 
-The model error terms \\\varepsilon_i\\ in Eq.  @ref(eq:glm) are not
+The model error terms \\\varepsilon_i\\ in Eq.  [(5.1)](#eq:glm) are not
 observed. Their observable counterparts are the residuals. After fitting
 the data with the corresponding linear model, the raw residual is
 
-\\\begin{equation} e_i = y_i - \hat{y}\_i, (\\eq:raw-residual)
-\end{equation}\\
+\\\begin{equation} e_i = y_i - \hat{y}\_i, \tag{5.2} \end{equation}\\
 
 where \\y_i\\ is the observed value and \\\hat{y}\_i\\ the fitted value
 for observation \\i\\;
 
 \\\begin{equation} \hat{y}\_i = b_0 + b_1 x\_{i1} + \cdots + b\_{k-1}
-x\_{i,k-1} \end{equation}\\ with the estimates values \\b_0, b_1,
+x\_{i,k-1} \end{equation}\\ with the estimated values \\b_0, b_1,
 \ldots, b\_{k-1}\\ for the unknown model parameters \\\beta_0, \beta_1,
 \ldots, \beta\_{k-1}\\.
 
@@ -284,30 +284,30 @@ standard error \\SE\_\text{res}^2 = \frac{\sum\_{i=1}^{N} e_i^2}{N-k}\\.
 Dividing the raw residuals by the standard error we obtain the
 z-residual
 
-\\\begin{equation} z_i = \frac{e_i}{SE\_\text{res}}, (\\eq:z-residual)
+\\\begin{equation} z_i = \frac{e_i}{SE\_\text{res}}, \tag{5.3}
 \end{equation}\\
 
 which facilitates model comparison across different scales of the raw
 data.
 
-###### Standardised residuals
+###### 5.2.1.1.1 Standardised residuals
 
 The residual standard error \\SE\_\text{res}\\ is a *global* estimate
 for the unknown \\\sigma\\, but \\SE\_\text{res}^2\\ is not the best
 estimate for the variance of the *individual* residual
 \\\operatorname{Var}(e_i)\\. It can be shown ([Cook and Weisberg 1982,
-14](#ref-Cook:1982); [Schützenmeister et al. 2012,
-145](#ref-Schutzenmeister:2012a)) that
+14](#ref-Cook:1982);
+[**Schutzenmeister:2012a?**](#ref-Schutzenmeister:2012a)) that
 
 \\\begin{equation} \operatorname{Var}(e_i)=\sigma^2(1-h\_{ii}),
-(\\eq:var-leverage) \end{equation}\\
+\tag{5.4} \end{equation}\\
 
 where the leverage \\h\_{ii}\\ of observation \\i\\ is the \\i\\-th
-diagonal element of the hat matrix \\\mathbf{H}\\ ([Schützenmeister et
-al. 2012, 144](#ref-Schutzenmeister:2012a)), which maps the observed
-values onto the fitted values.
+diagonal element of the hat matrix \\\mathbf{H}\\
+([**Schutzenmeister:2012a?**](#ref-Schutzenmeister:2012a)), which maps
+the observed values onto the fitted values.
 
-Equation @ref(eq:var-leverage) shows that the raw residuals carry an
+Equation [(5.4)](#eq:var-leverage) shows that the raw residuals carry an
 unequal, leverage-dependent variance even when the errors are
 homoscedastic: observations with higher leverage have a smaller
 individual residual variance. Internally studentised (“standardised”)
@@ -315,49 +315,49 @@ residuals correct for this artefact. Dividing \\e_i\\ by its estimated
 individual standard error gives
 
 \\\begin{equation} r_i =\frac{e_i}{\sqrt{
-SE\_\text{res}^2\\(1-h\_{ii})}}= \frac{z_i}{\sqrt{1-h\_{ii}}}.
-(\\eq:standardised) \end{equation}\\
+SE\_\text{res}^2\\(1-h\_{ii})}}= \frac{z_i}{\sqrt{1-h\_{ii}}}. \tag{5.5}
+\end{equation}\\
 
-#### General linear model assumption tests
+#### 5.2.2 General linear model assumption tests
 
 **Normality tests** The normality of the standardised residuals is
 formally assessed using both the Shapiro–Wilk test ([Shapiro and Wilk
 1965](#ref-Shapiro:1965); [Royston 1982](#ref-Royston:1982); [Royston
 1995](#ref-Royston:1995))
 ([`shapiro.test()`](https://rdrr.io/r/stats/shapiro.test.html); Eq. 
-@ref(eq:shapiro-w)) and the Anderson–Darling test ([Anderson and Darling
-1952](#ref-Anderson:1952)) (`ad.test()`; Eq.  @ref(eq:anderson-a2)).
-These tests offer complementary strengths: Anderson-Darling is highly
-sensitive to tail deviations in larger samples ([Razali and Wah
-2011](#ref-Razali:2011); [Yap and Sim 2011](#ref-Yap:2011)), while
-Shapiro-Wilk generally exhibits greater power across non-normal
-distributions in small samples. Therefore in smaller samples, the
-Shapiro–Wilk test is used as normality gate in the automated test
-selection (Section @ref(sec:route-1)).
+[(A.1)](#eq:shapiro-w)) and the Anderson–Darling test ([Anderson and
+Darling 1952](#ref-Anderson:1952)) (`ad.test()`; Eq. 
+[(A.2)](#eq:anderson-a2)). These tests offer complementary strengths:
+Anderson-Darling is highly sensitive to tail deviations in larger
+samples ([Razali and Wah 2011](#ref-Razali:2011); [Yap and Sim
+2011](#ref-Yap:2011)), while Shapiro-Wilk generally exhibits greater
+power across non-normal distributions in small samples. Therefore in
+smaller samples, the Shapiro–Wilk test is used as normality gate in the
+automated test selection (Section [5.3.1](#sec:route-1)).
 
 **Homoscedasticity tests** For grouped central-tendency analyses,
 variance homogeneity of standardised residuals ([Cook and Weisberg
 1982](#ref-Cook:1982); [Kozak and Piepho 2018](#ref-Kozak:2018)) is
 assessed using the package-implemented mean-centred Levene test ([Levene
-1960](#ref-Levene:1960)) (`levene.test()`; Eq.  @ref(eq:levene-f)) and
-Bartlett’s test ([Bartlett 1937](#ref-Bartlett:1937))
+1960](#ref-Levene:1960)) (`levene.test()`; Eq.  [(A.3)](#eq:levene-f))
+and Bartlett’s test ([Bartlett 1937](#ref-Bartlett:1937))
 ([`bartlett.test()`](https://rdrr.io/r/stats/bartlett.test.html); Eq. 
-@ref(eq:bartlett-k2)). Bartlett’s test has greater power when normality
-holds, but the Levene test is more robust to departures from normality
-([Allingham and Rayner 2012](#ref-Allingham:2012)). Therefore, Levene’s
-test is used as the variance gate in the automated workflow.
+[(A.4)](#eq:bartlett-k2)). Bartlett’s test has greater power when
+normality holds, but the Levene test is more robust to departures from
+normality ([Allingham and Rayner 2012](#ref-Allingham:2012)). Therefore,
+Levene’s test is used as the variance gate in the automated workflow.
 
 For simple linear regression, group-based variance tests are not
 applicable. There, `visStatistics` uses its package implementation
 `bp.test()` of the Breusch–Pagan test ([Breusch and Pagan
-1979](#ref-Breusch:1979)) (Eq. @ref(eq:breusch-pagan-bp)) on raw
-residuals ([Kozak and Piepho 2018](#ref-Kozak:2018); [Schützenmeister et
-al. 2012](#ref-Schutzenmeister:2012a)).
+1979](#ref-Breusch:1979)) (Eq. [(A.5)](#eq:breusch-pagan-bp)) on raw
+residuals ([Kozak and Piepho 2018](#ref-Kozak:2018);
+[**Schutzenmeister:2012a?**](#ref-Schutzenmeister:2012a)).
 
-#### Visualisation of the assumptions of the general linear model
+#### 5.2.3 Visualisation of the assumptions of the general linear model
 
-Since algorithmic logic based on p-values of assumptions tests, cannot
-replace expert visual judgment,  
+Since algorithmic logic based on p-values of assumption tests cannot
+replace expert visual judgment,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 *vis*ualises the assumptions of the underlying linear model for the
 selection of tests of central tendency (Route 1) and for simple linear
@@ -366,7 +366,7 @@ regression (`correlation = FALSE`) (Route 3).
 For numeric responses with categorical predictors (Route 1), the
 diagnostic panel displays the residual histogram, the normal Q–Q plot,
 and the absolute standardised residuals \\\|z_i\|\\
-(Eq. @ref(eq:standardised)) by group. The last panel shows whether
+(Eq. [(5.5)](#eq:standardised)) by group. The last panel shows whether
 residual spread is comparable across factor levels, the pattern assessed
 formally by the Levene and Bartlett variance checks.
 
@@ -383,28 +383,28 @@ Breusch–Pagan for simple regression.
 
 Note that among the displayed assumption tests, only the Shapiro–Wilk
 and Levene test results enter automated routing, and only in the
-central-tendency branch (see Section @ref(sec:route-1)).
+central-tendency branch (see Section [5.3.1](#sec:route-1)).
 Anderson–Darling, Bartlett, and Breusch–Pagan are diagnostic output
 only.
 
 The Route 1 and Route 3 diagnostic-panel designs are illustrated in the
-examples in Figures @ref(fig:welch-anova-example), left, and
-@ref(fig:regression-example), left.
+examples in Figures [6.4](#fig:welch-anova-example), left, and
+[6.8](#fig:regression-example), left.
 
-### Route-specific decision rules
+### 5.3 Route-specific decision rules
 
 The general branching is driven by input class and factor levels
-(Section @ref(sec:top-level)). Within the selected route, additional
+(Section [5.1](#sec:top-level)). Within the selected route, additional
 rules determine the selected test and output; these route-specific rules
 are detailed below.
 
-#### Route 1: Numeric response, categorical predictor
+#### 5.3.1 Route 1: Numeric response, categorical predictor
 
-A numeric response with a categorical predictor with \\k\\ “levels” ( in
-the following “groups” ) asks whether the response differs between
+A numeric response with a categorical predictor with \\k\\ “levels” (in
+the following “groups”) asks whether the response differs between
 groups.
 
-Figure @ref(fig:decision-tree) expands the routing logic for tests of
+Figure [5.2](#fig:decision-tree) expands the routing logic for tests of
 central tendencies.
 
 ![Decision tree selecting among Welch t-test, Student t-test, Wilcoxon,
@@ -412,12 +412,12 @@ Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests based on the
 all-groups n_i \> 50 rule, the Shapiro-Wilk test on model residuals, and
 the Levene test for variance homogeneity.](figures/decision_tree.png)
 
-Decision tree for tests of central tendency. If all group-specific
-sample sizes are greater than 50, the formal residual normality test is
-bypassed and variance homogeneity is assessed directly. Otherwise,
-Shapiro–Wilk on model residuals determines whether the route remains
-mean-based or switches to rank-based tests; the Levene test then selects
-equal-variance or Welch-type procedures.
+Figure 5.2: Decision tree for tests of central tendency. If all
+group-specific sample sizes are greater than 50, the formal residual
+normality test is bypassed and variance homogeneity is assessed
+directly. Otherwise, Shapiro–Wilk on model residuals determines whether
+the route remains mean-based or switches to rank-based tests; the Levene
+test then selects equal-variance or Welch-type procedures.
 
 The first split checks group size:
 
@@ -426,17 +426,17 @@ distribution of the group means is treated as sufficiently close to
 normal by the central limit theorem ([Lumley et al.
 2002](#ref-Lumley:2002)). In this case, the test selection is
 independent of the residual-normality p-values, albeit the corresponding
-p-values area still reported and displayd in the diagnostic panels
-(Setion @ref(sec:graphical)).
+p-values are still reported and displayed in the diagnostic panels
+(Section [5.2.3](#sec:graphical)).
 
 This avoids switching to rank-based tests because of negligible
 residual-normality deviations in large samples ([Ghasemi and Zahediasl
 2012](#ref-Ghasemi:2012); [Fagerland 2012](#ref-Fagerland:2012); [Shatz
 2024](#ref-Shatz:2024)).
 
-For smaller samples, a linear model of Eq. @ref(eq:glm) is fitted
+For smaller samples, a linear model of Eq. [(5.1)](#eq:glm) is fitted
 between the numeric response and the categorical predictor, and the
-model residuals of Eq. @ref(eq:raw-residual) are extracted.
+model residuals of Eq. [(5.2)](#eq:raw-residual) are extracted.
 
 The Shapiro–Wilk (SW) normality test is then applied as the
 residual-normality gate, because simulation studies report high power
@@ -446,26 +446,26 @@ for small to moderate sample sizes ([Razali and Wah
 If the SW-test rejects residual normality (\\p\_\text{SW} \le \alpha\\),
 non-parametric tests are selected:
 [`wilcox.test()`](https://rdrr.io/r/stats/wilcox.test.html)
-(Eq. @ref(eq:wilcoxon-w)) for two groups, or
+(Eq. [(C.1)](#eq:wilcoxon-w)) for two groups, or
 [`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html)
-(Eq. @ref(eq:kruskal-h)) followed by Holm-adjusted
+(Eq. [(C.2)](#eq:kruskal-h)) followed by Holm-adjusted
 [`pairwise.wilcox.test()`](https://rdrr.io/r/stats/pairwise.wilcox.test.html)
 for more than two groups.
 
 If residual normality is not rejected or assumed for large sample sizes
 (central limit theorem), variance homogeneity is assessed with the
 mean-centred Levene test (L) ([Levene 1960](#ref-Levene:1960))
-(Eq. @ref(eq:levene-f)).
+(Eq. [(A.3)](#eq:levene-f)).
 
 For homoscedastic data (\\p\_\text{L} \> \alpha\\),
-`t.test(var.equal = TRUE)` (Eq. @ref(eq:student-t)) is applied for two
-groups, or Fisher’s [`aov()`](https://rdrr.io/r/stats/aov.html)
-(Eq. @ref(eq:fisher-f)) for more than two groups. For heteroscedastic
-data (\\p\_\text{L} \le \alpha\\), Welch’s
-[`t.test()`](https://rdrr.io/r/stats/t.test.html) (Eq. @ref(eq:welch-t))
-is applied for two groups, or Welch’s
+`t.test(var.equal = TRUE)` (Eq. [(B.1)](#eq:student-t)) is applied for
+two groups, or Fisher’s [`aov()`](https://rdrr.io/r/stats/aov.html)
+(Eq. [(B.2)](#eq:fisher-f)) for more than two groups. For
+heteroscedastic data (\\p\_\text{L} \le \alpha\\), Welch’s
+[`t.test()`](https://rdrr.io/r/stats/t.test.html)
+(Eq. [(B.4)](#eq:welch-t)) is applied for two groups, or Welch’s
 [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html)
-(Eq. @ref(eq:welch-f)) for more than two groups.
+(Eq. [(B.6)](#eq:welch-f)) for more than two groups.
 
 A type I error of the Levene test merely routes homoscedastic data to
 Welch’s t-test or Welch’s one-way ANOVA, which lose only negligible
@@ -485,12 +485,12 @@ family of tests. Because the three omnibus tests rest on different
 assumptions, each branch uses a matching post-hoc procedure:
 
 - [`TukeyHSD()`](https://rdrr.io/r/stats/TukeyHSD.html)
-  (Eq. @ref(eq:tukey-hsd-q)) after
+  (Eq. [(B.3)](#eq:tukey-hsd-q)) after
   [`aov()`](https://rdrr.io/r/stats/aov.html) controls the family-wise
   error rate through the studentised range distribution under a
   common-variance assumption.
 
-- `games.howell()` (Eq. @ref(eq:games-howell-t)) after
+- `games.howell()` (Eq. [(B.7)](#eq:games-howell-t)) after
   [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html) uses
   separate variance estimates and Welch-adjusted degrees of freedom for
   each pair, making it the appropriate post-hoc procedure for the
@@ -502,13 +502,13 @@ assumptions, each branch uses a matching post-hoc procedure:
   Kruskal–Wallis branch.
 
 The graphical results panel of these omnibus tests consists of box plots
-(see examples in Section @ref(sec:examples-route1)) enriched with
+(see examples in Section [6.1](#sec:examples-route1)) enriched with
 significance letters to visualise the post-hoc analysis: Pairs whose
 adjusted post-hoc \\p\\-value falls below \\\alpha\\ are marked with
 different green significance letters below the box plots; pairs sharing
 a letter are not significantly different.
 
-#### Route 2: Ordered response
+#### 5.3.2 Route 2: Ordered response
 
 An ordered categorical response with a categorical predictor or ordered
 categorical predictor is treated as a rank-based group comparison. The
@@ -516,19 +516,20 @@ ordered response is converted to integer level codes and analysed with
 the Wilcoxon rank-sum test for two groups or the Kruskal–Wallis test for
 more than two groups.
 
-#### Route 3: Numeric response, numeric predictor
+#### 5.3.3 Route 3: Numeric response, numeric predictor
 
 Two numeric variables ask whether a numeric response changes with a
 numeric predictor. By default,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-fits a simple linear regression (Eq. @ref(eq:simple-regression-fit)).
-and the diagnostic panel described in Section @ref(sec:graphical) is
-displayed. If general linear model assumptions are violated, the
-corresponding p-values trigger warnings and recommendations, but no
-automatic model replacement. The regression output is shown in Section
-@ref(sec:lin-reg).
+fits a simple linear regression
+(Eq. [(6.1)](#eq:simple-regression-fit)). and the diagnostic panel
+described in Section [5.2.3](#sec:graphical) is displayed. If general
+linear model assumptions are violated, the corresponding p-values
+trigger warnings and recommendations, but no automatic model
+replacement. The regression output is shown in Section
+[6.3.1](#sec:lin-reg).
 
-#### Route 4: Two unordered factors
+#### 5.3.4 Route 4: Two unordered factors
 
 Two unordered factors ask whether two categorical variables are
 independent.
@@ -541,7 +542,7 @@ expected counts below 5. Yates’ continuity correction is applied by
 default to \\2 \times 2\\ tables when the \\\chi^2\\ approximation is
 used.
 
-#### Optional rank-correlation mode
+#### 5.3.5 Optional rank-correlation mode
 
 The four routes above describe the default, automatic test selection
 behaviour. For ordered–ordered and numeric–numeric input vectors, the
@@ -550,19 +551,19 @@ user can instead request a rank-correlation analysis by setting
 
 Both optional analyses test monotone association and are computed by
 [`cor.test()`](https://rdrr.io/r/stats/cor.test.html): Kendall’s
-\\\tau_b\\ (Eq. @ref(eq:kendall-tau-b)) with
+\\\tau_b\\ (Eq. [(E.1)](#eq:kendall-tau-b)) with
 `method = "kendall", exact = FALSE` for two ordered variables, and
-Spearman’s \\\rho\\ (Eq. @ref(eq:spearman-rho)) with
+Spearman’s \\\rho\\ (Eq. [(E.2)](#eq:spearman-rho)) with
 `method = "spearman"` for two numeric variables. Kendall’s \\\tau_b\\
 corrects for ties present with few ordered levels ([Agresti
 2010](#ref-Agresti:2010); [Xu et al. 2013](#ref-Xu:2013)).
 
-Note, that for numeric–numeric input, Pearson correlation is not
+Note that for numeric–numeric input, Pearson correlation is not
 implemented as a separate optional mode as in simple linear regression
 with an intercept, the two-sided test of zero slope and the two-sided
 Pearson correlation test return the same \\p\\-value.
 
-### Reported p-values and effect sizes
+### 5.4 Reported p-values and effect sizes
 
 The selected test output includes the p-value for the corresponding null
 hypothesis. As a complementary output component, the `effect_size` field
@@ -571,17 +572,17 @@ reports the effect-size name, numeric estimate, and method description.
 The exported package function
 [`effect_size()`](https://shhschilling.github.io/visStatistics/reference/effect_size.md)
 computes these estimates; implemented formulae are given in Appendix
-@ref(sec:effect-size).
+[F](#sec:effect-size).
 
 The p-value quantifies evidence against the null hypothesis, whereas the
 effect-size estimate describes the magnitude of the selected comparison,
 association, or model fit on the scale defined in Appendix
-@ref(sec:effect-size) ([Fritz et al. 2012](#ref-Fritz:2012); [Levine and
+[F](#sec:effect-size) ([Fritz et al. 2012](#ref-Fritz:2012); [Levine and
 Hullett 2002](#ref-Levine:2002)).
 
-## Examples
+## 6 Examples
 
-The examples follow the routes outlined in Section @ref(sec:top-level)
+The examples follow the routes outlined in Section [5.1](#sec:top-level)
 and are chosen to trigger every branch.
 
 Within the group-comparison routes, examples are ordered such that the
@@ -593,11 +594,11 @@ Where needed, the example descriptions add interpretive details on the
 graphical output, such as significance letters, regression bands, or
 mosaic plots.
 
-### Route 1: Numeric response, categorical predictor
+### 6.1 Route 1: Numeric response, categorical predictor
 
-#### Student’s t-test and Fisher’s one-way ANOVA
+#### 6.1.1 Student’s t-test and Fisher’s one-way ANOVA
 
-##### Student’s t-test
+##### 6.1.1.1 Student’s t-test
 
 The `ToothGrowth` dataset records odontoblast length in 60 guinea pigs
 given vitamin C by orange juice (`OJ`) or ascorbic acid (`VC`). With
@@ -626,13 +627,13 @@ the equal-variance mean-based path, followed by box plots with the
 Student t-test
 result.](visStatistics_files/figure-html/student-ttest-example-2.png)
 
-Student’s t-test applied to the `ToothGrowth` dataset (`len`
+Figure 6.1: Student’s t-test applied to the `ToothGrowth` dataset (`len`
 vs. `supp`). Assumption diagnostics (Shapiro–Wilk does not reject
 residual normality; Levene does not reject residual variance
 homogeneity) select the equal-variance mean-based path, followed by box
 plots with the Student t-test result.
 
-##### Fisher’s one-way ANOVA with Tukey HSD post-hoc comparisons
+##### 6.1.1.2 Fisher’s one-way ANOVA with Tukey HSD post-hoc comparisons
 
 The `PlantGrowth` dataset records yields (as measured by dried weight of
 plants) for a control group and two treatment groups. With control and
@@ -666,15 +667,15 @@ homogeneity) select the equal-variance mean-based path, followed by box
 plots with Tukey HSD significance letters (\$\alpha =
 0.05\$).](visStatistics_files/figure-html/anova-example-2.png)
 
-Fisher’s one-way ANOVA applied to the `PlantGrowth` dataset (`weight`
-vs. `group`). Assumption diagnostics (Shapiro–Wilk does not reject
-residual normality; Levene does not reject residual variance
+Figure 6.2: Fisher’s one-way ANOVA applied to the `PlantGrowth` dataset
+(`weight` vs. `group`). Assumption diagnostics (Shapiro–Wilk does not
+reject residual normality; Levene does not reject residual variance
 homogeneity) select the equal-variance mean-based path, followed by box
 plots with Tukey HSD significance letters (\\\alpha = 0.05\\).
 
-#### Welch’s t-test and Welch’s one-way ANOVA
+#### 6.1.2 Welch’s t-test and Welch’s one-way ANOVA
 
-##### Welch’s t-test
+##### 6.1.2.1 Welch’s t-test
 
 The *Motor Trend Car Road Tests* dataset (`mtcars`) contains 32
 observations, where `mpg` denotes miles per (US) gallon and `am`
@@ -704,13 +705,13 @@ normality; Levene rejects residual variance homogeneity) select the
 unequal-variance mean-based path, followed by box plots with the Welch
 t-test result.](visStatistics_files/figure-html/ttest-example-2.png)
 
-Welch’s t-test applied to the `mtcars` dataset (`mpg` vs. `am`).
-Assumption diagnostics (Shapiro–Wilk does not reject residual normality;
-Levene rejects residual variance homogeneity) select the
+Figure 6.3: Welch’s t-test applied to the `mtcars` dataset (`mpg`
+vs. `am`). Assumption diagnostics (Shapiro–Wilk does not reject residual
+normality; Levene rejects residual variance homogeneity) select the
 unequal-variance mean-based path, followed by box plots with the Welch
 t-test result.
 
-##### Welch’s heteroscedastic one-way ANOVA with Games–Howell post-hoc comparisons
+##### 6.1.2.2 Welch’s heteroscedastic one-way ANOVA with Games–Howell post-hoc comparisons
 
 In the `iris` dataset, using `Species` as predictor and `Sepal.Length`
 as response, the assumption-diagnostic panel shows that Shapiro–Wilk
@@ -742,15 +743,16 @@ path, followed by box plots with Games--Howell significance letters
 (\$\alpha =
 0.05\$).](visStatistics_files/figure-html/welch-anova-example-2.png)
 
-Welch’s heteroscedastic one-way ANOVA applied to the `iris` dataset
-(`Sepal.Length` vs. `Species`). Assumption diagnostics (Shapiro–Wilk
-does not reject residual normality; Levene rejects residual variance
-homogeneity) select the unequal-variance mean-based path, followed by
-box plots with Games–Howell significance letters (\\\alpha = 0.05\\).
+Figure 6.4: Welch’s heteroscedastic one-way ANOVA applied to the `iris`
+dataset (`Sepal.Length` vs. `Species`). Assumption diagnostics
+(Shapiro–Wilk does not reject residual normality; Levene rejects
+residual variance homogeneity) select the unequal-variance mean-based
+path, followed by box plots with Games–Howell significance letters
+(\\\alpha = 0.05\\).
 
-#### Wilcoxon rank-sum test and Kruskal–Wallis test
+#### 6.1.3 Wilcoxon rank-sum test and Kruskal–Wallis test
 
-##### Wilcoxon rank-sum test
+##### 6.1.3.1 Wilcoxon rank-sum test
 
 The `warpbreaks` dataset records thread breaks during weaving. Using
 wool type (`A` or `B`) as predictor and the number of breaks as
@@ -775,16 +777,16 @@ rank-sum test applied to the \`warpbreaks\` dataset (\`breaks\` vs.\\
 normality; non-parametric path selected) and box plots with the Wilcoxon
 test result.](visStatistics_files/figure-html/wilcoxon-example-2.png)
 
-Wilcoxon rank-sum test applied to the `warpbreaks` dataset (`breaks`
-vs. `wool`). Assumption diagnostics (Shapiro–Wilk rejects residual
-normality; non-parametric path selected) and box plots with the Wilcoxon
-test result.
+Figure 6.5: Wilcoxon rank-sum test applied to the `warpbreaks` dataset
+(`breaks` vs. `wool`). Assumption diagnostics (Shapiro–Wilk rejects
+residual normality; non-parametric path selected) and box plots with the
+Wilcoxon test result.
 
-##### Kruskal–Wallis rank sum test with pairwise Wilcoxon post-hoc comparisons
+##### 6.1.3.2 Kruskal–Wallis rank sum test with pairwise Wilcoxon post-hoc comparisons
 
 In the `iris` data set, `Petal.Width` by `Species` follows a different
 route than `Sepal.Length` by `Species` above (Figure
-@ref(fig:welch-anova-example)), because the assumption diagnostics
+[6.4](#fig:welch-anova-example)), because the assumption diagnostics
 differ. The assumption-diagnostic panel shows clear departures from
 normality, and both normality tests return very small \\p\\-values.
 Since Shapiro–Wilk falls below \\\alpha\\,
@@ -813,17 +815,17 @@ normality; non-parametric path selected) and box plots with
 Holm-adjusted pairwise Wilcoxon significance letters (\$\alpha =
 0.05\$).](visStatistics_files/figure-html/kruskal-example-2.png)
 
-Kruskal-Wallis test applied to the `iris` dataset (`Petal.Width`
-vs. `Species`). Assumption diagnostics (Shapiro–Wilk rejects residual
-normality; non-parametric path selected) and box plots with
-Holm-adjusted pairwise Wilcoxon significance letters (\\\alpha =
+Figure 6.6: Kruskal-Wallis test applied to the `iris` dataset
+(`Petal.Width` vs. `Species`). Assumption diagnostics (Shapiro–Wilk
+rejects residual normality; non-parametric path selected) and box plots
+with Holm-adjusted pairwise Wilcoxon significance letters (\\\alpha =
 0.05\\).
 
-### Route 2: Ordered response
+### 6.2 Route 2: Ordered response
 
-#### Ordered response, categorical factor
+#### 6.2.1 Ordered response, categorical factor
 
-##### Wilcoxon rank-sum test with ordered response
+##### 6.2.1.1 Wilcoxon rank-sum test with ordered response
 
 The `Titanic` dataset contains passenger counts by, among other
 variables, passenger class and gender. After expanding the table to
@@ -832,7 +834,7 @@ two-level predictor.
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 selects the Wilcoxon rank-sum test. The result panel therefore displays
 the rank-test comparison on the numeric level scores (see Figure
-@ref(fig:ordinal-wilcoxon-kruskal-example), left).
+[6.7](#fig:ordinal-wilcoxon-kruskal-example), left).
 
 ``` r
 
@@ -845,7 +847,7 @@ wilcox_ordered <- visstat(titanic_df$Sex, titanic_df$Class)
     ## Warning: Ordered response detected. Converting to integer level codes for
     ## non-parametric analysis.
 
-##### Kruskal–Wallis test with ordered response
+##### 6.2.1.2 Kruskal–Wallis test with ordered response
 
 With three predictor groups,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -854,7 +856,7 @@ followed by Holm-adjusted
 [`pairwise.wilcox.test()`](https://rdrr.io/r/stats/pairwise.wilcox.test.html).
 The result panel shows the Kruskal–Wallis comparison and Holm-adjusted
 significance letters on the numeric level scores (see Figure
-@ref(fig:ordinal-wilcoxon-kruskal-example), right). A synthetic survey
+[6.7](#fig:ordinal-wilcoxon-kruskal-example), right). A synthetic survey
 records perceived car comfort on a five-point scale across three
 markets.
 
@@ -890,37 +892,37 @@ Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as
 significance letters for the Kruskal-Wallis example (\$\alpha =
 0.05\$).](visStatistics_files/figure-html/ordinal-wilcoxon-kruskal-example-2.png)
 
-Wilcoxon rank-sum test for ordered passenger class by sex in the
-expanded `Titanic` data (left) and its multi-group generalisation, the
-Kruskal-Wallis test for ordered car comfort ratings by market (right).
-Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as
-significance letters for the Kruskal-Wallis example (\\\alpha = 0.05\\).
+Figure 6.7: Wilcoxon rank-sum test for ordered passenger class by sex in
+the expanded `Titanic` data (left) and its multi-group generalisation,
+the Kruskal-Wallis test for ordered car comfort ratings by market
+(right). Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown
+as significance letters for the Kruskal-Wallis example (\\\alpha =
+0.05\\).
 
-### Route 3: Numeric response, numeric predictor
+### 6.3 Route 3: Numeric response, numeric predictor
 
-#### Linear regression
+#### 6.3.1 Linear regression
 
 The `swiss` dataset records standardised fertility and socioeconomic
 indicators for 47 French-speaking Swiss provinces in 1888. We examine
 how the share of draftees achieving the highest army examination score
 (`Examination`) predicts the fertility measure (`Fertility`), with
 `conf.level = 0.99`. The diagnostic panel in Figure
-@ref(fig:regression-example), left, shows that both normality tests pass
-and the Breusch–Pagan test confirms homoscedasticity, supporting the
-linear model. The assumption-diagnostic panel is displayed, but its
+[6.8](#fig:regression-example), left, shows that both normality tests
+pass and the Breusch–Pagan test confirms homoscedasticity, supporting
+the linear model. The assumption-diagnostic panel is displayed, but its
 checks do not trigger automatic model replacement. The regression plot
 shows the fitted line
 
-\\\begin{equation} \hat{y}\_i = b_0 + b_1 x_i
-(\\eq:simple-regression-fit) \end{equation}\\ with the point estimates
-\\b_0\\ and \\b_1\\ for the unknown parameters \\\beta_0\\ and
-\\\beta_1\\ of the linear regression model in Eq.  @ref(eq:glm) with one
-predictor. It is displayed with pointwise confidence and prediction
-bands at the specified `conf.level`.
+\\\begin{equation} \hat{y}\_i = b_0 + b_1 x_i \tag{6.1} \end{equation}\\
+with the point estimates \\b_0\\ and \\b_1\\ for the unknown parameters
+\\\beta_0\\ and \\\beta_1\\ of the linear regression model in Eq. 
+[(5.1)](#eq:glm) with one predictor. It is displayed with pointwise
+confidence and prediction bands at the specified `conf.level`.
 
 The returned object contains the regression statistics,
 residual-normality tests, pointwise confidence and prediction bands, and
-the coefficient of determination \\R^2\\ (Eq. @ref(eq:r-squared)) as
+the coefficient of determination \\R^2\\ (Eq. [(F.1)](#eq:r-squared)) as
 effect size.
 
 ``` r
@@ -941,11 +943,11 @@ regression line, 99\\ confidence band (dark shading), and 99\\
 prediction band (light
 shading).](visStatistics_files/figure-html/regression-example-2.png)
 
-Simple linear regression of `Fertility` on `Examination` for the `swiss`
-dataset (`conf.level = 0.99`). Assumption diagnostics (Shapiro–Wilk,
-Anderson–Darling, Breusch–Pagan) and scatter plot with fitted regression
-line, 99% confidence band (dark shading), and 99% prediction band (light
-shading).
+Figure 6.8: Simple linear regression of `Fertility` on `Examination` for
+the `swiss` dataset (`conf.level = 0.99`). Assumption diagnostics
+(Shapiro–Wilk, Anderson–Darling, Breusch–Pagan) and scatter plot with
+fitted regression line, 99% confidence band (dark shading), and 99%
+prediction band (light shading).
 
 The `airquality` ozone example shows the limits of the automated
 approach when the default linear model is not an adequate final model.
@@ -979,8 +981,8 @@ dataset. Assumption diagnostics flag non-normal model residuals and
 heteroscedasticity before alternative routes are
 considered.](visStatistics_files/figure-html/ozone-lm-triage-2.png)
 
-Default simple linear regression for `Ozone` by `Wind` in the
-`airquality` dataset. Assumption diagnostics flag non-normal model
+Figure 6.9: Default simple linear regression for `Ozone` by `Wind` in
+the `airquality` dataset. Assumption diagnostics flag non-normal model
 residuals and heteroscedasticity before alternative routes are
 considered.
 
@@ -991,18 +993,18 @@ In the “Residual vs. fitted” diagnostic panel we observe an increase in
 spread from left to right, forming a funnel shape that indicates
 variance increases with fitted values. The optional Spearman analysis
 for the same dataset is shown in Section
-@ref(sec:examples-rank-correlation-mode). The following example shows a
-Gamma generalised linear model outside
+[6.5](#sec:examples-rank-correlation-mode). The following example shows
+a Gamma generalised linear model outside
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md).
 
-#### Model exploration outside `visstat()`
+#### 6.3.2 Model exploration outside `visstat()`
 
 As a model outside of
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md),
 we fit a Gamma generalised linear model with log link. The Gamma family
 is suited here because Ozone is strictly positive and continuous, and
-its variance grows with the fitte values — the structure detected by the
-Breusch–Pagan test. The log link guarantees positive fitted values.
+its variance grows with the fitted values — the structure detected by
+the Breusch–Pagan test. The log link guarantees positive fitted values.
 
 ``` r
 
@@ -1026,9 +1028,9 @@ model_lm$aic
 vs. \`Wind\`. The red curve shows the fitted Gamma GLM; the y-axis is on
 a log scale.](visStatistics_files/figure-html/gamma-glm-plot-1.png)
 
-Gamma GLM with log link fitted to the `airquality` dataset `Ozone`
-vs. `Wind`. The red curve shows the fitted Gamma GLM; the y-axis is on a
-log scale.
+Figure 6.10: Gamma GLM with log link fitted to the `airquality` dataset
+`Ozone` vs. `Wind`. The red curve shows the fitted Gamma GLM; the y-axis
+is on a log scale.
 
 For a Gamma generalised linear model with log link, standardised
 deviance residuals are asymptotically standard normal; we use
@@ -1070,7 +1072,7 @@ illustrates how assumption warnings from
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 can motivate model exploration outside the automated decision tree.
 
-### Route 4: Two unordered factors
+### 6.4 Route 4: Two unordered factors
 
 The following examples are based on the `HairEyeColor` contingency
 table, which is converted to the column-based data frame expected by
@@ -1078,15 +1080,15 @@ table, which is converted to the column-based data frame expected by
 using the helper function
 [`counts_to_cases()`](https://shhschilling.github.io/visStatistics/reference/counts_to_cases.md).
 
-#### Pearson’s \\\chi^2\\ test
+#### 6.4.1 Pearson’s \\\chi^2\\ test
 
 For a contingency table with \\R\\ response levels and \\C\\ predictor
-levels, Pearson’s \\\chi^2\\ test (Eq. @ref(eq:pearson-chi)) shows a
+levels, Pearson’s \\\chi^2\\ test (Eq. [(D.2)](#eq:pearson-chi)) shows a
 grouped column plot of row percentages with the \\p\\-value in the
 title, followed by a mosaic plot from `vcd` ([Meyer et al.
 2006](#ref-Meyer:2006), [2024](#ref-Meyer:2024)). Each tile corresponds
 to one cell of the contingency table. The tile colour represents the
-Pearson residual value (Eq. @ref(eq:pearson-residual)) on a blue–red
+Pearson residual value (Eq. [(D.1)](#eq:pearson-residual)) on a blue–red
 colour scale; the tile size reflects the cell count.
 
 With `Eye` and `Hair` from `HairEyeColor`, all expected cell counts
@@ -1108,22 +1110,22 @@ chart of eye colour by hair colour and mosaic plot with tiles coloured
 by Pearson residuals (blue: over-represented, red:
 under-represented).](visStatistics_files/figure-html/chisq-example-2.png)
 
-Pearson’s \\\chi^2\\ test applied to the `HairEyeColor` dataset. Grouped
-bar chart of eye colour by hair colour and mosaic plot with tiles
-coloured by Pearson residuals (blue: over-represented, red:
+Figure 6.11: Pearson’s \\\chi^2\\ test applied to the `HairEyeColor`
+dataset. Grouped bar chart of eye colour by hair colour and mosaic plot
+with tiles coloured by Pearson residuals (blue: over-represented, red:
 under-represented).
 
 Here, cells for black hair and brown hair, as well as blond hair and
 blue eyes, show counts above the expectation.
 
-#### Pearson’s \\\chi^2\\ test with Yates’ continuity correction
+#### 6.4.2 Pearson’s \\\chi^2\\ test with Yates’ continuity correction
 
 Restricting `HairEyeColor` to black or brown hair and brown or blue eyes
 yields a \\2 \times 2\\ table. Cochran’s rule is still satisfied, so
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 applies Pearson’s \\\chi^2\\ test with Yates’ continuity correction. The
 resulting grouped column plot is shown in Figure
-@ref(fig:yates-fisher-example), left.
+[6.12](#fig:yates-fisher-example), left.
 
 ``` r
 
@@ -1155,7 +1157,7 @@ below \\\alpha = 0.05\\ (\\p = 0.0035\\) and thus significant. This
 example underlines the importance of effect sizes: a significant p-value
 can be accompanied with a small effect size measure.
 
-#### Fisher’s exact test
+#### 6.4.3 Fisher’s exact test
 
 Restricting `HairEyeColor` to male participants with black or brown hair
 and hazel or green eyes yields a \\2 \times 2\\ table where one expected
@@ -1165,7 +1167,7 @@ frequency is less than 5, violating Cochran’s rule ([Cochran
 therefore applies Fisher’s exact test. The graphical output shows
 absolute counts with count labels above each bar and the \\p\\-value in
 the title, so the small cell counts that trigger the exact test remain
-visible (see Figure @ref(fig:yates-fisher-example), right).
+visible (see Figure [6.12](#fig:yates-fisher-example), right).
 
 ``` r
 
@@ -1192,25 +1194,25 @@ right). The Yates-corrected plot shows row percentages; the Fisher plot
 shows absolute
 counts.](visStatistics_files/figure-html/yates-fisher-example-2.png)
 
-Two \\2 \times 2\\ categorical routes in `HairEyeColor`: Yates-corrected
-Pearson \\\chi^2\\ when Cochran’s rule is satisfied (black/brown hair
-and brown/blue eyes; left), and Fisher’s exact test when expected counts
-are too small (male participants, black/brown hair, hazel/green eyes;
-right). The Yates-corrected plot shows row percentages; the Fisher plot
-shows absolute counts.
+Figure 6.12: Two \\2 \times 2\\ categorical routes in `HairEyeColor`:
+Yates-corrected Pearson \\\chi^2\\ when Cochran’s rule is satisfied
+(black/brown hair and brown/blue eyes; left), and Fisher’s exact test
+when expected counts are too small (male participants, black/brown hair,
+hazel/green eyes; right). The Yates-corrected plot shows row
+percentages; the Fisher plot shows absolute counts.
 
-### Optional rank-correlation mode
+### 6.5 Optional rank-correlation mode
 
 Correlation analysis requires the explicit flag `correlation = TRUE`.
 
-#### Kendall rank correlation with `correlation = TRUE`
+#### 6.5.1 Kendall rank correlation with `correlation = TRUE`
 
 A hypothetical survey of 150 secondary-school students records alcohol
 consumption frequency and academic performance on five-point ordinal
 scales. A negative monotone association is induced by construction:
 students who consume alcohol more frequently tend to have lower academic
 performance. The Kendall result is shown in Figure
-@ref(fig:kendall-spearman-example), left.
+[6.13](#fig:kendall-spearman-example), left.
 
 ``` r
 
@@ -1239,20 +1241,20 @@ Right: Spearman rank correlation of \`Wind\` and \`Ozone\` from the
 annotate the corresponding effect measure and
 \$p\$-value.](visStatistics_files/figure-html/kendall-spearman-example-2.png)
 
-Rank-based correlations: Left: Kendall’s \\\tau_b\\ for a hypothetical
-survey (\\n = 150\\): alcohol consumption frequency vs. academic
-performance. Right: Spearman rank correlation of `Wind` and `Ozone` from
-the `airquality` dataset (`correlation = TRUE`; right). Both plots
-annotate the corresponding effect measure and \\p\\-value.
+Figure 6.13: Rank-based correlations: Left: Kendall’s \\\tau_b\\ for a
+hypothetical survey (\\n = 150\\): alcohol consumption frequency
+vs. academic performance. Right: Spearman rank correlation of `Wind` and
+`Ozone` from the `airquality` dataset (`correlation = TRUE`; right).
+Both plots annotate the corresponding effect measure and \\p\\-value.
 
-#### Spearman rank correlation with `correlation = TRUE`
+#### 6.5.2 Spearman rank correlation with `correlation = TRUE`
 
-For the ozone example introduced in Section @ref(sec:lin-reg), staying
-within `visstat(,)` with the flag `correlation = TRUE` gives the
-Spearman analysis shown in Figure @ref(fig:kendall-spearman-example),
+For the ozone example introduced in Section [6.3.1](#sec:lin-reg),
+staying within `visstat(,)` with the flag `correlation = TRUE` gives the
+Spearman analysis shown in Figure [6.13](#fig:kendall-spearman-example),
 right.
 
-## The `visstat` methods
+## 7 The `visstat` methods
 
 Objects returned by
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1261,7 +1263,7 @@ are of class `"visstat"` and support the S3 methods
 [`summary()`](https://rdrr.io/r/base/summary.html), and
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html).
 
-### `print()`
+### 7.1 `print()`
 
 [`print()`](https://rdrr.io/r/base/print.html) lists the returned
 components.
@@ -1282,7 +1284,7 @@ print(anova_plantgrowth)
     ## [1] "summary statistics of ANOVA" "post-hoc analysis "         
     ## [3] "conf.level"                  "effect_size"
 
-### `summary()`
+### 7.2 `summary()`
 
 [`summary()`](https://rdrr.io/r/base/summary.html) prints the full
 returned object, including assumption tests, post-hoc comparisons,
@@ -1334,13 +1336,13 @@ summary(anova_plantgrowth)
     ## $effect_size_method
     ## [1] "Omega-squared for one-way ANOVA"
 
-### `plot()`
+### 7.3 `plot()`
 
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html) lists available
 plots by default. With `which`, it either replays a captured plot or
 reports the selected saved file path.
 
-#### Interactive mode
+#### 7.3.1 Interactive mode
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1365,7 +1367,7 @@ plot(anova_plantgrowth)
 plot(anova_plantgrowth, which = 2)
 ```
 
-#### Saved graphics
+#### 7.3.2 Saved graphics
 
 When
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1407,7 +1409,7 @@ print(basename(paths))
     ## [1] "glm_assumptions_anova_plantgrowth.png"
     ## [2] "anova_plantgrowth.png"
 
-## Discussion
+## 8 Discussion
 
 The design of `visStatistics` prioritises transparent, reproducible
 routing for common two-variable analyses ([Strasak et al.
@@ -1512,12 +1514,12 @@ Taken together, these scope decisions define `visStatistics` as a rapid,
 inspectable first-line workflow for routine two-variable inference
 rather than a replacement for model-specific statistical analysis.
 
-## Conclusion
+## 9 Conclusion
 
-Many routine statistical analysis reduce to a relatively small number of
+Many routine statistical analyses reduce to a relatively small number of
 tests. Under those tests parametric tests like t-tests, analysis of
 variance or regression belong to the family of general linear models,
-which’s assumptions are frequently not tested at all or not tested
+whose assumptions are frequently not tested at all or not tested
 properly ([Hoekstra et al. 2012](#ref-Hoekstra:2012); [Ernst and Albers
 2017](#ref-Ernst:2017); [Jones et al. 2025](#ref-Jones:2025); [Kéry and
 Hatfield 2003](#ref-Kery:2003)).
@@ -1525,25 +1527,25 @@ Hatfield 2003](#ref-Kery:2003)).
 `visStatistics` addresses this gap: Its automated test selection relying
 on the data type, size and p-values of assumption tests of the model
 residuals is fully transparent, but addresses the inherent shortcomings
-of test selection based on the p-values by assumptions tests ([Lumley et
+of test selection based on the p-values of assumption tests ([Lumley et
 al. 2002](#ref-Lumley:2002); [Fagerland 2012](#ref-Fagerland:2012);
 [Franc 2025](#ref-Franc:2025); [Kozak and Piepho 2018](#ref-Kozak:2018);
 [Shatz 2024](#ref-Shatz:2024)) by supplementing the output with
 diagnostic plots of the assumption tests.
 
-. Its value is not that it removes the user’s statistical judgment, but
+Its value is not that it removes the user’s statistical judgment, but
 that it exposes the assumptions, routing decisions, effect sizes, and
 plots that should inform that judgment. The package therefore serves as
 a transparent entry point for routine two-variable analyses, leaving
 model-specific extensions to the analyst.
 
-## (APPENDIX) Appendix
+## Appendix
 
-## Assumption tests
+## A Assumption tests
 
-### Normality tests
+### A.1 Normality tests
 
-#### Shapiro–Wilk test `shapiro.test()`
+#### A.1.1 Shapiro–Wilk test `shapiro.test()`
 
 The Shapiro–Wilk test evaluates whether a sample \\x_1,\ldots,x_n\\
 comes from a normal distribution. Let \\x\_{(1)}\le \cdots \le
@@ -1568,11 +1570,11 @@ V^{-1}V^{-1}\mathbf{m}\right)}}.\\ Then the Shapiro–Wilk statistic
 ([Shapiro and Wilk 1965](#ref-Shapiro:1965)) is
 
 \\\begin{equation} W=\frac{\left(\sum\_{i=1}^{n} a_i x\_{(i)}\right)^2}
-{\sum\_{i=1}^{n} (x_i-\bar{x})^2} (\\eq:shapiro-w) \end{equation}\\
+{\sum\_{i=1}^{n} (x_i-\bar{x})^2} \tag{A.1} \end{equation}\\
 
 \\W\\ takes values in \\(0, 1\]\\; values close to 1 indicate normality.
 
-#### Anderson–Darling test `ad.test()`
+#### A.1.2 Anderson–Darling test `ad.test()`
 
 Let \\z_i = (x\_{(i)} - \bar{x})/s,\\ i=1,2,\ldots,n\\ be the
 standardised order statistics of \\x_i\\, where \\s\\ is the sample
@@ -1581,14 +1583,14 @@ cumulative distribution function. The test statistic is
 
 \\\begin{equation} A^2 = -n - \frac{1}{n}\sum\_{i=1}^{n}(2i-1)
 \left\[\ln\Phi(z_i) + \ln\\\left(1 - \Phi(z\_{n+1-i})\right)\right\]
-(\\eq:anderson-a2) \end{equation}\\
+\tag{A.2} \end{equation}\\
 
 The implementation uses `ad.test()` from `nortest` ([Gross and Ligges
 2015](#ref-Gross:2015)).
 
-### Homoscedasticity tests
+### A.2 Homoscedasticity tests
 
-#### The mean-centred Levene test `levene.test()`
+#### A.2.1 The mean-centred Levene test `levene.test()`
 
 The package implementation uses Levene’s original mean-centred proposal
 ([Levene 1960](#ref-Levene:1960)).
@@ -1596,24 +1598,24 @@ The package implementation uses Levene’s original mean-centred proposal
 The Levene test statistic is the one-way ANOVA \\F\\ statistic, computed
 on the absolute residuals \\\|e\_{ij}\|\\ in place of the responses
 \\x\_{ij}\\; the corresponding Fisher ANOVA formula is given in
-Eq. @ref(eq:fisher-f):
+Eq. [(B.2)](#eq:fisher-f):
 
 \\\begin{equation} F_L = \frac{\displaystyle\sum\_{i=1}^{k} n_i
 (\overline{\|e\|}\_i - \overline{\|e\|})^2\\/\\(k-1)}
 {\displaystyle\sum\_{i=1}^{k}\sum\_{j=1}^{n_i}(\|e\_{ij}\| -
-\overline{\|e\|}\_i)^2\\/\\(N-k)}, (\\eq:levene-f) \end{equation}\\
+\overline{\|e\|}\_i)^2\\/\\(N-k)}, \tag{A.3} \end{equation}\\
 
 where \\\overline{\|e\|}\_i\\ is the within-group mean of the absolute
 residuals and \\\overline{\|e\|}\\ is their overall mean.
 
-#### Bartlett’s test `bartlett.test()`
+#### A.2.2 Bartlett’s test `bartlett.test()`
 
 Bartlett’s test statistic ([Bartlett 1937](#ref-Bartlett:1937)) is
 
 \\\begin{equation} K^2 = \frac{(N-k)\ln s_p^2 -
 \displaystyle\sum\_{i=1}^k (n_i-1)\ln s_i^2} {1 +
 \dfrac{1}{3(k-1)}\\\left(\displaystyle\sum\_{i=1}^k \frac{1}{n_i-1} -
-\frac{1}{N-k}\right)}, (\\eq:bartlett-k2) \end{equation}\\
+\frac{1}{N-k}\right)}, \tag{A.4} \end{equation}\\
 
 where \\k\\ is the number of groups, \\N = \sum\_{i=1}^k n_i\\ is the
 total sample size, \\n_i\\ is the sample size of group \\i\\, \\s_i^2\\
@@ -1625,7 +1627,7 @@ variance
 Under the null hypothesis the statistic approximately follows
 \\\chi^2(k-1)\\.
 
-#### Breusch–Pagan test `bp.test()`
+#### A.2.3 Breusch–Pagan test `bp.test()`
 
 For simple linear regression, group-based variance tests are not
 applicable. The package implementation `bp.test()` performs the Koenker
@@ -1636,8 +1638,7 @@ values from the regression model \\\hat{y}\_i\\.
 
 The Breusch–Pagan statistic is defined as:
 
-\\\begin{equation} BP = N R^2\_\text{aux} (\\eq:breusch-pagan-bp),
-\end{equation}\\
+\\\begin{equation} BP = N R^2\_\text{aux} \tag{A.5}, \end{equation}\\
 
 where \\R^2\_\text{aux}\\ denotes the coefficient of determination from
 regressing \\e_i^2\\ on \\\hat{y}\_i\\:
@@ -1651,24 +1652,23 @@ regression and \\\overline{e^2}\\ is the mean of the squared residuals.
 Under the null hypothesis of homoscedasticity, \\BP\\ is compared
 asymptotically to a \\\chi^2(k-1)\\ distribution.
 
-## Parametric tests
+## B Parametric tests
 
 In the numeric-response, categorical-predictor branch (Route 1),
 parametric tests are selected when residual normality is not rejected,
 or when all group-specific sample sizes are greater than 50. The Levene
 variance gate then separates equal-variance tests from Welch-type tests.
 
-### Student’s t-test and Fisher’s one-way ANOVA
+### B.1 Student’s t-test and Fisher’s one-way ANOVA
 
-#### Student’s t-test `t.test(..., var.equal = TRUE)`
+#### B.1.1 Student’s t-test `t.test(..., var.equal = TRUE)`
 
 Student’s t-test tests the null hypothesis that the means of two
 unpaired groups are equal. The test statistic for Student’s t-test
 (`t.test(..., var.equal = TRUE)`) is
 
 \\\begin{equation} t = \frac{\bar{x}\_1 - \bar{x}\_2} {s_p
-\sqrt{\dfrac{1}{n_1} + \dfrac{1}{n_2}}}, (\\eq:student-t)
-\end{equation}\\
+\sqrt{\dfrac{1}{n_1} + \dfrac{1}{n_2}}}, \tag{B.1} \end{equation}\\
 
 where \\\bar{x}\_1\\ and \\\bar{x}\_2\\ are the sample means, \\n_1\\
 and \\n_2\\ the sample sizes, and \\s_p\\ the pooled standard deviation
@@ -1678,7 +1678,7 @@ and \\n_2\\ the sample sizes, and \\s_p\\ the pooled standard deviation
 with \\s_1^2\\ and \\s_2^2\\ the sample variances. The statistic follows
 a \\t\\-distribution with \\\nu = n_1 + n_2 - 2\\ degrees of freedom.
 
-#### Fisher’s one-way ANOVA `aov()`
+#### B.1.2 Fisher’s one-way ANOVA `aov()`
 
 Fisher’s one-way ANOVA generalises the mean comparison to more than two
 groups and tests the null hypothesis that the means of \\k\\ groups are
@@ -1689,7 +1689,7 @@ equal. Fisher’s ANOVA test statistic is
 \frac{SS\_\text{between}/(k-1)}{SS\_\text{within}/(N-k)} =
 \frac{\displaystyle\sum\_{i=1}^{k} n_i (\bar{x}\_i -
 \bar{x})^2\\/\\(k-1)} {\displaystyle\sum\_{i=1}^{k}\sum\_{j=1}^{n_i}
-(x\_{ij}-\bar{x}\_i)^2\\/\\(N-k)} \end{aligned}, (\\eq:fisher-f)
+(x\_{ij}-\bar{x}\_i)^2\\/\\(N-k)} \end{aligned}, \tag{B.2}
 \end{equation}\\
 
 where \\MS\_\text{between}\\ and \\MS\_\text{within}\\ are the
@@ -1699,7 +1699,7 @@ the number of groups, \\N = \sum\_{i=1}^k n_i\\ is the total sample
 size, \\\bar{x}\_i\\ is the mean of group \\i\\, \\\bar{x}\\ is the
 overall mean, and \\x\_{ij}\\ is observation \\j\\ in group \\i\\.
 
-From Eq. @ref(eq:fisher-f) follows that in the two-sample case
+From Eq. [(B.2)](#eq:fisher-f) follows that in the two-sample case
 (\\k=2\\), the squared test statistic of Student’s t-test equals the
 Fisher ANOVA test statistic, \\t^2 = F\\, resulting in identical
 \\p\\-values for `t.test(var.equal = TRUE)` and
@@ -1708,7 +1708,7 @@ Fisher ANOVA test statistic, \\t^2 = F\\, resulting in identical
 Under \\H_0: \mu_1 = \cdots = \mu_k\\, the statistic follows \\F(k-1,
 N-k)\\.
 
-##### Post-hoc comparison
+##### B.1.2.1 Post-hoc comparison
 
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 follows [`aov()`](https://rdrr.io/r/stats/aov.html) with Tukey’s Honest
@@ -1724,25 +1724,25 @@ factor-level means. For two groups \\i\\ and \\j\\, let \\d\_{ij} =
 
 \\\begin{equation} q\_{ij} = \frac{\|d\_{ij}\|}
 {\sqrt{\dfrac{MS\_\text{within}}{2} \left(\dfrac{1}{n_i} +
-\dfrac{1}{n_j}\right)}}, (\\eq:tukey-hsd-q) \end{equation}\\
+\dfrac{1}{n_j}\right)}}, \tag{B.3} \end{equation}\\
 
-where \\MS\_\text{within}\\ is defined in Eq. @ref(eq:fisher-f).
+where \\MS\_\text{within}\\ is defined in Eq. [(B.2)](#eq:fisher-f).
 Adjusted p-values are computed from the studentised range distribution
 with \\k\\ groups and \\N-k\\ residual degrees of freedom.
 
-### Welch’s t-test and Welch’s heteroscedastic ANOVA
+### B.2 Welch’s t-test and Welch’s heteroscedastic ANOVA
 
 Welch’s heteroscedastic ANOVA generalises the unequal-variance mean
 comparison to more than two groups.
 
-#### Welch’s t-test `t.test()`
+#### B.2.1 Welch’s t-test `t.test()`
 
 Welch’s t-test (`t.test(..., var.equal = FALSE)`) compares the means of
 two independent groups when homogeneous variances cannot be assumed. Its
 statistic is
 
 \\\begin{equation} t = \frac{\bar{x}\_1 - \bar{x}\_2} {\sqrt{s_1^2/n_1 +
-s_2^2/n_2}} (\\eq:welch-t) \end{equation}\\
+s_2^2/n_2}} \tag{B.4} \end{equation}\\
 
 with degrees of freedom approximated by the Welch–Satterthwaite equation
 ([Welch 1947](#ref-Welch:1947); [Satterthwaite
@@ -1750,15 +1750,14 @@ with degrees of freedom approximated by the Welch–Satterthwaite equation
 
 \\\begin{equation} \nu \approx \frac{\left(\dfrac{s_1^2}{n_1} +
 \dfrac{s_2^2}{n_2}\right)^2} {\dfrac{(s_1^2/n_1)^2}{n_1-1} +
-\dfrac{(s_2^2/n_2)^2}{n_2-1}}. (\\eq:welch-satterthwaite-df)
-\end{equation}\\
+\dfrac{(s_2^2/n_2)^2}{n_2-1}}. \tag{B.5} \end{equation}\\
 
 Welch’s methods outperform their classical counterparts when variances
 differ ([Moser and Stevens 1992](#ref-Moser:1992); [Fagerland and
 Sandvik 2009](#ref-Fagerland:2009); [Delacre et al.
 2017](#ref-Delacre:2017)).
 
-#### Welch’s heteroscedastic ANOVA `oneway.test()`
+#### B.2.2 Welch’s heteroscedastic ANOVA `oneway.test()`
 
 Welch’s heteroscedastic ANOVA
 ([`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html))
@@ -1769,7 +1768,7 @@ assumed. Its test statistic is
 
 \\\begin{equation} F_W = \frac{\displaystyle\sum\_{i=1}^{k} w_i
 (\bar{x}\_i - \bar{x}\_w)^2\\/\\(k-1)} {1 + \dfrac{2(k-2)}{k^2-1}
-\displaystyle\sum\_{i=1}^{k} \dfrac{(1-w_i/w)^2}{n_i-1}}, (\\eq:welch-f)
+\displaystyle\sum\_{i=1}^{k} \dfrac{(1-w_i/w)^2}{n_i-1}}, \tag{B.6}
 \end{equation}\\
 
 where \\w_i = n_i/s_i^2\\ are the inverse-variance weights, \\w =
@@ -1779,7 +1778,7 @@ where \\w_i = n_i/s_i^2\\ are the inverse-variance weights, \\w =
 approximation returned by
 [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html).
 
-##### Post-hoc comparison `games.howell()`
+##### B.2.2.1 Post-hoc comparison `games.howell()`
 
 Post-hoc comparisons use the package implementation `games.howell()`
 ([Games and Howell 1976](#ref-Games:1976)). The Games–Howell procedure
@@ -1787,31 +1786,31 @@ is used for pairwise mean comparisons under unequal variances and
 unequal sample sizes. For each pairwise comparison, the two groups are
 denoted as 1 and 2. The test statistic is
 
-\\\begin{equation} t = \frac{d}{SE}, (\\eq:games-howell-t)
-\end{equation}\\
+\\\begin{equation} t = \frac{d}{SE}, \tag{B.7} \end{equation}\\
 
 where \\d = \bar{x}\_1 - \bar{x}\_2\\ is the mean difference and \\SE =
 \sqrt{s_1^2/n_1 + s_2^2/n_2}\\ its standard error.
 
-Eq. @ref(eq:games-howell-t) is evaluated against a \\t\\ distribution
-with \\\nu\\ degrees of freedom from the Welch–Satterthwaite
-approximation in Eq. @ref(eq:welch-satterthwaite-df). The resulting
-two-sided \\p\\-values are adjusted with Holm’s method ([Holm
+Eq. [(B.7)](#eq:games-howell-t) is evaluated against a \\t\\
+distribution with \\\nu\\ degrees of freedom from the
+Welch–Satterthwaite approximation in
+Eq. [(B.5)](#eq:welch-satterthwaite-df). The resulting two-sided
+\\p\\-values are adjusted with Holm’s method ([Holm
 1979](#ref-Holm:1979)).
 
-## Non-parametric tests
+## C Non-parametric tests
 
 In the numeric-response, categorical-predictor branch, non-parametric
 tests are selected when residual normality is rejected. They are also
 used for an ordered response with a categorical predictor.
 
-### Wilcoxon rank-sum test and Kruskal–Wallis test
+### C.1 Wilcoxon rank-sum test and Kruskal–Wallis test
 
 The Wilcoxon rank-sum test is a two-group rank-based location test;
 Kruskal–Wallis generalises this location comparison to more than two
 groups.
 
-#### Wilcoxon rank-sum test `wilxoc.test()`
+#### C.1.1 Wilcoxon rank-sum test `wilcox.test()`
 
 The two-sample Wilcoxon rank-sum test, also known as the Mann–Whitney
 test, tests for a difference in location between two independent
@@ -1827,14 +1826,14 @@ returned by [`wilcox.test()`](https://rdrr.io/r/stats/wilcox.test.html)
 is the Mann–Whitney \\U\\ statistic ([Mann and Whitney
 1947](#ref-Mann:1947)) of the first group:
 
-\\\begin{equation} W = U_1 = W_1 - \frac{n_1(n_1+1)}{2}
-(\\eq:wilcoxon-w) \end{equation}\\
+\\\begin{equation} W = U_1 = W_1 - \frac{n_1(n_1+1)}{2} \tag{C.1}
+\end{equation}\\
 
 An exact \\p\\-value is computed when both groups contain fewer than 50
 observations and the data contain no ties; otherwise a normal
 approximation with continuity correction is used.
 
-#### Kruskal–Wallis test `kruskal.test()`
+#### C.1.2 Kruskal–Wallis test `kruskal.test()`
 
 The Kruskal–Wallis test compares group distributions based on ranked
 values and tests the null hypothesis that the groups come from the same
@@ -1845,7 +1844,7 @@ be interpreted as testing equality of medians across groups ([Hollander
 et al. 2014](#ref-Hollander:2014)).
 
 \\\begin{equation} H = \frac{12}{N(N+1)} \sum\_{i=1}^{k} n_i
-\left(\bar{R}\_i - \bar{R}\right)^2, (\\eq:kruskal-h) \end{equation}\\
+\left(\bar{R}\_i - \bar{R}\right)^2, \tag{C.2} \end{equation}\\
 
 where \\n_i\\ is the sample size of group \\i\\, \\k\\ is the number of
 groups, \\\bar{R}\_i\\ is the average rank of group \\i\\, \\N\\ is the
@@ -1853,7 +1852,7 @@ total sample size, and \\\bar{R} = (N+1)/2\\ is the expected average
 rank under the null hypothesis. The statistic approximately follows
 \\\chi^2(k-1)\\.
 
-##### Post-hoc comparison `pairwise.wilcox.test()`
+##### C.1.2.1 Post-hoc comparison `pairwise.wilcox.test()`
 
 [`pairwise.wilcox.test()`](https://rdrr.io/r/stats/pairwise.wilcox.test.html)
 compares each pair of factor levels via the Wilcoxon rank-sum test on
@@ -1861,7 +1860,7 @@ ranks rather than means. The resulting p-values are adjusted for
 multiplicity using Holm’s step-down method ([Holm
 1979](#ref-Holm:1979)).
 
-## Tests for comparing proportions
+## D Tests for comparing proportions
 
 For two unordered factors (route 4),
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1870,7 +1869,7 @@ Pearson’s \\\chi^2\\ test or Fisher’s exact test, depending on expected
 cell counts following Cochran’s rule ([Cochran
 1954](#ref-Cochran:1954)).
 
-### Pearson’s \\\chi^2\\ test `chisq.test()`
+### D.1 Pearson’s \\\chi^2\\ test `chisq.test()`
 
 Pearson’s \\\chi^2\\ test evaluates the null hypothesis that two
 categorical variables are independent.
@@ -1881,11 +1880,11 @@ contingency table, where rows index the \\R\\ levels of the response
 \\y\\ and columns the \\C\\ levels of the predictor \\x\\. The Pearson
 residual for cell \\(i,j)\\ is \\\begin{equation} r\_{ij} =
 \frac{O\_{ij} - E\_{ij}}{\sqrt{E\_{ij}}}, \quad i = 1,\ldots,R,\quad j =
-1,\ldots,C. (\\eq:pearson-residual) \end{equation}\\ The test statistic
-of Pearson’s \\\chi^2\\ test is
+1,\ldots,C. \tag{D.1} \end{equation}\\ The test statistic of Pearson’s
+\\\chi^2\\ test is
 
 \\\begin{equation} \chi^2 = \sum\_{i=1}^{R}\sum\_{j=1}^{C} r\_{ij}^2,
-(\\eq:pearson-chi) \end{equation}\\
+\tag{D.2} \end{equation}\\
 
 Under the null hypothesis of independence, the statistic is compared
 with a \\\chi^2\\ distribution with \\(R-1)(C-1)\\ degrees of freedom.
@@ -1893,7 +1892,7 @@ with a \\\chi^2\\ distribution with \\(R-1)(C-1)\\ degrees of freedom.
 For \\2\times 2\\ tables, Yates’ continuity correction is applied by
 default.
 
-### Fisher’s exact test `fisher.test()`
+### D.2 Fisher’s exact test `fisher.test()`
 
 Fisher’s exact test
 ([`fisher.test()`](https://rdrr.io/r/stats/fisher.test.html)) is applied
@@ -1922,8 +1921,8 @@ probability mass function:
 
 \\\begin{equation} \mathbb{P}(T \mid n\_{1\cdot}, n\_{2\cdot}, n\_{\cdot
 1}, n\_{\cdot 2}) = \frac{\binom{n\_{1\cdot}}{n\_{11}}
-\binom{n\_{2\cdot}}{n\_{21}}}{\binom{N}{n\_{\cdot 1}}},
-(\\eq:fisher-exact) \end{equation}\\
+\binom{n\_{2\cdot}}{n\_{21}}}{\binom{N}{n\_{\cdot 1}}}, \tag{D.3}
+\end{equation}\\
 
 where \\N = n\_{1\cdot} + n\_{2\cdot} = n\_{\cdot 1} + n\_{\cdot 2}\\ is
 the total sample size. The \\p\\-value is computed by summing the
@@ -1937,15 +1936,15 @@ this approach using the multivariate hypergeometric distribution. For
 returns the conditional maximum likelihood estimate of the odds ratio
 
 \\\begin{equation} \widehat{\mathrm{OR}} =
-n\_{11}n\_{22}/(n\_{12}n\_{21}) (\\eq:odds-ratio) \end{equation}\\
+n\_{11}n\_{22}/(n\_{12}n\_{21}) \tag{D.4} \end{equation}\\
 
 and its confidence interval.
 
-## Rank correlations
+## E Rank correlations
 
 Rank correlations are used when `correlation = TRUE`.
 
-### Kendall rank correlation `cor.test(..., method="kendall")`
+### E.1 Kendall rank correlation `cor.test(..., method="kendall")`
 
 Kendall’s \\\tau_b\\ tests the null hypothesis of no monotone
 association between two ordered variables. For two ordinal variables
@@ -1954,8 +1953,7 @@ pairs (those whose ranks agree in both variables) and \\D\\ the number
 of discordant pairs. Kendall’s \\\tau_b\\ is defined as
 
 \\\begin{equation} \tau_b \\=\\ \frac{C - D} {\sqrt{\left(n_0 -
-n_1\right)\left(n_0 - n_2\right)}}, (\\eq:kendall-tau-b)
-\end{equation}\\
+n_1\right)\left(n_0 - n_2\right)}}, \tag{E.1} \end{equation}\\
 
 where \\n_0 = n(n-1)/2\\ is the total number of observation pairs, \\n_1
 = \sum_i t_i(t_i-1)/2\\ is the number of pairs tied in the response, and
@@ -1973,7 +1971,7 @@ calls
 and reports \\\tau_b\\, the asymptotic test statistic \\z = \tau_b /
 \operatorname{SE}(\tau_b)\\, and the two-sided \\p\\-value.
 
-### Spearman rank correlation `cor.test(..., method="spearman")`
+### E.2 Spearman rank correlation `cor.test(..., method="spearman")`
 
 For two numeric variables with `correlation = TRUE`,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
@@ -1982,7 +1980,7 @@ association between \\x\\ and \\y\\ using ranks. Spearman’s \\\rho\\ is
 Pearson’s \\r\\ applied to the ranks:
 
 \\\begin{equation} \rho = r(\operatorname{rank}(x),
-\operatorname{rank}(y)), (\\eq:spearman-rho) \end{equation}\\
+\operatorname{rank}(y)), \tag{E.2} \end{equation}\\
 
 where \\r(u, v)\\ denotes Pearson’s correlation coefficient:
 
@@ -2007,7 +2005,7 @@ and the two-sided test of zero Pearson correlation return the same
 \\p\\-value. Pearson correlation would therefore not add a separate
 inferential route to the default regression branch.
 
-## Effect size `effect_size()`
+## F Effect size `effect_size()`
 
 The effect size takes the value zero when the null hypothesis is true
 and some other, test- specific non-zero value when the null hypothesis
@@ -2033,7 +2031,7 @@ respective effect sizes and formulae.
 |:---|:---|:---|:---|
 | Student’s \\t\\-test | Hedges’ \\g\_{s_p}\\ (pooled) | \\g\_{s_p} = J(N-2)\cdot(\bar{x}\_1-\bar{x}\_2)/s_p\\ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
 | Welch’s \\t\\-test | Hedges’ \\g\_{s^{\*}}\\ (non-pooled) | \\g\_{s^{\*}} = J(\nu^{\*})\cdot(\bar{x}\_1-\bar{x}\_2)/s^{\*}\\ | [Delacre et al. 2021](https://doi.org/10.31234/osf.io/tu6mp) |
-| Wilcoxon rank-sum | rank-biserial \\r\\ | \\r = 2\cdot W/(n_1\cdot n_2) - 1\\ | ([Kerby 2014](#ref-Kerby:2014)) |
+| Wilcoxon rank-sum | rank-biserial \\r\\ | \\r = 2\cdot W/(n_1\cdot n_2) - 1\\ | [Kerby 2014](https://journals.sagepub.com/doi/abs/10.2466/11.it.3.1) |
 | Fisher’s ANOVA | \\\omega^2\\ | \\\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)\\ | [Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
 | Welch’s ANOVA | \\\omega^2\\ (approx.) | \\\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)\\ | [F-form from Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
 | Kruskal–Wallis | \\\eta_H^2\\ | \\(H - k + 1)/(N - k)\\ | [Kelley 1935](https://doi.org/10.1073/pnas.21.9.554) |
@@ -2044,7 +2042,7 @@ respective effect sizes and formulae.
 | Pearson \\\chi^2\\ (\\2\times 2\\) | \\\phi\\ | \\\phi = \sqrt{\chi^2/N}\\ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
 | Fisher’s exact (\\2\times 2\\) | odds ratio | \\\widehat{\mathrm{OR}} = n\_{11}n\_{22}/(n\_{12}n\_{21})\\ | `fisher.test()$estimate` |
 
-(#tab:effect-size-formulae) Effect sizes returned by
+Table F.1: Effect sizes returned by
 [`effect_size()`](https://shhschilling.github.io/visStatistics/reference/effect_size.md).
 {.table}
 
@@ -2075,14 +2073,14 @@ denominator degree of freedom returned by
 For simple linear regression, the coefficient of determination is
 
 \\\begin{equation} R^2 = 1 - \frac{SS\_\text{res}}{SS\_\text{tot}},
-(\\eq:r-squared) \end{equation}\\
+\tag{F.1} \end{equation}\\
 
 where \\SS\_\text{res}=\sum\_{i=1}^{N}(y_i-\hat{y}\_i)^2\\ is the
 residual sum of squares, \\\hat{y}\_i\\ is the predicted value, and
 \\SS\_\text{tot}=\sum\_{i=1}^{N}(y_i-\bar{y})^2\\ is the total sum of
 squares.
 
-All other variables used in Table @ref(tab:effect-size-formulae) are
+All other variables used in Table [F.1](#tab:effect-size-formulae) are
 defined in the corresponding “Analysis” section.
 
 ## References
@@ -2227,10 +2225,6 @@ Plots*. Manual. <https://doi.org/10.32614/CRAN.package.ggpubr>.
 Kendall, M. G. 1945. “The Treatment of Ties in Ranking Problems.”
 *Biometrika* 33 (3): 239–51. <https://doi.org/10.2307/2332303>.
 
-Kerby, Dave S. 2014. “The Simple Difference Formula: An Approach to
-Teaching Nonparametric Correlation.” *Comprehensive Psychology* 3.
-<https://doi.org/10.2466/11.IT.3.1>.
-
 Kéry, Marc, and Jeff S. Hatfield. 2003. “Normality of Raw Data in
 General Linear Models: The Most Widespread Myth in Statistics.”
 *Bulletin of the Ecological Society of America* 84 (2): 92–94.
@@ -2327,12 +2321,6 @@ Boxplot and Significance Test for Two Groups*. Manual.
 Schilling, Sabine. 2026. *visStatistics: Automated Selection and
 Visualisation of Statistical Hypothesis Tests*.
 <https://doi.org/10.32614/CRAN.package.visStatistics>.
-
-Schützenmeister, A., U. Jensen, and H.-P. Piepho. 2012. “Checking
-Normality and Homoscedasticity in the General Linear Model Using
-Diagnostic Plots.” *Communications in Statistics - Simulation and
-Computation* 41 (2): 141–54.
-<https://doi.org/10.1080/03610918.2011.582560>.
 
 Shapiro, S. S., and M. B. Wilk. 1965. “An Analysis of Variance Test for
 Normality (Complete Samples).” *Biometrika* 52 (3-4): 591–611.
