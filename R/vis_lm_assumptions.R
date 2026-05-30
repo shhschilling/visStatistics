@@ -1,30 +1,19 @@
-.simple_regression_leverage <- function(model) {
-  model_data <- model.frame(model)
-  predictor <- as.numeric(model_data[[2]])
-  n_obs <- length(predictor)
-  predictor_centered <- predictor - mean(predictor)
-  predictor_ss <- sum(predictor_centered^2)
-  if (is.finite(predictor_ss) && predictor_ss > 0) {
-    leverage <- 1 / n_obs + predictor_centered^2 / predictor_ss
-  } else {
-    leverage <- rep(1 / n_obs, n_obs)
-  }
-  names(leverage) <- rownames(model_data)
-  leverage
-}
-
 #' Visualisation of linear model assumption diagnostics
 #'
 #' Checks the residual diagnostics in the general linear model
 #' Student's t-test 
 #' (t.test,var=EQUAL) 
 #' Fisher oneway ANOVA (aov) or simple linear regression.
-#' Performs the Shapiro-Wilk test and Anderson-Darling test for normality and,
-#' if not a regression, also Levene's and Bartlett's tests for homogeneity
-#' of variances.
-#' Formal p-values are computed from raw model residuals. The plots display
-#' the same residuals divided by the residual standard error. In regression
-#' mode, Cook's distance contours are transformed to this residual scale.
+#' Performs the Shapiro-Wilk and Anderson-Darling tests for normality, and
+#' for grouped data also Levene's and Bartlett's tests for homogeneity of
+#' variances. For simple linear regression, heteroscedasticity is assessed
+#' with the Breusch-Pagan test [@Koenker:1981], which regresses squared raw
+#' residuals on fitted values. The normality tests, the grouped variance tests,
+#' and the histogram and Q-Q panels are computed from the internally
+#' studentised residuals r_i = e_i / (SE_res sqrt(1 - h_i)), which remove the
+#' leverage-dependent variance of the raw residuals (Var(e_i) = sigma^2
+#' (1 - h_i)). The residuals-vs-fitted panel (regression mode) uses the
+#' z-residuals z_i = e_i / SE_res, which retain the leverage-dependent spread.
 #'
 #' @param samples Numeric vector; the dependent variable.
 #' @param fact Factor; the independent variable.
@@ -32,19 +21,6 @@
 #' @param correlation Logical. If \code{FALSE} and \code{fact} is numeric,
 #'   regression diagnostics are shown. If \code{TRUE}, no regression
 #'   diagnostics are shown. Default is \code{FALSE}.
-#'
-#' @details
-#' In regression mode, the leverage panel does not use internally studentised
-#' residuals as in \code{plot.lm()}. With
-#' \eqn{z_i = e_i / SE_res}, where \eqn{SE_res} is the residual standard
-#' error, Cook's distance contours are drawn as
-#' \deqn{D_i = z_i^2 h_i / (k(1 - h_i)^2),}
-#' with simple-regression leverage
-#' \deqn{h_i = 1/N + (x_i - \bar{x})^2 /
-#'       \sum_{r=1}^{N}(x_r - \bar{x})^2.}
-#' Here \eqn{x_i} is the predictor value of observation \eqn{i},
-#' \eqn{N} is the total sample size, and \eqn{k = 2} is the number of
-#' fitted model parameters.
 #'
 #' @return A list with elements:
 #' \describe{
@@ -75,19 +51,26 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
   # Fit model
   anova_model <- aov(samples ~ fact) # needed for correct output structure, do not use lm(samples~fact)
   raw_residuals <- residuals(anova_model)
-  residual_se <- sigma(anova_model)
-  if (is.na(residual_se) || residual_se == 0) {
-    residual_se <- sd(raw_residuals, na.rm = TRUE)
+  # Internally studentised residuals r_i = e_i / (SE_res sqrt(1 - h_i)) for the
+  # normality tests and the N(0,1)-reference panels (histogram, Q-Q).
+  scaled_residuals <- rstandard(anova_model)
+  if (any(!is.finite(scaled_residuals))) {
+    residual_se <- sigma(anova_model)
+    if (is.na(residual_se) || residual_se == 0) residual_se <- sd(raw_residuals, na.rm = TRUE)
+    if (is.na(residual_se) || residual_se == 0) residual_se <- 1
+    scaled_residuals <- raw_residuals / residual_se
   }
-  if (is.na(residual_se) || residual_se == 0) {
-    residual_se <- 1
-  }
-  scaled_residuals <- raw_residuals / residual_se
+  # z-residuals z_i = e_i / SE_res for the residuals-vs-fitted panel only; these
+  # retain the leverage-dependent spread Var(e_i) = sigma^2 (1 - h_i).
+  z_residual_se <- sigma(anova_model)
+  if (is.na(z_residual_se) || z_residual_se == 0) z_residual_se <- sd(raw_residuals, na.rm = TRUE)
+  if (is.na(z_residual_se) || z_residual_se == 0) z_residual_se <- 1
+  z_residuals <- raw_residuals / z_residual_se
   
   # Run assumption tests
   # Shapiro-Wilk test (for n >= 3 and n <= 5000)
   if (length(raw_residuals) >= 3 && length(raw_residuals) <= 5000) {
-    shapiro_test <- shapiro.test(raw_residuals)
+    shapiro_test <- shapiro.test(scaled_residuals)
   } else {
     if (length(raw_residuals) > 5000) {
       warning(
@@ -100,13 +83,13 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
       method = "Shapiro-Wilk normality test",
       statistic = NA,
       p.value = NA,
-      data.name = "raw model residuals"
+      data.name = "standardised model residuals"
     )
   }
   
   # Anderson-Darling test (for n >= 7)
   if (length(raw_residuals) >= 7) {
-    ad_test <- nortest::ad.test(raw_residuals)
+    ad_test <- nortest::ad.test(scaled_residuals)
   } else {
     ad_test <- "Sample size too small (n < 7) for Anderson-Darling test"
   }
@@ -115,8 +98,8 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
   
   # Variance tests (only for grouped diagnostics)
   if (!regression_mode) {
-    levene_test <- levene.test(raw_residuals, fact)
-    bartlett_test <- bartlett.test(raw_residuals ~ fact)
+    levene_test <- levene.test(scaled_residuals, fact)
+    bartlett_test <- bartlett.test(scaled_residuals ~ fact)
      bp_test <- NULL
   } else {
     # For regression: use Breusch-Pagan test for heteroscedasticity
@@ -149,76 +132,36 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
   }
   
   plot_residuals_vs_fitted <- function() {
-    y_lim <- extendrange(c(scaled_residuals, -3, 3), f = 0.08)
+    y_lim <- extendrange(c(z_residuals, -3, 3), f = 0.08)
     y_ticks <- seq(floor(y_lim[1]), ceiling(y_lim[2]), by = 1)
-    plot(fitted(anova_model), scaled_residuals,
-         main = "z-transformed residuals vs. Fitted",
+    plot(fitted(anova_model), z_residuals,
+         main = "Residuals vs. Fitted",
          xlab = "Fitted values",
-         ylab = "z-transformed residuals",
+         ylab = "z residuals",
          ylim = y_lim,
          yaxt = "n")
     axis(2, at = y_ticks, las = 1)
     abline(h = c(-3, 3), col = "grey85", lty = 2, lwd = 1)
     abline(h = 0, col = "red", lwd = 1)
-    outliers <- which(abs(scaled_residuals) > 3)
+    outliers <- which(abs(z_residuals) > 3)
     if (length(outliers) > 0) {
-      text(fitted(anova_model)[outliers], scaled_residuals[outliers],
-           labels = outliers, pos = 3, cex = 0.7)
-    }
-  }
-  
-  plot_residuals_vs_leverage <- function() {
-    leverage <- .simple_regression_leverage(anova_model)
-    y_lim <- extendrange(c(scaled_residuals, -3, 3), f = 0.08)
-    y_ticks <- seq(floor(y_lim[1]), ceiling(y_lim[2]), by = 1)
-    x_lim <- c(0, min(1, max(leverage, na.rm = TRUE) * 1.15))
-    if (x_lim[2] <= 0) x_lim[2] <- 0.1
-    
-    plot(leverage, scaled_residuals,
-         main = "z-transformed residuals vs. Leverage",
-         xlab = "Leverage",
-         ylab = "z-transformed residuals",
-         xlim = x_lim,
-         ylim = y_lim,
-         yaxt = "n")
-    axis(2, at = y_ticks, las = 1)
-    abline(h = c(-3, 3), col = "grey85", lty = 2, lwd = 1)
-    abline(h = 0, col = "red", lwd = 1)
-    
-    k <- length(coef(anova_model))
-    h_seq <- seq(max(1e-6, x_lim[1] + 1e-6),
-                 min(0.99, x_lim[2]), length.out = 200)
-    for (cook in c(0.5, 1)) {
-      cook_line <- sqrt(cook * k) * (1 - h_seq) / sqrt(h_seq)
-      lines(h_seq, cook_line, col = "grey80", lty = 2)
-      lines(h_seq, -cook_line, col = "grey80", lty = 2)
-      if (is.finite(tail(cook_line, 1)) && tail(cook_line, 1) < y_lim[2]) {
-        text(tail(h_seq, 1), tail(cook_line, 1),
-             labels = paste0("D=", cook), col = "grey45",
-             pos = 2, cex = 0.7)
-      }
-    }
-    
-    outliers <- which(abs(scaled_residuals) > 3)
-    if (length(outliers) > 0) {
-      text(leverage[outliers], scaled_residuals[outliers],
+      text(fitted(anova_model)[outliers], z_residuals[outliers],
            labels = outliers, pos = 3, cex = 0.7)
     }
   }
   
   if (regression_mode) {
-    par(mfrow = c(2, 2), oma = c(0, 0, 3, 0), mar = c(4, 4, 3, 1),
+    par(mfrow = c(1, 3), oma = c(0, 0, 3, 0), mar = c(4.5, 4, 3, 1),
         cex = 0.7 * cex)
-    plot_histogram(scaled_residuals, "z-transformed residuals")
-    plot_qq(scaled_residuals, "z-transformed residuals")
+    plot_histogram(scaled_residuals, "Standardised residuals")
+    plot_qq(scaled_residuals, "Standardised residuals")
     plot_residuals_vs_fitted()
-    plot_residuals_vs_leverage()
   } else {
     par(mfrow = c(1, 3), oma = c(0, 0, 3, 0), mar = c(4.5, 4, 3, 1),
         cex = 0.7 * cex)
-    plot_histogram(scaled_residuals, "z-transformed residuals")
-    plot_qq(scaled_residuals, "z-transformed residuals")
-    
+    plot_histogram(scaled_residuals, "Standardised residuals")
+    plot_qq(scaled_residuals, "Standardised residuals")
+
     abs_scaled_residuals <- abs(scaled_residuals)
     fact_plot <- factor(fact)
     group_id <- as.numeric(fact_plot)
@@ -226,9 +169,9 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
     y_lim <- c(0, max(3, abs_scaled_residuals, na.rm = TRUE) * 1.08)
     y_ticks <- seq(0, ceiling(y_lim[2]), by = 1)
     plot(x_jitter, abs_scaled_residuals,
-         main = "Absolute z-residual spread",
+         main = "Absolute standardised-residual spread",
          xlab = "Group",
-         ylab = "|z_i|",
+         ylab = "|r_i|",
          xlim = c(0.5, length(levels(fact_plot)) + 0.5),
          ylim = y_lim,
          xaxt = "n",
