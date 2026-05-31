@@ -100,14 +100,15 @@ The scripted workflow is well suited for browser-based applications where sensit
 This approach was already successfully applied to develop a medical scoring tool [@Bijlenga:2017].
 
 For group comparisons, packages with related scope include `compareGroups` [@Subirana:2014], `boxTest` [@Sau:2025], `autotestR` [@Garcia:2026], and `automatedtests` [@Zeevat:2025].
-`compareGroups` is primarily designed for bivariate descriptive tables and reports, not diagnostic plots and test visualisations.
+`compareGroups` is primarily designed for bivariate descriptive tables and reports.
 `boxTest` covers only the two-group numeric-response case.
 `autotestR` provides automated recommendations for t-tests, ANOVA, correlation, and contingency-table analyses.
 `automatedtests` provides the broadest routing among these packages, including one-sample, paired, repeated-measures, regression, correlation, and contingency-table cases.
 
 For tests within the  general linear-model framework
 like Student's t-test or  Fisher's ANOVA and linear regression,
-the normality assumption concerns the model residual errors  (each observation minus its predicted value), but none of these packages checks normality on the residuals of the fitted linear model.
+the normality assumption concerns the model residual errors (each observation minus its predicted value), not the raw data; the belief that the raw data must be normal is a widespread myth [@Kery:2003].
+Yet none of these packages checks normality on the residuals of the fitted linear model.
 Instead,  `autotestR` and `boxTest` test the response separately within groups, whereas `automatedtests` and `compareGroups` test the response variable as a whole, ignoring the grouping.
 
 Among the reviewed automated test-selection packages, `visStatistics` is thus the only one that bases the central-tendency route on explicit residual diagnostics from the common linear model rather than on marginal or groupwise normality checks.
@@ -465,19 +466,99 @@ The exported package function `effect_size()` computes these estimates; implemen
 
 The p-value quantifies evidence against the null hypothesis, whereas the effect-size estimate describes the magnitude of the selected comparison, association, or model fit on the scale defined in Appendix \@ref(sec:effect-size) [@Fritz:2012; @Levine:2002].
 
-# Examples {#sec:examples}
+# The `visstat` methods {#sec:visstat-methods}
 
-The examples follow the routes outlined in Section \@ref(sec:top-level) and are chosen to trigger every branch.
+Objects returned by `visstat()` are of class `"visstat"` and support the S3 methods `print()`, `summary()`, and `plot()`.
 
-Within the group-comparison routes, examples are ordered such that the two-group case is followed by its generalisation to more than two groups: Student's t-test by Fisher's one-way ANOVA, Welch's t-test by Welch's one-way ANOVA, and Wilcoxon rank-sum by Kruskal--Wallis.
+## `print()`
 
-Where needed, the example descriptions add interpretive details on the graphical output, such as significance letters, regression bands, or mosaic plots.
+`print()` lists the returned components.
+
+```{r visstat-methods, fig.show='hide', results='hide'}
+anova_plantgrowth <- visstat(PlantGrowth$group, PlantGrowth$weight)
+```
+
+```{r visstat-methods-print}
+print(anova_plantgrowth)
+```
+
+## `summary()`
+
+`summary()` prints the full returned object, including assumption tests, post-hoc comparisons, confidence level, and `effect_size` where available.
+
+```{r visstat-methods-print-summary, eval=knitr::is_html_output()}
+summary(anova_plantgrowth)
+```
+
+## `plot()`
+
+`plot()` lists available plots by default.
+With `which`, it either replays a captured plot or reports the selected saved file path.
+
+## Interactive mode
+
+When `visstat()` is called without a `graphicsoutput` defined (the default interactive mode), the generated plots are captured internally.
+Calling `plot()` without `which` lists all available plots; calling it with `which` replays the selected plot in the interactive R session.
+
+```{r visstat-methods-plot}
+plot(anova_plantgrowth)
+```
+
+```{r visstat-methods-plot-replay, eval=FALSE}
+# Interactive only (not executed during vignette build):
+plot(anova_plantgrowth, which = 2)
+```
+
+## Saved graphics
+
+When `visstat()` is called with `graphicsoutput` specified, `plot()` lists the generated file paths instead.
+All generated graphics can be saved in any file format supported by `Cairo()` [@Urbanek:2025], including "png", "jpeg", "pdf", "svg", "ps", and "tiff".
+If `plotName` is provided, the main result plot uses this name.
+The assumption-diagnostic plot adds the prefix `"glm_assumptions_"`.
+If `plotName` is not provided, file names are generated from the selected plot type and the input variable names.
+
+In the following example, we store the graphics in `png` format in the `plotDirectory` `tempdir()` using the `PlantGrowth` Fisher's ANOVA example.
+Here, `plotName` is set explicitly so that the output names are stable.
+
+```{r anova-save-graphics}
+anova_plantgrowth_stored <- visstat(
+  PlantGrowth$group,
+  PlantGrowth$weight,
+  graphicsoutput = "png",
+  plotName = "anova_plantgrowth",
+  plotDirectory = tempdir()
+)
+```
+
+The full file paths of the generated graphics are stored as the attribute `"plot_paths"` on the returned object of class `"visstat"`.
+
+```{r show-anova-paths}
+paths <- attr(anova_plantgrowth_stored, "plot_paths")
+print(basename(paths))
+```
+
+<!-- Remove the graphical output from `plotDirectory`: -->
+
+```{r cleanup-anova-paths, eval=TRUE, echo=FALSE, results='hide'}
+file.remove(paths)
+```
+
+
 
 <!-- The number of plots returned by `visstat()` depends on the input types and the outcome of assumption checks. -->
 
 <!-- Central-tendency examples and simple linear regression produce an assumption-diagnostic panel followed by the result panel. -->
 
 <!-- Most example datasets are distributed with R; synthetic data are used where no suitable base R example is available. -->
+
+
+# Usage and Examples {#sec:examples}
+
+The examples follow the routes outlined in Section \@ref(sec:top-level) and are chosen to trigger every branch.
+
+Within the group-comparison routes, examples are ordered such that the two-group case is followed by its generalisation to more than two groups: Student's t-test by Fisher's one-way ANOVA, Welch's t-test by Welch's one-way ANOVA, and Wilcoxon rank-sum by Kruskal--Wallis.
+
+Where needed, the example descriptions add interpretive details on the graphical output, such as significance letters, regression bands, or mosaic plots.
 
 ## Route 1: Numeric response, categorical predictor {#sec:examples-route1}
 
@@ -776,82 +857,6 @@ spearman_air <- visstat(airquality$Wind, airquality$Ozone, correlation = TRUE)
 
 For the ozone example introduced in Section \@ref(sec:lin-reg), staying within `visstat(,)` with the flag `correlation = TRUE` gives the Spearman analysis shown in Figure \@ref(fig:kendall-spearman-example), right.
 
-# The `visstat` methods {#sec:visstat-methods}
-
-Objects returned by `visstat()` are of class `"visstat"` and support the S3 methods `print()`, `summary()`, and `plot()`.
-
-## `print()`
-
-`print()` lists the returned components.
-
-```{r visstat-methods, fig.show='hide', results='hide'}
-anova_plantgrowth <- visstat(PlantGrowth$group, PlantGrowth$weight)
-```
-
-```{r visstat-methods-print}
-print(anova_plantgrowth)
-```
-
-## `summary()`
-
-`summary()` prints the full returned object, including assumption tests, post-hoc comparisons, confidence level, and `effect_size` where available.
-
-```{r visstat-methods-print-summary, eval=knitr::is_html_output()}
-summary(anova_plantgrowth)
-```
-
-## `plot()`
-
-`plot()` lists available plots by default.
-With `which`, it either replays a captured plot or reports the selected saved file path.
-
-### Interactive mode
-
-When `visstat()` is called without a `graphicsoutput` defined (the default interactive mode), the generated plots are captured internally.
-Calling `plot()` without `which` lists all available plots; calling it with `which` replays the selected plot in the interactive R session.
-
-```{r visstat-methods-plot}
-plot(anova_plantgrowth)
-```
-
-```{r visstat-methods-plot-replay, eval=FALSE}
-# Interactive only (not executed during vignette build):
-plot(anova_plantgrowth, which = 2)
-```
-
-### Saved graphics
-
-When `visstat()` is called with `graphicsoutput` specified, `plot()` lists the generated file paths instead.
-All generated graphics can be saved in any file format supported by `Cairo()` [@Urbanek:2025], including "png", "jpeg", "pdf", "svg", "ps", and "tiff".
-If `plotName` is provided, the main result plot uses this name.
-The assumption-diagnostic plot adds the prefix `"glm_assumptions_"`.
-If `plotName` is not provided, file names are generated from the selected plot type and the input variable names.
-
-In the following example, we store the graphics in `png` format in the `plotDirectory` `tempdir()` using the `PlantGrowth` Fisher's ANOVA example.
-Here, `plotName` is set explicitly so that the output names are stable.
-
-```{r anova-save-graphics}
-anova_plantgrowth_stored <- visstat(
-  PlantGrowth$group,
-  PlantGrowth$weight,
-  graphicsoutput = "png",
-  plotName = "anova_plantgrowth",
-  plotDirectory = tempdir()
-)
-```
-
-The full file paths of the generated graphics are stored as the attribute `"plot_paths"` on the returned object of class `"visstat"`.
-
-```{r show-anova-paths}
-paths <- attr(anova_plantgrowth_stored, "plot_paths")
-print(basename(paths))
-```
-
-<!-- Remove the graphical output from `plotDirectory`: -->
-
-```{r cleanup-anova-paths, eval=TRUE, echo=FALSE, results='hide'}
-file.remove(paths)
-```
 
 # Discussion {#sec:discussion}
 
