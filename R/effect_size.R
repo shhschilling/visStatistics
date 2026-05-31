@@ -228,9 +228,9 @@ effect_size_kendall <- function(result) {
 #' g*s based on the non-pooled standard deviation should be reported with
 #' Welch's t-test. \emph{PsyArXiv}. doi:10.31234/osf.io/tu6mp.
 #'
-#' Glass, G. V. (1965). A ranking variable analogue of biserial correlation:
-#' Implications for short-cut item analysis. \emph{Journal of Educational
-#' Measurement}, 2(1), 91--95. doi:10.1111/j.1745-3984.1965.tb00396.x.
+#' Kerby, D. S. (2014). The simple difference formula: An approach to teaching
+#' nonparametric correlation. \emph{Comprehensive Psychology}, 3, 11.IT.3.1.
+#' doi:10.2466/11.IT.3.1.
 #'
 #' Albers, C., & Lakens, D. (2018). When power analyses based on pilot data are
 #' biased: Inaccurate effect size estimators and follow-up bias.

@@ -219,7 +219,7 @@ where $Y_i$ is the response for observation $i$, $x_{ij}$ is the value of predic
 The model error terms $\varepsilon_i$ are assumed to be independent and normally distributed with expectation 0 and constant variance $\sigma^2$, in short $$\varepsilon_i \sim \mathscr{N}(0, \sigma^2),
 \quad\mathrm{mutually\; independent} $$
 
-The variance $\sigma^2$ represents the variation of the data on the regression, $Var(Y_i)=\sigma^2$, as both the (unknown) model parameters and predictors are not random.
+The variance $\sigma^2$ represents the variation of the data on the regression, $Var(Y_i)=$Var(\varepsilon_i)=\sigma^2$, as both the (unknown) model parameters and predictors are not random.
 
 
 From Eq. 
@@ -271,16 +271,16 @@ which facilitates model comparison across different scales of the raw data.
 
 ##### Standardised residuals
 
-The residual standard error $SE_\text{res}$ is a *global* estimate for the unknown $\sigma$, but $SE_\text{res}^2$ is not the best estimate for the variance of the *individual* residual $\operatorname{Var}(e_i)$. It can be shown [@Cook:1982, p. 14; @Schutzenmeister:2012a, p. 145] that
+The residual standard error $SE_\text{res}$ is a *global* estimate for the unknown $\sigma$, but not an estimate for the variance of the *individual* residual $\operatorname{Var}(e_i)$. It can be shown [@Cook:1982, p. 14; @Schutzenmeister:2012, p. 145] that
 
 \begin{equation}
 \operatorname{Var}(e_i)=\sigma^2(1-h_{ii}),
 (\#eq:var-leverage)
 \end{equation}
 
-where the leverage $h_{ii}$ of observation $i$ is the $i$-th diagonal element of the hat matrix 
+where the leverage $h_{ii}$ of observation $i$ is the $i$-th diagonal element of the $N \times N$ hat matrix 
 $\mathbf{H}$ 
-[@Schutzenmeister:2012a, p. 144], which maps the observed values onto the fitted values.
+[@Schutzenmeister:2012, p. 144], which maps the observed values onto the fitted values. $h_{ii}$ measures how strongly observation $i$'s own observed value $y_i$ influences its fitted value $\hat y_i$.
 
 <!-- $\hat{\mathbf{y}} = \mathbf{H}\mathbf{y}$, and measures how strongly the predictor values of observation $i$ influence its own fitted value. Let $\mathbf{X}$ be the $N \times k$ design matrix whose $i$-th row is $\mathbf{x}_i^{\top} = (1, x_{i1}, \ldots, x_{i,k-1})$. Then -->
 
@@ -332,7 +332,7 @@ Therefore, Levene's test is used as the variance gate in the automated
 workflow.
 
 For simple linear regression, group-based variance tests are not applicable.
-There, `visStatistics` uses its package implementation `bp.test()` of the Breusch--Pagan test  [@Breusch:1979] (Eq. \@ref(eq:breusch-pagan-bp)) on raw residuals [@Kozak:2018; @Schutzenmeister:2012a]. 
+There, `visStatistics` uses its package implementation `bp.test()` of the Breusch--Pagan test  [@Breusch:1979] (Eq. \@ref(eq:breusch-pagan-bp)) on raw residuals [@Kozak:2018; @Schutzenmeister:2012]. 
 
 
 
@@ -348,8 +348,8 @@ Since algorithmic logic based on p-values of assumption tests cannot replace exp
 
 
 
-For numeric responses with categorical predictors (Route 1), the diagnostic panel displays the residual histogram, the normal Q--Q plot, and the absolute standardised residuals $|z_i|$ (Eq. \@ref(eq:standardised)) by group.
-The last panel shows whether residual spread is comparable across factor levels, the pattern assessed formally by the Levene and Bartlett variance checks.
+For numeric responses with categorical predictors (Route 1), the diagnostic panel displays the residual histogram, the normal Q--Q plot, and the absolute standardised residuals $|r_i|$ (Eq. \@ref(eq:standardised)) by group.
+The last panel shows whether residual spread is comparable across factor levels, the pattern assessed formally by the Levene (Eq. \@ref(eq:levene-f)) and Bartlett (Eq. \@ref(eq:bartlett-k2)) variance checks.
 
 For Route 3 (simple linear regression), the diagnostic panel displays the residual histogram with normal density overlay, the normal Q--Q plot, both computed from standardised residuals, and z-scaled residuals versus fitted values.
 
@@ -469,45 +469,21 @@ The p-value quantifies evidence against the null hypothesis, whereas the effect-
 # The `visstat` methods {#sec:visstat-methods}
 
 Objects returned by `visstat()` are of class `"visstat"` and support the S3 methods `print()`, `summary()`, and `plot()`.
+Each is demonstrated on a worked object in Section \@ref(sec:anova-plantgrowth).
 
-## `print()`
+- `print()` lists the returned components.
+- `summary()` prints the full returned object, including assumption tests, post-hoc comparisons, confidence level, and `effect_size` where available.
+- `plot()` lists the available plots by default; with `which`, it either replays a captured plot (in an interactve R session) or reports the selected saved file path.
 
-`print()` lists the returned components.
+<!-- ## Interactive mode -->
 
-```{r visstat-methods, fig.show='hide', results='hide'}
-anova_plantgrowth <- visstat(PlantGrowth$group, PlantGrowth$weight)
-```
+<!-- When `visstat()` is called without a `graphicsoutput` defined (the default interactive mode), the generated plots are captured internally. -->
+<!-- Calling `plot()` without `which` lists all available plots; calling it with `which` replays the selected plot in the interactive R session: -->
 
-```{r visstat-methods-print}
-print(anova_plantgrowth)
-```
-
-## `summary()`
-
-`summary()` prints the full returned object, including assumption tests, post-hoc comparisons, confidence level, and `effect_size` where available.
-
-```{r visstat-methods-print-summary, eval=knitr::is_html_output()}
-summary(anova_plantgrowth)
-```
-
-## `plot()`
-
-`plot()` lists available plots by default.
-With `which`, it either replays a captured plot or reports the selected saved file path.
-
-## Interactive mode
-
-When `visstat()` is called without a `graphicsoutput` defined (the default interactive mode), the generated plots are captured internally.
-Calling `plot()` without `which` lists all available plots; calling it with `which` replays the selected plot in the interactive R session.
-
-```{r visstat-methods-plot}
-plot(anova_plantgrowth)
-```
-
-```{r visstat-methods-plot-replay, eval=FALSE}
-# Interactive only (not executed during vignette build):
-plot(anova_plantgrowth, which = 2)
-```
+<!-- ```{r visstat-methods-plot-replay, eval=FALSE} -->
+<!-- # Interactive only (not executed during vignette build): -->
+<!-- plot(result, which = 2) -->
+<!-- ``` -->
 
 ## Saved graphics
 
@@ -516,32 +492,6 @@ All generated graphics can be saved in any file format supported by `Cairo()` [@
 If `plotName` is provided, the main result plot uses this name.
 The assumption-diagnostic plot adds the prefix `"glm_assumptions_"`.
 If `plotName` is not provided, file names are generated from the selected plot type and the input variable names.
-
-In the following example, we store the graphics in `png` format in the `plotDirectory` `tempdir()` using the `PlantGrowth` Fisher's ANOVA example.
-Here, `plotName` is set explicitly so that the output names are stable.
-
-```{r anova-save-graphics}
-anova_plantgrowth_stored <- visstat(
-  PlantGrowth$group,
-  PlantGrowth$weight,
-  graphicsoutput = "png",
-  plotName = "anova_plantgrowth",
-  plotDirectory = tempdir()
-)
-```
-
-The full file paths of the generated graphics are stored as the attribute `"plot_paths"` on the returned object of class `"visstat"`.
-
-```{r show-anova-paths}
-paths <- attr(anova_plantgrowth_stored, "plot_paths")
-print(basename(paths))
-```
-
-<!-- Remove the graphical output from `plotDirectory`: -->
-
-```{r cleanup-anova-paths, eval=TRUE, echo=FALSE, results='hide'}
-file.remove(paths)
-```
 
 
 
@@ -574,16 +524,74 @@ With delivery method as predictor and length as response, the assumption-diagnos
 student_ttest <- visstat(ToothGrowth$supp, ToothGrowth$len)
 ```
 
-#### Fisher's one-way ANOVA with Tukey HSD post-hoc comparisons
+#### Fisher's one-way ANOVA with Tukey HSD post-hoc comparisons with methods demonstration {#sec:anova-plantgrowth}
 
 The `PlantGrowth` dataset records yields (as measured by dried weight of plants) for a control group and two treatment groups.
-With control and treatment groups as predictor and plant weight as response, the assumption-diagnostic panel shows that Shapiro--Wilk does not reject normality of the model residuals and `levene.test()` does not reject homoscedasticity.
-`visstat()` therefore applies Fisher's one-way ANOVA followed by Tukey HSD post-hoc comparisons.
-The result panel shows the box plots and post-hoc significance letters.
+This dataset serves a double purpose: it demonstrates both a branching result and the `visstat()` S3 methods `print()`, `summary()`, and `plot()` (Section \@ref(sec:visstat-methods)).
+
+```{r anova-example, results='hide', fig.show='hide'}
+anova_plantgrowth <- visstat(PlantGrowth$group, PlantGrowth$weight)
+```
+
+<!-- ##### Worked `visstat` methods on the ANOVA result{.unnumbered} -->
+
+
+
+
+In this branch `visstat()` generates two figures: the assumption-diagnostic panel (`which = 1`) and the result panel with box plots and post-hoc significance letters (`which = 2`).
+Calling `plot()` without `which` first lists both available plots:
+
+```{r anova-plot-list}
+plot(anova_plantgrowth)
+```
+
+`which = 1` replays the assumption-diagnostic panel.
+With control and treatment groups as predictor and plant weight as response, Shapiro--Wilk does not reject normality of the model residuals and `levene.test()` does not reject homoscedasticity, so `visstat()` takes the equal-variance mean-based path:
+
+```{r anova-plot-assumptions, fig.cap="Assumption-diagnostic panel for the `PlantGrowth` Fisher's one-way ANOVA (`weight` vs.\\ `group`).", out.width="48%", fig.height=4.5}
+plot(anova_plantgrowth, which = 1)
+```
+
+`which = 2` replays the result panel:
+
+```{r anova-plot-result, fig.cap=paste0("Result panel for the `PlantGrowth` Fisher's one-way ANOVA: box plots with Tukey HSD significance letters ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5}
+plot(anova_plantgrowth, which = 2)
+```
+
 The omnibus F-test is significant at $\alpha = `r example_alpha`$, and the Tukey HSD post-hoc comparison finds no significant difference between the control group and either treatment, but the difference between `trt1` and `trt2` is significant.
 
-```{r anova-example, fig.cap=paste0("Fisher's one-way ANOVA applied to the `PlantGrowth` dataset (`weight` vs.\\ `group`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene does not reject residual variance homogeneity) select the equal-variance mean-based path, followed by box plots with Tukey HSD significance letters ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
-anova_plantgrowth <- visstat(PlantGrowth$group, PlantGrowth$weight)
+To save the graphics, call `visstat()` with `graphicsoutput`; the file paths are returned in the `"plot_paths"` attribute.
+Here, `plotName` is set explicitly so that the output names are stable.
+
+```{r anova-save-graphics}
+anova_plantgrowth_stored <- visstat(
+  PlantGrowth$group,
+  PlantGrowth$weight,
+  graphicsoutput = "png",
+  plotName = "anova_plantgrowth",
+  plotDirectory = tempdir()
+)
+paths <- attr(anova_plantgrowth_stored, "plot_paths")
+print(basename(paths))
+```
+
+
+`print()` lists the returned components:
+
+```{r anova-print}
+print(anova_plantgrowth)
+```
+
+`summary()` prints the full object, including assumption tests, post-hoc comparisons, and effect size.
+
+```{r anova-summary, eval=knitr::is_html_output(), echo=knitr::is_html_output()}
+summary(anova_plantgrowth)
+```
+
+
+```{r cleanup-anova-paths, echo=FALSE, results='hide'}
+file.remove(paths)
+
 ```
 
 ### Welch's t-test and Welch's one-way ANOVA
