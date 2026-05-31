@@ -169,9 +169,9 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
     y_lim <- c(0, max(3, abs_scaled_residuals, na.rm = TRUE) * 1.08)
     y_ticks <- seq(0, ceiling(y_lim[2]), by = 1)
     plot(x_jitter, abs_scaled_residuals,
-         main = "Absolute standardised-residual spread",
+         main = "Absolute residuals vs. Group",
          xlab = "Group",
-         ylab = "|r_i|",
+         ylab = "Absolute standardised residuals",
          xlim = c(0.5, length(levels(fact_plot)) + 0.5),
          ylim = y_lim,
          xaxt = "n",

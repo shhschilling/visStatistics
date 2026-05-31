@@ -601,7 +601,7 @@ Hedges' $g_{s^{*}}$ & $g_{s^{*}}=J(\nu^{*})(\bar{x}_1-\bar{x}_2)/s^{*}$ &
 \hline
 Wilcoxon rank-sum &
 rank-biserial $r$ & $r=2W/(n_1n_2)-1$ &
-\tbdoi{10.1007/BF02289138}{Cureton, 1956} \\
+\tbdoi{10.2466/11.IT.3.1}{Kerby, 2014} \\
 \hline
 Fisher's ANOVA & $\omega^2$ &
 $\nu_1(F-1)/(\nu_1F+\nu_2+1)$ &
@@ -657,7 +657,7 @@ Table: (\#tab:effect-size-formulae) Effect sizes returned by `effect_size()`.
 |:---|:---|:---|:---|
 | Student's $t$-test | Hedges' $g_{s_p}$ (pooled) | $g_{s_p} = J(N-2)\cdot(\bar{x}_1-\bar{x}_2)/s_p$ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
 | Welch's $t$-test | Hedges' $g_{s^{*}}$ (non-pooled) | $g_{s^{*}} = J(\nu^{*})\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$ | [Delacre et al. 2021](https://doi.org/10.31234/osf.io/tu6mp) |
-| Wilcoxon rank-sum | rank-biserial $r$ | $r = 2\cdot W/(n_1\cdot n_2) - 1$ | [Cureton 1956](https://doi.org/10.1007/BF02289138) |
+| Wilcoxon rank-sum | rank-biserial $r$ | $r = 2\cdot W/(n_1\cdot n_2) - 1$ | [Kerby 2014](https://doi.org/10.2466/11.IT.3.1) |
 | Fisher's ANOVA | $\omega^2$ | $\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)$ | [Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
 | Welch's ANOVA | $\omega^2$ (approx.) | $\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)$ | [F-form from Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
 | Kruskal--Wallis | $\eta_H^2$ | $(H - k + 1)/(N - k)$ | [Kelley 1935](https://doi.org/10.1073/pnas.21.9.554) |
