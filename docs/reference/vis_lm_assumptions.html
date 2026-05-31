@@ -9,21 +9,29 @@
 Student's t-test
 (t.test,var=EQUAL)
 Fisher oneway ANOVA (aov) or simple linear regression.
-Performs the Shapiro-Wilk test and Anderson-Darling test for normality and,
-if not a regression, also Levene's and Bartlett's tests for homogeneity
-of variances.
-Formal p-values are computed from raw model residuals. The plots display
-the same residuals divided by the residual standard error. In regression
-mode, Cook's distance contours are transformed to this residual scale."><meta property="og:description" content="Checks the residual diagnostics in the general linear model
+Performs the Shapiro-Wilk and Anderson-Darling tests for normality, and
+for grouped data also Levene's and Bartlett's tests for homogeneity of
+variances. For simple linear regression, heteroscedasticity is assessed
+with the Breusch-Pagan test [@Koenker:1981], which regresses squared raw
+residuals on fitted values. The normality tests, the grouped variance tests,
+and the histogram and Q-Q panels are computed from the internally
+studentised residuals r_i = e_i / (SE_res sqrt(1 - h_i)), which remove the
+leverage-dependent variance of the raw residuals (Var(e_i) = sigma^2
+(1 - h_i)). The residuals-vs-fitted panel (regression mode) uses the
+z-residuals z_i = e_i / SE_res, which retain the leverage-dependent spread."><meta property="og:description" content="Checks the residual diagnostics in the general linear model
 Student's t-test
 (t.test,var=EQUAL)
 Fisher oneway ANOVA (aov) or simple linear regression.
-Performs the Shapiro-Wilk test and Anderson-Darling test for normality and,
-if not a regression, also Levene's and Bartlett's tests for homogeneity
-of variances.
-Formal p-values are computed from raw model residuals. The plots display
-the same residuals divided by the residual standard error. In regression
-mode, Cook's distance contours are transformed to this residual scale."></head><body>
+Performs the Shapiro-Wilk and Anderson-Darling tests for normality, and
+for grouped data also Levene's and Bartlett's tests for homogeneity of
+variances. For simple linear regression, heteroscedasticity is assessed
+with the Breusch-Pagan test [@Koenker:1981], which regresses squared raw
+residuals on fitted values. The normality tests, the grouped variance tests,
+and the histogram and Q-Q panels are computed from the internally
+studentised residuals r_i = e_i / (SE_res sqrt(1 - h_i)), which remove the
+leverage-dependent variance of the raw residuals (Var(e_i) = sigma^2
+(1 - h_i)). The residuals-vs-fitted panel (regression mode) uses the
+z-residuals z_i = e_i / SE_res, which retain the leverage-dependent spread."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -62,12 +70,16 @@ mode, Cook's distance contours are transformed to this residual scale."></head><
 Student's t-test
 (t.test,var=EQUAL)
 Fisher oneway ANOVA (aov) or simple linear regression.
-Performs the Shapiro-Wilk test and Anderson-Darling test for normality and,
-if not a regression, also Levene's and Bartlett's tests for homogeneity
-of variances.
-Formal p-values are computed from raw model residuals. The plots display
-the same residuals divided by the residual standard error. In regression
-mode, Cook's distance contours are transformed to this residual scale.</p>
+Performs the Shapiro-Wilk and Anderson-Darling tests for normality, and
+for grouped data also Levene's and Bartlett's tests for homogeneity of
+variances. For simple linear regression, heteroscedasticity is assessed
+with the Breusch-Pagan test [@Koenker:1981], which regresses squared raw
+residuals on fitted values. The normality tests, the grouped variance tests,
+and the histogram and Q-Q panels are computed from the internally
+studentised residuals r_i = e_i / (SE_res sqrt(1 - h_i)), which remove the
+leverage-dependent variance of the raw residuals (Var(e_i) = sigma^2
+(1 - h_i)). The residuals-vs-fitted panel (regression mode) uses the
+z-residuals z_i = e_i / SE_res, which retain the leverage-dependent spread.</p>
     </div>
 
     <div class="section level2">
@@ -119,20 +131,6 @@ diagnostics are shown. Default is <code>FALSE</code>.</p></dd>
 
 
 </dl></div>
-    <div class="section level2">
-    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>In regression mode, the leverage panel does not use internally studentised
-residuals as in <code>plot.lm()</code>. With
-\(z_i = e_i / SE_res\), where \(SE_res\) is the residual standard
-error, Cook's distance contours are drawn as
-$$D_i = z_i^2 h_i / (k(1 - h_i)^2),$$
-with simple-regression leverage
-$$h_i = 1/N + (x_i - \bar{x})^2 /
-      \sum_{r=1}^{N}(x_r - \bar{x})^2.$$
-Here \(x_i\) is the predictor value of observation \(i\),
-\(N\) is the total sample size, and \(k = 2\) is the number of
-fitted model parameters.</p>
-    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>

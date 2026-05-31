@@ -504,7 +504,20 @@ permutations. For larger samples or when ties are present, it uses an
 approximation to the null distribution of the rank association measure
 or its asymptotic transformation. No distributional assumptions on the
 original data are required.
-
+<!-- 1. Beweis 
+The rank-biserial coefficient reported for the Wilcoxon rank-sum test
+(Table \@ref(tab:effect-size-formulae)) is the corresponding correlation
+coefficient for a ranking and a dichotomy. Cureton defines it from
+cross-category agreements \(P\) and inversions \(Q\) as
+\(r_{RB}=(P-Q)/P_{\max}\), with \(P_{\max}=N_1N_2\) when no bracket tie is
+present, and \(P_{\max}=N_1N_2-t_1t_2\) when a bracket tie is present.
+This is Kendall-type because it is based on agreements minus inversions.
+Using the Durbin--Stuart weighted inversion form of Spearman's rank
+correlation, the same coefficient is also Spearman-type: once one
+variable is a dichotomy, all cross-category rank differences in that
+variable are equal and the weighted agreement-minus-inversion expression
+reduces to the same ratio [@Cureton:1956].
+-->
 A separate Pearson-correlation branch is not implemented.
 In simple linear regression with an intercept, the two-sided test of zero
 slope and the two-sided test of zero Pearson correlation return the same
@@ -588,7 +601,7 @@ Hedges' $g_{s^{*}}$ & $g_{s^{*}}=J(\nu^{*})(\bar{x}_1-\bar{x}_2)/s^{*}$ &
 \hline
 Wilcoxon rank-sum &
 rank-biserial $r$ & $r=2W/(n_1n_2)-1$ &
-\href{https://journals.sagepub.com/doi/abs/10.2466/11.it.3.1}{Kerby, 2014} \\
+\tbdoi{10.1007/BF02289138}{Cureton, 1956} \\
 \hline
 Fisher's ANOVA & $\omega^2$ &
 $\nu_1(F-1)/(\nu_1F+\nu_2+1)$ &
@@ -644,7 +657,7 @@ Table: (\#tab:effect-size-formulae) Effect sizes returned by `effect_size()`.
 |:---|:---|:---|:---|
 | Student's $t$-test | Hedges' $g_{s_p}$ (pooled) | $g_{s_p} = J(N-2)\cdot(\bar{x}_1-\bar{x}_2)/s_p$ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
 | Welch's $t$-test | Hedges' $g_{s^{*}}$ (non-pooled) | $g_{s^{*}} = J(\nu^{*})\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$ | [Delacre et al. 2021](https://doi.org/10.31234/osf.io/tu6mp) |
-| Wilcoxon rank-sum | rank-biserial $r$ | $r = 2\cdot W/(n_1\cdot n_2) - 1$ | [Kerby 2014](https://journals.sagepub.com/doi/abs/10.2466/11.it.3.1) |
+| Wilcoxon rank-sum | rank-biserial $r$ | $r = 2\cdot W/(n_1\cdot n_2) - 1$ | [Cureton 1956](https://doi.org/10.1007/BF02289138) |
 | Fisher's ANOVA | $\omega^2$ | $\nu_1\cdot(F-1)/(\nu_1\cdot F + \nu_2 + 1)$ | [Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
 | Welch's ANOVA | $\omega^2$ (approx.) | $\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W + \nu_2 + 1)$ | [F-form from Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
 | Kruskal--Wallis | $\eta_H^2$ | $(H - k + 1)/(N - k)$ | [Kelley 1935](https://doi.org/10.1073/pnas.21.9.554) |

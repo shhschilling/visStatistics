@@ -24,9 +24,14 @@ test_that("effect_size agrees with formulae in the effect-size table", {
   y <- mtcars$mpg
   g <- factor(mtcars$am)
   x <- grouped(y, g)
-  n_total <- length(x[[1]]) + length(x[[2]])
   s_star <- sqrt((var(x[[1]]) + var(x[[2]])) / 2)
-  ref <- hedges_j(n_total - 2) * (mean(x[[1]]) - mean(x[[2]])) / s_star
+  n1 <- length(x[[1]])
+  n2 <- length(x[[2]])
+  s1 <- var(x[[1]])
+  s2 <- var(x[[2]])
+  nu_star <- ((n1 - 1) * (n2 - 1) * (s1 + s2)^2) /
+    ((n2 - 1) * s1^2 + (n1 - 1) * s2^2)
+  ref <- hedges_j(nu_star) * (mean(x[[1]]) - mean(x[[2]])) / s_star
   res <- list("t-test-statistics" = t.test(y ~ g, var.equal = FALSE))
   expect_equal(effect_size(res, x = g, y = y)$estimate, ref, tolerance = 1e-12)
 
