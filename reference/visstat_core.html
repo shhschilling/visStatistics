@@ -195,7 +195,11 @@ following Cochran's rule (Cochran (1954) &lt;doi:10.2307/3001666&gt;).</p>
 <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>, <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code>.</p>
 <p>Implemented tests for assumptions:</p><ul><li><p>Normality: <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and <code>ad.test()</code></p></li>
 <li><p>Heteroscedasticity: <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code> and <code><a href="levene.test.html">levene.test()</a></code> and <code>bp_test()</code></p></li>
-</ul><p>Implemented post hoc tests:</p><ul><li><p><code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code></p></li>
+</ul><p>For the general linear model the Shapiro-Wilk, Anderson-Darling, Levene and
+Bartlett tests are applied to the internally studentised residuals
+r_i = e_i / (SE_res sqrt(1 - h_i)), which remove the leverage-dependent
+variance of the raw residuals (Var(e_i) = sigma^2 (1 - h_i)).</p>
+<p>Implemented post hoc tests:</p><ul><li><p><code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code></p></li>
 <li><p><code>games.howell</code> for  <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code></p></li>
 <li><p><code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> for <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code></p></li>
 </ul></div>

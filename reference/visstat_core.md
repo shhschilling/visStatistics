@@ -155,6 +155,11 @@ Implemented tests for assumptions:
   [`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
   and `bp_test()`
 
+For the general linear model the Shapiro-Wilk, Anderson-Darling, Levene
+and Bartlett tests are applied to the internally studentised residuals
+r_i = e_i / (SE_res sqrt(1 - h_i)), which remove the leverage-dependent
+variance of the raw residuals (Var(e_i) = sigma^2 (1 - h_i)).
+
 Implemented post hoc tests:
 
 - [`TukeyHSD()`](https://rdrr.io/r/stats/TukeyHSD.html) for

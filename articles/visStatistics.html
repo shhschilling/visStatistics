@@ -57,7 +57,7 @@
       <h1>visStatistics: The right test, visualised</h1>
                         <h4 data-toc-skip class="author">Sabine Schilling</h4>
             
-            <h4 data-toc-skip class="date">2026-05-30</h4>
+            <h4 data-toc-skip class="date">2026-05-31</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -114,13 +114,14 @@ It selects a test from the variable classes, distributional assumptions, sample 
 The scripted workflow is well suited for browser-based applications where sensitive data (such as highly confidential medical records) are stored securely on a server and cannot be directly accessed by users.
 This approach was already successfully applied to develop a medical scoring tool <span class="citation">(<a href="#ref-Bijlenga:2017">Bijlenga et al. 2017</a>)</span>.</p>
 <p>For group comparisons, packages with related scope include <code>compareGroups</code> <span class="citation">(<a href="#ref-Subirana:2014">Subirana et al. 2014</a>)</span>, <code>boxTest</code> <span class="citation">(<a href="#ref-Sau:2025">Sau et al. 2025</a>)</span>, <code>autotestR</code> <span class="citation">(<a href="#ref-Garcia:2026">Garcia 2026</a>)</span>, and <code>automatedtests</code> <span class="citation">(<a href="#ref-Zeevat:2025">Zeevat 2025</a>)</span>.
-<code>compareGroups</code> is primarily designed for bivariate descriptive tables and reports, not diagnostic plots and test visualisations.
+<code>compareGroups</code> is primarily designed for bivariate descriptive tables and reports.
 <code>boxTest</code> covers only the two-group numeric-response case.
 <code>autotestR</code> provides automated recommendations for t-tests, ANOVA, correlation, and contingency-table analyses.
 <code>automatedtests</code> provides the broadest routing among these packages, including one-sample, paired, repeated-measures, regression, correlation, and contingency-table cases.</p>
 <p>For tests within the general linear-model framework
 like Student’s t-test or Fisher’s ANOVA and linear regression,
-the normality assumption concerns the model residual errors (each observation minus its predicted value), but none of these packages checks normality on the residuals of the fitted linear model.
+the normality assumption concerns the model residual errors (each observation minus its predicted value), not the raw data; the belief that the raw data must be normal is a widespread myth <span class="citation">(<a href="#ref-Kery:2003">Kéry and Hatfield 2003</a>)</span>.
+Yet none of these packages checks normality on the residuals of the fitted linear model.
 Instead, <code>autotestR</code> and <code>boxTest</code> test the response separately within groups, whereas <code>automatedtests</code> and <code>compareGroups</code> test the response variable as a whole, ignoring the grouping.</p>
 <p>Among the reviewed automated test-selection packages, <code>visStatistics</code> is thus the only one that bases the central-tendency route on explicit residual diagnostics from the common linear model rather than on marginal or groupwise normality checks.
 The package is deliberately limited to common two-variable settings in which the route can be visualised and audited: pretesting where applied, residual-based diagnostics for the linear-model branch, the selected test, full test statistics, effect size, result plots, and post-hoc comparisons where required.</p>
@@ -131,7 +132,7 @@ The package is deliberately limited to common two-variable settings in which the
 </h2>
 <p>The purpose of this vignette is two-fold: On the one hand it explains the
 decision logic of <code><a href="../reference/visstat.html">visstat()</a></code> (Section <a href="#sec:decision">5</a>) and illustrates it
-on examples for each branch of the decision logic (Section <a href="#sec:examples">6</a>).
+on examples for each branch of the decision logic (Section <a href="#sec:examples">7</a>).
 On the other side it serves as a text-book like reference of all implemented
 tests, correlations and effect-sizes (Appendices <a href="#sec:tests">B</a>–<a href="#sec:effect-size">F</a>),
 so that the user easily understands the output without having to consult the
@@ -157,7 +158,7 @@ This article refers to the latest development state in the <a href="https://gith
 <p>From this single entry point, the package automatically selects among the implemented hypothesis tests,</p>
 <p><code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>, <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>, <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>, <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code>, <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>, <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>.</p>
 <p>The underlying selection algorithm is detailed in Section <a href="#sec:decision">5</a>.
-The function returns an object of class <code>"visstat"</code> with <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>, <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods described in Section <a href="#sec:visstat-methods">7</a>.</p>
+The function returns an object of class <code>"visstat"</code> with <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>, <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods described in Section <a href="#sec:visstat-methods">6</a>.</p>
 <p>Among the returned components, <code><a href="../reference/visstat.html">visstat()</a></code> reports the p-value of the selected test and an <code>effect_size</code> field (Section <a href="#sec:p-values-effect-sizes">5.4</a>).</p>
 <p>Unless stated otherwise, R function names for selected tests refer to functions from the <code>stats</code> package distributed with R <span class="citation">(<a href="#ref-R:2026">R Core Team 2026</a>)</span>.</p>
 <p>To reduce dependencies on other packages, <code>visStatistics</code> implements <code>levene.test()</code> for the variance gate in grouped mean-based tests (Eq. <a href="#eq:levene-f">(A.3)</a>), <code>bp.test()</code> for regression diagnostics (Eq. <a href="#eq:breusch-pagan-bp">(A.5)</a>), and <code>games.howell()</code> for Welch-ANOVA post-hoc comparisons (Eq. <a href="#eq:games-howell-t">(B.7)</a>).</p>
@@ -320,7 +321,7 @@ The second row reports p-values of variance checks: Levene and Bartlett for grou
 <p>Note that among the displayed assumption tests, only the Shapiro–Wilk and Levene test results enter automated routing, and only in the central-tendency branch (see Section <a href="#sec:route-1">5.3.1</a>).
 Anderson–Darling, Bartlett, and Breusch–Pagan are diagnostic output only.</p>
 <!-- Because the displayed z-residuals are a constant rescaling of the raw residuals fed to the assumption tests, the visual evidence and the displayed p-values in the outer titles refer to the same residual object. -->
-<p>The Route 1 and Route 3 diagnostic-panel designs are illustrated in the examples in Figures <a href="#fig:welch-anova-example">6.4</a>, left, and <a href="#fig:regression-example">6.8</a>, left.</p>
+<p>The Route 1 and Route 3 diagnostic-panel designs are illustrated in the examples in Figures <a href="#fig:welch-anova-example">7.4</a>, left, and <a href="#fig:regression-example">7.8</a>, left.</p>
 <!-- `levene.test()` and `bp.test()` have standalone implementations in the package to avoid dependencies on external packages (see Section <a href="#sec:homo">A.2</a>). -->
 </div>
 </div>
@@ -367,7 +368,7 @@ Because the three omnibus tests rest on different assumptions, each branch uses 
 <li><p><code>games.howell()</code> (Eq. <a href="#eq:games-howell-t">(B.7)</a>) after <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> uses separate variance estimates and Welch-adjusted degrees of freedom for each pair, making it the appropriate post-hoc procedure for the heteroscedastic Welch branch.</p></li>
 <li><p><code>pairwise.wilcox.test(p.adjust.method = "holm")</code> after <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> uses Holm’s step-down adjustment for the pairwise Wilcoxon tests in the Kruskal–Wallis branch.</p></li>
 </ul>
-<p>The graphical results panel of these omnibus tests consists of box plots (see examples in Section <a href="#sec:examples-route1">6.1</a>) enriched with significance letters to visualise the post-hoc analysis: Pairs whose adjusted post-hoc <span class="math inline">\(p\)</span>-value falls below <span class="math inline">\(\alpha\)</span> are marked with different green significance letters below the box plots; pairs sharing a letter are not significantly different.</p>
+<p>The graphical results panel of these omnibus tests consists of box plots (see examples in Section <a href="#sec:examples-route1">7.1</a>) enriched with significance letters to visualise the post-hoc analysis: Pairs whose adjusted post-hoc <span class="math inline">\(p\)</span>-value falls below <span class="math inline">\(\alpha\)</span> are marked with different green significance letters below the box plots; pairs sharing a letter are not significantly different.</p>
 </div>
 </div>
 <div class="section level4" number="5.3.2">
@@ -382,10 +383,10 @@ The ordered response is converted to integer level codes and analysed with the W
 <span class="header-section-number">5.3.3</span> Route 3: Numeric response, numeric predictor<a class="anchor" aria-label="anchor" href="#sec:route-3"></a>
 </h4>
 <p>Two numeric variables ask whether a numeric response changes with a numeric predictor.
-By default, <code><a href="../reference/visstat.html">visstat()</a></code> fits a simple linear regression (Eq. <a href="#eq:simple-regression-fit">(6.1)</a>).
+By default, <code><a href="../reference/visstat.html">visstat()</a></code> fits a simple linear regression (Eq. <a href="#eq:simple-regression-fit">(7.1)</a>).
 and the diagnostic panel described in Section <a href="#sec:graphical">5.2.3</a> is displayed.
 If general linear model assumptions are violated, the corresponding p-values trigger warnings and recommendations, but no automatic model replacement.
-The regression output is shown in Section <a href="#sec:lin-reg">6.3.1</a>.</p>
+The regression output is shown in Section <a href="#sec:lin-reg">7.3.1</a>.</p>
 </div>
 <div class="section level4" number="5.3.4">
 <h4 id="sec:route-4">
@@ -419,412 +420,18 @@ As a complementary output component, the <code>effect_size</code> field reports 
 </div>
 </div>
 <div class="section level2" number="6">
-<h2 id="sec:examples">
-<span class="header-section-number">6</span> Examples<a class="anchor" aria-label="anchor" href="#sec:examples"></a>
-</h2>
-<p>The examples follow the routes outlined in Section <a href="#sec:top-level">5.1</a> and are chosen to trigger every branch.</p>
-<p>Within the group-comparison routes, examples are ordered such that the two-group case is followed by its generalisation to more than two groups: Student’s t-test by Fisher’s one-way ANOVA, Welch’s t-test by Welch’s one-way ANOVA, and Wilcoxon rank-sum by Kruskal–Wallis.</p>
-<p>Where needed, the example descriptions add interpretive details on the graphical output, such as significance letters, regression bands, or mosaic plots.</p>
-<!-- The number of plots returned by `visstat()` depends on the input types and the outcome of assumption checks. -->
-<!-- Central-tendency examples and simple linear regression produce an assumption-diagnostic panel followed by the result panel. -->
-<!-- Most example datasets are distributed with R; synthetic data are used where no suitable base R example is available. -->
-<div class="section level3" number="6.1">
-<h3 id="sec:examples-route1">
-<span class="header-section-number">6.1</span> Route 1: Numeric response, categorical predictor<a class="anchor" aria-label="anchor" href="#sec:examples-route1"></a>
-</h3>
-<div class="section level4" number="6.1.1">
-<h4 id="students-t-test-and-fishers-one-way-anova">
-<span class="header-section-number">6.1.1</span> Student’s t-test and Fisher’s one-way ANOVA<a class="anchor" aria-label="anchor" href="#students-t-test-and-fishers-one-way-anova"></a>
-</h4>
-<div class="section level5" number="6.1.1.1">
-<h5 id="sec:student-ttest">
-<span class="header-section-number">6.1.1.1</span> Student’s t-test<a class="anchor" aria-label="anchor" href="#sec:student-ttest"></a>
-</h5>
-<p>The <code>ToothGrowth</code> dataset records odontoblast length in 60 guinea pigs given vitamin C by orange juice (<code>OJ</code>) or ascorbic acid (<code>VC</code>).
-With delivery method as predictor and length as response, the assumption-diagnostic panel shows no residual-normality or variance-homogeneity violation.
-<code><a href="../reference/visstat.html">visstat()</a></code> therefore selects Student’s t-test, and the result panel shows the two-group box plot with the selected test result.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">student_ttest</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">ToothGrowth</span><span class="op">$</span><span class="va">supp</span>, <span class="va">ToothGrowth</span><span class="op">$</span><span class="va">len</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<span style="display:block;" id="fig:student-ttest-example"></span>
-<img src="visStatistics_files/figure-html/student-ttest-example-1.png" alt="Student's t-test applied to the `ToothGrowth` dataset (`len` vs.\ `supp`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene does not reject residual variance homogeneity) select the equal-variance mean-based path, followed by box plots with the Student t-test result." width="48%"><img src="visStatistics_files/figure-html/student-ttest-example-2.png" alt="Student's t-test applied to the `ToothGrowth` dataset (`len` vs.\ `supp`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene does not reject residual variance homogeneity) select the equal-variance mean-based path, followed by box plots with the Student t-test result." width="48%"><p class="caption">
-Figure 6.1: Student’s t-test applied to the <code>ToothGrowth</code> dataset (<code>len</code> vs. <code>supp</code>). Assumption diagnostics (Shapiro–Wilk does not reject residual normality; Levene does not reject residual variance homogeneity) select the equal-variance mean-based path, followed by box plots with the Student t-test result.
-</p>
-</div>
-</div>
-<div class="section level5" number="6.1.1.2">
-<h5 id="fishers-one-way-anova-with-tukey-hsd-post-hoc-comparisons">
-<span class="header-section-number">6.1.1.2</span> Fisher’s one-way ANOVA with Tukey HSD post-hoc comparisons<a class="anchor" aria-label="anchor" href="#fishers-one-way-anova-with-tukey-hsd-post-hoc-comparisons"></a>
-</h5>
-<p>The <code>PlantGrowth</code> dataset records yields (as measured by dried weight of plants) for a control group and two treatment groups.
-With control and treatment groups as predictor and plant weight as response, the assumption-diagnostic panel shows that Shapiro–Wilk does not reject normality of the model residuals and <code>levene.test()</code> does not reject homoscedasticity.
-<code><a href="../reference/visstat.html">visstat()</a></code> therefore applies Fisher’s one-way ANOVA followed by Tukey HSD post-hoc comparisons.
-The result panel shows the box plots and post-hoc significance letters.
-The omnibus F-test is significant at <span class="math inline">\(\alpha = 0.05\)</span>, and the Tukey HSD post-hoc comparison finds no significant difference between the control group and either treatment, but the difference between <code>trt1</code> and <code>trt2</code> is significant.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">anova_plantgrowth</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">PlantGrowth</span><span class="op">$</span><span class="va">group</span>, <span class="va">PlantGrowth</span><span class="op">$</span><span class="va">weight</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<span style="display:block;" id="fig:anova-example"></span>
-<img src="visStatistics_files/figure-html/anova-example-1.png" alt="Fisher's one-way ANOVA applied to the `PlantGrowth` dataset (`weight` vs.\ `group`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene does not reject residual variance homogeneity) select the equal-variance mean-based path, followed by box plots with Tukey HSD significance letters ($\alpha = 0.05$)." width="48%"><img src="visStatistics_files/figure-html/anova-example-2.png" alt="Fisher's one-way ANOVA applied to the `PlantGrowth` dataset (`weight` vs.\ `group`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene does not reject residual variance homogeneity) select the equal-variance mean-based path, followed by box plots with Tukey HSD significance letters ($\alpha = 0.05$)." width="48%"><p class="caption">
-Figure 6.2: Fisher’s one-way ANOVA applied to the <code>PlantGrowth</code> dataset (<code>weight</code> vs. <code>group</code>). Assumption diagnostics (Shapiro–Wilk does not reject residual normality; Levene does not reject residual variance homogeneity) select the equal-variance mean-based path, followed by box plots with Tukey HSD significance letters (<span class="math inline">\(\alpha = 0.05\)</span>).
-</p>
-</div>
-</div>
-</div>
-<div class="section level4" number="6.1.2">
-<h4 id="welchs-t-test-and-welchs-one-way-anova">
-<span class="header-section-number">6.1.2</span> Welch’s t-test and Welch’s one-way ANOVA<a class="anchor" aria-label="anchor" href="#welchs-t-test-and-welchs-one-way-anova"></a>
-</h4>
-<div class="section level5" number="6.1.2.1">
-<h5 id="welchs-t-test">
-<span class="header-section-number">6.1.2.1</span> Welch’s t-test<a class="anchor" aria-label="anchor" href="#welchs-t-test"></a>
-</h5>
-<p>The <em>Motor Trend Car Road Tests</em> dataset (<code>mtcars</code>) contains 32 observations, where <code>mpg</code> denotes miles per (US) gallon and <code>am</code> represents the transmission type (<code>0</code> = automatic, <code>1</code> = manual).
-With binary factor <code>am</code> and continuous response <code>mpg</code>, the assumption-diagnostic panel shows that Shapiro–Wilk does not reject normality of the model residuals, while the Levene test detects heteroscedasticity.
-The routing therefore leads to Welch’s t-test rather than Student’s t-test, and the result panel shows the corresponding two-group comparison.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
-<span><span class="va">t_test_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span>, <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<span style="display:block;" id="fig:ttest-example"></span>
-<img src="visStatistics_files/figure-html/ttest-example-1.png" alt="Welch's t-test applied to the `mtcars` dataset (`mpg` vs.\ `am`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene rejects residual variance homogeneity) select the unequal-variance mean-based path, followed by box plots with the Welch t-test result." width="48%"><img src="visStatistics_files/figure-html/ttest-example-2.png" alt="Welch's t-test applied to the `mtcars` dataset (`mpg` vs.\ `am`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene rejects residual variance homogeneity) select the unequal-variance mean-based path, followed by box plots with the Welch t-test result." width="48%"><p class="caption">
-Figure 6.3: Welch’s t-test applied to the <code>mtcars</code> dataset (<code>mpg</code> vs. <code>am</code>). Assumption diagnostics (Shapiro–Wilk does not reject residual normality; Levene rejects residual variance homogeneity) select the unequal-variance mean-based path, followed by box plots with the Welch t-test result.
-</p>
-</div>
-</div>
-<div class="section level5" number="6.1.2.2">
-<h5 id="sec:welch-anova-iris">
-<span class="header-section-number">6.1.2.2</span> Welch’s heteroscedastic one-way ANOVA with Games–Howell post-hoc comparisons<a class="anchor" aria-label="anchor" href="#sec:welch-anova-iris"></a>
-</h5>
-<p>In the <code>iris</code> dataset, using <code>Species</code> as predictor and <code>Sepal.Length</code> as response, the assumption-diagnostic panel shows that Shapiro–Wilk does not reject normality of the model residuals, whereas the Levene test rejects homoscedasticity at the given <span class="math inline">\(\alpha = 5\%\)</span>.
-<code><a href="../reference/visstat.html">visstat()</a></code> therefore selects Welch’s heteroscedastic one-way ANOVA (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) and applies Games–Howell post-hoc comparisons.
-The result panel shows the box plots and Games–Howell significance letters.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">welch_anova_iris</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<span style="display:block;" id="fig:welch-anova-example"></span>
-<img src="visStatistics_files/figure-html/welch-anova-example-1.png" alt="Welch's heteroscedastic one-way ANOVA applied to the `iris` dataset (`Sepal.Length` vs.\ `Species`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene rejects residual variance homogeneity) select the unequal-variance mean-based path, followed by box plots with Games--Howell significance letters ($\alpha = 0.05$)." width="48%"><img src="visStatistics_files/figure-html/welch-anova-example-2.png" alt="Welch's heteroscedastic one-way ANOVA applied to the `iris` dataset (`Sepal.Length` vs.\ `Species`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene rejects residual variance homogeneity) select the unequal-variance mean-based path, followed by box plots with Games--Howell significance letters ($\alpha = 0.05$)." width="48%"><p class="caption">
-Figure 6.4: Welch’s heteroscedastic one-way ANOVA applied to the <code>iris</code> dataset (<code>Sepal.Length</code> vs. <code>Species</code>). Assumption diagnostics (Shapiro–Wilk does not reject residual normality; Levene rejects residual variance homogeneity) select the unequal-variance mean-based path, followed by box plots with Games–Howell significance letters (<span class="math inline">\(\alpha = 0.05\)</span>).
-</p>
-</div>
-</div>
-</div>
-<div class="section level4" number="6.1.3">
-<h4 id="wilcoxon-rank-sum-test-and-kruskalwallis-test">
-<span class="header-section-number">6.1.3</span> Wilcoxon rank-sum test and Kruskal–Wallis test<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test-and-kruskalwallis-test"></a>
-</h4>
-<div class="section level5" number="6.1.3.1">
-<h5 id="wilcoxon-rank-sum-test">
-<span class="header-section-number">6.1.3.1</span> Wilcoxon rank-sum test<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test"></a>
-</h5>
-<p>The <code>warpbreaks</code> dataset records thread breaks during weaving.
-Using wool type (<code>A</code> or <code>B</code>) as predictor and the number of breaks as response, the assumption-diagnostic panel shows that the Shapiro–Wilk test rejects normality of the model residuals.
-<code><a href="../reference/visstat.html">visstat()</a></code> therefore selects the Wilcoxon rank-sum test, and the result panel shows the rank-based two-group comparison.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">wilcoxon_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">warpbreaks</span><span class="op">$</span><span class="va">wool</span>, <span class="va">warpbreaks</span><span class="op">$</span><span class="va">breaks</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<span style="display:block;" id="fig:wilcoxon-example"></span>
-<img src="visStatistics_files/figure-html/wilcoxon-example-1.png" alt="Wilcoxon rank-sum test applied to the `warpbreaks` dataset (`breaks` vs.\ `wool`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with the Wilcoxon test result." width="48%"><img src="visStatistics_files/figure-html/wilcoxon-example-2.png" alt="Wilcoxon rank-sum test applied to the `warpbreaks` dataset (`breaks` vs.\ `wool`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with the Wilcoxon test result." width="48%"><p class="caption">
-Figure 6.5: Wilcoxon rank-sum test applied to the <code>warpbreaks</code> dataset (<code>breaks</code> vs. <code>wool</code>). Assumption diagnostics (Shapiro–Wilk rejects residual normality; non-parametric path selected) and box plots with the Wilcoxon test result.
-</p>
-</div>
-</div>
-<div class="section level5" number="6.1.3.2">
-<h5 id="kruskalwallis-rank-sum-test-with-pairwise-wilcoxon-post-hoc-comparisons">
-<span class="header-section-number">6.1.3.2</span> Kruskal–Wallis rank sum test with pairwise Wilcoxon post-hoc comparisons<a class="anchor" aria-label="anchor" href="#kruskalwallis-rank-sum-test-with-pairwise-wilcoxon-post-hoc-comparisons"></a>
-</h5>
-<p>In the <code>iris</code> data set, <code>Petal.Width</code> by <code>Species</code> follows a different route than <code>Sepal.Length</code> by <code>Species</code> above (Figure <a href="#fig:welch-anova-example">6.4</a>), because the assumption diagnostics differ.
-The assumption-diagnostic panel shows clear departures from normality, and both normality tests return very small <span class="math inline">\(p\)</span>-values.
-Since Shapiro–Wilk falls below <span class="math inline">\(\alpha\)</span>, <code><a href="../reference/visstat.html">visstat()</a></code> switches to <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> followed by Holm-adjusted <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>.
-The result panel shows the box plots and Holm-adjusted significance letters; all three species differ significantly in petal width, as indicated by distinct letters.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">kruskal_iris</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Width</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<span style="display:block;" id="fig:kruskal-example"></span>
-<img src="visStatistics_files/figure-html/kruskal-example-1.png" alt="Kruskal-Wallis test applied to the `iris` dataset (`Petal.Width` vs.\ `Species`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted pairwise Wilcoxon significance letters ($\alpha = 0.05$)." width="48%"><img src="visStatistics_files/figure-html/kruskal-example-2.png" alt="Kruskal-Wallis test applied to the `iris` dataset (`Petal.Width` vs.\ `Species`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted pairwise Wilcoxon significance letters ($\alpha = 0.05$)." width="48%"><p class="caption">
-Figure 6.6: Kruskal-Wallis test applied to the <code>iris</code> dataset (<code>Petal.Width</code> vs. <code>Species</code>). Assumption diagnostics (Shapiro–Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted pairwise Wilcoxon significance letters (<span class="math inline">\(\alpha = 0.05\)</span>).
-</p>
-</div>
-</div>
-</div>
-</div>
-<div class="section level3" number="6.2">
-<h3 id="route-2-ordered-response">
-<span class="header-section-number">6.2</span> Route 2: Ordered response<a class="anchor" aria-label="anchor" href="#route-2-ordered-response"></a>
-</h3>
-<div class="section level4" number="6.2.1">
-<h4 id="sec:route-2-ordered-factor">
-<span class="header-section-number">6.2.1</span> Ordered response, categorical factor<a class="anchor" aria-label="anchor" href="#sec:route-2-ordered-factor"></a>
-</h4>
-<div class="section level5" number="6.2.1.1">
-<h5 id="wilcoxon-rank-sum-test-with-ordered-response">
-<span class="header-section-number">6.2.1.1</span> Wilcoxon rank-sum test with ordered response<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test-with-ordered-response"></a>
-</h5>
-<p>The <code>Titanic</code> dataset contains passenger counts by, among other variables, passenger class and gender.
-After expanding the table to individual rows, passenger class is treated as ordered and gender as a two-level predictor.
-<code><a href="../reference/visstat.html">visstat()</a></code> selects the Wilcoxon rank-sum test.
-The result panel therefore displays the rank-test comparison on the numeric level scores (see Figure <a href="#fig:ordinal-wilcoxon-kruskal-example">6.7</a>, left).</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">titanic_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">Titanic</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">titanic_df</span><span class="op">$</span><span class="va">Class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">titanic_df</span><span class="op">$</span><span class="va">Class</span>,</span>
-<span>                            levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1st"</span>, <span class="st">"2nd"</span>, <span class="st">"3rd"</span>, <span class="st">"Crew"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">wilcox_ordered</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">titanic_df</span><span class="op">$</span><span class="va">Sex</span>, <span class="va">titanic_df</span><span class="op">$</span><span class="va">Class</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: Ordered response detected. Converting to integer level codes for</span></span>
-<span><span class="co">## non-parametric analysis.</span></span></code></pre>
-</div>
-<div class="section level5" number="6.2.1.2">
-<h5 id="kruskalwallis-test-with-ordered-response">
-<span class="header-section-number">6.2.1.2</span> Kruskal–Wallis test with ordered response<a class="anchor" aria-label="anchor" href="#kruskalwallis-test-with-ordered-response"></a>
-</h5>
-<p>With three predictor groups, <code><a href="../reference/visstat.html">visstat()</a></code> routes to <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> followed by Holm-adjusted <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>.
-The result panel shows the Kruskal–Wallis comparison and Holm-adjusted significance letters on the numeric level scores (see Figure <a href="#fig:ordinal-wilcoxon-kruskal-example">6.7</a>, right).
-A synthetic survey records perceived car comfort on a five-point scale across three markets.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span><span class="va">market</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Europe"</span>, <span class="st">"North America"</span>, <span class="st">"Asia"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">comfort_numeric</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">50</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.30</span>, <span class="fl">0.30</span>, <span class="fl">0.20</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">50</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.10</span>, <span class="fl">0.20</span>, <span class="fl">0.40</span>, <span class="fl">0.20</span>, <span class="fl">0.10</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">50</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.10</span>, <span class="fl">0.20</span>, <span class="fl">0.35</span>, <span class="fl">0.30</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">survey_data_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  market <span class="op">=</span> <span class="va">market</span>,</span>
-<span>  comfort <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">comfort_numeric</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">kruskal_ordered</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">comfort</span> <span class="op">~</span> <span class="va">market</span>, data <span class="op">=</span> <span class="va">survey_data_3</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: Ordered response detected. Converting to integer level codes for</span></span>
-<span><span class="co">## non-parametric analysis.</span></span></code></pre>
-<div class="figure">
-<span style="display:block;" id="fig:ordinal-wilcoxon-kruskal-example"></span>
-<img src="visStatistics_files/figure-html/ordinal-wilcoxon-kruskal-example-1.png" alt="Wilcoxon rank-sum test for ordered passenger class by sex in the expanded `Titanic` data (left) and its multi-group generalisation, the Kruskal-Wallis test for ordered car comfort ratings by market (right). Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significance letters for the Kruskal-Wallis example ($\alpha = 0.05$)." width="48%"><img src="visStatistics_files/figure-html/ordinal-wilcoxon-kruskal-example-2.png" alt="Wilcoxon rank-sum test for ordered passenger class by sex in the expanded `Titanic` data (left) and its multi-group generalisation, the Kruskal-Wallis test for ordered car comfort ratings by market (right). Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significance letters for the Kruskal-Wallis example ($\alpha = 0.05$)." width="48%"><p class="caption">
-Figure 6.7: Wilcoxon rank-sum test for ordered passenger class by sex in the expanded <code>Titanic</code> data (left) and its multi-group generalisation, the Kruskal-Wallis test for ordered car comfort ratings by market (right). Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significance letters for the Kruskal-Wallis example (<span class="math inline">\(\alpha = 0.05\)</span>).
-</p>
-</div>
-</div>
-</div>
-</div>
-<div class="section level3" number="6.3">
-<h3 id="route-3-numeric-response-numeric-predictor">
-<span class="header-section-number">6.3</span> Route 3: Numeric response, numeric predictor<a class="anchor" aria-label="anchor" href="#route-3-numeric-response-numeric-predictor"></a>
-</h3>
-<div class="section level4" number="6.3.1">
-<h4 id="sec:lin-reg">
-<span class="header-section-number">6.3.1</span> Linear regression<a class="anchor" aria-label="anchor" href="#sec:lin-reg"></a>
-</h4>
-<p>The <code>swiss</code> dataset records standardised fertility and socioeconomic indicators for 47 French-speaking Swiss provinces in 1888.
-We examine how the share of draftees achieving the highest army examination score (<code>Examination</code>) predicts the fertility measure (<code>Fertility</code>), with <code>conf.level = 0.99</code>.
-The diagnostic panel in Figure <a href="#fig:regression-example">6.8</a>, left, shows that both normality tests pass and the Breusch–Pagan test confirms homoscedasticity, supporting the linear model.
-The assumption-diagnostic panel is displayed, but its checks do not trigger automatic model replacement.
-The regression plot shows the fitted line</p>
-<p><span class="math display" id="eq:simple-regression-fit">\[\begin{equation}
-\hat{y}_i = b_0 + b_1 x_i
-\tag{6.1}
-\end{equation}\]</span> with the point estimates <span class="math inline">\(b_0\)</span> and <span class="math inline">\(b_1\)</span> for the unknown parameters <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> of the linear regression model in Eq. 
-<a href="#eq:glm">(5.1)</a> with one predictor.
-It is displayed with pointwise confidence and prediction bands at the specified <code>conf.level</code>.</p>
-<p>The returned object contains the regression statistics, residual-normality tests, pointwise confidence and prediction bands, and the coefficient of determination <span class="math inline">\(R^2\)</span> (Eq. <a href="#eq:r-squared">(F.1)</a>) as effect size.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">linreg_swiss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">swiss</span><span class="op">$</span><span class="va">Examination</span>, <span class="va">swiss</span><span class="op">$</span><span class="va">Fertility</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<span style="display:block;" id="fig:regression-example"></span>
-<img src="visStatistics_files/figure-html/regression-example-1.png" alt="Simple linear regression of `Fertility` on `Examination` for the `swiss` dataset (`conf.level = 0.99`). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\% confidence band (dark shading), and 99\% prediction band (light shading)." width="48%"><img src="visStatistics_files/figure-html/regression-example-2.png" alt="Simple linear regression of `Fertility` on `Examination` for the `swiss` dataset (`conf.level = 0.99`). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\% confidence band (dark shading), and 99\% prediction band (light shading)." width="48%"><p class="caption">
-Figure 6.8: Simple linear regression of <code>Fertility</code> on <code>Examination</code> for the <code>swiss</code> dataset (<code>conf.level = 0.99</code>). Assumption diagnostics (Shapiro–Wilk, Anderson–Darling, Breusch–Pagan) and scatter plot with fitted regression line, 99% confidence band (dark shading), and 99% prediction band (light shading).
-</p>
-</div>
-<p>The <code>airquality</code> ozone example shows the limits of the automated approach when the default linear model is not an adequate final model.
-<code><a href="../reference/visstat.html">visstat()</a></code> identifies assumption violations and points to analyses outside the automated decision tree.
-A default <code><a href="../reference/visstat.html">visstat()</a></code> call for ozone concentration (<code>Ozone</code>) as a function of wind speed (<code>Wind</code>) fits the simple linear model.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ozone_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">$</span><span class="va">Wind</span>, <span class="va">airquality</span><span class="op">$</span><span class="va">Ozone</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: Statistical assumptions violated:</span></span>
-<span><span class="co">## Normality of residuals violated (Shapiro-Wilk p = 0.00522 )</span></span>
-<span><span class="co">## Homoscedasticity violated (Breusch-Pagan p = 0.00595 )</span></span>
-<span><span class="co">## Analysis proceeded but interpret results cautiously.</span></span></code></pre>
-<pre><code><span><span class="co">## RECOMMENDATION: Consider exploring alternatives outside visstat() such as data transformations,</span></span>
-<span><span class="co">## generalised linear models, or robust regression. For a non-causal alternative</span></span>
-<span><span class="co">## consider rerunning with correlation = TRUE.</span></span></code></pre>
-<div class="figure">
-<span style="display:block;" id="fig:ozone-lm-triage"></span>
-<img src="visStatistics_files/figure-html/ozone-lm-triage-1.png" alt="Default simple linear regression for `Ozone` by `Wind` in the `airquality` dataset. Assumption diagnostics flag non-normal  model residuals and heteroscedasticity before alternative routes are considered." width="48%"><img src="visStatistics_files/figure-html/ozone-lm-triage-2.png" alt="Default simple linear regression for `Ozone` by `Wind` in the `airquality` dataset. Assumption diagnostics flag non-normal  model residuals and heteroscedasticity before alternative routes are considered." width="48%"><p class="caption">
-Figure 6.9: Default simple linear regression for <code>Ozone</code> by <code>Wind</code> in the <code>airquality</code> dataset. Assumption diagnostics flag non-normal model residuals and heteroscedasticity before alternative routes are considered.
-</p>
-</div>
-<p>The diagnostic output flags non-normal model residuals and heteroscedasticity.</p>
-<p>In the “Residual vs. fitted” diagnostic panel we observe an increase in spread from left to right, forming a funnel shape that indicates variance increases with fitted values.
-The optional Spearman analysis for the same dataset is shown in Section <a href="#sec:examples-rank-correlation-mode">6.5</a>.
-The following example shows a Gamma generalised linear model outside <code><a href="../reference/visstat.html">visstat()</a></code>.</p>
-</div>
-<div class="section level4" number="6.3.2">
-<h4 id="sec:model-comparisons">
-<span class="header-section-number">6.3.2</span> Model exploration outside <code>visstat()</code><a class="anchor" aria-label="anchor" href="#sec:model-comparisons"></a>
-</h4>
-<p>As a model outside of <code><a href="../reference/visstat.html">visstat()</a></code>, we fit a Gamma generalised linear model with log link.
-The Gamma family is suited here because Ozone is strictly positive and continuous, and its variance grows with the fitted values — the structure detected by the Breusch–Pagan test.
-The log link guarantees positive fitted values.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Gamma model with log mapping</span></span>
-<span><span class="va">model_gamma</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">Ozone</span> <span class="op">~</span> <span class="va">Wind</span>, data <span class="op">=</span> <span class="va">airquality</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">Gamma</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">"log"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">model_gamma</span><span class="op">$</span><span class="va">aic</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 1040.021</span></span></code></pre>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Comparison with AIC of simple linear regression</span></span>
-<span><span class="va">model_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">Ozone</span> <span class="op">~</span> <span class="va">Wind</span>, data <span class="op">=</span> <span class="va">airquality</span><span class="op">)</span></span>
-<span><span class="va">model_lm</span><span class="op">$</span><span class="va">aic</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] 1093.187</span></span></code></pre>
-<div class="figure" style="text-align: center">
-<span style="display:block;" id="fig:gamma-glm-plot"></span>
-<img src="visStatistics_files/figure-html/gamma-glm-plot-1.png" alt="Gamma GLM with log link fitted to the `airquality` dataset `Ozone` vs. `Wind`. The red curve shows the fitted Gamma GLM; the y-axis is on a log scale." width="60%"><p class="caption">
-Figure 6.10: Gamma GLM with log link fitted to the <code>airquality</code> dataset <code>Ozone</code> vs. <code>Wind</code>. The red curve shows the fitted Gamma GLM; the y-axis is on a log scale.
-</p>
-</div>
-<p>For a Gamma generalised linear model with log link, standardised deviance residuals are asymptotically standard normal; we use Shapiro–Wilk and Anderson–Darling as approximate checks of the fitted model:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Extract standardised deviance residuals</span></span>
-<span><span class="va">std_dev_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/influence.measures.html" class="external-link">rstandard</a></span><span class="op">(</span><span class="va">model_gamma</span>, type <span class="op">=</span> <span class="st">"deviance"</span><span class="op">)</span></span>
-<span><span class="co"># Validate using the Shapiro-Wilk normality test</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test</a></span><span class="op">(</span><span class="va">std_dev_res</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## </span></span>
-<span><span class="co">##  Shapiro-Wilk normality test</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## data:  std_dev_res</span></span>
-<span><span class="co">## W = 0.99245, p-value = 0.7817</span></span></code></pre>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Validate using the Anderson-Darling normality test</span></span>
-<span><span class="fu">nortest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/nortest/man/ad.test.html" class="external-link">ad.test</a></span><span class="op">(</span><span class="va">std_dev_res</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## </span></span>
-<span><span class="co">##  Anderson-Darling normality test</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## data:  std_dev_res</span></span>
-<span><span class="co">## A = 0.198, p-value = 0.8853</span></span></code></pre>
-<p>The Gamma model improves the model fit according to the Akaike Information Criterion <span class="citation">(<a href="#ref-Akaike:1974">Akaike 1974</a>)</span>, which decreases from 1093.2 to 1040.0.
-The increase in the Shapiro–Wilk <span class="math inline">\(p\)</span>-value from <span class="math inline">\(p_{SW} = 0.0052\)</span> in the simple linear regression to <span class="math inline">\(p_{SW} = 0.78\)</span> is more consistent with residual normality.
-This comparison illustrates how assumption warnings from <code><a href="../reference/visstat.html">visstat()</a></code> can motivate model exploration outside the automated decision tree.</p>
-</div>
-</div>
-<div class="section level3" number="6.4">
-<h3 id="route-4-two-unordered-factors">
-<span class="header-section-number">6.4</span> Route 4: Two unordered factors<a class="anchor" aria-label="anchor" href="#route-4-two-unordered-factors"></a>
-</h3>
-<p>The following examples are based on the <code>HairEyeColor</code> contingency table, which is converted to the column-based data frame expected by <code><a href="../reference/visstat.html">visstat()</a></code> using the helper function <code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code>.</p>
-<div class="section level4" number="6.4.1">
-<h4 id="pearsons-chi2-test">
-<span class="header-section-number">6.4.1</span> Pearson’s <span class="math inline">\(\chi^2\)</span> test<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test"></a>
-</h4>
-<p>For a contingency table with <span class="math inline">\(R\)</span> response levels and <span class="math inline">\(C\)</span> predictor levels, Pearson’s <span class="math inline">\(\chi^2\)</span> test (Eq. <a href="#eq:pearson-chi">(D.2)</a>) shows a grouped column plot of row percentages with the <span class="math inline">\(p\)</span>-value in the title, followed by a mosaic plot from <code>vcd</code> <span class="citation">(<a href="#ref-Meyer:2006">Meyer et al. 2006</a>, <a href="#ref-Meyer:2024">2024</a>)</span>.
-Each tile corresponds to one cell of the contingency table.
-The tile colour represents the Pearson residual value (Eq. <a href="#eq:pearson-residual">(D.1)</a>) on a blue–red colour scale; the tile size reflects the cell count.</p>
-<p>With <code>Eye</code> and <code>Hair</code> from <code>HairEyeColor</code>, all expected cell counts exceed the Cochran thresholds <span class="citation">(<a href="#ref-Cochran:1954">Cochran 1954</a>)</span>, so the <span class="math inline">\(4 \times 4\)</span> <span class="math inline">\(\chi^2\)</span> approximation is used.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hair_eye_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_df</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">hair_eye_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<span style="display:block;" id="fig:chisq-example"></span>
-<img src="visStatistics_files/figure-html/chisq-example-1.png" alt="Pearson's $\chi^2$ test applied to the `HairEyeColor` dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented)." width="48%"><img src="visStatistics_files/figure-html/chisq-example-2.png" alt="Pearson's $\chi^2$ test applied to the `HairEyeColor` dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented)." width="48%"><p class="caption">
-Figure 6.11: Pearson’s <span class="math inline">\(\chi^2\)</span> test applied to the <code>HairEyeColor</code> dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented).
-</p>
-</div>
-<p>Here, cells for black hair and brown hair, as well as blond hair and blue eyes, show counts above the expectation.</p>
-</div>
-<div class="section level4" number="6.4.2">
-<h4 id="pearsons-chi2-test-with-yates-continuity-correction">
-<span class="header-section-number">6.4.2</span> Pearson’s <span class="math inline">\(\chi^2\)</span> test with Yates’ continuity correction<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test-with-yates-continuity-correction"></a>
-</h4>
-<p>Restricting <code>HairEyeColor</code> to black or brown hair and brown or blue eyes yields a <span class="math inline">\(2 \times 2\)</span> table.
-Cochran’s rule is still satisfied, so <code><a href="../reference/visstat.html">visstat()</a></code> applies Pearson’s <span class="math inline">\(\chi^2\)</span> test with Yates’ continuity correction.
-The resulting grouped column plot is shown in Figure <a href="#fig:yates-fisher-example">6.12</a>, left.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hair_black_brown_eyes_brown_blue</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></span>
-<span><span class="va">hair_black_brown_eyes_brown_blue_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">yates_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Eye</span>,</span>
-<span>                       <span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">yates_stats</span><span class="op">$</span><span class="va">effect_size</span></span></code></pre></div>
-<pre><code><span><span class="co">## $name</span></span>
-<span><span class="co">## [1] "phi"</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $estimate</span></span>
-<span><span class="co">## [1] 0.1709571</span></span>
-<span><span class="co">## </span></span>
-<span><span class="co">## $effect_size_method</span></span>
-<span><span class="co">## [1] "Phi coefficient for 2 x 2 contingency table"</span></span></code></pre>
-<p>The returned effect size is <span class="math inline">\(\phi = 0.17\)</span>, which, using Cohen’s benchmarks for <span class="math inline">\(2 \times 2\)</span> tables <span class="citation">(<a href="#ref-Cohen:2013">Cohen 2013, 227</a>)</span>, is a small association.
-The p-value instead is below <span class="math inline">\(\alpha = 0.05\)</span> (<span class="math inline">\(p = 0.0035\)</span>) and thus significant.
-This example underlines the importance of effect sizes: a significant p-value can be accompanied with a small effect size measure.</p>
-</div>
-<div class="section level4" number="6.4.3">
-<h4 id="fishers-exact-test">
-<span class="header-section-number">6.4.3</span> Fisher’s exact test<a class="anchor" aria-label="anchor" href="#fishers-exact-test"></a>
-</h4>
-<p>Restricting <code>HairEyeColor</code> to male participants with black or brown hair and hazel or green eyes yields a <span class="math inline">\(2 \times 2\)</span> table where one expected frequency is less than 5, violating Cochran’s rule <span class="citation">(<a href="#ref-Cochran:1954">Cochran 1954</a>)</span>.
-<code><a href="../reference/visstat.html">visstat()</a></code> therefore applies Fisher’s exact test.
-The graphical output shows absolute counts with count labels above each bar and the <span class="math inline">\(p\)</span>-value in the title, so the small cell counts that trigger the exact test remain visible (see Figure <a href="#fig:yates-fisher-example">6.12</a>, right).</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">hair_eye_male</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
-<span><span class="va">black_brown_hazel_green</span> <span class="op">&lt;-</span> <span class="va">hair_eye_male</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
-<span><span class="va">black_brown_hazel_green_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">black_brown_hazel_green</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_df</span><span class="op">$</span><span class="va">Eye</span>,</span>
-<span>                        <span class="va">black_brown_hazel_green_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<span style="display:block;" id="fig:yates-fisher-example"></span>
-<img src="visStatistics_files/figure-html/yates-fisher-example-1.png" alt="Two $2 \times 2$ categorical routes in `HairEyeColor`: Yates-corrected Pearson $\chi^2$ when Cochran's rule is satisfied (black/brown hair and brown/blue eyes; left), and Fisher's exact test when expected counts are too small (male participants, black/brown hair, hazel/green eyes; right). The Yates-corrected plot shows row percentages; the Fisher plot shows absolute counts." width="48%"><img src="visStatistics_files/figure-html/yates-fisher-example-2.png" alt="Two $2 \times 2$ categorical routes in `HairEyeColor`: Yates-corrected Pearson $\chi^2$ when Cochran's rule is satisfied (black/brown hair and brown/blue eyes; left), and Fisher's exact test when expected counts are too small (male participants, black/brown hair, hazel/green eyes; right). The Yates-corrected plot shows row percentages; the Fisher plot shows absolute counts." width="48%"><p class="caption">
-Figure 6.12: Two <span class="math inline">\(2 \times 2\)</span> categorical routes in <code>HairEyeColor</code>: Yates-corrected Pearson <span class="math inline">\(\chi^2\)</span> when Cochran’s rule is satisfied (black/brown hair and brown/blue eyes; left), and Fisher’s exact test when expected counts are too small (male participants, black/brown hair, hazel/green eyes; right). The Yates-corrected plot shows row percentages; the Fisher plot shows absolute counts.
-</p>
-</div>
-</div>
-</div>
-<div class="section level3" number="6.5">
-<h3 id="sec:examples-rank-correlation-mode">
-<span class="header-section-number">6.5</span> Optional rank-correlation mode<a class="anchor" aria-label="anchor" href="#sec:examples-rank-correlation-mode"></a>
-</h3>
-<p>Correlation analysis requires the explicit flag <code>correlation = TRUE</code>.</p>
-<div class="section level4" number="6.5.1">
-<h4 id="kendall-rank-correlation-with-correlation-true">
-<span class="header-section-number">6.5.1</span> Kendall rank correlation with <code>correlation = TRUE</code><a class="anchor" aria-label="anchor" href="#kendall-rank-correlation-with-correlation-true"></a>
-</h4>
-<p>A hypothetical survey of 150 secondary-school students records alcohol consumption frequency and academic performance on five-point ordinal scales.
-A negative monotone association is induced by construction: students who consume alcohol more frequently tend to have lower academic performance.
-The Kendall result is shown in Figure <a href="#fig:kendall-spearman-example">6.13</a>, left.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
-<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">150</span></span>
-<span><span class="va">xs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">ys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmin</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">(</span><span class="fl">6</span> <span class="op">-</span> <span class="va">xs</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="fl">1</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">likert_alc</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"never"</span>, <span class="st">"rarely"</span>, <span class="st">"sometimes"</span>, <span class="st">"often"</span>, <span class="st">"always"</span><span class="op">)</span></span>
-<span><span class="va">likert_perf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"poor"</span>,  <span class="st">"fair"</span>,   <span class="st">"ok"</span>,        <span class="st">"good"</span>,  <span class="st">"great"</span><span class="op">)</span></span>
-<span><span class="va">alcohol</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">likert_alc</span><span class="op">[</span><span class="va">xs</span><span class="op">]</span>,  levels <span class="op">=</span> <span class="va">likert_alc</span><span class="op">)</span></span>
-<span><span class="va">performance</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">likert_perf</span><span class="op">[</span><span class="va">ys</span><span class="op">]</span>, levels <span class="op">=</span> <span class="va">likert_perf</span><span class="op">)</span></span>
-<span><span class="va">kendall_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">performance</span>, <span class="va">alcohol</span>, correlation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">spearman_air</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">$</span><span class="va">Wind</span>, <span class="va">airquality</span><span class="op">$</span><span class="va">Ozone</span>, correlation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<span style="display:block;" id="fig:kendall-spearman-example"></span>
-<img src="visStatistics_files/figure-html/kendall-spearman-example-1.png" alt="Rank-based correlations: Left: Kendall's $\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance. Right: Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots annotate the corresponding effect measure and $p$-value." width="48%"><img src="visStatistics_files/figure-html/kendall-spearman-example-2.png" alt="Rank-based correlations: Left: Kendall's $\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance. Right: Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots annotate the corresponding effect measure and $p$-value." width="48%"><p class="caption">
-Figure 6.13: Rank-based correlations: Left: Kendall’s <span class="math inline">\(\tau_b\)</span> for a hypothetical survey (<span class="math inline">\(n = 150\)</span>): alcohol consumption frequency vs. academic performance. Right: Spearman rank correlation of <code>Wind</code> and <code>Ozone</code> from the <code>airquality</code> dataset (<code>correlation = TRUE</code>; right). Both plots annotate the corresponding effect measure and <span class="math inline">\(p\)</span>-value.
-</p>
-</div>
-</div>
-<div class="section level4" number="6.5.2">
-<h4 id="spearman-rank-correlation-with-correlation-true">
-<span class="header-section-number">6.5.2</span> Spearman rank correlation with <code>correlation = TRUE</code><a class="anchor" aria-label="anchor" href="#spearman-rank-correlation-with-correlation-true"></a>
-</h4>
-<p>For the ozone example introduced in Section <a href="#sec:lin-reg">6.3.1</a>, staying within <code>visstat(,)</code> with the flag <code>correlation = TRUE</code> gives the Spearman analysis shown in Figure <a href="#fig:kendall-spearman-example">6.13</a>, right.</p>
-</div>
-</div>
-</div>
-<div class="section level2" number="7">
 <h2 id="sec:visstat-methods">
-<span class="header-section-number">7</span> The <code>visstat</code> methods<a class="anchor" aria-label="anchor" href="#sec:visstat-methods"></a>
+<span class="header-section-number">6</span> The <code>visstat</code> methods<a class="anchor" aria-label="anchor" href="#sec:visstat-methods"></a>
 </h2>
 <p>Objects returned by <code><a href="../reference/visstat.html">visstat()</a></code> are of class <code>"visstat"</code> and support the S3 methods <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>, <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>.</p>
-<div class="section level3" number="7.1">
+<div class="section level3" number="6.1">
 <h3 id="print">
-<span class="header-section-number">7.1</span> <code>print()</code><a class="anchor" aria-label="anchor" href="#print"></a>
+<span class="header-section-number">6.1</span> <code>print()</code><a class="anchor" aria-label="anchor" href="#print"></a>
 </h3>
 <p><code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> lists the returned components.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anova_plantgrowth</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">PlantGrowth</span><span class="op">$</span><span class="va">group</span>, <span class="va">PlantGrowth</span><span class="op">$</span><span class="va">weight</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">anova_plantgrowth</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Object of class 'visstat'</span></span>
 <span><span class="co">## </span></span>
@@ -832,12 +439,12 @@ Figure 6.13: Rank-based correlations: Left: Kendall’s <span class="math inline
 <span><span class="co">## [1] "summary statistics of ANOVA" "post-hoc analysis "         </span></span>
 <span><span class="co">## [3] "conf.level"                  "effect_size"</span></span></code></pre>
 </div>
-<div class="section level3" number="7.2">
+<div class="section level3" number="6.2">
 <h3 id="summary">
-<span class="header-section-number">7.2</span> <code>summary()</code><a class="anchor" aria-label="anchor" href="#summary"></a>
+<span class="header-section-number">6.2</span> <code>summary()</code><a class="anchor" aria-label="anchor" href="#summary"></a>
 </h3>
 <p><code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> prints the full returned object, including assumption tests, post-hoc comparisons, confidence level, and <code>effect_size</code> where available.</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">anova_plantgrowth</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Summary of visstat object</span></span>
 <span><span class="co">## </span></span>
@@ -880,30 +487,31 @@ Figure 6.13: Rank-based correlations: Left: Kendall’s <span class="math inline
 <span><span class="co">## $effect_size_method</span></span>
 <span><span class="co">## [1] "Omega-squared for one-way ANOVA"</span></span></code></pre>
 </div>
-<div class="section level3" number="7.3">
+<div class="section level3" number="6.3">
 <h3 id="plot">
-<span class="header-section-number">7.3</span> <code>plot()</code><a class="anchor" aria-label="anchor" href="#plot"></a>
+<span class="header-section-number">6.3</span> <code>plot()</code><a class="anchor" aria-label="anchor" href="#plot"></a>
 </h3>
 <p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> lists available plots by default.
 With <code>which</code>, it either replays a captured plot or reports the selected saved file path.</p>
-<div class="section level4" number="7.3.1">
-<h4 id="interactive-mode">
-<span class="header-section-number">7.3.1</span> Interactive mode<a class="anchor" aria-label="anchor" href="#interactive-mode"></a>
-</h4>
+</div>
+<div class="section level3" number="6.4">
+<h3 id="interactive-mode">
+<span class="header-section-number">6.4</span> Interactive mode<a class="anchor" aria-label="anchor" href="#interactive-mode"></a>
+</h3>
 <p>When <code><a href="../reference/visstat.html">visstat()</a></code> is called without a <code>graphicsoutput</code> defined (the default interactive mode), the generated plots are captured internally.
 Calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> without <code>which</code> lists all available plots; calling it with <code>which</code> replays the selected plot in the interactive R session.</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">anova_plantgrowth</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Plot [1] captured. Use plot(obj, which = 1) to display.</span></span></code></pre>
 <pre><code><span><span class="co">## Plot [2] captured. Use plot(obj, which = 2) to display.</span></span></code></pre>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Interactive only (not executed during vignette build):</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">anova_plantgrowth</span>, which <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4" number="7.3.2">
-<h4 id="saved-graphics">
-<span class="header-section-number">7.3.2</span> Saved graphics<a class="anchor" aria-label="anchor" href="#saved-graphics"></a>
-</h4>
+<div class="section level3" number="6.5">
+<h3 id="saved-graphics">
+<span class="header-section-number">6.5</span> Saved graphics<a class="anchor" aria-label="anchor" href="#saved-graphics"></a>
+</h3>
 <p>When <code><a href="../reference/visstat.html">visstat()</a></code> is called with <code>graphicsoutput</code> specified, <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> lists the generated file paths instead.
 All generated graphics can be saved in any file format supported by <code>Cairo()</code> <span class="citation">(<a href="#ref-Urbanek:2025">Urbanek and Horner 2025</a>)</span>, including “png”, “jpeg”, “pdf”, “svg”, “ps”, and “tiff”.
 If <code>plotName</code> is provided, the main result plot uses this name.
@@ -911,7 +519,7 @@ The assumption-diagnostic plot adds the prefix <code>"glm_assumptions_"</code>.
 If <code>plotName</code> is not provided, file names are generated from the selected plot type and the input variable names.</p>
 <p>In the following example, we store the graphics in <code>png</code> format in the <code>plotDirectory</code> <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> using the <code>PlantGrowth</code> Fisher’s ANOVA example.
 Here, <code>plotName</code> is set explicitly so that the output names are stable.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">anova_plantgrowth_stored</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span></span>
 <span>  <span class="va">PlantGrowth</span><span class="op">$</span><span class="va">group</span>,</span>
 <span>  <span class="va">PlantGrowth</span><span class="op">$</span><span class="va">weight</span>,</span>
@@ -920,12 +528,405 @@ Here, <code>plotName</code> is set explicitly so that the output names are stabl
 <span>  plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The full file paths of the generated graphics are stored as the attribute <code>"plot_paths"</code> on the returned object of class <code>"visstat"</code>.</p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">anova_plantgrowth_stored</span>, <span class="st">"plot_paths"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">paths</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "glm_assumptions_anova_plantgrowth.png"</span></span>
 <span><span class="co">## [2] "anova_plantgrowth.png"</span></span></code></pre>
 <!-- Remove the graphical output from `plotDirectory`: -->
+<!-- The number of plots returned by `visstat()` depends on the input types and the outcome of assumption checks. -->
+<!-- Central-tendency examples and simple linear regression produce an assumption-diagnostic panel followed by the result panel. -->
+<!-- Most example datasets are distributed with R; synthetic data are used where no suitable base R example is available. -->
+</div>
+</div>
+<div class="section level2" number="7">
+<h2 id="sec:examples">
+<span class="header-section-number">7</span> Usage and Examples<a class="anchor" aria-label="anchor" href="#sec:examples"></a>
+</h2>
+<p>The examples follow the routes outlined in Section <a href="#sec:top-level">5.1</a> and are chosen to trigger every branch.</p>
+<p>Within the group-comparison routes, examples are ordered such that the two-group case is followed by its generalisation to more than two groups: Student’s t-test by Fisher’s one-way ANOVA, Welch’s t-test by Welch’s one-way ANOVA, and Wilcoxon rank-sum by Kruskal–Wallis.</p>
+<p>Where needed, the example descriptions add interpretive details on the graphical output, such as significance letters, regression bands, or mosaic plots.</p>
+<div class="section level3" number="7.1">
+<h3 id="sec:examples-route1">
+<span class="header-section-number">7.1</span> Route 1: Numeric response, categorical predictor<a class="anchor" aria-label="anchor" href="#sec:examples-route1"></a>
+</h3>
+<div class="section level4" number="7.1.1">
+<h4 id="students-t-test-and-fishers-one-way-anova">
+<span class="header-section-number">7.1.1</span> Student’s t-test and Fisher’s one-way ANOVA<a class="anchor" aria-label="anchor" href="#students-t-test-and-fishers-one-way-anova"></a>
+</h4>
+<div class="section level5" number="7.1.1.1">
+<h5 id="sec:student-ttest">
+<span class="header-section-number">7.1.1.1</span> Student’s t-test<a class="anchor" aria-label="anchor" href="#sec:student-ttest"></a>
+</h5>
+<p>The <code>ToothGrowth</code> dataset records odontoblast length in 60 guinea pigs given vitamin C by orange juice (<code>OJ</code>) or ascorbic acid (<code>VC</code>).
+With delivery method as predictor and length as response, the assumption-diagnostic panel shows no residual-normality or variance-homogeneity violation.
+<code><a href="../reference/visstat.html">visstat()</a></code> therefore selects Student’s t-test, and the result panel shows the two-group box plot with the selected test result.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">student_ttest</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">ToothGrowth</span><span class="op">$</span><span class="va">supp</span>, <span class="va">ToothGrowth</span><span class="op">$</span><span class="va">len</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<span style="display:block;" id="fig:student-ttest-example"></span>
+<img src="visStatistics_files/figure-html/student-ttest-example-1.png" alt="Student's t-test applied to the `ToothGrowth` dataset (`len` vs.\ `supp`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene does not reject residual variance homogeneity) select the equal-variance mean-based path, followed by box plots with the Student t-test result." width="48%"><img src="visStatistics_files/figure-html/student-ttest-example-2.png" alt="Student's t-test applied to the `ToothGrowth` dataset (`len` vs.\ `supp`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene does not reject residual variance homogeneity) select the equal-variance mean-based path, followed by box plots with the Student t-test result." width="48%"><p class="caption">
+Figure 7.1: Student’s t-test applied to the <code>ToothGrowth</code> dataset (<code>len</code> vs. <code>supp</code>). Assumption diagnostics (Shapiro–Wilk does not reject residual normality; Levene does not reject residual variance homogeneity) select the equal-variance mean-based path, followed by box plots with the Student t-test result.
+</p>
+</div>
+</div>
+<div class="section level5" number="7.1.1.2">
+<h5 id="fishers-one-way-anova-with-tukey-hsd-post-hoc-comparisons">
+<span class="header-section-number">7.1.1.2</span> Fisher’s one-way ANOVA with Tukey HSD post-hoc comparisons<a class="anchor" aria-label="anchor" href="#fishers-one-way-anova-with-tukey-hsd-post-hoc-comparisons"></a>
+</h5>
+<p>The <code>PlantGrowth</code> dataset records yields (as measured by dried weight of plants) for a control group and two treatment groups.
+With control and treatment groups as predictor and plant weight as response, the assumption-diagnostic panel shows that Shapiro–Wilk does not reject normality of the model residuals and <code>levene.test()</code> does not reject homoscedasticity.
+<code><a href="../reference/visstat.html">visstat()</a></code> therefore applies Fisher’s one-way ANOVA followed by Tukey HSD post-hoc comparisons.
+The result panel shows the box plots and post-hoc significance letters.
+The omnibus F-test is significant at <span class="math inline">\(\alpha = 0.05\)</span>, and the Tukey HSD post-hoc comparison finds no significant difference between the control group and either treatment, but the difference between <code>trt1</code> and <code>trt2</code> is significant.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">anova_plantgrowth</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">PlantGrowth</span><span class="op">$</span><span class="va">group</span>, <span class="va">PlantGrowth</span><span class="op">$</span><span class="va">weight</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<span style="display:block;" id="fig:anova-example"></span>
+<img src="visStatistics_files/figure-html/anova-example-1.png" alt="Fisher's one-way ANOVA applied to the `PlantGrowth` dataset (`weight` vs.\ `group`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene does not reject residual variance homogeneity) select the equal-variance mean-based path, followed by box plots with Tukey HSD significance letters ($\alpha = 0.05$)." width="48%"><img src="visStatistics_files/figure-html/anova-example-2.png" alt="Fisher's one-way ANOVA applied to the `PlantGrowth` dataset (`weight` vs.\ `group`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene does not reject residual variance homogeneity) select the equal-variance mean-based path, followed by box plots with Tukey HSD significance letters ($\alpha = 0.05$)." width="48%"><p class="caption">
+Figure 7.2: Fisher’s one-way ANOVA applied to the <code>PlantGrowth</code> dataset (<code>weight</code> vs. <code>group</code>). Assumption diagnostics (Shapiro–Wilk does not reject residual normality; Levene does not reject residual variance homogeneity) select the equal-variance mean-based path, followed by box plots with Tukey HSD significance letters (<span class="math inline">\(\alpha = 0.05\)</span>).
+</p>
+</div>
+</div>
+</div>
+<div class="section level4" number="7.1.2">
+<h4 id="welchs-t-test-and-welchs-one-way-anova">
+<span class="header-section-number">7.1.2</span> Welch’s t-test and Welch’s one-way ANOVA<a class="anchor" aria-label="anchor" href="#welchs-t-test-and-welchs-one-way-anova"></a>
+</h4>
+<div class="section level5" number="7.1.2.1">
+<h5 id="welchs-t-test">
+<span class="header-section-number">7.1.2.1</span> Welch’s t-test<a class="anchor" aria-label="anchor" href="#welchs-t-test"></a>
+</h5>
+<p>The <em>Motor Trend Car Road Tests</em> dataset (<code>mtcars</code>) contains 32 observations, where <code>mpg</code> denotes miles per (US) gallon and <code>am</code> represents the transmission type (<code>0</code> = automatic, <code>1</code> = manual).
+With binary factor <code>am</code> and continuous response <code>mpg</code>, the assumption-diagnostic panel shows that Shapiro–Wilk does not reject normality of the model residuals, while the Levene test detects heteroscedasticity.
+The routing therefore leads to Welch’s t-test rather than Student’s t-test, and the result panel shows the corresponding two-group comparison.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span>
+<span><span class="va">t_test_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span>, <span class="va">mtcars</span><span class="op">$</span><span class="va">mpg</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<span style="display:block;" id="fig:ttest-example"></span>
+<img src="visStatistics_files/figure-html/ttest-example-1.png" alt="Welch's t-test applied to the `mtcars` dataset (`mpg` vs.\ `am`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene rejects residual variance homogeneity) select the unequal-variance mean-based path, followed by box plots with the Welch t-test result." width="48%"><img src="visStatistics_files/figure-html/ttest-example-2.png" alt="Welch's t-test applied to the `mtcars` dataset (`mpg` vs.\ `am`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene rejects residual variance homogeneity) select the unequal-variance mean-based path, followed by box plots with the Welch t-test result." width="48%"><p class="caption">
+Figure 7.3: Welch’s t-test applied to the <code>mtcars</code> dataset (<code>mpg</code> vs. <code>am</code>). Assumption diagnostics (Shapiro–Wilk does not reject residual normality; Levene rejects residual variance homogeneity) select the unequal-variance mean-based path, followed by box plots with the Welch t-test result.
+</p>
+</div>
+</div>
+<div class="section level5" number="7.1.2.2">
+<h5 id="sec:welch-anova-iris">
+<span class="header-section-number">7.1.2.2</span> Welch’s heteroscedastic one-way ANOVA with Games–Howell post-hoc comparisons<a class="anchor" aria-label="anchor" href="#sec:welch-anova-iris"></a>
+</h5>
+<p>In the <code>iris</code> dataset, using <code>Species</code> as predictor and <code>Sepal.Length</code> as response, the assumption-diagnostic panel shows that Shapiro–Wilk does not reject normality of the model residuals, whereas the Levene test rejects homoscedasticity at the given <span class="math inline">\(\alpha = 5\%\)</span>.
+<code><a href="../reference/visstat.html">visstat()</a></code> therefore selects Welch’s heteroscedastic one-way ANOVA (<code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>) and applies Games–Howell post-hoc comparisons.
+The result panel shows the box plots and Games–Howell significance letters.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">welch_anova_iris</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Sepal.Length</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<span style="display:block;" id="fig:welch-anova-example"></span>
+<img src="visStatistics_files/figure-html/welch-anova-example-1.png" alt="Welch's heteroscedastic one-way ANOVA applied to the `iris` dataset (`Sepal.Length` vs.\ `Species`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene rejects residual variance homogeneity) select the unequal-variance mean-based path, followed by box plots with Games--Howell significance letters ($\alpha = 0.05$)." width="48%"><img src="visStatistics_files/figure-html/welch-anova-example-2.png" alt="Welch's heteroscedastic one-way ANOVA applied to the `iris` dataset (`Sepal.Length` vs.\ `Species`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene rejects residual variance homogeneity) select the unequal-variance mean-based path, followed by box plots with Games--Howell significance letters ($\alpha = 0.05$)." width="48%"><p class="caption">
+Figure 7.4: Welch’s heteroscedastic one-way ANOVA applied to the <code>iris</code> dataset (<code>Sepal.Length</code> vs. <code>Species</code>). Assumption diagnostics (Shapiro–Wilk does not reject residual normality; Levene rejects residual variance homogeneity) select the unequal-variance mean-based path, followed by box plots with Games–Howell significance letters (<span class="math inline">\(\alpha = 0.05\)</span>).
+</p>
+</div>
+</div>
+</div>
+<div class="section level4" number="7.1.3">
+<h4 id="wilcoxon-rank-sum-test-and-kruskalwallis-test">
+<span class="header-section-number">7.1.3</span> Wilcoxon rank-sum test and Kruskal–Wallis test<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test-and-kruskalwallis-test"></a>
+</h4>
+<div class="section level5" number="7.1.3.1">
+<h5 id="wilcoxon-rank-sum-test">
+<span class="header-section-number">7.1.3.1</span> Wilcoxon rank-sum test<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test"></a>
+</h5>
+<p>The <code>warpbreaks</code> dataset records thread breaks during weaving.
+Using wool type (<code>A</code> or <code>B</code>) as predictor and the number of breaks as response, the assumption-diagnostic panel shows that the Shapiro–Wilk test rejects normality of the model residuals.
+<code><a href="../reference/visstat.html">visstat()</a></code> therefore selects the Wilcoxon rank-sum test, and the result panel shows the rank-based two-group comparison.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">wilcoxon_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">warpbreaks</span><span class="op">$</span><span class="va">wool</span>, <span class="va">warpbreaks</span><span class="op">$</span><span class="va">breaks</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<span style="display:block;" id="fig:wilcoxon-example"></span>
+<img src="visStatistics_files/figure-html/wilcoxon-example-1.png" alt="Wilcoxon rank-sum test applied to the `warpbreaks` dataset (`breaks` vs.\ `wool`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with the Wilcoxon test result." width="48%"><img src="visStatistics_files/figure-html/wilcoxon-example-2.png" alt="Wilcoxon rank-sum test applied to the `warpbreaks` dataset (`breaks` vs.\ `wool`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with the Wilcoxon test result." width="48%"><p class="caption">
+Figure 7.5: Wilcoxon rank-sum test applied to the <code>warpbreaks</code> dataset (<code>breaks</code> vs. <code>wool</code>). Assumption diagnostics (Shapiro–Wilk rejects residual normality; non-parametric path selected) and box plots with the Wilcoxon test result.
+</p>
+</div>
+</div>
+<div class="section level5" number="7.1.3.2">
+<h5 id="kruskalwallis-rank-sum-test-with-pairwise-wilcoxon-post-hoc-comparisons">
+<span class="header-section-number">7.1.3.2</span> Kruskal–Wallis rank sum test with pairwise Wilcoxon post-hoc comparisons<a class="anchor" aria-label="anchor" href="#kruskalwallis-rank-sum-test-with-pairwise-wilcoxon-post-hoc-comparisons"></a>
+</h5>
+<p>In the <code>iris</code> data set, <code>Petal.Width</code> by <code>Species</code> follows a different route than <code>Sepal.Length</code> by <code>Species</code> above (Figure <a href="#fig:welch-anova-example">7.4</a>), because the assumption diagnostics differ.
+The assumption-diagnostic panel shows clear departures from normality, and both normality tests return very small <span class="math inline">\(p\)</span>-values.
+Since Shapiro–Wilk falls below <span class="math inline">\(\alpha\)</span>, <code><a href="../reference/visstat.html">visstat()</a></code> switches to <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> followed by Holm-adjusted <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>.
+The result panel shows the box plots and Holm-adjusted significance letters; all three species differ significantly in petal width, as indicated by distinct letters.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">kruskal_iris</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Width</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<span style="display:block;" id="fig:kruskal-example"></span>
+<img src="visStatistics_files/figure-html/kruskal-example-1.png" alt="Kruskal-Wallis test applied to the `iris` dataset (`Petal.Width` vs.\ `Species`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted pairwise Wilcoxon significance letters ($\alpha = 0.05$)." width="48%"><img src="visStatistics_files/figure-html/kruskal-example-2.png" alt="Kruskal-Wallis test applied to the `iris` dataset (`Petal.Width` vs.\ `Species`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted pairwise Wilcoxon significance letters ($\alpha = 0.05$)." width="48%"><p class="caption">
+Figure 7.6: Kruskal-Wallis test applied to the <code>iris</code> dataset (<code>Petal.Width</code> vs. <code>Species</code>). Assumption diagnostics (Shapiro–Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted pairwise Wilcoxon significance letters (<span class="math inline">\(\alpha = 0.05\)</span>).
+</p>
+</div>
+</div>
+</div>
+</div>
+<div class="section level3" number="7.2">
+<h3 id="route-2-ordered-response">
+<span class="header-section-number">7.2</span> Route 2: Ordered response<a class="anchor" aria-label="anchor" href="#route-2-ordered-response"></a>
+</h3>
+<div class="section level4" number="7.2.1">
+<h4 id="sec:route-2-ordered-factor">
+<span class="header-section-number">7.2.1</span> Ordered response, categorical factor<a class="anchor" aria-label="anchor" href="#sec:route-2-ordered-factor"></a>
+</h4>
+<div class="section level5" number="7.2.1.1">
+<h5 id="wilcoxon-rank-sum-test-with-ordered-response">
+<span class="header-section-number">7.2.1.1</span> Wilcoxon rank-sum test with ordered response<a class="anchor" aria-label="anchor" href="#wilcoxon-rank-sum-test-with-ordered-response"></a>
+</h5>
+<p>The <code>Titanic</code> dataset contains passenger counts by, among other variables, passenger class and gender.
+After expanding the table to individual rows, passenger class is treated as ordered and gender as a two-level predictor.
+<code><a href="../reference/visstat.html">visstat()</a></code> selects the Wilcoxon rank-sum test.
+The result panel therefore displays the rank-test comparison on the numeric level scores (see Figure <a href="#fig:ordinal-wilcoxon-kruskal-example">7.7</a>, left).</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">titanic_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">Titanic</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">titanic_df</span><span class="op">$</span><span class="va">Class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">titanic_df</span><span class="op">$</span><span class="va">Class</span>,</span>
+<span>                            levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1st"</span>, <span class="st">"2nd"</span>, <span class="st">"3rd"</span>, <span class="st">"Crew"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">wilcox_ordered</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">titanic_df</span><span class="op">$</span><span class="va">Sex</span>, <span class="va">titanic_df</span><span class="op">$</span><span class="va">Class</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: Ordered response detected. Converting to integer level codes for</span></span>
+<span><span class="co">## non-parametric analysis.</span></span></code></pre>
+</div>
+<div class="section level5" number="7.2.1.2">
+<h5 id="kruskalwallis-test-with-ordered-response">
+<span class="header-section-number">7.2.1.2</span> Kruskal–Wallis test with ordered response<a class="anchor" aria-label="anchor" href="#kruskalwallis-test-with-ordered-response"></a>
+</h5>
+<p>With three predictor groups, <code><a href="../reference/visstat.html">visstat()</a></code> routes to <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> followed by Holm-adjusted <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>.
+The result panel shows the Kruskal–Wallis comparison and Holm-adjusted significance letters on the numeric level scores (see Figure <a href="#fig:ordinal-wilcoxon-kruskal-example">7.7</a>, right).
+A synthetic survey records perceived car comfort on a five-point scale across three markets.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">market</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Europe"</span>, <span class="st">"North America"</span>, <span class="st">"Asia"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">50</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">comfort_numeric</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">50</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.30</span>, <span class="fl">0.30</span>, <span class="fl">0.20</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">50</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.10</span>, <span class="fl">0.20</span>, <span class="fl">0.40</span>, <span class="fl">0.20</span>, <span class="fl">0.10</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">50</span>, replace <span class="op">=</span> <span class="cn">TRUE</span>, prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.10</span>, <span class="fl">0.20</span>, <span class="fl">0.35</span>, <span class="fl">0.30</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">survey_data_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  market <span class="op">=</span> <span class="va">market</span>,</span>
+<span>  comfort <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">comfort_numeric</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">kruskal_ordered</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">comfort</span> <span class="op">~</span> <span class="va">market</span>, data <span class="op">=</span> <span class="va">survey_data_3</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: Ordered response detected. Converting to integer level codes for</span></span>
+<span><span class="co">## non-parametric analysis.</span></span></code></pre>
+<div class="figure">
+<span style="display:block;" id="fig:ordinal-wilcoxon-kruskal-example"></span>
+<img src="visStatistics_files/figure-html/ordinal-wilcoxon-kruskal-example-1.png" alt="Wilcoxon rank-sum test for ordered passenger class by sex in the expanded `Titanic` data (left) and its multi-group generalisation, the Kruskal-Wallis test for ordered car comfort ratings by market (right). Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significance letters for the Kruskal-Wallis example ($\alpha = 0.05$)." width="48%"><img src="visStatistics_files/figure-html/ordinal-wilcoxon-kruskal-example-2.png" alt="Wilcoxon rank-sum test for ordered passenger class by sex in the expanded `Titanic` data (left) and its multi-group generalisation, the Kruskal-Wallis test for ordered car comfort ratings by market (right). Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significance letters for the Kruskal-Wallis example ($\alpha = 0.05$)." width="48%"><p class="caption">
+Figure 7.7: Wilcoxon rank-sum test for ordered passenger class by sex in the expanded <code>Titanic</code> data (left) and its multi-group generalisation, the Kruskal-Wallis test for ordered car comfort ratings by market (right). Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significance letters for the Kruskal-Wallis example (<span class="math inline">\(\alpha = 0.05\)</span>).
+</p>
+</div>
+</div>
+</div>
+</div>
+<div class="section level3" number="7.3">
+<h3 id="route-3-numeric-response-numeric-predictor">
+<span class="header-section-number">7.3</span> Route 3: Numeric response, numeric predictor<a class="anchor" aria-label="anchor" href="#route-3-numeric-response-numeric-predictor"></a>
+</h3>
+<div class="section level4" number="7.3.1">
+<h4 id="sec:lin-reg">
+<span class="header-section-number">7.3.1</span> Linear regression<a class="anchor" aria-label="anchor" href="#sec:lin-reg"></a>
+</h4>
+<p>The <code>swiss</code> dataset records standardised fertility and socioeconomic indicators for 47 French-speaking Swiss provinces in 1888.
+We examine how the share of draftees achieving the highest army examination score (<code>Examination</code>) predicts the fertility measure (<code>Fertility</code>), with <code>conf.level = 0.99</code>.
+The diagnostic panel in Figure <a href="#fig:regression-example">7.8</a>, left, shows that both normality tests pass and the Breusch–Pagan test confirms homoscedasticity, supporting the linear model.
+The assumption-diagnostic panel is displayed, but its checks do not trigger automatic model replacement.
+The regression plot shows the fitted line</p>
+<p><span class="math display" id="eq:simple-regression-fit">\[\begin{equation}
+\hat{y}_i = b_0 + b_1 x_i
+\tag{7.1}
+\end{equation}\]</span> with the point estimates <span class="math inline">\(b_0\)</span> and <span class="math inline">\(b_1\)</span> for the unknown parameters <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> of the linear regression model in Eq. 
+<a href="#eq:glm">(5.1)</a> with one predictor.
+It is displayed with pointwise confidence and prediction bands at the specified <code>conf.level</code>.</p>
+<p>The returned object contains the regression statistics, residual-normality tests, pointwise confidence and prediction bands, and the coefficient of determination <span class="math inline">\(R^2\)</span> (Eq. <a href="#eq:r-squared">(F.1)</a>) as effect size.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">linreg_swiss</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">swiss</span><span class="op">$</span><span class="va">Examination</span>, <span class="va">swiss</span><span class="op">$</span><span class="va">Fertility</span>, conf.level <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<span style="display:block;" id="fig:regression-example"></span>
+<img src="visStatistics_files/figure-html/regression-example-1.png" alt="Simple linear regression of `Fertility` on `Examination` for the `swiss` dataset (`conf.level = 0.99`). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\% confidence band (dark shading), and 99\% prediction band (light shading)." width="48%"><img src="visStatistics_files/figure-html/regression-example-2.png" alt="Simple linear regression of `Fertility` on `Examination` for the `swiss` dataset (`conf.level = 0.99`). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\% confidence band (dark shading), and 99\% prediction band (light shading)." width="48%"><p class="caption">
+Figure 7.8: Simple linear regression of <code>Fertility</code> on <code>Examination</code> for the <code>swiss</code> dataset (<code>conf.level = 0.99</code>). Assumption diagnostics (Shapiro–Wilk, Anderson–Darling, Breusch–Pagan) and scatter plot with fitted regression line, 99% confidence band (dark shading), and 99% prediction band (light shading).
+</p>
+</div>
+<p>The <code>airquality</code> ozone example shows the limits of the automated approach when the default linear model is not an adequate final model.
+<code><a href="../reference/visstat.html">visstat()</a></code> identifies assumption violations and points to analyses outside the automated decision tree.
+A default <code><a href="../reference/visstat.html">visstat()</a></code> call for ozone concentration (<code>Ozone</code>) as a function of wind speed (<code>Wind</code>) fits the simple linear model.</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ozone_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">$</span><span class="va">Wind</span>, <span class="va">airquality</span><span class="op">$</span><span class="va">Ozone</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Warning: Statistical assumptions violated:</span></span>
+<span><span class="co">## Normality of residuals violated (Shapiro-Wilk p = 0.00522 )</span></span>
+<span><span class="co">## Homoscedasticity violated (Breusch-Pagan p = 0.00595 )</span></span>
+<span><span class="co">## Analysis proceeded but interpret results cautiously.</span></span></code></pre>
+<pre><code><span><span class="co">## RECOMMENDATION: Consider exploring alternatives outside visstat() such as data transformations,</span></span>
+<span><span class="co">## generalised linear models, or robust regression. For a non-causal alternative</span></span>
+<span><span class="co">## consider rerunning with correlation = TRUE.</span></span></code></pre>
+<div class="figure">
+<span style="display:block;" id="fig:ozone-lm-triage"></span>
+<img src="visStatistics_files/figure-html/ozone-lm-triage-1.png" alt="Default simple linear regression for `Ozone` by `Wind` in the `airquality` dataset. Assumption diagnostics flag non-normal  model residuals and heteroscedasticity before alternative routes are considered." width="48%"><img src="visStatistics_files/figure-html/ozone-lm-triage-2.png" alt="Default simple linear regression for `Ozone` by `Wind` in the `airquality` dataset. Assumption diagnostics flag non-normal  model residuals and heteroscedasticity before alternative routes are considered." width="48%"><p class="caption">
+Figure 7.9: Default simple linear regression for <code>Ozone</code> by <code>Wind</code> in the <code>airquality</code> dataset. Assumption diagnostics flag non-normal model residuals and heteroscedasticity before alternative routes are considered.
+</p>
+</div>
+<p>The diagnostic output flags non-normal model residuals and heteroscedasticity.</p>
+<p>In the “Residual vs. fitted” diagnostic panel we observe an increase in spread from left to right, forming a funnel shape that indicates variance increases with fitted values.
+The optional Spearman analysis for the same dataset is shown in Section <a href="#sec:examples-rank-correlation-mode">7.5</a>.
+The following example shows a Gamma generalised linear model outside <code><a href="../reference/visstat.html">visstat()</a></code>.</p>
+</div>
+<div class="section level4" number="7.3.2">
+<h4 id="sec:model-comparisons">
+<span class="header-section-number">7.3.2</span> Model exploration outside <code>visstat()</code><a class="anchor" aria-label="anchor" href="#sec:model-comparisons"></a>
+</h4>
+<p>As a model outside of <code><a href="../reference/visstat.html">visstat()</a></code>, we fit a Gamma generalised linear model with log link.
+The Gamma family is suited here because Ozone is strictly positive and continuous, and its variance grows with the fitted values — the structure detected by the Breusch–Pagan test.
+The log link guarantees positive fitted values.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Gamma model with log mapping</span></span>
+<span><span class="va">model_gamma</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">Ozone</span> <span class="op">~</span> <span class="va">Wind</span>, data <span class="op">=</span> <span class="va">airquality</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">Gamma</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">"log"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">model_gamma</span><span class="op">$</span><span class="va">aic</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 1040.021</span></span></code></pre>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#Comparison with AIC of simple linear regression</span></span>
+<span><span class="va">model_lm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">Ozone</span> <span class="op">~</span> <span class="va">Wind</span>, data <span class="op">=</span> <span class="va">airquality</span><span class="op">)</span></span>
+<span><span class="va">model_lm</span><span class="op">$</span><span class="va">aic</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 1093.187</span></span></code></pre>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:gamma-glm-plot"></span>
+<img src="visStatistics_files/figure-html/gamma-glm-plot-1.png" alt="Gamma GLM with log link fitted to the `airquality` dataset `Ozone` vs. `Wind`. The red curve shows the fitted Gamma GLM; the y-axis is on a log scale." width="60%"><p class="caption">
+Figure 7.10: Gamma GLM with log link fitted to the <code>airquality</code> dataset <code>Ozone</code> vs. <code>Wind</code>. The red curve shows the fitted Gamma GLM; the y-axis is on a log scale.
+</p>
+</div>
+<p>For a Gamma generalised linear model with log link, standardised deviance residuals are asymptotically standard normal; we use Shapiro–Wilk and Anderson–Darling as approximate checks of the fitted model:</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Extract standardised deviance residuals</span></span>
+<span><span class="va">std_dev_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/influence.measures.html" class="external-link">rstandard</a></span><span class="op">(</span><span class="va">model_gamma</span>, type <span class="op">=</span> <span class="st">"deviance"</span><span class="op">)</span></span>
+<span><span class="co"># Validate using the Shapiro-Wilk normality test</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test</a></span><span class="op">(</span><span class="va">std_dev_res</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">##  Shapiro-Wilk normality test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  std_dev_res</span></span>
+<span><span class="co">## W = 0.99245, p-value = 0.7817</span></span></code></pre>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Validate using the Anderson-Darling normality test</span></span>
+<span><span class="fu">nortest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/nortest/man/ad.test.html" class="external-link">ad.test</a></span><span class="op">(</span><span class="va">std_dev_res</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## </span></span>
+<span><span class="co">##  Anderson-Darling normality test</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## data:  std_dev_res</span></span>
+<span><span class="co">## A = 0.198, p-value = 0.8853</span></span></code></pre>
+<p>The Gamma model improves the model fit according to the Akaike Information Criterion <span class="citation">(<a href="#ref-Akaike:1974">Akaike 1974</a>)</span>, which decreases from 1093.2 to 1040.0.
+The increase in the Shapiro–Wilk <span class="math inline">\(p\)</span>-value from <span class="math inline">\(p_{SW} = 0.0052\)</span> in the simple linear regression to <span class="math inline">\(p_{SW} = 0.78\)</span> is more consistent with residual normality.
+This comparison illustrates how assumption warnings from <code><a href="../reference/visstat.html">visstat()</a></code> can motivate model exploration outside the automated decision tree.</p>
+</div>
+</div>
+<div class="section level3" number="7.4">
+<h3 id="route-4-two-unordered-factors">
+<span class="header-section-number">7.4</span> Route 4: Two unordered factors<a class="anchor" aria-label="anchor" href="#route-4-two-unordered-factors"></a>
+</h3>
+<p>The following examples are based on the <code>HairEyeColor</code> contingency table, which is converted to the column-based data frame expected by <code><a href="../reference/visstat.html">visstat()</a></code> using the helper function <code><a href="../reference/counts_to_cases.html">counts_to_cases()</a></code>.</p>
+<div class="section level4" number="7.4.1">
+<h4 id="pearsons-chi2-test">
+<span class="header-section-number">7.4.1</span> Pearson’s <span class="math inline">\(\chi^2\)</span> test<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test"></a>
+</h4>
+<p>For a contingency table with <span class="math inline">\(R\)</span> response levels and <span class="math inline">\(C\)</span> predictor levels, Pearson’s <span class="math inline">\(\chi^2\)</span> test (Eq. <a href="#eq:pearson-chi">(D.2)</a>) shows a grouped column plot of row percentages with the <span class="math inline">\(p\)</span>-value in the title, followed by a mosaic plot from <code>vcd</code> <span class="citation">(<a href="#ref-Meyer:2006">Meyer et al. 2006</a>, <a href="#ref-Meyer:2024">2024</a>)</span>.
+Each tile corresponds to one cell of the contingency table.
+The tile colour represents the Pearson residual value (Eq. <a href="#eq:pearson-residual">(D.1)</a>) on a blue–red colour scale; the tile size reflects the cell count.</p>
+<p>With <code>Eye</code> and <code>Hair</code> from <code>HairEyeColor</code>, all expected cell counts exceed the Cochran thresholds <span class="citation">(<a href="#ref-Cochran:1954">Cochran 1954</a>)</span>, so the <span class="math inline">\(4 \times 4\)</span> <span class="math inline">\(\chi^2\)</span> approximation is used.</p>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hair_eye_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_eye_df</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">hair_eye_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<span style="display:block;" id="fig:chisq-example"></span>
+<img src="visStatistics_files/figure-html/chisq-example-1.png" alt="Pearson's $\chi^2$ test applied to the `HairEyeColor` dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented)." width="48%"><img src="visStatistics_files/figure-html/chisq-example-2.png" alt="Pearson's $\chi^2$ test applied to the `HairEyeColor` dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented)." width="48%"><p class="caption">
+Figure 7.11: Pearson’s <span class="math inline">\(\chi^2\)</span> test applied to the <code>HairEyeColor</code> dataset. Grouped bar chart of eye colour by hair colour and mosaic plot with tiles coloured by Pearson residuals (blue: over-represented, red: under-represented).
+</p>
+</div>
+<p>Here, cells for black hair and brown hair, as well as blond hair and blue eyes, show counts above the expectation.</p>
+</div>
+<div class="section level4" number="7.4.2">
+<h4 id="pearsons-chi2-test-with-yates-continuity-correction">
+<span class="header-section-number">7.4.2</span> Pearson’s <span class="math inline">\(\chi^2\)</span> test with Yates’ continuity correction<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test-with-yates-continuity-correction"></a>
+</h4>
+<p>Restricting <code>HairEyeColor</code> to black or brown hair and brown or blue eyes yields a <span class="math inline">\(2 \times 2\)</span> table.
+Cochran’s rule is still satisfied, so <code><a href="../reference/visstat.html">visstat()</a></code> applies Pearson’s <span class="math inline">\(\chi^2\)</span> test with Yates’ continuity correction.
+The resulting grouped column plot is shown in Figure <a href="#fig:yates-fisher-example">7.12</a>, left.</p>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hair_black_brown_eyes_brown_blue</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="op">]</span></span>
+<span><span class="va">hair_black_brown_eyes_brown_blue_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">yates_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Eye</span>,</span>
+<span>                       <span class="va">hair_black_brown_eyes_brown_blue_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">yates_stats</span><span class="op">$</span><span class="va">effect_size</span></span></code></pre></div>
+<pre><code><span><span class="co">## $name</span></span>
+<span><span class="co">## [1] "phi"</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $estimate</span></span>
+<span><span class="co">## [1] 0.1709571</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## $effect_size_method</span></span>
+<span><span class="co">## [1] "Phi coefficient for 2 x 2 contingency table"</span></span></code></pre>
+<p>The returned effect size is <span class="math inline">\(\phi = 0.17\)</span>, which, using Cohen’s benchmarks for <span class="math inline">\(2 \times 2\)</span> tables <span class="citation">(<a href="#ref-Cohen:2013">Cohen 2013, 227</a>)</span>, is a small association.
+The p-value instead is below <span class="math inline">\(\alpha = 0.05\)</span> (<span class="math inline">\(p = 0.0035\)</span>) and thus significant.
+This example underlines the importance of effect sizes: a significant p-value can be accompanied with a small effect size measure.</p>
+</div>
+<div class="section level4" number="7.4.3">
+<h4 id="fishers-exact-test">
+<span class="header-section-number">7.4.3</span> Fisher’s exact test<a class="anchor" aria-label="anchor" href="#fishers-exact-test"></a>
+</h4>
+<p>Restricting <code>HairEyeColor</code> to male participants with black or brown hair and hazel or green eyes yields a <span class="math inline">\(2 \times 2\)</span> table where one expected frequency is less than 5, violating Cochran’s rule <span class="citation">(<a href="#ref-Cochran:1954">Cochran 1954</a>)</span>.
+<code><a href="../reference/visstat.html">visstat()</a></code> therefore applies Fisher’s exact test.
+The graphical output shows absolute counts with count labels above each bar and the <span class="math inline">\(p\)</span>-value in the title, so the small cell counts that trigger the exact test remain visible (see Figure <a href="#fig:yates-fisher-example">7.12</a>, right).</p>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">hair_eye_male</span> <span class="op">&lt;-</span> <span class="va">HairEyeColor</span><span class="op">[</span>, , <span class="fl">1</span><span class="op">]</span></span>
+<span><span class="va">black_brown_hazel_green</span> <span class="op">&lt;-</span> <span class="va">hair_eye_male</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
+<span><span class="va">black_brown_hazel_green_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">black_brown_hazel_green</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">fisher_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">black_brown_hazel_green_df</span><span class="op">$</span><span class="va">Eye</span>,</span>
+<span>                        <span class="va">black_brown_hazel_green_df</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<span style="display:block;" id="fig:yates-fisher-example"></span>
+<img src="visStatistics_files/figure-html/yates-fisher-example-1.png" alt="Two $2 \times 2$ categorical routes in `HairEyeColor`: Yates-corrected Pearson $\chi^2$ when Cochran's rule is satisfied (black/brown hair and brown/blue eyes; left), and Fisher's exact test when expected counts are too small (male participants, black/brown hair, hazel/green eyes; right). The Yates-corrected plot shows row percentages; the Fisher plot shows absolute counts." width="48%"><img src="visStatistics_files/figure-html/yates-fisher-example-2.png" alt="Two $2 \times 2$ categorical routes in `HairEyeColor`: Yates-corrected Pearson $\chi^2$ when Cochran's rule is satisfied (black/brown hair and brown/blue eyes; left), and Fisher's exact test when expected counts are too small (male participants, black/brown hair, hazel/green eyes; right). The Yates-corrected plot shows row percentages; the Fisher plot shows absolute counts." width="48%"><p class="caption">
+Figure 7.12: Two <span class="math inline">\(2 \times 2\)</span> categorical routes in <code>HairEyeColor</code>: Yates-corrected Pearson <span class="math inline">\(\chi^2\)</span> when Cochran’s rule is satisfied (black/brown hair and brown/blue eyes; left), and Fisher’s exact test when expected counts are too small (male participants, black/brown hair, hazel/green eyes; right). The Yates-corrected plot shows row percentages; the Fisher plot shows absolute counts.
+</p>
+</div>
+</div>
+</div>
+<div class="section level3" number="7.5">
+<h3 id="sec:examples-rank-correlation-mode">
+<span class="header-section-number">7.5</span> Optional rank-correlation mode<a class="anchor" aria-label="anchor" href="#sec:examples-rank-correlation-mode"></a>
+</h3>
+<p>Correlation analysis requires the explicit flag <code>correlation = TRUE</code>.</p>
+<div class="section level4" number="7.5.1">
+<h4 id="kendall-rank-correlation-with-correlation-true">
+<span class="header-section-number">7.5.1</span> Kendall rank correlation with <code>correlation = TRUE</code><a class="anchor" aria-label="anchor" href="#kendall-rank-correlation-with-correlation-true"></a>
+</h4>
+<p>A hypothetical survey of 150 secondary-school students records alcohol consumption frequency and academic performance on five-point ordinal scales.
+A negative monotone association is induced by construction: students who consume alcohol more frequently tend to have lower academic performance.
+The Kendall result is shown in Figure <a href="#fig:kendall-spearman-example">7.13</a>, left.</p>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">150</span></span>
+<span><span class="va">xs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">ys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmin</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">(</span><span class="fl">6</span> <span class="op">-</span> <span class="va">xs</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="fl">1</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">likert_alc</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"never"</span>, <span class="st">"rarely"</span>, <span class="st">"sometimes"</span>, <span class="st">"often"</span>, <span class="st">"always"</span><span class="op">)</span></span>
+<span><span class="va">likert_perf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"poor"</span>,  <span class="st">"fair"</span>,   <span class="st">"ok"</span>,        <span class="st">"good"</span>,  <span class="st">"great"</span><span class="op">)</span></span>
+<span><span class="va">alcohol</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">likert_alc</span><span class="op">[</span><span class="va">xs</span><span class="op">]</span>,  levels <span class="op">=</span> <span class="va">likert_alc</span><span class="op">)</span></span>
+<span><span class="va">performance</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">ordered</a></span><span class="op">(</span><span class="va">likert_perf</span><span class="op">[</span><span class="va">ys</span><span class="op">]</span>, levels <span class="op">=</span> <span class="va">likert_perf</span><span class="op">)</span></span>
+<span><span class="va">kendall_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">performance</span>, <span class="va">alcohol</span>, correlation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">spearman_air</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">airquality</span><span class="op">$</span><span class="va">Wind</span>, <span class="va">airquality</span><span class="op">$</span><span class="va">Ozone</span>, correlation <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<span style="display:block;" id="fig:kendall-spearman-example"></span>
+<img src="visStatistics_files/figure-html/kendall-spearman-example-1.png" alt="Rank-based correlations: Left: Kendall's $\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance. Right: Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots annotate the corresponding effect measure and $p$-value." width="48%"><img src="visStatistics_files/figure-html/kendall-spearman-example-2.png" alt="Rank-based correlations: Left: Kendall's $\tau_b$ for a hypothetical survey ($n = 150$): alcohol consumption frequency vs.\ academic performance. Right: Spearman rank correlation of `Wind` and `Ozone` from the `airquality` dataset (`correlation = TRUE`; right). Both plots annotate the corresponding effect measure and $p$-value." width="48%"><p class="caption">
+Figure 7.13: Rank-based correlations: Left: Kendall’s <span class="math inline">\(\tau_b\)</span> for a hypothetical survey (<span class="math inline">\(n = 150\)</span>): alcohol consumption frequency vs. academic performance. Right: Spearman rank correlation of <code>Wind</code> and <code>Ozone</code> from the <code>airquality</code> dataset (<code>correlation = TRUE</code>; right). Both plots annotate the corresponding effect measure and <span class="math inline">\(p\)</span>-value.
+</p>
+</div>
+</div>
+<div class="section level4" number="7.5.2">
+<h4 id="spearman-rank-correlation-with-correlation-true">
+<span class="header-section-number">7.5.2</span> Spearman rank correlation with <code>correlation = TRUE</code><a class="anchor" aria-label="anchor" href="#spearman-rank-correlation-with-correlation-true"></a>
+</h4>
+<p>For the ozone example introduced in Section <a href="#sec:lin-reg">7.3.1</a>, staying within <code>visstat(,)</code> with the flag <code>correlation = TRUE</code> gives the Spearman analysis shown in Figure <a href="#fig:kendall-spearman-example">7.13</a>, right.</p>
 </div>
 </div>
 </div>
@@ -1472,8 +1473,22 @@ observations, and <span class="math inline">\(\bar{u}\)</span> and <span class="
 permutations. For larger samples or when ties are present, it uses an
 approximation to the null distribution of the rank association measure
 or its asymptotic transformation. No distributional assumptions on the
-original data are required.</p>
-<p>A separate Pearson-correlation branch is not implemented.
+original data are required.
+<!-- 1. Beweis 
+The rank-biserial coefficient reported for the Wilcoxon rank-sum test
+(Table \@ref(tab:effect-size-formulae)) is the corresponding correlation
+coefficient for a ranking and a dichotomy. Cureton defines it from
+cross-category agreements \(P\) and inversions \(Q\) as
+\(r_{RB}=(P-Q)/P_{\max}\), with \(P_{\max}=N_1N_2\) when no bracket tie is
+present, and \(P_{\max}=N_1N_2-t_1t_2\) when a bracket tie is present.
+This is Kendall-type because it is based on agreements minus inversions.
+Using the Durbin--Stuart weighted inversion form of Spearman's rank
+correlation, the same coefficient is also Spearman-type: once one
+variable is a dichotomy, all cross-category rank differences in that
+variable are equal and the weighted agreement-minus-inversion expression
+reduces to the same ratio [@Cureton:1956].
+-->
+A separate Pearson-correlation branch is not implemented.
 In simple linear regression with an intercept, the two-sided test of zero
 slope and the two-sided test of zero Pearson correlation return the same
 <span class="math inline">\(p\)</span>-value. Pearson correlation would therefore not add a separate
@@ -1555,7 +1570,7 @@ formulae internally.</p>
 <td align="left">rank-biserial <span class="math inline">\(r\)</span>
 </td>
 <td align="left"><span class="math inline">\(r = 2\cdot W/(n_1\cdot n_2) - 1\)</span></td>
-<td align="left"><a href="https://journals.sagepub.com/doi/abs/10.2466/11.it.3.1" class="external-link">Kerby 2014</a></td>
+<td align="left"><a href="https://doi.org/10.1007/BF02289138" class="external-link">Cureton 1956</a></td>
 </tr>
 <tr class="even">
 <td align="left">Fisher’s ANOVA</td>
@@ -1826,7 +1841,7 @@ Shatz, Itamar. 2024. <span>“Assumption-Checking Rather Than (Just) Testing: <s
 Strasak, Alexander M., Qamruz Zaman, Gerhard Marinell, Karl P. Pfeiffer, and Hanno Ulmer. 2007. <span>“The <span>Use</span> of <span>Statistics</span> in <span>Medical Research</span>: <span>A Comparison</span> of "<span>The New England Journal</span> of <span>Medicine</span>" and "<span>Nature Medicine</span>".”</span> <em>The American Statistician</em> 61 (1): 47–55. <a href="https://www.jstor.org/stable/27643837" class="external-link">https://www.jstor.org/stable/27643837</a>.
 </div>
 <div id="ref-Subirana:2014" class="csl-entry">
-Subirana, Isaac, Héctor Sanz, and Joan Vila. 2014. <span>“Building Bivariate Tables: <span class="nocase">The compareGroups</span> Package for <span>R</span>.”</span> <em>Journal of Statistical Software</em> 57 (12): 1–16.
+Subirana, Isaac, Héctor Sanz, and Joan Vila. 2014. <span>“Building Bivariate Tables: <span class="nocase">The compareGroups</span> Package for <span>R</span>.”</span> <em>Journal of Statistical Software</em> 57 (12): 1–16. <a href="https://doi.org/10.18637/jss.v057.i12" class="external-link">https://doi.org/10.18637/jss.v057.i12</a>.
 </div>
 <div id="ref-Thompson:2015" class="csl-entry">
 Thompson, Bruce. 2015. <span>“The <span>Case</span> for <span>Using</span> the <span>General Linear Model</span> as a <span>Unifying Conceptual Framework</span> for <span>Teaching Statistics</span> and <span>Psychometric Theory</span>.”</span> <em>Journal of Methods and Measurement in the Social Sciences</em> 6 (2). <a href="https://doi.org/10.2458/v6i2.18801" class="external-link">https://doi.org/10.2458/v6i2.18801</a>.
