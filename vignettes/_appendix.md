@@ -4,6 +4,15 @@
 \numberwithin{equation}{section}
 ```
 
+<!-- For the standalone paper split: swap the block above for the two lines
+     below to number appendix equations S1...SN (PDF only; HTML unaffected).
+```{=latex}
+\setcounter{equation}{0}
+\renewcommand{\theequation}{S\arabic{equation}}
+```
+-->
+
+
 # Assumption tests {#sec:assumption-statistics}
 
 ## Normality tests {#sec:norm}
@@ -119,8 +128,8 @@ then separates equal-variance tests from Welch-type tests.
 
 ### Student's t-test `t.test(..., var.equal = TRUE)`{#sec:tt}
 
-Student's t-test tests the null hypothesis that the means of two
-unpaired groups are equal.
+Student's t-test tests the null hypothesis that the population means
+of two unpaired groups are equal.
 The test statistic for Student's t-test
 (`t.test(..., var.equal = TRUE)`) is
 
@@ -142,8 +151,8 @@ $\nu = n_1 + n_2 - 2$ degrees of freedom.
 
 ### Fisher's one-way ANOVA `aov()`{#sec:fisher-aov}
 
-Fisher's one-way ANOVA generalises the mean comparison to more than two
-groups and tests the null hypothesis that the means of
+Fisher's one-way ANOVA generalises the comparison to more than two
+groups and tests the null hypothesis that the population means of
 \(k\) groups are equal.
 Fisher's ANOVA test statistic is
 
@@ -225,8 +234,7 @@ equation [@Welch:1947; @Satterthwaite:1946]:
 (\#eq:welch-satterthwaite-df)
 \end{equation}
 
-Welch's methods outperform their classical counterparts when variances
-differ [@Moser:1992; @Fagerland:2009; @Delacre:2017].
+
 
 ### Welch's heteroscedastic ANOVA `oneway.test()`{#sec:welch-aov}
 
@@ -275,6 +283,46 @@ with $\nu$ degrees of freedom from the Welch--Satterthwaite
 approximation in Eq.\ \@ref(eq:welch-satterthwaite-df).
 The resulting two-sided $p$-values are adjusted with Holm's method
 [@Holm:1979].
+
+
+Welch's methods outperform their classical counterparts when variances
+differ [@Moser:1992; @Fagerland:2009; @Delacre:2017].
+
+#### Welch's method in the case of equal variances
+
+When variances are equal, Welch's methods lose only negligible power
+relative to their classical counterparts [@Moser:1992;
+@Delacre:2017]; in the two-group case the reduction is exact for equal group sizes:  
+ 
+When $s_1^2 = s_2^2 = s^2$ and
+$n_1 = n_2 = n$, the pooled variance entering Eq.\ \@ref(eq:student-t)
+becomes
+\begin{equation}
+s_p^2 = \frac{(n-1)s^2 + (n-1)s^2}{2n-2} = s^2,
+(\#eq:welch-student-pooled)
+\end{equation}
+so the Welch denominator in Eq.\ \@ref(eq:welch-t),
+$\sqrt{s^2/n + s^2/n} = s\sqrt{2/n}$, equals the Student denominator
+$s_p\sqrt{1/n + 1/n} = s\sqrt{2/n}$, and the Welch--Satterthwaite
+degrees of freedom in Eq.\ \@ref(eq:welch-satterthwaite-df) reduce to
+\begin{equation}
+\nu = \frac{\left(2s^2/n\right)^2}
+{\dfrac{(s^2/n)^2}{n-1} + \dfrac{(s^2/n)^2}{n-1}}
+= \frac{4s^4/n^2}{2s^4/[n^2(n-1)]}
+= 2(n-1) = 2n-2.
+(\#eq:welch-student-df)
+\end{equation}
+Welch's t-test then coincides with Student's t-test on $2n-2$ degrees
+of freedom.
+
+This exact equivalence does not
+extend beyond two groups: even under equal variances
+($s_1^2 = \cdots = s_k^2$) and equal group sizes
+($n_1 = \cdots = n_k$), the Welch statistic $F_W$ in Eq.\
+\@ref(eq:welch-f) is not algebraically identical to the classical $F$
+in Eq.\ \@ref(eq:fisher-f); it nevertheless converges to it, and the
+numerical difference becomes negligible.
+
 
 # Non-parametric tests
 

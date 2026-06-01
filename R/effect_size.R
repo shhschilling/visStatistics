@@ -210,15 +210,20 @@ effect_size_kendall <- function(result) {
 #' }
 #'
 #' @param result A list returned by \code{visstat()} or a compatible test
-#'   result object.
+#'   result object; or, in raw-data mode, the first input vector \code{x}.
 #' @param x First input vector, matching the first argument of
 #'   \code{visstat(x, y)}. Required when the effect size cannot be extracted
-#'   from \code{result} alone.
+#'   from \code{result} alone. In raw-data mode this is the second input
+#'   vector \code{y}.
 #' @param y Second input vector, matching the second argument of
 #'   \code{visstat(x, y)}. Required when the effect size cannot be extracted
 #'   from \code{result} alone.
+#' @param ... Passed to \code{visstat()} in raw-data mode (e.g.
+#'   \code{correlation}, \code{conf.level}).
 #' @return A list with components \code{name}, \code{estimate},
-#'   \code{effect_size_method}, and optionally \code{conf.int}.
+#'   \code{effect_size_method}, and optionally \code{conf.int}. In raw-data
+#'   mode (\code{effect_size(x, y)}) the list additionally contains
+#'   \code{selected_test}, the name of the test \code{visstat()} selected.
 #' @references
 #' Hedges, L. V. (1981). Distribution theory for Glass's estimator of effect
 #' size and related estimators. \emph{Journal of Educational Statistics},
@@ -258,6 +263,10 @@ effect_size_kendall <- function(result) {
 #' tab <- matrix(c(10, 5, 4, 12), nrow = 2)
 #' effect_size(chisq.test(tab))
 #'
+#' ## Raw-data mode: select the test with visstat() and return the effect
+#' ## size together with the name of the selected test.
+#' effect_size(ToothGrowth$supp, ToothGrowth$len)
+#'
 #' \dontrun{
 #' ## Large-sample example with a statistically significant Student's
 #' ## t-test p-value but a small effect size, measured by Hedges' g
@@ -278,7 +287,35 @@ effect_size_kendall <- function(result) {
 #' res$effect_size$estimate
 #' }
 #' @export
-effect_size <- function(result, x = NULL, y = NULL) {
+effect_size <- function(result, x = NULL, y = NULL, ...) {
+  # Raw-data input: effect_size(x, y) selects the test via visstat() and
+  # returns its effect-size record plus the name of the selected test. A
+  # selected-test result is always a list (visstat/htest object); raw data
+  # is an atomic vector or factor.
+  if (!is.list(result)) {
+    if (is.null(x)) {
+      stop("Raw-data input requires two vectors: effect_size(x, y).", call. = FALSE)
+    }
+    if (!is.null(y)) {
+      stop("Raw-data input takes exactly two vectors.", call. = FALSE)
+    }
+    if (!is.atomic(x) || length(result) != length(x)) {
+      stop("Raw-data input requires two atomic vectors of equal length.", call. = FALSE)
+    }
+    tmp <- tempfile(fileext = ".pdf")
+    grDevices::pdf(tmp)
+    on.exit({
+      while (!is.null(grDevices::dev.list())) grDevices::dev.off()
+      unlink(tmp)
+    }, add = TRUE)
+    res <- visstat(result, x, ...)
+    out <- res$effect_size
+    out$selected_test <- selected_test_title(res)
+    if (is.na(out$estimate)) {
+      warning(out$effect_size_method, call. = FALSE)
+    }
+    return(out)
+  }
   if (!is.null(result$effect_size)) {
     return(result$effect_size)
   }

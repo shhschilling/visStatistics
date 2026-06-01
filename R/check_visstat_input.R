@@ -53,6 +53,10 @@ check_visstat_input <- function(x, y=NULL, ...,data=NULL) {
   if (total_positional == 2 &&
       inherits(x, allowed_classes) &&
       inherits(y, allowed_classes)) {
+    if (length(x) != length(y)) {
+      stop("visstat() requires x and y to have the same length; got ",
+           length(x), " and ", length(y), ".", call. = FALSE)
+    }
     return(invisible(TRUE))  # valid vector input
   }
   

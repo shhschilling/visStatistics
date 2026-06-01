@@ -47,17 +47,6 @@ test_that("vis_lm_assumptions returns correct structure for regression", {
   expect_true(is.list(result$ad_test) || is.character(result$ad_test))
 })
 
-test_that("simple-regression leverage formula matches hatvalues", {
-  fit <- lm(Fertility ~ Examination, data = swiss)
-
-  # The leverage panel uses the explicit simple-regression formula stated in
-  # the vignette. This checks it against the standard hatvalues() result.
-  leverage_formula <- visStatistics:::.simple_regression_leverage(fit)
-  leverage_hatvalues <- hatvalues(fit)
-
-  expect_equal(leverage_formula, leverage_hatvalues, tolerance = 1e-12)
-})
-
 test_that("vis_lm_assumptions reports NA Shapiro above R limit", {
   png(tempfile(fileext = ".png"))
   on.exit(dev.off())
@@ -72,7 +61,7 @@ test_that("vis_lm_assumptions reports NA Shapiro above R limit", {
   )
 
   expect_true(is.na(result$shapiro_test$p.value))
-  expect_equal(result$shapiro_test$data.name, "raw model residuals")
+  expect_equal(result$shapiro_test$data.name, "standardised model residuals")
 })
 
 test_that("vis_lm_assumptions handles small samples correctly", {

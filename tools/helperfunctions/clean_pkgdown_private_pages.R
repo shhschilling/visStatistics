@@ -60,5 +60,7 @@ clean_pkgdown_private_pages <- function(docs_dir = "docs") {
   }
 }
 
-args <- commandArgs(trailingOnly = TRUE)
-clean_pkgdown_private_pages(if (length(args)) args[[1]] else "docs")
+if (identical(environment(), globalenv())) {
+  args <- commandArgs(trailingOnly = TRUE)
+  clean_pkgdown_private_pages(if (length(args)) args[[1]] else "docs")
+}
