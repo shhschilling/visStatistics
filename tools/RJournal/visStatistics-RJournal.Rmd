@@ -1,5 +1,5 @@
 ---
-title: "visStatistics: The right test, visualised"
+title: "visStatistics: automated test selection, visualised"
 author:
   - name: Sabine Schilling
     affiliation: Lucerne School of Business, Lucerne University of Applied Sciences and Arts
@@ -123,7 +123,7 @@ For group comparisons, packages with related scope include `compareGroups` [@Sub
 `compareGroups` is primarily designed for bivariate descriptive tables and reports.
 `boxTest` covers only the two-group numeric-response case.
 `autotestR` provides automated recommendations for t-tests, ANOVA, correlation, and contingency-table analyses.
-`automatedtests` provides the broadest routing among these packages, including one-sample, paired, repeated-measures, regression, correlation, and contingency-table cases.
+`automatedtests` provides the broadest coverage among these packages, including one-sample, paired, repeated-measures, regression, correlation, and contingency-table cases.
 
 For tests within the general linear-model framework
 like Student's t-test or Fisher's ANOVA and linear regression,
@@ -140,10 +140,10 @@ The package is deliberately limited to common two-variable settings in which the
 The purpose of this vignette is two-fold: On the one hand it explains the
 decision logic of `visstat()` (`r section_link("sec:decision")`) and illustrates it
 on examples for each branch of the decision logic (`r section_link("sec:examples")`).
-On the other hand it serves as a textbook-like reference of all implemented
+On the other hand its Appendices serve as reference of all implemented
 tests, correlations and effect-sizes (Appendices \@ref(sec:tests)--\@ref(sec:effect-size)),
 so that the user easily understands the output without having to consult the
-code or  literature.
+code or literature.
 
 # Package overview
 
@@ -249,11 +249,11 @@ From Eq. 
 \@ref(eq:glm), the special cases used by `visstat()` follow from the predictor structure:
 
 **Student's t-test** uses one binary indicator variable $x_{i1}$, with $x_{i1}=0$ for group 1 and $x_{i1}=1$ for group 2.
-Let $\mu_1$ and $\mu_2$ denote the expected values in the two population groups.
+Let $\mu_1$ and $\mu_2$ denote the expected mean values in the two population groups.
 For the expected values of the response, we then obtain $$E(Y_i \mid x_{i1}=0)=\mu_1=\beta_0$$ for group 1 and $$E(Y_i \mid x_{i1}=1)=\mu_2=\beta_0+\beta_1$$ for group 2.
 Testing $H_0: \beta_1 = 0$ is therefore equivalent to testing $H_0: \mu_1 = \mu_2$.
 
-**Fisher's ANOVA** generalises this coding to $k-1$ binary indicator variables for $k$ groups; testing $H_0: \beta_1 = \cdots = \beta_{k-1} = 0$ is equivalent to testing equality of all group means.
+**Fisher's ANOVA** generalises this coding to $k-1$ binary indicator variables for $k$ groups; testing $H_0: \beta_1 = \cdots = \beta_{k-1} = 0$ is equivalent to testing equality of $k$ group population means. 
 
 **Simple linear regression** uses one continuous predictor; $H_0: \beta_1 = 0$ examines whether a linear relationship exists.
 
@@ -332,7 +332,7 @@ r_i =\frac{e_i}{\sqrt{ SE_\text{res}^2\,(1-h_{ii})}}=
 
 
 **Normality tests** The normality of the standardised residuals is formally assessed using both the Shapiro--Wilk test [@Shapiro:1965; @Royston:1982; @Royston:1995] (`shapiro.test()`; see `r supplement_link(NULL, "Supplement")`) and the Anderson--Darling test [@Anderson:1952] (`ad.test()`; see `r supplement_link(NULL, "Supplement")`).
-These tests offer complementary strengths: Anderson--Darling is highly sensitive to tail deviations in larger samples [@Razali:2011; @Yap:2011],
+These tests offer complementary strengths: Anderson--Darling is highly sensitive to tail deviations in larger samples [ @Yap:2011],
 while Shapiro--Wilk generally exhibits greater power across non-normal distributions in small samples. Therefore in smaller samples, the Shapiro--Wilk test is used as the normality gate in the automated test selection (`r section_link("sec:route-1")`).
 
 
@@ -409,7 +409,7 @@ The first split checks group size:
 When all group-specific sample sizes are greater than 50, the sampling distribution of the group means is treated as sufficiently close to normal by the central limit theorem [@Lumley:2002]. In this case, the test selection is independent of the residual-normality p-values, albeit the corresponding p-values are still reported and displayed in the diagnostic panels (`r section_link("sec:graphical")`).
 
  
-This avoids switching to rank-based tests because of negligible residual-normality deviations in large samples [@Ghasemi:2012; @Fagerland:2012; @Shatz:2024].
+This avoids switching to rank-based tests because of negligible residual-normality deviations in large samples [@Ghasemi:2012;  @Shatz:2024].
 
 For smaller samples, a linear model of Eq.
 \@ref(eq:glm) is fitted between the numeric response and the categorical predictor, and the model residuals of Eq.
@@ -419,12 +419,13 @@ The Shapiro--Wilk (SW) normality test is then applied as the residual-normality 
 
 If the SW-test rejects residual normality ($p_\text{SW} \le \alpha$), non-parametric tests are selected: `wilcox.test()` (see `r supplement_link(NULL, "Supplement")`) for two groups, or `kruskal.test()` (see `r supplement_link(NULL, "Supplement")`) followed by Holm-adjusted `pairwise.wilcox.test()` for more than two groups.
 
-If residual normality is not rejected or assumed for large sample sizes (central limit theorem), variance homogeneity is assessed with the mean-centred Levene test (L) [@Levene:1960] (see `r supplement_link(NULL, "Supplement")`).
+If residual normality is not rejected or not tested in larger samples, variance homogeneity is assessed with the mean-centred Levene test (L) [@Levene:1960] (see `r supplement_link(NULL, "Supplement")`).
 
 For homoscedastic data ($p_\text{L} > \alpha$), `t.test(var.equal = TRUE)` (see `r supplement_link(NULL, "Supplement")`) is applied for two groups, or Fisher's `aov()` (see `r supplement_link(NULL, "Supplement")`) for more than two groups.
 For heteroscedastic data ($p_\text{L} \le \alpha$), Welch's `t.test()` (see `r supplement_link(NULL, "Supplement")`) is applied for two groups, or Welch's `oneway.test()` (see `r supplement_link(NULL, "Supplement")`) for more than two groups.
 
-A type I error of the Levene test merely routes homoscedastic data to Welch's t-test or Welch's one-way ANOVA, which lose only negligible power when variances are in fact equal; some authors therefore recommend them as the default [@Rasch:2011; @Delacre:2019].
+A type I error of the Levene test merely routes homoscedastic data to Welch's t-test or Welch's one-way ANOVA, which lose only negligible power when variances are in fact equal; 
+[@Rasch:2011; @Delacre:2019].
 
 
 
@@ -551,8 +552,11 @@ knitr::include_graphics(student_ttest_panel_file)
 The `PlantGrowth` dataset records yields (as measured by dried weight of plants) for a control group and two treatment groups.
 This dataset serves a double purpose: it demonstrates both a branching result and the `visstat()` S3 methods `print()`, `summary()`, and `plot()` (`r section_link("sec:visstat-methods")`).
 
-```{r anova-example, results='hide', fig.show='hide'}
-anova_plantgrowth <- visstat(PlantGrowth$group, PlantGrowth$weight)
+```{r anova-example, fig.cap="Fisher's one-way ANOVA applied to the `PlantGrowth` dataset (`weight` vs.\\ `group`). Top: assumption diagnostics. Bottom: box plots of plant weight by treatment group with Tukey HSD significance letters.", echo=FALSE, out.width="100%"}
+anova_plantgrowth <- capture_visstat_result(visstat(PlantGrowth$group, PlantGrowth$weight))
+anova_plantgrowth_panel_file <- file.path(tempdir(), "anova_example_panel.png")
+make_visstat_panel(anova_plantgrowth, anova_plantgrowth_panel_file)
+knitr::include_graphics(anova_plantgrowth_panel_file)
 ```
 
 
@@ -909,20 +913,13 @@ For the ozone example introduced in `r section_link("sec:lin-reg")`, staying wit
 # Discussion {#sec:discussion}
 
 
-The design of `visStatistics` prioritises transparent, reproducible routing for common two-variable analyses [@Strasak:2007; @Sato:2017; @Chicco:2025] over broad model coverage.
-This scope keeps the decision tree inspectable and the graphical output consistent, but it also leaves several modelling choices (e.g. paired tests, interaction terms, multiple linear regression) outside the automated workflow.
-
-
-While one of R's greatest strengths is the sheer volume of statistical methods available, incorporating a wider array of methods would require additional preliminary assumption checks, which in turn would exacerbate the risk of overall Type I error inflation.
-Furthermore, expanding the pipeline would result in a highly complex decision tree, rendering the underlying statistical logic increasingly opaque to the user.
-
-
 For every chosen test, `visStatistics` provides both a *vis*ualisation and a full report covering the test itself, and, where applicable, its assumption checks and  post-hoc comparisons.
 
-The report also includes the effect size. A sufficiently large sample makes even a negligible difference significant, so the p-value must be read alongside the magnitude of the effect [@Levine:2002; @Cohen:2013, p. 10]. The "right" test is thus per se not the one with the smallest p-value, but one whose assumptions hold, and whose effect is large enough to matter.
+The report is complemented by each test's effect size (Table \@ref(tab:effect-size-formulae)):
+A sufficiently large sample makes even a negligible difference significant, so the p-value must be read alongside the magnitude of the effect [@Levine:2002; @Cohen:2013, p. 10]. The "right" test is thus per se not the one with the smallest p-value, but one whose assumptions hold, and whose effect is large enough to matter.
 
 
-For tests of central tendency, p-values from assumption tests of normality and homoscedasticity are used as routing criteria, subject to the large sample-size safeguards for normality testing.
+For tests of central tendency, p-values from assumption tests of normality and homoscedasticity are used as routing criteria, subject to the large sample-size safeguards discussed below for normality testing.
 However, no single assumption test maintains optimal Type I error rates and statistical power across all distributions [@Olejnik:1987] and sample sizes, and p-values obtained from these tests may be unreliable if their assumptions are violated.
 
 Assessing assumptions solely through p-values can lead to both type I errors (false positives) and type II errors (false negatives).
@@ -930,14 +927,46 @@ In large samples, even minor, random deviations from the null hypothesis can res
 Conversely, in small samples, substantial violations of the assumption may not reach statistical significance, resulting in type II errors [@Kozak:2018].
 Thus, the robustness of statistical tests depends on both the sample size and the shape of the underlying distribution.
 
-Only for residual normality, the Central Limit Theorem provides an exit from this problem for large samples.
-This raises the practical question of what should count as a "large" sample in normality testing.
-The answer depends on the shape of the underlying distribution, especially skewness and tail weight [@Lumley:2002].
-Simulation studies suggest that moderately skewed distributions require roughly 40--50 observations for adequate convergence of the sampling distribution of the mean [@Fagerland:2012].
 
-Therefore, based on the Central Limit Theorem, normality tests of residuals do not steer automated routing in the decision logic of `visstat()`, if all group-specific sample sizes are greater than 50.
+
+In tests comparing group means, the Central Limit Theorem (CLT) allows us to bypass the formal assessment of the residual normality in large samples:  
+By the CLT, the sampling distribution of the group means approaches normality as the group sizes grow, regardless of the shape of the underlying distribution. For finite group sizes this holds only approximately, but it implies that in large enough samples a rejected residual-normality test no longer threatens the validity of the mean-based test.
+This raises the practical question of what should count as a "large enough" sample.
+The answer depends on the shape of the underlying distribution, especially skewness and tail weight [@Lumley:2002].
+
+ 
+
+`visstat()` tests the residual normality before testing homoscedasticity, so the justification of the minimum group size to bypass the residual normality testing must hold for both mean-based families it might reach: the homoscedastic comparison---Student's t-test, generalised to Fisher's one-way ANOVA---and the heteroscedastic comparison---Welch's t-test, generalised to Welch's one-way ANOVA. 
+Monte Carlo studies of robustness to non-normality [@Blanca:2017; @Fagerland:2012; @Delacre:2019] examine both mean-based families against a common criterion: under the null hypothesis of equal population means, and at a significance level of $\alpha = 5\%$, the empirical Type I error rate must stay within Bradley's liberal robustness bounds of $[2.5\%, 7.5\%]$ [@Bradley:1978].
+
+
+In the context of homoscedastic comparison, Blanca et al. [@Blanca:2017] demonstrated in a three-group design that the empirical Type I error of Fisher's one-way ANOVA — whose two-group special case is Student's t-test — remained within Bradley's bounds across skewness values up to 2 and kurtosis values up to 6, at group sizes ranging from 5 to 100.
+For the Student's t-test, the margin is wider, with a Type I error rate between 4% and 5% for sample sizes of 10 or more, as long as skewness is up to 4 and there are moderate differences in spread [@Fagerland:2012].
+
+
+
+In the context of heteroscedastic comparison, Delacre et al. [@Delacre:2019] established that the empirical Type I error of Welch's one-way ANOVA – whose two-group special case is Welch's t-test – remained within Bradley's bounds at approximately 50 observations per group for up to four groups.
+With more than four groups, 50 observations still suffice unless skewness exceeds about 2---a pronounced asymmetry---where roughly 100 per group are required.
+
+
+Summing up, the Central Limit Theorem and these simulation studies indicate that a minimum group size of 50 (given skewness below 2) is a conservative threshold; accordingly, normality tests of residuals do not steer automated routing in the decision logic of `visstat()` when all group-specific sample sizes exceed 50.
+`visstat()` applies a single threshold of 50 rather than raising it to the roughly 100 per group that Delacre et al. [@Delacre:2019] report for more than four groups under pronounced skewness (around 2, as in a $\chi^2_2$ distribution). The threshold matters only for groups sized between 50 and 100, the range in which the Shapiro--Wilk test has its highest power [@Razali:2011] yet the mean-based tests are already robust by the Central Limit Theorem. Raising the threshold to 100 would reinstate the normality gate over this range and route samples to rank-based tests on departures from normality that no longer threaten the mean-based comparison. Keeping it at 50 leaves only the one corner case of more than four strongly skewed, heteroscedastic groups outside its coverage, where the skewness and unequal variances remain visible in both the diagnostic and result plots, so the user can override the automatic choice.
+
+
+
+
+
 
 For smaller group-specific sample sizes, a Shapiro--Wilk test is used to route between mean-based and rank-based methods, as simulation studies suggest that it has the highest power among normality tests in small to moderate ($n = 10$ to 100) sample sizes [@Razali:2011].
+
+ 
+A type I error in a test of homoscedasticity is of no real consequence: it 
+merely routes homoscedastic data to Welch's t-test or Welch's one-way ANOVA, which loose only negligible power to Student' t-test or Fisher Oneway Anova, when variances are in fact equal [@Rasch:2011; @Delacre:2019]. 
+
+In the case of balanced designs and equal variances,  Welch's t-test is even  algebraically equivalent to Student's t-test (Eqs. \@ref(eq:welch-t) and \@ref(eq:student-t))  and  Welch's one-way ANOVA converges asymptotically to the Fisher One Way Anova (Eqs. \@ref(eq:welch-f) and \@ref(eq:fisher-f)).
+Some authors therefore recommend the Welch tests  as the default [@Rasch:2011; @Delacre:2019].
+
+
 
 If the assumptions of parametric tests are violated, `visstat()` automatically falls back to non-parametric tests.
 In the regression branch, violated assumptions are solely flagged, and the package offers Spearman rank correlation as a non-causal alternative to linear regression.
@@ -945,12 +974,20 @@ Further alternative methods such as data transformation, generalised linear mode
 
 Assumption tests provide no information on the nature of deviations from the expected distribution [@Shatz:2024] and cannot replace visual inspection of the diagnostic plots generated by `visstat()`, which may indicate cases where the automatic test choice should be overridden.
 
+# Limitations {#sec:limitations}
+
+
+The design of `visStatistics` prioritises transparent, reproducible routing for common two-variable analyses [@Strasak:2007; @Sato:2017; @Chicco:2025] over broad model coverage.
+This scope keeps the decision tree inspectable and the graphical output consistent, but it also leaves several modelling choices (e.g. paired tests, interaction terms, multiple linear regression) outside the automated workflow.
+
+
+While one of R's greatest strengths is the sheer volume of statistical methods available, incorporating a wider array of methods would require additional preliminary assumption checks, which in turn would exacerbate the risk of overall Type I error inflation.
+Furthermore, expanding the pipeline would result in a highly complex decision tree, rendering the underlying statistical logic increasingly opaque to the user.
+
 Bootstrapping represents an alternative to assumption-guided routing.
 As implemented for example in the R package `boot` [@boot:2025; @Davison:1997], it can provide confidence intervals for a wide range of statistics.
 However, bootstrapping often requires thousands of resamples and may perform poorly with very small sample sizes.
 This runs counter to the purpose of the `visStatistics` package, which is designed to offer a rapid overview of the data, laying the groundwork for deeper analysis in subsequent steps.
-
-
 
 
 
@@ -969,9 +1006,13 @@ Taken together, these scope decisions define `visStatistics` as a rapid, inspect
 
 # Conclusion
 
-Many routine statistical analyses reduce to a relatively small number of tests. Among those, parametric tests such as t-tests, analysis of variance, or regression belong to the family of general linear models, whose assumptions are frequently not tested at all or not tested properly [@Hoekstra:2012; @Ernst:2017; @Jones:2025; @Kery:2003].
+Many routine statistical analyses reduce to a relatively small number of tests implemented in `visStatistics`. Among those, parametric tests such as t-tests, analysis of variance, or simple linear regression belong to the family of general linear models, whose assumptions are frequently not tested at all or not tested properly [@Hoekstra:2012; @Ernst:2017; @Jones:2025; @Kery:2003].
 
 
-`visStatistics`  addresses this gap: Its automated test selection relying on the data type, size and p-values of assumption tests of the model residuals  is fully transparent, but addresses the inherent shortcomings of test selection based on the p-values of assumption tests [@Lumley:2002; @Fagerland:2012; @Franc:2025; @Kozak:2018; @Shatz:2024]  by supplementing the output with diagnostic plots of the assumption tests.
+`visStatistics` addresses this gap: Its selection of tests of central tendencies takes p-values of assumption tests of the model residuals of a fitted linear model into account. 
+
+The package addresses the inherent shortcomings of test selection based on p-values [@Lumley:2002; @Fagerland:2012; @Kozak:2018; @Shatz:2024; @Franc:2025;] by omitting testing of normality where justifiable by the Central Limit Theory and supplementing the output with diagnostic plots of the assumption tests.
+
+Its value is not that it removes the user's statistical judgment, but that it exposes the assumptions, effect sizes, and plots that should inform that judgment.
 
 

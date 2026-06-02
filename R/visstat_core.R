@@ -330,7 +330,11 @@ visstat_core <- function(dataframe,
                                                    fileDirectory = plotDirectory, capture_env = capture_env))
       
       # Decision logic gate
-      all_groups_large <- all(counts_per_level > 50)
+      # n > 50 CLT bypass DISABLED (commented out, not removed): the
+      # Shapiro--Wilk test now routes the selection at all group sizes.
+      # To restore the bypass, uncomment all_groups_large and the
+      # `if (all_groups_large)` branch below.
+      # all_groups_large <- all(counts_per_level > 50)
       current_model <- lm(samples ~ fact)
       raw_residuals <- residuals(current_model)
       # Internally studentised residuals for the normality gate, matching the
@@ -339,10 +343,11 @@ visstat_core <- function(dataframe,
       if (any(!is.finite(scaled_residuals)))
         scaled_residuals <- raw_residuals / max(sigma(current_model), 1e-8)
 
-      if (all_groups_large) {
-        normality_met <- TRUE
-      } else if (length(raw_residuals) > 5000) {
-        normality_met <- TRUE
+      # if (all_groups_large) {
+      #   normality_met <- TRUE
+      # } else if (length(raw_residuals) > 5000) {
+      if (length(raw_residuals) > 5000) {
+        normality_met <- TRUE   # Shapiro--Wilk undefined for n > 5000
       } else {
         normality_met <- shapiro.test(scaled_residuals)$p.value >= alpha
       }

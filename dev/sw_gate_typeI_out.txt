@@ -1,0 +1,14 @@
+Cells = rejection rate at alpha = 0.05.  Columns name the TEST and its fixed H0:
+   Welch   -> tests  H0: equal MEANS        (mu_A = mu_B)
+   Wilcox  -> tests  H0: equal ORDERING     (P(X>Y) = 0.5)
+   gate    -> SW-routed: reports Welch if SW passes, Wilcox if SW rejects (H0 = whichever it picked)
+Bradley liberal interval [0.025, 0.075].  A cell is TYPE I only where its H0 is TRUE in the DGP (see caption).
+
+=== DGP A: identical distributions, equal n ===
+    TRUE H0:  equal means = YES   |   ordering P(X>Y)=0.5 = YES
+    => ALL THREE columns are Type I error rates.
+                       |               n = 50 |              n = 200
+input shape            |  Welch Wilcox   gate |  Welch Wilcox   gate
+normal      (skew 0)   |  0.051  0.052  0.052 |  0.049  0.051  0.050
+uniform     (skew 0)   |  0.047  0.048  0.048 |  0.051  0.051  0.051
+Laplace     (skew 0)   |  0.053  0.053  0.056 |  0.048  0.049  0.049

@@ -186,7 +186,7 @@ remove_chunk_option <- function(options, name) {
   gsub(option_pattern, "", options, perl = TRUE)
 }
 
-stack_visstat_chunk <- function(text, label, file_slug) {
+stack_visstat_chunk <- function(text, label, file_slug, fig_cap = NULL) {
   chunk_pattern <- paste0("(?s)```\\{r ", label, "([^}]*)\\}\\n(.*?)\\n```")
   match <- regexec(chunk_pattern, text, perl = TRUE)
   parts <- regmatches(text, match)[[1L]]
@@ -199,6 +199,9 @@ stack_visstat_chunk <- function(text, label, file_slug) {
   for (option in c("echo", "results", "out\\.width", "fig\\.height",
                    "fig\\.show")) {
     options <- remove_chunk_option(options, option)
+  }
+  if (!is.null(fig_cap) && !grepl("fig\\.cap[[:space:]]*=", options)) {
+    options <- paste0(options, ", fig.cap=", fig_cap)
   }
   options <- paste0(options, ", echo=FALSE, out.width=\"100%\"")
 
@@ -254,6 +257,18 @@ for (chunk in list(
 )) {
   main_text <- stack_visstat_chunk(main_text, chunk[[1L]], chunk[[2L]])
 }
+
+main_text <- stack_visstat_chunk(
+  main_text,
+  "anova-example",
+  "anova_example",
+  fig_cap = paste0(
+    "\"Fisher's one-way ANOVA applied to the `PlantGrowth` dataset ",
+    "(`weight` vs.\\\\ `group`). Top: assumption diagnostics. Bottom: box ",
+    "plots of plant weight by treatment group with Tukey HSD significance ",
+    "letters.\""
+  )
+)
 
 rjournal_setup <- c(
   "```{r setup, include=FALSE}",
@@ -327,7 +342,7 @@ rjournal_setup <- c(
 
 yaml <- c(
   "---",
-  "title: \"visStatistics: The right test, visualised\"",
+  "title: \"visStatistics: automated test selection, visualised\"",
   "author:",
   "  - name: Sabine Schilling",
   "    affiliation: Lucerne School of Business, Lucerne University of Applied Sciences and Arts",

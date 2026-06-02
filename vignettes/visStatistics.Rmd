@@ -1,5 +1,5 @@
 ---
-title: 'visStatistics: The right test, visualised'
+title: 'visStatistics: automated test selection, visualised'
 author: Sabine Schilling
 date: "`r Sys.Date()`"
 output:
@@ -26,7 +26,7 @@ pkgdown:
   as_is: true
 vignette: >
   %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{visStatistics: The right test, visualised}
+  %\VignetteIndexEntry{visStatistics: automated test selection, visualised}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options:
   markdown:
@@ -869,6 +869,138 @@ For the ozone example introduced in Section \@ref(sec:lin-reg), staying within `
 
 # Discussion {#sec:discussion}
 
+<!-- reporting  -->
+For every chosen test, `visStatistics` provides both a *vis*ualisation and a full report covering the test itself, and, where applicable, its assumption checks and  post-hoc comparisons.
+<!-- EFFECT SIZE   -->
+The report is complemented by each test's effect size (Table \@ref(tab:effect-size-formulae)):
+A sufficiently large sample makes even a negligible difference significant, so the p-value must be read alongside the magnitude of the effect [@Levine:2002; @Cohen:2013, p. 10]. The "right" test is thus per se not the one with the smallest p-value, but one whose assumptions hold, and whose effect is large enough to matter.
+
+<!-- Problem of p-value guided test selection  -->
+For tests of central tendency, p-values from assumption tests of normality and homoscedasticity are used as routing criteria, subject to the large sample-size safeguards discussed below for normality testing.
+However, no single assumption test maintains optimal Type I error rates and statistical power across all distributions [@Olejnik:1987] and sample sizes, and p-values obtained from these tests may be unreliable if their assumptions are violated.
+
+Assessing assumptions solely through p-values can lead to both type I errors (false positives) and type II errors (false negatives).
+In large samples, even minor, random deviations from the null hypothesis can result in statistically significant p-values, leading to type I errors.
+Conversely, in small samples, substantial violations of the assumption may not reach statistical significance, resulting in type II errors [@Kozak:2018].
+Thus, the robustness of statistical tests depends on both the sample size and the shape of the underlying distribution.
+
+
+<!-- normality, CLT  -->
+In tests comparing group means, the Central Limit Theorem (CLT) allows us to bypass the formal assessment of the residual normality in large samples:  
+By the CLT, the sampling distribution of the group means approaches normality as the group sizes grow, regardless of the shape of the underlying distribution. For finite group sizes this holds only approximately, but it implies that in large enough samples a rejected residual-normality test no longer threatens the validity of the mean-based test.
+This raises the practical question of what should count as a "large enough" sample.
+The answer depends on the shape of the underlying distribution, especially skewness and tail weight [@Lumley:2002].
+<!-- In `visstat()`, this threshold is set at 50: once every group has more than 50 observations, the residual-normality test is bypassed. -->
+ 
+
+`visstat()` tests the residual normality before testing homoscedasticity, so the justification of the minimum group size to bypass the residual normality testing must hold for both mean-based families it might reach: the homoscedastic comparison---Student's t-test, generalised to Fisher's one-way ANOVA---and the heteroscedastic comparison---Welch's t-test, generalised to Welch's one-way ANOVA. 
+Monte Carlo studies of robustness to non-normality [@Blanca:2017; @Fagerland:2012; @Delacre:2019] examine both mean-based families against a common criterion: under the null hypothesis of equal population means, and at a significance level of $\alpha = 5\%$, the empirical Type I error rate must stay within Bradley's liberal robustness bounds of $[2.5\%, 7.5\%]$ [@Bradley:1978].
+
+<!-- homoscedastic comparison -->
+In the context of homoscedastic comparison, Blanca et al. [@Blanca:2017] demonstrated in a three-group design that the empirical Type I error of Fisher's one-way ANOVA — whose two-group special case is Student's t-test — remained within Bradley's bounds across skewness values up to 2 and kurtosis values up to 6, at group sizes ranging from 5 to 100.
+For the Student's t-test, the margin is wider, with a Type I error rate between 4% and 5% for sample sizes of 10 or more, as long as skewness is up to 4 and there are moderate differences in spread [@Fagerland:2012].
+
+
+<!-- heterocedastic comparison -->
+In the context of heteroscedastic comparison, Delacre et al. [@Delacre:2019] established that the empirical Type I error of Welch's one-way ANOVA – whose two-group special case is Welch's t-test – remained within Bradley's bounds at approximately 50 observations per group for up to four groups.
+With more than four groups, 50 observations still suffice for  skewness up to 2, for higher skewness roughly 100 per group are required.
+<!-- The comparison of more than four skewed, heteroscedastic groups is therefore the one case the cutoff does not cover: `visstat()` applies the same threshold of 50 regardless of the number of groups and does not raise it to 100 for $k > 4$. -->
+
+Summing up, the Central Limit Theorem and these simulation studies indicate that a minimum group size of 50 is a conservative threshold for skewness up to about 2. Above this size, normality tests of residuals do not steer automated routing in the decision logic of `visstat()`, which defaults to mean-based testing independent of the shape of the sample distribution.
+
+Without this bypass, the Shapiro--Wilk test would reject residual normality for almost any skewed sample at these sizes and reroute the comparison to a rank-based test. Such a switch is not more valid, because the Central Limit Theorem has already secured the mean-based comparison; it only answers a different question, about medians rather than means.
+<!-- `visstat()` applies a single threshold of 50 rather than raising it to the roughly 100 per group that Delacre et al. [@Delacre:2019] report for more than four groups under pronounced skewness (around 2, as in a $\chi^2_2$ distribution). The threshold matters only for groups sized between 50 and 100, the range in which the Shapiro--Wilk test has its highest power [@Razali:2011] yet the mean-based tests are already robust by the Central Limit Theorem. Raising the threshold to 100 would reinstate the normality gate over this range and route samples to rank-based tests on departures from normality that no longer threaten the mean-based comparison. Keeping it at 50 leaves only the one corner case of more than four strongly skewed, heteroscedastic groups outside its coverage, where the skewness and unequal variances remain visible in both the diagnostic and result plots, so the user can override the automatic choice. -->
+
+
+
+<!-- Summing up the above findings, these simulation studies suggest that a minimum group size of 50, given skewness below 2, as threshold to bypass routing based on residual normaliy -->
+<!-- Therefore, based on the Central Limit Theorem and these simulation studies, normality tests of residuals do not steer automated routing in the decision logic of `visstat()`, if all group-specific sample sizes are greater than 50. -->
+
+<!-- The logic -->
+<!-- 1. tests of glm family assume normal residuals -->
+<!-- 2. if the function they come from is highly skewed, the residuals will never be normal "enogh"-> fall back to non-parametric methods  -->
+<!-- 3. role of clt: it assumes that when the group numbers go to infinity, the DISTRIBUTION of the mean , in the glm the estimated bs become normal -->
+<!-- 4. Four simulation studies one must sample out of a skewed function and plot the distribution of the means, not the residuals, they should be normal -->
+<!-- 5. the threshold will always be dependent of the exact distribti0on shape, it can only be rough be described by skew and curtosis. thus every threshold is arbitrary -->
+
+
+
+Drop the n>50 bypass; SW routes at every n. No size threshold to justify — and none is defensible, since the "large enough" cutoff depends on skew and group count.
+Large n: SW over-rejects skewed data → routes to rank; passes near-normal data → mean. The over-rejection is not a flaw — it sends skewed samples to the rank test, the more powerful and more appropriate question there. Forcing means above 50 was never justified.
+Small n: SW is underpowered → usually passes → mean test; only strong skew is caught → rank. For skew<1 this is correct (mean ≈ median, t and rank essentially equal power); missed mild skew costs little (Bridge).
+Cost: the conditional pretest inflates Type I only slightly (~0.05–0.07, within Bradley).
+
+Large n: SW over-rejects  mildly skewed data → routes to rank; passes near-normal data → mean. The over-rejection is  a flaw — it sends nearly normal  samples to the rank test, minimal loss of power, change of null
+
+visstat routes on a residual-normality p-value, a sample-size-dependent proxy for the shape (skewness, tail weight) that actually governs whether the mean is a faithful estimand. A shape-selector would be more principled [@Hall:1997], but sample shape is poorly estimated in the small samples where the choice matters and admits no non-arbitrary threshold. SW is used because it is the transparent diagnostic already displayed, not because it is the optimal selection statistic.
+
+
+
+<!-- Why Shapiro -->
+For smaller group-specific sample sizes, a Shapiro--Wilk test is used to route between mean-based and rank-based methods, as simulation studies suggest that it has the highest power among normality tests in small to moderate ($n = 10$ to 100) sample sizes [@Razali:2011].
+
+Because the Shapiro–Wilk test's power against non-normality is driven primarily by asymmetry at small-to-moderate sample sizes [@Razali:2011], a rejected residual-normality test acts here as a practical proxy for the skewness that determines whether the mean is a faithful summary (Eq. @ref(eq:shapiro-w); supplementary simulation).
+
+Shapiro–Wilk serves as a proxy for skewness, the feature deciding whether the mean is a faithful summary: its power against non-normality is driven primarily by asymmetry at small-to-moderate 
+n
+n [@Razali:2011]. It is a normality verdict, not a skewness magnitude — a proxy, not a skewness test.
+Pre-testing distorts the error rate of any single conditional arm, yet the residual-normality-gated procedure holds the nominal level as a whole [@Rochon:2012], reproduced across input distributions from skew 0 to 6 (supplementary); the worst that can be said of the gate is that it is unnecessary, not that it inflates Type I.
+
+Shapiro–Wilk acts as a skewness proxy in the routing: its power against non-normality is driven primarily by asymmetry [@Razali:2011], so the gate effectively responds to skew. In large samples it rejects even mild skew and routes such data to the rank branch, at negligible cost — rank tests retain ~95% efficiency under normality and gain power under skew [@Harrell-BBR; @Bridge:1999] (supplementary)
+
+
+Shapiro–Wilk acts as a skewness-sensitive gate: it has high power against skewed alternatives at small-to-moderate 
+N
+[@Razali:2011]. For large 
+N it rejects even mild skew and routes such data to the rank branch, at negligible cost — rank tests retain ~95% efficiency under normality and gain power under skew [@Harrell-BBR; @Bridge:1999] (supplementary).
+
+Low skew, any N: SW usually stays parametric; even when it does route to rank, mean≈median so the two p-values agree in direction despite the different H₀. No practical harm. ✓ (your point 2)
+High skew, very small per-group N (~10): SW misses the skew and wrongly stays parametric — the one genuinely wrong outcome. ✓
+It self-corrects fast: by ~20/group the skew is caught and routing is correct.
+At trivially small data (≈5/group) inference is meaningless regardless — so the residual failure sits in a region where no method helps. ✓
+
+
+Shapiro–Wilk acts as a skewness-sensitive gate: it has high power against skewed alternatives at small-to-moderate 
+N
+N [@Razali:2011]. For large 
+N
+N it rejects even mild skew and routes such data to the rank branch; the cost of this is not power — rank tests retain ~95% efficiency under normality [@Harrell-BBR; @Bridge:1999] — but the change of research question from means to stochastic ordering.
+
+
+
+A maximally powerful test is useless if it answers the wrong question; lacking the user's research question, visstat() lets the residual-normality test guess the estimand from shape — transparent and overridable.
+
+Although the Shapiro–Wilk test is an omnibus normality statistic — sensitive to both skewness and excess kurtosis, and by construction unable to indicate which [@Gosselin:2024] — its power is dominated by asymmetry [@Razali:2011]; it therefore acts in practice as a skewness gate, and visstat() uses its rejection of residual normality to route skewed data to rank-based comparison by default.
+
+
+- **What the gate actually is.** The Shapiro--Wilk statistic is an omnibus normality test, sensitive to both skewness ($\sqrt{b_1}$) and kurtosis ($b_2$) though built from neither [@DAgostino:1973]; because its power is dominated by skewness [@Razali:2011], it functions in practice as a skewness detector --- the feature that governs whether a mean is a meaningful summary of each group.
+
+- **Why the $n > 50$ bypass is removed.** Since the Shapiro--Wilk test already routes by shape at every $N$, a sample-size threshold is redundant, and its "large enough" cutoff is itself shape-dependent and therefore arbitrary [@Lumley:2002]; `visstat()` thus lets the residual-normality test steer the route at all $N$ rather than forcing a mean-based test above a fixed size.
+
+- **How it behaves, and the real cost.** At large $N$ the gate routes even mildly skewed data to the rank branch; at small $N$ it is underpowered and keeps moderate skew on the mean route. The cost of this is not power --- rank tests retain about 95% efficiency under normality and gain under skew [@Harrell-BBR; @Bridge:1999] --- but a change in the hypothesis tested, from equality of means to stochastic ordering [@Fagerland:2009], which `visstat()` makes explicit by naming the selected test.
+
+- **Validity of the whole procedure, and honest scope.** Although pre-testing distorts the conditional error of a single arm, the residual-normality-gated procedure holds the nominal level as a whole [@Rochon:2012], reproduced across distributions from skew 0 to 6 (supplementary); the Shapiro--Wilk test is used because it is the transparent diagnostic already displayed and a serviceable estimand heuristic for an automated tool that is not told the research question --- not because it is the optimal selection statistic, a role a shape selector would fill more principledly [@Hall:1997].
+**against the competitors**
+Recommendations to default unconditionally to Welch's mean-based test [@Delacre:2019; @Zimmerman:2004] or to rank-based methods [@Harrell-BBR; @Franc:2025] each fix the estimand in advance --- means or stochastic ordering --- without flagging that the two answer different questions [@Fagerland:2009]. `visstat()` instead selects between mean- and rank-based tests of central tendency from the residual diagnostics and reports which was used, leaving the choice visible rather than silently fixed.
+*why both branches*
+Retaining the mean-based branch is not merely conventional. Under normality the general-linear-model tests are uniformly most powerful unbiased [@Bridge:1999], and they yield effect estimates and confidence intervals on the data's own scale, together with the regression and ANOVA decomposition that the rank route does not provide [@Harrell-BBR]. The rank tests buy robustness and efficiency under skew but give a $p$-value without a natural-scale effect or interval. `visstat()` therefore keeps both and selects between them, rather than discarding the mean framework's interpretability or the rank framework's robustness a priori.
+ <!-- homosc.  -->
+A type I error in a test of homoscedasticity is of no real consequence: it 
+merely routes homoscedastic data to Welch's t-test or Welch's one-way ANOVA, which loose only negligible power to Student' t-test or Fisher Oneway Anova, when variances are in fact equal [@Rasch:2011; @Delacre:2019]. 
+
+In the case of balanced designs and equal variances,  Welch's t-test is even  algebraically equivalent to Student's t-test (Eqs. \@ref(eq:welch-t) and \@ref(eq:student-t))  and  Welch's one-way ANOVA converges asymptotically to the Fisher One Way Anova (Eqs. \@ref(eq:welch-f) and \@ref(eq:fisher-f)).
+Some authors therefore recommend the Welch tests  as the default [@Rasch:2011; @Delacre:2019].
+
+
+
+If the assumptions of parametric tests are violated, `visstat()` automatically falls back to non-parametric tests.
+In the regression branch, violated assumptions are solely flagged, and the package offers Spearman rank correlation as a non-causal alternative to linear regression.
+Further alternative methods such as data transformation, generalised linear models, or robust regression are not implemented: each requires user judgment -- about the transformation family, the link function, or the estimator -- that cannot be automated without substantially expanding the decision tree and increasing the risk of Type I error inflation.
+
+Assumption tests provide no information on the nature of deviations from the expected distribution [@Shatz:2024] and cannot replace visual inspection of the diagnostic plots generated by `visstat()`, which may indicate cases where the automatic test choice should be overridden.
+
+# Limitations {#sec:limitations}
+
 <!-- 1. Nachvollziehbar -->
 The design of `visStatistics` prioritises transparent, reproducible routing for common two-variable analyses [@Strasak:2007; @Sato:2017; @Chicco:2025] over broad model coverage.
 This scope keeps the decision tree inspectable and the graphical output consistent, but it also leaves several modelling choices (e.g. paired tests, interaction terms, multiple linear regression) outside the automated workflow.
@@ -877,66 +1009,10 @@ This scope keeps the decision tree inspectable and the graphical output consiste
 While one of R's greatest strengths is the sheer volume of statistical methods available, incorporating a wider array of methods would require additional preliminary assumption checks, which in turn would exacerbate the risk of overall Type I error inflation.
 Furthermore, expanding the pipeline would result in a highly complex decision tree, rendering the underlying statistical logic increasingly opaque to the user.
 
-<!-- reporting  -->
-For every chosen test, `visStatistics` provides both a *vis*ualisation and a full report covering the test itself, and, where applicable, its assumption checks and  post-hoc comparisons.
-<!-- EFFECT SIZE   -->
-The report also includes the effect size. A sufficiently large sample makes even a negligible difference significant, so the p-value must be read alongside the magnitude of the effect [@Levine:2002; @Cohen:2013, p. 10]. The "right" test is thus per se not the one with the smallest p-value, but one whose assumptions hold, and whose effect is large enough to matter.
-
-<!-- Problem of p-value guided test selection  -->
-For tests of central tendency, p-values from assumption tests of normality and homoscedasticity are used as routing criteria, subject to the large sample-size safeguards for normality testing.
-However, no single assumption test maintains optimal Type I error rates and statistical power across all distributions [@Olejnik:1987] and sample sizes, and p-values obtained from these tests may be unreliable if their assumptions are violated.
-
-Assessing assumptions solely through p-values can lead to both type I errors (false positives) and type II errors (false negatives).
-In large samples, even minor, random deviations from the null hypothesis can result in statistically significant p-values, leading to type I errors.
-Conversely, in small samples, substantial violations of the assumption may not reach statistical significance, resulting in type II errors [@Kozak:2018].
-Thus, the robustness of statistical tests depends on both the sample size and the shape of the underlying distribution.
-
-<!-- normality, CLT  -->
-By the Central Limit Theorem, the sampling distribution of the group means approaches normality as the group sizes $n_i \to \infty$, regardless of the shape of the underlying distribution. For finite $n_i$ this holds only approximately, but it implies that in large enough samples a rejected residual-normality test no longer threatens the validity of the mean-based test.
-This raises the practical question of what should count as a "large" sample in normality testing.
-The answer depends on the shape of the underlying distribution, especially skewness and tail weight [@Lumley:2002].
-When this bypass fires, the routing has not yet tested homoscedasticity, so its justification must hold for both mean-based families it might reach: the homoscedastic comparison---Student's t-test, generalised to Fisher's one-way ANOVA---and the heteroscedastic comparison---Welch's t-test, generalised to Welch's one-way ANOVA. 
-
-
-Published Monte Carlo studies examine both against a common criterion: under the null hypothesis of equal population means, and at a significance level of $\alpha = 5\%$, the empirical Type I error rate must stay within Bradley's liberal robustness bounds of $[2.5\%, 7.5\%]$ [@Bradley:1978].
-
-Their shared finding is that, for up to four groups, group sizes around 50 keep both families within these bounds as long as the distributions are no more than moderately skewed (skewness up to 2): 
-<!-- homoscedastic comparison -->
-For the homoscedastic comparison,
-Blanca et al. [@Blanca:2017] showed in a study of three groups that the Type I error of Fisher's  one-way ANOVA stayed within Bradley's bounds in every condition examined---skewness up to 2 and kurtosis up to 6, at group sizes from 5 to 100 [@Blanca:2017]; its two-group special case is Student's t-test (Eq.\ \@ref(eq:fisher-f)), for which the margin is wider still---across skewness up to 4 and moderate differences in spread, the two-sample t-test's rejection rate stayed between 4\% and 5\% for sample sizes from 10 upward [@Fagerland:2012].
-
-<!-- heterocedastic comparison -->
-For the heteroscedastic comparison, Welch's one-way ANOVA---with Welch's t-test as its two-group special case---holds the rate at about 50 observations for up to four group comparisons.
-Beyond four groups, the cutoff of 50 holds unless skewness exceeds about 2---a pronounced asymmetry---where Welch's ANOVA needs roughly 100 per group [@Delacre:2019].
-<!-- The comparison of more than four skewed, heteroscedastic groups is therefore the one case the cutoff does not cover: `visstat()` applies the same threshold of 50 regardless of the number of groups and does not raise it to 100 for $k > 4$. -->
-
-
-
-
-
-Therefore, based on the Central Limit Theorem, normality tests of residuals do not steer automated routing in the decision logic of `visstat()`, if all group-specific sample sizes are greater than 50.
-<!-- Why Shapiro -->
-For smaller group-specific sample sizes, a Shapiro--Wilk test is used to route between mean-based and rank-based methods, as simulation studies suggest that it has the highest power among normality tests in small to moderate ($n = 10$ to 100) sample sizes [@Razali:2011].
-
- <!-- homosc.  -->
-A type I error in a test of homoscedasticity is of no real consequence: it 
-merely routes homoscedastic data to Welch's t-test or Welch's one-way ANOVA, which lose only negligible power to Student' t-test or Fisher Oneway Anova, when variances are in fact equal. In the case of balanced designs and equal variances,  Welch's t-test is  algebraicallly equivalent to Student's t-test (eq.)  and  Welch's one-way ANOVA converges asymptotically to the Fisher One Way Anova. (eq. )
- <!-- Why levene  -->
-
-Some authors therefore recommend them as the default [@Rasch:2011; @Delacre:2019].
-
-If the assumptions of parametric tests are violated, `visstat()` automatically falls back to non-parametric tests.
-In the regression branch, violated assumptions are solely flagged, and the package offers Spearman rank correlation as a non-causal alternative to linear regression.
-Further alternative methods such as data transformation, generalised linear models, or robust regression are not implemented: each requires user judgment -- about the transformation family, the link function, or the estimator -- that cannot be automated without substantially expanding the decision tree and increasing the risk of Type I error inflation.
-
-Assumption tests provide no information on the nature of deviations from the expected distribution [@Shatz:2024] and cannot replace visual inspection of the diagnostic plots generated by `visstat()`, which may indicate cases where the automatic test choice should be overridden.
-
 Bootstrapping represents an alternative to assumption-guided routing.
 As implemented for example in the R package `boot` [@boot:2025; @Davison:1997], it can provide confidence intervals for a wide range of statistics.
 However, bootstrapping often requires thousands of resamples and may perform poorly with very small sample sizes.
 This runs counter to the purpose of the `visStatistics` package, which is designed to offer a rapid overview of the data, laying the groundwork for deeper analysis in subsequent steps.
-
-<!-- Effect size  -->
 
 
 
