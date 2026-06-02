@@ -347,7 +347,9 @@ visstat_core <- function(dataframe,
       #   normality_met <- TRUE
       # } else if (length(raw_residuals) > 5000) {
       if (length(raw_residuals) > 5000) {
-        normality_met <- TRUE   # Shapiro--Wilk undefined for n > 5000
+        # Shapiro--Wilk is undefined for n > 5000; route on Anderson--Darling,
+        # which has no upper sample-size limit, so shape still decides.
+        normality_met <- nortest::ad.test(scaled_residuals)$p.value >= alpha
       } else {
         normality_met <- shapiro.test(scaled_residuals)$p.value >= alpha
       }

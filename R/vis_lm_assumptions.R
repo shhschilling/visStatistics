@@ -74,8 +74,8 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
   } else {
     if (length(raw_residuals) > 5000) {
       warning(
-        "Shapiro-Wilk test cannot be computed for more than 5000 ",
-        "model residuals; p-value set to NA.",
+        "For samples > 5000 the Shapiro-Wilk test is undefined (p-value set ",
+        "to NA); Anderson-Darling is the routing normality test.",
         call. = FALSE
       )
     }
