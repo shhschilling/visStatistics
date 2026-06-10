@@ -4,23 +4,29 @@
 \alias{effect_size}
 \title{Compute an effect-size estimate for a visstat result}
 \usage{
-effect_size(result, x = NULL, y = NULL)
+effect_size(result, x = NULL, y = NULL, ...)
 }
 \arguments{
 \item{result}{A list returned by \code{visstat()} or a compatible test
-result object.}
+result object; or, in raw-data mode, the first input vector \code{x}.}
 
 \item{x}{First input vector, matching the first argument of
 \code{visstat(x, y)}. Required when the effect size cannot be extracted
-from \code{result} alone.}
+from \code{result} alone. In raw-data mode this is the second input
+vector \code{y}.}
 
 \item{y}{Second input vector, matching the second argument of
 \code{visstat(x, y)}. Required when the effect size cannot be extracted
 from \code{result} alone.}
+
+\item{...}{Passed to \code{visstat()} in raw-data mode (e.g.
+\code{correlation}, \code{conf.level}).}
 }
 \value{
 A list with components \code{name}, \code{estimate},
-  \code{effect_size_method}, and optionally \code{conf.int}.
+  \code{effect_size_method}, and optionally \code{conf.int}. In raw-data
+  mode (\code{effect_size(x, y)}) the list additionally contains
+  \code{selected_test}, the name of the test \code{visstat()} selected.
 }
 \description{
 \code{effect_size()} returns the effect-size estimate associated with a
@@ -99,6 +105,10 @@ effect_size(kw, x = iris$Species, y = iris$Petal.Width)
 tab <- matrix(c(10, 5, 4, 12), nrow = 2)
 effect_size(chisq.test(tab))
 
+## Raw-data mode: select the test with visstat() and return the effect
+## size together with the name of the selected test.
+effect_size(ToothGrowth$supp, ToothGrowth$len)
+
 \dontrun{
 ## Large-sample example with a statistically significant Student's
 ## t-test p-value but a small effect size, measured by Hedges' g
@@ -128,9 +138,9 @@ Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why Hedges'
 g*s based on the non-pooled standard deviation should be reported with
 Welch's t-test. \emph{PsyArXiv}. doi:10.31234/osf.io/tu6mp.
 
-Glass, G. V. (1965). A ranking variable analogue of biserial correlation:
-Implications for short-cut item analysis. \emph{Journal of Educational
-Measurement}, 2(1), 91--95. doi:10.1111/j.1745-3984.1965.tb00396.x.
+Kerby, D. S. (2014). The simple difference formula: An approach to teaching
+nonparametric correlation. \emph{Comprehensive Psychology}, 3, 11.IT.3.1.
+doi:10.2466/11.IT.3.1.
 
 Albers, C., & Lakens, D. (2018). When power analyses based on pilot data are
 biased: Inaccurate effect size estimators and follow-up bias.

@@ -219,5 +219,6 @@ for (i in graphicaltypes) {
   print(file.path(filedir, plotname))
   # file.remove(file.path(filedir, plotname)) # removes all files of type ".png", ".pdf", ".svg", ".ps" in filedir=tempdir()-
 }
-dev.off()
 
+dev.off()
+graphics.off()

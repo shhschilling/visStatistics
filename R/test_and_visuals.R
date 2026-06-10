@@ -88,6 +88,9 @@ two_sample_t_test <- function(samples,
                               factorname = "") {
   oldpar <- par(no.readonly = TRUE)
   on.exit(par(oldpar))
+
+  # Small label tier: 0.8 of the global par("cex") (relative, so it follows it).
+  label_small <- 0.8
   alternative <- match.arg(alternative)
   
   
@@ -178,10 +181,10 @@ two_sample_t_test <- function(samples,
 
   # Group means -- parametric test compares means, so mark them explicitly
   points(c(1, 2), c(mean(x1), mean(x2)),
-         pch = 18, col = "red", cex = 1.3)
+         pch = 4, col = "red", cex = label_small, lwd = 1.5)
 
   # Sample sizes above box plot
-  text(1:length(b$n), c(ma, ma), paste("n =", b$n))
+  text(1:length(b$n), c(ma, ma) - 0.03 * (ma - mi), paste("n =", b$n), cex = label_small)
 
   t <- t.test(
     x1,
@@ -204,16 +207,9 @@ two_sample_t_test <- function(samples,
                stat_name, " = ", test_statistic,
                ", p = ", p_value))
 
-  # Legend: just the mean marker (no significance letters in the 2-group case)
-  legend("bottomleft",
-         legend = "group mean",
-         pch = 18,
-         col = "red",
-         text.col = "red",
-         bty = "n",
-         cex = 0.9,
-         inset = 0.02)
-  
+  # No mean-marker legend: the red x marks the mean, left unlabelled like the
+  # box's median line (neither central-tendency symbol is explained on-plot).
+
   my_list <-
     list(
       "dependent variable (response)" = samplename,
@@ -235,10 +231,12 @@ two_sample_wilcoxon_test <- function(samples,
                                      conf.level = conf.level,
                                      notchf = FALSE,
                                      samplename = "",
-                                     factorname = "",
-                                     cex = 1) {
+                                     factorname = "") {
   oldparwilcox <- par(no.readonly = TRUE) # make a copy of current values
   on.exit(par(oldparwilcox))
+
+  # Small label tier: 0.8 of the global par("cex") (relative, so it follows it).
+  label_small <- 0.8
   
   alternative <- match.arg(alternative)
   # Error handling ----
@@ -316,8 +314,13 @@ two_sample_wilcoxon_test <- function(samples,
     )
   }
 
+  # Group means (red x): shown so the mean-vs-median gap is visible even on the
+  # rank route, where the automated estimand may not match the user's question.
+  points(seq_along(levels(fact)), tapply(samples, fact, mean),
+         pch = 4, col = "red", cex = label_small, lwd = 1.5)
+
   # Sample sizes above box plot
-  text(1:length(b$n), c(ma, ma), paste("n =", b$n))
+  text(1:length(b$n), c(ma, ma) - 0.03 * (ma - mi), paste("n =", b$n), cex = label_small)
 
   t <- wilcox.test(samples ~ fact, alternative = alternative, na.action = na.omit)
 
@@ -601,10 +604,12 @@ vis_Kruskal_Wallis <- function(samples,
                                conf.level = conf.level,
                                samplename = "",
                                factorname = "",
-                               cex = 1,
                                notch = F) {
   oldparkruskal <- par(no.readonly = TRUE)
   on.exit(par(oldparkruskal))
+
+  # Small label tier: 0.8 of the global par("cex") (relative, so it follows it).
+  label_small <- 0.8
   
   if (missing(conf.level)) {
     conf.level <- 0.95
@@ -643,8 +648,7 @@ vis_Kruskal_Wallis <- function(samples,
     las = 1,
     xlab = factorname,
     ylab = samplename,
-    cex.lab = cex,
-    cex.axis = 0.8 * cex,
+    cex.axis = 0.8,
     boxwex = 0.5,
     outline = !show_jitter  # outliers via boxplot only when jitter is suppressed
   )
@@ -661,12 +665,17 @@ vis_Kruskal_Wallis <- function(samples,
     )
   }
 
+  # Group means (red x): shown so the mean-vs-median gap is visible even on the
+  # rank route, where the automated estimand may not match the user's question.
+  points(seq_len(n_classes), tapply(samples, fact, mean),
+         pch = 4, col = "red", cex = label_small, lwd = 1.5)
+
   if (n_classes > 6) {
     n_labels <- c(paste("n =", b$n[1]), as.character(b$n[-1]))
   } else {
     n_labels <- paste("n =", b$n)
   }
-  text(seq_len(n_classes), ma, n_labels)
+  text(seq_len(n_classes), ma - 0.03 * (ma - mi), n_labels, cex = label_small)
 
   post_hoc_kruskal <- sig_diffs_nongauss(samples, fact, conf.level = conf.level)
   s <- multcompLetters(post_hoc_kruskal[[1]][, 4], threshold = alpha)
@@ -682,7 +691,7 @@ vis_Kruskal_Wallis <- function(samples,
        mi,
        s$Letters[ord],
        col = colors()[81],
-       cex = cex,
+       cex = label_small,
        lwd = 2)
 
   # Title: line 1 = test name only, line 2 = H + p
@@ -695,12 +704,11 @@ vis_Kruskal_Wallis <- function(samples,
   # All post-hoc / alpha info lives here, so the title can stay compact.
   legend("bottomleft",
          legend = c("a, b, ...: significance letters",
-                    paste0("(pairwise Wilcoxon, Holm adj., alpha = ",
-                           signif(alpha, 2), ")")),
+                    paste0("(Wilcoxon, Holm; alpha = ", signif(alpha, 2), ")")),
          text.col = colors()[81],
          bty = "n",
-         cex = 0.9,
-         inset = 0.08)
+         cex = label_small,
+         inset = 0.04)
 
   my_list <-
     list("Kruskal Wallis rank sum test" = kk,

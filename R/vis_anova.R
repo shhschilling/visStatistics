@@ -9,7 +9,8 @@
 #' @param conf.level Numeric; confidence level for tests and intervals (default: 0.95).
 #' @param samplename Character; label for y-axis (default: "").
 #' @param factorname Character; label for x-axis (default: "").
-#' @param cex Numeric; character expansion factor for plot elements (default: 1).
+#' @param variance_route Character; \code{"levene"} selects Fisher/Welch by
+#'   Levene's test, \code{"welch"} always uses Welch's ANOVA.
 #'
 #' @return A list with components:
 #' \describe{
@@ -28,7 +29,7 @@
 #' one-way ANOVA with Games-Howell post-hoc is performed.
 #'
 #' The function produces a box plot with jittered points and group means
-#' (red diamonds for the parametric branches), annotated with a compact
+#' (red crosses for the parametric branches), annotated with a compact
 #' letter display showing which groups differ significantly.
 #' @examples
 #' # Example with equal variances (uses Fisher's ANOVA + TukeyHSD)
@@ -54,13 +55,17 @@ vis_anova <- function(samples,
                       conf.level = conf.level,
                       samplename = "",
                       factorname = "",
-                      cex = 1) {
+                      variance_route = c("levene", "welch")) {
   if (missing(conf.level)) {
     conf.level <- 0.95
   }
+  variance_route <- match.arg(variance_route)
   
   oldparanova <- par(no.readonly = TRUE)
   on.exit(par(oldparanova))
+
+  # Small label tier: 0.8 of the global par("cex") (relative, so it follows it).
+  label_small <- 0.8
   
   alpha <- 1 - conf.level
   
@@ -92,7 +97,9 @@ vis_anova <- function(samples,
   
   
   
-  if (p_levene > 1 - conf.level)
+  use_fisher <- variance_route == "levene" && p_levene > alpha
+
+  if (use_fisher)
   {
     p_aov <- summaryAnova[[1]][["Pr(>F)"]][1]
     F_value <- sprintf("%.2f", summaryAnova[[1]]$`F value`[1])
@@ -164,14 +171,14 @@ vis_anova <- function(samples,
 
   # Group means -- parametric branch tests means, so mark them explicitly
   points(seq_len(n_classes), m,
-         pch = 18, col = "red", cex = 1.3)
+         pch = 4, col = "red", cex = label_small, lwd = 1.5)
 
   if (n_classes > 6) {
     n_labels <- c(paste("n =", b$n[1]), as.character(b$n[-1]))
   } else {
     n_labels <- paste("n =", b$n)
   }
-  text(seq_len(n_classes), ma, n_labels)
+  text(seq_len(n_classes), ma - 0.03 * (ma - mi), n_labels, cex = label_small)
   
   
   
@@ -189,6 +196,7 @@ vis_anova <- function(samples,
        mi,
        s$Letters[ord],
        col = colors()[81],
+       cex = label_small,
        lwd = 2)
   
   
@@ -200,17 +208,16 @@ vis_anova <- function(samples,
   # Legend: mean marker (top) + significance letters with post-hoc method
   # and alpha (split on two lines for compactness in narrow windows).
   # All post-hoc / alpha info lives here, so the title can stay compact.
-  posthoc_name <- ifelse(p_levene > alpha, "Tukey's HSD", "Games-Howell")
+  # Legend: significance letters only (the red x marks the mean, left
+  # unlabelled like the box's median line).
+  posthoc_name <- ifelse(use_fisher, "Tukey's HSD", "Games-Howell")
   legend("bottomleft",
-         legend = c("group mean",
-                    "a, b, ...: significance letters",
+         legend = c("a, b, ...: significance letters",
                     paste0("(", posthoc_name, ", alpha = ", signif(alpha, 2), ")")),
-         pch = c(18, NA, NA),
-         col = c("red", NA, NA),
-         text.col = c("red", colors()[81], colors()[81]),
+         text.col = colors()[81],
          bty = "n",
-         cex = 0.9,
-         inset = 0.08)
+         cex = label_small,
+         inset = 0.04)
   
   
   

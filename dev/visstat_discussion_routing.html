@@ -384,12 +384,24 @@ placeholder key.</p>
 </blockquote>
 <div id="discussion" class="section level2">
 <h2>Discussion</h2>
-<p><code>visstat()</code> does not claim to find the optimal test. For a
-numeric response across groups it selects between a mean-based and a
-rank-based test of central tendency on the residual-normality
-diagnostic, reports which, and so makes the estimand — means or
-stochastic ordering — explicit rather than silent. Each standard
-objection has a bounded answer.</p>
+<p>For grouped numeric data, <code>visstat()</code> routes test
+selection from a single Shapiro–Wilk test on the model residuals. The
+consequence is intended: normality tests gain power with sample size
+and, in large samples, reject departures too small to affect a
+mean-based comparison <span class="citation">(Lumley et al. 2002; Kozak
+and Piepho 2018)</span>. Skewed data are therefore routed to the
+rank-based branch with probability approaching one as the number of
+residuals grows, the switch from mean- to rank-based occurring at
+moderate per-group sizes (of order 50 to 100), reproducing and extending
+earlier simulations of the pretest-and-route procedure <span class="citation">(Rochon et al. 2012; Rasch et al. 2011)</span> (<a href="sw_route_rank_by_skew.R"><code>sw_route_rank_by_skew.R</code></a>).
+This aligns the test with the readout: <code>visstat()</code> reports
+these comparisons as box plots, whose median and interquartile box
+describe the bulk of the data, while under skew the mean is drawn toward
+the long tail and away from that bulk <span class="citation">(<strong>Mishra:2019?</strong>)</span>. Routing skewed
+data to a rank-based test — which compares stochastic ordering rather
+than means <span class="citation">(Fagerland and Sandvik 2009)</span> —
+therefore matches the comparison to the summary the figure
+foregrounds.</p>
 <p>That preliminary normality testing invalidates inference <span class="citation">(Franc 2025)</span> holds for the conditional error of
 one arm, not for the procedure as a whole, which retains its nominal
 level under a common null across skewness 0 to 6 (<a href="sw_gate_typeI_by_distribution.R"><code>sw_gate_typeI_by_distribution.R</code></a>;
@@ -412,8 +424,8 @@ stochastic ordering, which <code>visstat()</code> reports. At small
 <span class="math inline">\(N\)</span> the test often fails to detect
 skewness and keeps the mean-based route; this affects only group sizes
 too small for reliable inference.</p>
-<p>That one should default to Welch <span class="citation">(Delacre et
-al. 2019; <strong>Zimmerman:2004?</strong>)</span> or to ranks <span class="citation">(<strong>Harrell-BBR?</strong>)</span> fixes the
+<p>That one should abandon pre-testing and default to Welch <span class="citation">(Rasch et al. 2011; Delacre et al. 2019;
+<strong>Zimmerman:2004?</strong>)</span> or to ranks <span class="citation">(<strong>Harrell-BBR?</strong>)</span> fixes the
 estimand a priori. The two families answer different questions: the
 Wilcoxon–Mann–Whitney null <span class="math inline">\(P(X&lt;Y)=0.5\)</span> coincides with equality of
 centres only under a common shape, and under unequal variances can
@@ -473,6 +485,24 @@ Medicine</span>.”</span> <em>Prehospital and Disaster Medicine</em> 40
 Hall, Peter, and A. R. Padmanabhan. 1997. <span>“Adaptive
 <span>Inference</span> for the <span>Two-Sample Scale
 Problem</span>.”</span> <em>Technometrics</em>, ahead of print. <a href="https://doi.org/10.1080/00401706.1997.10485160">https://doi.org/10.1080/00401706.1997.10485160</a>.
+</div>
+<div id="ref-Kozak:2018" class="csl-entry">
+Kozak, M., and H.-P. Piepho. 2018. <span>“What’s Normal Anyway?
+<span>Residual</span> Plots Are More Telling Than Significance Tests
+When Checking <span><span class="smallcaps">ANOVA</span></span>
+Assumptions.”</span> <em>Journal of Agronomy and Crop Science</em> 204
+(1): 86–98. <a href="https://doi.org/10.1111/jac.12220">https://doi.org/10.1111/jac.12220</a>.
+</div>
+<div id="ref-Lumley:2002" class="csl-entry">
+Lumley, Thomas, Paula Diehr, Scott Emerson, and Lu Chen. 2002.
+<span>“The <span>Importance</span> of the <span>Normality
+Assumption</span> in <span>Large Public Health Data Sets</span>.”</span>
+<em>Annual Review of Public Health</em> 23 (1): 151–69. <a href="https://doi.org/10.1146/annurev.publhealth.23.100901.140546">https://doi.org/10.1146/annurev.publhealth.23.100901.140546</a>.
+</div>
+<div id="ref-Rasch:2011" class="csl-entry">
+Rasch, Dieter, Klaus D. Kubinger, and Karl Moder. 2011. <span>“The
+Two-Sample t Test: Pre-Testing Its Assumptions Does Not Pay Off.”</span>
+<em>Statistical Papers</em> 52 (1): 219–31. <a href="https://doi.org/10.1007/s00362-009-0224-x">https://doi.org/10.1007/s00362-009-0224-x</a>.
 </div>
 <div id="ref-Razali:2011" class="csl-entry">
 Razali, Nornadiah Mohd, and Yap Bee Wah. 2011. <span>“Power Comparisons

@@ -57,7 +57,7 @@ test_that("vis_lm_assumptions reports NA Shapiro above R limit", {
 
   expect_warning(
     result <- vis_lm_assumptions(samples, groups),
-    "more than 5000 model residuals"
+    "Shapiro-Wilk test is undefined"
   )
 
   expect_true(is.na(result$shapiro_test$p.value))

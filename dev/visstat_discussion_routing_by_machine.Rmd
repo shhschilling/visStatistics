@@ -1,0 +1,66 @@
+---
+title: "Discussion: routing between tests of central tendency"
+subtitle: "Draft (n>50 bypass removed; SW routes at all N)"
+output: html_document
+bibliography: ../vignettes/REFERENCES.bib
+---
+
+> Supplementary scripts linked inline. `@Harrell-BBR` is a placeholder key.
+
+## Discussion
+
+For grouped numeric data, `visstat()` routes test selection from a single
+Shapiro--Wilk test on the model residuals. The consequence is intended: normality
+tests gain power with sample size and, in large samples, reject departures too
+small to affect a mean-based comparison [@Lumley:2002; @Kozak:2018]. Skewed data
+are therefore routed to the rank-based branch with probability approaching one as
+the number of residuals grows, the switch from mean- to rank-based occurring at
+moderate per-group sizes (of order 50 to 100), reproducing and extending earlier
+simulations of the pretest-and-route procedure [@Rochon:2012; @Rasch:2011]
+([`sw_route_rank_by_skew.R`](sw_route_rank_by_skew.R)). This aligns the test with
+the readout: `visstat()` reports these comparisons as box plots, whose median and
+interquartile box describe the bulk of the data, while under skew the mean is
+drawn toward the long tail and away from that bulk [@Mishra:2019]. Routing skewed
+data to a rank-based test --- which compares stochastic ordering rather than
+means [@Fagerland:2009] --- therefore matches the comparison to the summary the
+figure foregrounds.
+
+That preliminary normality testing invalidates inference [@Franc:2025] holds for
+the conditional error of one arm, not for the procedure as a whole, which retains
+its nominal level under a common null across skewness 0 to 6
+([`sw_gate_typeI_by_distribution.R`](sw_gate_typeI_by_distribution.R);
+[@Rochon:2012]). That its size threshold is arbitrary no longer applies: routing
+follows residual shape, not sample size.
+
+That Shapiro--Wilk is a normality test rather than a skewness test is correct,
+but it is an omnibus statistic whose power is dominated by skewness
+[@DAgostino:1973; @Razali:2011] --- a serviceable proxy, and the diagnostic
+already on screen. Its rank-routing probability rises with skewness and with the
+number of residuals $N$, so that any nonzero skewness is eventually rejected and
+larger samples route progressively milder asymmetry to ranks
+([`sw_route_rank_by_skew.R`](sw_route_rank_by_skew.R)). The power cost is
+negligible --- rank tests retain about 95% efficiency under normality and exceed
+the mean-based tests under skew [@Bridge:1999; @Harrell-BBR];
+[`sw_gate_power_simulation.R`](sw_gate_power_simulation.R) --- but the hypothesis
+tested changes, from equality of means to stochastic ordering, which `visstat()`
+reports. At small $N$ the test often fails to detect skewness and keeps the
+mean-based route; this affects only group sizes too small for reliable inference.
+
+That one should abandon pre-testing and default to Welch [@Rasch:2011;
+@Delacre:2019; @Zimmerman:2004] or to ranks [@Harrell-BBR] fixes the estimand a
+priori. The two families answer different
+questions: the Wilcoxon--Mann--Whitney null $P(X<Y)=0.5$ coincides with equality
+of centres only under a common shape, and under unequal variances can reject when
+the centres are equal [@Fagerland:2009]. `visstat()` instead selects between them
+and reports the choice.
+
+The mean-based branch is kept because, under normality, its tests are uniformly
+most powerful unbiased and alone return an effect and confidence interval on the
+data's scale, with the regression and analysis-of-variance structure of the
+general linear model [@Bridge:1999; @Harrell-BBR]; the rank branch supplies
+robustness under skew. The one intrinsic limitation is that an automated tool
+cannot know the research question, and the normality test is a proxy for shape,
+not an optimal selection statistic --- for which a shape selector would be more
+principled [@Hall:1997] but unreliable at small $N$. `visstat()` therefore
+presents the choice as a transparent, overridable default, with its diagnostics
+shown.

@@ -5,10 +5,10 @@
 ```
 
 <!-- For the standalone paper split: swap the block above for the two lines
-     below to number appendix equations S1...SN (PDF only; HTML unaffected).
+     below to number appendix equations S.1...S.N (PDF only; HTML unaffected).
 ```{=latex}
 \setcounter{equation}{0}
-\renewcommand{\theequation}{S\arabic{equation}}
+\renewcommand{\theequation}{S.\arabic{equation}}
 ```
 -->
 
@@ -288,11 +288,17 @@ The resulting two-sided $p$-values are adjusted with Holm's method
 Welch's methods outperform their classical counterparts when variances
 differ [@Moser:1992; @Fagerland:2009; @Delacre:2017].
 
-#### Welch's method in the case of equal variances
+#### Welch's method in the case of equal variances 
 
 When variances are equal, Welch's methods lose only negligible power
 relative to their classical counterparts [@Moser:1992;
-@Delacre:2017]; in the two-group case the reduction is exact for equal group sizes:  
+@Delacre:2017].
+
+#### Welch's method in the case of equal variances and  balanced designs {.unnumbered}
+
+##### Two- group comparison 
+If variances are equal and the groups are balanced (the same number in each group), 
+the Welch method's reduce in the case of two -group comparison algebraically to Student's t-test (equivalent to Fisher - Anova for two groups): 
  
 When $s_1^2 = s_2^2 = s^2$ and
 $n_1 = n_2 = n$, the pooled variance entering Eq.\ \@ref(eq:student-t)
@@ -315,13 +321,69 @@ degrees of freedom in Eq.\ \@ref(eq:welch-satterthwaite-df) reduce to
 Welch's t-test then coincides with Student's t-test on $2n-2$ degrees
 of freedom.
 
+
+
+#### More then two groups comparisons
+
 This exact equivalence does not
 extend beyond two groups: even under equal variances
-($s_1^2 = \cdots = s_k^2$) and equal group sizes
-($n_1 = \cdots = n_k$), the Welch statistic $F_W$ in Eq.\
+ and equal group sizes, the Welch statistic $F_W$ in Eq.\
 \@ref(eq:welch-f) is not algebraically identical to the classical $F$
-in Eq.\ \@ref(eq:fisher-f); it nevertheless converges to it, and the
-numerical difference becomes negligible.
+in Eq.\ \@ref(eq:fisher-f) for $k>2$ ; it nevertheless converges to it as $n$ increases: 
+Under
+equal variances and equal group sizes,
+$s_1^2 = \cdots = s_k^2 = s^2$ and
+$n_1 = \cdots = n_k = n$. Hence
+$w_i = n/s^2$, $w = kn/s^2$, $w_i/w = 1/k$, and
+$\bar{x}_w = \bar{x}$. The numerator of Eq.\ \@ref(eq:welch-f) then
+reduces to
+\begin{equation}
+\frac{\sum_{i=1}^{k} w_i(\bar{x}_i-\bar{x}_w)^2}{k-1}
+=
+\frac{1}{s^2}
+\frac{\sum_{i=1}^{k} n(\bar{x}_i-\bar{x})^2}{k-1}
+=
+\frac{MS_\text{between}}{s^2}.
+(\#eq:welch-anova-equal-var-numerator)
+\end{equation}
+
+Because $MS_\text{within}=s^2$ under the same assumptions, this is the
+numerator of the classical statistic
+$F=MS_\text{between}/MS_\text{within}$. The remaining denominator
+correction in Eq.\ \@ref(eq:welch-f) becomes
+
+\begin{equation}
+1+
+\frac{2(k-2)(k-1)}{k(k+1)(n-1)}.
+(\#eq:welch-anova-equal-var-correction)
+\end{equation}
+
+Thus
+
+\begin{equation}
+F_W =
+\frac{F}
+{1+\dfrac{2(k-2)(k-1)}{k(k+1)(n-1)}}.
+(\#eq:welch-anova-equal-var-reduction)
+\end{equation}
+
+For $k=2$, the correction term is zero, so Welch's ANOVA form gives the
+same statistic as Fisher's ANOVA Eq.\ \@ref(eq:fisher-f). 
+
+For the four-group case used in the
+examples, $k=4$ and therefore
+
+\begin{equation}
+F_W =
+\frac{F}{1+\dfrac{3}{5(n-1)}}.
+(\#eq:welch-anova-four-groups)
+\end{equation}
+
+Equivalently, $F/F_W = 1 + 3/[5(n-1)]$. The relative excess
+$F/F_W - 1$ is therefore $O(n^{-1})$ and, in this four-group example,
+already below $1\%$ for $n > 61$.
+
+
 
 
 # Non-parametric tests
@@ -764,3 +826,7 @@ squares.
 
 All other variables used in Table \@ref(tab:effect-size-formulae) are
 defined in the corresponding "Analysis" section.
+
+
+
+

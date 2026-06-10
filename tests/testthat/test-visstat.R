@@ -84,6 +84,50 @@ test_that("visstat standardised syntax works with factor and numeric", {
   expect_true(length(result) > 0)
 })
 
+test_that("Route 1 override selects Welch or rank family", {
+  setup_test_graphics()
+  on.exit(cleanup_test_graphics())
+
+  normal12 <- qnorm((seq_len(12) - 0.5) / 12)
+  group2 <- factor(rep(c("A", "B"), each = 12))
+  response2 <- c(normal12, normal12 + 0.5)
+
+  welch2 <- visstat(group2, response2, route = "welch")
+  rank2 <- visstat(group2, response2, route = "rank")
+
+  expect_match(welch2[["t-test-statistics"]]$method, "Welch")
+  expect_s3_class(rank2[["statsWilcoxon"]], "htest")
+
+  normal8 <- qnorm((seq_len(8) - 0.5) / 8)
+  group4 <- factor(rep(LETTERS[1:4], each = 8))
+  response4 <- rep(normal8, 4) + rep(c(0, 0.1, 0.2, 0.3), each = 8)
+
+  welch4 <- visstat(group4, response4, route = "welch")
+  rank4 <- visstat(group4, response4, route = "rank")
+
+  expect_match(
+    welch4[["summary statistics of ANOVA"]]$method,
+    "not assuming equal variances"
+  )
+  expect_s3_class(rank4[["Kruskal Wallis rank sum test"]], "htest")
+})
+
+test_that("Welch route warns when residual normality is violated", {
+  setup_test_graphics()
+  on.exit(cleanup_test_graphics())
+
+  set.seed(20260607)
+  group <- factor(rep(c("A", "B"), each = 40))
+  response <- c(rexp(40, rate = 1), rexp(40, rate = 0.7))
+
+  expect_warning(
+    result <- visstat(group, response, route = "welch"),
+    "Shapiro-Wilk test p = .*below alpha = 0.05"
+  )
+
+  expect_match(result[["t-test-statistics"]]$method, "Welch")
+})
+
 test_that("visstat standardised syntax works with numeric regression", {
   data <- create_visstat_test_data()
   
@@ -535,7 +579,7 @@ test_that("large residual panel reports NA Shapiro above R limit", {
 
   expect_warning(
     result <- visstat(group, response),
-    "more than 5000 model residuals"
+    "Shapiro-Wilk test is undefined"
   )
 
   expect_s3_class(result, "visstat")
@@ -560,7 +604,7 @@ test_that("legacy t-test Shapiro fields stay valid above group limit", {
 
   expect_warning(
     result <- visstat(group, response),
-    "more than 5000 model residuals"
+    "Shapiro-Wilk test is undefined"
   )
 
   expect_s3_class(result, "visstat")

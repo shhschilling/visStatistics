@@ -1,0 +1,257 @@
+---
+title: "Simulations"
+output: html_document
+date: "2026-06-04"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+figure_path <- function(filename) {
+  file.path(
+    "/Users/sschilli/Library/CloudStorage/OneDrive-HochschuleLuzern/Forschung/visStatistics/vignettes/figures",
+    filename
+  )
+}
+```
+
+```{css, echo=FALSE}
+.framed-table {
+  border: 1px solid #8a8a8a;
+  border-collapse: collapse;
+  width: 100%;
+}
+.framed-table caption {
+  caption-side: top;
+  font-weight: 600;
+  text-align: left;
+  padding-bottom: 0.35rem;
+}
+.framed-table th,
+.framed-table td {
+  border-bottom: 1px solid #dddddd;
+  padding: 0.35rem 0.55rem;
+}
+.framed-table th {
+  background: #f4f4f4;
+}
+```
+
+# Simulations
+
+## Type I error
+
+At $\alpha = 5\%$, Bradley's liberal robustness criterion treats empirical
+rejection rates between $2.5\%$ and $7.5\%$ as acceptable [@Bradley:1978].
+Abbreviations are: F = Fisher's one-way ANOVA; W = Welch's heteroscedastic
+ANOVA; L = Levene gate selecting F or W; KW = Kruskal--Wallis; SW =
+Shapiro--Wilk gate selecting W or KW; SW+L = Shapiro--Wilk gate selecting KW
+or, if the parametric branch is retained, Levene gate selecting F or W. 
+In the Type I simulations, \(n\) denotes the common per-group sample size in
+balanced rows; in unbalanced rows, \(\bar n\) denotes the mean per-group sample
+size. The unbalanced group sizes are
+\[
+(n_1,n_2,n_3,n_4)\approx\bar n(0.5,0.8,1.2,1.5),
+\]
+rounded to the nearest integers; therefore the realised mean group size is not
+guaranteed to equal exactly \(\bar n\).
+
+In contrast to the normal distribution, where mean and variance are
+independent parameters, this is not the case for the Gamma distribution
+\(G \sim \Gamma(\alpha,\theta)\), with shape parameter \(\alpha>0\)
+and scale parameter \(\theta>0\). The mean is
+\(E(G)=\alpha\theta\), whereas the variance is
+\(\mathrm{Var}(G)=\alpha\theta^2\). The corresponding skewness is
+\(2/\sqrt{\alpha}\), and the kurtosis is \(3+6/\alpha\), so the excess
+kurtosis is \(6/\alpha\) [@Forbes:2010, p. 109]. In the simulations,
+\(\theta=1\) and \(\alpha\in\{16,4,1,0.25\}\), followed by
+standardisation \(Z=(G-\alpha\theta)/(\theta\sqrt{\alpha})\).
+
+
+
+In the
+identical-distribution setting, both relevant null hypotheses are true: equal
+means for F, W, and L, and equal rank distributions for KW; SW and SW+L both
+remain within Bradley bounds in all conditions, showing that the automatic route
+does not inflate rejection when both candidate null hypotheses are true
+(Figure \@ref(fig:route1-identical-typeI)).
+
+```{r route1-identical-typeI, echo=FALSE, out.width="100%", fig.cap="Route 1 simulation under identical distributions and identical means, with maximum Gamma skewness 4. The heatmap shows empirical rejection rates at alpha = 5%; green marks Bradley's 2.5% to 7.5% range, with darkest green at 5%. The upper panels show the corresponding population PDFs; dashed vertical lines mark the common population mean. In balanced rows, n is the common per-group sample size; in unbalanced rows, \\bar n denotes the mean per-group sample size, with group sizes nearest to \\bar n(0.5,0.8,1.2,1.5). Abbreviations: F = Fisher's one-way ANOVA; W = Welch's heteroscedastic ANOVA; L = Levene gate selecting F or W; KW = Kruskal--Wallis; SW = Shapiro--Wilk gate selecting W or KW; SW+L = Shapiro--Wilk gate selecting KW or, if the parametric branch is retained, Levene gate selecting F or W. SW and SW+L cells show final-test rejection rates plus route probabilities. Because distributions are identical, both equal-means and equal-rank-distribution null hypotheses are true."}
+knitr::include_graphics(figure_path("route1_identical_distributions_typeI_with_kw_skew4_B50000.png"), rel_path = FALSE)
+```
+
+```{r route1-identical-typeI-table, echo=FALSE}
+knitr::kable(
+  data.frame(
+    Strategy = c("F", "W", "L", "KW", "SW", "SW+L"),
+    `$H_0$ tested` = c(
+      "equal means",
+      "equal means",
+      "equal means",
+      "equal rank distributions",
+      "selected final-test $H_0$",
+      "selected final-test $H_0$"
+    ),
+    `$H_0$ rejection` = c("4.77%", "5.83%", "5.42%", "4.75%", "5.01%", "5.03%"),
+    `Outside Bradley bounds` = c("0.0%", "12.5%", "7.5%", "0.0%", "0.0%", "0.0%"),
+    check.names = FALSE
+  ),
+  caption = "Summary of Route 1 rejection rates under identical distributions.",
+  align = c("l", "l", "r", "r"),
+  escape = FALSE,
+  table.attr = 'class="framed-table"'
+)
+```
+
+
+In the unequal-distribution setting, the equal-means null remains true, but the
+Kruskal--Wallis null is false because group distributions differ in spread; hence
+standalone Kruskal--Wallis is not part of the mean-null Type I comparison. Welch
+has fewer Bradley-bound violations than Fisher and the Levene-gated route, so the
+Levene variance gate adds little as a Fisher/Welch decision rule. The full SW gate
+often routes to Kruskal--Wallis under skewness, which is defensible only if the
+automatic procedure is read as a visible switch from testing means to testing rank
+distributions (Figure \@ref(fig:route1-unequal-mean-null-rejection)).
+
+```{r route1-unequal-mean-null-rejection, echo=FALSE, out.width="100%", fig.cap="Route 1 simulation under identical means but unequal distributions, with maximum Gamma skewness 4. The heatmap shows empirical rejection rates at alpha = 5%; green marks Bradley's 2.5% to 7.5% range, with darkest green at 5%. The upper panels show the corresponding population PDFs; dashed vertical lines mark the common population mean. In balanced rows, n is the common per-group sample size; in unbalanced rows, \\bar n denotes the mean per-group sample size, with group sizes nearest to \\bar n(0.5,0.8,1.2,1.5). Unequal-SD rows use SD = 1.0, 1.3, 1.7, 2.2, with the larger-n/larger-SD and larger-n/smaller-SD panels reversing the pairing of n and SD. Abbreviations: F = Fisher's one-way ANOVA; W = Welch's heteroscedastic ANOVA; L = Levene gate selecting F or W; SW = Shapiro--Wilk gate selecting W or KW; SW+L = Shapiro--Wilk gate selecting KW or, if the parametric branch is retained, Levene gate selecting F or W. F, W, and L assess the equal-means null; SW and SW+L report final-test rejection rates plus route probabilities. Standalone KW is omitted because equal rank distributions are not the ground-truth null in these rows."}
+knitr::include_graphics(figure_path("route1_equal_means_unequal_distributions_without_kw_skew4_B50000.png"), rel_path = FALSE)
+```
+
+```{r route1-unequal-typeI-table, echo=FALSE}
+knitr::kable(
+  data.frame(
+    Strategy = c("Fisher", "Welch", "Levene F/W", "SW", "SW+L"),
+    `$H_0$ tested` = c(
+      "equal means",
+      "equal means",
+      "equal means",
+      "selected final-test $H_0$",
+      "selected final-test $H_0$"
+    ),
+    `$H_0$ rejection` = c("7.20%", "6.81%", "6.70%", "27.15%", "27.39%"),
+    `Outside Bradley bounds` = c("33.3%", "16.7%", "23.3%", "60.0%", "65.0%"),
+    check.names = FALSE
+  ),
+  caption = "Summary of Route 1 rejection rates under equal means and unequal distributions.",
+  align = c("l", "l", "r", "r"),
+  escape = FALSE,
+  table.attr = 'class="framed-table"'
+)
+```
+
+
+## Power simulations
+
+Power was estimated as the rejection probability under ordered location shifts
+of 0, 0.25, 0.50, and 0.75 SD across four balanced homoscedastic groups. In the
+normal and mildly skewed cases, the parametric routes have the highest power; in
+strongly skewed cases, Kruskal--Wallis becomes dominant. The SW+L route follows
+this switch and is equal or closest to the best-performing strategy across
+skewness levels. In the normal four-group corner, the small Fisher advantage
+over Welch follows directly from Eq. \@ref(eq:welch-anova-four-groups),
+\(\frac{F}{F_W}=1+3/[5(n-1)]\)
+(Figure \@ref(fig:route1-power-skew-sweep)).
+Here \(n\) denotes the per-group sample size; the total sample size is
+\(N=4n\).
+
+```{r route1-power-skew-sweep, echo=FALSE, out.width="100%", fig.cap="Power simulation under ordered additive group shifts of 0, 0.25, 0.50, and 0.75 SD. The y-axis shows the simulated rejection rate at alpha = 5% for six strategies across skewness and per-group sample size n; total sample size is N = 4n. The data-generating difference is only additive: group means are shifted by 0, 0.25, 0.50, and 0.75 SD. Abbreviations: F = Fisher; W = Welch; L = Levene gate; KW = Kruskal--Wallis; SW = Shapiro--Wilk gate selecting W or KW; SW+L = Shapiro--Wilk gate selecting KW or, if the parametric branch is retained, Levene gate selecting F or W. Bottom labels show SW+L gate decisions. Kruskal--Wallis tests ranks; pairwise stochastic equality corresponds to P(X_i > X_j) + 0.5 P(X_i = X_j) = 0.5. Skew = 0 is normal; skew > 0 uses standardised Gamma groups, where skewness and excess kurtosis vary together. The high-skew result is not a contradiction of the CLT: for fixed mean differences, increasing N makes the mean-based tests valid and eventually highly powered even under strong skewness; KW may also approach 100% power because the location shift changes the ordering of observations."}
+knitr::include_graphics(figure_path("gamma_skew_sweep_4groups_power.png"), rel_path = FALSE)
+```
+
+```{r route1-power-summary-table, echo=FALSE}
+knitr::kable(
+  data.frame(
+    skew = c("0.0", "0.1", "0.5", "1.0", "2.0", "6.0"),
+    F = c("74.1%", "73.6%", "74.0%", "74.8%", "74.6%", "79.6%"),
+    W = c("73.3%", "72.8%", "73.3%", "74.3%", "75.6%", "88.8%"),
+    L = c("74.2%", "73.7%", "74.1%", "74.8%", "75.1%", "86.2%"),
+    KW = c("72.7%", "72.2%", "73.3%", "76.6%", "85.5%", "99.7%"),
+    SW = c("73.5%", "72.9%", "73.8%", "76.8%", "85.5%", "99.7%"),
+    `SW+L` = c("74.3%", "73.8%", "74.5%", "77.1%", "85.5%", "99.7%"),
+    best = c("SW+L", "SW+L", "SW+L", "SW+L", "SW+L", "KW"),
+    check.names = FALSE
+  ),
+  caption = "Mean simulated rejection rate by skewness in the power simulation.",
+  align = c("r", "r", "r", "r", "r", "r", "r", "l"),
+  table.attr = 'class="framed-table"'
+)
+```
+
+For the normal case (`skew = 0`), the small Fisher advantage over Welch can be
+checked directly against the algebraic factor from
+Eq. \@ref(eq:welch-anova-four-groups),
+\(\frac{F}{F_W}=1+3/[5(n-1)]\)
+(Figure \@ref(fig:route1-parametric-power)).
+
+```{r route1-parametric-power, echo=FALSE, out.width="100%", fig.cap="Parametric-branch power under true homoscedasticity. The plot compares Fisher always, Welch always, and the Levene-gated Fisher/Welch route by per-group sample size n."}
+knitr::include_graphics(figure_path("gamma_skew_sweep_4groups_parametric_branch_power.png"), rel_path = FALSE)
+```
+
+```{r route1-parametric-power-table, echo=FALSE}
+knitr::kable(
+  data.frame(
+    `per-group $n$` = c("10", "20", "50", "100", "200"),
+    `$F/F_W = 1 + 3/[5(n-1)]$` = c("1.0667", "1.0316", "1.0122", "1.0061", "1.0030"),
+    `F power` = c("25.7%", "52.3%", "92.5%", "99.9%", "100.0%"),
+    `W power` = c("24.1%", "50.5%", "92.1%", "99.9%", "100.0%"),
+    `F/W power` = c("1.06", "1.04", "1.00", "1.00", "1.00"),
+    check.names = FALSE
+  ),
+  caption = "Fisher/Welch power comparison under true homoscedasticity and normality.",
+  align = c("r", "r", "r", "r", "r"),
+  escape = FALSE,
+  table.attr = 'class="framed-table"'
+)
+```
+
+Taken together, the simulations support keeping SW+L as the automatic route.
+This keeps the paper's general linear model framing coherent: if standardised
+residual normality is not rejected, homoscedasticity decides whether the analysis
+remains with Fisher's ANOVA or moves to Welch's ANOVA. In the power simulation, the
+Levene layer shows no power loss relative to SW; under true homoscedasticity it
+recovers Fisher's small-sample advantage over Welch at \(n=10\) and \(n=20\),
+as expected from Eq. \@ref(eq:welch-anova-four-groups). The cost is not power
+but interpretation: under unequal distributions with equal means, SW+L
+increasingly reports the rejection rate of KW after the hypothesis switch, so
+that row must not be read as a Type I error rate for equal means.
+
+
+
+If all groups really come from the same distribution, all methods stay close to
+the intended 5% false-alarm rate, and the automatic SW and SW+L routes behave
+well. If the groups have the same mean but different spreads, Welch is the
+cleanest test for the equal-means question; Fisher and the Levene gate are less
+stable. The SW routes switch to Kruskal--Wallis very early, even at mild skew or
+unequal spread, so they are useful as an automatic method switch, but not as a
+pure test of equal means.
+
+
+If all groups really come from the same distribution, all methods stay close to
+the intended 5% false-alarm rate, and the automatic SW and SW+L routes behave
+well. If the groups have the same mean but different spreads, Welch is the
+cleanest test for the equal-means question; Fisher and the Levene gate are less
+stable. The SW routes switch to Kruskal--Wallis very early, even at mild skew or
+unequal spread, so they are useful as an automatic method switch, but not as a
+pure test of equal means.
+
+
+Read as an equal-means simulation, the results mainly support Welch. From about
+\(\bar n = 50\), Welch stays within Bradley's bounds even at skew = 6 when the
+larger groups also have the larger standard deviations. When larger standard
+deviations occur in the smaller groups, the difficult case moves upward: Welch
+needs about \(\bar n = 100\) at skew = 6, with no simulated value between 50 and
+100. Thus, even in very skewed settings, the central limit effect can be
+sufficient for the equal-means question, which argues for Welch as the stable
+default if the estimand is the mean.
+
+# Simulation errors
+
+All simulation errors are Monte Carlo standard errors. With
+\(B=50{,}000\) replications per cell and estimated rejection probability
+\(\hat p\), they were computed as
+\[
+SE_{\mathrm{MC}}=\sqrt{\hat p(1-\hat p)/B}.
+\]
+Expressed in percentage points, the standard error approaches \(0\) when
+\(\hat p\) approaches 0 or 1, is about \(0.10\) percentage points at
+\(\hat p=0.05\), and reaches its maximum of \(0.22\) percentage points at
+\(\hat p=0.50\).

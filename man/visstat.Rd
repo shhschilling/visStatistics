@@ -13,6 +13,7 @@ visstat(
   correlation = FALSE,
   numbers = TRUE,
   minpercent = 0.05,
+  route = NULL,
   graphicsoutput = NULL,
   plotName = NULL,
   plotDirectory = getwd()
@@ -53,6 +54,11 @@ with trend line only (no regression interpretation).}
 
 \item{minpercent}{Number between 0 and 1 indicating minimal fraction of 
 total count data of a category to be displayed in mosaic count plots.}
+
+\item{route}{Optional character. For a numeric response and factor predictor,
+\code{NULL} keeps the default assumption gates, \code{"welch"} forces
+Welch-type mean tests, and \code{"rank"} forces Wilcoxon/Kruskal-Wallis
+rank tests.}
 
 \item{graphicsoutput}{Saves plot(s) of type \code{"png"}, \code{"jpg"}, 
 \code{"tiff"} or \code{"bmp"} in directory specified in 
@@ -129,10 +135,10 @@ which selects and executes the appropriate test with visual output and
 assumption diagnostics.
 }
 \note{
-For best visualization, ensure that the RStudio Plots pane is adequately 
-sized. If you get "figure margins too large" errors, try expanding the Plots 
-pane in RStudio, using \code{dev.new(width=10, height=6)} for a larger plot 
-window, or reducing the \code{cex} parameter.
+For best visualization, ensure that the RStudio Plots pane is adequately
+sized. If you get "figure margins too large" errors, try expanding the Plots
+pane in RStudio, or using \code{dev.new(width=10, height=6)} for a larger plot
+window.
 }
 \examples{
 # Formula interface

@@ -1,0 +1,131 @@
+---
+title: "Discussion: routing between tests of central tendency"
+subtitle: "Draft (n>50 bypass removed; SW routes at all N)"
+output: html_document
+bibliography: ../vignettes/REFERENCES.bib
+---
+
+> Supplementary scripts linked inline. `@Harrell-BBR` is a placeholder key.
+
+# Discussion{.unnumbered}
+
+Grouped numeric data can answer two fundamentally different questions: Are the group means in the population equal?  -> answered by parametric test like Student's t-test and Fisher ANOVA and their Welch variants
+
+Do all groups have the same rank order in the population ?-> answered by non-parametric tests like Wilcoxon or Kruskal Wallis
+
+A programme for automated test selection can not know which of those questions the user wants to get answered, so there is "per se" no right test to be selected. 
+
+Here we outline four ways how to deal with this conundrum:
+
+# 1. Default to parametric testing, always.
+
+Why? It has been long established (cite ) that they are robust to mild (how mild) violations of their normality assumptions of the residuals even in small samples and in larger samples the CLT guarantees, that the distribution of the means becomes normally distributed (cite.Blance for ANOVA, ? for Welch..) As Welch's versions lose little power to their homoscedastic sisters, some authors (cite..)
+suggest to default to Welch variants (eqn. appendix ), Note that  they reduce asymptotically to their homoscedastic variants if homoscedasticy is really given and the groups are balanced (eqn. Appendix) 
+
+Advantage: Parametric tests are easy to interpret (just compare the means) and deliver  interpret confidence intervals
+
+The edge cases?
+
+
+
+A) Skewed data with small sample sizes. It has been shown by simulation studies that in skewed data (up to skew =2 ) and 4 groups to be compared [cite], you need already of 50 cases to obtain normal distributions of the mean by the CLT, the more skewed the data, the higher the n is needed per group, and the n increases also with the number of groups to be compared.  So in this case the default usage of a parametric test might not be justified. so the edge are small samples with high skew, where parametric tests have a high type 1 rate.
+
+
+
+
+B) Loss of power
+
+Using parametric methods on skewed data (>1) comes with a lot of power (cite)
+Fill in our own simulation studies. 
+
+C) Wrong question answered: 
+In highly skewed distribution, a test comparing group means  might not answer the right question. Imagine comparing income per head distributions of a several states, millions of data, in such a case  the CLT would  justify to assume the convergence of the group means to normality. But it is the right test? Probably not, the highly skewed data is right tailed, the means are all in the long tail, the median in the bulk of the data. In this case a rank-based the user would most propbably choose a ranked based test 
+
+
+# 2. Let the shape of the distribution decide what test to check
+
+One of the assumptions of parametric tests with the glm family (Student, Fisher ANOVA) is that the error terms are normally distributed , estimated by normality checks of the observed standardised residuals. Normality test like Shapiro-Wilk do not measure skewness directly , but are influenced by the skewness of the input data: the higher the skew, the more probable is that they will reject (give formula for the dependence with citation, see table below). 
+
+So one could use the glm assumption test of  normality  the residuals also as gate to change the hypothesis tested: if normality is not rejected, stay within the parametric family, otherwise use non-parametric testing which, in highly skewed data, might be the even the  more "just" test (see example 1B) 
+
+Pro: this guarantees that highly skewed data in all samples sizes defaults to non-parametric tests, often the actual hypothesis the user might want to be tested. Furthermore it avoids the power loss of parametric tests (cite) in highly skewed data
+
+But what is the caveat?
+
+a) Small samples are  underpowered 
+Normality test in smaller samples are underpowered, so they fail to detect deviation from normality (see our own power simulation in the table below )
+Does the underpowerment matter? Propably not: A 2017 study by Blanca et al. (often cited in this context) found ANOVA to be robust across all the non-normal conditions they tested, including skewness values up to 2 and kurtosis up to 6.
+
+
+This is examplifed in our simulation (Figure)
+The simulations do not justify a general default to either family on power
+grounds alone. Around normality and under mild skew, the parametric branch is
+often slightly more powerful, but the power loss of the non-parametric branch
+is small. Under stronger skew, roughly around skewness 2 in this Gamma design,
+the parametric branch can lose power clearly. The Shapiro-Wilk gate is
+therefore defensible because its likely error under mild skew is low-cost,
+whereas its switch under stronger skew avoids the larger power loss of staying
+parametric.
+
+
+But what is with heteroscedastic input data? does the robustness hold do?  No: 
+
+The automatic route is intentionally shape-sensitive. Its weak region is mild
+skew at moderate or large sample size, where Shapiro-Wilk can route to the
+rank branch although a mean-based comparison would often remain defensible. In
+these cases the automatic result should be read as a conservative method
+switch, not as proof that the mean comparison is invalid.
+
+
+
+b) Big samples are overpowered: 
+and in larger samples even the mild deviations from normality will be flagged as non-normal and switch the gate to non-parametric tests. 
+here an example of an simulation, here the data is clearly not normal (gamma with skew and the numbers in the cell indicate the power of the test, the right decision rejecting normality ):
+
+
+# Simulation of the power of SW in sample sizes up to 200
+
+
+
+## Example for overpower effect in Figure X: 
+Our simulation studies show (appendix/Figure X) that even mildly skewed data with skew around 0.3 comparing two groups of size x (fill in ) lead to a rejection of the normality data of . 
+
+Description of  Figure with two panels: 
+A the density distribution of two gamma functions with small data and mild skew
+B: the heat map of the rejections of a gamma function varying both skew and sample size  
+
+# 3. Combine 1) and 2): Only for larger samples default to parametric, ins smaller samples you use 2)-> our old n>50 rule
+
+In large enough  th CLT secures, that the group means converge to normality. What is large enough? Simulation studies (cite the Welch study simulation papers ) suggest that these convergence  in heteroscedastic data is given  within the bradley levels [alpha error between 2.5 and 7.4 percent] by 50 members per group if comparing up to 4 groups with a maximal skew of 2.  For more than 4  groups, the convergence might be reached only with group sample sizes of 100. 
+
+For homoscedastic data the convergence is much faster, and even grup sizes of xxx stay within the Bradleay limits [cite the Fisher simualtions]
+
+Solution:   Default to parametric only in larger sample by introducing a gate number of 50, or more conservately 100,  and, in smaller samples let the normality assumption test choose the hypothesis: If the normality of the residuals can be assumed test parametric, otherwise non parametric. The problem: as in 1) loose of power in highly skewed data sets, wrong question asked
+
+
+
+Caveat: 
+
+But even this route is problemeatic: Exacty in the region, where the shapiro test is underpowered, it stilll reigns. -> perhpas the worst of all routes, dismiss??
+
+
+# 4. Default to non-parametric testing, always.
+
+Less assumptions (which, find it out), robust, minimal loss of power when the assumptions of the parametric tests are met (cite...), our simulation results. 
+
+Price to pay: much more difficult to interpret, there is not "just" the means which get interpreted, but all the ranks simultaneously. No classical CI, less common CI. 
+
+
+
+
+
+
+
+
+Conclusion: 
+So what is the "right" design? There is no clear answer, it depends both on the user's research question and the distribution of the input data.
+
+In this implementation the "automatic" route chooses 3, the parametric branch 1, the non-parametric 2. 
+
+The *vis*ualisaton of the assumptions of the parametric branch in the diagnostic plot as well as the distrigution of the group data itself let the user decide himself, if the automated test selection was appropriate in this casel  
+

@@ -36,6 +36,10 @@
 #' @param numbers Logical. Whether to annotate plots with numeric values.
 #' @param minpercent Number between 0 and 1 indicating minimal fraction of 
 #'   total count data of a category to be displayed in mosaic count plots.
+#' @param route Optional character. For a numeric response and factor predictor,
+#'   \code{NULL} keeps the default assumption gates, \code{"welch"} forces
+#'   Welch-type mean tests, and \code{"rank"} forces Wilcoxon/Kruskal-Wallis
+#'   rank tests.
 #' @param graphicsoutput Saves plot(s) of type \code{"png"}, \code{"jpg"}, 
 #'   \code{"tiff"} or \code{"bmp"} in directory specified in 
 #'   \code{plotDirectory}. If \code{NULL}, no plots are saved.
@@ -98,10 +102,10 @@
 #' In case of insufficient data, returns a list with an \code{error} element and 
 #' basic input summary information.
 #'
-#' @note For best visualization, ensure that the RStudio Plots pane is adequately 
-#' sized. If you get "figure margins too large" errors, try expanding the Plots 
-#' pane in RStudio, using \code{dev.new(width=10, height=6)} for a larger plot 
-#' window, or reducing the \code{cex} parameter.
+#' @note For best visualization, ensure that the RStudio Plots pane is adequately
+#' sized. If you get "figure margins too large" errors, try expanding the Plots
+#' pane in RStudio, or using \code{dev.new(width=10, height=6)} for a larger plot
+#' window.
 #'
 #' @seealso \code{\link{visstat_core}} defining the decision logic, the 
 #' package's vignette \code{vignette("visStatistics")} explaining the decision 
@@ -187,6 +191,7 @@ visstat <- function(x,
                     correlation = FALSE,
                     numbers = TRUE,
                     minpercent = 0.05,
+                    route = NULL,
                     graphicsoutput = NULL,
                     plotName = NULL,
                     plotDirectory = getwd()) {
@@ -195,6 +200,7 @@ visstat <- function(x,
   on.exit(par(oldparvisstat))
   
   check_visstat_input(x, y, ..., data = data)
+  route <- if (is.null(route)) NULL else match.arg(route, c("welch", "rank"))
   
   clean_name <- function(expr) {
     sub(".*\\$", "", deparse(expr))
@@ -222,6 +228,7 @@ visstat <- function(x,
       correlation = correlation,
       numbers = numbers,
       minpercent = minpercent,
+      route = route,
       graphicsoutput = graphicsoutput,
       plotName = plotName,
       plotDirectory = plotDirectory
@@ -252,6 +259,7 @@ visstat <- function(x,
       correlation = correlation,
       numbers = numbers,
       minpercent = minpercent,
+      route = route,
       graphicsoutput = graphicsoutput,
       plotName = plotName,
       plotDirectory = plotDirectory
@@ -279,6 +287,7 @@ visstat <- function(x,
     correlation = correlation,
     numbers = numbers,
     minpercent = minpercent,
+    route = route,
     graphicsoutput = graphicsoutput,
     plotName = plotName,
     plotDirectory = plotDirectory

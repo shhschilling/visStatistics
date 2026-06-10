@@ -169,6 +169,8 @@ vis_numeric <- function(y,
     y_pred_low <- pred_int[ord, 2]
     y_pred_up <- pred_int[ord, 3]
     fitted_sorted <- reg$fitted[ord]
+    fit_col <- colorscheme(3)[5]
+    ci_col <- "black"
     
     # Set up plot
     ma <- max(y_sorted, y_pred_up, na.rm = TRUE)
@@ -183,26 +185,30 @@ vis_numeric <- function(y,
          main = "")
     
     polygon(c(x_sorted, rev(x_sorted)),
-            c(y_conf_low, rev(y_conf_up)),
-            col = adjustcolor(colorscheme(1)[1], alpha.f = 0.2),
+            c(y_pred_low, rev(y_pred_up)),
+            col = adjustcolor(fit_col, alpha.f = 0.2),
             border = NA)
     
     # Add regression line and bands
-    lines(x_sorted, fitted_sorted, col = colorscheme(2)[1], lwd = 2)
-    lines(x_sorted, y_conf_low, col = colorscheme(1)[1], lwd = 2, lty = 2)
-    lines(x_sorted, y_conf_up, col = colorscheme(1)[1], lwd = 2, lty = 2)
-    lines(x_sorted, y_pred_low, col = colorscheme(1)[2], lwd = 2, lty = 3)
-    lines(x_sorted, y_pred_up, col = colorscheme(1)[2], lwd = 2, lty = 3)
+    lines(x_sorted, fitted_sorted, col = fit_col, lwd = 2)
+    lines(x_sorted, y_pred_low, col = fit_col, lwd = 1)
+    lines(x_sorted, y_pred_up, col = fit_col, lwd = 1)
+    lines(x_sorted, y_conf_low, col = ci_col, lwd = 2, lty = 2)
+    lines(x_sorted, y_conf_up, col = ci_col, lwd = 2, lty = 2)
     
     legend("topleft", horiz = FALSE,
            c("regression line",
-             paste(conf.level*100,"% confidence band"),
-             paste(conf.level*100,"% prediction band")),
-           lwd = 2,
-           col = c(colorscheme(2)[1], colorscheme(1)[1], colorscheme(1)[2]),
-           lty = c(1, 2, 3),
+             sprintf("blue-shaded %.0f%% prediction interval", 100 * conf.level),
+             sprintf("black %.0f%% CI for fitted mean", 100 * conf.level)),
+           lwd = c(2, NA, 2),
+           col = c(fit_col,
+                   adjustcolor(fit_col, alpha.f = 0.2),
+                   ci_col),
+           lty = c(1, NA, 2),
+           pch = c(NA, 15, NA),
+           pt.cex = c(NA, 1.5, NA),
            bty = "n",
-           cex = 0.7)
+           cex = 0.65)
     
     # Create title
     conf_int_coeffs <- confint(reg, level = conf.level)

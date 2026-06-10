@@ -123,6 +123,9 @@ selected_test_title <- function(result) {
 #'   plots.
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total
 #'   count data of a category to be displayed	in mosaic count plots.
+#' @param route Optional character. For Route 1 only, \code{NULL} keeps the
+#'   default assumption gates, \code{"welch"} forces Welch-type mean tests, and
+#'   \code{"rank"} forces Wilcoxon/Kruskal-Wallis rank tests.
 #' @param graphicsoutput saves plot(s) of type "png",  "jpg", "tiff" or  "bmp"
 #'   in directory specified in \code{plotDirectory}. If graphicsoutput=NULL, no
 #'   plots are saved.
@@ -202,6 +205,7 @@ visstat_core <- function(dataframe,
                          correlation = FALSE,
                          numbers = TRUE,
                          minpercent = 0.05,
+                         route = NULL,
                          graphicsoutput = NULL,
                          plotName = NULL,
                          plotDirectory = getwd()) {
@@ -228,6 +232,7 @@ visstat_core <- function(dataframe,
   
   # Set default values---------------------------
   alpha <- 1 - conf.level
+  route <- if (is.null(route)) "automatic" else match.arg(route, c("welch", "rank"))
   
   ## Get input variables---------------------------------
   input <-
@@ -313,13 +318,15 @@ visstat_core <- function(dataframe,
       return(vis_sample_fact)
     }
     
-    # Check if response was originally ordinal - force non-parametric
-    if (ordinal_response) {
+    # Explicit Route 1 overrides bypass route selection. The Welch override
+    # still shows/checks the assumption diagnostics, but does not switch to
+    # the rank branch when residual normality is rejected.
+    if (route == "rank" || ordinal_response) {
       normality_met <- FALSE
     } else {
       # MANDATORY DIAGNOSTIC: Provide visual evidence for the decision pipeline
       openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 
-      vis_lm_assumptions(samples, fact, cex = 0.8)
+      vis_lm_assumptions(samples, fact, cex = 0.8, conf.level = conf.level)
       
       if (is.null(plotName)) {
         filename <- paste("glm_assumptions_", name_of_sample, "_", name_of_factor, sep = "")
@@ -349,9 +356,25 @@ visstat_core <- function(dataframe,
       if (length(raw_residuals) > 5000) {
         # Shapiro--Wilk is undefined for n > 5000; route on Anderson--Darling,
         # which has no upper sample-size limit, so shape still decides.
-        normality_met <- nortest::ad.test(scaled_residuals)$p.value >= alpha
+        normality_test_name <- "Anderson-Darling"
+        normality_p <- nortest::ad.test(scaled_residuals)$p.value
       } else {
-        normality_met <- shapiro.test(scaled_residuals)$p.value >= alpha
+        normality_test_name <- "Shapiro-Wilk"
+        normality_p <- shapiro.test(scaled_residuals)$p.value
+      }
+      normality_met <- normality_p >= alpha
+
+      if (route == "welch" && !normality_met) {
+        warning(
+          normality_test_name,
+          " test p = ", format.pval(normality_p, digits = 3),
+          " is below alpha = ",
+          signif(alpha, 3),
+          "; normality assumption violated. Consider switching to the ",
+          "\"rank\" method.",
+          call. = FALSE
+        )
+        normality_met <- TRUE
       }
     }
     
@@ -391,10 +414,11 @@ visstat_core <- function(dataframe,
       # heteroscedasticity of the raw residuals (Var(e_i) = sigma^2 (1 - h_i)),
       # matching the |r_i| spread panel of vis_lm_assumptions().
       var_p <- levene.test(scaled_residuals, fact)$p.value
+      use_fisher <- route == "automatic" && var_p >= alpha
       if (nlevels(fact) == 2) {
         # Final t-test execution
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 
-        vis_sample_fact <- two_sample_t_test(samples, fact, var.equal = (var_p >= alpha), 
+        vis_sample_fact <- two_sample_t_test(samples, fact, var.equal = use_fisher,
                                              conf.level = conf.level, samplename = varsample, 
                                              factorname = varfactor)
         if (is.null(plotName)) {
@@ -408,7 +432,8 @@ visstat_core <- function(dataframe,
         # ANOVA execution (Fisher/Welch and Post-hoc handled internally)
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 
         vis_sample_fact <- vis_anova(samples, fact, samplename = varsample, 
-                                     factorname = varfactor, conf.level = conf.level)
+                                     factorname = varfactor, conf.level = conf.level,
+                                     variance_route = if (route == "welch") "welch" else "levene")
         if (is.null(plotName)) {
           filename <- paste("anova_", name_of_sample, "_", name_of_factor, sep = "")
         } else {
@@ -624,7 +649,8 @@ visstat_core <- function(dataframe,
     
     if (!correlation) {
       normality_residual_assumption <-
-        vis_lm_assumptions(samples, fact, cex = 0.8, correlation = FALSE)
+        vis_lm_assumptions(samples, fact, cex = 0.8, correlation = FALSE,
+                           conf.level = conf.level)
       
       
       

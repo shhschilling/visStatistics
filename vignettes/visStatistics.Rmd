@@ -92,7 +92,7 @@ It also supports time-constrained work such as statistical consulting, where les
 
 # Introduction
 
-In the frequentist tradition, most routine data analyses reduce to a comparatively small set of inferential frameworks, including group comparisons, regression models and contingency-table analyses [@Fritz:2012; @Hayat:2017; @Sato:2017; @Brodeur:2020]; their correct use depends on assumptions that are often checked informally or not at all.
+In the frequentist tradition, most routine data analyses reduce to a comparatively small set of inferential frameworks, including group comparisons, regression models and contingency-table analyses [@Fritz:2012; @Hayat:2017; @Sato:2017; @Brodeur:2020]; their correct use depends on assumptions that are often checked informally or not at all [@Hoekstra:2012, @Shatz:2024]
 `visStatistics` targets this gap by making routine frequentist test selection explicit, assumption-aware, visual, and reproducible.
 Rather than requiring users to choose the test function first, `visstat()` starts from two variables and routes common two-variable settings through a fixed decision workflow.
 It selects a test from the variable classes, distributional assumptions, sample size, and expected cell counts; displays the diagnostics that led to the selected route; and returns an R object whose `print()` and `summary()` methods expose the complete test results, including the reported effect size.
@@ -166,7 +166,7 @@ Definitions of all implemented test statistics, rank-correlation coefficients, a
 
 The decision logic of `visstat()` is layered: The general branching, summarised in Figure \@ref(fig:overview), is driven by the `class` and number of factor levels of its input vectors.
 
-Only for a numeric response with a categorical predictor, the selection among tests of central tendency further depends on group-specific sample size and residual diagnostics from a fitted linear model (Section \@ref(sec:route-1)).
+Only for a numeric response with a categorical predictor, the selection among tests of central tendency further depends  residual diagnostics from a fitted linear model (Section \@ref(sec:route-1)).
 
 ## Top-level routing by input class {#sec:top-level}
 
@@ -308,8 +308,8 @@ r_i =\frac{e_i}{\sqrt{ SE_\text{res}^2\,(1-h_{ii})}}=
 ### General linear model assumption tests {#sec:assumption-tests}
 
 
-**Normality tests** The normality of the standardised residuals is formally assessed using both the Shapiro--Wilk test [@Shapiro:1965; @Royston:1982; @Royston:1995] (`shapiro.test()`; Eq. 
-\@ref(eq:shapiro-w)) and the Anderson--Darling test [@Anderson:1952] (`ad.test()`; Eq. 
+**Normality tests** The normality of the standardised residuals is formally assessed using both the Shapiro--Wilk (SW) test [@Shapiro:1965; @Royston:1982; @Royston:1995] (`shapiro.test()`; Eq. 
+\@ref(eq:shapiro-w)) and the Anderson--Darling  test [@Anderson:1952] (`ad.test()`; Eq. 
 \@ref(eq:anderson-a2)).
 These tests offer complementary strengths: Anderson--Darling is highly sensitive to tail deviations in larger samples [ @Yap:2011],
 while Shapiro--Wilk generally exhibits greater power across non-normal distributions in small samples. Therefore in smaller samples, the Shapiro--Wilk test is used as the normality gate in the automated test selection (Section \@ref(sec:route-1)).
@@ -327,9 +327,12 @@ while Shapiro--Wilk generally exhibits greater power across non-normal distribut
 \@ref(eq:levene-f)) and Bartlett's test [@Bartlett:1937] (`bartlett.test()`; Eq. 
 \@ref(eq:bartlett-k2)).
 Bartlett's test has greater power when normality holds, but the Levene
-test is more robust to departures from normality [@Allingham:2012].
+test is more robust to departures from normality (missing citation)
 Therefore, Levene's test is used as the variance gate in the automated
 workflow.
+
+
+
 
 For simple linear regression, group-based variance tests are not applicable.
 There, `visStatistics` uses its package implementation `bp.test()` of the Breusch--Pagan test [@Breusch:1979] (Eq. \@ref(eq:breusch-pagan-bp)) on raw residuals [@Schutzenmeister:2012].
@@ -348,7 +351,7 @@ Since algorithmic logic based on p-values of assumption tests cannot replace exp
 
 
 
-For numeric responses with categorical predictors (Route 1), the diagnostic panel displays the residual histogram, the normal Q--Q plot, and the absolute standardised residuals $|r_i|$ (Eq. \@ref(eq:standardised)) by group.
+For numeric responses with categorical predictors (Route 1), the diagnostic panel displays the residual histogram, the normal Q--Q plot with simultaneous and point-wise tolerance bands [@Schutzenmeister:2012], and the absolute standardised residuals $|r_i|$ (Eq. \@ref(eq:standardised)) by group.
 The last panel shows whether residual spread is comparable across factor levels, the pattern assessed formally by the Levene (Eq. \@ref(eq:levene-f)) and Bartlett (Eq. \@ref(eq:bartlett-k2)) variance checks.
 
 For Route 3 (simple linear regression), the diagnostic panel displays the residual histogram with normal density overlay, the normal Q--Q plot, both computed from standardised residuals, and z-scaled residuals versus fitted values.
@@ -369,6 +372,471 @@ The Route 1 and Route 3 diagnostic-panel designs are illustrated in the examples
 
 <!-- `levene.test()` and `bp.test()` have standalone implementations in the package to avoid dependencies on external packages (see Section @ref(sec:homo)). -->
 
+## Simulation results
+
+The simulations focus on Route 1, the only branch in which `visstat()` lets
+assumption tests select the final test. The high-level problem is that grouped
+numeric data can answer two different questions. Parametric tests such as
+Student's t-test, Fisher's ANOVA, and their Welch variants test population
+means [@Welch:1951; @Rasch:2011; @Delacre:2019]. Rank-based tests such as
+Wilcoxon and Kruskal--Wallis test a rank-based distributional target and must
+not be interpreted as mean tests when distributional shapes differ
+[@Fagerland:2009]. An automated programme cannot know which question the user
+intends; therefore no single automatic default is correct in all cases
+[@Fagerland:2009; @Shatz:2024].
+
+There are four coherent defaults. First, one can always stay within
+mean-based parametric testing. If this is the chosen estimand, a Welch default
+is defensible because it targets mean differences without requiring equal
+variances, avoids the operating-characteristic distortions introduced by
+preliminary variance tests [@Moser:1992; @Zimmerman:2004; @Rochon:2012].
+Its cost is small in the equal-variance balanced case: Welch's t-test
+coincides with Student's t-test, and for more than two balanced groups the
+Welch ANOVA statistic converges to Fisher's statistic with a relative
+difference of order \(n^{-1}\) (Eqs. \@ref(eq:welch-student-pooled) and
+\@ref(eq:welch-anova-equal-var-reduction)). In the four-group case used in the
+simulation, \(F/F_W = 1 + 3/[5(n-1)]\) (Eq.
+\@ref(eq:welch-anova-four-groups)) [@Welch:1951; @Rasch:2011;
+@Delacre:2019]. This keeps the estimand on the mean scale and gives directly
+interpretable estimates and confidence intervals [@Harrell:2026], but it can
+be weak for strongly skewed small samples [@Blanca:2017; @Fagerland:2012] and
+can answer the wrong scientific question when the mean lies in a long tail
+[@Fagerland:2009; @Harrell:2026]. Second, one can let residual shape decide:
+if Shapiro--Wilk rejects residual normality, route to ranks; otherwise stay
+mean-based. This is transparent because the same diagnostic is displayed to the
+user, and Shapiro--Wilk has high power among normality tests in small to
+moderate samples [@Razali:2011], but normality tests are underpowered in small
+samples and overpowered in large samples [@Ghasemi:2012; @Fagerland:2012;
+@Shatz:2024; @Franc:2025]. Third, one can combine both ideas by bypassing the
+normality gate above a sample-size threshold. This uses the Central Limit
+Theorem to protect mean-based inference
+[@Lumley:2002], but the threshold is necessarily shape- and design-dependent
+[@Blanca:2017; @Fagerland:2012]. Fourth, one can always use rank-based tests.
+This reduces distributional assumptions and can be efficient under skew
+[@Bridge:1999; @Harrell:2026; @Franc:2025], but changes the estimand
+[@Fagerland:2009] and gives less direct mean-scale interpretation
+[@Harrell:2026].
+
+The simulations below give the rationale for these design choices. They do
+not prove a universally best route; they show the price and benefit of each
+automatic compromise. Abbreviations used throughout are: `F` = Fisher's
+ANOVA; `W` = Welch's heteroscedastic ANOVA; `L` = Levene gate selecting `F`
+or `W`; `KW` = Kruskal--Wallis; `SW` = Shapiro--Wilk gate selecting `W` or
+`KW`; and `SW+L` = Shapiro--Wilk gate selecting `KW` or, if the mean branch
+is retained, `L`.
+
+The current code fits a group model, tests the standardised residuals, and
+uses the Shapiro--Wilk result as the first gate: rejected residual normality
+routes to Wilcoxon or Kruskal--Wallis; retained residual normality keeps the
+result in the mean-based branch. The design question is therefore specific:
+should the parametric side of the Shapiro--Wilk gate default directly to Welch
+(`SW`), or should it include the Levene gate (`SW+L`) and select
+Fisher/Student only when homoscedasticity is not rejected?
+
+Rochon et al. [@Rochon:2012] is used only as background here: two-stage
+testing can change conditional error rates, so the final procedure must be
+judged by its simulated final-test rejection rates. The figures below separate
+three questions. The first Type I simulation checks whether the candidate
+routes keep the nominal rejection rate when both the equal-means and
+rank-distribution nulls are true. The second keeps the equal-means null true
+but violates equality of distributions, so `F`, `W`, and `L` remain mean-null
+tests while `SW` and `SW+L` become final-test rejection rates after possible
+hypothesis switching. The power simulation then asks how the routes behave
+under real ordered group differences.
+
+The simulation layout follows the competitor logic. Blanca et al.
+[@Blanca:2017] assess Fisher's ANOVA under zero group effect, non-normal
+distributions, balanced and unbalanced group sizes, and Bradley's robustness
+criterion. Delacre et al. [@Delacre:2019] cross sample-size ratios, SD ratios,
+and sample-size/SD pairings to compare Fisher-type and Welch-type ANOVA.
+Fagerland and Sandvik [@Fagerland:2009] separate the equal-means target from
+rank-based targets and show why rank tests must not be read as mean tests when
+distributional shapes differ. We therefore use two Type I settings: identical
+distributions, where both the equal-means and equal-rank-distribution nulls are
+true, and equal means with unequal distributions, where only the equal-means
+null is the common target for `F`, `W`, and `L`.
+
+The normal input is the standard normal distribution,
+\(X \sim \mathcal{N}(0,1)\): mean 0, variance 1, skewness 0, and kurtosis 3.
+Excess kurtosis is kurtosis minus 3, so it is 0 for the standard normal
+distribution. Gamma input follows the standardised Gamma path. For
+\(X \sim \Gamma(\alpha,\theta)\), with shape parameter \(\alpha>0\) and scale
+parameter \(\theta>0\), the mean is \(E(X)=\alpha\theta\), the variance is
+\(\mathrm{Var}(X)=\alpha\theta^2\), the skewness is \(2/\sqrt{\alpha}\), and
+the kurtosis is \(3+6/\alpha\). The excess kurtosis is therefore
+\(6/\alpha\) [@Forbes:2010, p. 109]. In the simulations \(\theta=1\),
+\(\alpha\in\{16,4,1,0.25\}\), and draws are standardised by
+\(Z=(X-\alpha\theta)/(\theta\sqrt{\alpha})\). Thus the Gamma columns
+deliberately vary skewness and excess kurtosis together.
+
+The Type I simulations use four groups and $B=50{,}000$ Monte Carlo
+replications per cell. For an estimated rejection probability \(\hat p\), the
+Monte Carlo standard error is
+\[
+SE_{\mathrm{MC}}=\sqrt{\hat p(1-\hat p)/B}.
+\]
+This is about 0.10 percentage points at \(\hat p=0.05\), with a maximum of
+about 0.22 percentage points at \(\hat p=0.50\).
+
+```{r simulation-data, include=FALSE}
+type1_path <- file.path(
+  "simulation_data",
+  "route1_equal_mean_blanca_zimmerman.csv"
+)
+
+power_path <- file.path(
+  "simulation_data",
+  "gamma_skew_sweep_4groups_power.csv"
+)
+
+type1 <- read.csv(type1_path, check.names = FALSE)
+power <- read.csv(power_path, check.names = FALSE)
+
+identical_type1 <- subset(
+  type1,
+  design %in% c("balanced n, equal SD", "unbalanced n, equal SD")
+)
+
+unequal_type1 <- subset(
+  type1,
+  !design %in% c("balanced n, equal SD", "unbalanced n, equal SD")
+)
+
+pct <- function(x, digits = 1) {
+  sprintf(paste0("%.", digits, "f%%"), 100 * x)
+}
+
+range_pct <- function(x, digits = 1) {
+  values <- range(x, na.rm = TRUE)
+  if (diff(values) < 0.0005) {
+    return(pct(values[1], digits))
+  }
+  paste0(pct(values[1], digits), "--", pct(values[2], digits))
+}
+
+shape_name <- function(distribution, gamma_shape) {
+  if (distribution[1] == "normal") {
+    "normal, mean = 0, SD = 1"
+  } else {
+    sprintf(
+      "standardised Gamma, alpha = %s",
+      format(gamma_shape[1], trim = TRUE, scientific = FALSE)
+    )
+  }
+}
+
+skew_name <- function(distribution, skew) {
+  if (distribution[1] == "normal") {
+    "0"
+  } else {
+    format(skew[1], trim = TRUE, scientific = FALSE)
+  }
+}
+
+excess_kurtosis_name <- function(distribution, excess_kurtosis) {
+  if (distribution[1] == "normal") {
+    "0"
+  } else {
+    format(round(excess_kurtosis[1], 3), trim = TRUE, scientific = FALSE)
+  }
+}
+
+make_type_table <- function(dat, include_kw = TRUE) {
+  pieces <- split(dat, dat$skew)
+  out <- lapply(pieces, function(s) {
+    row <- data.frame(
+      Distribution = shape_name(s$distribution, s$gamma_shape),
+      Skewness = skew_name(s$distribution, s$skew),
+      `Excess kurtosis` = excess_kurtosis_name(
+        s$distribution,
+        s$excess_kurtosis
+      ),
+      F = range_pct(s$fisher_rejection),
+      W = range_pct(s$welch_rejection),
+      L = range_pct(s$levene_route_rejection),
+      SW = range_pct(s$sw_rejection),
+      `SW+L` = range_pct(s$sw_gate_rejection),
+      `SW to W` = range_pct(s$sw_route_welch_probability),
+      `SW to KW` = range_pct(s$sw_route_rank_probability),
+      `SW+L to F` = range_pct(s$route_fisher_probability),
+      `SW+L to W` = range_pct(s$route_welch_probability),
+      `SW+L to KW` = range_pct(s$route_rank_probability),
+      check.names = FALSE
+    )
+    if (include_kw) {
+      row <- cbind(
+        row[1:6],
+        KW = range_pct(s$rank_rejection),
+        row[7:ncol(row)]
+      )
+    }
+    row
+  })
+  do.call(rbind, out)
+}
+
+make_power_table <- function(dat) {
+  pieces <- split(dat, dat$skew)
+  out <- lapply(pieces, function(s) {
+    best <- pmax(
+      s$fisher_power,
+      s$welch_power,
+      s$mean_power,
+      s$rank_power,
+      s$sw_power,
+      s$gate_power
+    )
+    data.frame(
+      Distribution = shape_name(s$distribution, s$gamma_shape),
+      Skewness = skew_name(s$distribution, s$skew),
+      `Excess kurtosis` = excess_kurtosis_name(
+        s$distribution,
+        s$excess_kurtosis
+      ),
+      F = pct(mean(s$fisher_power)),
+      W = pct(mean(s$welch_power)),
+      L = pct(mean(s$mean_power)),
+      KW = pct(mean(s$rank_power)),
+      SW = pct(mean(s$sw_power)),
+      `SW+L` = pct(mean(s$gate_power)),
+      `SW+L regret` = pct(mean(best - s$gate_power), digits = 2),
+      `SW to W` = range_pct(s$sw_route_welch_probability),
+      `SW to KW` = range_pct(s$sw_route_rank_probability),
+      `SW+L to F` = range_pct(s$route_fisher_probability),
+      `SW+L to W` = range_pct(s$route_welch_probability),
+      `SW+L to KW` = range_pct(s$route_rank_probability),
+      check.names = FALSE
+    )
+  })
+  do.call(rbind, out)
+}
+```
+
+```{r simulation-captions, include=FALSE}
+cap_route1_identical_typeI <- paste(
+  "Route 1 Type I simulation under identical distributions and identical",
+  "means. The heatmap reports final-test rejection rates at alpha = 5%.",
+  "Green marks Bradley's 2.5%--7.5% interval. Cells for SW and SW+L",
+  "additionally report the route split."
+)
+
+cap_route1_unequal_typeI <- paste(
+  "Route 1 equal-means simulation with unequal group distributions. F, W,",
+  "and L are mean-null tests; SW and SW+L report final-test rejection after",
+  "possible routing to Kruskal--Wallis."
+)
+
+cap_route1_power_pdf <- paste(
+  "Theoretical input densities for the Route 1 power simulation. Groups",
+  "A--D use the same standardised normal or Gamma shape, with additive mean",
+  "shifts of 0, 0.25, 0.50, and 0.75 theoretical standard deviations."
+)
+
+cap_route1_power <- paste(
+  "Power simulation for four balanced homoscedastic groups with ordered",
+  "additive mean shifts of 0, 0.25, 0.50, and 0.75 SD. The first panel",
+  "shows the theoretical input densities; the second panel shows the",
+  "probability that the final test rejects at alpha = 5%."
+)
+
+cap_route1_parametric_power <- paste(
+  "Parametric-branch power under normality, balanced groups, and true",
+  "homoscedasticity."
+)
+```
+
+The first setting is the clean null case. All groups have the same population
+mean and the same distribution; therefore the equal-means null is true for
+`F`, `W`, and `L`, and the rank-distribution null is also true for `KW`.
+This is the only Type I figure where standalone `KW` is a valid comparator.
+
+```{r route1-identical-typeI, echo=FALSE, fig.cap=cap_route1_identical_typeI}
+knitr::include_graphics(
+  "figures/route1_identical_distributions_typeI_with_kw_skew4_B50000.png"
+)
+```
+
+Across the identical-distribution cells, `SW` and `SW+L` remain inside
+Bradley's interval. Their mean final-test rejection rates are
+`r pct(mean(identical_type1$sw_rejection), 2)` and
+`r pct(mean(identical_type1$sw_gate_rejection), 2)`, respectively. The
+important point is not that `SW` fails to route to `KW` under skew; it does
+route to `KW`. The point is that this does not create false rejection here,
+because the rank-distribution null is true as well.
+
+```{r route1-identical-table, echo=FALSE}
+knitr::kable(
+  make_type_table(identical_type1, include_kw = TRUE),
+  caption = paste(
+    "Summary of the identical-distribution Type I simulation by",
+    "distribution shape. Entries are ranges across the displayed n-regimes."
+  ),
+  align = "l",
+  row.names = FALSE
+)
+```
+
+The second Type I setting is the mean-null stress test. The group means are
+equal, but the group distributions differ through the standard-deviation
+design. Therefore `F`, `W`, and `L` still assess the equal-means null, but
+`KW` is not a standalone Type I comparator for that null. `SW` and `SW+L` are
+retained in the figure because they are the actual automatic procedures; their
+cells report the rejection rate of the final selected test after a possible
+switch to `KW`.
+
+```{r route1-unequal-typeI, echo=FALSE, fig.cap=cap_route1_unequal_typeI}
+knitr::include_graphics(
+  "figures/route1_equal_means_unequal_distributions_without_kw_skew4_B50000.png"
+)
+```
+
+Read strictly as equal-means testing, Welch is the most stable of the
+mean-based strategies in this simulation: the mean rejection rates are
+`F` = `r pct(mean(unequal_type1$fisher_rejection), 2)`,
+`W` = `r pct(mean(unequal_type1$welch_rejection), 2)`, and
+`L` = `r pct(mean(unequal_type1$levene_route_rejection), 2)`.
+`SW` and `SW+L` are much higher,
+`r pct(mean(unequal_type1$sw_rejection), 2)` and
+`r pct(mean(unequal_type1$sw_gate_rejection), 2)`, because the
+Shapiro--Wilk gate often switches to `KW`. This is the central
+interpretation: `SW` and `SW+L` are method switches, not better
+equal-means tests.
+
+```{r route1-unequal-table, echo=FALSE}
+knitr::kable(
+  make_type_table(unequal_type1, include_kw = FALSE),
+  caption = paste(
+    "Summary of the unequal-distribution Type I simulation by distribution",
+    "shape. Entries are ranges across the unequal-distribution n/SD regimes."
+  ),
+  align = "l",
+  row.names = FALSE
+)
+```
+
+The power simulation addresses the complementary question: if real ordered
+group differences exist, how much power is lost or gained by `SW` and `SW+L`?
+This completed power simulation is balanced and homoscedastic, with four group
+means shifted by 0, 0.25, 0.50, and 0.75 SD. It is therefore a power
+simulation, not a Type I simulation, and it does not replace the Type I
+simulation with unequal distributions above.
+
+```{r route1-power, echo=FALSE, fig.cap=cap_route1_power, fig.height=8.8}
+power_pdf_img <- png::readPNG("figures/gamma_skew_sweep_4groups_power_pdf.png")
+power_img <- png::readPNG("figures/gamma_skew_sweep_4groups_power.png")
+
+draw_power_panel <- function(img, row) {
+  grid::pushViewport(grid::viewport(layout.pos.row = row))
+  grid::grid.raster(img, width = grid::unit(1, "npc"), interpolate = TRUE)
+  grid::popViewport()
+}
+
+grid::grid.newpage()
+grid::pushViewport(grid::viewport(
+  layout = grid::grid.layout(
+    nrow = 2,
+    heights = grid::unit(c(1, 1.2), "null")
+  )
+))
+draw_power_panel(power_pdf_img, 1)
+draw_power_panel(power_img, 2)
+grid::popViewport()
+```
+
+Around normality and mild Gamma skew, `SW+L` has slightly higher power than
+`SW` because the Levene gate sometimes retains Fisher in homoscedastic data.
+At stronger skew, both `SW` and `SW+L` route almost entirely to `KW` and their
+power is practically identical.
+
+```{r route1-power-table, echo=FALSE}
+knitr::kable(
+  make_power_table(power),
+  caption = paste(
+    "Summary of the power simulation by distribution shape. Power entries",
+    "are means across n = 10, 20, 50, 100, and 200; the",
+    "figure shows the n-specific values."
+  ),
+  align = "l",
+  row.names = FALSE
+)
+```
+
+Finally, the parametric branch is shown separately under normality, balanced
+groups, and true homoscedasticity. This small homoscedastic advantage of
+Fisher/Student is exactly the balanced equal-variance corner quantified in
+Eq. \@ref(eq:welch-anova-four-groups): in the four-group simulation,
+\(F/F_W = 1 + 3/[5(n-1)]\), so the statistic-level difference is of order
+\(n^{-1}\). This is not an argument for variance pretesting. The literature
+separates the two issues: Welch-type tests are recommended as unconditional
+mean tests when equal variances are doubtful [@Welch:1951; @Rasch:2011;
+@Delacre:2019], whereas choosing Student/Fisher or Welch after a preliminary
+variance test is discouraged because the selection step changes the operating
+characteristics of the final test [@Moser:1992; @Zimmerman:2004;
+@Rochon:2012].
+
+```{r route1-parametric-power, echo=FALSE, fig.cap=cap_route1_parametric_power}
+knitr::include_graphics(
+  "figures/gamma_skew_sweep_4groups_parametric_branch_power.png"
+)
+```
+
+```{r route1-parametric-table, echo=FALSE}
+normal_power <- subset(power, distribution == "normal")
+normal_power <- normal_power[order(normal_power$n_per_group), ]
+
+parametric_table <- data.frame(
+  n = normal_power$n_per_group,
+  `F/F_W theory` = sprintf(
+    "%.4f",
+    1 + 3 / (5 * (normal_power$n_per_group - 1))
+  ),
+  `F power` = pct(normal_power$fisher_power, 1),
+  `W power` = pct(normal_power$welch_power, 1),
+  `L power` = pct(normal_power$mean_power, 1),
+  `SW+L to F` = pct(normal_power$route_fisher_probability, 1),
+  `SW+L to W` = pct(normal_power$route_welch_probability, 1),
+  `SW+L to KW` = pct(normal_power$route_rank_probability, 1),
+  check.names = FALSE
+)
+
+knitr::kable(
+  parametric_table,
+  caption = paste(
+    "Fisher/Welch comparison in the normal homoscedastic corner of the",
+    "power simulation."
+  ),
+  align = "r",
+  row.names = FALSE
+)
+```
+
+The only remaining reason for `SW+L` is therefore not statistical optimality
+for the equal-means null, but consistency with the displayed model. Route 1
+shows the residual diagnostics of the equal-variance Gaussian group model; if
+both displayed GLM assumptions pass, keeping Fisher/Student available makes the
+reported test correspond to the model just diagnosed. If that design link is
+not wanted, the literature and these simulations both favour the simpler `SW`
+route: Shapiro--Wilk retained means Welch, Shapiro--Wilk rejected means
+Kruskal--Wallis.
+
+If Route 1 is read strictly as an equal-means machine, the simulations support
+Welch as the clean default. If Route 1 is allowed to use residual shape as a
+method switch, `SW` is the simpler automatic route. `SW+L` is a model-display
+compromise: it preserves the Fisher/Student GLM branch when both residual
+normality and homoscedasticity are retained, but its Type I error cost must be
+read from the Type I simulations, not from the Fisher/Welch power comparison.
+
+Thus the simulations do not prove that `SW+L` is the best equal-means
+procedure. They show the price and benefit of the automatic route. The price
+is that, under equal means but unequal distributions, `SW` and `SW+L` often
+report the rejection rate of `KW` after the hypothesis has changed. The benefit
+is that the switch is visible and diagnostic-driven. The final design decision
+is therefore not statistical optimality in the abstract, but which default the
+package wants to make explicit: Welch for fixed equal-means inference, `SW` for
+a parsimonious shape-based switch, or `SW+L` for the same switch while
+preserving the GLM Fisher/Student branch when its displayed assumptions pass.
+
+
 ## Route-specific decision rules {#sec:route-rules}
 
 The general branching is driven by input class and factor levels (Section \@ref(sec:top-level)).
@@ -387,26 +855,36 @@ knitr::include_graphics("figures/decision_tree.png")
 
 The first split checks group size: 
 
-When all group-specific sample sizes are greater than 50, the sampling distribution of the group means is treated as sufficiently close to normal by the central limit theorem [@Lumley:2002]. In this case, the test selection is independent of the residual-normality p-values, albeit the corresponding p-values are still reported and displayed in the diagnostic panels (Section \@ref(sec:graphical)).
+<!-- When all group-specific sample sizes are greater than 50, the sampling distribution of the group means is treated as sufficiently close to normal by the central limit theorem [@Lumley:2002]. In this case, the test selection is independent of the residual-normality p-values, albeit the corresponding p-values are still reported and displayed in the diagnostic panels (Section \@ref(sec:graphical)). -->
 
- <!-- In this casel, formal testing of residual normality of the general linear model does not steer test selection to avoid type I errors caused by negligible deviations from normality in large samples [@Ghasemi:2012; @Fagerland:2012; @Shatz:2024],  albeit the corresponding p-values area still displayd in the diagnostic panels (Section \@ref(sec:graphical)) and reported.  -->
+ <!-- In this case, formal testing of residual normality of the general linear model does not steer test selection to avoid type I errors caused by negligible deviations from normality in large samples [@Ghasemi:2012; @Fagerland:2012; @Shatz:2024],  albeit the corresponding p-values area still displayd in the diagnostic panels (Section \@ref(sec:graphical)) and reported.  -->
+ 
+From Shatz
+"When violations are detected, the diagnostics can also drive the decision of what to do; common options include switching methods (e.g., to robust non-parametric ones), transforming the data (e.g., by taking its logarithm), or sticking to the original analysis (Casson & Farmer, 2014; Pek et al., 2018; Pole & Bondy, 2012; Vallejo et al., 2021)."
+
+
+The literature question is separate: Fisher/Welch can still be robust to that non-normality, especially with adequate sample size. So the gate may be assumption-correct but not always necessary. 
+
+
+
 This avoids switching to rank-based tests because of negligible residual-normality deviations in large samples [@Ghasemi:2012;  @Shatz:2024].
 
-For smaller samples, a linear model of Eq.
+A linear model of Eq.
 \@ref(eq:glm) is fitted between the numeric response and the categorical predictor, and the model residuals of Eq.
 \@ref(eq:raw-residual) are extracted.
 
 The Shapiro--Wilk (SW) normality test is then applied as the residual-normality gate, because simulation studies report high power for small to moderate sample sizes [@Razali:2011].
 
-If the SW-test rejects residual normality ($p_\text{SW} \le \alpha$), non-parametric tests are selected: `wilcox.test()` (Eq. \@ref(eq:wilcoxon-w)) for two groups, or `kruskal.test()` (Eq. \@ref(eq:kruskal-h)) followed by Holm-adjusted `pairwise.wilcox.test()` for more than two groups.
+If the SW-test rejects residual normality ($p_\text{SW} \le \alpha$), robust non-parametric tests are selected: `wilcox.test()` (Eq. \@ref(eq:wilcoxon-w)) for two groups, or `kruskal.test()` (Eq. \@ref(eq:kruskal-h)) followed by Holm-adjusted `pairwise.wilcox.test()` for more than two groups.
 
 If residual normality is not rejected or not tested in larger samples, variance homogeneity is assessed with the mean-centred Levene test (L) [@Levene:1960] (Eq. \@ref(eq:levene-f)).
 
 For homoscedastic data ($p_\text{L} > \alpha$), `t.test(var.equal = TRUE)` (Eq. \@ref(eq:student-t)) is applied for two groups, or Fisher's `aov()` (Eq. \@ref(eq:fisher-f)) for more than two groups.
 For heteroscedastic data ($p_\text{L} \le \alpha$), Welch's `t.test()` (Eq. \@ref(eq:welch-t)) is applied for two groups, or Welch's `oneway.test()` (Eq. \@ref(eq:welch-f)) for more than two groups.
 
-A type I error of the Levene test merely routes homoscedastic data to Welch's t-test or Welch's one-way ANOVA, which lose only negligible power when variances are in fact equal; 
+A type I error of the Levene test merely routes homoscedastic data to Welch's t-test or Welch's one-way ANOVA, which lose only negligible power when variances are in fact equal simple sizes are large. 
 [@Rasch:2011; @Delacre:2019].
+
 <!-- some authors therefore recommend them as the default  -->
 
 
@@ -716,7 +1194,7 @@ It is displayed with pointwise confidence and prediction bands at the specified 
 
 The returned object contains the regression statistics, residual-normality tests, pointwise confidence and prediction bands, and the coefficient of determination $R^2$ (Eq. \@ref(eq:r-squared)) as effect size.
 
-```{r regression-example, fig.cap="Simple linear regression of `Fertility` on `Examination` for the `swiss` dataset (`conf.level = 0.99`). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, 99\\% confidence band (dark shading), and 99\\% prediction band (light shading).", out.width="48%", fig.height=4.5, fig.show="hold"}
+```{r regression-example, fig.cap="Simple linear regression of `Fertility` on `Examination` for the `swiss` dataset (`conf.level = 0.99`). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, blue-shaded 99\\% prediction interval, and black 99\\% CI for the fitted mean.", out.width="48%", fig.height=4.5, fig.show="hold"}
 linreg_swiss <- visstat(swiss$Examination, swiss$Fertility, conf.level = 0.99)
 ```
 
@@ -939,20 +1417,20 @@ visstat routes on a residual-normality p-value, a sample-size-dependent proxy fo
 <!-- Why Shapiro -->
 For smaller group-specific sample sizes, a Shapiro--Wilk test is used to route between mean-based and rank-based methods, as simulation studies suggest that it has the highest power among normality tests in small to moderate ($n = 10$ to 100) sample sizes [@Razali:2011].
 
-Because the Shapiro–Wilk test's power against non-normality is driven primarily by asymmetry at small-to-moderate sample sizes [@Razali:2011], a rejected residual-normality test acts here as a practical proxy for the skewness that determines whether the mean is a faithful summary (Eq. @ref(eq:shapiro-w); supplementary simulation).
+Because the Shapiro–Wilk test's power against non-normality is driven primarily by asymmetry at small-to-moderate sample sizes [@Razali:2011], a rejected residual-normality test acts here as a practical proxy for the skewness that determines whether the mean is a faithful summary (Eq. \@ref(eq:shapiro-w); supplementary simulation).
 
 Shapiro–Wilk serves as a proxy for skewness, the feature deciding whether the mean is a faithful summary: its power against non-normality is driven primarily by asymmetry at small-to-moderate 
 n
 n [@Razali:2011]. It is a normality verdict, not a skewness magnitude — a proxy, not a skewness test.
 Pre-testing distorts the error rate of any single conditional arm, yet the residual-normality-gated procedure holds the nominal level as a whole [@Rochon:2012], reproduced across input distributions from skew 0 to 6 (supplementary); the worst that can be said of the gate is that it is unnecessary, not that it inflates Type I.
 
-Shapiro–Wilk acts as a skewness proxy in the routing: its power against non-normality is driven primarily by asymmetry [@Razali:2011], so the gate effectively responds to skew. In large samples it rejects even mild skew and routes such data to the rank branch, at negligible cost — rank tests retain ~95% efficiency under normality and gain power under skew [@Harrell-BBR; @Bridge:1999] (supplementary)
+Shapiro–Wilk acts as a skewness proxy in the routing: its power against non-normality is driven primarily by asymmetry [@Razali:2011], so the gate effectively responds to skew. In large samples it rejects even mild skew and routes such data to the rank branch, at negligible cost — rank tests retain ~95% efficiency under normality and gain power under skew [@Harrell:2026; @Bridge:1999] (supplementary)
 
 
 Shapiro–Wilk acts as a skewness-sensitive gate: it has high power against skewed alternatives at small-to-moderate 
 N
 [@Razali:2011]. For large 
-N it rejects even mild skew and routes such data to the rank branch, at negligible cost — rank tests retain ~95% efficiency under normality and gain power under skew [@Harrell-BBR; @Bridge:1999] (supplementary).
+N it rejects even mild skew and routes such data to the rank branch, at negligible cost — rank tests retain ~95% efficiency under normality and gain power under skew [@Harrell:2026; @Bridge:1999] (supplementary).
 
 Low skew, any N: SW usually stays parametric; even when it does route to rank, mean≈median so the two p-values agree in direction despite the different H₀. No practical harm. ✓ (your point 2)
 High skew, very small per-group N (~10): SW misses the skew and wrongly stays parametric — the one genuinely wrong outcome. ✓
@@ -964,26 +1442,41 @@ Shapiro–Wilk acts as a skewness-sensitive gate: it has high power against skew
 N
 N [@Razali:2011]. For large 
 N
-N it rejects even mild skew and routes such data to the rank branch; the cost of this is not power — rank tests retain ~95% efficiency under normality [@Harrell-BBR; @Bridge:1999] — but the change of research question from means to stochastic ordering.
+N it rejects even mild skew and routes such data to the rank branch; the cost of this is not power — rank tests retain ~95% efficiency under normality [@Harrell:2026; @Bridge:1999] — but the change of research question from means to stochastic ordering.
 
 
 
 A maximally powerful test is useless if it answers the wrong question; lacking the user's research question, visstat() lets the residual-normality test guess the estimand from shape — transparent and overridable.
 
-Although the Shapiro–Wilk test is an omnibus normality statistic — sensitive to both skewness and excess kurtosis, and by construction unable to indicate which [@Gosselin:2024] — its power is dominated by asymmetry [@Razali:2011]; it therefore acts in practice as a skewness gate, and visstat() uses its rejection of residual normality to route skewed data to rank-based comparison by default.
+Although the Shapiro–Wilk test is an omnibus normality statistic — sensitive to both skewness and excess kurtosis, and by construction unable to indicate which  — its power is dominated by asymmetry [@Razali:2011]; it therefore acts in practice as a skewness gate, and visstat() uses its rejection of residual normality to route skewed data to rank-based comparison by default.
 
 
 - **What the gate actually is.** The Shapiro--Wilk statistic is an omnibus normality test, sensitive to both skewness ($\sqrt{b_1}$) and kurtosis ($b_2$) though built from neither [@DAgostino:1973]; because its power is dominated by skewness [@Razali:2011], it functions in practice as a skewness detector --- the feature that governs whether a mean is a meaningful summary of each group.
 
 - **Why the $n > 50$ bypass is removed.** Since the Shapiro--Wilk test already routes by shape at every $N$, a sample-size threshold is redundant, and its "large enough" cutoff is itself shape-dependent and therefore arbitrary [@Lumley:2002]; `visstat()` thus lets the residual-normality test steer the route at all $N$ rather than forcing a mean-based test above a fixed size.
 
-- **How it behaves, and the real cost.** At large $N$ the gate routes even mildly skewed data to the rank branch; at small $N$ it is underpowered and keeps moderate skew on the mean route. The cost of this is not power --- rank tests retain about 95% efficiency under normality and gain under skew [@Harrell-BBR; @Bridge:1999] --- but a change in the hypothesis tested, from equality of means to stochastic ordering [@Fagerland:2009], which `visstat()` makes explicit by naming the selected test.
+- **How it behaves, and the real cost.** At large $N$ the gate routes even mildly skewed data to the rank branch; at small $N$ it is underpowered and keeps moderate skew on the mean route. The cost of this is not power --- rank tests retain about 95% efficiency under normality and gain under skew [@Harrell:2026; @Bridge:1999] --- but a change in the hypothesis tested, from equality of means to stochastic ordering [@Fagerland:2009], which `visstat()` makes explicit by naming the selected test.
 
-- **Validity of the whole procedure, and honest scope.** Although pre-testing distorts the conditional error of a single arm, the residual-normality-gated procedure holds the nominal level as a whole [@Rochon:2012], reproduced across distributions from skew 0 to 6 (supplementary); the Shapiro--Wilk test is used because it is the transparent diagnostic already displayed and a serviceable estimand heuristic for an automated tool that is not told the research question --- not because it is the optimal selection statistic, a role a shape selector would fill more principledly [@Hall:1997].
+- **Validity of the whole procedure, and honest scope.** Although pre-testing distorts the conditional error of a single arm, the residual-normality-gated procedure holds the nominal level as a whole [@Rochon:2012], reproduced  in our simulations across distributions from skew 0 to 6 (supplementary); the Shapiro--Wilk test is used because it is the transparent diagnostic already displayed and a serviceable estimand heuristic for an automated tool that is not told the research question --- not because it is the optimal selection statistic, a role a shape selector would fill more principledly [@Hall:1997].
 **against the competitors**
-Recommendations to default unconditionally to Welch's mean-based test [@Delacre:2019; @Zimmerman:2004] or to rank-based methods [@Harrell-BBR; @Franc:2025] each fix the estimand in advance --- means or stochastic ordering --- without flagging that the two answer different questions [@Fagerland:2009]. `visstat()` instead selects between mean- and rank-based tests of central tendency from the residual diagnostics and reports which was used, leaving the choice visible rather than silently fixed.
+Recommendations to default unconditionally to Welch's mean-based test [@Delacre:2019; @Zimmerman:2004] or to rank-based methods [@Harrell:2026; @Franc:2025] each fix the estimand in advance --- means or stochastic ordering --- without flagging that the two answer different questions [@Fagerland:2009]. `visstat()` instead selects between mean- and rank-based tests of central tendency from the residual diagnostics and reports which was used, leaving the choice visible rather than silently fixed.
 *why both branches*
-Retaining the mean-based branch is not merely conventional. Under normality the general-linear-model tests are uniformly most powerful unbiased [@Bridge:1999], and they yield effect estimates and confidence intervals on the data's own scale, together with the regression and ANOVA decomposition that the rank route does not provide [@Harrell-BBR]. The rank tests buy robustness and efficiency under skew but give a $p$-value without a natural-scale effect or interval. `visstat()` therefore keeps both and selects between them, rather than discarding the mean framework's interpretability or the rank framework's robustness a priori.
+Retaining the mean-based branch is not merely conventional. Under normality the general-linear-model tests are uniformly most powerful unbiased [@Bridge:1999], and they yield effect estimates and confidence intervals on the data's own scale, together with the regression and ANOVA decomposition that the rank route does not provide [@Harrell:2026]. The rank tests buy robustness and efficiency under skew but give a $p$-value without a natural-scale effect or interval. `visstat()` therefore keeps both and selects between them, rather than discarding the mean framework's interpretability or the rank framework's robustness a priori.
+
+*** Codex**Route 1 defaults to parametric tests of central tendency. The assumption tests
+check whether this default is defensible for the fitted group model, not
+whether the user's scientific target is correct. The first check is the shape
+of the model residuals: after group means have been fitted, the remaining
+within-group deviations should be compatible with the parametric model. If this
+residual shape is clearly non-normal, visstat() falls back to ranks.
+
+The weak case is mild skewness of the within-group distributions. In that
+case, residuals can fail Shapiro-Wilk although the group mean still lies close
+to the median and still describes the bulk of the observations. Then the rank
+fallback is conservative, not automatically better
+
+
+
  <!-- homosc.  -->
 A type I error in a test of homoscedasticity is of no real consequence: it 
 merely routes homoscedastic data to Welch's t-test or Welch's one-way ANOVA, which loose only negligible power to Student' t-test or Fisher Oneway Anova, when variances are in fact equal [@Rasch:2011; @Delacre:2019]. 
@@ -993,6 +1486,10 @@ Some authors therefore recommend the Welch tests  as the default [@Rasch:2011; @
 
 
 
+
+
+
+<!-- end of playing around  -->
 If the assumptions of parametric tests are violated, `visstat()` automatically falls back to non-parametric tests.
 In the regression branch, violated assumptions are solely flagged, and the package offers Spearman rank correlation as a non-causal alternative to linear regression.
 Further alternative methods such as data transformation, generalised linear models, or robust regression are not implemented: each requires user judgment -- about the transformation family, the link function, or the estimator -- that cannot be automated without substantially expanding the decision tree and increasing the risk of Type I error inflation.
@@ -1036,7 +1533,8 @@ Many routine statistical analyses reduce to a relatively small number of tests i
 
 `visStatistics` addresses this gap: Its selection of tests of central tendencies takes p-values of assumption tests of the model residuals of a fitted linear model into account. 
 
-The package addresses the inherent shortcomings of test selection based on p-values [@Lumley:2002; @Fagerland:2012; @Kozak:2018; @Shatz:2024; @Franc:2025;] by omitting testing of normality where justifiable by the Central Limit Theory and supplementing the output with diagnostic plots of the assumption tests.
+The package addresses the inherent shortcomings of test selection based on p-values [@Lumley:2002; @Fagerland:2012; @Kozak:2018; @Shatz:2024] 
+<!-- by omitting testing of normality where justifiable by the Central Limit Theory and  --> by supplementing the output with diagnostic plots of the assumption tests of the selected test. It's design is therefore a combination of both "assumption checking" [@Shatz:2024] by visualisation  and  "assumption testing" by p-values. 
 
 Its value is not that it removes the user's statistical judgment, but that it exposes the assumptions, effect sizes, and plots that should inform that judgment.
 

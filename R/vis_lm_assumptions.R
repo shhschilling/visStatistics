@@ -21,6 +21,8 @@
 #' @param correlation Logical. If \code{FALSE} and \code{fact} is numeric,
 #'   regression diagnostics are shown. If \code{TRUE}, no regression
 #'   diagnostics are shown. Default is \code{FALSE}.
+#' @param conf.level Numeric confidence level for the simulated Q-Q envelopes.
+#' @param qq_nsim Integer number of simulated refits for the Q-Q envelopes.
 #'
 #' @return A list with elements:
 #' \describe{
@@ -37,8 +39,9 @@
 #' vis_lm_assumptions(ToothGrowth$len, ToothGrowth$dose)
 #'
 #' @export
-
-vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
+vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE,
+                               conf.level = 0.95,
+                               qq_nsim = getOption("visStatistics.qq_nsim", 5000L)) {
   
   oldpar <- par(no.readonly = TRUE)
   on.exit(par(oldpar))
@@ -108,13 +111,18 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
     bartlett_test <- NULL
      bp_test <-   bp.test(anova_model)
   }
+
+  qq_envelope <- tryCatch(
+    qq_lm_envelope(anova_model, conf.level = conf.level, nsim = qq_nsim),
+    error = function(e) NULL
+  )
   
   plot_histogram <- function(x, xlab) {
     x_min <- min(min(x, na.rm = TRUE), -3.2)
     x_max <- max(max(x, na.rm = TRUE), 3.2)
     temp_hist <- hist(x, plot = FALSE)
     y_max <- max(max(temp_hist$density), 0.45)
-    
+
     hist(x, freq = FALSE, main = "Histogram and Normal Density",
          xlab = xlab, col = "lightblue", border = "black",
          xlim = c(x_min, x_max), ylim = c(0, y_max))
@@ -123,29 +131,127 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
   }
   
   plot_qq <- function(x, ylab) {
-    qq <- qqnorm(x, plot.it = FALSE)
+    diagnostic_col <- colorscheme(3)[5]
+    if (is.null(qq_envelope)) {
+      qq <- qqnorm(x, plot.it = FALSE)
+    } else {
+      qq <- list(x = qq_envelope$expected, y = qq_envelope$observed)
+    }
+    y_lim <- range(qq$y, na.rm = TRUE)
+    if (!is.null(qq_envelope)) {
+      y_lim <- range(y_lim, qq_envelope$pointwise, qq_envelope$global, na.rm = TRUE)
+    }
+
     plot(qq$x, qq$y,
+         type = "n",
          main = "Normal Q-Q Plot",
          xlab = "Theoretical quantiles",
-         ylab = ylab)
+         ylab = ylab,
+         ylim = y_lim)
+    if (!is.null(qq_envelope)) {
+      polygon(
+        c(qq$x, rev(qq$x)),
+        c(qq_envelope$global[1, ], rev(qq_envelope$global[2, ])),
+        border = NA,
+        col = grDevices::adjustcolor(diagnostic_col, alpha.f = 0.25)
+      )
+      lines(qq$x, qq_envelope$pointwise[1, ], col = "black", lty = 2, lwd = 1)
+      lines(qq$x, qq_envelope$pointwise[2, ], col = "black", lty = 2, lwd = 1)
+      lines(qq$x, qq_envelope$global[1, ], col = diagnostic_col, lwd = 1)
+      lines(qq$x, qq_envelope$global[2, ], col = diagnostic_col, lwd = 1)
+    }
     qqline(x, col = "red", lwd = 1)
+    points(qq$x, qq$y, pch = 1, col = "black")
+    if (!is.null(qq_envelope)) {
+      legend(
+        "topleft",
+        legend = sprintf(
+          c("%.0f%% simultaneous tolerance band",
+            "%.0f%% point-wise tolerance band"),
+          100 * conf.level
+        ),
+        lty = c(1, 2),
+        lwd = 1,
+        col = c(diagnostic_col, "black"),
+        bty = "n",
+        cex = 0.65
+      )
+    }
   }
   
   plot_residuals_vs_fitted <- function() {
     y_lim <- extendrange(c(z_residuals, -3, 3), f = 0.08)
     y_ticks <- seq(floor(y_lim[1]), ceiling(y_lim[2]), by = 1)
-    plot(fitted(anova_model), z_residuals,
+    # smoother_col <- colorscheme(3)[5]
+    fitted_values <- fitted(anova_model)
+    plot(fitted_values, z_residuals,
+         type = "n",
          main = "Residuals vs. Fitted",
-         xlab = "Fitted values",
+         xlab = "Fitted response",
          ylab = "z residuals",
          ylim = y_lim,
          yaxt = "n")
     axis(2, at = y_ticks, las = 1)
+    # ok <- is.finite(fitted_values) & is.finite(z_residuals)
+    # smoother_fit <- NULL
+    # smoother_x <- NULL
+    # if (sum(ok) >= 3 && length(unique(fitted_values[ok])) >= 3) {
+    #   smooth_dat <- data.frame(x = fitted_values[ok], z = z_residuals[ok])
+    #   smoother <- tryCatch(
+    #     suppressWarnings(stats::loess(
+    #       z ~ x,
+    #       data = smooth_dat,
+    #       span = 2 / 3,
+    #       degree = 1,
+    #       family = "symmetric"
+    #     )),
+    #     error = function(e) NULL
+    #   )
+    #   if (!is.null(smoother)) {
+    #     smoother_x <- seq(min(smooth_dat$x), max(smooth_dat$x), length.out = 200)
+    #     pred <- tryCatch(
+    #       stats::predict(smoother, data.frame(x = smoother_x), se = TRUE),
+    #       error = function(e) NULL
+    #     )
+    #     if (!is.null(pred) && all(is.finite(pred$fit))) {
+    #       smoother_fit <- pred$fit
+    #       if (all(is.finite(pred$se.fit)) && is.finite(pred$df) && pred$df > 0) {
+    #         crit <- stats::qt((1 + conf.level) / 2, df = pred$df)
+    #         smoother_band <- crit * pred$se.fit
+    #         polygon(
+    #           c(smoother_x, rev(smoother_x)),
+    #           c(smoother_fit - smoother_band,
+    #             rev(smoother_fit + smoother_band)),
+    #           border = NA,
+    #           col = grDevices::adjustcolor(smoother_col, alpha.f = 0.2)
+    #         )
+    #       }
+    #     }
+    #   }
+    # }
     abline(h = c(-3, 3), col = "grey85", lty = 2, lwd = 1)
     abline(h = 0, col = "red", lwd = 1)
+    points(fitted_values, z_residuals, pch = 1, col = "black")
+    # if (!is.null(smoother_x) && !is.null(smoother_fit)) {
+    #   lines(smoother_x, smoother_fit, col = smoother_col, lwd = 1)
+    #   legend(
+    #     "topleft",
+    #     legend = c(
+    #       "lowess smoother",
+    #       sprintf("%.0f%% smoother band", 100 * conf.level)
+    #     ),
+    #     lty = c(1, NA),
+    #     lwd = c(1, NA),
+    #     pch = c(NA, 15),
+    #     pt.cex = c(NA, 1.5),
+    #     col = c(smoother_col, grDevices::adjustcolor(smoother_col, alpha.f = 0.2)),
+    #     bty = "n",
+    #     cex = 0.65
+    #   )
+    # }
     outliers <- which(abs(z_residuals) > 3)
     if (length(outliers) > 0) {
-      text(fitted(anova_model)[outliers], z_residuals[outliers],
+      text(fitted_values[outliers], z_residuals[outliers],
            labels = outliers, pos = 3, cex = 0.7)
     }
   }
@@ -183,18 +289,18 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE) {
     abline(h = 3, col = "grey85", lty = 2, lwd = 1)
     
     group_means <- tapply(abs_scaled_residuals, fact_plot, mean, na.rm = TRUE)
-    points(seq_along(group_means), group_means, pch = 18, col = "red", cex = 1.5)
+    points(seq_along(group_means), group_means, pch = 4, col = "red", cex = 0.8, lwd = 1.5)
     
     outliers <- which(abs_scaled_residuals > 3)
     if (length(outliers) > 0) {
       text(x_jitter[outliers], abs_scaled_residuals[outliers],
            labels = outliers, pos = 3, cex = 0.7)
     }
-    
-    legend("topright", legend = "group mean", pch = 18, col = "red",
+
+    legend("topright", legend = "group mean", pch = 4, pt.lwd = 1.5, col = "red",
            bty = "n", cex = 0.8)
   }
-  
+
   # Add overall title with test results
   p_shapiro <- if (!is.na(shapiro_test$p.value)) signif(shapiro_test$p.value, 2) else "NA"
   p_AD <- if (is.list(ad_test) && !is.null(ad_test$p.value)) signif(ad_test$p.value, 2) else "N/A"
