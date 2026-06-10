@@ -123,11 +123,13 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE,
     temp_hist <- hist(x, plot = FALSE)
     y_max <- max(max(temp_hist$density), 0.45)
 
-    hist(x, freq = FALSE, main = "Histogram and Normal Density",
+    hist(x, freq = FALSE, main = "Histogram",
          xlab = xlab, col = "lightblue", border = "black",
          xlim = c(x_min, x_max), ylim = c(0, y_max))
     x_seq <- seq(x_min, x_max, length.out = 200)
     lines(x_seq, dnorm(x_seq), col = "red", lwd = 1)
+    legend("topright", legend = "normal density", col = "red", lwd = 1,
+           bty = "n", cex = cex, inset = 0.02)
   }
   
   plot_qq <- function(x, ylab) {
@@ -144,7 +146,7 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE,
 
     plot(qq$x, qq$y,
          type = "n",
-         main = "Normal Q-Q Plot",
+         main = "QQ-Residuals",
          xlab = "Theoretical quantiles",
          ylab = ylab,
          ylim = y_lim)
@@ -166,15 +168,15 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE,
       legend(
         "topleft",
         legend = sprintf(
-          c("%.0f%% simultaneous tolerance band",
-            "%.0f%% point-wise tolerance band"),
+          c("%.0f%% STB",
+            "%.0f%% TB"),
           100 * conf.level
         ),
         lty = c(1, 2),
         lwd = 1,
         col = c(diagnostic_col, "black"),
         bty = "n",
-        cex = 0.65
+        cex = cex
       )
     }
   }
@@ -252,19 +254,19 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE,
     outliers <- which(abs(z_residuals) > 3)
     if (length(outliers) > 0) {
       text(fitted_values[outliers], z_residuals[outliers],
-           labels = outliers, pos = 3, cex = 0.7)
+           labels = outliers, pos = 3, cex = cex)
     }
   }
   
   if (regression_mode) {
     par(mfrow = c(1, 3), oma = c(0, 0, 3, 0), mar = c(4.5, 4, 3, 1),
-        cex = 0.7 * cex)
+        cex = cex)
     plot_histogram(scaled_residuals, "Standardised residuals")
     plot_qq(scaled_residuals, "Standardised residuals")
     plot_residuals_vs_fitted()
   } else {
     par(mfrow = c(1, 3), oma = c(0, 0, 3, 0), mar = c(4.5, 4, 3, 1),
-        cex = 0.7 * cex)
+        cex = cex)
     plot_histogram(scaled_residuals, "Standardised residuals")
     plot_qq(scaled_residuals, "Standardised residuals")
 
@@ -275,7 +277,7 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE,
     y_lim <- c(0, max(3, abs_scaled_residuals, na.rm = TRUE) * 1.08)
     y_ticks <- seq(0, ceiling(y_lim[2]), by = 1)
     plot(x_jitter, abs_scaled_residuals,
-         main = "Absolute residuals vs. Group",
+         main = "Abs. residuals vs Group",
          xlab = "Group",
          ylab = "Absolute standardised residuals",
          xlim = c(0.5, length(levels(fact_plot)) + 0.5),
@@ -289,16 +291,16 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE,
     abline(h = 3, col = "grey85", lty = 2, lwd = 1)
     
     group_means <- tapply(abs_scaled_residuals, fact_plot, mean, na.rm = TRUE)
-    points(seq_along(group_means), group_means, pch = 4, col = "red", cex = 0.8, lwd = 1.5)
+    points(seq_along(group_means), group_means, pch = 4, col = "red", cex = cex, lwd = 1.5)
     
     outliers <- which(abs_scaled_residuals > 3)
     if (length(outliers) > 0) {
       text(x_jitter[outliers], abs_scaled_residuals[outliers],
-           labels = outliers, pos = 3, cex = 0.7)
+           labels = outliers, pos = 3, cex = cex)
     }
 
     legend("topright", legend = "group mean", pch = 4, pt.lwd = 1.5, col = "red",
-           bty = "n", cex = 0.8)
+           bty = "n", cex = cex)
   }
 
   # Add overall title with test results
@@ -312,8 +314,8 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE,
                          "| Anderson-Darling p =", p_AD)
     title_line2 <- paste("Breusch-Pagan p =", p_bp)
     
-    mtext(title_line1, side = 3, outer = TRUE, line = 1, cex = 0.7)
-    mtext(title_line2, side = 3, outer = TRUE, line = 0, cex = 0.7)
+    mtext(title_line1, side = 3, outer = TRUE, line = 1, cex = cex)
+    mtext(title_line2, side = 3, outer = TRUE, line = 0, cex = cex)
   } else {
     # ANOVA title with Levene and Bartlett - split into two rows
     title_line1 <- paste("Shapiro-Wilk p =", p_shapiro,
@@ -321,8 +323,8 @@ vis_lm_assumptions <- function(samples, fact, cex = 1, correlation = FALSE,
     title_line2 <- paste("Levene p =", signif(levene_test$p.value, 2),
                          "| Bartlett p =", signif(bartlett_test$p.value, 2))
     
-    mtext(title_line1, side = 3, outer = TRUE, line = 1, cex = 0.7)
-    mtext(title_line2, side = 3, outer = TRUE, line = 0, cex = 0.7)
+    mtext(title_line1, side = 3, outer = TRUE, line = 1, cex = cex)
+    mtext(title_line2, side = 3, outer = TRUE, line = 0, cex = cex)
   }
   
   # Return results

@@ -43,6 +43,7 @@ knitr::opts_chunk$set(
   echo = TRUE
 )
 example_alpha <- 0.05
+options(visStatistics.qq_nsim = 999L)
 ```
 
 ```{=html}
@@ -158,7 +159,7 @@ Among the returned components, `visstat()` reports the p-value of the selected t
 
 Unless stated otherwise, R function names for selected tests refer to functions from the `stats` package distributed with R [@R:2026].
 
-To reduce dependencies on other packages, `visStatistics` implements `levene.test()` for the variance gate in grouped mean-based tests (Eq. \@ref(eq:levene-f)), `bp.test()` for regression diagnostics (Eq. \@ref(eq:breusch-pagan-bp)), and `games.howell()` for Welch-ANOVA post-hoc comparisons (Eq. \@ref(eq:games-howell-t)).
+To reduce dependencies on other packages, `visStatistics` implements `levene.test()` for the variance gate in grouped mean-based tests (Eq. \@ref(eq:levene-f)), `bp.test()` for regression diagnostics (Eq. \@ref(eq:breusch-pagan-bp)), and `games.howell()` for Welch-ANOVA post-hoc comparisons (Eq. \@ref(eq:games-howell-t)).
 
 Definitions of all implemented test statistics, rank-correlation coefficients, and effect sizes are given in Appendices \@ref(sec:tests)--\@ref(sec:rank-correlations).
 
@@ -222,8 +223,7 @@ The model error terms $\varepsilon_i$ are assumed to be independent and normally
 The variance $\sigma^2$ represents the variation of the data about the regression, $\operatorname{Var}(Y_i)=\operatorname{Var}(\varepsilon_i)=\sigma^2$, as both the (unknown) model parameters and predictors are not random.
 
 
-From Eq. 
-\@ref(eq:glm), the special cases used by `visstat()` follow from the predictor structure:
+From Eq. \@ref(eq:glm), the special cases used by `visstat()` follow from the predictor structure:
 
 **Student's t-test** uses one binary indicator variable $x_{i1}$, with $x_{i1}=0$ for group 1 and $x_{i1}=1$ for group 2.
 Let $\mu_1$ and $\mu_2$ denote the expected mean values in the two population groups.
@@ -235,8 +235,7 @@ Testing $H_0: \beta_1 = 0$ is therefore equivalent to testing $H_0: \mu_1 = \mu_
 **Simple linear regression** uses one continuous predictor; $H_0: \beta_1 = 0$ examines whether a linear relationship exists.
 
 #### Residuals
-The model error terms $\varepsilon_i$ in Eq. 
-\@ref(eq:glm) are not observed.
+The model error terms $\varepsilon_i$ in Eq. \@ref(eq:glm) are not observed.
 Their observable counterparts are the residuals.
 After fitting the data with the corresponding linear model, the raw residual is
 
@@ -308,9 +307,7 @@ r_i =\frac{e_i}{\sqrt{ SE_\text{res}^2\,(1-h_{ii})}}=
 ### General linear model assumption tests {#sec:assumption-tests}
 
 
-**Normality tests** The normality of the standardised residuals is formally assessed using both the Shapiro--Wilk (SW) test [@Shapiro:1965; @Royston:1982; @Royston:1995] (`shapiro.test()`; Eq. 
-\@ref(eq:shapiro-w)) and the Anderson--Darling  test [@Anderson:1952] (`ad.test()`; Eq. 
-\@ref(eq:anderson-a2)).
+**Normality tests** The normality of the standardised residuals is formally assessed using both the Shapiro--Wilk (SW) test [@Shapiro:1965; @Royston:1982; @Royston:1995] (`shapiro.test()`; Eq. \@ref(eq:shapiro-w)) and the Anderson--Darling  test [@Anderson:1952] (`ad.test()`; Eq. \@ref(eq:anderson-a2)).
 These tests offer complementary strengths: Anderson--Darling is highly sensitive to tail deviations in larger samples [ @Yap:2011],
 while Shapiro--Wilk generally exhibits greater power across non-normal distributions in small samples. Therefore in smaller samples, the Shapiro--Wilk test is used as the normality gate in the automated test selection (Section \@ref(sec:route-1)).
 
@@ -323,9 +320,7 @@ while Shapiro--Wilk generally exhibits greater power across non-normal distribut
 <!-- In a balanced one-way design the standardised and z-residuals differ only by a constant and the tests are unaffected; where the leverages $h_i$ differ across observations -- most notably in simple linear regression -- the correction in Eq. \@ref(eq:standardised) matters. -->
 
 
-**Homoscedasticity tests** For grouped central-tendency analyses, variance homogeneity of standardised residuals [@Cook:1982] is assessed using the package-implemented mean-centred Levene test [@Levene:1960] (`levene.test()`; Eq. 
-\@ref(eq:levene-f)) and Bartlett's test [@Bartlett:1937] (`bartlett.test()`; Eq. 
-\@ref(eq:bartlett-k2)).
+**Homoscedasticity tests** For grouped central-tendency analyses, variance homogeneity of standardised residuals [@Cook:1982] is assessed using the package-implemented mean-centred Levene test [@Levene:1960] (`levene.test()`; Eq. \@ref(eq:levene-f)) and Bartlett's test [@Bartlett:1937] (`bartlett.test()`; Eq. \@ref(eq:bartlett-k2)).
 Bartlett's test has greater power when normality holds, but the Levene
 test is more robust to departures from normality (missing citation)
 Therefore, Levene's test is used as the variance gate in the automated
@@ -335,7 +330,7 @@ workflow.
 
 
 For simple linear regression, group-based variance tests are not applicable.
-There, `visStatistics` uses its package implementation `bp.test()` of the Breusch--Pagan test [@Breusch:1979] (Eq. \@ref(eq:breusch-pagan-bp)) on raw residuals [@Schutzenmeister:2012].
+There, `visStatistics` uses its package implementation `bp.test()` of the Breusch--Pagan test [@Breusch:1979] (Eq. \@ref(eq:breusch-pagan-bp)) on raw residuals [@Schutzenmeister:2012].
 
 
 
@@ -351,12 +346,12 @@ Since algorithmic logic based on p-values of assumption tests cannot replace exp
 
 
 
-For numeric responses with categorical predictors (Route 1), the diagnostic panel displays the residual histogram, the normal Q--Q plot with simultaneous and point-wise tolerance bands [@Schutzenmeister:2012], and the absolute standardised residuals $|r_i|$ (Eq. \@ref(eq:standardised)) by group.
+For numeric responses with categorical predictors (Route 1), the diagnostic panel displays the residual histogram, the normal Q--Q plot with simultaneous tolerance band (STB) and point-wise tolerance band (TB) [@Schutzenmeister:2012], and the absolute standardised residuals $|r_i|$ (Eq. \@ref(eq:standardised)) by group.
 The last panel shows whether residual spread is comparable across factor levels, the pattern assessed formally by the Levene (Eq. \@ref(eq:levene-f)) and Bartlett (Eq. \@ref(eq:bartlett-k2)) variance checks.
 
-For Route 3 (simple linear regression), the diagnostic panel displays the residual histogram with normal density overlay, the normal Q--Q plot, both computed from standardised residuals, and z-scaled residuals versus fitted values.
+For Route 3 (simple linear regression), the first two diagnostic panels follow the layout of  Route 1, whereas the third panels displays z-scaled residuals versus fitted values.
 
-<!-- (Eq. \@ref(eq:leverage-simple-regression) with Cook's distance contours computed on the same z-residual scale (see Section \@ref(sec:cooks-distance)). -->
+<!-- (Eq. \@ref(eq:leverage-simple-regression) with Cook's distance contours computed on the same z-residual scale (see Section \@ref(sec:cooks-distance)). -->
 
 
 <!-- #outer tile  -->
@@ -395,8 +390,7 @@ coincides with Student's t-test, and for more than two balanced groups the
 Welch ANOVA statistic converges to Fisher's statistic with a relative
 difference of order \(n^{-1}\) (Eqs. \@ref(eq:welch-student-pooled) and
 \@ref(eq:welch-anova-equal-var-reduction)). In the four-group case used in the
-simulation, \(F/F_W = 1 + 3/[5(n-1)]\) (Eq.
-\@ref(eq:welch-anova-four-groups)) [@Welch:1951; @Rasch:2011;
+simulation, \(F/F_W = 1 + 3/[5(n-1)]\) (Eq. \@ref(eq:welch-anova-four-groups)) [@Welch:1951; @Rasch:2011;
 @Delacre:2019]. This keeps the estimand on the mean scale and gives directly
 interpretable estimates and confidence intervals [@Harrell:2026], but it can
 be weak for strongly skewed small samples [@Blanca:2017; @Fagerland:2012] and
@@ -633,16 +627,19 @@ cap_route1_power_pdf <- paste(
 )
 
 cap_route1_power <- paste(
-  "Power simulation for four balanced homoscedastic groups with ordered",
-  "additive mean shifts of 0, 0.25, 0.50, and 0.75 SD. The first panel",
-  "shows the theoretical input densities; the second panel shows the",
-  "probability that the final test rejects at alpha = 5%."
+  "Power simulation. (a) Theoretical input distributions. Group A has mean",
+  "0 after standardisation; groups B--D are shifted by 0.25, 0.50, and",
+  "0.75.",
+  "(b) Power simulations for six testing strategies based on 50,000",
+  "Monte Carlo draws per setting from the population densities depicted in",
+  "(a). F, W, and L are mean-based strategies and test equality of means;",
+  "KW is rank-based and tests equality of rank distributions. SW and SW+L",
+  "are routed strategies, so their tested null hypothesis depends on the",
+  "selected final test. The F, W, and KW percentages printed inside the",
+  "lower panels give the proportions of simulations routed by SW+L to",
+  "Fisher, Welch, and Kruskal--Wallis, respectively."
 )
 
-cap_route1_parametric_power <- paste(
-  "Parametric-branch power under normality, balanced groups, and true",
-  "homoscedasticity."
-)
 ```
 
 The first setting is the clean null case. All groups have the same population
@@ -717,30 +714,12 @@ knitr::kable(
 The power simulation addresses the complementary question: if real ordered
 group differences exist, how much power is lost or gained by `SW` and `SW+L`?
 This completed power simulation is balanced and homoscedastic, with four group
-means shifted by 0, 0.25, 0.50, and 0.75 SD. It is therefore a power
-simulation, not a Type I simulation, and it does not replace the Type I
-simulation with unequal distributions above.
+means shifted by 0, 0.25, 0.50, and 0.75 after standardisation. 
 
-```{r route1-power, echo=FALSE, fig.cap=cap_route1_power, fig.height=8.8}
-power_pdf_img <- png::readPNG("figures/gamma_skew_sweep_4groups_power_pdf.png")
-power_img <- png::readPNG("figures/gamma_skew_sweep_4groups_power.png")
-
-draw_power_panel <- function(img, row) {
-  grid::pushViewport(grid::viewport(layout.pos.row = row))
-  grid::grid.raster(img, width = grid::unit(1, "npc"), interpolate = TRUE)
-  grid::popViewport()
-}
-
-grid::grid.newpage()
-grid::pushViewport(grid::viewport(
-  layout = grid::grid.layout(
-    nrow = 2,
-    heights = grid::unit(c(1, 1.2), "null")
-  )
-))
-draw_power_panel(power_pdf_img, 1)
-draw_power_panel(power_img, 2)
-grid::popViewport()
+```{r route1-power, echo=FALSE, fig.cap=cap_route1_power, fig.height=5.2}
+knitr::include_graphics(
+  "figures/gamma_skew_sweep_4groups_power_with_pdf.png"
+)
 ```
 
 Around normality and mild Gamma skew, `SW+L` has slightly higher power than
@@ -761,8 +740,8 @@ knitr::kable(
 )
 ```
 
-Finally, the parametric branch is shown separately under normality, balanced
-groups, and true homoscedasticity. This small homoscedastic advantage of
+Finally, the normal homoscedastic corner of Figure \@ref(fig:route1-power) is
+summarised in Table \@ref(tab:route1-parametric-table). This small advantage of
 Fisher/Student is exactly the balanced equal-variance corner quantified in
 Eq. \@ref(eq:welch-anova-four-groups): in the four-group simulation,
 \(F/F_W = 1 + 3/[5(n-1)]\), so the statistic-level difference is of order
@@ -773,12 +752,6 @@ mean tests when equal variances are doubtful [@Welch:1951; @Rasch:2011;
 variance test is discouraged because the selection step changes the operating
 characteristics of the final test [@Moser:1992; @Zimmerman:2004;
 @Rochon:2012].
-
-```{r route1-parametric-power, echo=FALSE, fig.cap=cap_route1_parametric_power}
-knitr::include_graphics(
-  "figures/gamma_skew_sweep_4groups_parametric_branch_power.png"
-)
-```
 
 ```{r route1-parametric-table, echo=FALSE}
 normal_power <- subset(power, distribution == "normal")
@@ -869,18 +842,16 @@ The literature question is separate: Fisher/Welch can still be robust to that no
 
 This avoids switching to rank-based tests because of negligible residual-normality deviations in large samples [@Ghasemi:2012;  @Shatz:2024].
 
-A linear model of Eq.
-\@ref(eq:glm) is fitted between the numeric response and the categorical predictor, and the model residuals of Eq.
-\@ref(eq:raw-residual) are extracted.
+A linear model of Eq. \@ref(eq:glm) is fitted between the numeric response and the categorical predictor, and the model residuals of Eq. \@ref(eq:raw-residual) are extracted.
 
 The Shapiro--Wilk (SW) normality test is then applied as the residual-normality gate, because simulation studies report high power for small to moderate sample sizes [@Razali:2011].
 
-If the SW-test rejects residual normality ($p_\text{SW} \le \alpha$), robust non-parametric tests are selected: `wilcox.test()` (Eq. \@ref(eq:wilcoxon-w)) for two groups, or `kruskal.test()` (Eq. \@ref(eq:kruskal-h)) followed by Holm-adjusted `pairwise.wilcox.test()` for more than two groups.
+If the SW-test rejects residual normality ($p_\text{SW} \le \alpha$), robust non-parametric tests are selected: `wilcox.test()` (Eq. \@ref(eq:wilcoxon-w)) for two groups, or `kruskal.test()` (Eq. \@ref(eq:kruskal-h)) followed by Holm-adjusted `pairwise.wilcox.test()` for more than two groups.
 
-If residual normality is not rejected or not tested in larger samples, variance homogeneity is assessed with the mean-centred Levene test (L) [@Levene:1960] (Eq. \@ref(eq:levene-f)).
+If residual normality is not rejected or not tested in larger samples, variance homogeneity is assessed with the mean-centred Levene test (L) [@Levene:1960] (Eq. \@ref(eq:levene-f)).
 
-For homoscedastic data ($p_\text{L} > \alpha$), `t.test(var.equal = TRUE)` (Eq. \@ref(eq:student-t)) is applied for two groups, or Fisher's `aov()` (Eq. \@ref(eq:fisher-f)) for more than two groups.
-For heteroscedastic data ($p_\text{L} \le \alpha$), Welch's `t.test()` (Eq. \@ref(eq:welch-t)) is applied for two groups, or Welch's `oneway.test()` (Eq. \@ref(eq:welch-f)) for more than two groups.
+For homoscedastic data ($p_\text{L} > \alpha$), `t.test(var.equal = TRUE)` (Eq. \@ref(eq:student-t)) is applied for two groups, or Fisher's `aov()` (Eq. \@ref(eq:fisher-f)) for more than two groups.
+For heteroscedastic data ($p_\text{L} \le \alpha$), Welch's `t.test()` (Eq. \@ref(eq:welch-t)) is applied for two groups, or Welch's `oneway.test()` (Eq. \@ref(eq:welch-f)) for more than two groups.
 
 A type I error of the Levene test merely routes homoscedastic data to Welch's t-test or Welch's one-way ANOVA, which lose only negligible power when variances are in fact equal simple sizes are large. 
 [@Rasch:2011; @Delacre:2019].
@@ -895,9 +866,9 @@ ANOVA, Welch ANOVA, and Kruskal--Wallis are omnibus tests: a significant test re
 To identify the differing pairs, `visstat()` tests all pairwise comparisons among the factor levels, defining a family of tests.
 Because the three omnibus tests rest on different assumptions, each branch uses a matching post-hoc procedure:
 
-- `TukeyHSD()` (Eq. \@ref(eq:tukey-hsd-q)) after `aov()` controls the family-wise error rate through the studentised range distribution under a common-variance assumption.
+- `TukeyHSD()` (Eq. \@ref(eq:tukey-hsd-q)) after `aov()` controls the family-wise error rate through the studentised range distribution under a common-variance assumption.
 
-- `games.howell()` (Eq. \@ref(eq:games-howell-t)) after `oneway.test()` uses separate variance estimates and Welch-adjusted degrees of freedom for each pair, making it the appropriate post-hoc procedure for the heteroscedastic Welch branch.
+- `games.howell()` (Eq. \@ref(eq:games-howell-t)) after `oneway.test()` uses separate variance estimates and Welch-adjusted degrees of freedom for each pair, making it the appropriate post-hoc procedure for the heteroscedastic Welch branch.
 
 - `pairwise.wilcox.test(p.adjust.method = "holm")` after `kruskal.test()` uses Holm's step-down adjustment for the pairwise Wilcoxon tests in the Kruskal--Wallis branch.
 
@@ -911,7 +882,7 @@ The ordered response is converted to integer level codes and analysed with the W
 ### Route 3: Numeric response, numeric predictor {#sec:route-3}
 
 Two numeric variables ask whether a numeric response changes with a numeric predictor.
-By default, `visstat()` fits a simple linear regression (Eq. \@ref(eq:simple-regression-fit)).
+By default, `visstat()` fits a simple linear regression (Eq. \@ref(eq:simple-regression-fit)).
 and the diagnostic panel described in Section \@ref(sec:graphical) is displayed.
 If general linear model assumptions are violated, the corresponding p-values trigger warnings and recommendations, but no automatic model replacement.
 The regression output is shown in Section \@ref(sec:lin-reg).
@@ -927,7 +898,7 @@ Yates' continuity correction is applied by default to $2 \times 2$ tables when t
 The four routes above describe the default, automatic test selection behaviour.
 For ordered--ordered and numeric--numeric input vectors, the user can instead request a rank-correlation analysis by setting `correlation = TRUE`.
 
-Both optional analyses test monotone association and are computed by `cor.test()`: Kendall's $\tau_b$ (Eq. \@ref(eq:kendall-tau-b)) with `method = "kendall", exact = FALSE` for two ordered variables, and Spearman's $\rho$ (Eq. \@ref(eq:spearman-rho)) with `method = "spearman"` for two numeric variables.
+Both optional analyses test monotone association and are computed by `cor.test()`: Kendall's $\tau_b$ (Eq. \@ref(eq:kendall-tau-b)) with `method = "kendall", exact = FALSE` for two ordered variables, and Spearman's $\rho$ (Eq. \@ref(eq:spearman-rho)) with `method = "spearman"` for two numeric variables.
 Kendall's $\tau_b$ corrects for ties present with few ordered levels [@Agresti:2010; @Xu:2013].
 
 Note that for numeric--numeric input, Pearson correlation is not implemented as a separate optional mode as in simple linear regression with an intercept, the two-sided test of zero slope and the two-sided Pearson correlation test return the same $p$-value.
@@ -1017,23 +988,24 @@ anova_plantgrowth <- visstat(PlantGrowth$group, PlantGrowth$weight)
 
 
 
-In this branch `visstat()` generates two figures: the assumption-diagnostic panel (`which = 1`) and the result panel with box plots and post-hoc significance letters (`which = 2`).
+In this branch `visstat()` generates two plots: the assumption-diagnostic panel (`which = 1`) and the result panel with box plots and post-hoc significance letters (`which = 2`).
 Calling `plot()` without `which` first lists both available plots:
 
 ```{r anova-plot-list}
 plot(anova_plantgrowth)
 ```
 
-`which = 1` replays the assumption-diagnostic panel.
-With control and treatment groups as predictor and plant weight as response, Shapiro--Wilk does not reject normality of the model residuals and `levene.test()` does not reject homoscedasticity, so `visstat()` takes the equal-variance mean-based path:
+Figure \@ref(fig:anova-plantgrowth-panels)(a) replays the
+assumption-diagnostic panel (`which = 1`).
+With control and treatment groups as predictor and plant weight as response,
+Shapiro--Wilk does not reject normality of the model residuals and
+`levene.test()` does not reject homoscedasticity, so `visstat()` takes the
+equal-variance mean-based path.
+Figure \@ref(fig:anova-plantgrowth-panels)(b) replays the result panel
+(`which = 2`).
 
-```{r anova-plot-assumptions, fig.cap="Assumption-diagnostic panel for the `PlantGrowth` Fisher's one-way ANOVA (`weight` vs.\\ `group`).", out.width="48%", fig.height=4.5}
+```{r anova-plantgrowth-panels, fig.cap=paste0("`PlantGrowth` Fisher's one-way ANOVA (`weight` vs.\\ `group`). (a) Assumption-diagnostic panel. (b) Result panel with Tukey HSD significance letters ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
 plot(anova_plantgrowth, which = 1)
-```
-
-`which = 2` replays the result panel:
-
-```{r anova-plot-result, fig.cap=paste0("Result panel for the `PlantGrowth` Fisher's one-way ANOVA: box plots with Tukey HSD significance letters ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5}
 plot(anova_plantgrowth, which = 2)
 ```
 
@@ -1179,7 +1151,7 @@ visstat(comfort ~ market, data = survey_data_3)
 
 ### Linear regression {#sec:lin-reg}
 
-The `swiss` dataset records standardised fertility and socioeconomic indicators for 47 French-speaking Swiss provinces in 1888.
+The `swiss` dataset records standardised fertility and socio-economic indicators for 47 French-speaking Swiss provinces in 1888.
 We examine how the share of draftees achieving the highest army examination score (`Examination`) predicts the fertility measure (`Fertility`), with `conf.level = 0.99`.
 The diagnostic panel in Figure \@ref(fig:regression-example), left, shows that both normality tests pass and the Breusch--Pagan test confirms homoscedasticity, supporting the linear model.
 The assumption-diagnostic panel is displayed, but its checks do not trigger automatic model replacement.
@@ -1188,11 +1160,10 @@ The regression plot shows the fitted line
 \begin{equation}
 \hat{y}_i = b_0 + b_1 x_i
 (\#eq:simple-regression-fit)
-\end{equation} with the point estimates $b_0$ and $b_1$ for the unknown parameters $\beta_0$ and $\beta_1$ of the linear regression model in Eq. 
-\@ref(eq:glm) with one predictor.
+\end{equation} with the point estimates $b_0$ and $b_1$ for the unknown parameters $\beta_0$ and $\beta_1$ of the linear regression model in Eq. \@ref(eq:glm) with one predictor.
 It is displayed with pointwise confidence and prediction bands at the specified `conf.level`.
 
-The returned object contains the regression statistics, residual-normality tests, pointwise confidence and prediction bands, and the coefficient of determination $R^2$ (Eq. \@ref(eq:r-squared)) as effect size.
+The returned object contains the regression statistics, residual-normality tests, pointwise confidence and prediction bands, and the coefficient of determination $R^2$ (Eq. \@ref(eq:r-squared)) as effect size.
 
 ```{r regression-example, fig.cap="Simple linear regression of `Fertility` on `Examination` for the `swiss` dataset (`conf.level = 0.99`). Assumption diagnostics (Shapiro--Wilk, Anderson--Darling, Breusch--Pagan) and scatter plot with fitted regression line, blue-shaded 99\\% prediction interval, and black 99\\% CI for the fitted mean.", out.width="48%", fig.height=4.5, fig.show="hold"}
 linreg_swiss <- visstat(swiss$Examination, swiss$Fertility, conf.level = 0.99)
@@ -1230,7 +1201,7 @@ model_lm$aic
 ```{r gamma-glm-plot, echo=FALSE, fig.cap="Gamma GLM with log link fitted to the `airquality` dataset `Ozone` vs. `Wind`. The red curve shows the fitted Gamma GLM; the y-axis is on a log scale.", out.width="60%", fig.height=4.5, fig.align="center"}
 # Plotting the data with Gamma model overlay
 plot(airquality$Wind, airquality$Ozone, log = "y",
-     pch = 19, col = "darkgrey", xlab = "Wind (mph)", ylab = "Ozone (ppb) [log scale]",
+     pch = 1, col = "black", xlab = "Wind (mph)", ylab = "Ozone (ppb) [log scale]",
      main = "Gamma GLM Fit (Log Link)")
 # Generate predictions for the overlay
 wind_seq <- seq(min(airquality$Wind), max(airquality$Wind), length.out = 100)
@@ -1238,7 +1209,7 @@ preds <- predict(model_gamma, newdata = data.frame(Wind = wind_seq), type = "res
 lines(wind_seq, preds, col = "red", lwd = 2)
 
 legend("topright", legend = c("Data", "Gamma GLM (log link)"),
-       col = c("darkgrey", "red"), pch = c(19, NA), lty = c(NA, 1), lwd = c(NA, 2))
+       col = c("black", "red"), pch = c(1, NA), lty = c(NA, 1), lwd = c(NA, 2))
 ```
 
 For a Gamma generalised linear model with log link, standardised deviance residuals are asymptotically standard normal; we use Shapiro--Wilk and Anderson--Darling as approximate checks of the fitted model:
@@ -1382,7 +1353,7 @@ For the Student's t-test, the margin is wider, with a Type I error rate between 
 <!-- heterocedastic comparison -->
 In the context of heteroscedastic comparison, Delacre et al. [@Delacre:2019] established that the empirical Type I error of Welch's one-way ANOVA – whose two-group special case is Welch's t-test – remained within Bradley's bounds at approximately 50 observations per group for up to four groups.
 With more than four groups, 50 observations still suffice for  skewness up to 2, for higher skewness roughly 100 per group are required.
-<!-- The comparison of more than four skewed, heteroscedastic groups is therefore the one case the cutoff does not cover: `visstat()` applies the same threshold of 50 regardless of the number of groups and does not raise it to 100 for $k > 4$. -->
+<!-- The comparison of more than four skewed, heteroscedastic groups is therefore the one case the cut-off does not cover: `visstat()` applies the same threshold of 50 regardless of the number of groups and does not raise it to 100 for $k > 4$. -->
 
 Summing up, the Central Limit Theorem and these simulation studies indicate that a minimum group size of 50 is a conservative threshold for skewness up to about 2. Above this size, normality tests of residuals do not steer automated routing in the decision logic of `visstat()`, which defaults to mean-based testing independent of the shape of the sample distribution.
 
@@ -1403,7 +1374,7 @@ Without this bypass, the Shapiro--Wilk test would reject residual normality for 
 
 
 
-Drop the n>50 bypass; SW routes at every n. No size threshold to justify — and none is defensible, since the "large enough" cutoff depends on skew and group count.
+Drop the n>50 bypass; SW routes at every n. No size threshold to justify — and none is defensible, since the "large enough" cut-off depends on skew and group count.
 Large n: SW over-rejects skewed data → routes to rank; passes near-normal data → mean. The over-rejection is not a flaw — it sends skewed samples to the rank test, the more powerful and more appropriate question there. Forcing means above 50 was never justified.
 Small n: SW is underpowered → usually passes → mean test; only strong skew is caught → rank. For skew<1 this is correct (mean ≈ median, t and rank essentially equal power); missed mild skew costs little (Bridge).
 Cost: the conditional pretest inflates Type I only slightly (~0.05–0.07, within Bradley).
@@ -1457,7 +1428,7 @@ Although the Shapiro–Wilk test is an omnibus normality statistic — sensitive
 
 - **How it behaves, and the real cost.** At large $N$ the gate routes even mildly skewed data to the rank branch; at small $N$ it is underpowered and keeps moderate skew on the mean route. The cost of this is not power --- rank tests retain about 95% efficiency under normality and gain under skew [@Harrell:2026; @Bridge:1999] --- but a change in the hypothesis tested, from equality of means to stochastic ordering [@Fagerland:2009], which `visstat()` makes explicit by naming the selected test.
 
-- **Validity of the whole procedure, and honest scope.** Although pre-testing distorts the conditional error of a single arm, the residual-normality-gated procedure holds the nominal level as a whole [@Rochon:2012], reproduced  in our simulations across distributions from skew 0 to 6 (supplementary); the Shapiro--Wilk test is used because it is the transparent diagnostic already displayed and a serviceable estimand heuristic for an automated tool that is not told the research question --- not because it is the optimal selection statistic, a role a shape selector would fill more principledly [@Hall:1997].
+- **Validity of the whole procedure, and honest scope.** Although pre-testing distorts the conditional error of a single arm, the residual-normality-gated procedure holds the nominal level as a whole [@Rochon:2012], reproduced  in our simulations across distributions from skew 0 to 6 (supplementary); the Shapiro--Wilk test is used because it is the transparent diagnostic already displayed and a serviceable estimand heuristic for an automated tool that is not told the research question --- not because it is the optimal selection statistic, a role a shape selector would fill more naturally [@Hall:1997].
 **against the competitors**
 Recommendations to default unconditionally to Welch's mean-based test [@Delacre:2019; @Zimmerman:2004] or to rank-based methods [@Harrell:2026; @Franc:2025] each fix the estimand in advance --- means or stochastic ordering --- without flagging that the two answer different questions [@Fagerland:2009]. `visstat()` instead selects between mean- and rank-based tests of central tendency from the residual diagnostics and reports which was used, leaving the choice visible rather than silently fixed.
 *why both branches*

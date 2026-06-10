@@ -68,7 +68,7 @@ The package implementation uses Levene's original mean-centred proposal [@Levene
 
 The Levene test statistic is the one-way ANOVA $F$ statistic, computed on the
 absolute residuals $|e_{ij}|$ in place of the responses $x_{ij}$; the
-corresponding Fisher ANOVA formula is given in Eq.\ \@ref(eq:fisher-f):
+corresponding Fisher ANOVA formula is given in Eq. \@ref(eq:fisher-f):
 
 \begin{equation}
 F_L = \frac{\displaystyle\sum_{i=1}^{k} n_i (\overline{|e|}_i - \overline{|e|})^2\;/\;(k-1)}
@@ -175,7 +175,7 @@ number of groups, $N = \sum_{i=1}^k n_i$ is the total sample size,
 $\bar{x}_i$ is the mean of group $i$, $\bar{x}$ is the overall mean,
 and $x_{ij}$ is observation $j$ in group $i$.
 
-From Eq.\ \@ref(eq:fisher-f) follows that in the two-sample case
+From Eq. \@ref(eq:fisher-f) follows that in the two-sample case
 ($k=2$), the squared test statistic of Student's t-test equals the
 Fisher ANOVA test statistic, $t^2 = F$, resulting in identical
 $p$-values for `t.test(var.equal = TRUE)` and `aov()`.
@@ -202,7 +202,7 @@ q_{ij} =
 (\#eq:tukey-hsd-q)
 \end{equation}
 
-where \(MS_\text{within}\) is defined in Eq.\ \@ref(eq:fisher-f).
+where \(MS_\text{within}\) is defined in Eq. \@ref(eq:fisher-f).
 Adjusted p-values are computed from the studentised range distribution
 with \(k\) groups and \(N-k\) residual degrees of freedom.
 
@@ -278,9 +278,9 @@ t = \frac{d}{SE},
 where $d = \bar{x}_1 - \bar{x}_2$ is the mean difference and
 $SE = \sqrt{s_1^2/n_1 + s_2^2/n_2}$ its standard error.
 
-Eq.\ \@ref(eq:games-howell-t) is evaluated against a $t$ distribution
+Eq. \@ref(eq:games-howell-t) is evaluated against a $t$ distribution
 with $\nu$ degrees of freedom from the Welch--Satterthwaite
-approximation in Eq.\ \@ref(eq:welch-satterthwaite-df).
+approximation in Eq. \@ref(eq:welch-satterthwaite-df).
 The resulting two-sided $p$-values are adjusted with Holm's method
 [@Holm:1979].
 
@@ -301,16 +301,16 @@ If variances are equal and the groups are balanced (the same number in each grou
 the Welch method's reduce in the case of two -group comparison algebraically to Student's t-test (equivalent to Fisher - Anova for two groups): 
  
 When $s_1^2 = s_2^2 = s^2$ and
-$n_1 = n_2 = n$, the pooled variance entering Eq.\ \@ref(eq:student-t)
+$n_1 = n_2 = n$, the pooled variance entering Eq. \@ref(eq:student-t)
 becomes
 \begin{equation}
 s_p^2 = \frac{(n-1)s^2 + (n-1)s^2}{2n-2} = s^2,
 (\#eq:welch-student-pooled)
 \end{equation}
-so the Welch denominator in Eq.\ \@ref(eq:welch-t),
+so the Welch denominator in Eq. \@ref(eq:welch-t),
 $\sqrt{s^2/n + s^2/n} = s\sqrt{2/n}$, equals the Student denominator
 $s_p\sqrt{1/n + 1/n} = s\sqrt{2/n}$, and the Welch--Satterthwaite
-degrees of freedom in Eq.\ \@ref(eq:welch-satterthwaite-df) reduce to
+degrees of freedom in Eq. \@ref(eq:welch-satterthwaite-df) reduce to
 \begin{equation}
 \nu = \frac{\left(2s^2/n\right)^2}
 {\dfrac{(s^2/n)^2}{n-1} + \dfrac{(s^2/n)^2}{n-1}}
@@ -327,15 +327,14 @@ of freedom.
 
 This exact equivalence does not
 extend beyond two groups: even under equal variances
- and equal group sizes, the Welch statistic $F_W$ in Eq.\
-\@ref(eq:welch-f) is not algebraically identical to the classical $F$
-in Eq.\ \@ref(eq:fisher-f) for $k>2$ ; it nevertheless converges to it as $n$ increases: 
+ and equal group sizes, the Welch statistic $F_W$ in Eq. \@ref(eq:welch-f) is not algebraically identical to the classical $F$
+in Eq. \@ref(eq:fisher-f) for $k>2$ ; it nevertheless converges to it as $n$ increases: 
 Under
 equal variances and equal group sizes,
 $s_1^2 = \cdots = s_k^2 = s^2$ and
 $n_1 = \cdots = n_k = n$. Hence
 $w_i = n/s^2$, $w = kn/s^2$, $w_i/w = 1/k$, and
-$\bar{x}_w = \bar{x}$. The numerator of Eq.\ \@ref(eq:welch-f) then
+$\bar{x}_w = \bar{x}$. The numerator of Eq. \@ref(eq:welch-f) then
 reduces to
 \begin{equation}
 \frac{\sum_{i=1}^{k} w_i(\bar{x}_i-\bar{x}_w)^2}{k-1}
@@ -350,7 +349,7 @@ reduces to
 Because $MS_\text{within}=s^2$ under the same assumptions, this is the
 numerator of the classical statistic
 $F=MS_\text{between}/MS_\text{within}$. The remaining denominator
-correction in Eq.\ \@ref(eq:welch-f) becomes
+correction in Eq. \@ref(eq:welch-f) becomes
 
 \begin{equation}
 1+
@@ -368,7 +367,7 @@ F_W =
 \end{equation}
 
 For $k=2$, the correction term is zero, so Welch's ANOVA form gives the
-same statistic as Fisher's ANOVA Eq.\ \@ref(eq:fisher-f). 
+same statistic as Fisher's ANOVA Eq. \@ref(eq:fisher-f). 
 
 For the four-group case used in the
 examples, $k=4$ and therefore
@@ -642,7 +641,7 @@ For simple linear regression, the leverage plot visualises whether individual
 observations may exert disproportionate influence on the fitted line. Cook's
 distance combines residual size and leverage for this purpose [@Cook:1982].
 In `visStatistics`, the contours are drawn on the z residual scale used in the
-diagnostic panel. With $z_i$ defined in Eq.\ \@ref(eq:z-residual), Cook's
+diagnostic panel. With $z_i$ defined in Eq. \@ref(eq:z-residual), Cook's
 distance for observation $i$ is
 
 \begin{equation}

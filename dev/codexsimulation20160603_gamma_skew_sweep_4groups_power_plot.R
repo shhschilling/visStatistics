@@ -1,6 +1,6 @@
 ## Plot-only script for codexsimulation20160603_gamma_skew_sweep_4groups_power.R
 
-OUTDIR <- file.path("dev", "codexsimulation20160603_gamma_skew_sweep_4groups_power_outputs")
+OUTDIR <- file.path("dev", "codexsimulation20160606_gamma_skew_sweep_4groups_power_skew4_B50000_outputs")
 RESULTS <- file.path(OUTDIR, "gamma_skew_sweep_4groups_power.rds")
 
 ## ---------------------------------------------------------------------------
@@ -8,19 +8,11 @@ RESULTS <- file.path(OUTDIR, "gamma_skew_sweep_4groups_power.rds")
 ## and is not rerun by this script.
 ## ---------------------------------------------------------------------------
 
-POWER_TITLE <- "Six testing strategies under additive mean shifts"
-POWER_SUBTITLE <- "Parametric H0: mu1 = ... = mu4; Kruskal-Wallis H0: equal rank distributions"
+POWER_TITLE <- "b) Power simulations"
+POWER_SUBTITLE <- NULL
 POWER_X <- "n per group"
 POWER_Y <- "simulated rejection rate"
-POWER_CAPTION <- paste(
-  "Simulated rejection rate is the proportion of Monte Carlo samples with p < 0.05.",
-  "The data-generating difference is only additive: group means are shifted by 0, 0.25, 0.50, and 0.75 SD.",
-  "Labels: F = Fisher, W = Welch, L = Levene gate, KW = Kruskal-Wallis, SW = Shapiro-Wilk routes W/KW, SW+L = Shapiro-Wilk plus Levene.",
-  "Bottom labels show SW+L gate decisions: F = Fisher, W = Welch, KW = Kruskal-Wallis.",
-  "Kruskal-Wallis tests ranks; pairwise stochastic equality corresponds to P(X_i > X_j) + 0.5 P(X_i = X_j) = 0.5.",
-  "Skew = 0 is normal; skew > 0 uses standardised Gamma groups.",
-  "Gamma caveat: skewness and excess kurtosis vary together."
-)
+POWER_CAPTION <- NULL
 
 PARAMETRIC_TITLE <- "Parametric branch power under true homoscedasticity"
 PARAMETRIC_SUBTITLE <- "Fisher always, Welch always, and Levene-gated Fisher/Welch"
@@ -36,7 +28,7 @@ ROUTE_SUBTITLE <- "Cells show how often Shapiro-Wilk rejects residual normality"
 ROUTE_X <- "residual distribution"
 ROUTE_Y <- "n per group"
 ROUTE_CAPTION <- paste(
-  "Group mean offsets are 0, 0.25, 0.50, and 0.75 SD.",
+  "Group mean offsets are 0, 0.25, 0.50, and 0.75 after standardisation.",
   "Gamma caveat: skewness and excess kurtosis vary together."
 )
 
@@ -84,7 +76,7 @@ ROUTE_WIDTH <- 12
 ROUTE_HEIGHT <- 7.2
 WELCH_ROUTE_WIDTH <- 12
 WELCH_ROUTE_HEIGHT <- 5.4
-DPI <- 180
+DPI <- 360
 
 if (!requireNamespace("ggplot2", quietly = TRUE)) {
   stop("Package 'ggplot2' is required.")
@@ -193,12 +185,12 @@ p_power <- ggplot2$ggplot() +
     data = gate_labels,
     ggplot2$aes(x = n_per_group, y = 0.06, label = gate_label),
     colour = "grey25",
-    size = 2.1,
+    size = 2.85,
     lineheight = 0.82
   ) +
-  ggplot2$facet_grid(stats::as.formula("effect_size ~ skew_label")) +
+  ggplot2$facet_grid(stats::as.formula(". ~ skew_label")) +
   ggplot2$scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-  ggplot2$scale_x_log10(breaks = NS_TO_PLOT) +
+  ggplot2$scale_x_log10(breaks = NS_TO_PLOT, limits = c(7, 130)) +
   ggplot2$scale_shape_manual(
     values = c("1. Fisher always" = 16,
                "2. Welch always" = 17,
@@ -222,7 +214,7 @@ p_power <- ggplot2$ggplot() +
     shape = "test strategy",
     caption = POWER_CAPTION
   ) +
-  ggplot2$theme_minimal(base_size = 11) +
+  ggplot2$theme_minimal(base_size = 11, base_family = "serif") +
   ggplot2$theme(
     legend.position = "right",
     axis.text.x = ggplot2$element_text(angle = 45, hjust = 1),
@@ -231,6 +223,8 @@ p_power <- ggplot2$ggplot() +
     panel.grid.major.y = ggplot2$element_blank(),
     panel.grid.minor.y = ggplot2$element_blank(),
     panel.border = ggplot2$element_rect(colour = "black", fill = NA, linewidth = 0.25),
+    plot.title = ggplot2$element_text(hjust = 0),
+    plot.title.position = "plot",
     plot.caption = ggplot2$element_text(hjust = 0, size = 9)
   )
 
@@ -258,7 +252,7 @@ p_route <- ggplot2$ggplot(
     y = ROUTE_Y,
     caption = ROUTE_CAPTION
   ) +
-  ggplot2$theme_minimal(base_size = 11) +
+  ggplot2$theme_minimal(base_size = 11, base_family = "serif") +
   ggplot2$theme(
     axis.text.x = ggplot2$element_text(size = 7.5),
     legend.position = "right",
@@ -289,7 +283,7 @@ if (exists("parametric_long", inherits = FALSE)) {
       shape = "parametric strategy",
       caption = PARAMETRIC_CAPTION
     ) +
-    ggplot2$theme_minimal(base_size = 11) +
+    ggplot2$theme_minimal(base_size = 11, base_family = "serif") +
     ggplot2$theme(
       legend.position = "right",
       axis.text.x = ggplot2$element_text(angle = 45, hjust = 1),
@@ -333,7 +327,7 @@ if ("route_welch_probability" %in% names(power)) {
       y = WELCH_ROUTE_Y,
       caption = WELCH_ROUTE_CAPTION
     ) +
-    ggplot2$theme_minimal(base_size = 11) +
+    ggplot2$theme_minimal(base_size = 11, base_family = "serif") +
     ggplot2$theme(
       axis.text.x = ggplot2$element_text(size = 7.5),
       legend.position = "right",

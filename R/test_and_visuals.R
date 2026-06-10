@@ -278,11 +278,16 @@ two_sample_wilcoxon_test <- function(samples,
   x1 <- twosamples$sample1
   x2 <- twosamples$sample2
   
-  upper <- 0.2
+  upper <- 0.25
   lower <- 0.05
-  res <- calc_min_max_of_y_axis(x, upper, lower)
-  mi <- res[[1]]
-  ma <- res[[2]]
+  y_limits <- range(x, na.rm = TRUE)
+  y_spread <- diff(y_limits)
+  if (!is.finite(y_spread) || y_spread == 0) {
+    y_spread <- max(abs(y_limits), 1, na.rm = TRUE)
+  }
+  mi <- y_limits[1] - lower * y_spread
+  ma <- y_limits[2] + upper * y_spread
+  n_label_y <- y_limits[2] + 0.10 * y_spread
   
   x <- cbind(x, factor(c(rep(1, length(
     x1
@@ -320,7 +325,8 @@ two_sample_wilcoxon_test <- function(samples,
          pch = 4, col = "red", cex = label_small, lwd = 1.5)
 
   # Sample sizes above box plot
-  text(1:length(b$n), c(ma, ma) - 0.03 * (ma - mi), paste("n =", b$n), cex = label_small)
+  text(seq_along(b$n), rep(n_label_y, length(b$n)), paste("n =", b$n),
+       cex = label_small)
 
   t <- wilcox.test(samples ~ fact, alternative = alternative, na.action = na.omit)
 

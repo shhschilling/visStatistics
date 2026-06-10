@@ -246,7 +246,7 @@ effect_size_kendall <- function(result) {
 #' \emph{Proceedings of the National Academy of Sciences}, 21(9), 554--559.
 #' doi:10.1073/pnas.21.9.554.
 #'
-#' Cohen, J. (2013). \emph{Statistical power analysis for the behavioral
+#' Cohen, J. (2013). \emph{Statistical power analysis for the behavioural
 #' sciences}. Routledge. doi:10.4324/9780203771587.
 #' @examples
 #' x <- ToothGrowth$supp

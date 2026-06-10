@@ -88,23 +88,24 @@ p <- ggplot2::ggplot(dens, ggplot2::aes(x = x, y = density_plot, colour = group)
   ggplot2::facet_wrap(~ distribution, scales = "free", nrow = 1) +
   ggplot2::scale_colour_manual(values = group_cols, name = "Group") +
   ggplot2::labs(
-    title = "Power simulation input distributions",
-    subtitle = "Group means shifted by 0, 0.25, 0.50, and 0.75 theoretical SD; density clipped at 1.1 for readability",
+    title = "a) Input distributions",
+    subtitle = "Group means after standardisation: A = 0, B = 0.25, C = 0.50, D = 0.75",
     x = "Response value after standardisation and group shift",
     y = "Theoretical density"
   ) +
-  ggplot2::theme_minimal(base_size = 10) +
+  ggplot2::theme_minimal(base_size = 10, base_family = "serif") +
   ggplot2::theme(
     panel.grid.minor = ggplot2::element_blank(),
     panel.border = ggplot2::element_rect(colour = "grey35", fill = NA, linewidth = 0.35),
     strip.text = ggplot2::element_text(size = 8),
-    legend.position = "bottom",
+    legend.position = "right",
+    plot.title = ggplot2::element_text(hjust = 0),
     plot.title.position = "plot"
   )
 
 outfile <- "gamma_skew_sweep_4groups_power_pdf.png"
-ggplot2::ggsave(file.path(OUTDIR, outfile), p, width = 14, height = 3.4, dpi = 220)
-ggplot2::ggsave(file.path(FIGDIR, outfile), p, width = 14, height = 3.4, dpi = 220)
+ggplot2::ggsave(file.path(OUTDIR, outfile), p, width = 14, height = 3.4, dpi = 360)
+ggplot2::ggsave(file.path(FIGDIR, outfile), p, width = 14, height = 3.4, dpi = 360)
 
 message("Wrote: ", file.path(OUTDIR, outfile))
 message("Wrote: ", file.path(FIGDIR, outfile))

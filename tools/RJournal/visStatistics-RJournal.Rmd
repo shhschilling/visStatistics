@@ -245,8 +245,7 @@ The model error terms $\varepsilon_i$ are assumed to be independent and normally
 The variance $\sigma^2$ represents the variation of the data about the regression, $\operatorname{Var}(Y_i)=\operatorname{Var}(\varepsilon_i)=\sigma^2$, as both the (unknown) model parameters and predictors are not random.
 
 
-From Eq. 
-\@ref(eq:glm), the special cases used by `visstat()` follow from the predictor structure:
+From Eq. \@ref(eq:glm), the special cases used by `visstat()` follow from the predictor structure:
 
 **Student's t-test** uses one binary indicator variable $x_{i1}$, with $x_{i1}=0$ for group 1 and $x_{i1}=1$ for group 2.
 Let $\mu_1$ and $\mu_2$ denote the expected mean values in the two population groups.
@@ -258,8 +257,7 @@ Testing $H_0: \beta_1 = 0$ is therefore equivalent to testing $H_0: \mu_1 = \mu_
 **Simple linear regression** uses one continuous predictor; $H_0: \beta_1 = 0$ examines whether a linear relationship exists.
 
 #### Residuals
-The model error terms $\varepsilon_i$ in Eq. 
-\@ref(eq:glm) are not observed.
+The model error terms $\varepsilon_i$ in Eq. \@ref(eq:glm) are not observed.
 Their observable counterparts are the residuals.
 After fitting the data with the corresponding linear model, the raw residual is
 
@@ -367,7 +365,7 @@ Since algorithmic logic based on p-values of assumption tests cannot replace exp
 
 
 
-For numeric responses with categorical predictors (Route 1), the diagnostic panel displays the residual histogram, the normal Q--Q plot, and the absolute standardised residuals $|r_i|$ (Eq. \@ref(eq:standardised)) by group.
+For numeric responses with categorical predictors (Route 1), the diagnostic panel displays the residual histogram, the normal Q--Q plot with simultaneous tolerance band (STB) and point-wise tolerance band (TB) [@Schutzenmeister:2012], and the absolute standardised residuals $|r_i|$ (Eq. \@ref(eq:standardised)) by group.
 The last panel shows whether residual spread is comparable across factor levels, the pattern assessed formally by the Levene (see `r supplement_link(NULL, "Supplement")`) and Bartlett (see `r supplement_link(NULL, "Supplement")`) variance checks.
 
 For Route 3 (simple linear regression), the diagnostic panel displays the residual histogram with normal density overlay, the normal Q--Q plot, both computed from standardised residuals, and z-scaled residuals versus fitted values.
@@ -411,9 +409,7 @@ When all group-specific sample sizes are greater than 50, the sampling distribut
  
 This avoids switching to rank-based tests because of negligible residual-normality deviations in large samples [@Ghasemi:2012;  @Shatz:2024].
 
-For smaller samples, a linear model of Eq.
-\@ref(eq:glm) is fitted between the numeric response and the categorical predictor, and the model residuals of Eq.
-\@ref(eq:raw-residual) are extracted.
+For smaller samples, a linear model of Eq. \@ref(eq:glm) is fitted between the numeric response and the categorical predictor, and the model residuals of Eq. \@ref(eq:raw-residual) are extracted.
 
 The Shapiro--Wilk (SW) normality test is then applied as the residual-normality gate, because simulation studies report high power for small to moderate sample sizes [@Razali:2011].
 
@@ -452,7 +448,7 @@ The ordered response is converted to integer level codes and analysed with the W
 ### Route 3: Numeric response, numeric predictor {#sec:route-3}
 
 Two numeric variables ask whether a numeric response changes with a numeric predictor.
-By default, `visstat()` fits a simple linear regression (Eq. \@ref(eq:simple-regression-fit)).
+By default, `visstat()` fits a simple linear regression (Eq. \@ref(eq:simple-regression-fit)).
 and the diagnostic panel described in `r section_link("sec:graphical")` is displayed.
 If general linear model assumptions are violated, the corresponding p-values trigger warnings and recommendations, but no automatic model replacement.
 The regression output is shown in `r section_link("sec:lin-reg")`.
@@ -747,8 +743,7 @@ The regression plot shows the fitted line
 \begin{equation}
 \hat{y}_i = b_0 + b_1 x_i
 (\#eq:simple-regression-fit)
-\end{equation} with the point estimates $b_0$ and $b_1$ for the unknown parameters $\beta_0$ and $\beta_1$ of the linear regression model in Eq. 
-\@ref(eq:glm) with one predictor.
+\end{equation} with the point estimates $b_0$ and $b_1$ for the unknown parameters $\beta_0$ and $\beta_1$ of the linear regression model in Eq. \@ref(eq:glm) with one predictor.
 It is displayed with pointwise confidence and prediction bands at the specified `conf.level`.
 
 The returned object contains the regression statistics, residual-normality tests, pointwise confidence and prediction bands, and the coefficient of determination $R^2$ (see `r supplement_link(NULL, "Supplement")`) as effect size.
@@ -1014,5 +1009,3 @@ Many routine statistical analyses reduce to a relatively small number of tests i
 The package addresses the inherent shortcomings of test selection based on p-values [@Lumley:2002; @Fagerland:2012; @Kozak:2018; @Shatz:2024; @Franc:2025;] by omitting testing of normality where justifiable by the Central Limit Theory and supplementing the output with diagnostic plots of the assumption tests.
 
 Its value is not that it removes the user's statistical judgment, but that it exposes the assumptions, effect sizes, and plots that should inform that judgment.
-
-

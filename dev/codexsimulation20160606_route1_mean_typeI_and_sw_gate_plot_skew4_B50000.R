@@ -193,7 +193,7 @@ make_pdf_plot <- function(design_name, title, show_group_legend = TRUE,
         x = "Response values",
         y = if (i == 1) "Density" else NULL
       ) +
-      ggplot2$theme_minimal(base_size = 10.5) +
+      ggplot2$theme_minimal(base_size = 10.5, base_family = "serif") +
       ggplot2$theme(
         legend.position = if (show_group_legend && i == length(skew_levels)) {
           "right"
@@ -466,7 +466,7 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
       x = NULL,
       y = "strategy"
     ) +
-    ggplot2$theme_minimal(base_size = 12.2) +
+    ggplot2$theme_minimal(base_size = 12.2, base_family = "serif") +
     ggplot2$theme(
       axis.text.x = ggplot2$element_blank(),
       axis.ticks.x = ggplot2$element_blank(),
@@ -656,7 +656,7 @@ make_unequal_plot <- function() {
     )
 }
 
-save_plot <- function(filename, plot, width, height, dpi = 180) {
+save_plot <- function(filename, plot, width, height, dpi = 360) {
   outfile <- file.path(OUTDIR, filename)
   figfile <- file.path(FIGDIR, filename)
   ggplot2$ggsave(outfile, plot, width = width, height = height, dpi = dpi)
@@ -674,7 +674,7 @@ ggplot2$ggsave(
   make_equal_plot(),
   width = 15,
   height = 15,
-  dpi = 180
+  dpi = 360
 )
 message("Wrote: ", equal_outfile)
 
