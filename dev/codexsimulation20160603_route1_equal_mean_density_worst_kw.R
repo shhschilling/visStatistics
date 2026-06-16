@@ -14,6 +14,7 @@ dir.create(OUTDIR, showWarnings = FALSE, recursive = TRUE)
 if (!requireNamespace("ggplot2", quietly = TRUE)) {
   stop("Package 'ggplot2' is required.")
 }
+source(file.path("dev", "codexsimulation20160607_gamma_density_helpers.R"))
 
 skews <- c(2, 6)
 designs <- list(
@@ -31,14 +32,13 @@ shape_from_skew <- function(skew) {
   (2 / skew)^2
 }
 
-standardised_gamma_density <- function(z, skew) {
+standardised_gamma_density_from_skew <- function(z, skew) {
   shape <- shape_from_skew(skew)
-  stats::dgamma(z * sqrt(shape) + shape, shape = shape, scale = 1) *
-    sqrt(shape)
+  standardised_gamma_density(z, alpha = shape, shift = 0)
 }
 
 scaled_gamma_density <- function(x, skew, sd) {
-  standardised_gamma_density(x / sd, skew) / sd
+  standardised_gamma_density_from_skew(x / sd, skew) / sd
 }
 
 rows <- list()
@@ -98,9 +98,7 @@ p <- ggplot2$ggplot(
   density_data,
   ggplot2$aes(x = x, y = density, colour = group_label)
 ) +
-  ggplot2$geom_line(linewidth = 0.85) +
-  ggplot2$geom_vline(xintercept = 0, linetype = "dashed",
-                     linewidth = 0.35, colour = "grey20") +
+  ggplot2$geom_line(linewidth = 0.85, na.rm = TRUE) +
   ggplot2$facet_grid(stats::as.formula("design ~ skew_label"),
                      scales = "free") +
   ggplot2$labs(
@@ -110,7 +108,6 @@ p <- ggplot2$ggplot(
     y = "density",
     colour = "group",
     caption = paste(
-      "Dashed vertical line marks the common population mean.",
       "Distributions are standardised Gamma variables rescaled by group SD.",
       "Gamma caveat: skewness and excess kurtosis vary together."
     )
@@ -240,8 +237,6 @@ p_cdf <- ggplot2$ggplot(
   ggplot2$aes(x = x, y = cdf, colour = group_label)
 ) +
   ggplot2$geom_line(linewidth = 0.85) +
-  ggplot2$geom_vline(xintercept = 0, linetype = "dashed",
-                     linewidth = 0.35, colour = "grey20") +
   ggplot2$geom_segment(
     data = quantile_data,
     ggplot2$aes(x = q25, xend = q75, y = 0.5, yend = 0.5,
@@ -266,7 +261,6 @@ p_cdf <- ggplot2$ggplot(
     y = "cumulative probability",
     colour = "group",
     caption = paste(
-      "Dashed vertical line marks the common population mean.",
       "Horizontal segments mark Q1-Q3 at the median level; points mark medians.",
       "Kruskal-Wallis reacts to these rank-distribution differences, not to unequal means."
     )

@@ -1,6 +1,6 @@
 Four-group Gamma/normal skew sweep for Route 1 power
-NREP per cell: 1
-Maximum Monte Carlo SE for a percentage estimate: 50.00 percentage points
+NREP per cell: 50000
+Maximum Monte Carlo SE for a percentage estimate: 0.22 percentage points
 alpha: 0.05
 Group mean offsets:
   moderate ordered effect: 0, 0.25, 0.50, 0.75 SD

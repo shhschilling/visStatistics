@@ -32,6 +32,8 @@ ALPHA <- 0.05
 ggplot2 <- asNamespace("ggplot2")
 patchwork <- asNamespace("patchwork")
 scales <- asNamespace("scales")
+source(file.path("dev", "codexsimulation20160607_gamma_density_helpers.R"))
+group_cols <- gamma_group_cols
 
 design_levels <- levels(sim$design)
 if (is.null(design_levels)) design_levels <- unique(sim$design)
@@ -60,63 +62,81 @@ skew_levels <- levels(sim$skew_label)
 if (is.null(skew_levels)) skew_levels <- unique(sim$skew_label)
 distribution_label <- function(skew_label) {
   if (grepl("^normal", skew_label)) {
-    return(expression(atop(
-      Normal(mu == 0, sigma^2 == 1),
-      paste("skew = 0, excess kurtosis = 0")
-    )))
+    return("N(0, 1)\nskew = 0; excess kurtosis = 0")
   }
   skew <- as.numeric(sub(".*skew = ([0-9.]+).*", "\\1", skew_label))
   shape <- (2 / skew)^2
   excess_kurtosis <- 6 / shape
-  bquote(atop(
-    paste("standardised ", Gamma(alpha == .(shape), theta == 1)),
-    paste("skew = ", .(skew), ", excess kurtosis = ",
-          .(round(excess_kurtosis, 3)))
-  ))
+  sprintf(
+    "standardised \u0393(\u03b1 = %s, \u03b8 = 1)\nskew = %s; excess kurtosis = %s",
+    format(shape, trim = TRUE, scientific = FALSE),
+    format(skew, trim = TRUE, scientific = FALSE),
+    format(round(excess_kurtosis, 3), trim = TRUE, scientific = FALSE)
+  )
 }
 base_distribution_labels <- setNames(
   lapply(skew_levels, distribution_label),
   skew_levels
 )
+numbered_distribution_labels <- setNames(
+  paste0(seq_along(skew_levels), ") ", unlist(base_distribution_labels)),
+  skew_levels
+)
 
-scaled_distribution_label <- function(skew_label) {
+distribution_plot_title <- function(skew_label, number) {
   if (grepl("^normal", skew_label)) {
-    return(expression(atop(
-      paste(Y[i] == s[i] %.% Z, ", ", Z %~% N(0, 1)),
-      paste(Z, ": skew = 0, excess kurtosis = 0")
+    return(bquote(atop(
+      paste(bold(.(paste0(number, ")"))), " N(0, 1)"),
+      "skew = 0; excess kurtosis = 0"
     )))
   }
   skew <- as.numeric(sub(".*skew = ([0-9.]+).*", "\\1", skew_label))
   shape <- (2 / skew)^2
-  excess_kurtosis <- 6 / shape
+  excess_kurtosis <- round(6 / shape, 3)
   bquote(atop(
-    paste(Y[i] == s[i] %.% Z, ", ",
-          Z == frac(X - alpha %.% theta, theta %.% sqrt(alpha)), ", ",
-          X %~% Gamma(alpha == .(shape), theta == 1)),
-    paste(Z, ": skew = ", .(skew), ", excess kurtosis = ",
-          .(round(excess_kurtosis, 3)))
+    paste(
+      bold(.(paste0(number, ")"))), " standardised ", Gamma,
+      "(", alpha == .(shape), ", ", theta == 1, ")"
+    ),
+    paste("skew = ", .(skew), "; excess kurtosis = ", .(excess_kurtosis))
   ))
 }
-scaled_distribution_labels <- setNames(
-  lapply(skew_levels, scaled_distribution_label),
-  skew_levels
-)
 
-shape_from_skew <- function(skew) {
-  if (skew == 0) Inf else (2 / skew)^2
+density_y_limit <- function(skew_label) {
+  if (grepl("^normal", skew_label)) return(1.25)
+  skew <- as.numeric(sub(".*skew = ([0-9.]+).*", "\\1", skew_label))
+  if (skew >= 4) 3 else 1.25
 }
 
 standard_density <- function(x, skew) {
   if (skew == 0) return(stats::dnorm(x))
-  shape <- shape_from_skew(skew)
-  z <- x * sqrt(shape) + shape
-  out <- stats::dgamma(z, shape = shape, scale = 1) * sqrt(shape)
-  out[!is.finite(out)] <- NA_real_
-  out
+  standardised_gamma_density(x, alpha = shape_from_skew(skew), shift = 0)
 }
 
 scaled_density <- function(x, skew, sd) {
-  standard_density(x / sd, skew) / sd
+  if (skew == 0) return(stats::dnorm(x / sd) / sd)
+  shape <- (2 / skew)^2
+  density <- standardised_gamma_density(x / sd, alpha = shape, shift = 0) / sd
+  density[!is.finite(density)] <- NA_real_
+  density
+}
+
+make_density_curve <- function(skew, sd, xlim, y_cap) {
+  if (skew == 0) {
+    return(data.frame(
+      x = seq(xlim[1], xlim[2], length.out = 700),
+      density = stats::dnorm(seq(xlim[1], xlim[2], length.out = 700) / sd) / sd,
+      piece = "density"
+    ))
+  }
+  standardised_gamma_curve(
+    alpha = shape_from_skew(skew),
+    shift = 0,
+    sd = sd,
+    xlim = xlim,
+    n = 700,
+    y_cap = y_cap
+  )
 }
 
 one_per_distribution <- sim[!duplicated(sim[c("design", "skew_label")]), ]
@@ -126,17 +146,25 @@ x_grid <- seq(-2.5, 5, length.out = 700)
 
 for (i in seq_len(nrow(one_per_distribution))) {
   one <- one_per_distribution[i, ]
-  sd_vec <- as.numeric(strsplit(one$sd_per_group, ", ")[[1]])
-  for (j in seq_along(sd_vec)) {
-    pdf_rows[[idx]] <- data.frame(
-      design = one$design,
-      skew_label = one$skew_label,
-      group = LETTERS[j],
-      sd = sd_vec[j],
-      x = x_grid,
-      density = scaled_density(x_grid, one$skew, sd_vec[j]),
-      row.names = NULL
-    )
+    sd_vec <- as.numeric(strsplit(one$sd_per_group, ", ")[[1]])
+    for (j in seq_along(sd_vec)) {
+      curve <- make_density_curve(
+        one$skew,
+        sd_vec[j],
+        range(x_grid),
+        density_y_limit(one$skew_label)
+      )
+      pdf_row <- data.frame(
+        design = one$design,
+        skew_label = one$skew_label,
+        group = LETTERS[j],
+        sd = sd_vec[j],
+        x = curve$x,
+        density = curve$density,
+        piece = curve$piece,
+        row.names = NULL
+      )
+    pdf_rows[[idx]] <- pdf_row
     idx <- idx + 1
   }
 }
@@ -147,8 +175,8 @@ pdf_data$skew_label <- factor(pdf_data$skew_label, levels = skew_levels)
 
 sim$design <- factor(sim$design, levels = design_levels)
 sim$skew_base_label <- factor(
-  base_distribution_labels[as.character(sim$skew_label)],
-  levels = base_distribution_labels
+  numbered_distribution_labels[as.character(sim$skew_label)],
+  levels = numbered_distribution_labels
 )
 
 make_pdf_plot <- function(design_name, title, show_group_legend = TRUE,
@@ -158,22 +186,18 @@ make_pdf_plot <- function(design_name, title, show_group_legend = TRUE,
   for (i in seq_along(skew_levels)) {
     skew_level <- skew_levels[i]
     panel_data <- subset(one_pdf, skew_label == skew_level)
-    y_limit <- if (grepl("skew = 6", skew_level, fixed = TRUE)) 3 else 1.2
+    y_limit <- density_y_limit(skew_level)
     line_layer <- if (black_curves) {
-      ggplot2$geom_line(colour = "black", linewidth = 0.55, alpha = 0.9)
+      ggplot2$geom_line(colour = "black", linewidth = 0.55, alpha = 0.9,
+                         na.rm = TRUE)
     } else {
-      ggplot2$geom_line(linewidth = 0.55, alpha = 0.9)
+      ggplot2$geom_line(linewidth = 0.55, alpha = 0.9, na.rm = TRUE)
     }
-    panels[[i]] <- ggplot2$ggplot(
-      panel_data,
-      ggplot2$aes(x = x, y = density, colour = group)
-    ) +
-      line_layer +
-      ggplot2$geom_vline(xintercept = 0, linetype = "dashed",
-                         linewidth = 0.25, colour = "grey35") +
-      ggplot2$coord_cartesian(xlim = c(-2.5, 5), ylim = c(0, y_limit)) +
-      ggplot2$scale_colour_brewer(
-        palette = "Dark2",
+    colour_scale <- if (black_curves) {
+      NULL
+    } else {
+      ggplot2$scale_colour_manual(
+        values = group_cols,
         name = if (show_sd_mapping) "scale factor" else "group",
         labels = if (show_sd_mapping) {
           expression(paste("A: ", s[1] == 1.0),
@@ -183,13 +207,18 @@ make_pdf_plot <- function(design_name, title, show_group_legend = TRUE,
         } else {
           ggplot2$waiver()
         }
-      ) +
+      )
+    }
+    panels[[i]] <- ggplot2$ggplot(
+      panel_data,
+      ggplot2$aes(x = x, y = density, colour = group,
+                  group = interaction(group, piece))
+    ) +
+      line_layer +
+      ggplot2$coord_cartesian(xlim = c(-2.5, 5), ylim = c(0, y_limit)) +
+      colour_scale +
       ggplot2$labs(
-        title = if (show_sd_mapping) {
-          scaled_distribution_labels[[as.character(skew_level)]]
-        } else {
-          base_distribution_labels[[as.character(skew_level)]]
-        },
+        title = distribution_plot_title(as.character(skew_level), i),
         x = "Response values",
         y = if (i == 1) "Density" else NULL
       ) +
@@ -205,17 +234,18 @@ make_pdf_plot <- function(design_name, title, show_group_legend = TRUE,
         panel.border = ggplot2$element_rect(colour = "black", fill = NA,
                                             linewidth = 0.2),
         plot.title = ggplot2$element_text(size = 8.5, hjust = 0.5,
+                                          face = "plain",
                                           lineheight = 0.85)
       )
   }
   patchwork$wrap_plots(panels, nrow = 1) +
     patchwork$plot_annotation(
       title = title,
-      subtitle = NULL
-    ) &
-    ggplot2$theme(
-      plot.title = ggplot2$element_text(face = "bold", size = 11),
-      plot.subtitle = ggplot2$element_text(size = 10)
+      subtitle = NULL,
+      theme = ggplot2$theme(
+        plot.title = ggplot2$element_text(face = "bold", size = 11),
+        plot.subtitle = ggplot2$element_text(size = 10)
+      )
     )
 }
 
@@ -615,11 +645,12 @@ make_unequal_plot <- function() {
   )
   height_list[3] <- 0.75
   plot_list[[4]] <- block_title(
-    expression(paste("b) unbalanced: ",
-                     n[i] == ceiling(bar(n) %.% .("(0.5, 0.8, 1.2, 1.5)")),
-                     "; larger ", n[i], " with larger SD"))
+    as.expression(bquote(atop(
+      paste("b) unbalanced: larger ", n[i], " with larger SD"),
+      n[i] == ceiling(bar(n) %.% .("(0.5, 0.8, 1.2, 1.5)"))
+    )))
   )
-  height_list[4] <- 0.09
+  height_list[4] <- 0.12
   plot_list[[5]] <- make_rejection_plot(
     "unbalanced n, larger n with larger SD",
     strategies,
@@ -629,11 +660,12 @@ make_unequal_plot <- function() {
   )
   height_list[5] <- 0.75
   plot_list[[6]] <- block_title(
-    expression(paste("c) unbalanced: ",
-                     n[i] == ceiling(bar(n) %.% .("(0.5, 0.8, 1.2, 1.5)")),
-                     "; larger ", n[i], " with smaller SD"))
+    as.expression(bquote(atop(
+      paste("c) unbalanced: larger ", n[i], " with smaller SD"),
+      n[i] == ceiling(bar(n) %.% .("(0.5, 0.8, 1.2, 1.5)"))
+    )))
   )
-  height_list[6] <- 0.09
+  height_list[6] <- 0.12
   plot_list[[7]] <- make_rejection_plot(
     "unbalanced n, larger n with smaller SD",
     strategies,

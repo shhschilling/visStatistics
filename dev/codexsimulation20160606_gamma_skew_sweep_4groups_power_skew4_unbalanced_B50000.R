@@ -9,7 +9,7 @@
 ##     moderate: 0, 0.25, 0.50, 0.75 SD.
 ##     strong:   0, 0.50, 1.00, 1.50 SD.
 ##   group sizes: n_i = round(mean_n * c(0.5, 0.8, 1.2, 1.5)).
-##   skew values: 0, 0.1, 0.5, 1, 2, 4.
+##   skew values: 0, 0.5, 1, 2.
 ##
 ## Tests:
 ##   F: Fisher's one-way ANOVA.
@@ -166,7 +166,7 @@ run_cell <- function(skew, n_vec, shifts) {
     levene_reject = summarise_binary(levene_reject))
 }
 
-skews <- c(0, 0.1, 0.5, 1, 2, 4)
+skews <- c(0, 0.5, 1, 2)
 ns <- c(10, 20, 50, 100, 200)
 
 rows <- list()

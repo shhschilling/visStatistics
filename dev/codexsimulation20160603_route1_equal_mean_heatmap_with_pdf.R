@@ -18,6 +18,7 @@ if (!requireNamespace("patchwork", quietly = TRUE)) {
 if (!requireNamespace("scales", quietly = TRUE)) {
   stop("Package 'scales' is required.")
 }
+source(file.path("dev", "codexsimulation20160607_gamma_density_helpers.R"))
 
 sim <- readRDS(file.path(OUTDIR, "route1_equal_mean_blanca_zimmerman.rds"))
 
@@ -82,10 +83,7 @@ shape_from_skew <- function(skew) {
 standard_density <- function(x, skew) {
   if (skew == 0) return(stats::dnorm(x))
   shape <- shape_from_skew(skew)
-  z <- x * sqrt(shape) + shape
-  out <- stats::dgamma(z, shape = shape, scale = 1) * sqrt(shape)
-  out[!is.finite(out)] <- NA_real_
-  out
+  standardised_gamma_density(x, alpha = shape, shift = 0)
 }
 
 scaled_density <- function(x, skew, sd) {
@@ -261,9 +259,7 @@ make_pdf_plot <- function(design_name, title = NULL) {
     one_pdf,
     ggplot2$aes(x = x, y = density, colour = group)
   ) +
-    ggplot2$geom_line(linewidth = 0.55, alpha = 0.9) +
-    ggplot2$geom_vline(xintercept = 0, linetype = "dashed",
-                       linewidth = 0.25, colour = "grey35") +
+    ggplot2$geom_line(linewidth = 0.55, alpha = 0.9, na.rm = TRUE) +
     ggplot2$coord_cartesian(xlim = c(-2.5, 5), ylim = c(0, 2.3)) +
     ggplot2$facet_grid(
       stats::as.formula(". ~ skew_label"),

@@ -36,7 +36,7 @@
 #' @param numbers Logical. Whether to annotate plots with numeric values.
 #' @param minpercent Number between 0 and 1 indicating minimal fraction of 
 #'   total count data of a category to be displayed in mosaic count plots.
-#' @param route Optional character. For a numeric response and factor predictor,
+#' @param group_test Optional character. For a numeric response and factor predictor,
 #'   \code{NULL} keeps the default assumption gates, \code{"welch"} forces
 #'   Welch-type mean tests, and \code{"rank"} forces Wilcoxon/Kruskal-Wallis
 #'   rank tests.
@@ -191,7 +191,7 @@ visstat <- function(x,
                     correlation = FALSE,
                     numbers = TRUE,
                     minpercent = 0.05,
-                    route = NULL,
+                    group_test = NULL,
                     graphicsoutput = NULL,
                     plotName = NULL,
                     plotDirectory = getwd()) {
@@ -200,7 +200,7 @@ visstat <- function(x,
   on.exit(par(oldparvisstat))
   
   check_visstat_input(x, y, ..., data = data)
-  route <- if (is.null(route)) NULL else match.arg(route, c("welch", "rank"))
+  group_test <- if (is.null(group_test)) NULL else match.arg(group_test, c("welch", "rank"))
   
   clean_name <- function(expr) {
     sub(".*\\$", "", deparse(expr))
@@ -228,7 +228,7 @@ visstat <- function(x,
       correlation = correlation,
       numbers = numbers,
       minpercent = minpercent,
-      route = route,
+      group_test = group_test,
       graphicsoutput = graphicsoutput,
       plotName = plotName,
       plotDirectory = plotDirectory
@@ -259,7 +259,7 @@ visstat <- function(x,
       correlation = correlation,
       numbers = numbers,
       minpercent = minpercent,
-      route = route,
+      group_test = group_test,
       graphicsoutput = graphicsoutput,
       plotName = plotName,
       plotDirectory = plotDirectory
@@ -287,7 +287,7 @@ visstat <- function(x,
     correlation = correlation,
     numbers = numbers,
     minpercent = minpercent,
-    route = route,
+    group_test = group_test,
     graphicsoutput = graphicsoutput,
     plotName = plotName,
     plotDirectory = plotDirectory

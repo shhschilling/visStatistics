@@ -19,7 +19,7 @@ set.seed(20260603)
 args <- commandArgs(trailingOnly = TRUE)
 NREP <- if (length(args) >= 1) as.integer(args[1]) else 50000
 ALPHA <- 0.05
-SKEWS <- c(0, 0.5, 1, 2, 4)
+SKEWS <- c(0, 0.5, 1, 2)
 MEAN_NS <- c(10, 20, 50, 100)
 OUTDIR <- file.path(
   "dev",

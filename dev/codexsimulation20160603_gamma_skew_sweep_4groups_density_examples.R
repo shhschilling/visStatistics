@@ -12,6 +12,7 @@ dir.create(OUTDIR, showWarnings = FALSE, recursive = TRUE)
 if (!requireNamespace("ggplot2", quietly = TRUE)) {
   stop("Package 'ggplot2' is required.")
 }
+source(file.path("dev", "codexsimulation20160607_gamma_density_helpers.R"))
 
 skews <- c(0, 0.1, 0.5, 1, 2, 6)
 x_grid <- seq(-3, 8, length.out = 1600)
@@ -31,8 +32,7 @@ shape_from_skew <- function(skew) {
 standardised_density <- function(x, skew) {
   if (skew == 0) return(stats::dnorm(x))
   shape <- shape_from_skew(skew)
-  stats::dgamma(x * sqrt(shape) + shape, shape = shape, scale = 1) *
-    sqrt(shape)
+  standardised_gamma_density(x, alpha = shape, shift = 0)
 }
 
 rows <- list()
@@ -88,7 +88,7 @@ p_density <- ggplot2$ggplot(
   density_data,
   ggplot2$aes(x = value, y = density, colour = group)
 ) +
-  ggplot2$geom_line(linewidth = 0.75) +
+  ggplot2$geom_line(linewidth = 0.75, na.rm = TRUE) +
   ggplot2$geom_vline(
     data = unique(density_data[c("effect_size", "group", "mean_offset", "skew_label")]),
     ggplot2$aes(xintercept = mean_offset, colour = group),

@@ -123,7 +123,7 @@ selected_test_title <- function(result) {
 #'   plots.
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total
 #'   count data of a category to be displayed	in mosaic count plots.
-#' @param route Optional character. For Route 1 only, \code{NULL} keeps the
+#' @param group_test Optional character. For Route 1 only, \code{NULL} keeps the
 #'   default assumption gates, \code{"welch"} forces Welch-type mean tests, and
 #'   \code{"rank"} forces Wilcoxon/Kruskal-Wallis rank tests.
 #' @param graphicsoutput saves plot(s) of type "png",  "jpg", "tiff" or  "bmp"
@@ -205,7 +205,7 @@ visstat_core <- function(dataframe,
                          correlation = FALSE,
                          numbers = TRUE,
                          minpercent = 0.05,
-                         route = NULL,
+                         group_test = NULL,
                          graphicsoutput = NULL,
                          plotName = NULL,
                          plotDirectory = getwd()) {
@@ -232,7 +232,7 @@ visstat_core <- function(dataframe,
   
   # Set default values---------------------------
   alpha <- 1 - conf.level
-  route <- if (is.null(route)) "automatic" else match.arg(route, c("welch", "rank"))
+  group_test <- if (is.null(group_test)) "automatic" else match.arg(group_test, c("welch", "rank"))
   
   ## Get input variables---------------------------------
   input <-
@@ -321,7 +321,7 @@ visstat_core <- function(dataframe,
     # Explicit Route 1 overrides bypass route selection. The Welch override
     # still shows/checks the assumption diagnostics, but does not switch to
     # the rank branch when residual normality is rejected.
-    if (route == "rank" || ordinal_response) {
+    if (group_test == "rank" || ordinal_response) {
       normality_met <- FALSE
     } else {
       # MANDATORY DIAGNOSTIC: Provide visual evidence for the decision pipeline
@@ -364,7 +364,7 @@ visstat_core <- function(dataframe,
       }
       normality_met <- normality_p >= alpha
 
-      if (route == "welch" && !normality_met) {
+      if (group_test == "welch" && !normality_met) {
         warning(
           normality_test_name,
           " test p = ", format.pval(normality_p, digits = 3),
@@ -414,7 +414,7 @@ visstat_core <- function(dataframe,
       # heteroscedasticity of the raw residuals (Var(e_i) = sigma^2 (1 - h_i)),
       # matching the |r_i| spread panel of vis_lm_assumptions().
       var_p <- levene.test(scaled_residuals, fact)$p.value
-      use_fisher <- route == "automatic" && var_p >= alpha
+      use_fisher <- group_test == "automatic" && var_p >= alpha
       if (nlevels(fact) == 2) {
         # Final t-test execution
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 
@@ -433,7 +433,7 @@ visstat_core <- function(dataframe,
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory) 
         vis_sample_fact <- vis_anova(samples, fact, samplename = varsample, 
                                      factorname = varfactor, conf.level = conf.level,
-                                     variance_route = if (route == "welch") "welch" else "levene")
+                                     variance_route = if (group_test == "welch") "welch" else "levene")
         if (is.null(plotName)) {
           filename <- paste("anova_", name_of_sample, "_", name_of_factor, sep = "")
         } else {
