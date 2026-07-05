@@ -151,7 +151,7 @@ The underlying selection algorithm is detailed in Section
 Among the returned components,
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 reports the p-value of the selected test and an `effect_size` field
-(Section [**??**](#sec:p-values-effect-sizes)).
+(Section [7](#sec:effect-size)).
 
 Unless stated otherwise, R function names for selected tests refer to
 functions from the `stats` package distributed with R ([R Core Team
@@ -869,9 +869,6 @@ Otherwise it implements the remaining formulae internally.
 The following tables summarises the statistical analysis with their
 respective effect sizes and formulae.
 
-Table: (#tab:effect-size-formulae) Effect sizes returned by
-[`effect_size()`](https://shhschilling.github.io/visStatistics/reference/effect_size.md).
-
 | Analysis | Effect size | Formula | Source |
 |----|----|----|----|
 | Student’s \\t\\-test | Hedges’ \\g\_{s_p}\\ (pooled) | \\g\_{s_p}=J(N-2)\cdot(\bar{x}\_1-\bar{x}\_2)/s_p\\ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
@@ -885,6 +882,10 @@ Table: (#tab:effect-size-formulae) Effect sizes returned by
 | Pearson \\\chi^2\\ (\\R\times C\\) | Cramér’s \\V\\ | \\V\_{R\times C}=\sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}\\ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
 | Pearson \\\chi^2\\ (\\2\times 2\\) | \\\phi\\ | \\\phi=\sqrt{\chi^2/N}\\ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
 | Fisher’s exact (\\2\times 2\\) | conditional odds ratio | `fisher.test()``\(estimate</code></td> <td><code>fisher.test()\)``estimate` |  |
+
+Effect sizes returned by
+[`effect_size()`](https://shhschilling.github.io/visStatistics/reference/effect_size.md).
+{#tab:effect-size-formulae}
 
 Here, Hedges’ small-sample correction factor is
 
@@ -920,8 +921,9 @@ residual sum of squares, \\\hat{y}\_i\\ is the predicted value, and
 \\SS\_\text{tot}=\sum\_{i=1}^{N}(y_i-\bar{y})^2\\ is the total sum of
 squares.
 
-All other variables used in Table [7.1](#tab:effect-size-formulae) are
-defined in the correspoding “Analysis” section of the Appendix.
+All other variables used in the [effect-size
+table](#tab:effect-size-formulae) are defined in the correspoding
+“Analysis” section of the Appendix.
 
 ## 8 Usage and Examples
 
@@ -1707,13 +1709,13 @@ Figure [8.13](#fig:kendall-spearman-example), right.
 For every chosen test, `visStatistics` provides both a *vis*ualisation
 and a full report covering the test itself, and, where applicable, its
 assumption checks and post-hoc comparisons. The report is complemented
-by each test’s effect size (Table [7.1](#tab:effect-size-formulae)): A
-sufficiently large sample makes even a negligible difference
-significant, so the p-value must be read alongside the magnitude of the
-effect ([Levine and Hullett 2002](#ref-Levine:2002); [Cohen 2013,
-10](#ref-Cohen:2013)). The “right” test is thus per se not the one with
-the smallest p-value, but one whose assumptions hold, and whose effect
-is large enough to matter.
+by each test’s effect size (see the [effect-size
+table](#tab:effect-size-formulae)): A sufficiently large sample makes
+even a negligible difference significant, so the p-value must be read
+alongside the magnitude of the effect ([Levine and Hullett
+2002](#ref-Levine:2002); [Cohen 2013, 10](#ref-Cohen:2013)). The “right”
+test is thus per se not the one with the smallest p-value, but one whose
+assumptions hold, and whose effect is large enough to matter.
 
 For tests of central tendency, p-values from assumption tests of
 normality and homoscedasticity are used as routing criteria in the

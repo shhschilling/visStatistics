@@ -165,7 +165,7 @@ This article refers to the latest development state in the <a href="https://gith
 <p>From this single entry point, the package automatically selects among the implemented hypothesis tests,</p>
 <p><code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>, <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>, <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>, <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code>, <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>, <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>.</p>
 <p>The underlying selection algorithm is detailed in Section <a href="#sec:decision">6</a>.</p>
-<p>Among the returned components, <code><a href="../reference/visstat.html">visstat()</a></code> reports the p-value of the selected test and an <code>effect_size</code> field (Section <a href="#sec:p-values-effect-sizes"><strong>??</strong></a>).</p>
+<p>Among the returned components, <code><a href="../reference/visstat.html">visstat()</a></code> reports the p-value of the selected test and an <code>effect_size</code> field (Section <a href="#sec:effect-size">7</a>).</p>
 <p>Unless stated otherwise, R function names for selected tests refer to functions from the <code>stats</code> package distributed with R <span class="citation">(<a href="#ref-R:2026">R Core Team 2026</a>)</span>.</p>
 <p>To reduce dependencies on other packages, <code>visStatistics</code> implements <code><a href="../reference/levene.test.html">levene.test()</a></code> for the variance gate in grouped mean-based tests (Eq. <a href="#eq:levene-f">(A.3)</a>), <code><a href="../reference/bp.test.html">bp.test()</a></code> for regression diagnostics (Eq. <a href="#eq:breusch-pagan-bp">(A.5)</a>), and <code><a href="../reference/games.howell.html">games.howell()</a></code> for Welch-ANOVA post-hoc comparisons using the Welch statistic (Eq. <a href="#eq:welch-t">(B.4)</a>).</p>
 <p>Definitions of all implemented test statistics, rank-correlation coefficients, and effect sizes are given in Appendices <a href="#sec:tests">B</a>–<a href="#sec:rank-correlations">D</a>.</p>
@@ -583,8 +583,10 @@ While p-values strongly affected by sample size, effect-size, estimates are inte
 <p>The effect size takes the value zero when the null hypothesis is true and some other, test- specific non-zero value when the null hypothesis is false, it is an an index of degree of departure from the null hypothesis [<span class="citation">Cohen (<a href="#ref-Cohen:2013">2013</a>)</span>; page 10]</p>
 <p>To avoid additional package dependencies, <code><a href="../reference/effect_size.html">effect_size()</a></code> extracts, where possible, the effect sizes from base R <code>stats</code> output, Otherwise it implements the remaining formulae internally.</p>
 <p>The following tables summarises the statistical analysis with their respective effect sizes and formulae. <!-- The internal function  `effect_size()` extracts, where possible, the effect sizes --> <!-- from base R `stats` output, Otherwise it implements the remaining --> <!-- formulae internally. --></p>
-<p>Table: (#tab:effect-size-formulae) Effect sizes returned by <code><a href="../reference/effect_size.html">effect_size()</a></code>.</p>
-<table class="table">
+<table id="tab:effect-size-formulae" class="table">
+<caption>
+Effect sizes returned by <code><a href="../reference/effect_size.html">effect_size()</a></code>.
+</caption>
 <tr>
 <th>
 Analysis
@@ -783,7 +785,7 @@ R^2 = 1 - \frac{SS_\text{res}}{SS_\text{tot}},
 \tag{7.1}
 \end{equation}\]</span></p>
 <p>where <span class="math inline">\(SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2\)</span> is the residual sum of squares, <span class="math inline">\(\hat{y}_i\)</span> is the predicted value, and <span class="math inline">\(SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2\)</span> is the total sum of squares.</p>
-<p>All other variables used in Table <a href="#tab:effect-size-formulae">7.1</a> are defined in the correspoding “Analysis” section of the Appendix.</p>
+<p>All other variables used in the <a href="#tab:effect-size-formulae">effect-size table</a> are defined in the correspoding “Analysis” section of the Appendix.</p>
 </div>
 <div class="section level2" number="8">
 <h2 id="sec:examples">
@@ -1263,7 +1265,7 @@ Figure 8.13: Rank-based correlations: Left: Kendall’s <span class="math inline
 <span class="header-section-number">9</span> Discussion<a class="anchor" aria-label="anchor" href="#sec:discussion"></a>
 </h2>
 <p>For every chosen test, <code>visStatistics</code> provides both a <em>vis</em>ualisation and a full report covering the test itself, and, where applicable, its assumption checks and post-hoc comparisons.
-The report is complemented by each test’s effect size (Table <a href="#tab:effect-size-formulae">7.1</a>): A sufficiently large sample makes even a negligible difference significant, so the p-value must be read alongside the magnitude of the effect <span class="citation">(<a href="#ref-Levine:2002">Levine and Hullett 2002</a>; <a href="#ref-Cohen:2013">Cohen 2013, 10</a>)</span>.
+The report is complemented by each test’s effect size (see the <a href="#tab:effect-size-formulae">effect-size table</a>): A sufficiently large sample makes even a negligible difference significant, so the p-value must be read alongside the magnitude of the effect <span class="citation">(<a href="#ref-Levine:2002">Levine and Hullett 2002</a>; <a href="#ref-Cohen:2013">Cohen 2013, 10</a>)</span>.
 The “right” test is thus per se not the one with the smallest p-value, but one whose assumptions hold, and whose effect is large enough to matter.</p>
 <p>For tests of central tendency, p-values from assumption tests of normality and homoscedasticity are used as routing criteria in the default settings.
 However, no single assumption test maintains optimal Type I error rates and statistical power across all distributions <span class="citation">(<a href="#ref-Olejnik:1987">Olejnik and Algina 1987</a>)</span> and sample sizes, and p-values obtained from these tests may be unreliable if their assumptions are violated.</p>
@@ -1823,8 +1825,8 @@ have been assigned average ranks.</p>
 \sqrt{\sum_{i=1}^{n}(v_i-\bar v)^2}}.\]</span></p>
 <p>Here <span class="math inline">\(u_i = \operatorname{rank}(x_i)\)</span> and <span class="math inline">\(v_i = \operatorname{rank}(y_i)\)</span> are the ranks of the <span class="math inline">\(n\)</span> paired observations, and <span class="math inline">\(\bar{u}\)</span> and <span class="math inline">\(\bar{v}\)</span> are their sample means.</p>
 <p>For inference, <code>cor.test(..., method = "spearman")</code> computes an exact <span class="math inline">\(p\)</span>-value for small samples without ties by evaluating all <span class="math inline">\(n!\)</span> rank permutations. For larger samples or when ties are present, it uses an approximation to the null distribution of the rank association measure or its asymptotic transformation. No distributional assumptions on the original data are required. <!-- 1. Beweis 
-The rank-biserial coefficient reported for the Wilcoxon rank-sum test
-(Table <a href="#tab:effect-size-formulae">7.1</a>) is the corresponding correlation
+The rank-biserial coefficient reported for the Wilcoxon rank-sum test is
+the corresponding correlation
 coefficient for a ranking and a dichotomy. Cureton defines it from
 cross-category agreements \(P\) and inversions \(Q\) as
 \(r_{RB}=(P-Q)/P_{\max}\), with \(P_{\max}=N_1N_2\) when no bracket tie is

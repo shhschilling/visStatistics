@@ -158,7 +158,7 @@ From this single entry point, the package automatically selects among the implem
 
 The underlying selection algorithm is detailed in Section \@ref(sec:decision).
 
-Among the returned components, `visstat()` reports the p-value of the selected test and an `effect_size` field (Section \@ref(sec:p-values-effect-sizes)).
+Among the returned components, `visstat()` reports the p-value of the selected test and an `effect_size` field (Section \@ref(sec:effect-size)).
 
 Unless stated otherwise, R function names for selected tests refer to functions from the `stats` package distributed with R [@R:2026].
 
@@ -350,9 +350,9 @@ Anderson--Darling, Bartlett, and Breusch--Pagan are diagnostic output only.
 The Route 1 and Route 3 diagnostic-panel designs are illustrated in the examples in Figures \@ref(fig:welch-anova-example), left, and \@ref(fig:regression-example), left.
 
 
-## Simulation results {#sec:simulation-results}
+## Simulation  {#sec:simulation-results}
 
-The simulations focus on grouped numeric data (Route 1), which can answer two different questions: Parametric tests such as Student's t-test, Fisher's ANOVA, and their Welch variants test population means [@Welch:1951; @Rasch:2011; @Delacre:2019], whereas non-parametric tests such as Wilcoxon and Kruskal--Wallis test a rank-based distributional target.
+The simulation illustrate on examplary distributions the type I and type II errors of different test choices on grouped numeric data (Route 1). Route 1  can answer two different questions: Parametric tests such as Student's t-test, Fisher's ANOVA, and their Welch variants test population means [@Welch:1951; @Rasch:2011; @Delacre:2019], whereas non-parametric tests such as Wilcoxon and Kruskal--Wallis test a rank-based distributional target.
 
 <!-- ::: rev-del -->
 <!-- There are three coherent defaults. -->
@@ -407,8 +407,8 @@ The simulations use Fleishman's polynomial transformation $Y=a+bX+cX^2+dX^3$, wh
 The Type I simulations use four groups and $B=50{,}000$ Monte Carlo
 replications per cell.
 Across rows, the balanced designs vary the common group size
-$n \in \{10,20,50,100\}$, whereas the unbalanced designs vary the target
-mean group size $\bar n \in \{10,20,50,100\}$.
+$n \in \{10,20,50,100\}$, whereas he unbalanced designs vary the target
+mean group size $\bar n = n$.
 Within each unbalanced row, the group-size vector is
 $\mathbf n=\bar n\cdot(0.5,0.8,1.2,1.5)$, rounded up component-wise.
 For an estimated rejection probability $\hat p$, the Monte Carlo standard error is [@Koehler:2009].
@@ -629,6 +629,12 @@ Because the three omnibus tests rest on different assumptions, each branch uses 
 
 The graphical results panel of these omnibus tests consists of box plots (see examples in Section \@ref(sec:examples-route1)) enriched with significance letters to visualise the post-hoc analysis: Pairs whose adjusted post-hoc $p$-value falls below $\alpha$ are marked with different green significance letters below the box plots; pairs sharing a letter are not significantly different.
 
+welch variant: 
+"Taking both the effects of the assumption violations on the alpha risk and on the power, we recommend using the W-test instead of the F-test to compare groups means. The F-test and F*-test should be avoided, because a) the equal variances assumption is often unrealistic, b) tests of the equal variances assumption will often fail to detect differences when these are present, c) the loss of power when using the W-test is very small (and often even negligible), and d) the gain in Type I error control is considerable under a wide range of realistic conditions." [@Delacre:2019]
+
+
+
+
 ### Route 2: Ordered response {#sec:route-2}
 
 An ordered categorical response with a categorical predictor or ordered categorical predictor is treated as a rank-based group comparison.
@@ -759,9 +765,8 @@ conditional odds ratio &
 )")
 } else {
   cat(r"(
-Table: (\#tab:effect-size-formulae) Effect sizes returned by `effect_size()`.
-
-<table>
+<table id="tab:effect-size-formulae">
+<caption>Effect sizes returned by <code>effect_size()</code>.</caption>
 <tr>
 <th>Analysis</th>
 <th>Effect size</th>
@@ -883,7 +888,7 @@ R^2 = 1 - \frac{SS_\text{res}}{SS_\text{tot}},
 
 where $SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2$ is the residual sum of squares, $\hat{y}_i$ is the predicted value, and $SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2$ is the total sum of squares.
 
-All other variables used in Table \@ref(tab:effect-size-formulae) are defined in the correspoding "Analysis" section of the Appendix. 
+All other variables used in the [effect-size table](#tab:effect-size-formulae) are defined in the correspoding "Analysis" section of the Appendix. 
 
 
 
@@ -1255,7 +1260,7 @@ For the ozone example introduced in Section \@ref(sec:lin-reg), staying within `
 
 
 For every chosen test, `visStatistics` provides both a *vis*ualisation and a full report covering the test itself, and, where applicable, its assumption checks and post-hoc comparisons.
-The report is complemented by each test's effect size (Table \@ref(tab:effect-size-formulae)): A sufficiently large sample makes even a negligible difference significant, so the p-value must be read alongside the magnitude of the effect [@Levine:2002; @Cohen:2013, p. 10].
+The report is complemented by each test's effect size (see the [effect-size table](#tab:effect-size-formulae)): A sufficiently large sample makes even a negligible difference significant, so the p-value must be read alongside the magnitude of the effect [@Levine:2002; @Cohen:2013, p. 10].
 The "right" test is thus per se not the one with the smallest p-value, but one whose assumptions hold, and whose effect is large enough to matter.
 
 

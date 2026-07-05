@@ -443,8 +443,8 @@ $$r(u,v)
 Here $u_i = \operatorname{rank}(x_i)$ and $v_i = \operatorname{rank}(y_i)$ are the ranks of the $n$ paired observations, and $\bar{u}$ and $\bar{v}$ are their sample means.
 
 For inference, `cor.test(..., method = "spearman")` computes an exact $p$-value for small samples without ties by evaluating all $n!$ rank permutations. For larger samples or when ties are present, it uses an approximation to the null distribution of the rank association measure or its asymptotic transformation. No distributional assumptions on the original data are required. <!-- 1. Beweis 
-The rank-biserial coefficient reported for the Wilcoxon rank-sum test
-(Table @ref(tab:effect-size-formulae)) is the corresponding correlation
+The rank-biserial coefficient reported for the Wilcoxon rank-sum test is
+the corresponding correlation
 coefficient for a ranking and a dichotomy. Cureton defines it from
 cross-category agreements \(P\) and inversions \(Q\) as
 \(r_{RB}=(P-Q)/P_{\max}\), with \(P_{\max}=N_1N_2\) when no bracket tie is
@@ -554,5 +554,4 @@ The sample odds ratio is
 \[
 \widehat{\mathrm{OR}} = \frac{ad}{bc}.
 \]
-
 
