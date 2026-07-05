@@ -18,7 +18,15 @@ spread.
 ## Usage
 
 ``` r
-vis_lm_assumptions(samples, fact, cex = 1, correlation = FALSE)
+vis_lm_assumptions(
+  samples,
+  fact,
+  cex = 1,
+  correlation = FALSE,
+  conf.level = 0.95,
+  qq_nsim = getOption("visStatistics.qq_nsim", 5000L),
+  plot_args = list()
+)
 ```
 
 ## Arguments
@@ -40,6 +48,18 @@ vis_lm_assumptions(samples, fact, cex = 1, correlation = FALSE)
   Logical. If `FALSE` and `fact` is numeric, regression diagnostics are
   shown. If `TRUE`, no regression diagnostics are shown. Default is
   `FALSE`.
+
+- conf.level:
+
+  Numeric confidence level for the simulated Q-Q envelopes.
+
+- qq_nsim:
+
+  Integer number of simulated refits for the Q-Q envelopes.
+
+- plot_args:
+
+  Optional named list of base graphics parameters.
 
 ## Value
 
@@ -82,6 +102,6 @@ A list with elements:
 
 ``` r
 ToothGrowth$dose <- as.factor(ToothGrowth$dose)
-vis_lm_assumptions(ToothGrowth$len, ToothGrowth$dose)
+vis_lm_assumptions(ToothGrowth$len, ToothGrowth$dose, qq_nsim = 100L)
 
 ```

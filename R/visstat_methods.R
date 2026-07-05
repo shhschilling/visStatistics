@@ -21,30 +21,24 @@
 #' @export
 
 print.visstat <- function(x, ...) {
-  
   cat("Object of class 'visstat'\n")
-  
+
   if (is.list(x)) {
-    
     if (!is.null(x$test) && !is.null(x$test$method)) {
       cat("Test used:", x$test$method, "\n")
     }
-    
+
     if (!is.null(x$test) && !is.null(x$test$p.value)) {
       cat("p-value:", signif(x$test$p.value, 3), "\n")
     }
 
     cat("\nAvailable components:\n")
     print(names(x))
-    
   } else {
-    
     cat("(No named elements in object)\n")
-    
   }
-  
+
   invisible(x)
-  
 }
 
 
@@ -72,70 +66,48 @@ print.visstat <- function(x, ...) {
 #' @export
 
 summary.visstat <- function(object, ...) {
-  
   cat("Summary of visstat object\n\n")
-  
+
   cat("--- Named components ---\n")
   print(names(object))
-  
+
   cat("\n--- Contents ---\n")
-  
+
   for (name in names(object)) {
-    
     cat(paste0("\n$", name, ":\n"))
-    
+
     if (name == "captured_plots") {
-      
       .print_captured_plots_summary(object[[name]])
-      
     } else {
-      
       print(object[[name]])
-      
     }
-    
   }
-  
+
   invisible(object)
-  
 }
 
 
 # Helper function for captured plots in print()
 
 .print_captured_plots <- function(plots) {
-  
   if (is.list(plots) && length(plots) > 0) {
-    
     cat(sprintf("List of %d plot object(s)\n", length(plots)))
-    
   } else {
-    
     print(plots)
-    
   }
-  
 }
 
 
 # Helper function for captured plots in summary()
 
 .print_captured_plots_summary <- function(plots) {
-  
   if (is.list(plots) && length(plots) > 0) {
-    
     cat(sprintf("List of %d plot object(s)\n", length(plots)))
-    
   } else if (is.list(plots) && length(plots) == 0) {
-    
     cat("Empty plot list\n")
-    
   } else {
-    
     cat("Plot object(s) (not displayed in summary)\n")
-    
   }
-  
 }
 
 
@@ -183,62 +155,44 @@ summary.visstat <- function(object, ...) {
 #' @export
 
 plot.visstat <- function(x, which = NULL, ...) {
-  
   path <- attr(x, "plot_paths")
   capture <- attr(x, "captured_plots")
-  
+
   # File-based plots ---------------------------------------------------
-  
+
   if (!is.null(path) && length(path) > 0) {
-    
     if (!is.null(which)) {
-      
       message("Plot [", which, "] stored in ", path[[which]])
-      
     } else {
-      
       for (i in seq_along(path)) {
-        
         message("Plot [", i, "] stored in ", path[[i]])
-        
       }
-      
     }
-    
+
     return(invisible(x))
-    
   }
-  
+
   # Captured plots -----------------------------------------------------
-  
+
   if (!is.null(capture) && length(capture) > 0) {
-    
     if (!is.null(which)) {
-      
       oldpar <- graphics::par(no.readonly = TRUE)
-      
+
       on.exit(graphics::par(oldpar), add = TRUE)
-      
+
       replayPlot(capture[[which]])
-      
     } else {
-      
       for (i in seq_along(capture)) {
-        
         message(
           "Plot [", i,
           "] captured. Use plot(obj, which = ", i,
           ") to display."
         )
-        
       }
-      
     }
-    
+
     return(invisible(x))
-    
   }
-  
+
   invisible(x)
-  
 }

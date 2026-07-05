@@ -2,104 +2,115 @@
 #'
 #' Wrapper for visstat_core Allowing Three Different Input Styles
 #'
-#' @description \code{visstat()} is a wrapper around \code{\link{visstat_core}} 
-#' that provides three alternative input styles: a formula interface, a 
-#' standardised vector interface, and a backward-compatible data frame interface.
-#' \code{\link{visstat_core}} defines the decision logic for statistical 
-#' hypothesis testing and visualisation between two variables of class 
-#' \code{"numeric"}, \code{"integer"}, or \code{"factor"}.
+#' @description \code{visstat()} is a wrapper around \code{\link{visstat_core}}
+#' that provides three input styles and dispatches to one of four analysis
+#' routes. Route 1 handles a numeric response with a categorical predictor.
+#' By default, Route 1 uses residual-based assumption diagnostics: the
+#' Shapiro--Wilk test gates mean-based versus rank-based analysis, and the
+#' Levene test then gates equal-variance versus Welch-type mean tests.
+#' Alternatively, \code{group_test = "welch"} keeps Route 1 on the mean scale
+#' and forces Welch-type tests, while \code{group_test = "rank"} forces
+#' Wilcoxon/Kruskal--Wallis rank tests. Route 2 handles ordered responses
+#' with Wilcoxon/Kruskal--Wallis tests. Route 3 handles two numeric variables
+#' with linear regression by default, or Spearman correlation when
+#' \code{correlation = TRUE}. Route 4 handles two unordered factors with
+#' Pearson's \eqn{\chi^2} test or Fisher's exact test.
 #'
-#' @param x For the formula interface: a formula of the form \code{y ~ x}, 
-#'   where \code{y} is the response variable and \code{x} is the predictor or 
-#'   grouping variable (requires \code{data} argument). For the standardised 
-#'   form: a vector of class \code{"numeric"}, \code{"integer"}, or 
-#'   \code{"factor"} representing the predictor or grouping variable. For the 
-#'   backward-compatible form: a \code{data.frame} containing the relevant 
+#' @param x For the formula interface: a formula of the form \code{y ~ x},
+#'   where \code{y} is the response variable and \code{x} is the predictor or
+#'   grouping variable (requires \code{data} argument). For the standardised
+#'   form: a vector of class \code{"numeric"}, \code{"integer"}, or
+#'   \code{"factor"} representing the predictor or grouping variable. For the
+#'   backward-compatible form: a \code{data.frame} containing the relevant
 #'   columns.
-#' @param y For the formula interface: not used (variables are extracted from 
-#'   the formula). For the standardised form: a vector of class \code{"numeric"}, 
-#'   \code{"integer"}, or \code{"factor"} representing the response variable. 
-#'   For the backward-compatible form: a \code{character} string specifying the 
+#' @param y For the formula interface: not used (variables are extracted from
+#'   the formula). For the standardised form: a vector of class \code{"numeric"},
+#'   \code{"integer"}, or \code{"factor"} representing the response variable.
+#'   For the backward-compatible form: a \code{character} string specifying the
 #'   name of the response variable column in \code{x}.
-#' @param ... For the backward-compatible form only: a \code{character} string 
-#'   specifying the name of the predictor or grouping variable column in 
-#'   \code{x}. Ignored for formula and standardised input styles.
-#' @param data A \code{data.frame} containing the variables specified in the 
-#'   formula. Required when using the formula interface. Ignored for other 
+#' @param ... Named graphical arguments are forwarded to the plots selected by
+#'   the analysis route for all three input forms. Only in the backward-compatible
+#'   form, the first unnamed extra argument must specify the predictor or grouping
+#'   column name in \code{x}. Ignored otherwise.
+#' @param data A \code{data.frame} containing the variables specified in the
+#'   formula. Required when using the formula interface. Ignored for other
 #'   input styles.
-#' @param conf.level Confidence level for statistical inference; default is 
+#' @param conf.level Confidence level for statistical inference; default is
 #'   \code{0.95}.
 #' @param correlation Logical. If \code{FALSE} (default), performs simple
 #'   linear regression analysis with confidence and prediction bands when both
 #'   variables are numeric. If \code{TRUE}, performs Spearman correlation analysis
 #'   with trend line only (no regression interpretation).
 #' @param numbers Logical. Whether to annotate plots with numeric values.
-#' @param minpercent Number between 0 and 1 indicating minimal fraction of 
+#' @param minpercent Number between 0 and 1 indicating minimal fraction of
 #'   total count data of a category to be displayed in mosaic count plots.
 #' @param group_test Optional character. For a numeric response and factor predictor,
 #'   \code{NULL} keeps the default assumption gates, \code{"welch"} forces
 #'   Welch-type mean tests, and \code{"rank"} forces Wilcoxon/Kruskal-Wallis
 #'   rank tests.
-#' @param graphicsoutput Saves plot(s) of type \code{"png"}, \code{"jpg"}, 
-#'   \code{"tiff"} or \code{"bmp"} in directory specified in 
+#' @param graphicsoutput Saves plot(s) of type \code{"png"}, \code{"jpg"},
+#'   \code{"tiff"} or \code{"bmp"} in directory specified in
 #'   \code{plotDirectory}. If \code{NULL}, no plots are saved.
-#' @param plotName Graphical output is stored following the naming convention 
-#'   \code{"plotName.graphicsoutput"} in \code{plotDirectory}. Without 
-#'   specifying this parameter, \code{plotName} is automatically generated 
+#' @param plotName Graphical output is stored following the naming convention
+#'   \code{"plotName.graphicsoutput"} in \code{plotDirectory}. Without
+#'   specifying this parameter, \code{plotName} is automatically generated
 #'   following the convention \code{"statisticalTestName_varsample_varfactor"}.
-#' @param plotDirectory Specifies directory where generated plots are stored. 
+#' @param plotDirectory Specifies directory where generated plots are stored.
 #'   Default is current working directory.
 #'
 #' @details This wrapper supports three input formats:
-#' 
-#' (1) Formula interface: \code{visstat(y ~ x, data = df)}, where the formula 
-#' specifies the response (\code{y}) and predictor (\code{x}) variables, and 
+#'
+#' (1) Formula interface: \code{visstat(y ~ x, data = df)}, where the formula
+#' specifies the response (\code{y}) and predictor (\code{x}) variables, and
 #' \code{data} is a data frame containing these variables.
 #'
-#' (2) Standardised form: \code{visstat(x, y)}, where both \code{x} and \code{y} 
-#' are vectors of class \code{"numeric"}, \code{"integer"}, or \code{"factor"}. 
-#' Here \code{x} is the predictor or grouping variable and \code{y} is the 
+#' (2) Standardised form: \code{visstat(x, y)}, where both \code{x} and \code{y}
+#' are vectors of class \code{"numeric"}, \code{"integer"}, or \code{"factor"}.
+#' Here \code{x} is the predictor or grouping variable and \code{y} is the
 #' response variable.
 #'
-#' (3) Backward-compatible form: \code{visstat(dataframe, "name_of_y", "name_of_x")}, 
-#' where the first character string refers to the response variable and the 
-#' second to the predictor or grouping variable. Both must be column names in 
+#' (3) Backward-compatible form: \code{visstat(dataframe, "name_of_y", "name_of_x")},
+#' where the first character string refers to the response variable and the
+#' second to the predictor or grouping variable. Both must be column names in
 #' \code{dataframe}. This form gives a warning and may be removed in a future
 #' version.
 #'
-#' The interpretation of \code{x} and \code{y} depends on the variable classes. 
-#' Throughout, data of class \code{numeric} or \code{integer} are referred to 
+#' The interpretation of \code{x} and \code{y} depends on the variable classes.
+#' Throughout, data of class \code{numeric} or \code{integer} are referred to
 #' as numeric, while data of class \code{factor} are referred to as categorical:
 #'
-#' If one variable is numeric and the other a factor, the numeric vector is the 
-#' response (\code{y}) and the factor is the grouping variable (\code{x}). This 
-#' supports tests of central tendencies (e.g., t-test, Welch's ANOVA, Wilcoxon, 
-#' Kruskal-Wallis).
+#' If one variable is numeric and the other a factor, the numeric vector is the
+#' response (\code{y}) and the factor is the grouping variable (\code{x}).
+#' This is Route 1: residual normality and residual variance diagnostics select
+#' between Student/Welch mean tests and Wilcoxon/Kruskal--Wallis rank tests,
+#' unless \code{group_test} explicitly forces \code{"welch"} or \code{"rank"}.
 #'
-#' If both variables are numeric, a linear model is fitted with \code{y} as the 
-#' response and \code{x} as the predictor.
+#' If both variables are numeric, a linear model is fitted with \code{y} as the
+#' response and \code{x} as the predictor, unless \code{correlation = TRUE},
+#' which requests Spearman rank correlation.
 #'
-#' If both variables are factors, an association test (Chi-squared or Fisher's 
-#' exact) is used. The test result is invariant to variable order, but 
-#' visualisations (e.g., axis layout, bar orientation) depend on the roles of 
-#' \code{x} and \code{y}.
+#' If both variables are factors, unordered factors enter the
+#' Pearson-\eqn{\chi^2}/Fisher exact association route. Ordered responses with
+#' categorical predictors are analysed as rank-based group comparisons; if both
+#' variables are ordered and \code{correlation = TRUE}, Kendall's \eqn{\tau_b}
+#' is used.
 #'
-#' This wrapper standardises the input and calls \code{\link{visstat_core}}, 
-#' which selects and executes the appropriate test with visual output and 
+#' This wrapper standardises the input and calls \code{\link{visstat_core}},
+#' which selects and executes the appropriate test with visual output and
 #' assumption diagnostics.
 #'
-#' @return An object of class \code{"visstat"} containing the results of 
-#' the automatically selected statistical test. The specific contents depend on 
-#' which test was performed. Additionally, the returned object includes two 
+#' @return An object of class \code{"visstat"} containing the results of
+#' the automatically selected statistical test. The specific contents depend on
+#' which test was performed. Additionally, the returned object includes two
 #' attributes:
 #' \itemize{
-#'   \item \code{plot_paths}: Character vector of file paths where plots were 
+#'   \item \code{plot_paths}: Character vector of file paths where plots were
 #'     saved (if \code{graphicsoutput} was specified)
-#'   \item \code{captured_plots}: List of captured plot objects for programmatic 
+#'   \item \code{captured_plots}: List of captured plot objects for programmatic
 #'     access
 #' }
 #'
-#' In case of insufficient data, returns a list with an \code{error} element and 
+#' In case of insufficient data, returns a list with an \code{error} element and
 #' basic input summary information.
 #'
 #' @note For best visualization, ensure that the RStudio Plots pane is adequately
@@ -107,12 +118,15 @@
 #' pane in RStudio, or using \code{dev.new(width=10, height=6)} for a larger plot
 #' window.
 #'
-#' @seealso \code{\link{visstat_core}} defining the decision logic, the 
-#' package's vignette \code{vignette("visStatistics")} explaining the decision 
-#' logic accompanied by illustrative examples, and the accompanying webpage 
+#' @seealso \code{\link{visstat_core}} defining the decision logic, the
+#' package's vignette \code{vignette("visStatistics")} explaining the decision
+#' logic accompanied by illustrative examples, and the accompanying webpage
 #' \url{https://shhschilling.github.io/visStatistics/}.
 #'
 #' @examples
+#' old_qq_nsim <- getOption("visStatistics.qq_nsim")
+#' options(visStatistics.qq_nsim = 100L)
+#'
 #' # Formula interface
 #' mtcars$am <- as.factor(mtcars$am)
 #' visstat(mpg ~ am, data = mtcars)
@@ -124,7 +138,7 @@
 #' # When residuals are normally distributed and Levene's test indicates
 #' # homoscedasticity, the classic Student's t-test with pooled variance is used
 #' df <- droplevels(subset(PlantGrowth, group %in% c("ctrl", "trt1")))
-#' visstat(df$group,df$weight)
+#' visstat(df$group, df$weight)
 #'
 #' ## Welch's t-test (unequal variances, two groups)
 #' # When residuals are normally distributed but Levene's test indicates
@@ -147,18 +161,18 @@
 #' ## Fisher's ANOVA (equal variances, >2 groups)
 #' # When residuals are normally distributed and Levene's test indicates
 #' # homoscedasticity, classic Fisher's ANOVA with TukeyHSD post-hoc is used.
-#' # Different green letters indicate significant differences between groups. 
+#' # Different green letters indicate significant differences between groups.
 #' visstat(PlantGrowth$group, PlantGrowth$weight)
 #'
 #' ## Welch's one-way ANOVA (unequal variances, >2 groups)
 #' set.seed(123)
-#' values <- c(rnorm(20, 10, 1),rnorm(20, 15, 5),rnorm(20, 12, 2))
+#' values <- c(rnorm(20, 10, 1), rnorm(20, 15, 5), rnorm(20, 12, 2))
 #' groups <- factor(rep(c("A", "B", "C"), each = 20))
 #' visstat(groups, values)
 
 #' ## Kruskal-Wallis (non-normal, >2 groups)
-#' # When residuals are not normally distributed, kruskal.test() is followed by 
-#' # pairwise.wilcox.test. 
+#' # When residuals are not normally distributed, kruskal.test() is followed by
+#' # pairwise.wilcox.test.
 #' visstat(iris$Species, iris$Petal.Width)
 #'
 #' ## Simple linear regression (both numeric)
@@ -166,7 +180,7 @@
 #'
 #' ## Pearson's Chi-squared test (both factors, large expected counts)
 #' HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
-#' visstat(HairEyeColorDataFrame$Eye, HairEyeColorDataFrame$Hair)
+#' visstat(HairEyeColorDataFrame$Eye, HairEyeColorDataFrame$Hair, cex = 0.7)
 #'
 #' ## Fisher's exact test (both factors, small expected counts)
 #' HairEyeColorMaleFisher <- HairEyeColor[, , 1]
@@ -181,6 +195,8 @@
 #' ## Custom plot name
 #' visstat(iris$Species, iris$Petal.Width,
 #'         graphicsoutput = "pdf", plotName = "kruskal_iris", plotDirectory = tempdir())
+#'
+#' options(visStatistics.qq_nsim = old_qq_nsim)
 #'
 #' @export
 visstat <- function(x,
@@ -198,28 +214,39 @@ visstat <- function(x,
   # store default graphical parameters------
   oldparvisstat <- par(no.readonly = TRUE)
   on.exit(par(oldparvisstat))
-  
+
   check_visstat_input(x, y, ..., data = data)
+  dots <- list(...)
+  dot_names <- names(dots)
+  named_dots <- if (is.null(dot_names)) list() else dots[nzchar(dot_names)]
+  if ("route" %in% names(dots)) {
+    route <- match.arg(dots$route, c("welch", "rank"))
+    if (!is.null(group_test) && group_test != route) {
+      stop("Use only one of 'group_test' or legacy 'route'.", call. = FALSE)
+    }
+    group_test <- route
+  }
+  plot_args <- named_dots[setdiff(names(named_dots), "route")]
   group_test <- if (is.null(group_test)) NULL else match.arg(group_test, c("welch", "rank"))
-  
+
   clean_name <- function(expr) {
     sub(".*\\$", "", deparse(expr))
   }
-  
+
   # Case 0: formula interface
   if (inherits(x, "formula")) {
     if (is.null(data)) {
       stop("Formula input requires a 'data' argument.")
     }
-    
+
     vars <- all.vars(x)
     if (length(vars) != 2) {
       stop("Formula must be of the form 'y ~ x'.")
     }
-    
+
     yvar <- vars[1]
     xvar <- vars[2]
-    
+
     return(visstat_core(
       dataframe = data,
       varsample = yvar,
@@ -231,19 +258,23 @@ visstat <- function(x,
       group_test = group_test,
       graphicsoutput = graphicsoutput,
       plotName = plotName,
-      plotDirectory = plotDirectory
+      plotDirectory = plotDirectory,
+      plot_args = plot_args
     ))
   }
-  
+
   # Case 1: legacy form: visstat(data, "Girth", "Height")
   if (is.data.frame(x) && is.character(y) && length(y) == 1) {
     mc <- match.call()
     args <- as.list(mc)[-1]
     if (length(args) < 3 || !is.character(eval(args[[3]], parent.frame()))) {
-      stop("When using the backward-compatible form, provide two column names as character strings.")
+      stop(
+        "When using the backward-compatible form, provide two column names ",
+        "as character strings."
+      )
     }
-    varsample <- y                                    # first string: response
-    varfactor <- eval(args[[3]], parent.frame())      # second string: predictor
+    varsample <- y # first string: response
+    varfactor <- eval(args[[3]], parent.frame()) # second string: predictor
     dataframe <- x
     warning(
       "The backward-compatible form visstat(dataframe, \"y\", \"x\") ",
@@ -262,27 +293,28 @@ visstat <- function(x,
       group_test = group_test,
       graphicsoutput = graphicsoutput,
       plotName = plotName,
-      plotDirectory = plotDirectory
+      plotDirectory = plotDirectory,
+      plot_args = plot_args
     ))
   }
-  
+
   # Case 2: new syntax: visstat(trees$Height, trees$Girth)
-  factor_expr <- substitute(x)  # first argument = predictor/grouping variable
-  sample_expr <- substitute(y)  # second argument = response
-  
+  factor_expr <- substitute(x) # first argument = predictor/grouping variable
+  sample_expr <- substitute(y) # second argument = response
+
   factor_val <- eval(factor_expr, parent.frame())
   sample_val <- eval(sample_expr, parent.frame())
-  
+
   factor_name <- clean_name(factor_expr)
   sample_name <- clean_name(sample_expr)
-  
+
   dataframe <- data.frame(factor_val, sample_val)
   names(dataframe) <- c(factor_name, sample_name)
-  
+
   return(invisible(visstat_core(
     dataframe = dataframe,
-    varsample = sample_name,   # second argument = response
-    varfactor = factor_name,   # first argument = predictor
+    varsample = sample_name, # second argument = response
+    varfactor = factor_name, # first argument = predictor
     conf.level = conf.level,
     correlation = correlation,
     numbers = numbers,
@@ -290,6 +322,7 @@ visstat <- function(x,
     group_test = group_test,
     graphicsoutput = graphicsoutput,
     plotName = plotName,
-    plotDirectory = plotDirectory
+    plotDirectory = plotDirectory,
+    plot_args = plot_args
   )))
 }

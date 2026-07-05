@@ -24,8 +24,10 @@ test_that("bp.test returns an htest object with the expected components", {
   res <- bp.test(fit)
 
   expect_s3_class(res, "htest")
-  expect_true(all(c("statistic", "parameter", "p.value",
-                    "method", "data.name") %in% names(res)))
+  expect_true(all(c(
+    "statistic", "parameter", "p.value",
+    "method", "data.name"
+  ) %in% names(res)))
   expect_named(res$statistic, "BP")
   expect_named(res$parameter, "df")
   expect_equal(unname(res$parameter), 1L)
@@ -49,14 +51,14 @@ test_that("BP statistic equals N * R^2 from the auxiliary regression", {
   res <- bp.test(fit)
 
   # Manual computation per Equation eq:breusch-pagan-bp.
-  e2     <- residuals(fit)^2
-  yhat   <- fitted(fit)
-  aux    <- lm(e2 ~ yhat)
+  e2 <- residuals(fit)^2
+  yhat <- fitted(fit)
+  aux <- lm(e2 ~ yhat)
   r2_aux <- summary(aux)$r.squared
 
   bp_manual <- n * r2_aux
   df_manual <- length(coef(fit)) - 1L
-  p_manual  <- pchisq(bp_manual, df = df_manual, lower.tail = FALSE)
+  p_manual <- pchisq(bp_manual, df = df_manual, lower.tail = FALSE)
 
   expect_equal(unname(res$statistic), bp_manual)
   expect_equal(unname(res$parameter), df_manual)
@@ -74,10 +76,10 @@ test_that("homoscedastic case gives larger p-value than heteroscedastic case", {
   n <- 200
   x <- runif(n, 0, 10)
   y_homo <- 2 + 3 * x + rnorm(n, sd = 1)
-  y_het  <- 2 + 3 * x + rnorm(n, sd = 0.5 + 0.5 * x)
+  y_het <- 2 + 3 * x + rnorm(n, sd = 0.5 + 0.5 * x)
 
   p_homo <- bp.test(lm(y_homo ~ x))$p.value
-  p_het  <- bp.test(lm(y_het ~ x))$p.value
+  p_het <- bp.test(lm(y_het ~ x))$p.value
 
   expect_gt(p_homo, p_het)
 })

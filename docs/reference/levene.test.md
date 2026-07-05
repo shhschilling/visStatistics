@@ -63,7 +63,7 @@ where \\\bar{y}\_i\\ is the mean of group \\i\\.
 The test statistic is the F-statistic from a one-way ANOVA on the
 \\z\_{ij}\\ values:
 
-\$\$F = \frac{(N-k) \sum\_{i=1}^{k} n_i (\bar{z}\_i - \bar{z})^2}{(k-1)
+\$\$F = \frac{(N-k) \sum\_{i=1}^{k} n_i (\bar{z}\_i - \bar{z})^2}{ (k-1)
 \sum\_{i=1}^{k} \sum\_{j=1}^{n_i} (z\_{ij} - \bar{z}\_i)^2}\$\$
 
 where:
@@ -122,6 +122,4 @@ levene.test(y_unequal, g_unequal)
 #> data:  absolute deviations from group means
 #> F = 35.937, df1 = 2, df2 = 42, p-value = 8.004e-10
 #> 
-
-
 ```

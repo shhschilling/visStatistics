@@ -106,7 +106,8 @@ deviation from the group mean:</p>
 <p>$$z_{ij} = |y_{ij} - \bar{y}_i|$$</p>
 <p>where \(\bar{y}_i\) is the mean of group \(i\).</p>
 <p>The test statistic is the F-statistic from a one-way ANOVA on the \(z_{ij}\) values:</p>
-<p>$$F = \frac{(N-k) \sum_{i=1}^{k} n_i (\bar{z}_i - \bar{z})^2}{(k-1) \sum_{i=1}^{k} \sum_{j=1}^{n_i} (z_{ij} - \bar{z}_i)^2}$$</p>
+<p>$$F = \frac{(N-k) \sum_{i=1}^{k} n_i (\bar{z}_i - \bar{z})^2}{
+(k-1) \sum_{i=1}^{k} \sum_{j=1}^{n_i} (z_{ij} - \bar{z}_i)^2}$$</p>
 <p>where:</p><ul><li><p>\(k\) = number of groups</p></li>
 <li><p>\(N\) = total sample size</p></li>
 <li><p>\(n_i\) = sample size of group \(i\)</p></li>
@@ -156,8 +157,6 @@ Stanford University Press.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> data:  absolute deviations from group means</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> F = 35.937, df1 = 2, df2 = 42, p-value = 8.004e-10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

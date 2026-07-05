@@ -53,7 +53,7 @@ library(visStatistics)
 ## ---- 1. Data-generating machinery -----------------------------------------
 
 ## Per-group standard deviations and common mean.
-group_sd   <- c(A = 0.3, B = 0.5, C = 0.7, D = 0.9, E = 1.1)
+group_sd <- c(A = 0.3, B = 0.5, C = 0.7, D = 0.9, E = 1.1)
 group_mean <- 10
 
 ## Target skewness s -> log-standard-deviation of the lognormal base.
@@ -70,18 +70,22 @@ skew_to_sdlog <- function(s) {
 ## Standardised skewed base: mean 0, sd 1, skewness s.
 make_base <- function(s) {
   sdlog <- skew_to_sdlog(s)
-  m     <- exp(sdlog^2 / 2)
-  sdz   <- sqrt((exp(sdlog^2) - 1) * exp(sdlog^2))
+  m <- exp(sdlog^2 / 2)
+  sdz <- sqrt((exp(sdlog^2) - 1) * exp(sdlog^2))
   function(n) (rlnorm(n, 0, sdlog) - m) / sdz
 }
 
 ## One realisation of the k-group sample as a (value, group) pair.
 make_sample <- function(n_per_group, base) {
   groups <- names(n_per_group)
-  value  <- unlist(lapply(groups,
-              function(g) group_mean + group_sd[g] * base(n_per_group[g])))
-  list(value = value,
-       group = factor(rep(groups, times = n_per_group)))
+  value <- unlist(lapply(
+    groups,
+    function(g) group_mean + group_sd[g] * base(n_per_group[g])
+  ))
+  list(
+    value = value,
+    group = factor(rep(groups, times = n_per_group))
+  )
 }
 
 ## ---- 2. Empirical Type I error of Welch's one-way ANOVA --------------------
@@ -89,12 +93,14 @@ make_sample <- function(n_per_group, base) {
 ## visstat() uses when variances are unequal, which they are here.
 
 welch_typeI <- function(n_per_group, s, nrep = 2000, alpha = 0.05) {
-  base  <- make_base(s)
-  group <- factor(rep(names(n_per_group), times = n_per_group))
   mean(replicate(nrep, {
-    value <- unlist(lapply(names(n_per_group),
-               function(g) group_mean + group_sd[g] * base(n_per_group[g])))
-    oneway.test(value ~ group, var.equal = FALSE)$p.value < alpha
+    oneway.test(
+      (unlist(lapply(
+        names(n_per_group),
+        function(g) group_mean + group_sd[g] * make_base(s)(n_per_group[g])
+      )) ~ factor(rep(names(n_per_group), times = n_per_group))),
+      var.equal = FALSE
+    )$p.value < alpha
   }))
 }
 
@@ -102,30 +108,35 @@ welch_typeI <- function(n_per_group, s, nrep = 2000, alpha = 0.05) {
 
 run_sweep <- function(skews = 2:8, nrep = 2000, seed = 1) {
   regimes <- list(
-    "n in (50,100)" = c(A = 55,  B = 65,  C = 75,  D = 85,  E = 95),
+    "n in (50,100)" = c(A = 55, B = 65, C = 75, D = 85, E = 95),
     "n > 100"       = c(A = 110, B = 130, C = 150, D = 170, E = 190),
     "n > 500"       = c(A = 510, B = 530, C = 550, D = 570, E = 590)
   )
   tab <- matrix(NA_real_, length(skews), length(regimes),
-                dimnames = list(skewness = skews, regime = names(regimes)))
-  for (i in seq_along(skews))
+    dimnames = list(skewness = skews, regime = names(regimes))
+  )
+  for (i in seq_along(skews)) {
     for (j in seq_along(regimes)) {
       set.seed(seed)
       tab[i, j] <- welch_typeI(regimes[[j]], skews[i], nrep = nrep)
     }
+  }
   tab
 }
 
-cat("Welch one-way ANOVA, empirical Type I error",
-    "(k = 5, equal means, heteroscedastic).\n")
+cat(
+  "Welch one-way ANOVA, empirical Type I error",
+  "(k = 5, equal means, heteroscedastic).\n"
+)
 cat("Nominal alpha = .05; Bradley (1978) liberal bound [.025, .075].\n\n")
 
 typeI <- run_sweep(skews = 2:8, nrep = 2000, seed = 1)
 print(round(typeI, 4))
 
 flagged <- ifelse(typeI > 0.075,
-                  paste0(format(round(typeI, 3), nsmall = 3), "*"),
-                  format(round(typeI, 3), nsmall = 3))
+  paste0(format(round(typeI, 3), nsmall = 3), "*"),
+  format(round(typeI, 3), nsmall = 3)
+)
 cat("\n('*' = above Bradley's upper bound .075)\n")
 print(noquote(flagged))
 
@@ -134,19 +145,23 @@ print(noquote(flagged))
 
 matplot_typeI <- function(tab) {
   skews <- as.numeric(rownames(tab))
-  cols  <- c("#1b9e77", "#d95f02", "#7570b3")
-  matplot(skews, tab, type = "b", pch = 16, lty = 1, lwd = 2, col = cols,
-          ylim = c(0.04, max(0.095, max(tab))),
-          xlab = "common group skewness",
-          ylab = "empirical Type I error",
-          main = "Welch ANOVA Type I error vs skewness (k = 5, equal means)")
+  cols <- c("#1b9e77", "#d95f02", "#7570b3")
+  matplot(skews, tab,
+    type = "b", pch = 16, lty = 1, lwd = 2, col = cols,
+    ylim = c(0.04, max(0.095, max(tab))),
+    xlab = "common group skewness",
+    ylab = "empirical Type I error",
+    main = "Welch ANOVA Type I error vs skewness (k = 5, equal means)"
+  )
   rect(par("usr")[1], 0.025, par("usr")[2], 0.075,
-       col = adjustcolor("grey80", alpha.f = 0.35), border = NA)
+    col = adjustcolor("grey80", alpha.f = 0.35), border = NA
+  )
   matlines(skews, tab, type = "b", pch = 16, lty = 1, lwd = 2, col = cols)
   abline(h = 0.05, lty = 3)
   legend("topleft", colnames(tab), col = cols, pch = 16, lwd = 2, bty = "n")
   legend("bottomright", "Bradley band [.025, .075]",
-         fill = adjustcolor("grey80", alpha.f = 0.6), border = NA, bty = "n")
+    fill = adjustcolor("grey80", alpha.f = 0.6), border = NA, bty = "n"
+  )
 }
 matplot_typeI(typeI)
 
@@ -158,7 +173,7 @@ cat("\n--- Interpreting the skewness scale ---\n")
 cat("Reference skewness:  exponential / chi-sq(2) = 2.00 ;  chi-sq(1) = 2.83\n")
 for (s in c(2, 4, 6, 8)) {
   sdlog <- skew_to_sdlog(s)
-  cv    <- sqrt(exp(sdlog^2) - 1)
+  cv <- sqrt(exp(sdlog^2) - 1)
   cat(sprintf("  skewness %d  <->  lognormal CV = %.2f\n", s, cv))
 }
 cat("\nMax POSSIBLE sample skewness for n points is (n-2)/sqrt(n-1):\n")
@@ -170,7 +185,8 @@ cat(paste(strwrap(paste(
   "sits near that ceiling and is typically driven by one or two extreme",
   "points rather than the bulk shape. A stable population skewness of 6",
   "(lognormal CV > 1.2) is heavy-tailed data for which the mean is itself a",
-  "questionable summary."), width = 78), collapse = "\n"), "\n")
+  "questionable summary."
+), width = 78), collapse = "\n"), "\n")
 
 ## ---- 6. Reproducible visstat() demonstration -------------------------------
 ## A single dataset from the same construction, passed to visstat(). With every
@@ -182,15 +198,25 @@ cat(paste(strwrap(paste(
 
 set.seed(1)
 demo <- make_sample(c(A = 55, B = 65, C = 75, D = 85, E = 95),
-                    base = make_base(4))
+  base = make_base(4)
+)
 
 cat("\n--- visstat() demonstration (skewness 4, n in (50,100)) ---\n")
-cat("group means  :", paste(round(tapply(demo$value, demo$group, mean),   2),
-                            collapse = " / "), "\n")
-cat("group medians:", paste(round(tapply(demo$value, demo$group, median), 2),
-                            collapse = " / "), "\n")
-cat("group sds    :", paste(round(tapply(demo$value, demo$group, sd),     2),
-                            collapse = " / "), "\n")
+cat(
+  "group means  :",
+  paste(round(tapply(demo$value, demo$group, mean), 2), collapse = " / "),
+  "\n"
+)
+cat(
+  "group medians:",
+  paste(round(tapply(demo$value, demo$group, median), 2), collapse = " / "),
+  "\n"
+)
+cat(
+  "group sds    :",
+  paste(round(tapply(demo$value, demo$group, sd), 2), collapse = " / "),
+  "\n"
+)
 
 result <- visstat(demo$group, demo$value)
 
@@ -199,17 +225,23 @@ result <- visstat(demo$group, demo$value)
 ## summary.aov (Fisher's ANOVA).
 anova_obj <- result[["summary statistics of ANOVA"]]
 if (inherits(anova_obj, "htest")) {
-  cat(sprintf("visstat() selected: Welch's one-way ANOVA (p = %.3f)\n",
-              anova_obj$p.value))
+  cat(sprintf(
+    "visstat() selected: Welch's one-way ANOVA (p = %.3f)\n",
+    anova_obj$p.value
+  ))
 } else {
   p_fisher <- anova_obj[[1]][["Pr(>F)"]][1]
-  cat(sprintf("visstat() selected: Fisher's one-way ANOVA (p = %.3f)\n",
-              p_fisher))
+  cat(sprintf(
+    "visstat() selected: Fisher's one-way ANOVA (p = %.3f)\n",
+    p_fisher
+  ))
 }
-cat("Note: group means coincide while group medians do not, and the residuals",
-    "are\nnon-normal -- yet with every group above 50 the mean-based Welch test",
-    "is used,\njustified by the central limit theorem rather than by residual",
-    "normality.\n")
+cat(
+  "Note: group means coincide while group medians do not, and the residuals",
+  "are\nnon-normal -- yet with every group above 50 the mean-based Welch test",
+  "is used,\njustified by the central limit theorem rather than by residual",
+  "normality.\n"
+)
 
 ## ---- 7. Session information for reproducibility ----------------------------
 cat("\n--- sessionInfo() ---\n")

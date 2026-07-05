@@ -2,13 +2,18 @@
 
 `visstat()` is a wrapper around
 [`visstat_core`](https://shhschilling.github.io/visStatistics/reference/visstat_core.md)
-that provides three alternative input styles: a formula interface, a
-standardised vector interface, and a backward-compatible data frame
-interface.
-[`visstat_core`](https://shhschilling.github.io/visStatistics/reference/visstat_core.md)
-defines the decision logic for statistical hypothesis testing and
-visualisation between two variables of class `"numeric"`, `"integer"`,
-or `"factor"`.
+that provides three input styles and dispatches to one of four analysis
+routes. Route 1 handles a numeric response with a categorical predictor.
+By default, Route 1 uses residual-based assumption diagnostics: the
+Shapiro–Wilk test gates mean-based versus rank-based analysis, and the
+Levene test then gates equal-variance versus Welch-type mean tests.
+Alternatively, `group_test = "welch"` keeps Route 1 on the mean scale
+and forces Welch-type tests, while `group_test = "rank"` forces
+Wilcoxon/Kruskal–Wallis rank tests. Route 2 handles ordered responses
+with Wilcoxon/Kruskal–Wallis tests. Route 3 handles two numeric
+variables with linear regression by default, or Spearman correlation
+when `correlation = TRUE`. Route 4 handles two unordered factors with
+Pearson's \\\chi^2\\ test or Fisher's exact test.
 
 ## Usage
 
@@ -22,6 +27,7 @@ visstat(
   correlation = FALSE,
   numbers = TRUE,
   minpercent = 0.05,
+  group_test = NULL,
   graphicsoutput = NULL,
   plotName = NULL,
   plotDirectory = getwd()
@@ -49,9 +55,11 @@ visstat(
 
 - ...:
 
-  For the backward-compatible form only: a `character` string specifying
-  the name of the predictor or grouping variable column in `x`. Ignored
-  for formula and standardised input styles.
+  Named graphical arguments are forwarded to the plots selected by the
+  analysis route for all three input forms. Only in the
+  backward-compatible form, the first unnamed extra argument must
+  specify the predictor or grouping column name in `x`. Ignored
+  otherwise.
 
 - data:
 
@@ -78,6 +86,12 @@ visstat(
 
   Number between 0 and 1 indicating minimal fraction of total count data
   of a category to be displayed in mosaic count plots.
+
+- group_test:
+
+  Optional character. For a numeric response and factor predictor,
+  `NULL` keeps the default assumption gates, `"welch"` forces Welch-type
+  mean tests, and `"rank"` forces Wilcoxon/Kruskal-Wallis rank tests.
 
 - graphicsoutput:
 
@@ -137,16 +151,19 @@ numeric, while data of class `factor` are referred to as categorical:
 
 If one variable is numeric and the other a factor, the numeric vector is
 the response (`y`) and the factor is the grouping variable (`x`). This
-supports tests of central tendencies (e.g., t-test, Welch's ANOVA,
-Wilcoxon, Kruskal-Wallis).
+is Route 1: residual normality and residual variance diagnostics select
+between Student/Welch mean tests and Wilcoxon/Kruskal–Wallis rank tests,
+unless `group_test` explicitly forces `"welch"` or `"rank"`.
 
 If both variables are numeric, a linear model is fitted with `y` as the
-response and `x` as the predictor.
+response and `x` as the predictor, unless `correlation = TRUE`, which
+requests Spearman rank correlation.
 
-If both variables are factors, an association test (Chi-squared or
-Fisher's exact) is used. The test result is invariant to variable order,
-but visualisations (e.g., axis layout, bar orientation) depend on the
-roles of `x` and `y`.
+If both variables are factors, unordered factors enter the
+Pearson-\\\chi^2\\/Fisher exact association route. Ordered responses
+with categorical predictors are analysed as rank-based group
+comparisons; if both variables are ordered and `correlation = TRUE`,
+Kendall's \\\tau_b\\ is used.
 
 This wrapper standardises the input and calls
 [`visstat_core`](https://shhschilling.github.io/visStatistics/reference/visstat_core.md),
@@ -157,8 +174,8 @@ assumption diagnostics.
 
 For best visualization, ensure that the RStudio Plots pane is adequately
 sized. If you get "figure margins too large" errors, try expanding the
-Plots pane in RStudio, using `dev.new(width=10, height=6)` for a larger
-plot window, or reducing the `cex` parameter.
+Plots pane in RStudio, or using `dev.new(width=10, height=6)` for a
+larger plot window.
 
 ## See also
 
@@ -172,6 +189,9 @@ the accompanying webpage
 ## Examples
 
 ``` r
+old_qq_nsim <- getOption("visStatistics.qq_nsim")
+options(visStatistics.qq_nsim = 100L)
+
 # Formula interface
 mtcars$am <- as.factor(mtcars$am)
 visstat(mpg ~ am, data = mtcars)
@@ -187,7 +207,7 @@ visstat(mtcars$am, mtcars$mpg)
 # When residuals are normally distributed and Levene's test indicates
 # homoscedasticity, the classic Student's t-test with pooled variance is used
 df <- droplevels(subset(PlantGrowth, group %in% c("ctrl", "trt1")))
-visstat(df$group,df$weight)
+visstat(df$group, df$weight)
 
 
 
@@ -216,21 +236,21 @@ visstat(grades_gender$Sex, grades_gender$Grade)
 ## Fisher's ANOVA (equal variances, >2 groups)
 # When residuals are normally distributed and Levene's test indicates
 # homoscedasticity, classic Fisher's ANOVA with TukeyHSD post-hoc is used.
-# Different green letters indicate significant differences between groups. 
+# Different green letters indicate significant differences between groups.
 visstat(PlantGrowth$group, PlantGrowth$weight)
 
 
 
 ## Welch's one-way ANOVA (unequal variances, >2 groups)
 set.seed(123)
-values <- c(rnorm(20, 10, 1),rnorm(20, 15, 5),rnorm(20, 12, 2))
+values <- c(rnorm(20, 10, 1), rnorm(20, 15, 5), rnorm(20, 12, 2))
 groups <- factor(rep(c("A", "B", "C"), each = 20))
 visstat(groups, values)
 
 
 ## Kruskal-Wallis (non-normal, >2 groups)
-# When residuals are not normally distributed, kruskal.test() is followed by 
-# pairwise.wilcox.test. 
+# When residuals are not normally distributed, kruskal.test() is followed by
+# pairwise.wilcox.test.
 visstat(iris$Species, iris$Petal.Width)
 
 
@@ -242,7 +262,7 @@ visstat(trees$Height, trees$Girth, conf.level = 0.99)
 
 ## Pearson's Chi-squared test (both factors, large expected counts)
 HairEyeColorDataFrame <- counts_to_cases(as.data.frame(HairEyeColor))
-visstat(HairEyeColorDataFrame$Eye, HairEyeColorDataFrame$Hair)
+visstat(HairEyeColorDataFrame$Eye, HairEyeColorDataFrame$Hair, cex = 0.7)
 
 
 
@@ -261,4 +281,6 @@ visstat(blackBrownHazelGreen$Hair, blackBrownHazelGreen$Eye,
 visstat(iris$Species, iris$Petal.Width,
         graphicsoutput = "pdf", plotName = "kruskal_iris", plotDirectory = tempdir())
 #> Warning: calling par(new=TRUE) with no plot
+
+options(visStatistics.qq_nsim = old_qq_nsim)
 ```

@@ -98,7 +98,8 @@ effect_size(tt, x = x, y = y)
 
 kw <- list(
   "Kruskal Wallis rank sum test" = kruskal.test(Petal.Width ~ Species,
-                                               data = iris)
+    data = iris
+  )
 )
 effect_size(kw, x = iris$Species, y = iris$Petal.Width)
 

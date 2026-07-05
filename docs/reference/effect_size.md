@@ -10,7 +10,7 @@ directly from the returned object.
 ## Usage
 
 ``` r
-effect_size(result, x = NULL, y = NULL)
+effect_size(result, x = NULL, y = NULL, ...)
 ```
 
 ## Arguments
@@ -19,22 +19,33 @@ effect_size(result, x = NULL, y = NULL)
 
   A list returned by
   [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-  or a compatible test result object.
+  or a compatible test result object; or, in raw-data mode, the first
+  input vector `x`.
 
 - x:
 
   First input vector, matching the first argument of `visstat(x, y)`.
   Required when the effect size cannot be extracted from `result` alone.
+  In raw-data mode this is the second input vector `y`.
 
 - y:
 
   Second input vector, matching the second argument of `visstat(x, y)`.
   Required when the effect size cannot be extracted from `result` alone.
 
+- ...:
+
+  Passed to
+  [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
+  in raw-data mode (e.g. `correlation`, `conf.level`).
+
 ## Value
 
 A list with components `name`, `estimate`, `effect_size_method`, and
-optionally `conf.int`.
+optionally `conf.int`. In raw-data mode (`effect_size(x, y)`) the list
+additionally contains `selected_test`, the name of the test
+[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
+selected.
 
 ## Details
 
@@ -106,10 +117,9 @@ Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why
 Hedges' g\*s based on the non-pooled standard deviation should be
 reported with Welch's t-test. *PsyArXiv*. doi:10.31234/osf.io/tu6mp.
 
-Glass, G. V. (1965). A ranking variable analogue of biserial
-correlation: Implications for short-cut item analysis. *Journal of
-Educational Measurement*, 2(1), 91–95.
-doi:10.1111/j.1745-3984.1965.tb00396.x.
+Kerby, D. S. (2014). The simple difference formula: An approach to
+teaching nonparametric correlation. *Comprehensive Psychology*, 3,
+11.IT.3.1. doi:10.2466/11.IT.3.1.
 
 Albers, C., & Lakens, D. (2018). When power analyses based on pilot data
 are biased: Inaccurate effect size estimators and follow-up bias.
@@ -120,7 +130,7 @@ Kelley, T. L. (1935). An unbiased correlation ratio measure.
 *Proceedings of the National Academy of Sciences*, 21(9), 554–559.
 doi:10.1073/pnas.21.9.554.
 
-Cohen, J. (2013). *Statistical power analysis for the behavioral
+Cohen, J. (2013). *Statistical power analysis for the behavioural
 sciences*. Routledge. doi:10.4324/9780203771587.
 
 ## Examples
@@ -142,7 +152,8 @@ effect_size(tt, x = x, y = y)
 
 kw <- list(
   "Kruskal Wallis rank sum test" = kruskal.test(Petal.Width ~ Species,
-                                               data = iris)
+    data = iris
+  )
 )
 effect_size(kw, x = iris$Species, y = iris$Petal.Width)
 #> $name
@@ -165,6 +176,22 @@ effect_size(chisq.test(tab))
 #> 
 #> $effect_size_method
 #> [1] "Phi coefficient for 2 x 2 contingency table"
+#> 
+
+## Raw-data mode: select the test with visstat() and return the effect
+## size together with the name of the selected test.
+effect_size(ToothGrowth$supp, ToothGrowth$len)
+#> $name
+#> [1] "Hedges' g"
+#> 
+#> $estimate
+#> [1] 0.4880931
+#> 
+#> $effect_size_method
+#> [1] "Hedges' g using pooled standard deviation"
+#> 
+#> $selected_test
+#> [1] "Two Sample t-test"
 #> 
 
 if (FALSE) { # \dontrun{

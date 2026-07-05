@@ -33,10 +33,11 @@ qq_lm_envelope <- function(model, conf.level = 0.95,
   }
   if (!is.null(stats::weights(model))) {
     stop("`qq_lm_envelope()` currently supports unweighted fits only.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
   if (!is.numeric(conf.level) || length(conf.level) != 1L ||
-      !is.finite(conf.level) || conf.level <= 0 || conf.level >= 1) {
+        !is.finite(conf.level) || conf.level <= 0 || conf.level >= 1) {
     stop("`conf.level` must be one number between 0 and 1.", call. = FALSE)
   }
 
@@ -61,7 +62,7 @@ qq_lm_envelope <- function(model, conf.level = 0.95,
     stop("The model has non-finite standardised residuals.", call. = FALSE)
   }
 
-  sim_orders <- .qq_lm_simulated_rstandard_orders(model, nsim = nsim)
+  sim_orders <- .qq_lm_sim_rstandard_orders(model, nsim = nsim)
   bands <- .qq_lm_bands(
     sim_orders = sim_orders,
     conf.level = conf.level,
@@ -85,7 +86,7 @@ qq_lm_envelope <- function(model, conf.level = 0.95,
   result
 }
 
-.qq_lm_simulated_rstandard_orders <- function(model, nsim) {
+.qq_lm_sim_rstandard_orders <- function(model, nsim) {
   x <- stats::model.matrix(model)
   fitted_values <- stats::fitted(model)
   residual_scale <- stats::sigma(model)
@@ -94,9 +95,10 @@ qq_lm_envelope <- function(model, conf.level = 0.95,
   n <- length(fitted_values)
 
   if (!is.finite(residual_scale) || residual_scale <= 0 ||
-      is.na(df_residual) || df_residual <= 0) {
+        is.na(df_residual) || df_residual <= 0) {
     stop("The model has no positive residual degrees of freedom.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
   if (any(!is.finite(hat_values)) || any(hat_values >= 1)) {
     stop("The model has hat values greater than or equal to 1.", call. = FALSE)

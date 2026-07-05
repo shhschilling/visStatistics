@@ -11,7 +11,6 @@ saveGraphVisstat(
 )
 
 
-
 graphicsoutput <- "pdf"
 openGraphCairo(type = graphicsoutput, fileDirectory = filedir)
 plot(rnorm(4000), rnorm(4000), col = "#ff000018", pch = 19, cex = 2)
@@ -37,8 +36,6 @@ saveGraphVisstat(
 )
 
 
-
-
 # remove output  plots in filedir
 graphicaltypes <- c(".png", ".pdf", ".svg", ".ps")
 for (i in graphicaltypes) {
@@ -46,4 +43,3 @@ for (i in graphicaltypes) {
   print(file.path(filedir, plotname))
   file.remove(file.path(filedir, plotname))
 }
-

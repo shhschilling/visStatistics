@@ -50,48 +50,56 @@ openGraphCairo <- function(width = 640,
   # oldparCairo <- par(no.readonly = TRUE)
   # oldparCairo$new <- FALSE
   # on.exit(par(oldparCairo))
-  # 
-  
-  
-  
-  
+  #
+
+
   if (is.null(type)) {
     return()
   }
-  
+
   if (is.null(fileName)) {
     fileName <- "visstat_plot"
   }
-  
-  
-  
+
+
   fullfilename <- paste(fileName, ".", type, sep = "")
   Cairofilename <- file.path(fileDirectory, fullfilename)
-  
+
   if (type == "png") {
-    CairoPNG(filename = Cairofilename, width = width, height = height, 
-             pointsize = pointsize, bg = bg, dpi = dpi)
+    CairoPNG(
+      filename = Cairofilename, width = width, height = height,
+      pointsize = pointsize, bg = bg, dpi = dpi
+    )
   } else if (type == "pdf") {
-    CairoPDF(file = Cairofilename, width = width, height = height, 
-             pointsize = pointsize, bg = bg)
+    CairoPDF(
+      file = Cairofilename, width = width, height = height,
+      pointsize = pointsize, bg = bg
+    )
   } else if (type == "jpeg") {
-    CairoJPEG(filename = Cairofilename, width = width, height = height, 
-              pointsize = pointsize, bg = bg, dpi = dpi)
+    CairoJPEG(
+      filename = Cairofilename, width = width, height = height,
+      pointsize = pointsize, bg = bg, dpi = dpi
+    )
   } else if (type == "tiff") {
-    CairoTIFF(filename = Cairofilename, width = width, height = height, 
-              pointsize = pointsize, bg = bg, dpi = dpi)
+    CairoTIFF(
+      filename = Cairofilename, width = width, height = height,
+      pointsize = pointsize, bg = bg, dpi = dpi
+    )
   } else if (type == "svg") {
-    CairoSVG(file = Cairofilename, width = width, height = height, 
-             pointsize = pointsize, bg = bg)
+    CairoSVG(
+      file = Cairofilename, width = width, height = height,
+      pointsize = pointsize, bg = bg
+    )
   } else if (type == "ps") {
-    CairoPS(file = Cairofilename, width = width, height = height, 
-            pointsize = pointsize, bg = bg, family = "Helvetica")
+    CairoPS(
+      file = Cairofilename, width = width, height = height,
+      pointsize = pointsize, bg = bg, family = "Helvetica"
+    )
   } else {
     warning("Chosen output type not supported. No graphics saved.")
     return()
   }
 }
-
 
 
 #' Saves Graphical Output with plot capture capability
@@ -125,15 +133,13 @@ saveGraphVisstat <- function(fileName = NULL,
                              fileDirectory = getwd(),
                              oldfile = NULL,
                              capture_env = NULL) {
-  
   # logic to capture plots independent of type
-  
-  
-  
+
+
   if (!is.null(capture_env)) {
     capture_env$captured_plots[[length(capture_env$captured_plots) + 1]] <- recordPlot()
   }
-  
+
   if (is.null(fileName)) {
     return()
   } else if (is.null(type)) {
@@ -143,21 +149,21 @@ saveGraphVisstat <- function(fileName = NULL,
     oldPlotName <- paste(dummy_name, ".", type, sep = "")
     oldfile <- file.path(fileDirectory, oldPlotName)
   }
-  
+
   while (!is.null(dev.list())) {
     dev.off()
   }
-  
+
   file2 <- gsub("[^[:alnum:]]", "_", fileName)
   file3 <- gsub("_{2,}", "_", file2)
-  
+
   newFileName <- paste0(file3, ".", type)
   Cairofile <- file.path(fileDirectory, newFileName)
-  file.copy(oldfile, Cairofile, overwrite = T)
-  
+  file.copy(oldfile, Cairofile, overwrite = TRUE)
+
   if (file.exists(oldfile)) {
     file.remove(oldfile)
   }
-  
+
   return(invisible(Cairofile))
 }

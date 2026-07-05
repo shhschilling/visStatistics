@@ -5,17 +5,31 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Wrapper for visstat_core Allowing Three Different Input Styles — visstat"><meta name="description" content='visstat() is a wrapper around visstat_core
-that provides three alternative input styles: a formula interface, a
-standardised vector interface, and a backward-compatible data frame interface.
-visstat_core defines the decision logic for statistical
-hypothesis testing and visualisation between two variables of class
-"numeric", "integer", or "factor".'><meta property="og:description" content='visstat() is a wrapper around visstat_core
-that provides three alternative input styles: a formula interface, a
-standardised vector interface, and a backward-compatible data frame interface.
-visstat_core defines the decision logic for statistical
-hypothesis testing and visualisation between two variables of class
-"numeric", "integer", or "factor".'></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Wrapper for visstat_core Allowing Three Different Input Styles — visstat"><meta name="description" content="visstat() is a wrapper around visstat_core
+that provides three input styles and dispatches to one of four analysis
+routes. Route 1 handles a numeric response with a categorical predictor.
+By default, Route 1 uses residual-based assumption diagnostics: the
+Shapiro–Wilk test gates mean-based versus rank-based analysis, and the
+Levene test then gates equal-variance versus Welch-type mean tests.
+Alternatively, group_test = &quot;welch&quot; keeps Route 1 on the mean scale
+and forces Welch-type tests, while group_test = &quot;rank&quot; forces
+Wilcoxon/Kruskal–Wallis rank tests. Route 2 handles ordered responses
+with Wilcoxon/Kruskal–Wallis tests. Route 3 handles two numeric variables
+with linear regression by default, or Spearman correlation when
+correlation = TRUE. Route 4 handles two unordered factors with
+Pearson's \(\chi^2\) test or Fisher's exact test."><meta property="og:description" content="visstat() is a wrapper around visstat_core
+that provides three input styles and dispatches to one of four analysis
+routes. Route 1 handles a numeric response with a categorical predictor.
+By default, Route 1 uses residual-based assumption diagnostics: the
+Shapiro–Wilk test gates mean-based versus rank-based analysis, and the
+Levene test then gates equal-variance versus Welch-type mean tests.
+Alternatively, group_test = &quot;welch&quot; keeps Route 1 on the mean scale
+and forces Welch-type tests, while group_test = &quot;rank&quot; forces
+Wilcoxon/Kruskal–Wallis rank tests. Route 2 handles ordered responses
+with Wilcoxon/Kruskal–Wallis tests. Route 3 handles two numeric variables
+with linear regression by default, or Spearman correlation when
+correlation = TRUE. Route 4 handles two unordered factors with
+Pearson's \(\chi^2\) test or Fisher's exact test."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -51,11 +65,18 @@ hypothesis testing and visualisation between two variables of class
 
     <div class="ref-description section level2">
     <p><code>visstat()</code> is a wrapper around <code><a href="visstat_core.html">visstat_core</a></code>
-that provides three alternative input styles: a formula interface, a
-standardised vector interface, and a backward-compatible data frame interface.
-<code><a href="visstat_core.html">visstat_core</a></code> defines the decision logic for statistical
-hypothesis testing and visualisation between two variables of class
-<code>"numeric"</code>, <code>"integer"</code>, or <code>"factor"</code>.</p>
+that provides three input styles and dispatches to one of four analysis
+routes. Route 1 handles a numeric response with a categorical predictor.
+By default, Route 1 uses residual-based assumption diagnostics: the
+Shapiro–Wilk test gates mean-based versus rank-based analysis, and the
+Levene test then gates equal-variance versus Welch-type mean tests.
+Alternatively, <code>group_test = "welch"</code> keeps Route 1 on the mean scale
+and forces Welch-type tests, while <code>group_test = "rank"</code> forces
+Wilcoxon/Kruskal–Wallis rank tests. Route 2 handles ordered responses
+with Wilcoxon/Kruskal–Wallis tests. Route 3 handles two numeric variables
+with linear regression by default, or Spearman correlation when
+<code>correlation = TRUE</code>. Route 4 handles two unordered factors with
+Pearson's \(\chi^2\) test or Fisher's exact test.</p>
     </div>
 
     <div class="section level2">
@@ -69,6 +90,7 @@ hypothesis testing and visualisation between two variables of class
 <span>  correlation <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  numbers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  minpercent <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  group_test <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  graphicsoutput <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plotName <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -98,9 +120,10 @@ name of the response variable column in <code>x</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>For the backward-compatible form only: a <code>character</code> string
-specifying the name of the predictor or grouping variable column in
-<code>x</code>. Ignored for formula and standardised input styles.</p></dd>
+<dd><p>Named graphical arguments are forwarded to the plots selected by
+the analysis route for all three input forms. Only in the backward-compatible
+form, the first unnamed extra argument must specify the predictor or grouping
+column name in <code>x</code>. Ignored otherwise.</p></dd>
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
@@ -128,6 +151,13 @@ with trend line only (no regression interpretation).</p></dd>
 <dt id="arg-minpercent">minpercent<a class="anchor" aria-label="anchor" href="#arg-minpercent"></a></dt>
 <dd><p>Number between 0 and 1 indicating minimal fraction of
 total count data of a category to be displayed in mosaic count plots.</p></dd>
+
+
+<dt id="arg-group-test">group_test<a class="anchor" aria-label="anchor" href="#arg-group-test"></a></dt>
+<dd><p>Optional character. For a numeric response and factor predictor,
+<code>NULL</code> keeps the default assumption gates, <code>"welch"</code> forces
+Welch-type mean tests, and <code>"rank"</code> forces Wilcoxon/Kruskal-Wallis
+rank tests.</p></dd>
 
 
 <dt id="arg-graphicsoutput">graphicsoutput<a class="anchor" aria-label="anchor" href="#arg-graphicsoutput"></a></dt>
@@ -179,15 +209,18 @@ version.</p>
 Throughout, data of class <code>numeric</code> or <code>integer</code> are referred to
 as numeric, while data of class <code>factor</code> are referred to as categorical:</p>
 <p>If one variable is numeric and the other a factor, the numeric vector is the
-response (<code>y</code>) and the factor is the grouping variable (<code>x</code>). This
-supports tests of central tendencies (e.g., t-test, Welch's ANOVA, Wilcoxon,
-Kruskal-Wallis).</p>
+response (<code>y</code>) and the factor is the grouping variable (<code>x</code>).
+This is Route 1: residual normality and residual variance diagnostics select
+between Student/Welch mean tests and Wilcoxon/Kruskal–Wallis rank tests,
+unless <code>group_test</code> explicitly forces <code>"welch"</code> or <code>"rank"</code>.</p>
 <p>If both variables are numeric, a linear model is fitted with <code>y</code> as the
-response and <code>x</code> as the predictor.</p>
-<p>If both variables are factors, an association test (Chi-squared or Fisher's
-exact) is used. The test result is invariant to variable order, but
-visualisations (e.g., axis layout, bar orientation) depend on the roles of
-<code>x</code> and <code>y</code>.</p>
+response and <code>x</code> as the predictor, unless <code>correlation = TRUE</code>,
+which requests Spearman rank correlation.</p>
+<p>If both variables are factors, unordered factors enter the
+Pearson-\(\chi^2\)/Fisher exact association route. Ordered responses with
+categorical predictors are analysed as rank-based group comparisons; if both
+variables are ordered and <code>correlation = TRUE</code>, Kendall's \(\tau_b\)
+is used.</p>
 <p>This wrapper standardises the input and calls <code><a href="visstat_core.html">visstat_core</a></code>,
 which selects and executes the appropriate test with visual output and
 assumption diagnostics.</p>
@@ -196,8 +229,8 @@ assumption diagnostics.</p>
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
     <p>For best visualization, ensure that the RStudio Plots pane is adequately
 sized. If you get "figure margins too large" errors, try expanding the Plots
-pane in RStudio, using <code>dev.new(width=10, height=6)</code> for a larger plot
-window, or reducing the <code>cex</code> parameter.</p>
+pane in RStudio, or using <code>dev.new(width=10, height=6)</code> for a larger plot
+window.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -209,7 +242,10 @@ logic accompanied by illustrative examples, and the accompanying webpage
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Formula interface</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">old_qq_nsim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"visStatistics.qq_nsim"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>visStatistics.qq_nsim <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Formula interface</span></span></span>
 <span class="r-in"><span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">am</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">am</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-1.png" alt="" width="700" height="433"></span>
@@ -224,7 +260,7 @@ logic accompanied by illustrative examples, and the accompanying webpage
 <span class="r-in"><span><span class="co"># When residuals are normally distributed and Levene's test indicates</span></span></span>
 <span class="r-in"><span><span class="co"># homoscedasticity, the classic Student's t-test with pooled variance is used</span></span></span>
 <span class="r-in"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/droplevels.html" class="external-link">droplevels</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">PlantGrowth</span>, <span class="va">group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ctrl"</span>, <span class="st">"trt1"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">group</span>,<span class="va">df</span><span class="op">$</span><span class="va">weight</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">group</span>, <span class="va">df</span><span class="op">$</span><span class="va">weight</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-5.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="visstat-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -253,21 +289,21 @@ logic accompanied by illustrative examples, and the accompanying webpage
 <span class="r-in"><span><span class="co">## Fisher's ANOVA (equal variances, &gt;2 groups)</span></span></span>
 <span class="r-in"><span><span class="co"># When residuals are normally distributed and Levene's test indicates</span></span></span>
 <span class="r-in"><span><span class="co"># homoscedasticity, classic Fisher's ANOVA with TukeyHSD post-hoc is used.</span></span></span>
-<span class="r-in"><span><span class="co"># Different green letters indicate significant differences between groups. </span></span></span>
+<span class="r-in"><span><span class="co"># Different green letters indicate significant differences between groups.</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">PlantGrowth</span><span class="op">$</span><span class="va">group</span>, <span class="va">PlantGrowth</span><span class="op">$</span><span class="va">weight</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-11.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="visstat-12.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Welch's one-way ANOVA (unequal variances, &gt;2 groups)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, <span class="fl">1</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">15</span>, <span class="fl">5</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">12</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">10</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">15</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">12</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">groups</span>, <span class="va">values</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-13.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="visstat-14.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co">## Kruskal-Wallis (non-normal, &gt;2 groups)</span></span></span>
-<span class="r-in"><span><span class="co"># When residuals are not normally distributed, kruskal.test() is followed by </span></span></span>
-<span class="r-in"><span><span class="co"># pairwise.wilcox.test. </span></span></span>
+<span class="r-in"><span><span class="co"># When residuals are not normally distributed, kruskal.test() is followed by</span></span></span>
+<span class="r-in"><span><span class="co"># pairwise.wilcox.test.</span></span></span>
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Width</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-15.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="visstat-16.png" alt="" width="700" height="433"></span>
@@ -279,7 +315,7 @@ logic accompanied by illustrative examples, and the accompanying webpage
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Pearson's Chi-squared test (both factors, large expected counts)</span></span></span>
 <span class="r-in"><span><span class="va">HairEyeColorDataFrame</span> <span class="op">&lt;-</span> <span class="fu"><a href="counts_to_cases.html">counts_to_cases</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">HairEyeColor</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">HairEyeColorDataFrame</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">HairEyeColorDataFrame</span><span class="op">$</span><span class="va">Hair</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">HairEyeColorDataFrame</span><span class="op">$</span><span class="va">Eye</span>, <span class="va">HairEyeColorDataFrame</span><span class="op">$</span><span class="va">Hair</span>, cex <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="visstat-19.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="visstat-20.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -298,6 +334,8 @@ logic accompanied by illustrative examples, and the accompanying webpage
 <span class="r-in"><span><span class="fu">visstat</span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Width</span>,</span></span>
 <span class="r-in"><span>        graphicsoutput <span class="op">=</span> <span class="st">"pdf"</span>, plotName <span class="op">=</span> <span class="st">"kruskal_iris"</span>, plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>calling par(new=TRUE) with no plot</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>visStatistics.qq_nsim <span class="op">=</span> <span class="va">old_qq_nsim</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

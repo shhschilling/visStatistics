@@ -59,7 +59,9 @@ effect_size_wilcoxon <- function(samples, fact) {
   n1 <- length(x1)
   n2 <- length(x2)
   if (n1 == 0 || n2 == 0) {
-    return(effect_size_unavailable("Rank-biserial correlation requires observations in both groups."))
+    return(effect_size_unavailable(
+      "Rank-biserial correlation requires observations in both groups."
+    ))
   }
   wt <- suppressWarnings(stats::wilcox.test(x1, x2, exact = FALSE))
   u <- unname(wt$statistic)
@@ -81,7 +83,8 @@ effect_size_anova <- function(samples, fact, result) {
     return(effect_size_record(
       "approximate omega-squared-type",
       max(0, omega, na.rm = TRUE),
-      "Approximate omega-squared-type measure for Welch's one-way test, computed from F, df1, and df2"
+      "Approximate omega-squared-type measure for Welch's one-way test, ",
+      "computed from F, df1, and df2"
     ))
   }
 
@@ -256,7 +259,8 @@ effect_size_kendall <- function(result) {
 #'
 #' kw <- list(
 #'   "Kruskal Wallis rank sum test" = kruskal.test(Petal.Width ~ Species,
-#'                                                data = iris)
+#'     data = iris
+#'   )
 #' )
 #' effect_size(kw, x = iris$Species, y = iris$Petal.Width)
 #'
@@ -304,10 +308,13 @@ effect_size <- function(result, x = NULL, y = NULL, ...) {
     }
     tmp <- tempfile(fileext = ".pdf")
     grDevices::pdf(tmp)
-    on.exit({
-      while (!is.null(grDevices::dev.list())) grDevices::dev.off()
-      unlink(tmp)
-    }, add = TRUE)
+    on.exit(
+      {
+        while (!is.null(grDevices::dev.list())) grDevices::dev.off()
+        unlink(tmp)
+      },
+      add = TRUE
+    )
     res <- visstat(result, x, ...)
     out <- res$effect_size
     out$selected_test <- selected_test_title(res)
@@ -335,8 +342,11 @@ effect_size <- function(result, x = NULL, y = NULL, ...) {
   if (!is.null(result$test) && grepl("Kendall", result$test$method, ignore.case = TRUE)) {
     return(effect_size_kendall(result))
   }
-  if (!is.null(result$method) && (grepl("Chi-squared", result$method, ignore.case = TRUE) ||
-                                 grepl("Fisher", result$method, ignore.case = TRUE))) {
+  if (
+    !is.null(result$method) &&
+      (grepl("Chi-squared", result$method, ignore.case = TRUE) ||
+         grepl("Fisher", result$method, ignore.case = TRUE))
+  ) {
     return(effect_size_chi_fisher(result))
   }
   effect_size_unavailable("No effect size could be inferred for this result.")

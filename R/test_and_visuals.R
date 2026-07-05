@@ -15,33 +15,34 @@ test_norm_vis <- function(x, y_axis_hist = c(0, 0.04)) {
   norm_dens <- function(z) {
     dnorm(z, mean(x), sd(x))
   }
-  
+
   ymax <- max(norm_dens(x))
   # Plot histogramm of raw data
-  otto <- hist(
+  hist(
     x,
     freq = FALSE,
     col = "grey",
     breaks = "Sturges",
     xlim = c(
-      mean(x, na.rm = T) - 5 * sd(x, na.rm = T),
-      mean(x, na.rm = T) +
-        5 * sd(x, na.rm = T)
+      mean(x, na.rm = TRUE) - 5 * sd(x, na.rm = TRUE),
+      mean(x, na.rm = TRUE) +
+        5 * sd(x, na.rm = TRUE)
     ),
     ylim = c(0, 1.2 * ymax)
   )
-  
+
   # normal distribution with mean and sd of given distribution
   curve(norm_dens,
-        col = "red",
-        add = TRUE,
-        lwd = 2)
-  
-  
+    col = "red",
+    add = TRUE,
+    lwd = 2
+  )
+
+
   # par(new = TRUE) #the next high-level plotting command does not clean the frame before drawing
   # as if it were on a new device.
   lines(density(x), col = "blue")
-  
+
   legend(
     "topright",
     c("fitted", "estimated"),
@@ -51,15 +52,15 @@ test_norm_vis <- function(x, y_axis_hist = c(0, 0.04)) {
     bty = "n"
   )
   box() # frame around current plot
-  
+
   qqnorm(x)
   qqline(x, col = "red", lwd = 2)
-  
+
   KS <- ad.test(x)
   p_KS <- signif(KS$p.value, 2)
   SH <- shapiro.test(x)
   p_SH <- signif(SH$p.value, 2)
-  
+
   mtext(
     paste(
       "Shapiro-Wilk: p = ",
@@ -71,10 +72,9 @@ test_norm_vis <- function(x, y_axis_hist = c(0, 0.04)) {
     outer = TRUE
   )
   my_list <- list("Anderson-Darling" = KS, "Shapiro" = SH)
-  
+
   return(my_list)
 }
-
 
 
 ###### Two-Sample t-Test ###############################
@@ -85,30 +85,32 @@ two_sample_t_test <- function(samples,
                               var.equal = FALSE,
                               conf.level = conf.level,
                               samplename = "",
-                              factorname = "") {
+                              factorname = "",
+                              plot_args = list()) {
   oldpar <- par(no.readonly = TRUE)
   on.exit(par(oldpar))
+  if (is.null(plot_args)) plot_args <- list()
 
   # Small label tier: 0.8 of the global par("cex") (relative, so it follows it).
   label_small <- 0.8
-  alternative <- match.arg(alternative)
-  
-  
- 
-  
-  if (!missing(conf.level) &&
-      (length(conf.level) != 1 || !is.finite(conf.level) ||
-       conf.level < 0 || conf.level > 1)) {
-    stop("'conf.level' must be a single number between 0 and 1")  
+  if (!is.null(visstat_graphics_arg(plot_args, "cex", NULL))) {
+    label_small <- visstat_graphics_arg(plot_args, "cex", label_small)
   }
-  
-  
-  
+  alternative <- match.arg(alternative)
+
+
+  if (
+    !missing(conf.level) &&
+      (length(conf.level) != 1 || !is.finite(conf.level) ||
+         conf.level < 0 || conf.level > 1)
+  ) {
+    stop("'conf.level' must be a single number between 0 and 1")
+  }
+
+
   if (missing(conf.level)) {
     conf.level <- 0.95
   }
-  alpha <- 1 - conf.level
-  levels <- unique(sort(fact))
   twosamples <- create_two_samples_vector(samples, fact)
   x <- twosamples$sample1and2
   x1 <- twosamples$sample1
@@ -140,29 +142,31 @@ two_sample_t_test <- function(samples,
   } else {
     p2 <- test_norm(twosamples$sample2)
   }
-  
+
   # margins of y -axis
   lower <- 0.2
   upper <- 0.2
   margins <- calc_min_max_of_y_axis(x, lower, upper)
   mi <- margins[[1]]
   ma <- margins[[2]]
-  
+
   x <- cbind(x, factor(c(rep(1, length(
     x1
   )), rep(2, length(
     x2
   )))))
-  
-  show_jitter  <- max(length(x1), length(x2)) <= jitter_max_n
+
+  show_jitter <- max(length(x1), length(x2)) <= jitter_max_n
+
+  visstat_graphics_par(plot_args)
 
   b <- boxplot(
     samples ~ fact,
-    xlab = factorname,
-    ylab = samplename,
+    xlab = visstat_graphics_arg(plot_args, "xlab", factorname),
+    ylab = visstat_graphics_arg(plot_args, "ylab", samplename),
     ylim = c(mi, ma),
     col = colorscheme(1),
-    outline = !show_jitter  # outliers via boxplot only when jitter is suppressed
+    outline = !show_jitter # outliers via boxplot only when jitter is suppressed
   )
 
   if (show_jitter) {
@@ -181,10 +185,13 @@ two_sample_t_test <- function(samples,
 
   # Group means -- parametric test compares means, so mark them explicitly
   points(c(1, 2), c(mean(x1), mean(x2)),
-         pch = 4, col = "red", cex = label_small, lwd = 1.5)
+    pch = 4,
+    col = visstat_graphics_arg(plot_args, "col", "red"),
+    cex = label_small, lwd = 1.5
+  )
 
   # Sample sizes above box plot
-  text(1:length(b$n), c(ma, ma) - 0.03 * (ma - mi), paste("n =", b$n), cex = label_small)
+  text(seq_along(b$n), c(ma, ma) - 0.03 * (ma - mi), paste("n =", b$n), cex = label_small)
 
   t <- t.test(
     x1,
@@ -196,16 +203,18 @@ two_sample_t_test <- function(samples,
     na.action = na.omit
   )
 
-  p_value       <- signif(t$p.value, 2)
+  p_value <- signif(t$p.value, 2)
   test_statistic <- sprintf("%.2f", t$statistic)
-  stat_name     <- names(t$statistic)
+  stat_name <- names(t$statistic)
 
   # Title: line 1 = test name, line 2 = test statistic + p
   # (alpha and decision suffix omitted -- 2-group test has no post-hoc letters
   #  whose interpretation depends on alpha)
-  mtext(paste0(t$method, "\n",
-               stat_name, " = ", test_statistic,
-               ", p = ", p_value))
+  mtext(visstat_graphics_arg(
+    plot_args,
+    "main",
+    paste0(t$method, "\n", stat_name, " = ", test_statistic, ", p = ", p_value)
+  ))
 
   # No mean-marker legend: the red x marks the mean, left unlabelled like the
   # box's median line (neither central-tendency symbol is explained on-plot).
@@ -218,7 +227,7 @@ two_sample_t_test <- function(samples,
       "Shapiro-Wilk-test_sample1" = p1,
       "Shapiro-Wilk-test_sample2" = p2
     )
-  
+
   return(my_list)
 }
 
@@ -231,30 +240,37 @@ two_sample_wilcoxon_test <- function(samples,
                                      conf.level = conf.level,
                                      notchf = FALSE,
                                      samplename = "",
-                                     factorname = "") {
+                                     factorname = "",
+                                     plot_args = list()) {
   oldparwilcox <- par(no.readonly = TRUE) # make a copy of current values
   on.exit(par(oldparwilcox))
+  if (is.null(plot_args)) plot_args <- list()
 
   # Small label tier: 0.8 of the global par("cex") (relative, so it follows it).
   label_small <- 0.8
-  
+  if (!is.null(visstat_graphics_arg(plot_args, "cex", NULL))) {
+    label_small <- visstat_graphics_arg(plot_args, "cex", label_small)
+  }
+
   alternative <- match.arg(alternative)
   # Error handling ----
-  
-  
+
+
   if (missing(conf.level)) {
     conf.level <- 0.95
   }
-  
+
   if (missing(notchf)) {
     notchf <- FALSE
   }
-  
-  if (!((length(conf.level) == 1L) && is.finite(conf.level) &&
-        (conf.level > 0) && (conf.level < 1))) {
+
+  if (
+    !((length(conf.level) == 1L) && is.finite(conf.level) &&
+        (conf.level > 0) && (conf.level < 1))
+  ) {
     return(warning("'conf.level' must be a single number between 0 and 1"))
   }
-  
+
   if (!is.numeric(samples)) {
     return(warning("'samples' must be numeric"))
   }
@@ -263,21 +279,15 @@ two_sample_wilcoxon_test <- function(samples,
       return(warning("'fact' must be factorial"))
     }
   }
-  
+
   # Store default graphical parameter
   # Define color palette
-  colortuple2 <- colorscheme(2)
-  
-  
-  
-  
-  
   # Create to numeric vectors
   twosamples <- create_two_samples_vector(samples, fact)
   x <- twosamples$sample1and2
   x1 <- twosamples$sample1
   x2 <- twosamples$sample2
-  
+
   upper <- 0.25
   lower <- 0.05
   y_limits <- range(x, na.rm = TRUE)
@@ -288,23 +298,25 @@ two_sample_wilcoxon_test <- function(samples,
   mi <- y_limits[1] - lower * y_spread
   ma <- y_limits[2] + upper * y_spread
   n_label_y <- y_limits[2] + 0.10 * y_spread
-  
+
   x <- cbind(x, factor(c(rep(1, length(
     x1
   )), rep(2, length(
     x2
   )))))
-  
-  show_jitter  <- max(length(x1), length(x2)) <= jitter_max_n
+
+  show_jitter <- max(length(x1), length(x2)) <= jitter_max_n
+
+  visstat_graphics_par(plot_args)
 
   b <- boxplot(
     samples ~ fact,
     notch = notchf,
     col = colorscheme(1),
     ylim = c(mi, ma),
-    ylab = samplename,
-    xlab = factorname,
-    outline = !show_jitter  # outliers via boxplot only when jitter is suppressed
+    ylab = visstat_graphics_arg(plot_args, "ylab", samplename),
+    xlab = visstat_graphics_arg(plot_args, "xlab", factorname),
+    outline = !show_jitter # outliers via boxplot only when jitter is suppressed
   )
 
   if (show_jitter) {
@@ -322,27 +334,32 @@ two_sample_wilcoxon_test <- function(samples,
   # Group means (red x): shown so the mean-vs-median gap is visible even on the
   # rank route, where the automated estimand may not match the user's question.
   points(seq_along(levels(fact)), tapply(samples, fact, mean),
-         pch = 4, col = "red", cex = label_small, lwd = 1.5)
+    pch = 4,
+    col = visstat_graphics_arg(plot_args, "col", "red"),
+    cex = label_small, lwd = 1.5
+  )
 
   # Sample sizes above box plot
   text(seq_along(b$n), rep(n_label_y, length(b$n)), paste("n =", b$n),
-       cex = label_small)
+    cex = label_small
+  )
 
   t <- wilcox.test(samples ~ fact, alternative = alternative, na.action = na.omit)
 
-  p_value       <- signif(t$p.value, 2)
+  p_value <- signif(t$p.value, 2)
   test_statistic <- sprintf("%.2f", t$statistic)
-  stat_name     <- names(t$statistic)
+  stat_name <- names(t$statistic)
 
   # Title: line 1 = test name, line 2 = test statistic + p
   # (alpha and decision suffix omitted -- 2-group test has no post-hoc letters
   #  whose interpretation depends on alpha)
-  mtext(paste0(t$method, "\n",
-               stat_name, " = ", test_statistic,
-               ", p = ", p_value))
-  
-  
-  
+  mtext(visstat_graphics_arg(
+    plot_args,
+    "main",
+    paste0(t$method, "\n", stat_name, " = ", test_statistic, ", p = ", p_value)
+  ))
+
+
   my_list <-
     list(
       "dependent variable (response)" = samplename,
@@ -350,7 +367,7 @@ two_sample_wilcoxon_test <- function(samples,
       "statsWilcoxon" = t,
       "statsBoxplot" = b
     )
-  
+
   return(my_list)
 }
 
@@ -368,31 +385,31 @@ two_sample_FTest <- function(samples,
   if (missing(conf.int)) {
     conf.int <- 0.95
   }
-  
+
   alpha <- 1 - conf.int
-  levels <- unique(sort(fact))
-  
-  x1 <- samples[fact == levels[1]]
-  x2 <- samples[fact == levels[2]]
-  
-  x1 <- x1 - mean(x1, na.rm = T)
-  
+  group_levels <- unique(sort(fact))
+
+  x1 <- samples[fact == group_levels[1]]
+  x2 <- samples[fact == group_levels[2]]
+
+  x1 <- x1 - mean(x1, na.rm = TRUE)
+
   x2 <- x2 - mean(x2)
-  
-  
+
+
   x <- c(x1, x2)
   spread <- max(x) - min(x)
   spread <- max(spread, var(x1), var(x2))
-  
+
   mi <- min(x) - 0.3 * spread
   ma <- max(x) + 0.3 * spread
-  
+
   x <- cbind(x, factor(c(rep(1, length(
     x1
   )), rep(2, length(
     x2
   )))))
-  
+
   par(oma = c(0, 0, 3, 0))
   stripchart(
     x[, 1] ~ x[, 2],
@@ -404,13 +421,15 @@ two_sample_FTest <- function(samples,
     xlab = "",
     axes = FALSE
   )
-  
+
   axis(side = 2)
-  axis(side = 1,
-       at = c(1, 2),
-       labels = levels)
+  axis(
+    side = 1,
+    at = c(1, 2),
+    labels = levels
+  )
   box()
-  
+
   lines(
     x = c(1.1, 1.1),
     y = c(-0.5 * var(x1), 0.5 * var(x1)),
@@ -423,7 +442,7 @@ two_sample_FTest <- function(samples,
     col = "blue",
     lwd = 5
   )
-  
+
   legend(
     "topright",
     inset = 0.05,
@@ -431,15 +450,15 @@ two_sample_FTest <- function(samples,
     col = c("blue"),
     lwd = 2
   )
-  
+
   t <- var.test(x1, x2, alternative = alternative)
   p_value <- t$p.value
   p_value <- signif(p_value, 3)
-  
+
   test_statistic <- t$statistic
   test_statistic <- formatC(signif(test_statistic, digits = 2))
-  
-  
+
+
   mtext(
     paste(
       "Two Sample F-Test (",
@@ -454,7 +473,6 @@ two_sample_FTest <- function(samples,
 }
 
 
-
 # Chisquared Test of Fisher-test  ----
 
 
@@ -463,10 +481,12 @@ vis_chi_squared_test <- function(samples,
                                  fact,
                                  samplename,
                                  factorname,
-                                 cex = 1) {
+                                 cex = 1,
+                                 plot_args = list()) {
   oldparchi <- par(no.readonly = TRUE)
   on.exit(par(oldparchi))
-  
+  if (is.null(plot_args)) plot_args <- list()
+
   colortuple <- colorscheme(1)
   ColorPalette <- colorscheme(3)
   if (missing(samplename)) {
@@ -475,24 +495,22 @@ vis_chi_squared_test <- function(samples,
   if (missing(factorname)) {
     factorname <- character()
   }
-  
+
   counts <- makeTable(samples, fact, samplename, factorname)
   # check for minimal size of 2x2
   check_assumptions_chi <- check_assumptions_count_data(samples, fact)
-  
+
   if (check_assumptions_chi == FALSE) {
     fisher_chi <- counts
     return(fisher_chi)
-    
   } else {
     row_sum <- rowSums(counts)
-    col_sum <- colSums(counts)
     count_labels <- dimnames(counts)[2]
     count_labels <- as.character(unlist(count_labels))
-    
+
     category_names <- dimnames(counts)[1]
     category_names <- as.character(unlist(category_names))
-    
+
     norm_counts <- (counts / row_sum) * 100 # row percentages
 
     fisher_chi <- fisher_chi(counts) # checks Cochran requirements; uses Fisher if violated
@@ -500,11 +518,11 @@ vis_chi_squared_test <- function(samples,
     # Fisher's exact test: show absolute counts; Chi² / Yates: show row percentages
     is_fisher <- isTRUE(grepl("Fisher", fisher_chi$method, ignore.case = TRUE))
     if (is_fisher) {
-      bar_data  <- counts
+      bar_data <- counts
       ylab_text <- "Count"
       max_val_y <- max(counts, na.rm = TRUE)
     } else {
-      bar_data  <- norm_counts
+      bar_data <- norm_counts
       ylab_text <- "%"
       max_val_y <- max(norm_counts, na.rm = TRUE)
     }
@@ -514,15 +532,17 @@ vis_chi_squared_test <- function(samples,
     } else {
       col_vec_browser <- c(colortuple, rainbow(nrow(counts) - 2, s = 0.4, alpha = 1))
     }
+    bar_cols <- visstat_graphics_arg(plot_args, "col", col_vec_browser)
 
-    par(mfrow = c(1, 1), oma = c(0, 0, 3, 0))
+    visstat_graphics_par(plot_args, list(mfrow = c(1, 1), oma = c(0, 0, 3, 0)))
 
     maxlabels <- length(levels(samples))
-    if (maxlabels > 7 |
-        grepl("basis", samplename) | grepl("source", samplename) |
-        grepl("basis", factorname) | grepl("source", factorname) |
-        grepl("genotyped", samplename) |
-        grepl("genotyped", factorname)) {
+    if (
+      maxlabels > 7 ||
+        grepl("basis", samplename) || grepl("source", samplename) ||
+        grepl("basis", factorname) || grepl("source", factorname) ||
+        grepl("genotyped", samplename) || grepl("genotyped", factorname)
+    ) {
       labelsize <- 0.3 * cex
     } else if (maxlabels > 5) {
       labelsize <- 0.7 * cex
@@ -562,12 +582,12 @@ vis_chi_squared_test <- function(samples,
       ylim = c(0, ma),
       width = 1 / (nrow(counts) + 1),
       space = c(0, 1),
-      col = col_vec_browser,
-      ylab = ylab_text,
-      xlab = samplename,
+      col = bar_cols,
+      ylab = visstat_graphics_arg(plot_args, "ylab", ylab_text),
+      xlab = visstat_graphics_arg(plot_args, "xlab", samplename),
       beside = TRUE,
-      cex.axis = 1,
-      cex.names = labelsize
+      cex.axis = visstat_graphics_arg(plot_args, "cex.axis", 1),
+      cex.names = visstat_graphics_arg(plot_args, "cex.names", labelsize)
     )
 
     # Count labels: Fisher branch only — Pearson chi² is followed by a mosaic that
@@ -577,12 +597,13 @@ vis_chi_squared_test <- function(samples,
       bar_n <- as.vector(counts)
       bar_h <- as.vector(bar_data)
       text(bar_x, bar_h + strheight("N", units = "user"),
-           paste("n =", bar_n),
-           cex = labelsize * 0.8)
+        paste("n =", bar_n),
+        cex = labelsize * 0.8
+      )
     }
 
     box()
-    mtext(titletext)
+    mtext(visstat_graphics_arg(plot_args, "main", titletext))
     category_names <- as.character(category_names)
     legend(
       "topright",
@@ -594,12 +615,10 @@ vis_chi_squared_test <- function(samples,
       lwd = 2,
       cex = legendsize
     )
-    
+
     return(fisher_chi)
   }
 }
-
-
 
 
 ###### Visualize Kruskal_Wallis ###############################
@@ -610,13 +629,18 @@ vis_Kruskal_Wallis <- function(samples,
                                conf.level = conf.level,
                                samplename = "",
                                factorname = "",
-                               notch = F) {
+                               notch = FALSE,
+                               plot_args = list()) {
   oldparkruskal <- par(no.readonly = TRUE)
   on.exit(par(oldparkruskal))
+  if (is.null(plot_args)) plot_args <- list()
 
   # Small label tier: 0.8 of the global par("cex") (relative, so it follows it).
   label_small <- 0.8
-  
+  if (!is.null(visstat_graphics_arg(plot_args, "cex", NULL))) {
+    label_small <- visstat_graphics_arg(plot_args, "cex", label_small)
+  }
+
   if (missing(conf.level)) {
     conf.level <- 0.95
   }
@@ -639,11 +663,9 @@ vis_Kruskal_Wallis <- function(samples,
   mi <- margins[[1]]
   ma <- margins[[2]]
 
-  # For legend positioning (spread from actual plot range)
-  spread <- ma - mi
+  show_jitter <- max(tapply(samples, fact, length)) <= jitter_max_n
 
-
-  show_jitter  <- max(tapply(samples, fact, length)) <= jitter_max_n
+  visstat_graphics_par(plot_args)
 
   b <- boxplot(
     samples ~ fact,
@@ -652,11 +674,11 @@ vis_Kruskal_Wallis <- function(samples,
     ylim = c(mi, ma),
     col = box_cols,
     las = 1,
-    xlab = factorname,
-    ylab = samplename,
+    xlab = visstat_graphics_arg(plot_args, "xlab", factorname),
+    ylab = visstat_graphics_arg(plot_args, "ylab", samplename),
     cex.axis = 0.8,
     boxwex = 0.5,
-    outline = !show_jitter  # outliers via boxplot only when jitter is suppressed
+    outline = !show_jitter # outliers via boxplot only when jitter is suppressed
   )
 
   if (show_jitter) {
@@ -674,7 +696,10 @@ vis_Kruskal_Wallis <- function(samples,
   # Group means (red x): shown so the mean-vs-median gap is visible even on the
   # rank route, where the automated estimand may not match the user's question.
   points(seq_len(n_classes), tapply(samples, fact, mean),
-         pch = 4, col = "red", cex = label_small, lwd = 1.5)
+    pch = 4,
+    col = visstat_graphics_arg(plot_args, "col", "red"),
+    cex = label_small, lwd = 1.5
+  )
 
   if (n_classes > 6) {
     n_labels <- c(paste("n =", b$n[1]), as.character(b$n[-1]))
@@ -694,31 +719,40 @@ vis_Kruskal_Wallis <- function(samples,
   }
 
   text(seq_len(n_classes),
-       mi,
-       s$Letters[ord],
-       col = colors()[81],
-       cex = label_small,
-       lwd = 2)
+    mi,
+    s$Letters[ord],
+    col = colors()[81],
+    cex = label_small,
+    lwd = 2
+  )
 
   # Title: line 1 = test name only, line 2 = H + p
   # (post-hoc method + alpha live in the legend below to avoid duplication)
   kk_value <- sprintf("%.2f", as.numeric(kk$statistic))
-  mtext(paste0("Kruskal-Wallis test\nH = ", kk_value,
-               ", p = ", signif(kk$p.value, 2)))
+  mtext(visstat_graphics_arg(
+    plot_args,
+    "main",
+    paste0("Kruskal-Wallis test\nH = ", kk_value, ", p = ", signif(kk$p.value, 2))
+  ))
 
   # Legend: significance letters (no mean marker -- Kruskal tests ranks).
   # All post-hoc / alpha info lives here, so the title can stay compact.
   legend("bottomleft",
-         legend = c("a, b, ...: significance letters",
-                    paste0("(Wilcoxon, Holm; alpha = ", signif(alpha, 2), ")")),
-         text.col = colors()[81],
-         bty = "n",
-         cex = label_small,
-         inset = 0.04)
+    legend = c(
+      "a, b, ...: significance letters",
+      paste0("(Wilcoxon, Holm; alpha = ", signif(alpha, 2), ")")
+    ),
+    text.col = colors()[81],
+    bty = "n",
+    cex = label_small,
+    inset = 0.04
+  )
 
   my_list <-
-    list("Kruskal Wallis rank sum test" = kk,
-         "post-hoc by pairwise Wilcoxon rank sum test " = post_hoc_kruskal)
+    list(
+      "Kruskal Wallis rank sum test" = kk,
+      "post-hoc by pairwise Wilcoxon rank sum test " = post_hoc_kruskal
+    )
   return(my_list)
 }
 
@@ -732,30 +766,29 @@ vis_regr_trumpets <- function(x, y, conf.level) {
   on.exit(par(oldparreg))
   reg <- lm(y ~ x)
   summary(reg)
-  
+
   ## error bands:
   y_conf_low <- conf_band(x, reg, conf.level, -1)
   y_conf_up <- conf_band(x, reg, conf.level, 1)
-  
+
   ma <- max(y, reg$fitted)
   mi <- min(y, reg$fitted)
-  spread <- ma - mi
-  
   lower <- 0.1
   upper <- 0.4
   margins <- calc_min_max_of_y_axis(y, lower, upper)
   mi <- margins[[1]]
   ma <- margins[[2]]
-  
-  
+
+
   par(oma = c(0, 0, 5, 0))
   plot(x, y, ylim = c(mi, ma))
   points(x,
-         reg$fitted,
-         type = "l",
-         col = 2,
-         lwd = 2)
-  
+    reg$fitted,
+    type = "l",
+    col = 2,
+    lwd = 2
+  )
+
   points(
     x,
     y_conf_low,
@@ -808,7 +841,7 @@ vis_regr_trumpets <- function(x, y, conf.level) {
     ),
     outer = TRUE
   )
-  
+
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
   plot(
     reg$fitted,
@@ -818,15 +851,15 @@ vis_regr_trumpets <- function(x, y, conf.level) {
     ylab = "Residuals"
   )
   abline(h = 0, col = 1, lwd = 2)
-  
+
   qqnorm(residuals(reg), ylab = "Sample Quantiles of  Residuals")
   qqline(residuals(reg), col = "red", lwd = 2)
-  
+
   KS <- ad.test(residuals(reg))
   p_KS <- signif(KS$p.value, 2)
   SH <- shapiro.test(residuals(reg))
   p_SH <- signif(SH$p.value, 2)
-  
+
   mtext(
     paste(
       "Residual Analysis\n Shapiro-Wilk: p = ",
@@ -842,19 +875,19 @@ vis_regr_trumpets <- function(x, y, conf.level) {
 vis_resid <- function(resid, fitted) {
   oldparresid <- par(no.readonly = TRUE)
   on.exit(par(oldparresid))
-  
+
   par(mfrow = c(1, 2), oma = c(0, 0, 3, 0))
   plot(fitted, resid, main = "Residuals vs. Fitted")
   abline(h = 0, col = 1, lwd = 2)
-  
+
   qqnorm(resid)
   qqline(resid, col = "red", lwd = 2)
-  
+
   KS <- ad.test(resid)
   p_KS <- signif(KS$p.value, 2)
   SH <- shapiro.test(resid)
   p_SH <- signif(SH$p.value, 2)
-  
+
   mtext(
     paste(
       "Residual Analysis\n Shapiro-Wilk: p = ",
@@ -875,24 +908,24 @@ vis_normality_assumptions <- function(y, x, conf.level = 0.95) {
   on.exit(par(oldparreg))
   alpha <- 1 - conf.level
   # P = alpha
-  
+
   # remove all NAs from both vectors
   xna <- x[!is.na(y) & !is.na(x)]
   yna <- y[!is.na(y) & !is.na(x)]
-  
+
   x <- xna
   y <- yna
-  
+
   ord <- order(x)
   x <- sort(x)
   y <- y[ord]
-  
+
   reg <- lm(y ~ x)
   resreg <- summary(reg)
   raw_residuals <- residuals(reg)
   scaled_residuals <- raw_residuals / sigma(reg)
-  
-  
+
+
   par(mfrow = c(1, 2), oma = c(0, 0, 4, 0))
   plot(
     reg$fitted,
@@ -902,10 +935,10 @@ vis_normality_assumptions <- function(y, x, conf.level = 0.95) {
     ylab = "z-transformed residuals"
   )
   abline(h = 0, col = 1, lwd = 2)
-  
+
   qqnorm(scaled_residuals, ylab = "Sample Quantiles of z-transformed residuals")
   qqline(scaled_residuals, col = "red", lwd = 2)
-  
+
   AD <- ad.test(raw_residuals)
   p_AD <- signif(AD$p.value, 2)
   SH <- shapiro.test(raw_residuals)
@@ -932,19 +965,16 @@ vis_normality_assumptions <- function(y, x, conf.level = 0.95) {
       outer = TRUE
     )
   }
-  
+
   my_list <- list(
     "summary_regression" = resreg,
     "shapiro_test_residuals" = SH,
     "ad_test_residuals" = AD
   )
-  
-  
+
+
   return(my_list)
 }
-
-
-
 
 
 # Mosaic plots-----
@@ -954,11 +984,13 @@ vis_mosaic <- function(samples,
                        name_of_factor = character(),
                        minperc = 0.05,
                        numbers = TRUE,
-                       shade = TRUE) {
+                       shade = TRUE,
+                       plot_args = list()) {
   oldparmosaic <- par(no.readonly = TRUE)
   oldparmosaic$new <- FALSE
   on.exit(par(oldparmosaic))
-  
+  if (is.null(plot_args)) plot_args <- list()
+
   if (missing(minperc)) {
     # minperc is the minimum percentage a column has to contribute to be displayed
     minperc <- 0.05
@@ -967,7 +999,7 @@ vis_mosaic <- function(samples,
     # numbers are shown in rectangle of category
     numbers <- TRUE
   }
-  
+
   counts <- makeTable(samples, fact, name_of_sample, name_of_factor)
   check_assumptions <- check_assumptions_count_data(samples, fact)
   if (check_assumptions == FALSE) {
@@ -983,7 +1015,7 @@ vis_mosaic <- function(samples,
     n_fact <- length(unique(fact))
     maxfactors <- max(n_samples, n_fact)
     threshold <- 6
-    
+
     # Calculate adaptive font sizes based on number of categories
     if (maxfactors <= 4) {
       label_fontsize <- 8
@@ -998,14 +1030,20 @@ vis_mosaic <- function(samples,
       label_fontsize <- 4
       cell_fontsize <- 3
     }
-    
+    cex_override <- visstat_graphics_arg(plot_args, "cex", 1)
+    main_text <- visstat_graphics_arg(plot_args, "main", NULL)
+    main_cex <- visstat_graphics_arg(plot_args, "cex.main", 1.2)
+    label_fontsize <- label_fontsize * cex_override
+    cell_fontsize <- cell_fontsize * cex_override
+    varname_fontsize <- (label_fontsize + 1) * cex_override
+
     # Common labeling arguments for readable labels
     label_args <- list(
       gp_labels = gpar(fontsize = label_fontsize),
-      gp_varnames = gpar(fontsize = label_fontsize + 1, fontface = "bold")
+      gp_varnames = gpar(fontsize = varname_fontsize, fontface = "bold")
     )
-    
-    if (n_samples < threshold & n_fact < threshold) {
+
+    if (n_samples < threshold && n_fact < threshold) {
       res <- mosaic(
         counts,
         shade = shade,
@@ -1013,20 +1051,24 @@ vis_mosaic <- function(samples,
         labeling_args = label_args,
         pop = FALSE
       )
-      
+
       tab <- as.table(ifelse(counts < 0.005 * sum(counts), NA, counts))
       if (numbers == TRUE) {
-        labeling_cells(text = tab, margin = 0, 
-                       gp_text = gpar(fontsize = cell_fontsize))(counts)
+        labeling_cells(
+          text = tab, margin = 0,
+          gp_text = gpar(fontsize = cell_fontsize)
+        )(counts)
       }
     } else {
       ## Eliminate rows and columns distributing less than minperc total number of counts
       rowSum <- rowSums(counts)
       colSum <- colSums(counts)
       total <- sum(counts)
-      
-      countscolumn_row_reduced <- as.table(counts[which(rowSum > minperc * total), which(colSum > minperc * total)])
-      
+
+      row_keep <- which(rowSum > minperc * total)
+      col_keep <- which(colSum > minperc * total)
+      countscolumn_row_reduced <- as.table(counts[row_keep, col_keep])
+
       # check dimensions after reduction: must be a contingency table
       test <- dim(as.table(countscolumn_row_reduced))
       if (is.na(test[2])) {
@@ -1034,7 +1076,7 @@ vis_mosaic <- function(samples,
       } else {
         countsreduced <- countscolumn_row_reduced
       }
-      
+
       res <- mosaic(
         countsreduced,
         shade = shade,
@@ -1042,19 +1084,26 @@ vis_mosaic <- function(samples,
         labeling_args = label_args,
         pop = FALSE
       )
-      
-      if (numbers == TRUE & maxfactors <= 10) {
-        labeling_cells(text = countsreduced, margin = 0,
-                       gp_text = gpar(fontsize = cell_fontsize))(countsreduced)
+
+      if (numbers && maxfactors <= 10) {
+        labeling_cells(
+          text = countsreduced, margin = 0,
+          gp_text = gpar(fontsize = cell_fontsize)
+        )(countsreduced)
       }
     }
+    if (!is.null(main_text)) {
+      grid::grid.text(
+        main_text,
+        y = grid::unit(0.98, "npc"),
+        gp = grid::gpar(fontsize = 12 * main_cex, fontface = "bold")
+      )
+    }
     my_list <- list("mosaic_stats" = res)
-    
+
     return(my_list)
   }
 }
-
-
 
 
 # Helper functions--------------------------------------
@@ -1071,14 +1120,18 @@ type_sample_fact <- function(samples, fact) {
 # calculation of odds ratio
 odds_ratio <- function(a, b, c, d, alpha, zerocorrect) {
   attr(odds_ratio, "help") <-
-    "odds_ratio calculates odds ratio OR=(a/b)/(c/d) and corresponding upper and lower confidence intervalls\n INPUT: a = group 1 positive, c = group 2 positive, b=group 1 non positive, d = group 2 non positive, 1-alpha: confidence level, default alpha=0.05"
-  
-  # "odds_ratio calculates odds ratio OR=(a/b)/(c/d) and corresponding upper and lower confidence intervalls\n
-  # INPUT: a=number of positives in  group 1, c=group 2 positive, b=group 1 non positive, d =group 2 non positive,default alpha=0.05, OR=(a/b)/(c/d)"\n
+    paste0(
+      "odds_ratio calculates odds ratio OR=(a/b)/(c/d) and corresponding ",
+      "upper and lower confidence intervalls\n",
+      "INPUT: a = group 1 positive, c = group 2 positive, ",
+      "b=group 1 non positive, d = group 2 non positive, ",
+      "1-alpha: confidence level, default alpha=0.05"
+    )
+
   # a,b,c,d can be vectors, elementwise calculation
   #
-  
-  
+
+
   if (missing(alpha)) {
     alpha <- 0.05
   }
@@ -1086,49 +1139,54 @@ odds_ratio <- function(a, b, c, d, alpha, zerocorrect) {
     zerocorrect <- TRUE
   }
   # odds ratio:=OR=a/b/(c/d)
-  
+
   # eliminate columns with zeros
   # a=c=0 or b=d 0: no positive or no negative cases in both groups
   # Higgins and Green 2011:
-  
+
   if (zerocorrect == TRUE) {
     # eliminate columns with zeros, if
     # a=c=0 or b=d=0: no positive or no control cases in BOTH groups
     # Higgins and Green 2011:
-    doublezero <- which(a == 0 &
-                          c == 0 | b == 0 & d == 0, arr.ind = T)
+    doublezero <- which(
+      (a == 0 & c == 0) | (b == 0 & d == 0),
+      arr.ind = TRUE
+    )
     a[doublezero] <- NaN
     b[doublezero] <- NaN
     c[doublezero] <- NaN
     d[doublezero] <- NaN
-    # Where zeros cause problems with computation of effects or standard errors, 0.5 is added to all cells (a, b, c, d)
-    singlezero <- which(a == 0 |
-                          b == 0 | c == 0 | d == 0, arr.ind = T)
+    # Where zeros cause problems with computation of effects or standard
+    # errors, 0.5 is added to all cells (a, b, c, d)
+    singlezero <- which(
+      a == 0 | b == 0 | c == 0 | d == 0,
+      arr.ind = TRUE
+    )
     a[singlezero] <- a[singlezero] + 0.5
     b[singlezero] <- b[singlezero] + 0.5
     c[singlezero] <- c[singlezero] + 0.5
     d[singlezero] <- d[singlezero] + 0.5
   }
-  
+
   oddA <- a / b
   oddB <- c / d
-  
+
   OR <- oddA / oddB
-  
+
   # confidence intervall
   # SE of ln(OR)
   SE <- sqrt(1 / a + 1 / b + 1 / c + 1 / d)
   alpha <- 0.05
   zalph <- qnorm(1 - alpha / 2)
-  
+
   log_low <- log(OR) - zalph * SE
   log_up <- log(OR) + zalph * SE
-  
+
   lowconf <- exp(log_low) # lower confidence
   upconf <- exp(log_up)
-  
+
   output <- rbind(OR, lowconf, upconf, SE)
-  my_list <- ("odds_ratio_statistics" <- output)
+  my_list <- list(odds_ratio_statistics = output)
   return(my_list)
 }
 
@@ -1138,27 +1196,27 @@ makeTable <- function(samples, fact, samplename, factorname) {
   colnames(counts) <- c(factorname, samplename)
   counts2 <- table(counts)
   # sort by column sums
-  counts3 <- counts2[, order(colSums(counts2), decreasing = T)]
+  counts3 <- counts2[, order(colSums(counts2), decreasing = TRUE)]
   # sort by row sums
-  counts4 <- counts3[order(rowSums(counts3), decreasing = T), ]
+  counts4 <- counts3[order(rowSums(counts3), decreasing = TRUE), ]
   # remove columnns with all entries zero
   counts4 <- counts4[, colSums(counts4 != 0) > 0]
-  
+
   return(counts4)
 }
 
 fisher_chi <- function(counts) {
   # if Cochran requirements for chi2 not given: fisher test is performed
-  # if more than 20% of cells have EXPECTED count smaller 5 or one cell has expected count smaller than 1
-  #
+  # if more than 20% of cells have EXPECTED count smaller 5 or one cell has
+  # expected count smaller than 1
+
 
   suppressWarnings(chisq <- chisq.test(counts))
   expected_counts <- chisq$expected
 
-  cochran_violated <- any(expected_counts < 1) | # at least one cell with expectation value smaller 1
-    (sum(expected_counts < 5) / length(expected_counts) > 0.2 # more than 20% of cells have expected count smaller 5
-     &
-     dim(counts)[2] < 7) # Fisher breaks down for too large tables
+  cochran_low_expected <- sum(expected_counts < 5) / length(expected_counts) > 0.2
+  cochran_violated <- any(expected_counts < 1) ||
+    (cochran_low_expected && dim(counts)[2] < 7)
 
   if (cochran_violated) {
     if (all(dim(counts) == 2)) {
@@ -1195,19 +1253,19 @@ side_of_nh <- function(alternative) {
 create_two_samples_vector <- function(samples, fact) {
   # Creates column vector built out of two samples
   # samples all in one column and sorted
-  levels <- unique(sort(fact))
+  group_levels <- unique(sort(fact))
   # two levels
-  if (length(levels) > 2) {
+  if (length(group_levels) > 2) {
     return(warning(
       "warning: create_two_samples_vector: only two level input allowed"
     ))
   } else {
-    samples1 <- samples[fact == levels[1]]
+    samples1 <- samples[fact == group_levels[1]]
     samples1 <- samples1[!is.na(samples1)]
     if (length(samples1) == 0) {
       return(warning("each group needs at least one entry"))
     } else {
-      samples2 <- samples[fact == levels[2]]
+      samples2 <- samples[fact == group_levels[2]]
       samples2 <- samples2[!is.na(samples2)]
       if (length(samples2) == 0) {
         return(warning("each group needs at least one entry"))
@@ -1227,8 +1285,8 @@ create_two_samples_vector <- function(samples, fact) {
 calc_min_max_of_y_axis <- function(samples,
                                    lowerExtramargin,
                                    upperExtramargin) {
-  maximum <- max(samples, na.rm = T)
-  minimum <- min(samples, na.rm = T)
+  maximum <- max(samples, na.rm = TRUE)
+  minimum <- min(samples, na.rm = TRUE)
   spread <- maximum - minimum
   min_y_axis <- minimum - lowerExtramargin * spread
   max_y_axis <- maximum + upperExtramargin * spread
@@ -1249,16 +1307,15 @@ check_assumptions_shapiro <- function(x) {
     warning("all 'x' values are identical")
     return(FALSE)
   }
-  
-  
-  
+
+
   return(TRUE)
 }
 
-check_assumption_shapiro_size_range_two_samples <- function(x1, x2) {
+check_shapiro_size_range_2s <- function(x1, x2) {
   boolean1 <- check_assumptions_shapiro(x1)
   boolean2 <- check_assumptions_shapiro(x2)
-  if (boolean1 == TRUE & boolean2 == TRUE) {
+  if (boolean1 == TRUE && boolean2 == TRUE) {
     return(TRUE)
   } else {
     return(FALSE)
@@ -1294,50 +1351,50 @@ sig_diffs_nongauss <- function(samples, fact, conf.level = conf.level) {
   # function to produce a table similar to that produced for TukeyHSD,
   # but for non-normally distributed data
   # calculate p values for each data classification based on pairwise.wilcox.test
-  
+
   if (missing(conf.level)) {
     conf.level <- 0.95
   }
-  
+
   ufactor <- levels(fact)
   pwt <- pairwise.wilcox.test(samples, fact, conf.level = conf.level)
   factormeans <- matrix(0, length(ufactor), 1)
-  for (ii in 1:length(ufactor)) {
+  for (ii in seq_along(ufactor)) {
     pos <- which(fact == ufactor[ii])
-    
+
     factormeans[ii] <- mean(samples[pos])
   }
-  
+
   # make a matrix with a row for every possible combination of
   # 2 data classifications and populate it with the calculated
   # p values
-  
+
   xcomb <- combn(length(ufactor), 2)
   tukeylike <- matrix(0, ncol(xcomb), 4)
   colnames(tukeylike) <- c("diff", "lwr", "upr", "p adj")
   tukeynames <- vector("list", ncol(xcomb))
-  for (ii in 1:ncol(xcomb)) {
+  for (ii in seq_len(ncol(xcomb))) {
     tukeynames[ii] <-
       paste(ufactor[xcomb[2, ii]], "-", ufactor[xcomb[1, ii]], sep = "")
-    
+
     p_value <- pwt$p.value[xcomb[2, ii] - 1, xcomb[1, ii]]
-    
+
     if (is.na(p_value)) {
       p_value <- 1
     }
-    
+
     tukeylike[ii, 4] <- p_value
     tukeylike[ii, 1] <- NA
     tukeylike[ii, 2] <- NA
     tukeylike[ii, 3] <- NA
   }
   rownames(tukeylike) <- tukeynames
-  
+
   # re-format the table slightly so it is the same as that produced
   # by TukeyHSD and output
-  
+
   tukeylike2 <- list(tukeylike)
-  
+
   return(tukeylike2)
 }
 
@@ -1348,7 +1405,7 @@ conf_band <- function(x, reg, conf.level = conf.level, up) {
   if (missing(conf.level)) {
     conf.level <- 0.95
   }
-  
+
   if (missing(up)) {
     up <- 1
   }
@@ -1356,21 +1413,22 @@ conf_band <- function(x, reg, conf.level = conf.level, up) {
   a <- reg$coefficients[2] # slope
   b <- reg$coefficients[1] # constant
   md <- x - mean(x)
-  
+
   result <- x # initialization
-  
-  # formula standard error of the regression line at point x:
-  # https://stats.stackexchange.com/questions/101318/understanding-shape-and-calculation-of-confidence-bands-in-linear-regression
-  # See also statistics script page 124: konfidenzint4erval
-  
-  # http://www.sthda.com/english/articles/40-regression-analysis/166-predict-in-r-model-predictions-and-confidence-intervals/
-  for (i in 1:length(x)) {
+
+  # formula standard error of the regression line at point x.
+  # See also statistics script page 124: konfidenzint4erval.
+  # https://stats.stackexchange.com/questions/101318/
+  # understanding-shape-and-calculation-of-confidence-bands-in-linear-regression
+  # http://www.sthda.com/english/articles/40-regression-analysis/
+  # 166-predict-in-r-model-predictions-and-confidence-intervals/
+  for (i in seq_along(x)) {
     result[i] <- a * x[i] + b +
       up * qt(1 - alpha / 2, length(x) - 2) *
-      # Standard error of the estimate
-      sqrt(sum(reg$resid * reg$resid) / (length(x) - 2)) *
-      #
-      sqrt(1 / (length(x)) + md[i]^2 / sum(md * md))
+        # Standard error of the estimate
+        sqrt(sum(reg$resid * reg$resid) / (length(x) - 2)) *
+        #
+        sqrt(1 / (length(x)) + md[i]^2 / sum(md * md))
   }
   return(result)
 }
@@ -1379,23 +1437,23 @@ progn_band <- function(x, reg, conf.level, up) {
   if (missing(conf.level)) {
     conf.level <- 0.95
   }
-  alpha <- 1 - conf.level
   if (missing(up)) {
     up <- 1
   }
+  alpha <- 1 - conf.level
   a <- reg$coefficients[2]
   b <- reg$coefficients[1]
   md <- x - mean(x)
-  
+
   result <- x
-  
-  for (i in 1:length(x)) {
+
+  for (i in seq_along(x)) {
     result[i] <- a * x[i] + b +
       up * qt(1 - alpha / 2, length(x) - 2) *
-      # Standard error of the estimate
-      sqrt(sum(reg$resid * reg$resid) / (length(x) - 2)) *
-      #
-      sqrt(1 + 1 / (length(x)) + md[i]^2 / sum(md * md))
+        # Standard error of the estimate
+        sqrt(sum(reg$resid * reg$resid) / (length(x) - 2)) *
+        #
+        sqrt(1 + 1 / (length(x)) + md[i]^2 / sum(md * md))
   }
   return(result)
 }
@@ -1419,11 +1477,11 @@ test_norm <- function(x) {
 }
 
 # Check length of distributions for t-test----
-check_assumption_sample_size_t_test <- function(x1, x2, minimum_size) {
+check_sample_size_t_test <- function(x1, x2, minimum_size) {
   # x1 sample 1
   # x2 sample 2
   # minimum_size:return TRUE if length> minimum_size
-  if (length(x1) > minimum_size & length(x2) > minimum_size) {
+  if (length(x1) > minimum_size && length(x2) > minimum_size) {
     return(TRUE)
   } else {
     return(FALSE)
@@ -1439,11 +1497,15 @@ jitter_max_n <- 50
 
 # Define color scheme-----
 
-#' \code{colorscheme(x)} selects color scheme of graphical output. Function parameter NULL lists all available color schemes, 1 a color tuple of green and blue
-#' 2 a color tuple of dark green and turquoi, 3 a colorplaette as defined by RcolorBrewer
+#' \code{colorscheme(x)} selects the color scheme used for graphical output.
+#' Function parameter `NULL` lists all available color schemes, `1` a color
+#' tuple of green and blue, `2` a color tuple of dark green and turquoi, and
+#' `3` a color palette as defined by RColorBrewer.
 
 #'
-#' @param colorcode selects color scheme. parameters NULL: list of all available color schemes, 1: colortuple, 2, colortuple2, 3, ColorPalette
+#' @param colorcode selects the color scheme. `NULL` lists all available color
+#'   schemes, `1` gives a colortuple, `2` gives `colortuple2`, and `3` gives
+#'   `ColorPalette`.
 #' @return selected color scheme, colors are given with their Hex Code #RRGGBB names
 #' @noRd
 
@@ -1469,14 +1531,14 @@ colorscheme <- function(colorcode = NULL) {
     "#CCEBC5",
     "#FFED6F"
   )
-  
-  
+
+
   my_list <- list(
     "colortuple" = colortuple,
     "colortuple2" = colortuple2,
     "ColorPalette" = ColorPalette
   )
-  
+
   if (is.null(colorcode)) {
     return(my_list)
   } else if (colorcode == 1) {
@@ -1492,8 +1554,9 @@ colorscheme <- function(colorcode = NULL) {
 
 resetPar <- function() {
   dev.new
-  while (!is.null(dev.list()))
-    dev.off() # restores to default values
+  while (!is.null(dev.list())) {
+    dev.off()
+  } # restores to default values
   oldpar <- par(no.readonly = TRUE)
   return(oldpar)
 }

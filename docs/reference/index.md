@@ -20,6 +20,8 @@
   : Plot method for visstat objects
 - [`print(`*`<visstat>`*`)`](https://shhschilling.github.io/visStatistics/reference/print.visstat.md)
   : Print method for visstat objects
+- [`qq_lm_envelope()`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md)
+  : Simulated Q-Q envelopes for linear model residuals
 - [`saveGraphVisstat()`](https://shhschilling.github.io/visStatistics/reference/saveGraphVisstat.md)
   : Saves Graphical Output with plot capture capability
 - [`summary(`*`<visstat>`*`)`](https://shhschilling.github.io/visStatistics/reference/summary.visstat.md)

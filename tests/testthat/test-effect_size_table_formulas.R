@@ -14,8 +14,7 @@ test_that("effect_size agrees with formulae in the effect-size table", {
   n1 <- length(x[[1]])
   n2 <- length(x[[2]])
   n_total <- n1 + n2
-  sp <- sqrt(((n1 - 1) * var(x[[1]]) + (n2 - 1) * var(x[[2]])) /
-               (n_total - 2))
+  sp <- sqrt(((n1 - 1) * var(x[[1]]) + (n2 - 1) * var(x[[2]])) / (n_total - 2))
   ref <- hedges_j(n_total - 2) * (mean(x[[1]]) - mean(x[[2]])) / sp
   res <- list("t-test-statistics" = t.test(y ~ g, var.equal = TRUE))
   expect_equal(effect_size(res, x = g, y = y)$estimate, ref, tolerance = 1e-12)
@@ -125,7 +124,8 @@ test_that("effect_size agrees with formulae in the effect-size table", {
   x_ord <- ordered(x_levels[xs], levels = x_levels)
   y_ord <- ordered(y_levels[ys], levels = y_levels)
   ct <- cor.test(as.numeric(y_ord), as.numeric(x_ord),
-                 method = "kendall", exact = FALSE)
+    method = "kendall", exact = FALSE
+  )
   res <- list(test = ct)
   expect_equal(effect_size(res)$estimate, unname(ct$estimate), tolerance = 1e-12)
 
@@ -161,8 +161,10 @@ test_that("Welch-Satterthwaite df matches oneway.test for two groups", {
   }
 
   y <- mtcars$mpg
-  for (g in list(factor(mtcars$am),
-                 factor(mtcars$am, levels = c("1", "0")))) {
+  for (g in list(
+    factor(mtcars$am),
+    factor(mtcars$am, levels = c("1", "0"))
+  )) {
     ow <- stats::oneway.test(y ~ g)
     df_from_equation <- welch_satterthwaite_df(y, g)
     df_from_oneway <- unname(ow$parameter[["denom df"]])
@@ -172,7 +174,8 @@ test_that("Welch-Satterthwaite df matches oneway.test for two groups", {
     expect_equal(unname(ow$parameter[["num df"]]), 1, tolerance = 1e-12)
     expect_equal(df_from_oneway, df_from_equation, tolerance = 1e-12)
     expect_equal(df_from_oneway,
-                 unname(stats::t.test(y ~ g)$parameter),
-                 tolerance = 1e-12)
+      unname(stats::t.test(y ~ g)$parameter),
+      tolerance = 1e-12
+    )
   }
 })

@@ -255,8 +255,8 @@ tendencies are selected.
 #### mtcars data set
 
 ```{r mtcars, fig.alt="Welch two-sample t-test comparing fuel efficiency (mpg) between automatic and manual transmission. Shows boxplot with individual points, statistical results, and diagnostic plots for normality and variance homogeneity."}
- mtcars$am <- as.factor(mtcars$am)
- t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
+mtcars$am <- as.factor(mtcars$am)
+t_test_statistics <- visstat(mtcars$am, mtcars$mpg)
 ```
 
 ### Wilcoxon rank sum test
@@ -278,13 +278,13 @@ wilcoxon_statistics <- visstat(grades_gender$sex, grades_gender$grade)
 ### Fisher's one way ANOVA
 
 ```{r npk-onewy, fig.alt="Fisher's one-way ANOVA comparing crop yield across different experimental blocks. Shows boxplot for each block with individual data points, ANOVA results, and post-hoc comparisons with confidence intervals."}
-fisher_one_way_npk <- visstat(npk$block,npk$yield)
+fisher_one_way_npk <- visstat(npk$block, npk$yield)
 ```
 
 ### Kruskal-Wallis test
 
 ```{r iris-kruskal, fig.alt="Kruskal-Wallis test comparing petal width across three iris species. Displays boxplot with individual observations for each species, test statistics, and post-hoc pairwise comparisons."}
-kruskal_iris=visstat(iris$Species, iris$Petal.Width)
+kruskal_iris <- visstat(iris$Species, iris$Petal.Width)
 ```
 
 ## Ordered response and categorical predictor:
@@ -303,18 +303,18 @@ segment <- factor(rep(c("Budget", "Premium"), each = 50))
 
 # Create response: Likert scale ratings (1-5)
 satisfaction_numeric <- c(
-  sample(1:5, 50, replace = TRUE, prob = c(0.15, 0.25, 0.30, 0.20, 0.10)),  # Budget
-  sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.35, 0.30))   # Premium
+  sample(1:5, 50, replace = TRUE, prob = c(0.15, 0.25, 0.30, 0.20, 0.10)), # Budget
+  sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.35, 0.30)) # Premium
 )
 
 # Create dataframe with ORDERED response
 survey_data <- data.frame(
   segment = segment,
-  satisfaction = ordered(satisfaction_numeric)  # Declare as ordered
+  satisfaction = ordered(satisfaction_numeric) # Declare as ordered
 )
 
 # triggers warnings and use Wilcoxon test
-result <- visstat(survey_data$segment,survey_data$satisfaction)
+result <- visstat(survey_data$segment, survey_data$satisfaction)
 ```
 
 ### Kruskal-Wallis test
@@ -327,15 +327,15 @@ service_class <- factor(rep(c("Economy", "Business", "First"), each = 50))
 
 # Create response: Likert scale ratings (1-5)
 comfort_numeric <- c(
-  sample(1:5, 50, replace = TRUE, prob = c(0.35, 0.30, 0.20, 0.10, 0.05)),  # Economy
-  sample(1:5, 50, replace = TRUE, prob = c(0.10, 0.20, 0.35, 0.25, 0.10)),  # Business
-  sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.30, 0.35))   # First
+  sample(1:5, 50, replace = TRUE, prob = c(0.35, 0.30, 0.20, 0.10, 0.05)), # Economy
+  sample(1:5, 50, replace = TRUE, prob = c(0.10, 0.20, 0.35, 0.25, 0.10)), # Business
+  sample(1:5, 50, replace = TRUE, prob = c(0.05, 0.10, 0.20, 0.30, 0.35)) # First
 )
 
 # Create dataframe with ordered response
 flight_data <- data.frame(
   service_class = service_class,
-  comfort = ordered(comfort_numeric)  # Declare as ordered
+  comfort = ordered(comfort_numeric) # Declare as ordered
 )
 
 # triggers warning and uses Kruskal-Wallis test
@@ -345,7 +345,7 @@ result <- visstat(flight_data$service_class, flight_data$comfort)
 ## Numerical response and numerical predictor: Linear Regression 
 
 ```{r lin-reg-dist-speed, fig.alt="Linear regression analysis of weight versus height for women. Shows scatter plot with fitted regression line, 99% confidence band for the regression line, and prediction band. Includes residual plot and Q-Q plot for diagnostic assessment."}
-vis_women <- visstat(women$height, women$weight,conf.level=0.99)
+vis_women <- visstat(women$height, women$weight, conf.level = 0.99)
 ```
 
 
@@ -370,7 +370,7 @@ black_brown_hazel_green_male <- hair_eye_color_male[1:2, 3:4]
 # Transform to data frame
 black_brown_hazel_green_male <- counts_to_cases(as.data.frame(black_brown_hazel_green_male))
 # Fisher test
-fisher_stats <- visstat(black_brown_hazel_green_male$Eye,black_brown_hazel_green_male$Hair)
+fisher_stats <- visstat(black_brown_hazel_green_male$Eye, black_brown_hazel_green_male$Hair)
 ```
 
 ## Both variables ordered: Rank correlation
@@ -386,9 +386,9 @@ n <- 150
 # Negative monotone association: higher alcohol -> lower academic performance
 xs <- sample(1:5, n, replace = TRUE)
 ys <- pmin(5, pmax(1, (6 - xs) + sample(-1:1, n, replace = TRUE)))
-likert_levels  <- c("never", "rarely", "sometimes", "often", "always")
+likert_levels <- c("never", "rarely", "sometimes", "often", "always")
 likert_levels2 <- c("poor", "fair", "ok", "good", "great")
-alcohol     <- ordered(likert_levels[xs],  levels = likert_levels)
+alcohol <- ordered(likert_levels[xs], levels = likert_levels)
 performance <- ordered(likert_levels2[ys], levels = likert_levels2)
 kendall_result <- visstat(performance, alcohol, correlation = TRUE)
 ```
@@ -414,7 +414,8 @@ In the following example, we store the graphics in `png` format in the
 # a single bar chart showing absolute counts (Fisher's exact test).
 # Output file: chi_squared_or_fisher_Hair_Eye.png
 save_fisher <- visstat(black_brown_hazel_green_male, "Hair", "Eye",
-        graphicsoutput = "png", plotDirectory = tempdir())
+  graphicsoutput = "png", plotDirectory = tempdir()
+)
 ```
 
 The full file path of the generated graphics are stored as the attribute
