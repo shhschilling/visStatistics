@@ -1,0 +1,158 @@
+---
+title: "Unified Framework of t-test, ANOVA, and Linear Models under the General Linear Model"
+author: "Sabine Schilling"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    mathjax: default
+# bibliography: references.bib
+#csl: apa.csl
+---
+
+# Introduction
+
+The **general linear model (GLM)** serves as the unifying mathematical structure for many classical statistical techniques, including the **t-test**, **one-way ANOVA**, and **linear regression**, whether simple or multiple. All these methods share the same assumptions and estimation framework. This document demonstrates this connection, proves the equivalence \( t^2 = F \), and interprets model coefficients.
+
+# The General Linear Model
+
+A general linear model is given by:
+
+$$
+\mathbf{y} = \mathbf{X}\boldsymbol\beta + \boldsymbol\varepsilon, \quad \boldsymbol\varepsilon \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)
+$$
+
+Where:
+- \( \mathbf{y} \in \mathbb{R}^n \): response vector  
+- \( \mathbf{X} \in \mathbb{R}^{n \times p} \): model matrix  
+- \( \boldsymbol\beta \in \mathbb{R}^p \): regression coefficients  
+- \( \boldsymbol\varepsilon \): homoscedastic, independent, normally distributed errors  
+
+This framework applies whether \( \mathbf{X} \) encodes group indicators (as in t-tests or ANOVA) or continuous predictors (as in regression). See [Faraway, 2014](#faraway2014) and [Fox, 2015](#fox2015).
+
+# Shared Assumptions
+
+All the following methods are GLMs under the same assumptions:
+1. **Linearity**: The expected value of the response is a linear combination of predictors.
+2. **Independence**: Observations are independent.
+3. **Homoscedasticity**: Constant variance \( \operatorname{Var}(\varepsilon_i) = \sigma^2 \).
+4. **Normality**: \( \varepsilon_i \sim \mathcal{N}(0, \sigma^2) \) for exact inference.
+
+# Equivalence of t-test, ANOVA, and `lm()`
+
+## Two-sample t-test as a linear model
+
+```{r}
+set.seed(42)
+group <- factor(rep(c("A", "B"), each = 10))
+y <- c(rnorm(10, mean = 5), rnorm(10, mean = 7))
+
+t.test(y ~ group) # Welch's t-test
+
+model_t <- lm(y ~ group)
+summary(model_t)
+
+anova(model_t)
+```
+
+- The coefficient for `groupB` is the **mean difference**.
+- The square of the `t` statistic from `summary(model_t)` equals the `F` from `anova()`.
+
+```{r}
+t_val <- summary(model_t)$coefficients[2, "t value"]
+f_val <- anova(model_t)[1, "F value"]
+c(t_squared = t_val^2, F = f_val)
+```
+
+## One-way ANOVA as a GLM
+
+```{r}
+group3 <- factor(rep(c("A", "B", "C"), each = 10))
+y3 <- c(rnorm(10, 5), rnorm(10, 7), rnorm(10, 6))
+
+model_aov <- aov(y3 ~ group3)
+summary(model_aov)
+
+model_lm <- lm(y3 ~ group3)
+anova(model_lm)
+```
+
+## Multiple regression as GLM
+
+```{r}
+x1 <- rnorm(30)
+x2 <- rnorm(30)
+y_multi <- 2 + 1.5 * x1 - 0.7 * x2 + rnorm(30)
+
+model_multi <- lm(y_multi ~ x1 + x2)
+summary(model_multi)
+```
+
+# Mathematical Identity: \( t^2 = F \)
+
+For testing a single coefficient \( \beta_j \) in linear regression:
+
+$$
+t_j = \frac{\hat\beta_j}{\operatorname{SE}(\hat\beta_j)} \quad \text{and} \quad F = t_j^2
+$$
+
+This holds for any one-parameter linear contrast, under the null hypothesis.
+
+**Proof**:  
+If \( H_0: \beta_j = 0 \), then:
+
+- Numerator SS: \( \text{SS}_{\text{reg},j} = \hat\beta_j^2 / \operatorname{Var}(\hat\beta_j) \)
+- Denominator MSE: \( \hat\sigma^2 = \text{RSS} / (n - p) \)
+
+Then:
+
+$$
+F = \frac{\hat\beta_j^2}{\operatorname{Var}(\hat\beta_j)} / \hat\sigma^2 = t_j^2
+$$
+
+# Interpretation of Coefficients
+
+In the GLM:
+
+- \( \beta_0 \): the expected value of \( y \) when all predictors are 0.  
+  - In group comparisons: mean of reference group  
+  - In regression: intercept at \( x_1 = x_2 = \dots = 0 \)
+
+- \( \beta_1, \beta_2, \dots \): expected change in \( y \) per unit increase in predictor, holding others constant.
+
+In t-tests and ANOVA:
+- Coefficients represent **group means** or **mean differences**, interpretable as regression slopes on dummy variables.
+
+# Conclusion
+
+The t-test, ANOVA, and regression models are all **specific cases** of the **general linear model**, differing only in how the predictor matrix \( \mathbf{X} \) is constructed. They share assumptions, estimation, and inferential logic.
+
+# References
+
+```{r, echo = FALSE, results = "asis"}
+# Generate references from .bib
+```
+
+---
+
+
+```bibtex
+@book{faraway2014,
+  title     = {Linear Models with R},
+  author    = {Julian J. Faraway},
+  year      = {2014},
+  publisher = {CRC Press},
+  edition   = {2},
+  doi       = {10.1201/b17107}
+}
+
+@book{fox2015,
+  title     = {Applied Regression Analysis and Generalized Linear Models},
+  author    = {John Fox},
+  year      = {2015},
+  edition   = {3},
+  publisher = {SAGE Publications},
+  doi       = {10.4135/9781483393126}
+}
+```

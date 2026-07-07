@@ -497,7 +497,7 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
   header$strategy <- "header"
   header$plot_strategy <- "header"
   header$rejection <- NA_real_
-  header$rejection_label <- "rej"
+  header$rejection_label <- "rej."
   header$gate_bar_label <- "|"
   header$split_f_label <- "F"
   header$split_w_label <- "W"
@@ -506,13 +506,14 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
     header[[nm]] <- NA
   }
   one <- rbind(one, header[names(one)])
-  one$plot_strategy <- factor(
-    one$plot_strategy,
-    levels = c(rev(strategies), "header")
-  )
+  strategy_levels <- c(rev(strategies), "header")
+  strategy_y <- stats::setNames(seq_along(strategy_levels), strategy_levels)
+  strategy_y["header"] <- length(strategies) + 1.25
+  one$plot_strategy <- factor(one$plot_strategy, levels = strategy_levels)
+  one$plot_y <- unname(strategy_y[as.character(one$plot_strategy)])
   ggplot2$ggplot(
     one,
-    ggplot2$aes(x = skew_base_label, y = plot_strategy, fill = rejection)
+    ggplot2$aes(x = skew_base_label, y = plot_y, fill = rejection)
   ) +
     ggplot2$geom_tile(colour = NA) +
     ggplot2$geom_text(
@@ -540,8 +541,10 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
       position = ggplot2$position_nudge(x = 0.37),
       size = FLEISHMAN_GEOM_TEXT$heatmap_cell
     ) +
-    ggplot2$scale_y_discrete(
-      labels = c(stats::setNames(strategies, strategies), header = "")
+    ggplot2$scale_y_continuous(
+      breaks = unname(strategy_y),
+      labels = c(rev(strategies), ""),
+      expand = ggplot2$expansion(add = c(0.45, 0.20))
     ) +
     ggplot2$facet_grid(
       stats::as.formula("mean_n_label ~ ."),
@@ -563,7 +566,7 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
       axis.text.y = ggplot2$element_text(size = FLEISHMAN_TEXT$heatmap_row),
       axis.ticks.x = ggplot2$element_blank(),
         panel.grid = ggplot2$element_blank(),
-      panel.spacing.y = grid::unit(0.08, "lines"),
+      panel.spacing.y = grid::unit(0.12, "lines"),
       strip.placement = "outside",
       strip.background.y = ggplot2$element_rect(
         colour = "grey35",
@@ -614,18 +617,18 @@ make_equal_plot <- function() {
     "B",
     "balanced; n<sub>1</sub> = ... = n<sub>4</sub> = n; SD<sub>1</sub> = ... = SD<sub>4</sub> = 1"
   )
-  height_list[3] <- 0.10
+  height_list[3] <- 0.13
   plot_list[[4]] <- balanced_plot
-  height_list[4] <- 0.85
+  height_list[4] <- 1.00
   plot_list[[5]] <- patchwork$plot_spacer()
-  height_list[5] <- 0.02
+  height_list[5] <- 0.06
   plot_list[[6]] <- panel_header(
     "C",
     "unbalanced; (n<sub>1</sub>, ..., n<sub>4</sub>) = &lceil;n&#772;(0.5, 0.8, 1.2, 1.5)&rceil;; SD<sub>1</sub> = ... = SD<sub>4</sub> = 1"
   )
-  height_list[6] <- 0.10
+  height_list[6] <- 0.13
   plot_list[[7]] <- unbalanced_plot
-  height_list[7] <- 0.85
+  height_list[7] <- 1.00
   (
     patchwork$wrap_plots(plot_list, ncol = 1, heights = height_list) +
       patchwork$plot_layout(guides = "keep")
@@ -649,7 +652,7 @@ make_unequal_design_plot <- function(design_name, panel_label, show_legend = TRU
   plot_list[[2]] <- block_title(
     panel_label
   )
-  height_list[2] <- 0.09
+  height_list[2] <- 0.12
   plot_list[[3]] <- make_rejection_plot(
     design_name,
     strategies,
@@ -657,7 +660,7 @@ make_unequal_design_plot <- function(design_name, panel_label, show_legend = TRU
     show_legend = show_legend,
     fill_limit = 1
   )
-  height_list[3] <- 0.75
+  height_list[3] <- 0.90
   (
     patchwork$wrap_plots(plot_list, ncol = 1, heights = height_list) +
       patchwork$plot_layout(guides = "keep")
@@ -688,7 +691,7 @@ make_unequal_plot <- function() {
     "B",
     "balanced; n<sub>1</sub> = ... = n<sub>4</sub> = n; (SD<sub>1</sub>, ..., SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
   )
-  height_list[3] <- 0.10
+  height_list[3] <- 0.13
   plot_list[[4]] <- make_rejection_plot(
     "balanced n, unequal SD",
     strategies,
@@ -696,12 +699,12 @@ make_unequal_plot <- function() {
     show_legend = TRUE,
     fill_limit = 1
   )
-  height_list[4] <- 0.75
+  height_list[4] <- 0.90
   plot_list[[5]] <- panel_header(
     "C",
     "unbalanced; (n<sub>1</sub>, ..., n<sub>4</sub>) = &lceil;n&#772;(0.5, 0.8, 1.2, 1.5)&rceil;; (SD<sub>1</sub>, ..., SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
   )
-  height_list[5] <- 0.10
+  height_list[5] <- 0.13
   plot_list[[6]] <- make_rejection_plot(
     "unbalanced n, larger n with larger SD",
     strategies,
@@ -709,12 +712,12 @@ make_unequal_plot <- function() {
     show_legend = FALSE,
     fill_limit = 1
   )
-  height_list[6] <- 0.75
+  height_list[6] <- 0.90
   plot_list[[7]] <- panel_header(
     "D",
     "unbalanced; (n<sub>1</sub>, ..., n<sub>4</sub>) = &lceil;n&#772;(0.5, 0.8, 1.2, 1.5)&rceil;; (SD<sub>1</sub>, ..., SD<sub>4</sub>) = (2.2, 1.7, 1.3, 1.0)"
   )
-  height_list[7] <- 0.10
+  height_list[7] <- 0.13
   plot_list[[8]] <- make_rejection_plot(
     "unbalanced n, larger n with smaller SD",
     strategies,
@@ -722,7 +725,7 @@ make_unequal_plot <- function() {
     show_legend = FALSE,
     fill_limit = 1
   )
-  height_list[8] <- 0.75
+  height_list[8] <- 0.90
   (
     patchwork$wrap_plots(plot_list, ncol = 1, heights = height_list) +
       patchwork$plot_layout(guides = "keep")
@@ -749,7 +752,7 @@ ggplot2$ggsave(
   equal_outfile,
   make_equal_plot(),
   width = 20,
-  height = 18,
+  height = 22,
   dpi = 360
 )
 message("Wrote: ", equal_outfile)
@@ -764,5 +767,5 @@ save_plot(
   "route1_equal_means_unequal_distributions_fleishman_B50000.png",
   make_unequal_plot(),
   width = 20,
-  height = 22
+  height = 26
 )
