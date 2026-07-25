@@ -61,9 +61,11 @@ total count data of a category to be displayed in mosaic count plots.}
 Welch-type mean tests, and \code{"rank"} forces Wilcoxon/Kruskal-Wallis
 rank tests.}
 
-\item{graphicsoutput}{Saves plot(s) of type \code{"png"}, \code{"jpg"},
-\code{"tiff"} or \code{"bmp"} in directory specified in
-\code{plotDirectory}. If \code{NULL}, no plots are saved.}
+\item{graphicsoutput}{Saves plot(s) of type \code{"png"}, \code{"jpeg"},
+\code{"pdf"}, \code{"svg"}, \code{"ps"} or \code{"tiff"} in directory
+specified in \code{plotDirectory}. If \code{NULL}, no plots are saved.
+Any other value is not supported by \code{Cairo()}: it triggers a warning,
+no file is written, and no \code{plot_paths} attribute is returned.}
 
 \item{plotName}{Graphical output is stored following the naming convention
 \code{"plotName.graphicsoutput"} in \code{plotDirectory}. Without
@@ -95,6 +97,13 @@ routes. Route 1 handles a numeric response with a categorical predictor.
 By default, Route 1 uses residual-based assumption diagnostics: the
 Shapiro--Wilk test gates mean-based versus rank-based analysis, and the
 Levene test then gates equal-variance versus Welch-type mean tests.
+Above 5000 observations, where \code{shapiro.test()} is undefined, the
+Anderson--Darling test takes over as the residual-normality gate. If the
+group sizes are unbalanced, the largest group standard deviations occur in the
+smallest groups, and the selected route is the equal-variance test or a
+rank-based test, the default route warns and points at
+\code{group_test = "welch"}, because those two routes can exceed the nominal
+significance level in that configuration.
 Alternatively, \code{group_test = "welch"} keeps Route 1 on the mean scale
 and forces Welch-type tests, while \code{group_test = "rank"} forces
 Wilcoxon/Kruskal--Wallis rank tests. Route 2 handles ordered responses

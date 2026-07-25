@@ -34,6 +34,80 @@ selected_test_title <- function(result) {
   "selected test"
 }
 
+# Warn about the one Route 1 configuration in which both automatic gates fail.
+#
+# In unbalanced designs whose smallest groups carry the largest standard
+# deviations, the default gating leaves Bradley's liberal robustness bounds at
+# every simulated sample size, because the Levene gate is too weak at small n
+# and the rank branch inherits the sensitivity of rank tests to unequal
+# variances at unequal group sizes; fixed Welch stays inside the bounds
+# throughout. See the Route 1 simulations in vignette("visStatistics").
+# The thresholds are heuristics matched to that simulated configuration, whose
+# population standard deviation ratio is 2.2. The trigger is set lower because
+# the ratio is estimated from the sample, and the group with the largest
+# standard deviation is by construction the smallest one, so the estimate is
+# both noisy and biased downwards: a population ratio of 2.2 is routinely
+# observed as below 2.
+detect_adverse_variance_pairing <- function(samples, fact,
+                                            sd_ratio_min = 1.5) {
+  none <- list(adverse = FALSE)
+  n_i <- tapply(samples, fact, function(z) sum(is.finite(z)))
+  s_i <- tapply(samples, fact, function(z) stats::sd(z[is.finite(z)]))
+  keep <- is.finite(n_i) & is.finite(s_i)
+  n_i <- n_i[keep]
+  s_i <- s_i[keep]
+
+  if (length(n_i) < 2 || length(unique(n_i)) < 2 || any(s_i <= 0)) {
+    return(none)
+  }
+
+  sd_ratio <- max(s_i) / min(s_i)
+  pairing <- suppressWarnings(
+    stats::cor(as.numeric(n_i), as.numeric(s_i), method = "spearman")
+  )
+
+  if (!is.finite(pairing) || pairing >= 0 || sd_ratio < sd_ratio_min) {
+    return(none)
+  }
+
+  list(adverse = TRUE, n = n_i, sd_ratio = sd_ratio)
+}
+
+# Only the vulnerable routes are flagged. In the simulated adverse design the
+# default gating leaves Bradley's bounds either because the Levene gate is too
+# weak and Fisher/Student is selected, or because the residual-normality gate
+# sends the comparison to the rank branch, whose Type I error is itself
+# sensitive to unequal variances at unequal group sizes. Welch, when it is the
+# selected route, stays inside the bounds throughout, so it is not flagged.
+warn_adverse_variance_pairing <- function(pairing, route) {
+  if (!isTRUE(pairing$adverse)) {
+    return(invisible(FALSE))
+  }
+
+  reason <- switch(route,
+    fisher = paste(
+      "the variance gate did not detect the heterogeneity and an",
+      "equal-variance test was selected"
+    ),
+    rank = paste(
+      "the residual-normality gate selected a rank-based test, whose Type I",
+      "error is itself affected by unequal variances at unequal group sizes"
+    )
+  )
+
+  warning(
+    "Unbalanced group sizes with the largest standard deviations in the ",
+    "smallest groups (group sizes ", paste(pairing$n, collapse = ", "),
+    "; standard deviation ratio ",
+    format(round(pairing$sd_ratio, 2), nsmall = 2), "). Here ", reason,
+    ", so the reported test can exceed the nominal significance level. ",
+    "Consider group_test = \"welch\" if the comparison is about population ",
+    "means; see vignette(\"visStatistics\").",
+    call. = FALSE
+  )
+  invisible(TRUE)
+}
+
 # Header visstat_core -----
 #'
 #' Automated Visualization of Statistical Hypothesis Testing
@@ -48,7 +122,10 @@ selected_test_title <- function(result) {
 #' numeric response with a categorical predictor. By default, Route 1 uses
 #' residual-based test selection: Shapiro--Wilk on model residuals gates
 #' mean-based versus rank-based analysis, and Levene gates equal-variance
-#' versus Welch-type mean tests inside the mean branch. Alternatively,
+#' versus Welch-type mean tests inside the mean branch. Above 5000
+#' observations, where \code{shapiro.test()} is undefined, the
+#' Anderson--Darling test takes over as the residual-normality gate.
+#' Alternatively,
 #' \code{group_test = "welch"} forces Welch-type mean tests, and
 #' \code{group_test = "rank"} forces Wilcoxon/Kruskal--Wallis tests.
 #'
@@ -64,6 +141,13 @@ selected_test_title <- function(result) {
 #' The significance level \code{alpha} is defined as \code{1 - conf.level}.
 #' Assumption tests are interpreted relative to this threshold.
 #'
+#' Under the default \code{group_test = NULL}, Route 1 issues a warning when the
+#' group sizes are unbalanced, the largest group standard deviations occur in the
+#' smallest groups, and the route selected is either the equal-variance test or a
+#' rank-based test. In that configuration those two routes can exceed the nominal
+#' significance level, whereas a selected Welch test does not and is therefore
+#' not flagged; see the Route 1 simulations in \code{vignette("visStatistics")}.
+#'
 #' Implemented main tests:
 #'
 #' \code{t.test()}, \code{wilcox.test()}, \code{aov()},
@@ -73,7 +157,7 @@ selected_test_title <- function(result) {
 #' Implemented tests for assumptions:
 #' \itemize{
 #'   \item Normality: \code{shapiro.test()} and \code{ad.test()}
-#'   \item Heteroscedasticity: \code{bartlett.test()} and \code{levene.test()} and \code{bp_test()}
+#'   \item Heteroscedasticity: \code{bartlett.test()} and \code{levene.test()} and \code{bp.test()}
 #' }
 #'
 #' For the general linear model the Shapiro-Wilk, Anderson-Darling, Levene and
@@ -84,7 +168,7 @@ selected_test_title <- function(result) {
 #' Implemented post hoc tests:
 #' \itemize{
 #'   \item \code{TukeyHSD()} for \code{aov()}
-#'   \item \code{games.howell} for  \code{oneway.test()}
+#'   \item \code{games.howell()} for  \code{oneway.test()}
 #'   \item \code{pairwise.wilcox.test()} for \code{kruskal.test()}
 #' }
 #' @seealso
@@ -116,9 +200,10 @@ selected_test_title <- function(result) {
 #' @param group_test Optional character. For Route 1 only, \code{NULL} keeps the
 #'   default assumption gates, \code{"welch"} forces Welch-type mean tests, and
 #'   \code{"rank"} forces Wilcoxon/Kruskal-Wallis rank tests.
-#' @param graphicsoutput saves plot(s) of type "png",  "jpg", "tiff" or  "bmp"
-#'   in directory specified in \code{plotDirectory}. If graphicsoutput=NULL, no
-#'   plots are saved.
+#' @param graphicsoutput saves plot(s) of type "png", "jpeg", "pdf", "svg", "ps"
+#'   or "tiff" in directory specified in \code{plotDirectory}. If
+#'   graphicsoutput=NULL, no plots are saved. Any other value is not supported by
+#'   \code{Cairo()}: it triggers a warning and no file is written.
 #' @param plotName graphical output is stored following the naming convention
 #'   "plotName.graphicsoutput" in \code{plotDirectory}. Without specifying this
 #'   parameter, plotName is automatically generated following the convention
@@ -381,9 +466,18 @@ visstat_core <- function(dataframe,
       }
     }
 
+    # Flag the configuration in which the automatic route is unreliable, once
+    # the route is known: only the equal-variance and rank routes are affected.
+    adverse_pairing <- if (group_test == "automatic" && !ordinal_response) {
+      detect_adverse_variance_pairing(samples, fact)
+    } else {
+      list(adverse = FALSE)
+    }
+
     # Testing and Visualization steps
     if (!normality_met) {
       # --- NON-PARAMETRIC BRANCH ---
+      warn_adverse_variance_pairing(adverse_pairing, "rank")
       openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
       if (nlevels(fact) == 2) {
         vis_sample_fact <- two_sample_wilcoxon_test(samples, fact,
@@ -427,6 +521,9 @@ visstat_core <- function(dataframe,
       # matching the |r_i| spread panel of vis_lm_assumptions().
       var_p <- levene.test(scaled_residuals, fact)$p.value
       use_fisher <- group_test == "automatic" && var_p >= alpha
+      if (use_fisher) {
+        warn_adverse_variance_pairing(adverse_pairing, "fisher")
+      }
       if (nlevels(fact) == 2) {
         # Final t-test execution
         openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)

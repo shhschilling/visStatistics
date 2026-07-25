@@ -116,8 +116,8 @@ openGraphCairo <- function(width = 640,
 #' @param oldfile old file of same name to be overwritten
 #' @param capture_env Environment to store captured plots. If NULL, no capture occurs.
 #'
-#' @return NULL, if no \code{type} or \code{fileName} is provided, file path if graph
-#'   is created
+#' @return NULL, if no \code{type} or \code{fileName} is provided or if no
+#'   graphics file was created, file path if graph is created
 #' @examples
 #'
 #' # very simple KDE (adapted from example in Cairo())
@@ -159,10 +159,16 @@ saveGraphVisstat <- function(fileName = NULL,
 
   newFileName <- paste0(file3, ".", type)
   Cairofile <- file.path(fileDirectory, newFileName)
-  file.copy(oldfile, Cairofile, overwrite = TRUE)
+  copied <- file.copy(oldfile, Cairofile, overwrite = TRUE)
 
   if (file.exists(oldfile)) {
     file.remove(oldfile)
+  }
+
+  # No device was opened for an unsupported type, so no file exists to copy;
+  # returning the intended path would report a file that was never written.
+  if (!isTRUE(copied)) {
+    return(invisible(NULL))
   }
 
   return(invisible(Cairofile))

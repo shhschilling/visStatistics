@@ -26,8 +26,8 @@ setting current working directory.}
 \item{capture_env}{Environment to store captured plots. If NULL, no capture occurs.}
 }
 \value{
-NULL, if no \code{type} or \code{fileName} is provided, file path if graph
-  is created
+NULL, if no \code{type} or \code{fileName} is provided or if no
+  graphics file was created, file path if graph is created
 }
 \description{
 Closes all graphical devices with \code{dev.off()} and saves the output only
