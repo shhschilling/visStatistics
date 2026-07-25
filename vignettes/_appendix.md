@@ -281,10 +281,20 @@ When variances are equal, Welch's methods lose only negligible power relative to
 
 If variances are equal and the groups are balanced (the same number in each group), the Welch method's reduce in the case of two -group comparison algebraically to Student's t-test (equivalent to Fisher - Anova for two groups):
 
-When $s_1^2 = s_2^2 = s^2$ and $n_1 = n_2 = n$, the pooled variance entering Eq. \@ref(eq:student-t) becomes \begin{equation}
+When $s_1^2 = s_2^2 = s^2$ and $n_1 = n_2 = n$, the pooled variance entering
+Eq. \@ref(eq:student-t) becomes
+
+\begin{equation}
 s_p^2 = \frac{(n-1)s^2 + (n-1)s^2}{2n-2} = s^2,
 (\#eq:welch-student-pooled)
-\end{equation} so the Welch denominator in Eq. \@ref(eq:welch-t), $\sqrt{s^2/n + s^2/n} = s\sqrt{2/n}$, equals the Student denominator $s_p\sqrt{1/n + 1/n} = s\sqrt{2/n}$, and the Welch--Satterthwaite degrees of freedom in Eq. \@ref(eq:welch-satterthwaite-df) reduce to \begin{equation}
+\end{equation}
+
+so the Welch denominator in Eq. \@ref(eq:welch-t),
+$\sqrt{s^2/n + s^2/n} = s\sqrt{2/n}$, equals the Student denominator
+$s_p\sqrt{1/n + 1/n} = s\sqrt{2/n}$, and the Welch--Satterthwaite degrees
+of freedom in Eq. \@ref(eq:welch-satterthwaite-df) reduce to
+
+\begin{equation}
 \nu = \frac{\left(2s^2/n\right)^2}
 {\dfrac{(s^2/n)^2}{n-1} + \dfrac{(s^2/n)^2}{n-1}}
 = \frac{4s^4/n^2}{2s^4/[n^2(n-1)]}
@@ -534,12 +544,17 @@ R_2 & c & d & c + d \\
 Given these fixed margins, the exact null probability of this table is the
 hypergeometric probability
 
+Let $A$ denote the random upper-left cell count. The conditional odds ratio
+is the value $\hat\theta_{\mathrm{cond}}$ such that
+$\operatorname{E}_{\hat\theta}(A \mid a+b,c+d,a+c,b+d)=a$.
+
 \[
 \mathbb{P}(a \mid a+b,c+d,a+c,b+d)
 =
 \frac{\dbinom{a+b}{a}\dbinom{c+d}{c}}
 {\dbinom{N}{a+c}},
 \]
+(\#eq:fisher-hypergeom)
 
 where $N = a+b+c+d$. The two-sided $p$-value is obtained by summing the
 probabilities of all tables with the same margins whose probabilities under
@@ -554,4 +569,3 @@ The sample odds ratio is
 \[
 \widehat{\mathrm{OR}} = \frac{ad}{bc}.
 \]
-

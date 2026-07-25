@@ -265,7 +265,7 @@ make_pdf_plot <- function(design_name, title, show_group_legend = TRUE,
           "none"
         },
         legend.box.margin = ggplot2$margin(0, 0, 0, 4),
-        legend.key.height = grid::unit(1.25, "lines"),
+        legend.key.height = grid::unit(1.6, "lines"),
         legend.title = ggplot2$element_text(size = FLEISHMAN_TEXT$legend),
         legend.text = ggplot2$element_text(size = FLEISHMAN_TEXT$legend),
         axis.title.x = ggplot2$element_text(size = FLEISHMAN_TEXT$axis_title),
@@ -457,16 +457,21 @@ separator_values <- function(dat, rows_per_n) {
 }
 
 mean_fill_scale <- function(limit = 1) {
-  anchors <- c(0, 0.025, 0.05, 0.075, 0.10, 0.20, 0.50, 1.00)
-  anchor_cols <- c(
-    "#084594", "#67a9cf", "#1a9850", "#66bd63",
-    "#fee08b", "#fdae61", "#d73027", "#9e1b1b"
-  )
+  if (limit <= 0.075) {
+    anchors <- c(0.025, 0.05, 0.075)
+    anchor_cols <- c("#67a9cf", "#1a9850", "#66bd63")
+  } else {
+    anchors <- c(0, 0.025, 0.05, 0.075, 0.10, 0.20, 0.50, 1.00)
+    anchor_cols <- c(
+      "#084594", "#67a9cf", "#1a9850", "#66bd63",
+      "#fee08b", "#fdae61", "#d73027", "#9e1b1b"
+    )
+  }
   keep <- anchors <= limit
   ggplot2$scale_fill_gradientn(
     colours = anchor_cols[keep],
-    values = scales$rescale(anchors[keep], from = c(0, limit)),
-    limits = c(0, limit),
+    values = scales$rescale(anchors[keep], from = range(anchors[keep])),
+    limits = range(anchors[keep]),
     oob = scales$squish,
     labels = scales$percent,
     na.value = "white",
@@ -481,7 +486,7 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
     design == design_name
   )
   one$strategy <- as.character(one$strategy)
-  mean_levels <- sort(unique(one$mean_n_per_group), decreasing = TRUE)
+  mean_levels <- sort(unique(one$mean_n_per_group), decreasing = FALSE)
   n_pattern <- if (startsWith(design_name, "balanced")) {
     "n[i] == %s"
   } else {
@@ -604,18 +609,18 @@ make_equal_plot <- function() {
     strategies,
     "identical distributions and identical means; empirical Type I error (%)",
     show_legend = TRUE,
-    fill_limit = 0.20
+    fill_limit = 0.075
   )
   unbalanced_plot <- make_rejection_plot(
     "unbalanced n, equal SD",
     strategies,
     "identical distributions and identical means; empirical Type I error (%)",
     show_legend = FALSE,
-    fill_limit = 0.20
+    fill_limit = 0.075
   )
   plot_list[[3]] <- panel_header(
     "B",
-    "balanced; n<sub>1</sub> = ... = n<sub>4</sub> = n; SD<sub>1</sub> = ... = SD<sub>4</sub> = 1"
+    "balanced; n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub> = n; SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub> = 1"
   )
   height_list[3] <- 0.13
   plot_list[[4]] <- balanced_plot
@@ -624,7 +629,7 @@ make_equal_plot <- function() {
   height_list[5] <- 0.06
   plot_list[[6]] <- panel_header(
     "C",
-    "unbalanced; (n<sub>1</sub>, ..., n<sub>4</sub>) = &lceil;n&#772;(0.5, 0.8, 1.2, 1.5)&rceil;; SD<sub>1</sub> = ... = SD<sub>4</sub> = 1"
+    "unbalanced; n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub> = n&#772;(0.5, 0.8, 1.2, 1.5); SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub> = 1"
   )
   height_list[6] <- 0.13
   plot_list[[7]] <- unbalanced_plot
@@ -676,7 +681,7 @@ make_unequal_plot <- function() {
   height_list <- numeric()
   plot_list[[1]] <- panel_header(
     "A",
-    "identical means; (SD<sub>1</sub>, ..., SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
+    "identical means; SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub> = (1.0, 1.3, 1.7, 2.2)"
   )
   height_list[1] <- 0.10
   plot_list[[2]] <- make_pdf_plot(
@@ -689,7 +694,7 @@ make_unequal_plot <- function() {
   height_list[2] <- 1.15
   plot_list[[3]] <- panel_header(
     "B",
-    "balanced; n<sub>1</sub> = ... = n<sub>4</sub> = n; (SD<sub>1</sub>, ..., SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
+    "balanced; n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub> = n; SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub> = (1.0, 1.3, 1.7, 2.2)"
   )
   height_list[3] <- 0.13
   plot_list[[4]] <- make_rejection_plot(
@@ -702,7 +707,7 @@ make_unequal_plot <- function() {
   height_list[4] <- 0.90
   plot_list[[5]] <- panel_header(
     "C",
-    "unbalanced; (n<sub>1</sub>, ..., n<sub>4</sub>) = &lceil;n&#772;(0.5, 0.8, 1.2, 1.5)&rceil;; (SD<sub>1</sub>, ..., SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
+    "unbalanced; n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub> = n&#772;(0.5, 0.8, 1.2, 1.5); SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub> = (1.0, 1.3, 1.7, 2.2)"
   )
   height_list[5] <- 0.13
   plot_list[[6]] <- make_rejection_plot(
@@ -715,7 +720,7 @@ make_unequal_plot <- function() {
   height_list[6] <- 0.90
   plot_list[[7]] <- panel_header(
     "D",
-    "unbalanced; (n<sub>1</sub>, ..., n<sub>4</sub>) = &lceil;n&#772;(0.5, 0.8, 1.2, 1.5)&rceil;; (SD<sub>1</sub>, ..., SD<sub>4</sub>) = (2.2, 1.7, 1.3, 1.0)"
+    "unbalanced; n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub> = n&#772;(0.5, 0.8, 1.2, 1.5); SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub> = (2.2, 1.7, 1.3, 1.0)"
   )
   height_list[7] <- 0.13
   plot_list[[8]] <- make_rejection_plot(
