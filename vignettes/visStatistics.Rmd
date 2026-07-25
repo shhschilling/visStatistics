@@ -537,9 +537,8 @@ $(2,6.6)$; the first two are symmetric.
 Balanced designs use $\mathbf n=(n,n,n,n)$ with $n \in \{10,20,50,100\}$; unbalanced
 designs use $\mathbf n=\bar n\cdot(0.5,0.8,1.2,1.5)$, giving group sizes
 $(5,8,12,15)$, $(10,16,24,30)$, $(25,40,60,75)$ and $(50,80,120,150)$ for
-$\bar n \in \{10,20,50,100\}$. Equal-SD designs use $\mathbf s=(1.0,1.0,1.0,1.0)$;
-unequal-SD designs use $\mathbf s=(1.0,1.3,1.7,2.2)$, and in the unbalanced case this
-vector is either kept, so that larger groups carry larger SDs, or reversed to
+$\bar n \in \{10,20,50,100\}$. Equal standard deviation (SD)  designs use $\mathbf s=(1.0,1.0,1.0,1.0)$;
+unequal-SD designs use eihter $\mathbf s=(1.0,1.3,1.7,2.2)$ such  that larger groups carry larger SDs, or reversed to
 $\mathbf s=(2.2,1.7,1.3,1.0)$, so that larger groups carry smaller SDs.
 The simulation scripts and the saved Monte Carlo output are shipped with the package;
 `system.file("simulations", package = "visStatistics")` returns their directory, whose
@@ -547,15 +546,16 @@ The simulation scripts and the saved Monte Carlo output are shipped with the pac
 to re-run the simulations themselves.
 
 An empirical rate is reported as non-robust when it leaves Bradley's liberal bounds of
-$[2.5\%, 7.5\%]$ at $\alpha = 5\%$ [@Bradley:1978]. This is a reporting convention
-without principled status — Bradley's own argument is that no fixed interval defines
-robustness — and it is used here only so that the same threshold is applied in every
-figure. In Figure \@ref(fig:route1-identical-typeI) the colour scale is capped at
-7.5%, so any exceedance would be visible at a glance; none occurs.
+$[2.5\%, 7.5\%]$ at $\alpha = 5\%$ [@Bradley:1978]. 
+<!-- This is a reporting convention -->
+<!-- without principled status — Bradley's own argument is that no fixed interval defines -->
+<!-- robustness — and it is used here only so that the same threshold is applied in every figure.  -->
+<!-- In Figure \@ref(fig:route1-identical-typeI) the colour scale is capped at -->
+<!-- 7.5%, so any exceedance would be visible at a glance; none occurs. -->
 
 Three rules apply when reading the heatmaps.
 
-1. Rows `F`, `W` and `L` always report the rejection rate of a mean-based test, in the simulations of  Figure \@ref(fig:route1-identical-typeI))  and Figure \@ref(fig:route1-unequal-typeI) the population means are in set ups equal they are Type I error rates in every cell.
+1. Rows `F`, `W` and `L` always report the rejection rate of a mean-based test.  In the simulations of Figure \@ref(fig:route1-identical-typeI))  and Figure \@ref(fig:route1-unequal-typeI)  population means are always equal and thus `F`, `W` and `L` report  Type I error rates in every cell.
 2. Rows `KW` (shown only in Figure \@ref(fig:route1-identical-typeI)), `SW` and `SW+L`
    report the rate of whichever test was finally selected, so their interpretation
    differs between the two figures. In Figure \@ref(fig:route1-identical-typeI) the
