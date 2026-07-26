@@ -1,5 +1,12 @@
 # (APPENDIX) Appendix {.unnumbered} 
 
+```{=latex}
+% The (APPENDIX) marker is consumed by bookdown and emitted as \appendix,
+% which switches section numbering to A, B, C but leaves no visible heading.
+% Put an "Appendix" line back into the PDF table of contents.
+\addcontentsline{toc}{section}{Appendix}
+```
+
 ## Notation {.unnumbered}
 In the following , \(k\) denotes the number of groups,
 \(n_i\) the sample size of group \(i\), and
@@ -43,7 +50,7 @@ $$\mathbf{a}
 =\frac{V^{-1}\mathbf{m}}
 {\sqrt{\left(\mathbf{m}^\top V^{-1}V^{-1}\mathbf{m}\right)}}.$$ Royston
 [@Royston:1982; @Royston:1995] describes the algorithmic approximation used for
-these weights and for the $p$-value calculation. The Shapiro--Wilk statistic
+these weights and for the $p$\ value calculation. The Shapiro--Wilk statistic
 [@Shapiro:1965] is
 
 \begin{equation}
@@ -199,7 +206,7 @@ F
 =t^2.
 $$
 Therefore, in the two-sample case, Student's $t$-test with
-`var.equal = TRUE` and Fisher's one-way ANOVA return identical $p$-values.
+`var.equal = TRUE` and Fisher's one-way ANOVA return identical $p$\ values.
 
 Under $H_0: \mu_1 = \cdots = \mu_k$, the statistic follows $F(k-1, N-k)$.
 
@@ -207,7 +214,7 @@ Under $H_0: \mu_1 = \cdots = \mu_k$, the statistic follows $F(k-1, N-k)$.
 
 `visstat()` follows `aov()` with Tukey's Honest Significant Differences procedure `TukeyHSD()` [@Tukey:1949]. The procedure is designed for pairwise mean comparisons following ANOVA.
 
-`TukeyHSD()` returns adjusted p-values and confidence intervals for all pairwise differences between factor-level means. For two groups $i$ and $j$, let $d_{ij} = \bar{x}_i - \bar{x}_j$. The studentised range statistic is
+`TukeyHSD()` returns adjusted $p$\ values and confidence intervals for all pairwise differences between factor-level means. For two groups $i$ and $j$, let $d_{ij} = \bar{x}_i - \bar{x}_j$. The studentised range statistic is
 
 \begin{equation}
 q_{ij} =
@@ -217,7 +224,7 @@ q_{ij} =
 (\#eq:tukey-hsd-q)
 \end{equation}
 
-where $MS_\text{within}$ is defined in Eq. \@ref(eq:fisher-f). Adjusted p-values are computed from the studentised range distribution with $k$ groups and $N-k$ residual degrees of freedom.
+where $MS_\text{within}$ is defined in Eq. \@ref(eq:fisher-f). Adjusted $p$\ values are computed from the studentised range distribution with $k$ groups and $N-k$ residual degrees of freedom.
 For a pair \(i,j\), \(q_{ij}\) is \(\sqrt{2}\) times the absolute value of the
 Student \(t\)-statistic from Eq. \@ref(eq:student-t), with \(s_p^2\) replaced
 by the ANOVA residual mean square \(MS_\text{within}\).
@@ -278,7 +285,7 @@ When variances are equal, Welch's methods lose only negligible power relative to
 
 ##### Welch's method in the case of equal variances and balanced designs {.unnumbered}
 
-###### Two- group comparison  {.unnumbered}
+###### Two-group comparison {.unnumbered}
 
 If variances are equal and the groups are balanced (the same number in each group), the Welch method's reduce in the case of two -group comparison algebraically to Student's t-test (equivalent to Fisher - Anova for two groups):
 
@@ -303,7 +310,7 @@ of freedom in Eq. \@ref(eq:welch-satterthwaite-df) reduce to
 (\#eq:welch-student-df)
 \end{equation} Welch's t-test then coincides with Student's t-test on $2n-2$ degrees of freedom.
 
-###### More then two groups comparisons {.unnumbered}
+###### More than two group comparisons {.unnumbered}
 
 This exact equivalence does not extend beyond two groups: even under equal variances and equal group sizes, the Welch statistic $F_W$ in Eq. \@ref(eq:welch-f) is not algebraically identical to the classical $F$ in Eq. \@ref(eq:fisher-f) for $k>2$ ; it nevertheless converges to it as $n$ increases: Under equal variances and equal group sizes, $s_1^2 = \cdots = s_k^2 = s^2$ and $n_1 = \cdots = n_k = n$. Hence $w_i = n/s^2$, $w = kn/s^2$, $w_i/w = 1/k$, and $\bar{x}_w = \bar{x}$. The numerator of Eq. \@ref(eq:welch-f) then reduces to \begin{equation}
 \frac{\sum_{i=1}^{k} w_i(\bar{x}_i-\bar{x}_w)^2}{k-1}
@@ -375,9 +382,9 @@ Equivalently, the same statistic can be written as a count over the $n_1n_2$ pos
 =
 \frac{C_{>}+0.5C_{=}}{n_1n_2}.$$ Under the null hypothesis that the two groups have the same continuous distribution, neither group is more likely to produce the larger value. Thus $W/(n_1n_2)$ is centred at $1/2$; there are no ties in a continuous distribution, so the tie term is zero. If the two group distributions are the same distribution up to an additive constant, the test can be read as a location test and, because the shift moves all quantiles by the same amount, also as a median test [@Fay:2010].
 
-Because `wilcox.test(x, y)` uses the first supplied group for $W_1$, swapping the two groups uses $W_2$ and reports $W_2-n_2(n_2+1)/2=n_1n_2-W$. For each cross-group pair, the two directional contributions always sum to $1$: group 1 larger gives $1+0$, group 2 larger gives $0+1$, and a tie gives $0.5+0.5$. The two-sided $p$-value is unchanged, but the reported statistic and one-sided direction change.
+Because `wilcox.test(x, y)` uses the first supplied group for $W_1$, swapping the two groups uses $W_2$ and reports $W_2-n_2(n_2+1)/2=n_1n_2-W$. For each cross-group pair, the two directional contributions always sum to $1$: group 1 larger gives $1+0$, group 2 larger gives $0+1$, and a tie gives $0.5+0.5$. The two-sided $p$\ value is unchanged, but the reported statistic and one-sided direction change.
 
-The $p$-value is the tail probability of the observed $W$ under the null distribution of the rank-sum statistic. With R's default settings, `wilcox.test()` obtains this null distribution exactly when both groups have fewer than 50 finite observations, and otherwise uses a normal approximation with continuity correction.
+The $p$\ value is the tail probability of the observed $W$ under the null distribution of the rank-sum statistic. With R's default settings, `wilcox.test()` obtains this null distribution exactly when both groups have fewer than 50 finite observations, and otherwise uses a normal approximation with continuity correction.
 
 ### Kruskal--Wallis test `kruskal.test()`{#sec:kw}
 
@@ -410,11 +417,11 @@ have been assigned average ranks.
 
 If the group distributions are the same distribution up to group-specific additive constants, the test can be read as a location test and, because such shifts move all quantiles by the same amount, also as a median test [@Hollander:2014].
 
-For $k=2$, Kruskal--Wallis and Wilcoxon are based on the same pooled ranks. The two group mean ranks are $\bar R_1=W_1/n_1$ and $\bar R_2=W_2/n_2$, and $W=U_1$ is the reported Wilcoxon statistic from Eq. \@ref(eq:wilcoxon-w). In the large-sample approximation, the two-group Kruskal--Wallis statistic $H$ corresponds to a squared, centred, and rescaled form of the reported Wilcoxon statistic $W$. Therefore the two tests give identical two-sided $p$-values only when Wilcoxon is forced to use the uncorrected large-sample approximation, `wilcox.test(..., exact = FALSE, correct = FALSE)`. In `visstat()`, `wilcox.test()` is used with R's default settings, while `kruskal.test()` uses the large-sample $\chi^2$ approximation to $H$. Therefore the two routes should not be expected to return identical two-group $p$-values under the defaults.
+For $k=2$, Kruskal--Wallis and Wilcoxon are based on the same pooled ranks. The two group mean ranks are $\bar R_1=W_1/n_1$ and $\bar R_2=W_2/n_2$, and $W=U_1$ is the reported Wilcoxon statistic from Eq. \@ref(eq:wilcoxon-w). In the large-sample approximation, the two-group Kruskal--Wallis statistic $H$ corresponds to a squared, centred, and rescaled form of the reported Wilcoxon statistic $W$. Therefore the two tests give identical two-sided $p$\ values only when Wilcoxon is forced to use the uncorrected large-sample approximation, `wilcox.test(..., exact = FALSE, correct = FALSE)`. In `visstat()`, `wilcox.test()` is used with R's default settings, while `kruskal.test()` uses the large-sample $\chi^2$ approximation to $H$. Therefore the two routes should not be expected to return identical two-group $p$\ values under the defaults.
 
 #### Post-hoc comparison `pairwise.wilcox.test()`{#sec:pairwise-wilcox}
 
-`pairwise.wilcox.test()` compares each pair of factor levels via the Wilcoxon rank-sum test on ranks rather than means. The resulting $p$-values are adjusted for multiplicity using Holm's step-down method [@Holm:1979].
+`pairwise.wilcox.test()` compares each pair of factor levels via the Wilcoxon rank-sum test on ranks rather than means. The resulting $p$\ values are adjusted for multiplicity using Holm's step-down method [@Holm:1979].
 
 # Rank correlations {#sec:rank-correlations}
 
@@ -432,7 +439,7 @@ Kendall's $\tau_b$ tests the null hypothesis of no monotone association between 
 
 where $n_0 = n(n-1)/2$ is the total number of observation pairs, $n_1 = \sum_i t_i(t_i-1)/2$ is the number of pairs tied in the response, and $n_2 = \sum_j u_j(u_j-1)/2$ is the number of pairs tied in the predictor. The denominator correction makes $\tau_b$ attain $\pm 1$ even with ties, which Spearman's $\rho$ does not [@Kendall:1945]. With few ordered levels (e.g., five-point Likert items), ties are unavoidable; this is the principal reason to prefer $\tau_b$ over Spearman's $\rho$ in this setting [@Agresti:2010].
 
-`visstat()` calls `cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)` and reports $\tau_b$, the asymptotic test statistic $z = \tau_b / \operatorname{SE}(\tau_b)$, and the two-sided $p$-value.
+`visstat()` calls `cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)` and reports $\tau_b$, the asymptotic test statistic $z = \tau_b / \operatorname{SE}(\tau_b)$, and the two-sided $p$\ value.
 
 ## Spearman rank correlation `cor.test(..., method="spearman")` {#sec:rho}
 
@@ -453,7 +460,7 @@ $$r(u,v)
 
 Here $u_i = \operatorname{rank}(x_i)$ and $v_i = \operatorname{rank}(y_i)$ are the ranks of the $n$ paired observations, and $\bar{u}$ and $\bar{v}$ are their sample means.
 
-For inference, `cor.test(..., method = "spearman")` computes an exact $p$-value for small samples without ties by evaluating all $n!$ rank permutations. For larger samples or when ties are present, it uses an approximation to the null distribution of the rank association measure or its asymptotic transformation. No distributional assumptions on the original data are required. <!-- 1. Beweis 
+For inference, `cor.test(..., method = "spearman")` computes an exact $p$\ value for small samples without ties by evaluating all $n!$ rank permutations. For larger samples or when ties are present, it uses an approximation to the null distribution of the rank association measure or its asymptotic transformation. No distributional assumptions on the original data are required. <!-- 1. Beweis 
 The rank-biserial coefficient reported for the Wilcoxon rank-sum test is
 the corresponding correlation
 coefficient for a ranking and a dichotomy. Cureton defines it from
@@ -466,7 +473,7 @@ correlation, the same coefficient is also Spearman-type: once one
 variable is a dichotomy, all cross-category rank differences in that
 variable are equal and the weighted agreement-minus-inversion expression
 reduces to the same ratio [@Cureton:1956].
---> A separate Pearson-correlation branch is not implemented. In simple linear regression with an intercept, the two-sided test of zero slope and the two-sided test of zero Pearson correlation return the same $p$-value. Pearson correlation would therefore not add a separate inferential route to the default regression branch.
+--> A separate Pearson-correlation branch is not implemented. In simple linear regression with an intercept, the two-sided test of zero slope and the two-sided test of zero Pearson correlation return the same $p$\ value. Pearson correlation would therefore not add a separate inferential route to the default regression branch.
 
 ```{=html}
 <!--
@@ -557,7 +564,7 @@ $\operatorname{E}_{\hat\theta}(A \mid a+b,c+d,a+c,b+d)=a$.
 \]
 (\#eq:fisher-hypergeom)
 
-where $N = a+b+c+d$. The two-sided $p$-value is obtained by summing the
+where $N = a+b+c+d$. The two-sided $p$\ value is obtained by summing the
 probabilities of all tables with the same margins whose probabilities under
 the null are less than or equal to the probability of the observed table.
 For general $R \times C$ tables, `fisher.test()` generalises this calculation
