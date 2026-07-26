@@ -198,8 +198,10 @@ warn_adverse_variance_pairing <- function(pairing, route) {
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total
 #'   count data of a category to be displayed	in mosaic count plots.
 #' @param group_test Optional character. For Route 1 only, \code{NULL} keeps the
-#'   default assumption gates, \code{"welch"} forces Welch-type mean tests, and
-#'   \code{"rank"} forces Wilcoxon/Kruskal-Wallis rank tests.
+#'   default assumption gates, \code{"welch"} forces Welch-type mean tests, but
+#'   still displays the assumption-diagnostic plot and warns when residual
+#'   normality is rejected, whereas \code{"rank"} forces Wilcoxon/Kruskal-Wallis
+#'   rank tests without assessing the assumptions.
 #' @param graphicsoutput saves plot(s) of type "png", "jpeg", "pdf", "svg", "ps"
 #'   or "tiff" in directory specified in \code{plotDirectory}. If
 #'   graphicsoutput=NULL, no plots are saved. Any other value is not supported by

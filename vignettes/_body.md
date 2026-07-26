@@ -333,6 +333,8 @@ For heteroscedastic data ($p_\text{L} \le \alpha$), Welch's `t.test()` (Eq. \@re
 
 Independent of assumption testing, the user can enforce group mean comparisons by the option `group_test = welch` which defaults to Welch variants of the t-test (`t.test()`) and ANOVA (`oneway.test()`), otherwise the option `group_test = rank`switches to the non-parametric alternatives `wilcox.test()` and `kruskal.test()`.
 
+The two overrides differ in what they display: `group_test = welch` still fits the linear model and shows the assumption-diagnostic panel, with a warning when the Shapiro--Wilk test rejects residual normality, whereas `group_test = rank` enters the rank branch directly and does not generate the assumption plot with its corresponding test statistics.
+
 The rationale for the automated gating, and the mean- and rank-based alternatives and the limitations of each approach are discussed in Section \@ref(sec:simulation-results) and Section \@ref(sec:discussion).
 
 

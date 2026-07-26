@@ -58,8 +58,9 @@ total count data of a category to be displayed in mosaic count plots.}
 
 \item{group_test}{Optional character. For a numeric response and factor predictor,
 \code{NULL} keeps the default assumption gates, \code{"welch"} forces
-Welch-type mean tests, and \code{"rank"} forces Wilcoxon/Kruskal-Wallis
-rank tests.}
+Welch-type mean tests, but still displays the assumption-diagnostic plot
+and warns when residual normality is rejected, whereas \code{"rank"} forces
+Wilcoxon/Kruskal-Wallis rank tests without assessing the assumptions.}
 
 \item{graphicsoutput}{Saves plot(s) of type \code{"png"}, \code{"jpeg"},
 \code{"pdf"}, \code{"svg"}, \code{"ps"} or \code{"tiff"} in directory

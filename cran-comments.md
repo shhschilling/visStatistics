@@ -78,6 +78,9 @@ bypass obtain mean-based tests with `group_test = "welch"`.
 
 ## Check status
 
-- To be filled after the final `R CMD check` run.
+
+- NOTE: Possibly misspelled words in DESCRIPTION: Kruskal, Spearman,
+  Wilcoxon. These are the surnames of the statisticians the tests are
+  named after, spelled as in the cited literature.
 
 Thank you for reviewing this release.
