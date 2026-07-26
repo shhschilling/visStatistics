@@ -1,7 +1,7 @@
 
 ```{r setup, include=FALSE}
 library(visStatistics)
-knitr::opts_knit$set(root.dir = normalizePath(dirname(knitr::current_input(dir = TRUE))))
+knitr::opts_knit$set(root.dir = normalizePath("."))
 knitr::opts_chunk$set(
  fig.width = 7,
  fig.height = 4.5,
@@ -1245,8 +1245,3 @@ The design of the study is thus a combination of  "assumption checking" [@Shatz:
 
 The value of this approach lies not in the removal of the user's statistical judgment, but rather in the exposure of the assumptions, effect sizes, and plots that should inform that judgment.
 
- 
-```{r appendix-child, child = file.path(dirname(knitr::current_input(dir = TRUE)), "_appendix.md")}
-```
-
-# References {.unnumbered}

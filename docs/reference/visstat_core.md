@@ -67,8 +67,10 @@ visstat_core(
 - group_test:
 
   Optional character. For Route 1 only, `NULL` keeps the default
-  assumption gates, `"welch"` forces Welch-type mean tests, and `"rank"`
-  forces Wilcoxon/Kruskal-Wallis rank tests.
+  assumption gates, `"welch"` forces Welch-type mean tests, but still
+  displays the assumption-diagnostic plot and warns when residual
+  normality is rejected, whereas `"rank"` forces Wilcoxon/Kruskal-Wallis
+  rank tests without assessing the assumptions.
 
 - graphicsoutput:
 
@@ -179,6 +181,14 @@ Implemented post hoc tests:
 
 - [`pairwise.wilcox.test()`](https://rdrr.io/r/stats/pairwise.wilcox.test.html)
   for [`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html)
+
+The Q-Q envelopes in the assumption diagnostics are simulated (see
+[`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md)).
+The number of simulated refits is taken from the option
+`visStatistics.qq_nsim` and defaults to 5000. As `visstat_core()` has no
+corresponding argument, this option is the only way to change it here;
+lower it to trade precision for speed, for instance
+`options(visStatistics.qq_nsim = 1000L)`.
 
 ## See also
 

@@ -15,7 +15,7 @@ title:
   plain:     "visStatistics: Automated test selection, visualised"
   short:     "\\pkg{visStatistics}: Automated test selection"
 abstract: >
-  `r paste(readLines(file.path(dirname(knitr::current_input(dir = TRUE)), "_abstract.md")), collapse = " ")`
+  `r paste(readLines("_abstract.md"), collapse = " ")`
 keywords:
   formatted: [automated test selection, visualisation, assumption diagnostics, general linear model, residual diagnostics,  "\\proglang{R}"]
   plain:     [automated test selection,visualisation,  assumption diagnostics, general linear model, residual diagnostics,  R]
@@ -32,5 +32,10 @@ output:
     citation_package: natbib
 ---
 
-```{r body, child = file.path(dirname(knitr::current_input(dir = TRUE)), "_body.md")}
+```{r body, child = "_body.md"}
 ```
+
+```{r appendix-child, child = "_appendix.md"}
+```
+
+# References {.unnumbered}

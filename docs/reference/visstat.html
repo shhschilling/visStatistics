@@ -51,7 +51,7 @@ Pearson's \(\chi^2\) test or Fisher's exact test."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">visStatistics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -177,8 +177,9 @@ total count data of a category to be displayed in mosaic count plots.</p></dd>
 <dt id="arg-group-test">group_test<a class="anchor" aria-label="anchor" href="#arg-group-test"></a></dt>
 <dd><p>Optional character. For a numeric response and factor predictor,
 <code>NULL</code> keeps the default assumption gates, <code>"welch"</code> forces
-Welch-type mean tests, and <code>"rank"</code> forces Wilcoxon/Kruskal-Wallis
-rank tests.</p></dd>
+Welch-type mean tests, but still displays the assumption-diagnostic plot
+and warns when residual normality is rejected, whereas <code>"rank"</code> forces
+Wilcoxon/Kruskal-Wallis rank tests without assessing the assumptions.</p></dd>
 
 
 <dt id="arg-graphicsoutput">graphicsoutput<a class="anchor" aria-label="anchor" href="#arg-graphicsoutput"></a></dt>
@@ -247,6 +248,14 @@ is used.</p>
 <p>This wrapper standardises the input and calls <code><a href="visstat_core.html">visstat_core</a></code>,
 which selects and executes the appropriate test with visual output and
 assumption diagnostics.</p>
+<p>The Q-Q envelopes in the assumption diagnostics are simulated (see
+<code><a href="qq_lm_envelope.html">qq_lm_envelope</a></code>). The number of simulated refits is taken from
+the option <code>visStatistics.qq_nsim</code> and defaults to 5000. As
+<code>visstat()</code> has no corresponding argument, this option is the only way
+to change it here; lower it to trade precision for speed, for instance
+<code>options(visStatistics.qq_nsim = 1000L)</code>. Use
+<code><a href="vis_lm_assumptions.html">vis_lm_assumptions</a></code> or <code><a href="qq_lm_envelope.html">qq_lm_envelope</a></code> directly if
+you prefer to set the number of refits per call.</p>
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>

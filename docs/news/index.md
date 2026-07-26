@@ -1,27 +1,91 @@
 # Changelog
 
-## visStatistics 0.2.1
+## visStatistics 0.3.0
+
+### Major changes in Route 1 (numeric response, categorical predictor)
+
+- **Two fixed defaults alongside the automated routing.** New argument
+  `group_test` in
+  [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md).
+  The default `group_test = NULL` keeps the assumption-driven routing.
+  `group_test = "welch"` keeps Route 1 on the mean scale and forces
+  Welch-type tests, while `group_test = "rank"` forces the rank-based
+  tests. Both bypass the preliminary assumption tests.
+
+- **The large-sample gate was dropped.** In version 0.2.0, normality
+  testing was skipped and parametric tests applied directly whenever
+  every group held more than 50 observations. This bypass is disabled:
+  the Shapiro–Wilk test on the studentised residuals now routes the
+  selection at all group sizes. Selected tests can therefore differ from
+  0.2.0 for designs in which every group exceeds 50 observations.
+
+The two changes are one shift rather than two: the implicit, sample-size
+based override of the assumption tests was replaced by explicit ones in
+both directions. The old gate could only push the selection towards the
+mean-based tests, and only once every group passed 50 observations;
+`group_test` now fixes either branch, `"welch"` on the mean scale or
+`"rank"` on the rank scale, at any group size. Users who relied on the
+bypass obtain mean-based tests with `group_test = "welch"`.
+
+### Changes to the exported API
+
+- Newly exported:
+  [`effect_size()`](https://shhschilling.github.io/visStatistics/reference/effect_size.md)
+  and
+  [`qq_lm_envelope()`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md).
+- No longer exported: `vis_anova()`, `vis_numeric()`, `gh_letters()`,
+  `vis_anova_assumptions()` and `vis_group_normality()`. Internal
+  routing and plotting helpers are no longer exported or documented as
+  standalone functions.
+- No longer shipped: `vis_group_normality()` and
+  `pooled_normality_test()`.
+- `vis_anova_assumptions()` remains as an internal deprecated wrapper
+  for
+  [`vis_lm_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md).
 
 ### Effect sizes
 
 - New, exported
   [`effect_size()`](https://shhschilling.github.io/visStatistics/reference/effect_size.md)
-  function to generate effect-size output
+  function to generate effect-size output.
 - Examples, tests, and vignette documentation include now the
   effect-size output.
 
-### Reduced the number of exported standalone functions
+### Diagnostics
 
-- Reduced the exported standalone functions. The following routing and
-  plotting helpers are no longer exported or documented as standalone
-  functions:
-- `vis_anova()`, `vis_numeric()`, and `gh_letters()` are now internal
-  helpers. Legacy normality helpers `vis_group_normality()` and
-  `pooled_normality_test()` were archived and are no longer shipped.
-- `vis_anova_assumptions()` remains as an internal deprecated wrapper
-  for
-  [`vis_lm_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md),
-  but is no longer exported or documented.
+- New, exported
+  [`qq_lm_envelope()`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md).
+  The Q–Q bands for the internally studentised residuals of an
+  unweighted [`lm()`](https://rdrr.io/r/stats/lm.html) or
+  [`aov()`](https://rdrr.io/r/stats/aov.html) fit are now obtained by
+  Monte Carlo simulation: responses are repeatedly drawn from the fitted
+  normal-error model and the model is refitted. Both a point-wise and a
+  simultaneous band are returned at the requested `conf.level`, the
+  simultaneous band following the tolerance-band construction of
+  Schuetzenmeister et al. (2012), together with its achieved coverage.
+
+- The number of simulated refits defaults to 5000.
+  [`qq_lm_envelope()`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md)
+  and
+  [`vis_lm_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md)
+  take it as an argument (`nsim` and `qq_nsim`);
+  [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
+  has no such argument, so there it is set session-wide through the
+  `visStatistics.qq_nsim` option, for example
+  `options(visStatistics.qq_nsim = 1000L)`.
+
+- The diagnostic Q–Q panel of
+  [`vis_lm_assumptions()`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md)
+  displays these simulated bands.
+
+### Documentation
+
+- The vignette adds Monte Carlo simulations (B = 50,000) quantifying the
+  Type I error and power of the default gating against fixed Welch and
+  fixed Kruskal–Wallis defaults.
+
+- The documented routing logic for numeric response and categorical
+  predictor input has been updated.
 
 ## visStatistics 0.2.0
 

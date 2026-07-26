@@ -99,7 +99,9 @@ visstat(
 
   Optional character. For a numeric response and factor predictor,
   `NULL` keeps the default assumption gates, `"welch"` forces Welch-type
-  mean tests, and `"rank"` forces Wilcoxon/Kruskal-Wallis rank tests.
+  mean tests, but still displays the assumption-diagnostic plot and
+  warns when residual normality is rejected, whereas `"rank"` forces
+  Wilcoxon/Kruskal-Wallis rank tests without assessing the assumptions.
 
 - graphicsoutput:
 
@@ -180,6 +182,18 @@ This wrapper standardises the input and calls
 [`visstat_core`](https://shhschilling.github.io/visStatistics/reference/visstat_core.md),
 which selects and executes the appropriate test with visual output and
 assumption diagnostics.
+
+The Q-Q envelopes in the assumption diagnostics are simulated (see
+[`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md)).
+The number of simulated refits is taken from the option
+`visStatistics.qq_nsim` and defaults to 5000. As `visstat()` has no
+corresponding argument, this option is the only way to change it here;
+lower it to trade precision for speed, for instance
+`options(visStatistics.qq_nsim = 1000L)`. Use
+[`vis_lm_assumptions`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md)
+or
+[`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md)
+directly if you prefer to set the number of refits per call.
 
 ## Note
 
