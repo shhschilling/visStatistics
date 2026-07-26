@@ -5,6 +5,13 @@
 
 FLEISHMAN_FONT_FAMILY <- "serif"
 
+## Raster resolution for the saved PNGs. The figures are 12-20 inches wide, so
+## 360 dpi produced 1.3-2.8 MB files and a "significant size reductions"
+## WARNING from R CMD check on the vignette PDF. 200 dpi keeps a comfortable
+## margin above the 144 dpi floor the JSS style guide asks for, while cutting
+## the raster area to roughly a third.
+FLEISHMAN_DPI <- 200
+
 FLEISHMAN_TEXT <- list(
   main_title = 20,
   panel_title = 18,

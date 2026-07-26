@@ -1,14 +1,12 @@
 # (APPENDIX) Appendix {.unnumbered} 
 
 ```{=latex}
-% The (APPENDIX) marker is consumed by bookdown and emitted as \appendix,
-% which switches section numbering to A, B, C but leaves no visible heading.
-% Put an "Appendix" line back into the PDF table of contents.
+\section*{Appendix}
 \addcontentsline{toc}{section}{Appendix}
 ```
 
 ## Notation {.unnumbered}
-In the following , \(k\) denotes the number of groups,
+In the following, \(k\) denotes the number of groups,
 \(n_i\) the sample size of group \(i\), and
 \(N=\sum_{i=1}^{k}n_i\) the total sample size. Observations are written as
 \(x_{ij}\), with group mean \(\bar x_i\), grand mean \(\bar x\), and group
@@ -287,7 +285,7 @@ When variances are equal, Welch's methods lose only negligible power relative to
 
 ###### Two-group comparison {.unnumbered}
 
-If variances are equal and the groups are balanced (the same number in each group), the Welch method's reduce in the case of two -group comparison algebraically to Student's t-test (equivalent to Fisher - Anova for two groups):
+If variances are equal and the groups are balanced (the same number in each group), the Welch methods reduce in the case of a two-group comparison algebraically to Student's t-test (equivalent to Fisher - Anova for two groups):
 
 When $s_1^2 = s_2^2 = s^2$ and $n_1 = n_2 = n$, the pooled variance entering
 Eq. \@ref(eq:student-t) becomes
@@ -312,7 +310,7 @@ of freedom in Eq. \@ref(eq:welch-satterthwaite-df) reduce to
 
 ###### More than two group comparisons {.unnumbered}
 
-This exact equivalence does not extend beyond two groups: even under equal variances and equal group sizes, the Welch statistic $F_W$ in Eq. \@ref(eq:welch-f) is not algebraically identical to the classical $F$ in Eq. \@ref(eq:fisher-f) for $k>2$ ; it nevertheless converges to it as $n$ increases: Under equal variances and equal group sizes, $s_1^2 = \cdots = s_k^2 = s^2$ and $n_1 = \cdots = n_k = n$. Hence $w_i = n/s^2$, $w = kn/s^2$, $w_i/w = 1/k$, and $\bar{x}_w = \bar{x}$. The numerator of Eq. \@ref(eq:welch-f) then reduces to \begin{equation}
+This exact equivalence does not extend beyond two groups: even under equal variances and equal group sizes, the Welch statistic $F_W$ in Eq. \@ref(eq:welch-f) is not algebraically identical to the classical $F$ in Eq. \@ref(eq:fisher-f) for $k>2$; it nevertheless converges to it as $n$ increases: Under equal variances and equal group sizes, $s_1^2 = \cdots = s_k^2 = s^2$ and $n_1 = \cdots = n_k = n$. Hence, $w_i = n/s^2$, $w = kn/s^2$, $w_i/w = 1/k$, and $\bar{x}_w = \bar{x}$. The numerator of Eq. \@ref(eq:welch-f) then reduces to \begin{equation}
 \frac{\sum_{i=1}^{k} w_i(\bar{x}_i-\bar{x}_w)^2}{k-1}
 =
 \frac{1}{s^2}
@@ -380,7 +378,7 @@ W = U_1 = W_1 - \frac{n_1(n_1+1)}{2}
 
 Equivalently, the same statistic can be written as a count over the $n_1n_2$ possible cross-group pairs. Let $C_{>}$ be the number of pairs in which the group-1 observation is larger than the group-2 observation, and let $C_{=}$ be the number of tied pairs. Then $W=C_{>}+0.5C_{=}$, and dividing by $n_1n_2$ gives the empirical Mann--Whitney probability: $$\frac{W}{n_1n_2}
 =
-\frac{C_{>}+0.5C_{=}}{n_1n_2}.$$ Under the null hypothesis that the two groups have the same continuous distribution, neither group is more likely to produce the larger value. Thus $W/(n_1n_2)$ is centred at $1/2$; there are no ties in a continuous distribution, so the tie term is zero. If the two group distributions are the same distribution up to an additive constant, the test can be read as a location test and, because the shift moves all quantiles by the same amount, also as a median test [@Fay:2010].
+\frac{C_{>}+0.5C_{=}}{n_1n_2}.$$ Under the null hypothesis that the two groups have the same continuous distribution, neither group is more likely to produce the larger value. Thus, $W/(n_1n_2)$ is centred at $1/2$; there are no ties in a continuous distribution, so the tie term is zero. If the two group distributions are the same distribution up to an additive constant, the test can be read as a location test and, because the shift moves all quantiles by the same amount, also as a median test [@Fay:2010].
 
 Because `wilcox.test(x, y)` uses the first supplied group for $W_1$, swapping the two groups uses $W_2$ and reports $W_2-n_2(n_2+1)/2=n_1n_2-W$. For each cross-group pair, the two directional contributions always sum to $1$: group 1 larger gives $1+0$, group 2 larger gives $0+1$, and a tie gives $0.5+0.5$. The two-sided $p$\ value is unchanged, but the reported statistic and one-sided direction change.
 
@@ -417,7 +415,7 @@ have been assigned average ranks.
 
 If the group distributions are the same distribution up to group-specific additive constants, the test can be read as a location test and, because such shifts move all quantiles by the same amount, also as a median test [@Hollander:2014].
 
-For $k=2$, Kruskal--Wallis and Wilcoxon are based on the same pooled ranks. The two group mean ranks are $\bar R_1=W_1/n_1$ and $\bar R_2=W_2/n_2$, and $W=U_1$ is the reported Wilcoxon statistic from Eq. \@ref(eq:wilcoxon-w). In the large-sample approximation, the two-group Kruskal--Wallis statistic $H$ corresponds to a squared, centred, and rescaled form of the reported Wilcoxon statistic $W$. Therefore the two tests give identical two-sided $p$\ values only when Wilcoxon is forced to use the uncorrected large-sample approximation, `wilcox.test(..., exact = FALSE, correct = FALSE)`. In `visstat()`, `wilcox.test()` is used with R's default settings, while `kruskal.test()` uses the large-sample $\chi^2$ approximation to $H$. Therefore the two routes should not be expected to return identical two-group $p$\ values under the defaults.
+For $k=2$, Kruskal--Wallis and Wilcoxon are based on the same pooled ranks. The two group mean ranks are $\bar R_1=W_1/n_1$ and $\bar R_2=W_2/n_2$, and $W=U_1$ is the reported Wilcoxon statistic from Eq. \@ref(eq:wilcoxon-w). In the large-sample approximation, the two-group Kruskal--Wallis statistic $H$ corresponds to a squared, centred, and rescaled form of the reported Wilcoxon statistic $W$. Therefore, the two tests give identical two-sided $p$\ values only when Wilcoxon is forced to use the uncorrected large-sample approximation, `wilcox.test(..., exact = FALSE, correct = FALSE)`. In `visstat()`, `wilcox.test()` is used with R's default settings, while `kruskal.test()` uses the large-sample $\chi^2$ approximation to $H$. Therefore, the two routes should not be expected to return identical two-group $p$\ values under the defaults.
 
 #### Post-hoc comparison `pairwise.wilcox.test()`{#sec:pairwise-wilcox}
 

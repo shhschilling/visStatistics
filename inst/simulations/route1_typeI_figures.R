@@ -631,7 +631,7 @@ make_equal_plot <- function() {
   )
   plot_list[[3]] <- panel_header(
     "B",
-    "balanced; n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub> = n; SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub> = 1"
+    "balanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = <b>n</b>; (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = 1"
   )
   height_list[3] <- 0.03
   plot_list[[4]] <- balanced_plot
@@ -640,7 +640,7 @@ make_equal_plot <- function() {
   height_list[5] <- 0.06
   plot_list[[6]] <- panel_header(
     "C",
-    "unbalanced; n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub> = n&#772;(0.5, 0.8, 1.2, 1.5); SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub> = 1"
+    "unbalanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = 1"
   )
   height_list[6] <- 0.03
   plot_list[[7]] <- unbalanced_plot
@@ -692,7 +692,7 @@ make_unequal_plot <- function() {
   height_list <- numeric()
   plot_list[[1]] <- panel_header(
     "A",
-    "identical means; SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub> = (1.0, 1.3, 1.7, 2.2)"
+    "identical means; (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
   )
   height_list[1] <- 0.10
   plot_list[[2]] <- make_pdf_plot(
@@ -705,7 +705,7 @@ make_unequal_plot <- function() {
   height_list[2] <- 1.15
   plot_list[[3]] <- panel_header(
     "B",
-    "balanced; n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub> = n; SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub> = (1.0, 1.3, 1.7, 2.2)"
+    "balanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = <b>n</b>; (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
   )
   height_list[3] <- 0.03
   plot_list[[4]] <- make_rejection_plot(
@@ -718,7 +718,7 @@ make_unequal_plot <- function() {
   height_list[4] <- 0.90
   plot_list[[5]] <- panel_header(
     "C",
-    "unbalanced; n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub> = n&#772;(0.5, 0.8, 1.2, 1.5); SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub> = (1.0, 1.3, 1.7, 2.2)"
+    "unbalanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
   )
   height_list[5] <- 0.03
   plot_list[[6]] <- make_rejection_plot(
@@ -731,7 +731,7 @@ make_unequal_plot <- function() {
   height_list[6] <- 0.90
   plot_list[[7]] <- panel_header(
     "D",
-    "unbalanced; n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub> = n&#772;(0.5, 0.8, 1.2, 1.5); SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub> = (2.2, 1.7, 1.3, 1.0)"
+    "unbalanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (2.2, 1.7, 1.3, 1.0)"
   )
   height_list[7] <- 0.03
   plot_list[[8]] <- make_rejection_plot(
@@ -751,7 +751,7 @@ make_unequal_plot <- function() {
     )
 }
 
-save_plot <- function(filename, plot, width, height, dpi = 360) {
+save_plot <- function(filename, plot, width, height, dpi = FLEISHMAN_DPI) {
   outfile <- file.path(OUTDIR, filename)
   figfile <- file.path(FIGDIR, filename)
   ggplot2$ggsave(outfile, plot, width = width, height = height, dpi = dpi)
@@ -771,7 +771,7 @@ ggplot2$ggsave(
   make_equal_plot(),
   width = 20,
   height = 22,
-  dpi = 360
+  dpi = FLEISHMAN_DPI
 )
 message("Wrote: ", equal_outfile)
 

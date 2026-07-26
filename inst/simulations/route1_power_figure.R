@@ -482,51 +482,51 @@ combined <- patchwork$wrap_plots(p_pdf, p_power, ncol = 1, heights = c(1, 2.35))
 
 ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_power_pdf.png"),
   p_pdf,
-  width = 20, height = 5.2, dpi = 360
+  width = 20, height = 5.2, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_power_pdf.png"),
   p_pdf,
-  width = 20, height = 5.2, dpi = 360
+  width = 20, height = 5.2, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_power.png"),
   combined,
-  width = 20, height = 15.2, dpi = 360
+  width = 20, height = 15.2, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_power.png"),
   combined,
-  width = 20, height = 15.2, dpi = 360
+  width = 20, height = 15.2, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_power_with_pdf.png"),
   combined,
-  width = 20, height = 15.2, dpi = 360
+  width = 20, height = 15.2, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_power_with_pdf.png"),
   combined,
-  width = 20, height = 15.2, dpi = 360
+  width = 20, height = 15.2, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_parametric_branch_power.png"),
   p_parametric,
-  width = 14, height = 7.8, dpi = 360
+  width = 14, height = 7.8, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_parametric_branch_power.png"),
   p_parametric,
-  width = 14, height = 7.8, dpi = 360
+  width = 14, height = 7.8, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_route_probability.png"),
   p_route,
-  width = 12, height = 7.2, dpi = 360
+  width = 12, height = 7.2, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_route_probability.png"),
   p_route,
-  width = 12, height = 7.2, dpi = 360
+  width = 12, height = 7.2, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_fisher_welch_route_probability.png"),
   p_fisher_welch,
-  width = 12, height = 5.4, dpi = 360
+  width = 12, height = 5.4, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_fisher_welch_route_probability.png"),
   p_fisher_welch,
-  width = 12, height = 5.4, dpi = 360
+  width = 12, height = 5.4, dpi = FLEISHMAN_DPI
 )
 
 message("Updated plots in: ", OUTDIR)

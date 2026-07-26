@@ -232,7 +232,7 @@ vis_numeric <- function(y,
     lines(x_sorted, y_conf_up, col = ci_col, lwd = 2, lty = ci_lty)
 
     conf_int_coeffs <- confint(reg, level = conf.level)
-    mtext(main_text, side = 3, line = 3, cex = 0.7)
+    mtext(main_text, side = 3, line = 3, cex = 0.8)
     mtext(
       bquote(paste(
         R^2, " = ",
@@ -240,7 +240,7 @@ vis_numeric <- function(y,
         ", conf. level = ",
         .(sprintf("%.2f", conf.level))
       )),
-      side = 3, line = 2, cex = 0.7
+      side = 3, line = 2, cex = 0.8
     )
     mtext(
       bquote(paste(
@@ -253,7 +253,7 @@ vis_numeric <- function(y,
         "], p = ",
         .(sprintf("%.2e", reg_summary$coefficients[2, 4]))
       )),
-      side = 3, line = 1, cex = 0.7
+      side = 3, line = 1, cex = 0.8
     )
     mtext(
       bquote(paste(
@@ -266,7 +266,7 @@ vis_numeric <- function(y,
         "], p = ",
         .(sprintf("%.2e", reg_summary$coefficients[1, 4]))
       )),
-      side = 3, line = 0, cex = 0.7
+      side = 3, line = 0, cex = 0.8
     )
 
     legend("topleft",
@@ -292,7 +292,7 @@ vis_numeric <- function(y,
       pch = c(NA, 15, NA),
       pt.cex = c(NA, 1.5, NA),
       bty = "n",
-      cex = 0.65
+      cex = 0.8
     )
 
     # Prepare return values

@@ -1,0 +1,36 @@
+---
+documentclass: jss
+classoption: nojss
+author:
+  - name: Sabine Schilling
+    orcid: 0000-0002-8318-9421
+    affiliation: Lucerne University of Applied Sciences and Arts
+    address: |
+      | Lucerne School of Business
+      | Walter-von-Moos-Promenade 1
+      | 6005 Luzern, Switzerland
+    email: \email{sabineschilling@gmx.ch}
+title:
+  formatted: "\\pkg{visStatistics}: Automated test selection, visualised"
+  plain:     "visStatistics: Automated test selection, visualised"
+  short:     "\\pkg{visStatistics}: Automated test selection"
+abstract: >
+  `r paste(readLines(file.path(dirname(knitr::current_input(dir = TRUE)), "_abstract.md")), collapse = " ")`
+keywords:
+  formatted: [automated test selection, visualisation, assumption diagnostics, general linear model, residual diagnostics,  "\\proglang{R}"]
+  plain:     [automated test selection,visualisation,  assumption diagnostics, general linear model, residual diagnostics,  R]
+preamble: >
+  \usepackage{amsmath}
+  \usepackage{amssymb}
+  \usepackage{array}
+  \usepackage{mathrsfs}
+  \makeatletter\renewcommand{\pdfbookmark}[3][]{}\makeatother
+bibliography: REFERENCES.bib
+output:
+  bookdown::pdf_book:
+    base_format: rticles::jss_article
+    citation_package: natbib
+---
+
+```{r body, child = file.path(dirname(knitr::current_input(dir = TRUE)), "_body.md")}
+```
