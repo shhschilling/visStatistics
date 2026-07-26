@@ -91,9 +91,6 @@ summary(anova)
 #> [1] 0.6511908
 #> 
 #> $effect_size_method
-#> [1] "Approximate omega-squared-type measure for Welch's one-way test, "
-#> 
-#> $conf.int
-#> [1] "computed from F, df1, and df2"
+#> [1] "Approximate omega-squared-type measure for Welch's one-way test, computed from F, df1, and df2"
 #> 
 ```

@@ -11,6 +11,13 @@ routes. Route 1 handles a numeric response with a categorical predictor.
 By default, Route 1 uses residual-based assumption diagnostics: the
 Shapiro–Wilk test gates mean-based versus rank-based analysis, and the
 Levene test then gates equal-variance versus Welch-type mean tests.
+Above 5000 observations, where shapiro.test() is undefined, the
+Anderson–Darling test takes over as the residual-normality gate. If the
+group sizes are unbalanced, the largest group standard deviations occur in the
+smallest groups, and the selected route is the equal-variance test or a
+rank-based test, the default route warns and points at
+group_test = &quot;welch&quot;, because those two routes can exceed the nominal
+significance level in that configuration.
 Alternatively, group_test = &quot;welch&quot; keeps Route 1 on the mean scale
 and forces Welch-type tests, while group_test = &quot;rank&quot; forces
 Wilcoxon/Kruskal–Wallis rank tests. Route 2 handles ordered responses
@@ -23,6 +30,13 @@ routes. Route 1 handles a numeric response with a categorical predictor.
 By default, Route 1 uses residual-based assumption diagnostics: the
 Shapiro–Wilk test gates mean-based versus rank-based analysis, and the
 Levene test then gates equal-variance versus Welch-type mean tests.
+Above 5000 observations, where shapiro.test() is undefined, the
+Anderson–Darling test takes over as the residual-normality gate. If the
+group sizes are unbalanced, the largest group standard deviations occur in the
+smallest groups, and the selected route is the equal-variance test or a
+rank-based test, the default route warns and points at
+group_test = &quot;welch&quot;, because those two routes can exceed the nominal
+significance level in that configuration.
 Alternatively, group_test = &quot;welch&quot; keeps Route 1 on the mean scale
 and forces Welch-type tests, while group_test = &quot;rank&quot; forces
 Wilcoxon/Kruskal–Wallis rank tests. Route 2 handles ordered responses
@@ -70,6 +84,13 @@ routes. Route 1 handles a numeric response with a categorical predictor.
 By default, Route 1 uses residual-based assumption diagnostics: the
 Shapiro–Wilk test gates mean-based versus rank-based analysis, and the
 Levene test then gates equal-variance versus Welch-type mean tests.
+Above 5000 observations, where <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> is undefined, the
+Anderson–Darling test takes over as the residual-normality gate. If the
+group sizes are unbalanced, the largest group standard deviations occur in the
+smallest groups, and the selected route is the equal-variance test or a
+rank-based test, the default route warns and points at
+<code>group_test = "welch"</code>, because those two routes can exceed the nominal
+significance level in that configuration.
 Alternatively, <code>group_test = "welch"</code> keeps Route 1 on the mean scale
 and forces Welch-type tests, while <code>group_test = "rank"</code> forces
 Wilcoxon/Kruskal–Wallis rank tests. Route 2 handles ordered responses
@@ -161,9 +182,11 @@ rank tests.</p></dd>
 
 
 <dt id="arg-graphicsoutput">graphicsoutput<a class="anchor" aria-label="anchor" href="#arg-graphicsoutput"></a></dt>
-<dd><p>Saves plot(s) of type <code>"png"</code>, <code>"jpg"</code>,
-<code>"tiff"</code> or <code>"bmp"</code> in directory specified in
-<code>plotDirectory</code>. If <code>NULL</code>, no plots are saved.</p></dd>
+<dd><p>Saves plot(s) of type <code>"png"</code>, <code>"jpeg"</code>,
+<code>"pdf"</code>, <code>"svg"</code>, <code>"ps"</code> or <code>"tiff"</code> in directory
+specified in <code>plotDirectory</code>. If <code>NULL</code>, no plots are saved.
+Any other value is not supported by <code>Cairo()</code>: it triggers a warning,
+no file is written, and no <code>plot_paths</code> attribute is returned.</p></dd>
 
 
 <dt id="arg-plotname">plotName<a class="anchor" aria-label="anchor" href="#arg-plotname"></a></dt>

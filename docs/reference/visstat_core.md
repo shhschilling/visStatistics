@@ -72,9 +72,10 @@ visstat_core(
 
 - graphicsoutput:
 
-  saves plot(s) of type "png", "jpg", "tiff" or "bmp" in directory
-  specified in `plotDirectory`. If graphicsoutput=NULL, no plots are
-  saved.
+  saves plot(s) of type "png", "jpeg", "pdf", "svg", "ps" or "tiff" in
+  directory specified in `plotDirectory`. If graphicsoutput=NULL, no
+  plots are saved. Any other value is not supported by `Cairo()`: it
+  triggers a warning and no file is written.
 
 - plotName:
 
@@ -111,9 +112,13 @@ The decision logic is organised into four routes. Route 1 handles a
 numeric response with a categorical predictor. By default, Route 1 uses
 residual-based test selection: Shapiro–Wilk on model residuals gates
 mean-based versus rank-based analysis, and Levene gates equal-variance
-versus Welch-type mean tests inside the mean branch. Alternatively,
-`group_test = "welch"` forces Welch-type mean tests, and
-`group_test = "rank"` forces Wilcoxon/Kruskal–Wallis tests.
+versus Welch-type mean tests inside the mean branch. Above 5000
+observations, where
+[`shapiro.test()`](https://rdrr.io/r/stats/shapiro.test.html) is
+undefined, the Anderson–Darling test takes over as the
+residual-normality gate. Alternatively, `group_test = "welch"` forces
+Welch-type mean tests, and `group_test = "rank"` forces
+Wilcoxon/Kruskal–Wallis tests.
 
 Route 2 handles ordered responses with categorical predictors by
 converting the ordered response to integer level codes and applying
@@ -126,6 +131,15 @@ depending on expected counts. If both variables are ordered and
 
 The significance level `alpha` is defined as `1 - conf.level`.
 Assumption tests are interpreted relative to this threshold.
+
+Under the default `group_test = NULL`, Route 1 issues a warning when the
+group sizes are unbalanced, the largest group standard deviations occur
+in the smallest groups, and the route selected is either the
+equal-variance test or a rank-based test. In that configuration those
+two routes can exceed the nominal significance level, whereas a selected
+Welch test does not and is therefore not flagged; see the Route 1
+simulations in
+[`vignette("visStatistics")`](https://shhschilling.github.io/visStatistics/articles/visStatistics.md).
 
 Implemented main tests:
 
@@ -147,7 +161,8 @@ Implemented tests for assumptions:
 - Heteroscedasticity:
   [`bartlett.test()`](https://rdrr.io/r/stats/bartlett.test.html) and
   [`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
-  and `bp_test()`
+  and
+  [`bp.test()`](https://shhschilling.github.io/visStatistics/reference/bp.test.md)
 
 For the general linear model the Shapiro-Wilk, Anderson-Darling, Levene
 and Bartlett tests are applied to the internally studentised residuals
@@ -159,8 +174,8 @@ Implemented post hoc tests:
 - [`TukeyHSD()`](https://rdrr.io/r/stats/TukeyHSD.html) for
   [`aov()`](https://rdrr.io/r/stats/aov.html)
 
-- `games.howell` for
-  [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html)
+- [`games.howell()`](https://shhschilling.github.io/visStatistics/reference/games.howell.md)
+  for [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html)
 
 - [`pairwise.wilcox.test()`](https://rdrr.io/r/stats/pairwise.wilcox.test.html)
   for [`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html)

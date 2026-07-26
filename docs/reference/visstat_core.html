@@ -123,9 +123,10 @@ default assumption gates, <code>"welch"</code> forces Welch-type mean tests, and
 
 
 <dt id="arg-graphicsoutput">graphicsoutput<a class="anchor" aria-label="anchor" href="#arg-graphicsoutput"></a></dt>
-<dd><p>saves plot(s) of type "png",  "jpg", "tiff" or  "bmp"
-in directory specified in <code>plotDirectory</code>. If graphicsoutput=NULL, no
-plots are saved.</p></dd>
+<dd><p>saves plot(s) of type "png", "jpeg", "pdf", "svg", "ps"
+or "tiff" in directory specified in <code>plotDirectory</code>. If
+graphicsoutput=NULL, no plots are saved. Any other value is not supported by
+<code>Cairo()</code>: it triggers a warning and no file is written.</p></dd>
 
 
 <dt id="arg-plotname">plotName<a class="anchor" aria-label="anchor" href="#arg-plotname"></a></dt>
@@ -160,7 +161,10 @@ Additionally, the returned object includes two attributes:</p><ul><li><p><code>p
 numeric response with a categorical predictor. By default, Route 1 uses
 residual-based test selection: Shapiro–Wilk on model residuals gates
 mean-based versus rank-based analysis, and Levene gates equal-variance
-versus Welch-type mean tests inside the mean branch. Alternatively,
+versus Welch-type mean tests inside the mean branch. Above 5000
+observations, where <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> is undefined, the
+Anderson–Darling test takes over as the residual-normality gate.
+Alternatively,
 <code>group_test = "welch"</code> forces Welch-type mean tests, and
 <code>group_test = "rank"</code> forces Wilcoxon/Kruskal–Wallis tests.</p>
 <p>Route 2 handles ordered responses with categorical predictors by converting
@@ -173,18 +177,24 @@ counts. If both variables are ordered and <code>correlation = TRUE</code>,
 Kendall's \(\tau_b\) is used.</p>
 <p>The significance level <code>alpha</code> is defined as <code>1 - conf.level</code>.
 Assumption tests are interpreted relative to this threshold.</p>
+<p>Under the default <code>group_test = NULL</code>, Route 1 issues a warning when the
+group sizes are unbalanced, the largest group standard deviations occur in the
+smallest groups, and the route selected is either the equal-variance test or a
+rank-based test. In that configuration those two routes can exceed the nominal
+significance level, whereas a selected Welch test does not and is therefore
+not flagged; see the Route 1 simulations in <code><a href="../articles/visStatistics.html">vignette("visStatistics")</a></code>.</p>
 <p>Implemented main tests:</p>
 <p><code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code>, <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code>,
 <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>, <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>, <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code>,
 <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>, <code><a href="https://rdrr.io/r/stats/chisq.test.html" class="external-link">chisq.test()</a></code>.</p>
 <p>Implemented tests for assumptions:</p><ul><li><p>Normality: <code><a href="https://rdrr.io/r/stats/shapiro.test.html" class="external-link">shapiro.test()</a></code> and <code>ad.test()</code></p></li>
-<li><p>Heteroscedasticity: <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code> and <code><a href="levene.test.html">levene.test()</a></code> and <code>bp_test()</code></p></li>
+<li><p>Heteroscedasticity: <code><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test()</a></code> and <code><a href="levene.test.html">levene.test()</a></code> and <code><a href="bp.test.html">bp.test()</a></code></p></li>
 </ul><p>For the general linear model the Shapiro-Wilk, Anderson-Darling, Levene and
 Bartlett tests are applied to the internally studentised residuals
 r_i = e_i / (SE_res sqrt(1 - h_i)), which remove the leverage-dependent
 variance of the raw residuals (Var(e_i) = sigma^2 (1 - h_i)).</p>
 <p>Implemented post hoc tests:</p><ul><li><p><code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code></p></li>
-<li><p><code>games.howell</code> for  <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code></p></li>
+<li><p><code><a href="games.howell.html">games.howell()</a></code> for  <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code></p></li>
 <li><p><code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> for <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code></p></li>
 </ul></div>
     <div class="section level2">

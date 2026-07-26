@@ -7,6 +7,14 @@ routes. Route 1 handles a numeric response with a categorical predictor.
 By default, Route 1 uses residual-based assumption diagnostics: the
 Shapiro–Wilk test gates mean-based versus rank-based analysis, and the
 Levene test then gates equal-variance versus Welch-type mean tests.
+Above 5000 observations, where
+[`shapiro.test()`](https://rdrr.io/r/stats/shapiro.test.html) is
+undefined, the Anderson–Darling test takes over as the
+residual-normality gate. If the group sizes are unbalanced, the largest
+group standard deviations occur in the smallest groups, and the selected
+route is the equal-variance test or a rank-based test, the default route
+warns and points at `group_test = "welch"`, because those two routes can
+exceed the nominal significance level in that configuration.
 Alternatively, `group_test = "welch"` keeps Route 1 on the mean scale
 and forces Welch-type tests, while `group_test = "rank"` forces
 Wilcoxon/Kruskal–Wallis rank tests. Route 2 handles ordered responses
@@ -95,8 +103,11 @@ visstat(
 
 - graphicsoutput:
 
-  Saves plot(s) of type `"png"`, `"jpg"`, `"tiff"` or `"bmp"` in
-  directory specified in `plotDirectory`. If `NULL`, no plots are saved.
+  Saves plot(s) of type `"png"`, `"jpeg"`, `"pdf"`, `"svg"`, `"ps"` or
+  `"tiff"` in directory specified in `plotDirectory`. If `NULL`, no
+  plots are saved. Any other value is not supported by `Cairo()`: it
+  triggers a warning, no file is written, and no `plot_paths` attribute
+  is returned.
 
 - plotName:
 
