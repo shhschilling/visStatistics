@@ -108,6 +108,15 @@
 #' which selects and executes the appropriate test with visual output and
 #' assumption diagnostics.
 #'
+#' The Q-Q envelopes in the assumption diagnostics are simulated (see
+#' \code{\link{qq_lm_envelope}}). The number of simulated refits is taken from
+#' the option \code{visStatistics.qq_nsim} and defaults to 5000. As
+#' \code{visstat()} has no corresponding argument, this option is the only way
+#' to change it here; lower it to trade precision for speed, for instance
+#' \code{options(visStatistics.qq_nsim = 1000L)}. Use
+#' \code{\link{vis_lm_assumptions}} or \code{\link{qq_lm_envelope}} directly if
+#' you prefer to set the number of refits per call.
+#'
 #' @return An object of class \code{"visstat"} containing the results of
 #' the automatically selected statistical test. The specific contents depend on
 #' which test was performed. Additionally, the returned object includes two

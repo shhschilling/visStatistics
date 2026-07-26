@@ -15,25 +15,9 @@ test_that("qq_lm_envelope returns inspectable simulated bands", {
   expect_true(env$global_coverage >= env$conf.level)
 })
 
-test_that("qq_lm_envelope simultaneous band agrees with STB", {
-  skip_if_not_installed("STB")
-
-  set.seed(20260605)
-  fit <- lm(mpg ~ wt, data = mtcars)
-  env <- qq_lm_envelope(fit, nsim = 999, tol = 1e-4)
-  stb <- STB::getSTB(
-    env$sim_orders,
-    alpha = 1 - env$conf.level,
-    tol = 1e-4,
-    q.type = env$q.type,
-    output = FALSE,
-    timer = FALSE,
-    Ncpu = 1
-  )
-
-  expect_equal(env$global_coverage, stb$coverage, tolerance = 1e-12)
-  expect_equal(as.numeric(env$global), as.numeric(stb$Q), tolerance = 1e-12)
-})
+## The comparison against the reference STB implementation lives in
+## inst/validation/qq_lm_envelope_vs_STB.R, because STB is not a declared
+## dependency. See that file for how to run it.
 
 test_that("qq_lm_envelope bands widen with higher confidence level", {
   fit <- lm(mpg ~ wt, data = mtcars)

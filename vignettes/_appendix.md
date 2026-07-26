@@ -1,7 +1,6 @@
-
 # (APPENDIX) Appendix {.unnumbered} 
 
-######## {.unnumbered} 
+## Notation {.unnumbered}
 In the following , \(k\) denotes the number of groups,
 \(n_i\) the sample size of group \(i\), and
 \(N=\sum_{i=1}^{k}n_i\) the total sample size. Observations are written as
@@ -11,6 +10,8 @@ sample variance \(s_i^2\). The pooled variance is
 s_p^2=\frac{1}{N-k}\sum_{i=1}^{k}(n_i-1)s_i^2 .
 (\#eq:pooled-variance)
 \end{equation}
+
+
 
 ```{=latex}
 \numberwithin{equation}{section}

@@ -211,6 +211,13 @@ warn_adverse_variance_pairing <- function(pairing, route) {
 #' @param plotDirectory specifies directory, where generated plots are stored.
 #'   Default is current working directory.
 #' @param plot_args Optional named list of base graphics parameters.
+#' @details
+#' The Q-Q envelopes in the assumption diagnostics are simulated (see
+#' \code{\link{qq_lm_envelope}}). The number of simulated refits is taken from
+#' the option \code{visStatistics.qq_nsim} and defaults to 5000. As
+#' \code{visstat_core()} has no corresponding argument, this option is the only
+#' way to change it here; lower it to trade precision for speed, for instance
+#' \code{options(visStatistics.qq_nsim = 1000L)}.
 #' @return An object of class \code{"visstat"} containing the results of
 #' the automatically selected statistical test. The specific contents depend on
 #'  which test was performed.
