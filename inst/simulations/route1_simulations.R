@@ -191,7 +191,7 @@ type1$skew_label <- factor(vapply(type1$panel, case_label, character(1)),
 write.csv(type1, file.path(OUTDIR, "route1_equal_mean_blanca_zimmerman.csv"),
   row.names = FALSE
 )
-saveRDS(type1, file.path(OUTDIR, "route1_equal_mean_blanca_zimmerman.rds"))
+saveRDS(type1, file.path(OUTDIR, "route1_equal_mean_blanca_zimmerman.rds"), version = 2)
 
 make_shift_data <- function(panel, n, shifts) {
   k <- length(shifts)
@@ -290,7 +290,7 @@ power$effect_size <- factor(power$effect_size, levels = names(SHIFT_SCENARIOS))
 write.csv(power, file.path(OUTDIR, "fleishman_4groups_power.csv"),
   row.names = FALSE
 )
-saveRDS(power, file.path(OUTDIR, "fleishman_4groups_power.rds"))
+saveRDS(power, file.path(OUTDIR, "fleishman_4groups_power.rds"), version = 2)
 
 writeLines(
   c(

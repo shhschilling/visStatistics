@@ -269,11 +269,11 @@ Eq. \@ref(eq:welch-satterthwaite-df), to each of the \(k(k-1)/2\) pairwise
 group comparisons. The resulting two-sided pairwise \(p\)-values are adjusted
 with Holm's method [@Holm:1979].
 
-Welch's methods outperform their classical counterparts when variances differ [@Moser:1992; @Fagerland:2009; @Delacre:2017].
+Welch's methods outperform their classical counterparts when variances differ [@Moser:1992; @Fagerland:2009; @Delacre:2017; @Delacre:2019].
 
 #### Welch's method in the case of equal variances {.unnumbered}
 
-When variances are equal, Welch's methods lose only negligible power relative to their classical counterparts [@Moser:1992; @Delacre:2017].
+When variances are equal, Welch's methods lose only negligible power relative to their classical counterparts [@Moser:1992; @Delacre:2017; @Delacre:2019].
 
 ##### Welch's method in the case of equal variances and balanced designs {.unnumbered}
 
