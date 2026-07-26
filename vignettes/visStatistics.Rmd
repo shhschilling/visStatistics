@@ -693,29 +693,29 @@ if (knitr::is_latex_output()) {
 \textbf{Source} \\
 \hline
 Student's $t$-test &
-Hedges' $g_{s_p}$ & $g_{s_p}=J(N-2)(\bar{x}_1-\bar{x}_2)/s_p$ &
-\tbdoi{10.3102/10769986006002107}{Hedges, 1981} \\
+Hedges' $g_{s_p}$ (pooled) & $g_{s_p}=J(N-2)\cdot(\bar{x}_1-\bar{x}_2)/s_p$ &
+\tbdoi{10.3102/10769986006002107}{Hedges 1981} \\
 \hline
 Welch's $t$-test &
-Hedges' $g_{s^{*}}$ & $g_{s^{*}}=J(\nu^{*})(\bar{x}_1-\bar{x}_2)/s^{*}$ &
-\tbdoi{10.31234/osf.io/tu6mp}{Delacre et al., 2021} \\
+Hedges' $g_{s^{*}}$ (non-pooled) & $g_{s^{*}}=J(\nu^{*})\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$ &
+\tbdoi{10.31234/osf.io/tu6mp}{Delacre et al. 2021} \\
 \hline
 Wilcoxon rank-sum &
-rank-biserial $r$ & $r=2W/(n_1n_2)-1$ &
-\tbdoi{10.2466/11.IT.3.1}{Kerby, 2014} \\
+rank-biserial $r$ & $r=2\cdot W/(n_1\cdot n_2)-1$ &
+\tbdoi{10.2466/11.IT.3.1}{Kerby 2014} \\
 \hline
 Fisher's ANOVA & $\omega^2$ &
-$\nu_1(F-1)/(\nu_1F+\nu_2+1)$ &
-\tbdoi{10.1016/j.jesp.2017.09.004}{Albers and Lakens, 2018, Appendix A} \\
+$\nu_1\cdot(F-1)/(\nu_1\cdot F+\nu_2+1)$ &
+\tbdoi{10.1016/j.jesp.2017.09.004}{Albers and Lakens 2018, Appendix A} \\
 \hline
 Welch's ANOVA &
 $\omega^2$ (approx.) &
-$\nu_1(F_W-1)/(\nu_1F_W+\nu_2+1)$ &
-\tbdoi{10.1016/j.jesp.2017.09.004}{Albers and Lakens, 2018, Appendix A} \\
+$\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W+\nu_2+1)$ &
+\tbdoi{10.1016/j.jesp.2017.09.004}{F-form from Albers and Lakens 2018, Appendix A} \\
 \hline
 Kruskal--Wallis &
 $\eta_H^2$ & $(H-k+1)/(N-k)$ &
-\tbdoi{10.1073/pnas.21.9.554}{Kelley, 1935} \\
+\tbdoi{10.1073/pnas.21.9.554}{Kelley 1935} \\
 \hline
 Simple linear regression &
 $R^2$ &
@@ -725,16 +725,16 @@ $R^2=1-SS_\text{res}/SS_\text{tot}$ &
 Spearman &
 $\rho$ &
 $\rho=r(\operatorname{rank}(x),\operatorname{rank}(y))$ &
-\texttt{cor.test()} \\
+\texttt{cor.test()\$estimate} \\
 \hline
 Kendall &
 $\tau_b$ &
 $\tau_b=(C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$ &
-\texttt{cor.test()} \\
+\texttt{cor.test()\$estimate} \\
 \hline
 Pearson $\chi^2$ ($R\times C$) &
-Cramer's $V$ &
-$V_{R\times C}=\sqrt{\chi^2/\left(N\left(\min(R,C)-1\right)\right)}$ &
+Cramér's $V$ &
+$V_{R\times C}=\sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}$ &
 \tbdoi{10.4324/9780203771587}{Cohen 2013, p. 223} \\
 \hline
 Pearson $\chi^2$ ($2\times2$) &
@@ -831,8 +831,8 @@ Lakens 2018, Appendix A</a></td>
 <tr>
 <td>Fisher's exact ($2\times 2$)</td>
 <td>conditional odds ratio</td>
-<td>$\hat\theta_{\mathrm{cond}}:
-E_{\hat\theta}(X\mid \mathrm{margins})=n_{11}$</td>
+<td>$\hat\theta_{\mathrm{cond}}$, where
+$E_{\hat\theta}(A \mid a+b, c+d, a+c, b+d)=a$</td>
 <td><code>fisher.test()</code></td>
 </tr>
 </table>
