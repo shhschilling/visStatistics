@@ -10,6 +10,14 @@ OUTDIR <- "."
 FIGDIR <- "."
 dir.create(FIGDIR, showWarnings = FALSE, recursive = TRUE)
 
+## Replications per cell behind the saved results. Used in the file names only.
+## Set NREP before sourcing this script when the results come from a run with a
+## reduced number of replications.
+if (!exists("NREP")) {
+  NREP <- 50000L
+}
+B_SUFFIX <- sprintf("B%d", NREP)
+
 if (!requireNamespace("ggplot2", quietly = TRUE)) {
   stop("Package 'ggplot2' is required.")
 }
@@ -762,10 +770,10 @@ save_plot <- function(filename, plot, width, height, dpi = FLEISHMAN_DPI) {
   }
 }
 
-equal_outfile <- file.path(
-  OUTDIR,
-  "route1_identical_distributions_typeI_with_kw_fleishman_B50000.png"
+equal_name <- sprintf(
+  "route1_identical_distributions_typeI_with_kw_fleishman_%s.png", B_SUFFIX
 )
+equal_outfile <- file.path(OUTDIR, equal_name)
 ggplot2$ggsave(
   equal_outfile,
   make_equal_plot(),
@@ -778,13 +786,13 @@ message("Wrote: ", equal_outfile)
 if (normalizePath(OUTDIR) != normalizePath(FIGDIR)) {
   file.copy(
     equal_outfile,
-    file.path(FIGDIR, "route1_identical_distributions_typeI_with_kw_fleishman_B50000.png"),
+    file.path(FIGDIR, equal_name),
     overwrite = TRUE
   )
 }
 
 save_plot(
-  "route1_equal_means_unequal_distributions_fleishman_B50000.png",
+  sprintf("route1_equal_means_unequal_distributions_fleishman_%s.png", B_SUFFIX),
   make_unequal_plot(),
   width = 20,
   height = 26

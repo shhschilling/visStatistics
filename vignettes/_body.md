@@ -431,7 +431,9 @@ Figure \@ref(fig:route1-unequal-typeI) keeps the equal-means null and varies the
 
 
 All simulations use four groups and $B=50{,}000$ Monte Carlo
-replications per cell.
+replications per cell. The scripts, the saved Monte Carlo output and the code
+that builds the three figures ship with the package in
+`system.file("simulations", package = "visStatistics")`.
 
 
 For an estimated rejection probability $p$, the Monte Carlo standard error is [@Koehler:2009]
@@ -488,11 +490,11 @@ knitr::include_graphics(
 This is a clean Type I check for Shapiro (`SW`)  or Shapiro and Levene gate based (`SW+L`)  automated routing, as routing to Kruskal--Wallis under non-normality does not change the truth status of the tested null, because the Kruskal--Wallis null is in this homoscedastic simulations also true.
 
 
-The type I error rate stays inside Bradley's bounds in all forty simulated cells, ranging from 4.2% to 5.6% for `SW` and from 4.5% to 5.7% for `SW+L`. Adding the Levene gate raises the rate by at most 0.9 percentage points, in the unbalanced design under the symmetric heavy-tailed input at $\bar n = 10$.
+The type I error rate stays inside Bradley's bounds in all forty simulated cells, ranging from 4.2% to 5.8% for `SW` and from 4.8% to 5.6% for `SW+L`. Adding the Levene gate raises the rate by at most 0.9 percentage points, in the unbalanced design under the symmetric heavy-tailed input at $\bar n = 10$.
 
-The route probabilities show the gate responding to both skewness and kurtosis: at $n = 20$ the rank branch is taken in 74.6% of replications under the symmetric heavy-tailed input, whose skewness is zero, against 31.8% under the mildly skewed input with excess kurtosis 1.
+The route probabilities show the gate responding to both skewness and kurtosis: at $n = 20$ the rank branch is taken in 74.2% of replications under the symmetric heavy-tailed input, whose skewness is zero, against 31.3% under the mildly skewed input with excess kurtosis 1.
 
-As with any hypothesis test, the power of the gate grows with the sample: under the mildly skewed input the rank branch is taken in 17.0% of replications at $n=10$ and in 90.2% at $n=100$, although the departure from normality is the same in every row.
+As with any hypothesis test, the power of the gate grows with the sample: under the mildly skewed input the rank branch is taken in 17.1% of replications at $n=10$ and in 89.9% at $n=100$, although the departure from normality is the same in every row.
 
 
 ## Equal means, introducing heteroscedasticity
@@ -529,11 +531,11 @@ The residual-normality gate also reacts to unequal variances alone. In panel B, 
 
 ### Bradley's boundaries in heteroscedastic simulations
 
-Albeit Fisher's Anova  (`F`) assumes variance homogeneity, it remains within Bradley's boundaries for all simulated balanced, unequal standard deviation four group comparison (panel B of Fig. \@ref(fig:route1-unequal-typeI)). In unbalanced simulations where smaller group sizes were combined with smaller standard deviations (panel C), `F` is conservative throughout and falls just below the lower bound, to 2.4%, under the symmetric input with excess kurtosis 6 at $\bar n = 10$ and $\bar n = 20$.
+Albeit Fisher's Anova  (`F`) assumes variance homogeneity, it remains within Bradley's boundaries for all simulated balanced, unequal standard deviation four group comparison (panel B of Fig. \@ref(fig:route1-unequal-typeI)). In unbalanced simulations where smaller group sizes were combined with smaller standard deviations (panel C), `F` is conservative throughout and sits at the lower bound of 2.5%, which it undercuts under the symmetric input with excess kurtosis 6 at $\bar n = 10$ by less than the Monte Carlo error.
 
-This is not the case any more in the reversed scenario (panel D):  Combining larger groups with smaller standard deviations, `F` rejects the null hypotheses of equal means between 11.8%--13.1%. In this reversed scenario, also `W` leaves the Bradley bounds only for skewness 2 with excess kurtosis 6.6 for a mean group size $\bar n \le 20$ (panel D).
+This is not the case any more in the reversed scenario (panel D):  Combining larger groups with smaller standard deviations, `F` rejects the null hypotheses of equal means between 11.7%--13.2%. In this reversed scenario, also `W` leaves the Bradley bounds only for skewness 2 with excess kurtosis 6.6 for a mean group size $\bar n \le 20$ (panel D).
 
-In the first two symmetric columns of Fig. \@ref(fig:route1-unequal-typeI), both `SW` and `SW+L` are still type I tests and remain in Bradley's boundaries in the balanced simulations (panel B) as well as the unbalanced simulations of panel C. But combining smaller sample sizes with larger standard deviations (panel D), `SW` leaves the Bradley bound in three out of 8 scenarios with $\bar n \ge 50$, as in  larger samples the Shapiro--Wilk gate is overpowered and sends most replications to `KW`, whose own rate is affected by unequal variances at unequal group sizes [@Zimmerman:2004]. Adding the Levene gate (`SW+L`) increases the type I error in smaller samples even further, as the Levene gate at $\bar n=10$ is underpowered and routes nearly half the replications to `F`. `SW+L` leaves the bounds in six of eight cells of panel D, at worst at about twice the nominal 5%.
+In the first two symmetric columns of Fig. \@ref(fig:route1-unequal-typeI), both `SW` and `SW+L` are still type I tests and remain in Bradley's boundaries in the balanced simulations (panel B) as well as the unbalanced simulations of panel C. But combining smaller sample sizes with larger standard deviations (panel D), `SW` leaves the Bradley bound in three out of 8 scenarios with $\bar n \ge 50$, as in  larger samples the Shapiro--Wilk gate is overpowered and sends most replications to `KW`, whose own rate is affected by unequal variances at unequal group sizes [@Zimmerman:2004]. Adding the Levene gate (`SW+L`) increases the type I error in smaller samples even further, as the Levene gate at $\bar n=10$ is underpowered and routes nearly half the replications to `F`. `SW+L` leaves the bounds in seven of eight cells of panel D, at worst at about twice the nominal 5%.
 
 
 ## Type II error (power) simulations
@@ -1174,10 +1176,10 @@ In the case of balanced designs and equal variances, Welch's t-test is even alge
 
 Conversely, in small samples, substantial violations of the assumption may not reach statistical significance, resulting in type II errors. [@Kozak:2018].
 E.g., in our simulations we observe a type II error in normality testing  at small sample sizes of 10 in each symmetric (skew=0), heavy tailed (excess kurtosis=6) group: The default routing (`SW+L`) still sends 51% of the replications to Fisher's one-way ANOVA and a further 5% to Welch's ANOVA, albeit the normality assumption of the residuals is not given. 
-As the sample size increases, the type II error in normality testing approaches zero: at 100 observations per group the same shape is diverted in 99.99% of the replications to the Kruskal-Wallis test (column 2, row `SW+L` of panel B, Fig. \@ref(fig:route1-identical-typeI)).
+As the sample size increases, the type II error in normality testing approaches zero: at 100 observations per group the same shape is diverted in all replications to the Kruskal-Wallis test (column 2, row `SW+L` of panel B, Fig. \@ref(fig:route1-identical-typeI)).
 
 Analogue, we observed a type II error in homoscedasticity testing
- at small sample sizes of 10 for each of the four groups being normal (skew and excess kurtosis=0), but with varying standard deviations of 1.0, 1.3, 1.7 and 2.2: Here  the Levene gate (`L`)  sends 57% of the replications to Fisher's one-way ANOVA, albeit the homoscedasticity assumption of the residuals is not given. The type II error in variance testing vanishes with growing sample size as well: at 50 observations per group the Levene test selects Fisher's one-way ANOVA only in $0.3\%$ the replications (column 1, rows `L`  of panel B, Fig. \@ref(fig:route1-unequal-typeI)).
+ at small sample sizes of 10 for each of the four groups being normal (skew and excess kurtosis=0), but with varying standard deviations of 1.0, 1.3, 1.7 and 2.2: Here  the Levene gate (`L`)  sends 58% of the replications to Fisher's one-way ANOVA, albeit the homoscedasticity assumption of the residuals is not given. The type II error in variance testing vanishes with growing sample size as well: at 50 observations per group the Levene test selects Fisher's one-way ANOVA only in $0.3\%$ the replications (column 1, rows `L`  of panel B, Fig. \@ref(fig:route1-unequal-typeI)).
 
 The Shapiro-Wilk residual-normality gate, the Levene variance gate that follows it when residual normality is retained, and the test finally selected are all computed from the same data, so conditioning on the outcome of the gates changes the distribution of the selected statistic and the procedure no longer operates at the chosen significance level [@Rochon:2012; @Moser:1992].
 

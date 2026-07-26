@@ -3,7 +3,21 @@
 ## This keeps the Gamma simulation routing logic, but draws centred,
 ## standardised Fleishman residual distributions.
 
+## Reproducible parallel streams: set.seed() alone does not reach the workers
+## forked by mclapply(). With L'Ecuyer-CMRG each replication is given its own
+## stream, drawn in the parent, so results do not depend on the number of cores.
+RNGkind("L'Ecuyer-CMRG")
 set.seed(20260615)
+.rng_stream <- .Random.seed
+
+cell_seeds <- function(n) {
+  seeds <- vector("list", n)
+  for (i in seq_len(n)) {
+    seeds[[i]] <- .rng_stream
+    .rng_stream <<- parallel::nextRNGStream(.rng_stream)
+  }
+  seeds
+}
 
 args <- commandArgs(trailingOnly = TRUE)
 NREP <- if (length(args) >= 1) as.integer(args[1]) else 50000
@@ -110,7 +124,9 @@ make_equal_mean_data <- function(panel, n_vec, sd_vec) {
 }
 
 run_type1_cell <- function(panel, n_vec, sd_vec) {
+  seeds <- cell_seeds(NREP)
   out <- parallel::mclapply(seq_len(NREP), function(i) {
+    assign(".Random.seed", seeds[[i]], envir = globalenv())
     dat <- make_equal_mean_data(panel, n_vec, sd_vec)
     route_once(dat$y, dat$g)
   }, mc.cores = NCORES)
@@ -203,7 +219,9 @@ make_shift_data <- function(panel, n, shifts) {
 }
 
 run_power_cell <- function(panel, n, shifts) {
+  seeds <- cell_seeds(NREP)
   out <- parallel::mclapply(seq_len(NREP), function(i) {
+    assign(".Random.seed", seeds[[i]], envir = globalenv())
     dat <- make_shift_data(panel, n, shifts)
     route_once(dat$y, dat$g)
   }, mc.cores = NCORES)
