@@ -15,7 +15,7 @@ title:
   plain:     "visStatistics: Automated test selection, visualised"
   short:     "\\pkg{visStatistics}: Automated test selection"
 abstract: >
-  `r paste(readLines(if (file.exists("_abstract.Rmd")) "_abstract.Rmd" else "vignettes/_abstract.Rmd"), collapse = " ")`
+  `r paste(readLines(if (file.exists("children/_abstract.Rmd")) "children/_abstract.Rmd" else "vignettes/children/_abstract.Rmd"), collapse = " ")`
 keywords:
   formatted: [automated test selection, visualisation, assumption diagnostics, general linear model, residual diagnostics,  "\\proglang{R}"]
   plain:     [automated test selection,visualisation,  assumption diagnostics, general linear model, residual diagnostics,  R]
@@ -35,15 +35,15 @@ output:
 ```{r knit-setup, include=FALSE}
 # See the note in visStatistics.Rmd: keep the child documents resolvable when
 # the knit starts from the package root rather than from vignettes/.
-if (!file.exists("_body.Rmd") && dir.exists("vignettes")) {
+if (!file.exists("children/_body.Rmd") && dir.exists("vignettes")) {
   knitr::opts_knit$set(root.dir = normalizePath("vignettes"))
 }
 ```
 
-```{r body, child = "_body.Rmd"}
+```{r body, child = "children/_body.Rmd"}
 ```
 
-```{r appendix-child, child = "_appendix.Rmd"}
+```{r appendix-child, child = "children/_appendix.Rmd"}
 ```
 
 # References {.unnumbered}

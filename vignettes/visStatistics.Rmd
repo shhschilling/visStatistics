@@ -38,20 +38,20 @@ editor_options:
 # The child documents are named relative to this file. Knitting from the
 # package root instead (RStudio's "Project Directory" setting) would look for
 # them there, so the root directory is moved back to vignettes/ in that case.
-if (!file.exists("_abstract.Rmd") && dir.exists("vignettes")) {
+if (!file.exists("children/_abstract.Rmd") && dir.exists("vignettes")) {
  knitr::opts_knit$set(root.dir = normalizePath("vignettes"))
 }
 ```
 
 # Abstract {.unnumbered}
 
-```{r abstract, child = "_abstract.Rmd"}
+```{r abstract, child = "children/_abstract.Rmd"}
 ```
 
-```{r body, child = "_body.Rmd"}
+```{r body, child = "children/_body.Rmd"}
 ```
 
-```{r appendix, child = "_appendix.Rmd"}
+```{r appendix, child = "children/_appendix.Rmd"}
 ```
 
 # References {.unnumbered}

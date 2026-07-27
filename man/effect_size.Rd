@@ -80,11 +80,19 @@ The following estimates are computed internally:
 
 The following estimates are extracted from existing result objects:
 \itemize{
-  \item \eqn{R^2} from \code{summary(lm())$r.squared}.
+  \item \eqn{R^2} from \code{summary(lm())$r.squared}, the coefficient of
+    determination \eqn{R^2 = 1 - SS_{res}/SS_{tot}}, where \eqn{SS_{res}}
+    is the residual and \eqn{SS_{tot}} the total sum of squares.
   \item Spearman's \eqn{\rho} from
-    \code{cor.test(method = "spearman")$estimate}.
+    \code{cor.test(method = "spearman")$estimate}, the Pearson correlation
+    of the ranks, \eqn{\rho = r(rank(x), rank(y))}.
   \item Kendall's \eqn{\tau_b} from
-    \code{cor.test(method = "kendall")$estimate}.
+    \code{cor.test(method = "kendall")$estimate},
+    \eqn{\tau_b = (n_c - n_d)/\sqrt{(n_0 - n_1)(n_0 - n_2)}}, where
+    \eqn{n_c} and \eqn{n_d} are the numbers of concordant and discordant
+    pairs, \eqn{n_0 = n(n-1)/2} the total number of pairs, and \eqn{n_1}
+    and \eqn{n_2} the numbers of pairs tied in the response and in the
+    predictor.
   \item The conditional maximum-likelihood odds ratio from
     \code{fisher.test()$estimate} and its confidence interval from
     \code{fisher.test()$conf.int} for \eqn{2\times 2} tables.

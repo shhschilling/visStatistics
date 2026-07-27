@@ -130,7 +130,7 @@ In the numeric-response, categorical-predictor branch (Route 1), parametric test
 
 ## Student's t-test and Fisher's one-way ANOVA
 
-### Student's t-test `t.test(..., var.equal = TRUE)`{#sec:tt}
+### Student's t-test `t.test(..., var.equal = TRUE)` {#sec:tt}
 
 Student's t-test tests the null hypothesis that the population means of two unpaired groups are equal. The test statistic for Student's t-test (`t.test(..., var.equal = TRUE)`) is
 
@@ -144,7 +144,7 @@ where \(s_p\) is the square root of the pooled variance in
 Eq. \@ref(eq:pooled-variance) for \(k=2\). The statistic follows a
 \(t\)-distribution with \(\nu=n_1+n_2-2\) degrees of freedom.
 
-### Fisher's one-way ANOVA `aov()`{#sec:fisher-aov}
+### Fisher's one-way ANOVA `aov()` {#sec:fisher-aov}
 
 Fisher's one-way ANOVA generalises the comparison to more than two groups and
 tests the null hypothesis that the population means of \(k\) groups are equal.
@@ -231,7 +231,7 @@ by the ANOVA residual mean square \(MS_\text{within}\).
 
 Welch's heteroscedastic ANOVA generalises the unequal-variance mean comparison to more than two groups.
 
-### Welch's t-test `t.test()`{#sec:welch-tt}
+### Welch's t-test `t.test()` {#sec:welch-tt}
 
 Welch's t-test (`t.test(..., var.equal = FALSE)`) compares the means of two independent groups when homogeneous variances cannot be assumed. Its statistic is
 
@@ -251,7 +251,7 @@ with degrees of freedom approximated by the Welch--Satterthwaite equation [@Welc
 (\#eq:welch-satterthwaite-df)
 \end{equation}
 
-### Welch's heteroscedastic ANOVA `oneway.test()`{#sec:welch-aov}
+### Welch's heteroscedastic ANOVA `oneway.test()` {#sec:welch-aov}
 
 Welch's heteroscedastic ANOVA (`oneway.test()`) generalises Welch's t-test to more than two groups by down-weighting groups with large variance. It compares group means using weights based on sample sizes and variances when homogeneous variances cannot be assumed. Its test statistic is
 
@@ -266,7 +266,7 @@ F_W =
 
 where $w_i = n_i/s_i^2$ are the inverse-variance weights, $w = \sum_{i=1}^{k} w_i$, and $\bar{x}_w = \sum_{i=1}^{k} w_i \bar{x}_i / w$ is the weighted grand mean. The numerator degree of freedom is $k-1$; the denominator degree of freedom is the Satterthwaite-type approximation returned by `oneway.test()`.
 
-#### Post-hoc comparison `games.howell()`{#sec:gh}
+#### Post-hoc comparison `games.howell()` {#sec:gh}
 
 Post-hoc comparisons use the package implementation `games.howell()`
 [@Games:1976]. It applies the Welch two-sample statistic from
@@ -355,7 +355,7 @@ In contrast to the preceding mean-based tests, the non-parametric group tests be
 
 ## Wilcoxon rank-sum test and Kruskal--Wallis test
 
-### Wilcoxon rank-sum test `wilcox.test()`{#sec:wilc}
+### Wilcoxon rank-sum test `wilcox.test()` {#sec:wilc}
 
 For two independent groups, after the combined ranking step described above,
 let \(R(x_{1,j})\) be the rank assigned to observation \(j\) in the first
@@ -384,7 +384,7 @@ Because `wilcox.test(x, y)` uses the first supplied group for $W_1$, swapping th
 
 The $p$\ value is the tail probability of the observed $W$ under the null distribution of the rank-sum statistic. With R's default settings, `wilcox.test()` obtains this null distribution exactly when both groups have fewer than 50 finite observations, and otherwise uses a normal approximation with continuity correction.
 
-### Kruskal--Wallis test `kruskal.test()`{#sec:kw}
+### Kruskal--Wallis test `kruskal.test()` {#sec:kw}
 
 For \(k\) independent groups, the observations from all groups are ranked
 together as described above. Let \(\bar R_i\) be the mean rank assigned back
@@ -417,7 +417,7 @@ If the group distributions are the same distribution up to group-specific additi
 
 For $k=2$, Kruskal--Wallis and Wilcoxon are based on the same pooled ranks. The two group mean ranks are $\bar R_1=W_1/n_1$ and $\bar R_2=W_2/n_2$, and $W=U_1$ is the reported Wilcoxon statistic from Eq. \@ref(eq:wilcoxon-w). In the large-sample approximation, the two-group Kruskal--Wallis statistic $H$ corresponds to a squared, centred, and rescaled form of the reported Wilcoxon statistic $W$. Therefore, the two tests give identical two-sided $p$\ values only when Wilcoxon is forced to use the uncorrected large-sample approximation, `wilcox.test(..., exact = FALSE, correct = FALSE)`. In `visstat()`, `wilcox.test()` is used with R's default settings, while `kruskal.test()` uses the large-sample $\chi^2$ approximation to $H$. Therefore, the two routes should not be expected to return identical two-group $p$\ values under the defaults.
 
-#### Post-hoc comparison `pairwise.wilcox.test()`{#sec:pairwise-wilcox}
+#### Post-hoc comparison `pairwise.wilcox.test()` {#sec:pairwise-wilcox}
 
 `pairwise.wilcox.test()` compares each pair of factor levels via the Wilcoxon rank-sum test on ranks rather than means. The resulting $p$\ values are adjusted for multiplicity using Holm's step-down method [@Holm:1979].
 
@@ -425,7 +425,7 @@ For $k=2$, Kruskal--Wallis and Wilcoxon are based on the same pooled ranks. The 
 
 Rank correlations are used when `correlation = TRUE`.
 
-## Kendall rank correlation `cor.test(..., method="kendall")`{#sec:tau}
+## Kendall rank correlation `cor.test(..., method="kendall")` {#sec:tau}
 
 Kendall's $\tau_b$ tests the null hypothesis of no monotone association between two ordered variables. For two ordinal variables with $n$ joint observations, let $n_c$ denote the number of concordant pairs (those whose ranks agree in both variables) and $n_d$ the number of discordant pairs. Kendall's $\tau_b$ is defined as
 
@@ -551,8 +551,7 @@ Given these fixed margins, the exact null probability of this table is the
 hypergeometric probability
 
 \begin{equation}
-\mathbb{P}(a \mid a+b,c+d,a+c,b+d)
-=
+\operatorname{P}(A=a \mid a+b,c+d,a+c,b+d)=
 \frac{\dbinom{a+b}{a}\dbinom{c+d}{c}}
 {\dbinom{N}{a+c}},
 (\#eq:fisher-hypergeom)
@@ -575,31 +574,301 @@ of the cells holding the counts $a,b,c,d$, and let
 \end{equation}
 
 be the population odds ratio, with $\theta=1$ under independence. Let $A$
-denote the random upper-left cell count. Conditional on the margins, $A$
-follows Fisher's noncentral hypergeometric distribution
+denote the upper-left cell count as a random variable, of which the observed
+count $a$ is one realisation. Conditional on the margins, $A$ follows
+Fisher's non-central hypergeometric distribution [@Agresti:2002, pp. 99--100]
 
 \begin{equation}
 \operatorname{P}_{\theta}(A=k \mid a+b,c+d,a+c,b+d)=
-\frac{w_k\,\theta^{k}}{\sum_{j} w_j\,\theta^{j}},
+\frac{w_k\,\theta^{k}}{\sum_{j=m_-}^{m_+} w_j\,\theta^{j}},
 \qquad
 w_j=\dbinom{a+b}{j}\dbinom{c+d}{a+c-j},
 (\#eq:fisher-noncentral)
 \end{equation}
 
-of which Eq. \@ref(eq:fisher-hypergeom) is the case $\theta=1$. Differentiating
-its log-likelihood $\ell(\theta)=a\log\theta-\log\sum_{j} w_j\theta^{j}$ with
-respect to $\theta$ gives
-$\bigl(a-\operatorname{E}_{\theta}(A \mid a+b,c+d,a+c,b+d)\bigr)/\theta$, so
-$\hat\theta_{\mathrm{cond}}$ is the value of $\theta$ at which this derivative
-vanishes, that is the solution of
+for $m_-\le k\le m_+$, where $m_-=\max(0,a-d)$ and $m_+=\min(a+b,a+c)$ are the
+smallest and largest upper-left counts compatible with the fixed margins.
+Eq. \@ref(eq:fisher-hypergeom) is the case $\theta=1$: the numerator
+then reduces to $w_a$, and the denominator to $\sum_{j=m_-}^{m_+} w_j$, which by
+Vandermonde's identity equals $\dbinom{N}{a+c}$,
+
+\begin{equation}
+\sum_{j=m_-}^{m_+}\dbinom{a+b}{j}\dbinom{c+d}{a+c-j}=\dbinom{N}{a+c}.
+(\#eq:vandermonde)
+\end{equation}
+
+The conditional maximum
+likelihood estimate $\hat\theta_{\mathrm{cond}}$ is the value of $\theta$ that
+maximises the probability of Eq. \@ref(eq:fisher-noncentral) at the observed
+count $k=a$. With $k$ fixed at $a$ and $\theta$ varying, that probability is
+the likelihood, abbreviated $L(\theta)$. The denominator of
+Eq. \@ref(eq:fisher-noncentral) is the normalising sum, the total of the
+unnormalised weights $w_j\,\theta^{j}$ over all counts the margins permit,
+
+\begin{equation}
+Z(\theta)=\sum_{j=m_-}^{m_+} w_j\,\theta^{j},
+(\#eq:fisher-Z)
+\end{equation}
+
+so that the likelihood is
+
+\begin{equation}
+L(\theta)=\operatorname{P}_{\theta}(A=a \mid a+b,c+d,a+c,b+d)
+=\frac{w_a\,\theta^{a}}{Z(\theta)}.
+(\#eq:fisher-likelihood)
+\end{equation}
+
+Differentiating Eq. \@ref(eq:fisher-likelihood) with respect to $\theta$ gives
+
+\begin{equation}
+L'(\theta)=\frac{a\,w_a\,\theta^{a-1}Z(\theta)-w_a\,\theta^{a}Z'(\theta)}
+{Z(\theta)^{2}}
+=\frac{L(\theta)}{\theta}
+\left(a-\theta\,\frac{Z'(\theta)}{Z(\theta)}\right).
+(\#eq:fisher-score)
+\end{equation}
+
+By Eq. \@ref(eq:fisher-Z), the second term in the bracket of
+Eq. \@ref(eq:fisher-score) is a sum over the probabilities of
+Eq. \@ref(eq:fisher-noncentral), that is the conditional expectation of $A$,
+
+\begin{equation}
+\begin{split}
+Z'(\theta) &= \frac{\mathrm{d}Z}{\mathrm{d}\theta}
+= \sum_{j=m_-}^{m_+} j\,w_j\,\theta^{j-1}, \\[2pt]
+\theta\,\frac{Z'(\theta)}{Z(\theta)}
+&= \frac{\sum_{j=m_-}^{m_+} j\,w_j\,\theta^{j}}
+        {\sum_{j=m_-}^{m_+} w_j\,\theta^{j}} \\[2pt]
+&= \sum_{j=m_-}^{m_+} j\,
+   \operatorname{P}_{\theta}(A=j \mid a+b,c+d,a+c,b+d) \\[2pt]
+&= \operatorname{E}_{\theta}(A \mid a+b,c+d,a+c,b+d).
+\end{split}
+(\#eq:score-mean)
+\end{equation}
+
+As $L(\theta)>0$ and $\theta>0$, Eq. \@ref(eq:fisher-score) vanishes exactly
+when
 
 \begin{equation}
 \operatorname{E}_{\theta}(A \mid a+b,c+d,a+c,b+d)=a .
 (\#eq:conditional-mle)
 \end{equation}
 
-The sample odds ratio is
+where the expectation refers to the distribution of Eq.
+\@ref(eq:fisher-noncentral). Note that this estimator differs from the unconditional
+maximum likelihood estimator, the sample odds ratio
 
 \[
 \widehat{\mathrm{OR}} = \frac{ad}{bc}.
 \]
+
+# Effect size table {#sec:effect-sizes}
+
+The following tables summarise the statistical analyses with their respective effect sizes and formulae.
+
+```{r effect-size-table, echo=FALSE, results='asis'}
+if (knitr::is_latex_output()) {
+ cat(r"(
+\begin{table}[!htbp]
+\caption{Effect sizes returned by \texttt{effect\_size()}.}
+\label{tab:effect-size-formulae}
+\centering
+\begingroup
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\setlength{\arrayrulewidth}{0.2pt}
+\renewcommand{\arraystretch}{1.18}
+\newcommand{\tbdoi}[2]{\href{https://doi.org/#1}{#2}}
+\begin{tabular}{@{}%
+>{\raggedright\arraybackslash}p{0.23\textwidth}%
+>{\raggedright\arraybackslash}p{0.17\textwidth}%
+>{\raggedright\arraybackslash}p{0.37\textwidth}%
+>{\raggedright\arraybackslash}p{0.19\textwidth}@{}}
+\hline
+\textbf{Analysis} & \textbf{Effect size} & \textbf{Formula} &
+\textbf{Source} \\
+\hline
+\hyperref[sec:tt]{Student's $t$-test} &
+Hedges' $g_{s_p}$ (pooled) & $g_{s_p}=J(N-2)\cdot(\bar{x}_1-\bar{x}_2)/s_p$ &
+\tbdoi{10.3102/10769986006002107}{Hedges 1981} \\
+\hline
+\hyperref[sec:welch-tt]{Welch's $t$-test} &
+Hedges' $g_{s^{*}}$ (non-pooled) & $g_{s^{*}}=J(\nu^{*})\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$ &
+\tbdoi{10.31234/osf.io/tu6mp}{Delacre et al. 2021} \\
+\hline
+\hyperref[sec:wilc]{Wilcoxon rank-sum} &
+rank-biserial $r$ & $r=2\cdot W/(n_1\cdot n_2)-1$ &
+\tbdoi{10.2466/11.IT.3.1}{Kerby 2014} \\
+\hline
+\hyperref[sec:fisher-aov]{Fisher's ANOVA} & $\omega^2$ &
+$\nu_1\cdot(F-1)/(\nu_1\cdot F+\nu_2+1)$ &
+\tbdoi{10.1016/j.jesp.2017.09.004}{Albers and Lakens 2018, Appendix A} \\
+\hline
+\hyperref[sec:welch-aov]{Welch's ANOVA} &
+$\omega^2$ (approx.) &
+$\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W+\nu_2+1)$ &
+\tbdoi{10.1016/j.jesp.2017.09.004}{F-form from Albers and Lakens 2018, Appendix A} \\
+\hline
+\hyperref[sec:kw]{Kruskal--Wallis} &
+$\eta_H^2$ & $(H-k+1)/(N-k)$ &
+\tbdoi{10.1073/pnas.21.9.554}{Kelley 1935} \\
+\hline
+\hyperref[sec:lin-reg]{Simple linear regression} &
+$R^2$ &
+$R^2=1-SS_\text{res}/SS_\text{tot}$ &
+\texttt{summary(lm())\$r.squared} \\
+\hline
+\hyperref[sec:rho]{Spearman} &
+$\rho$ &
+$\rho=r(\operatorname{rank}(x),\operatorname{rank}(y))$ &
+\texttt{cor.test(method = "spearman")\$estimate} \\
+\hline
+\hyperref[sec:tau]{Kendall} &
+$\tau_b$ &
+$\tau_b=(n_c-n_d)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$ &
+\texttt{cor.test(method = "kendall")\$estimate} \\
+\hline
+\hyperref[sec:fisher-exact]{Pearson $\chi^2$ ($R\times C$)} &
+Cramér's $V$ &
+$V_{R\times C}=\sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}$ &
+\tbdoi{10.4324/9780203771587}{Cohen 2013, p. 223} \\
+\hline
+\hyperref[sec:fisher-exact]{Pearson $\chi^2$ ($2\times2$)} &
+$\phi$ & $\phi=\sqrt{\chi^2/N}$ &
+\tbdoi{10.4324/9780203771587}{Cohen 2013, p. 223} \\
+\hline
+\hyperref[sec:fisher-exact]{Fisher's exact ($2\times2$)} &
+conditional odds ratio &
+\(\hat\theta_{\mathrm{cond}}\) &
+\texttt{fisher.test()\$estimate} \\
+\hline
+\end{tabular}
+\endgroup
+\end{table}
+)")
+} else {
+ cat(r"(
+<table id="tab:effect-size-formulae">
+<caption>Effect sizes returned by <code>effect_size()</code>.</caption>
+<tr>
+<th>Analysis</th>
+<th>Effect size</th>
+<th>Formula</th>
+<th>Source</th>
+</tr>
+<tr>
+<td><a href="#sec:tt">Student's $t$-test</a></td>
+<td>Hedges' $g_{s_p}$ (pooled)</td>
+<td>$g_{s_p}=J(N-2)\cdot(\bar{x}_1-\bar{x}_2)/s_p$</td>
+<td><a href="https://doi.org/10.3102/10769986006002107">Hedges 1981</a></td>
+</tr>
+<tr>
+<td><a href="#sec:welch-tt">Welch's $t$-test</a></td>
+<td>Hedges' $g_{s^{*}}$ (non-pooled)</td>
+<td>$g_{s^{*}}=J(\nu^{*})\cdot(\bar{x}_1-\bar{x}_2)/s^{*}$</td>
+<td><a href="https://doi.org/10.31234/osf.io/tu6mp">Delacre et al. 2021</a></td>
+</tr>
+<tr>
+<td><a href="#sec:wilc">Wilcoxon rank-sum</a></td>
+<td>rank-biserial $r$</td>
+<td>$r=2\cdot W/(n_1\cdot n_2)-1$</td>
+<td><a href="https://doi.org/10.2466/11.IT.3.1">Kerby 2014</a></td>
+</tr>
+<tr>
+<td><a href="#sec:fisher-aov">Fisher's ANOVA</a></td>
+<td>$\omega^2$</td>
+<td>$\nu_1\cdot(F-1)/(\nu_1\cdot F+\nu_2+1)$</td>
+<td><a href="https://doi.org/10.1016/j.jesp.2017.09.004">Albers and Lakens 2018, Appendix A</a></td>
+</tr>
+<tr>
+<td><a href="#sec:welch-aov">Welch's ANOVA</a></td>
+<td>$\omega^2$ (approx.)</td>
+<td>$\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W+\nu_2+1)$</td>
+<td><a href="https://doi.org/10.1016/j.jesp.2017.09.004">F-form from Albers and
+Lakens 2018, Appendix A</a></td>
+</tr>
+<tr>
+<td><a href="#sec:kw">Kruskal--Wallis</a></td>
+<td>$\eta_H^2$</td>
+<td>$(H-k+1)/(N-k)$</td>
+<td><a href="https://doi.org/10.1073/pnas.21.9.554">Kelley 1935</a></td>
+</tr>
+<tr>
+<td><a href="#sec:lin-reg">Simple linear regression</a></td>
+<td>$R^2$</td>
+<td>$R^2=1-SS_\text{res}/SS_\text{tot}$</td>
+<td><code>summary(lm())&#36;r.squared</code></td>
+</tr>
+<tr>
+<td><a href="#sec:rho">Spearman</a></td>
+<td>$\rho$</td>
+<td>$\rho=r(\operatorname{rank}(x),\operatorname{rank}(y))$</td>
+<td><code>cor.test(method = "spearman")&#36;estimate</code></td>
+</tr>
+<tr>
+<td><a href="#sec:tau">Kendall</a></td>
+<td>$\tau_b$</td>
+<td>$\tau_b=(n_c-n_d)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$</td>
+<td><code>cor.test(method = "kendall")&#36;estimate</code></td>
+</tr>
+<tr>
+<td><a href="#sec:fisher-exact">Pearson $\chi^2$ ($R\times C$)</a></td>
+<td>Cramér's $V$</td>
+<td>$V_{R\times C}=\sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}$</td>
+<td><a href="https://doi.org/10.4324/9780203771587">Cohen 2013, p. 223</a></td>
+</tr>
+<tr>
+<td><a href="#sec:fisher-exact">Pearson $\chi^2$ ($2\times 2$)</a></td>
+<td>$\phi$</td>
+<td>$\phi=\sqrt{\chi^2/N}$</td>
+<td><a href="https://doi.org/10.4324/9780203771587">Cohen 2013, p. 223</a></td>
+</tr>
+<tr>
+<td><a href="#sec:fisher-exact">Fisher's exact ($2\times 2$)</a></td>
+<td>conditional odds ratio</td>
+<td>$\hat\theta_{\mathrm{cond}}$</td>
+<td><code>fisher.test()&#36;estimate</code></td>
+</tr>
+</table>
+)")
+}
+```
+
+
+Here, Hedges' small-sample correction factor is
+
+\begin{equation*}
+J(\nu) =
+\frac{\Gamma(\nu/2)}
+   {\sqrt{\nu/2}\;\Gamma((\nu-1)/2)},
+\end{equation*}
+
+where $J$ denotes Hedges' correction factor. For Student's $t$-test, $\nu=N-2$; for Welch's $t$-test, $\nu=\nu^{*}$ with
+
+\begin{equation*}
+\nu^{*} =
+\frac{(n_1-1)(n_2-1)(s_1^2+s_2^2)^2}
+   {(n_2-1)s_1^4+(n_1-1)s_2^4}.
+\end{equation*}
+
+The non-pooled average-variance standardizer is
+
+\begin{equation*}
+s^{*} = \sqrt{\frac{s_1^2+s_2^2}{2}},
+\end{equation*}
+
+where $s^{*}$ denotes the average-variance standardizer.
+
+$\nu_1$ and $\nu_2$ denote the numerator and denominator degrees of freedom; for Fisher's ANOVA, $\nu_1=k-1$ and $\nu_2=N-k$; for Welch's ANOVA, $\nu_1=k-1$ and $\nu_2$ is the usually fractional denominator degree of freedom returned by `oneway.test()`.
+
+For simple linear regression, the coefficient of determination is
+
+\begin{equation}
+R^2 = 1 - \frac{SS_\text{res}}{SS_\text{tot}},
+(\#eq:r-squared)
+\end{equation}
+
+where $SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2$ is the residual sum of squares, $\hat{y}_i$ is the predicted value, and $SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2$ is the total sum of squares.
+
+All other variables used in the [effect-size table](#tab:effect-size-formulae) are defined in the corresponding "Analysis" section.
+
