@@ -7,10 +7,12 @@ FLEISHMAN_FONT_FAMILY <- "serif"
 
 ## Raster resolution for the saved PNGs. The figures are 12-20 inches wide, so
 ## 360 dpi produced 1.3-2.8 MB files and a "significant size reductions"
-## WARNING from R CMD check on the vignette PDF. 200 dpi keeps a comfortable
-## margin above the 144 dpi floor the JSS style guide asks for, while cutting
-## the raster area to roughly a third.
-FLEISHMAN_DPI <- 200
+## WARNING from R CMD check on the vignette PDF. Each PNG counts twice in the
+## source tarball, once in vignettes/figures and once base64-encoded inside the
+## html_vignette, so 130 dpi keeps the tarball below the 10 MB CRAN limit. The
+## figures are drawn 20 inches wide, so this is still about 400 dpi at the
+## width they are displayed at.
+FLEISHMAN_DPI <- 130
 
 FLEISHMAN_TEXT <- list(
   main_title = 20,

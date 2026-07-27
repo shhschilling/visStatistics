@@ -84,9 +84,6 @@ bypass obtain mean-based tests with `group_test = "welch"`.
 ## Check status
 
 
-- NOTE: Possibly misspelled words in DESCRIPTION: Kruskal, Spearman,
-  Wilcoxon. These are the surnames of the statisticians the tests are
-  named after, spelled as in the cited literature.
 
 - NOTE: installed size is 10.1Mb, with the sub-directories doc (6.6Mb)
   and help (2.8Mb) above 1Mb. The package selects and *visualises*

@@ -79,6 +79,7 @@ Among the reviewed automated test-selection packages, `visStatistics` is thus th
 The package is deliberately limited to common two-variable settings in which the route can be visualised and audited: residual-based diagnostics for the linear-model branches, the selected test, full test statistics, effect size, result plots, and post-hoc comparisons where required.
 
 Note that packages such as `rstatix` [@Kassambara:2025], `ggstatsplot` [@Patil:2021], and, in Python, `pingouin` [@Vallat:2018] provide individual diagnostic and test functions but leave the actual test choice to the user rather than automating it.
+For agronomic field trials, `agrobox` [@Salinas:2026] automates the choice between Fisher's and Welch's ANOVA from residual-normality and variance diagnostics; when residual normality is rejected it reports the group means without any test, rather than falling back to a rank-based alternative.
 
 
 # Purpose of the vignette
