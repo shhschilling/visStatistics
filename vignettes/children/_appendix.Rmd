@@ -16,8 +16,6 @@ s_p^2=\frac{1}{N-k}\sum_{i=1}^{k}(n_i-1)s_i^2 .
 (\#eq:pooled-variance)
 \end{equation}
 
-
-
 ```{=latex}
 \numberwithin{equation}{section}
 ```
@@ -458,49 +456,9 @@ $$r(u,v)
 
 Here $u_i = \operatorname{rank}(x_i)$ and $v_i = \operatorname{rank}(y_i)$ are the ranks of the $n$ paired observations, and $\bar{u}$ and $\bar{v}$ are their sample means.
 
-For inference, `cor.test(..., method = "spearman")` computes an exact $p$\ value for small samples without ties by evaluating all $n!$ rank permutations. For larger samples or when ties are present, it uses an approximation to the null distribution of the rank association measure or its asymptotic transformation. No distributional assumptions on the original data are required. <!-- 1. Beweis 
-The rank-biserial coefficient reported for the Wilcoxon rank-sum test is
-the corresponding correlation
-coefficient for a ranking and a dichotomy. Cureton defines it from
-cross-category agreements \(P\) and inversions \(Q\) as
-\(r_{RB}=(P-Q)/P_{\max}\), with \(P_{\max}=N_1N_2\) when no bracket tie is
-present, and \(P_{\max}=N_1N_2-t_1t_2\) when a bracket tie is present.
-This is Kendall-type because it is based on agreements minus inversions.
-Using the Durbin--Stuart weighted inversion form of Spearman's rank
-correlation, the same coefficient is also Spearman-type: once one
-variable is a dichotomy, all cross-category rank differences in that
-variable are equal and the weighted agreement-minus-inversion expression
-reduces to the same ratio [@Cureton:1956].
---> A separate Pearson-correlation branch is not implemented. In simple linear regression with an intercept, the two-sided test of zero slope and the two-sided test of zero Pearson correlation return the same $p$\ value. Pearson correlation would therefore not add a separate inferential route to the default regression branch.
+For inference, `cor.test(..., method = "spearman")` computes an exact $p$\ value for small samples without ties by evaluating all $n!$ rank permutations. For larger samples or when ties are present, it uses an approximation to the null distribution of the rank association measure or its asymptotic transformation. No distributional assumptions on the original data are required.A separate Pearson-correlation branch is not implemented. In simple linear regression with an intercept, the two-sided test of zero slope and the two-sided test of zero Pearson correlation return the same $p$\ value. Pearson correlation would therefore not add a separate inferential route to the default regression branch.
 
 ```{=html}
-<!--
-# Influence diagnostics: Cook's distance {#sec:cooks-distance}
-
-For simple linear regression, the leverage plot visualises whether individual
-observations may exert disproportionate influence on the fitted line. Cook's
-distance combines residual size and leverage for this purpose [@Cook:1982].
-In `visStatistics`, the contours are drawn on the z residual scale used in the
-diagnostic panel. With $z_i$ defined in Eq. \@ref(eq:z-residual), Cook's
-distance for observation $i$ is
-
-\begin{equation}
-D_i = \frac{z_i^2 h_i}{k(1-h_i)^2},
-(\#eq:cooks-distance-z)
-\end{equation}
-
-with leverage
-
-\begin{equation}
-h_i = \frac{1}{N} +
-      \frac{(x_i-\bar{x})^2}{\sum_{r=1}^{N}(x_r-\bar{x})^2}.
-(\#eq:leverage-simple-regression)
-\end{equation}
-
-Here $x_i$ is the predictor value of observation $i$, $\bar{x}$ is the
-predictor mean, $N$ is the total sample size, and $k = 2$ is the number of
-fitted model parameters.
--->
 ```
 
 # Pearson's $\chi^2$ test and Fisher's exact test {#sec:fisher-exact}
@@ -833,7 +791,6 @@ Lakens 2018, Appendix A</a></td>
 )")
 }
 ```
-
 
 Here, Hedges' small-sample correction factor is
 
