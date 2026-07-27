@@ -1,8 +1,7 @@
 Dear CRAN-maintainer
 
-Thanks for your all your work.
 
-Below you find the summary of the main changes in visStatistics [version 0.3.0] tot the previous vere version 0.2.0 on CRAN:
+Below you find the summary of the main changes in visStatistics [version 0.3.0] to the current version 0.2.0 on CRAN:
 
 ## CRAN submission for visStatistics [version 0.3.0]
 

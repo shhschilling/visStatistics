@@ -773,21 +773,18 @@ For the ozone example introduced in Section \@ref(sec:lin-reg), staying within `
 Route 1 can answer two different questions: Parametric tests such as Student's t-test, Fisher's one-way ANOVA, and their Welch variants test population means [@Welch:1951; @Rasch:2011; @Delacre:2019], whereas non-parametric tests such as Wilcoxon and Kruskal--Wallis test a rank-based distributional target.
 
 The simulations display the fixed tests and the routed procedures
-side by side: fixed Fisher/Student (`F`), fixed Welch (`W`), a Levene gate
+side by side for four-group comparisons:  fixed Fisher's one-way ANOVA (`F`), fixed Welch's one-way ANOVA (`W`), a Levene gate
 between them (`L`), fixed Kruskal--Wallis (`KW`), a Shapiro--Wilk gate
 between `W` and `KW` (`SW`), and the full Shapiro--Wilk plus Levene gate
 (`SW+L`) gating to either `F` or `W` within the mean branch, otherwise to `KW`.
-In the four-group setting simulated here, `W` is the test that `group_test = "welch"` selects, `KW` the test that `group_test = "rank"` selects, and `SW+L` the default routing; `F`, `L` and `SW` are not user-selectable and are shown to separate the contribution of each gate.
-In two-group comparisons the corresponding options select Welch's t-test and the Wilcoxon rank-sum test, which are not simulated here.
+In the four-group setting simulated here, `W` is the test that `group_test = "welch"` selects, `KW` the test that `group_test = "rank"` selects, and `SW+L` the default routing. 
+<!-- `F`, `L` and `SW` are not user-selectable and are shown to separate the contribution of each gate. -->
+<!-- In two-group comparisons the corresponding options select Welch's t-test and the Wilcoxon rank-sum test, which are not simulated here. -->
 
-###  Defaulting to Welch-type tests{.unnumbered}
-
-Under `group_test = "welch"` the analysis remains mean-based and defaults to Welch-type tests.
-
-
+**Defaulting to Welch-type tests** Fixing the analysis to Welch-type tests costs little when the variances are in fact equal.
 In balanced, homoscedastic four-group case simulations, where the assumptions of the Fisher One way Anova are given, the relative difference between the Fisher and Welch-F-statistic for four group comparisons is of order $1/n$ (Eq. \@ref(eq:welch-anova-equal-var-reduction)) [@Welch:1951; @Rasch:2011; @Delacre:2019], resulting in a relative difference of $6.7\;\%$ for $n = 10$ and only $0.6\%$ for $n=100$ in our four group comparisons  (Eq. \@ref(eq:welch-anova-four-groups)). A default to Welch tests, even when homoscedasticity is given, changes the type I error by less than the Monte Carlo error at every simulated $n$ (Fig. \@ref(fig:route1-identical-typeI), panel B, column 1) and costs about two percentage points of power at $n = 10$, nothing measurable by $n = 100$ (Fig. \@ref(fig:route1-power), panel B, column 1).
 In the context of heteroscedastic comparison, Delacre et al.
-[@Delacre:2019] established that the empirical Type I error of Welch's
+`[@Delacre:2019] established that the empirical Type I error of Welch's
 one-way ANOVA -- whose two-group special case is Welch's t-test --
 remained within Bradley's liberal robustness bounds of $[2.5\%, 7.5\%]$
 [@Bradley:1978] across their simulated non-normal distributions. These
@@ -798,45 +795,41 @@ robustness requires
 at least about 50 observations per group for up to four groups, and about
 100 observations per group for more than four groups [@Delacre:2019].
 
-<!-- Our own exemplary simulations of four group comparisons confirm this for the Welch route in Figures \@ref(fig:route1-identical-typeI) and \@ref(fig:route1-unequal-typeI): for skewness up to 2 and excess kurtosis of 6.6, `W` remains within Bradley's bounds from a minimal individual group size of 25 and a mean group size of 50 onwards, as does the Levene route `L`, whereas `F` does not. -->
-
-
-### Defaulting to rank-based tests {.unnumbered}
-
-Under `group_test = "rank"` the analysis remains rank-based,
-defaulting to the `wilcox.test()` in the two group case and the `kruskal.test()` for more than two groups. 
-Rank-based tests reduce the distributional assumptions and can be more efficient under skewness when the variances are equal [@Bridge:1999].
-
-###  Residual-based test selection {.unnumbered}
-
-Under the default `group_test = NULL` the Shapiro--Wilk and gates send the comparison either to the mean-based or to the rank-based tests based on residual shape:rejected residual normality routes to Wilcoxon or Kruskal--Wallis; retained residual normality keeps the result in the mean-based branch. In mean-based branch we simulated two possible sub strategies to select the default method in 'visstat()': In the first mean based tests always route to Welch's test (`SW`), in the other the Levene test decides if to stay within the general linear framework and choose Student's t-test of Fisher Anova (`F`) as final test or branch out to Welch's methods otherwise, this strategy is denoted by `SW+L`. 
-
-The aim of the simulations is not to re-establish the robustness evidence for Fisher's one-way ANOVA under homoscedasticity and non-normality [@Blanca:2017] or for Welch's ANOVA under heterogeneous variances [@Delacre:2019]. Instead they contrast the three Route 1 strategies in level and in power across combinations of sample size, skewness, excess kurtosis and variance pairing, and show under which of them the displayed residual diagnostics move the analysis from the mean-based branch to the rank-based one.
 
 
 
-The route probabilities are printed in the heatmaps after "|", so that the final
-rejection rates can be read together with the path probabilities taken to the final test.
+**Defaulting to rank-based tests** Rank-based tests reduce the distributional assumptions and can be more efficient under skewness when the variances are equal [@Bridge:1999], ; what this costs under normality and what it gains under skew is quantified in the power simulations below
+(Fig. \@ref(fig:route1-power)).
+
+**Residual-based test selection** The default leaves the choice to the residual diagnostics, so its level and power follows from neither fixed strategy and is studied in the simulations below.
+
+
+The aim  of the simulations is not to re-establish the robustness evidence for Fisher's one-way ANOVA under homoscedasticity and non-normality [@Blanca:2017] or for Welch's ANOVA under heterogeneous variances [@Delacre:2019], but to contrast the three Route 1 strategies in level and in power across combinations of sample size, skewness, excess kurtosis and variance pairing, and to show under which of them the displayed residual diagnostics move the analysis from the mean-based branch to the rank-based one.
+
+
+
 
 The simulations address both homo- and heteroscedastic settings:
 Figure \@ref(fig:route1-identical-typeI) adapts the three-group zero-effect one-way ANOVA setting of Blanca et al. [@Blanca:2017] to four Route 1 groups with identical distributions; here both the equal-means null and the Kruskal--Wallis null are  true.
 
 Figure \@ref(fig:route1-unequal-typeI) keeps the equal-means null and varies the group standard deviations and sample-size pairings as in Delacre et al. [@Delacre:2019].
 
+The route probabilities are printed in the heatmaps after "|", so that the final
+rejection rates can be read together with the path probabilities taken to the final test.
 
-All simulations use four groups and $B=50{,}000$ Monte Carlo
-replications per cell. The scripts, the saved Monte Carlo output and the code
-that builds the three figures ship with the package in
-`system.file("simulations", package = "visStatistics")`.
-
-
-For an estimated rejection probability $p$, the Monte Carlo standard error is [@Koehler:2009]
-$$SE_{\mathrm{MC}}=\sqrt{p(1-p)/B}.$$ This is about 0.10 percentage points at $p=0.05$, with a maximum of about 0.22 percentage points at $p=0.50$.
 
 Non-normal data are generated with Fleishman's polynomial transformation
 $Y = a + bX + cX^2 + dX^3$, where $X \sim N(0,1)$.
 The coefficients set mean 0, variance 1, and the target skewness and
 excess kurtosis [@Fleishman:1978].
+
+
+All simulations use four groups and $B=50{,}000$ Monte Carlo
+replications per cell. The scripts, the saved Monte Carlo output and the code
+that builds the three figures ship with the package in
+`system.file("simulations", package = "visStatistics")`
+For an estimated rejection probability $p$, the Monte Carlo standard error is [@Koehler:2009]
+$$SE_{\mathrm{MC}}=\sqrt{p(1-p)/B}.$$ This is about 0.10 percentage points at $p=0.05$, with a maximum of about 0.22 percentage points at $p=0.50$.
 
 ## Type I error simulations: equal means, equal ranks, balanced or unbalanced group sizes
 
@@ -968,8 +961,7 @@ Assessing assumptions solely through p-values can lead to both type I errors (fa
 No single assumption test maintains optimal Type I error rates and statistical power across all distributions [@Olejnik:1987] and sample sizes, and p-values obtained from these tests may be unreliable if their assumptions are violated.
 
 
-
-In the default routing for tests of central tendencies,two assumption tests are concatenated: the Shapiro--Wilk test on the standardised residuals is an omnibus test of normality: it responds to both skewness and to excess kurtosis (see Fig. \@ref(fig:route1-identical-typeI)) and acts as a proxy for whether the group mean is a faithful summary of the group. Only if the mean-based branch is retained does the Levene test decide within it, between the equal-variance tests and their Welch counterparts.
+In the default routing for tests of central tendencies, up to two assumption tests are concatenated: the Shapiro--Wilk test on the standardised residuals is an omnibus test of normality: it responds to both skewness and to excess kurtosis (see Fig. \@ref(fig:route1-identical-typeI)) and acts as a proxy for whether the group mean is a faithful summary of the group. Only if the mean-based branch is retained does the Levene then test decide within it, between the equal-variance tests and their Welch counterparts.
 
 What a false alarm in either gate costs differs accordingly.
 A type I error in the Shapiro--Wilk residual normality test sends input that satisfies the general linear model assumptions to the rank branch. In our simulations, under true normality, this only occurs  at the nominal level of about $\alpha$ of all analyses (see column 1 of Fig. \@ref(fig:route1-identical-typeI)). As that input is normal and homoscedastic, the Kruskal–Wallis null hypothesis is also true and the general rejection rate remains close to the nominal level. The real impact is that the question being answered changes from a mean comparison to a rank comparison. 
