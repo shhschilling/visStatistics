@@ -87,7 +87,10 @@
 ^_book$
 ^_main\.html$
 ^\.lintr$
-^inst/simulations/run_B[0-9]+\.log$
+^inst/simulations/.*\.log$
+# Figures are rebuilt from the shipped .csv/.rds by the two figure scripts;
+# the three manuscript figures also live in vignettes/figures.
+^inst/simulations/.*\.png$
 ^inst/simulations/fleishman_route1_power_B[0-9]+_outputs$
 ^vignettes/_visStatistics_jss\.Rmd$
 ^vignettes/.*\.pdf$

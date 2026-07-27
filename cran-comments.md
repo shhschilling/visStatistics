@@ -1,3 +1,9 @@
+Dear CRAN-maintainer
+
+Thanks for your all your work.
+
+Below you find the summary of the main changes in visStatistics [version 0.3.0] tot the previous vere version 0.2.0 on CRAN:
+
 ## CRAN submission for visStatistics [version 0.3.0]
 
 This is a feature release following version 0.2.0.
@@ -83,4 +89,17 @@ bypass obtain mean-based tests with `group_test = "welch"`.
   Wilcoxon. These are the surnames of the statisticians the tests are
   named after, spelled as in the cited literature.
 
+- NOTE: installed size is 10.1Mb, with the sub-directories doc (6.6Mb)
+  and help (2.8Mb) above 1Mb. The package selects and *visualises*
+  statistical tests, so its documentation is largely graphical: the
+  vignette embeds the assumption-diagnostic panels, the result panels of
+  every implemented test, and the three Monte Carlo simulation figures it
+  discusses, and the help pages embed the corresponding example plots.
+  The Monte Carlo results shipped in inst/simulations are the replication
+  material for those figures and take 168Kb; the figures themselves are
+  not shipped, but rebuilt from the results by the scripts in the same
+  directory.
+
 Thank you for reviewing this release.
+
+Best regards, Sabine Schilling

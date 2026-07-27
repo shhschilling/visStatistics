@@ -427,10 +427,10 @@ Rank correlations are used when `correlation = TRUE`.
 
 ## Kendall rank correlation `cor.test(..., method="kendall")`{#sec:tau}
 
-Kendall's $\tau_b$ tests the null hypothesis of no monotone association between two ordered variables. For two ordinal variables with $n$ joint observations, let $C$ denote the number of concordant pairs (those whose ranks agree in both variables) and $D$ the number of discordant pairs. Kendall's $\tau_b$ is defined as
+Kendall's $\tau_b$ tests the null hypothesis of no monotone association between two ordered variables. For two ordinal variables with $n$ joint observations, let $n_c$ denote the number of concordant pairs (those whose ranks agree in both variables) and $n_d$ the number of discordant pairs. Kendall's $\tau_b$ is defined as
 
 \begin{equation}
-\tau_b \;=\; \frac{C - D}
+\tau_b \;=\; \frac{n_c - n_d}
 {\sqrt{\left(n_0 - n_1\right)\left(n_0 - n_2\right)}},
 (\#eq:kendall-tau-b)
 \end{equation}
@@ -503,7 +503,7 @@ fitted model parameters.
 -->
 ```
 
-# Pearson's $\chi^2$ test and Fisher's exact test
+# Pearson's $\chi^2$ test and Fisher's exact test {#sec:fisher-exact}
 
 Let $O_{ij}$ and $E_{ij}$ denote the observed and expected frequencies
 in row $i$ and column $j$ of an $R \times C$ contingency table, where
@@ -550,17 +550,13 @@ R_2 & c & d & c + d \\
 Given these fixed margins, the exact null probability of this table is the
 hypergeometric probability
 
-Let $A$ denote the random upper-left cell count. The conditional odds ratio
-is the value $\hat\theta_{\mathrm{cond}}$ such that
-$\operatorname{E}_{\hat\theta}(A \mid a+b,c+d,a+c,b+d)=a$.
-
-\[
+\begin{equation}
 \mathbb{P}(a \mid a+b,c+d,a+c,b+d)
 =
 \frac{\dbinom{a+b}{a}\dbinom{c+d}{c}}
 {\dbinom{N}{a+c}},
-\]
 (\#eq:fisher-hypergeom)
+\end{equation}
 
 where $N = a+b+c+d$. The two-sided $p$\ value is obtained by summing the
 probabilities of all tables with the same margins whose probabilities under
@@ -570,6 +566,38 @@ using the multivariate hypergeometric distribution.
 
 For $2\times 2$ tables, `fisher.test()` additionally returns the conditional
 maximum likelihood estimate of the odds ratio and its confidence interval.
+Let $\pi_{11},\pi_{12},\pi_{21},\pi_{22}$ denote the population probabilities
+of the cells holding the counts $a,b,c,d$, and let
+
+\begin{equation}
+\theta=\frac{\pi_{11}\pi_{22}}{\pi_{12}\pi_{21}}
+(\#eq:odds-ratio)
+\end{equation}
+
+be the population odds ratio, with $\theta=1$ under independence. Let $A$
+denote the random upper-left cell count. Conditional on the margins, $A$
+follows Fisher's noncentral hypergeometric distribution
+
+\begin{equation}
+\operatorname{P}_{\theta}(A=k \mid a+b,c+d,a+c,b+d)=
+\frac{w_k\,\theta^{k}}{\sum_{j} w_j\,\theta^{j}},
+\qquad
+w_j=\dbinom{a+b}{j}\dbinom{c+d}{a+c-j},
+(\#eq:fisher-noncentral)
+\end{equation}
+
+of which Eq. \@ref(eq:fisher-hypergeom) is the case $\theta=1$. Differentiating
+its log-likelihood $\ell(\theta)=a\log\theta-\log\sum_{j} w_j\theta^{j}$ with
+respect to $\theta$ gives
+$\bigl(a-\operatorname{E}_{\theta}(A \mid a+b,c+d,a+c,b+d)\bigr)/\theta$, so
+$\hat\theta_{\mathrm{cond}}$ is the value of $\theta$ at which this derivative
+vanishes, that is the solution of
+
+\begin{equation}
+\operatorname{E}_{\theta}(A \mid a+b,c+d,a+c,b+d)=a .
+(\#eq:conditional-mle)
+\end{equation}
+
 The sample odds ratio is
 
 \[

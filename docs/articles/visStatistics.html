@@ -57,7 +57,7 @@
       <h1>visStatistics: automated test selection, visualised</h1>
                         <h4 data-toc-skip class="author">Sabine Schilling</h4>
             
-            <h4 data-toc-skip class="date">2026-07-26</h4>
+            <h4 data-toc-skip class="date">2026-07-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/HEAD/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -540,7 +540,7 @@ At <span class="math inline">\(n=100\)</span>, all strategies approach 100% reje
 <span class="header-section-number">7</span> Reported <span class="math inline">\(p\)</span> values and effect sizes <code>effect_size()</code><a class="anchor" aria-label="anchor" href="#sec:effect-size"></a>
 </h2>
 <p>The selected test output includes the <span class="math inline">\(p\)</span> value quantifying evidence against the null hypothesis and a complementary <code>effect_size</code> estimate describing the magnitude of the selected comparison, association, or model fit on the scale
-defined in Appendix <a href="#sec:effect-size">7</a> <span class="citation">(<a href="#ref-Fritz:2012">Fritz, Morris, and Richler 2012</a>; <a href="#ref-Levine:2002">Levine and Hullett 2002</a>)</span>.
+defined in the <a href="#tab:effect-size-formulae">effect-size table</a> <span class="citation">(<a href="#ref-Fritz:2012">Fritz, Morris, and Richler 2012</a>; <a href="#ref-Levine:2002">Levine and Hullett 2002</a>)</span>.
 While <span class="math inline">\(p\)</span> values are strongly affected by sample size, effect-size, estimates are intended to support comparisons across studies regardless of sample size <span class="citation">(<a href="#ref-Levine:2002">Levine and Hullett 2002</a>)</span>. Effect size is therefore an important determinant of power or required sample size or both <span class="citation">(<a href="#ref-Cohen:2013">Cohen 2013, 10</a>)</span>.</p>
 <p>The effect size takes the value zero when the null hypothesis is true and some other, test-specific non-zero value when the null hypothesis is false, it is an index of degree of departure from the null hypothesis <span class="citation">(<a href="#ref-Cohen:2013">Cohen 2013, 10</a>)</span>.</p>
 <p>To avoid additional package dependencies, <code><a href="../reference/effect_size.html">effect_size()</a></code> extracts, where possible, the effect sizes from base R <code>stats</code> output. Otherwise, it implements the remaining formulae internally.</p>
@@ -565,7 +565,7 @@ Source
 </tr>
 <tr>
 <td>
-Student’s <span class="math inline">\(t\)</span>-test
+<a href="#sec:tt">Student’s <span class="math inline">\(t\)</span>-test</a>
 </td>
 <td>
 Hedges’ <span class="math inline">\(g_{s_p}\)</span> (pooled)
@@ -579,7 +579,7 @@ Hedges’ <span class="math inline">\(g_{s_p}\)</span> (pooled)
 </tr>
 <tr>
 <td>
-Welch’s <span class="math inline">\(t\)</span>-test
+<a href="#sec:welch-tt">Welch’s <span class="math inline">\(t\)</span>-test</a>
 </td>
 <td>
 Hedges’ <span class="math inline">\(g_{s^{*}}\)</span> (non-pooled)
@@ -593,7 +593,7 @@ Hedges’ <span class="math inline">\(g_{s^{*}}\)</span> (non-pooled)
 </tr>
 <tr>
 <td>
-Wilcoxon rank-sum
+<a href="#sec:wilc">Wilcoxon rank-sum</a>
 </td>
 <td>
 rank-biserial <span class="math inline">\(r\)</span>
@@ -607,7 +607,7 @@ rank-biserial <span class="math inline">\(r\)</span>
 </tr>
 <tr>
 <td>
-Fisher’s ANOVA
+<a href="#sec:fisher-aov">Fisher’s ANOVA</a>
 </td>
 <td>
 <span class="math inline">\(\omega^2\)</span>
@@ -621,7 +621,7 @@ Fisher’s ANOVA
 </tr>
 <tr>
 <td>
-Welch’s ANOVA
+<a href="#sec:welch-aov">Welch’s ANOVA</a>
 </td>
 <td>
 <span class="math inline">\(\omega^2\)</span> (approx.)
@@ -636,7 +636,7 @@ Lakens 2018, Appendix A</a>
 </tr>
 <tr>
 <td>
-Kruskal–Wallis
+<a href="#sec:kw">Kruskal–Wallis</a>
 </td>
 <td>
 <span class="math inline">\(\eta_H^2\)</span>
@@ -650,7 +650,7 @@ Kruskal–Wallis
 </tr>
 <tr>
 <td>
-Simple linear regression
+<a href="#sec:lin-reg">Simple linear regression</a>
 </td>
 <td>
 <span class="math inline">\(R^2\)</span>
@@ -664,7 +664,7 @@ Simple linear regression
 </tr>
 <tr>
 <td>
-Spearman
+<a href="#sec:rho">Spearman</a>
 </td>
 <td>
 <span class="math inline">\(\rho\)</span>
@@ -673,26 +673,26 @@ Spearman
 <span class="math inline">\(\rho=r(\operatorname{rank}(x),\operatorname{rank}(y))\)</span>
 </td>
 <td>
-<code>cor.test()$estimate</code>
+<code>cor.test(method = “spearman”)$estimate</code>
 </td>
 </tr>
 <tr>
 <td>
-Kendall
+<a href="#sec:tau">Kendall</a>
 </td>
 <td>
 <span class="math inline">\(\tau_b\)</span>
 </td>
 <td>
-<span class="math inline">\(\tau_b=(C-D)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}\)</span>
+<span class="math inline">\(\tau_b=(n_c-n_d)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}\)</span>
 </td>
 <td>
-<code>cor.test()$estimate</code>
+<code>cor.test(method = “kendall”)$estimate</code>
 </td>
 </tr>
 <tr>
 <td>
-Pearson <span class="math inline">\(\chi^2\)</span> (<span class="math inline">\(R\times C\)</span>)
+<a href="#sec:fisher-exact">Pearson <span class="math inline">\(\chi^2\)</span> (<span class="math inline">\(R\times C\)</span>)</a>
 </td>
 <td>
 Cramér’s <span class="math inline">\(V\)</span>
@@ -706,7 +706,7 @@ Cramér’s <span class="math inline">\(V\)</span>
 </tr>
 <tr>
 <td>
-Pearson <span class="math inline">\(\chi^2\)</span> (<span class="math inline">\(2\times 2\)</span>)
+<a href="#sec:fisher-exact">Pearson <span class="math inline">\(\chi^2\)</span> (<span class="math inline">\(2\times 2\)</span>)</a>
 </td>
 <td>
 <span class="math inline">\(\phi\)</span>
@@ -720,17 +720,16 @@ Pearson <span class="math inline">\(\chi^2\)</span> (<span class="math inline">\
 </tr>
 <tr>
 <td>
-Fisher’s exact (<span class="math inline">\(2\times 2\)</span>)
+<a href="#sec:fisher-exact">Fisher’s exact (<span class="math inline">\(2\times 2\)</span>)</a>
 </td>
 <td>
 conditional odds ratio
 </td>
 <td>
-<span class="math inline">\(\hat\theta_{\mathrm{cond}}\)</span>, where
-<span class="math inline">\(E_{\hat\theta}(A \mid a+b, c+d, a+c, b+d)=a\)</span>
+<span class="math inline">\(\hat\theta_{\mathrm{cond}}\)</span>
 </td>
 <td>
-<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>
+<code>fisher.test()$estimate</code>
 </td>
 </tr>
 </table>
@@ -758,7 +757,7 @@ R^2 = 1 - \frac{SS_\text{res}}{SS_\text{tot}},
 \tag{7.1}
 \end{equation}\]</span></p>
 <p>where <span class="math inline">\(SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2\)</span> is the residual sum of squares, <span class="math inline">\(\hat{y}_i\)</span> is the predicted value, and <span class="math inline">\(SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2\)</span> is the total sum of squares.</p>
-<p>All other variables used in the <a href="#tab:effect-size-formulae">effect-size table</a> are defined in the corresponding”Analysis” section of the Appendix.</p>
+<p>All other variables used in the <a href="#tab:effect-size-formulae">effect-size table</a> are defined in the corresponding”Analysis” section.</p>
 </div>
 <div class="section level2" number="8">
 <h2 id="sec:examples">
@@ -1723,9 +1722,9 @@ have been assigned average ranks.</p>
 <h3 id="kendall-rank-correlation-cor-test----methodkendall">
 <span class="header-section-number">D.1</span> Kendall rank correlation <code id="sec:tau">cor.test(..., method="kendall")</code><a class="anchor" aria-label="anchor" href="#kendall-rank-correlation-cor-test----methodkendall"></a>
 </h3>
-<p>Kendall’s <span class="math inline">\(\tau_b\)</span> tests the null hypothesis of no monotone association between two ordered variables. For two ordinal variables with <span class="math inline">\(n\)</span> joint observations, let <span class="math inline">\(C\)</span> denote the number of concordant pairs (those whose ranks agree in both variables) and <span class="math inline">\(D\)</span> the number of discordant pairs. Kendall’s <span class="math inline">\(\tau_b\)</span> is defined as</p>
+<p>Kendall’s <span class="math inline">\(\tau_b\)</span> tests the null hypothesis of no monotone association between two ordered variables. For two ordinal variables with <span class="math inline">\(n\)</span> joint observations, let <span class="math inline">\(n_c\)</span> denote the number of concordant pairs (those whose ranks agree in both variables) and <span class="math inline">\(n_d\)</span> the number of discordant pairs. Kendall’s <span class="math inline">\(\tau_b\)</span> is defined as</p>
 <p><span class="math display" id="eq:kendall-tau-b">\[\begin{equation}
-\tau_b \;=\; \frac{C - D}
+\tau_b \;=\; \frac{n_c - n_d}
 {\sqrt{\left(n_0 - n_1\right)\left(n_0 - n_2\right)}},
 \tag{D.1}
 \end{equation}\]</span></p>
@@ -1792,8 +1791,8 @@ fitted model parameters.
 </div>
 </div>
 <div class="section level2" number="16">
-<h2 id="pearsons-chi2-test-and-fishers-exact-test">
-<span class="header-section-number">E</span> Pearson’s <span class="math inline">\(\chi^2\)</span> test and Fisher’s exact test<a class="anchor" aria-label="anchor" href="#pearsons-chi2-test-and-fishers-exact-test"></a>
+<h2 id="sec:fisher-exact">
+<span class="header-section-number">E</span> Pearson’s <span class="math inline">\(\chi^2\)</span> test and Fisher’s exact test<a class="anchor" aria-label="anchor" href="#sec:fisher-exact"></a>
 </h2>
 <p>Let <span class="math inline">\(O_{ij}\)</span> and <span class="math inline">\(E_{ij}\)</span> denote the observed and expected frequencies
 in row <span class="math inline">\(i\)</span> and column <span class="math inline">\(j\)</span> of an <span class="math inline">\(R \times C\)</span> contingency table, where
@@ -1832,16 +1831,13 @@ R_2 &amp; c &amp; d &amp; c + d \\
 \]</span></p>
 <p>Given these fixed margins, the exact null probability of this table is the
 hypergeometric probability</p>
-<p>Let <span class="math inline">\(A\)</span> denote the random upper-left cell count. The conditional odds ratio
-is the value <span class="math inline">\(\hat\theta_{\mathrm{cond}}\)</span> such that
-<span class="math inline">\(\operatorname{E}_{\hat\theta}(A \mid a+b,c+d,a+c,b+d)=a\)</span>.</p>
-<p><span class="math display" id="eq:fisher-hypergeom">\[
+<p><span class="math display" id="eq:fisher-hypergeom">\[\begin{equation}
 \mathbb{P}(a \mid a+b,c+d,a+c,b+d)
 =
 \frac{\dbinom{a+b}{a}\dbinom{c+d}{c}}
 {\dbinom{N}{a+c}},
-\]</span>
-\tag{E.3}</p>
+\tag{E.3}
+\end{equation}\]</span></p>
 <p>where <span class="math inline">\(N = a+b+c+d\)</span>. The two-sided <span class="math inline">\(p\)</span> value is obtained by summing the
 probabilities of all tables with the same margins whose probabilities under
 the null are less than or equal to the probability of the observed table.
@@ -1849,7 +1845,33 @@ For general <span class="math inline">\(R \times C\)</span> tables, <code><a hre
 using the multivariate hypergeometric distribution.</p>
 <p>For <span class="math inline">\(2\times 2\)</span> tables, <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code> additionally returns the conditional
 maximum likelihood estimate of the odds ratio and its confidence interval.
-The sample odds ratio is</p>
+Let <span class="math inline">\(\pi_{11},\pi_{12},\pi_{21},\pi_{22}\)</span> denote the population probabilities
+of the cells holding the counts <span class="math inline">\(a,b,c,d\)</span>, and let</p>
+<p><span class="math display" id="eq:odds-ratio">\[\begin{equation}
+\theta=\frac{\pi_{11}\pi_{22}}{\pi_{12}\pi_{21}}
+\tag{E.4}
+\end{equation}\]</span></p>
+<p>be the population odds ratio, with <span class="math inline">\(\theta=1\)</span> under independence. Let <span class="math inline">\(A\)</span>
+denote the random upper-left cell count. Conditional on the margins, <span class="math inline">\(A\)</span>
+follows Fisher’s noncentral hypergeometric distribution</p>
+<p><span class="math display" id="eq:fisher-noncentral">\[\begin{equation}
+\operatorname{P}_{\theta}(A=k \mid a+b,c+d,a+c,b+d)=
+\frac{w_k\,\theta^{k}}{\sum_{j} w_j\,\theta^{j}},
+\qquad
+w_j=\dbinom{a+b}{j}\dbinom{c+d}{a+c-j},
+\tag{E.5}
+\end{equation}\]</span></p>
+<p>of which Eq. <a href="#eq:fisher-hypergeom">(E.3)</a> is the case <span class="math inline">\(\theta=1\)</span>. Differentiating
+its log-likelihood <span class="math inline">\(\ell(\theta)=a\log\theta-\log\sum_{j} w_j\theta^{j}\)</span> with
+respect to <span class="math inline">\(\theta\)</span> gives
+<span class="math inline">\(\bigl(a-\operatorname{E}_{\theta}(A \mid a+b,c+d,a+c,b+d)\bigr)/\theta\)</span>, so
+<span class="math inline">\(\hat\theta_{\mathrm{cond}}\)</span> is the value of <span class="math inline">\(\theta\)</span> at which this derivative
+vanishes, that is the solution of</p>
+<p><span class="math display" id="eq:conditional-mle">\[\begin{equation}
+\operatorname{E}_{\theta}(A \mid a+b,c+d,a+c,b+d)=a .
+\tag{E.6}
+\end{equation}\]</span></p>
+<p>The sample odds ratio is</p>
 <p><span class="math display">\[
 \widehat{\mathrm{OR}} = \frac{ad}{bc}.
 \]</span></p>
