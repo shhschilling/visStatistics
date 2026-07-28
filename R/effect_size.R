@@ -189,7 +189,7 @@ effect_size_kendall <- function(result) {
 #'     Welch ANOVA statistic, \eqn{\nu_1=k-1}, and \eqn{\nu_2} is the
 #'     usually fractional denominator degree of freedom returned by
 #'     \code{oneway.test()}. Negative estimates are truncated to zero.
-#'   \item Kruskal-Wallis test: Kelley-adjusted eta-squared based on
+#'   \item Kruskal-Wallis test: eta-squared based on
 #'     \eqn{H}, \eqn{\eta_H^2=(H-k+1)/(N-k)}, where \eqn{H} is the
 #'     Kruskal-Wallis statistic. Negative estimates are truncated to zero.
 #'   \item Pearson's chi-squared test: Cramer's \eqn{V} for general
@@ -253,9 +253,9 @@ effect_size_kendall <- function(result) {
 #' \emph{Journal of Experimental Social Psychology}, 74, 187--195.
 #' doi:10.1016/j.jesp.2017.09.004.
 #'
-#' Kelley, T. L. (1935). An unbiased correlation ratio measure.
-#' \emph{Proceedings of the National Academy of Sciences}, 21(9), 554--559.
-#' doi:10.1073/pnas.21.9.554.
+#' Tomczak, M., & Tomczak, E. (2014). The need to report effect size estimates
+#' revisited. An overview of some recommended measures of effect size.
+#' \emph{Trends in Sport Sciences}, 1(21), 19--25.
 #'
 #' Cohen, J. (2013). \emph{Statistical power analysis for the behavioural
 #' sciences}. Routledge. doi:10.4324/9780203771587.
