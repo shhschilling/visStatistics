@@ -433,7 +433,7 @@ Kendall's $\tau_b$ tests the null hypothesis of no monotone association between 
 (\#eq:kendall-tau-b)
 \end{equation}
 
-where $n_0 = n(n-1)/2$ is the total number of observation pairs, $n_1 = \sum_i t_i(t_i-1)/2$ is the number of pairs tied in the response, and $n_2 = \sum_j u_j(u_j-1)/2$ is the number of pairs tied in the predictor. The denominator correction makes $\tau_b$ attain $\pm 1$ even with ties, which Spearman's $\rho$ does not [@Kendall:1945]. With few ordered levels (e.g., five-point Likert items), ties are unavoidable; this is the principal reason to prefer $\tau_b$ over Spearman's $\rho$ in this setting [@Agresti:2010].
+where $n_0 = n(n-1)/2$ is the total number of observation pairs, $n_1 = \sum_i t_i(t_i-1)/2$ is the number of pairs tied in the response, and $n_2 = \sum_j u_j(u_j-1)/2$ is the number of pairs tied in the predictor. The denominator correction makes $\tau_b$ attain $\pm 1$ even with ties, which Spearman's $\rho$ does not [@Kendall:1945]. With few ordered levels (e.g., five-point Likert items), ties are common; this is the principal reason to prefer $\tau_b$ over Spearman's $\rho$ in this setting [@Agresti:2010].
 
 `visstat()` calls `cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)` and reports $\tau_b$, the asymptotic test statistic $z = \tau_b / \operatorname{SE}(\tau_b)$, and the two-sided $p$\ value.
 
@@ -546,9 +546,10 @@ w_j=\dbinom{a+b}{j}\dbinom{c+d}{a+c-j},
 
 for $m_-\le k\le m_+$, where $m_-=\max(0,a-d)$ and $m_+=\min(a+b,a+c)$ are the
 smallest and largest upper-left counts compatible with the fixed margins.
-Eq. \@ref(eq:fisher-hypergeom) is the case $\theta=1$: the numerator
-then reduces to $w_a$, and the denominator to $\sum_{j=m_-}^{m_+} w_j$, which by
-Vandermonde's identity equals $\dbinom{N}{a+c}$,
+Setting $\theta=1$ in Eq. \@ref(eq:fisher-noncentral) recovers
+Eq. \@ref(eq:fisher-hypergeom): the powers $\theta^{k}$ disappear, so the probability at $A=a$
+becomes $w_a$ over $\sum_{j=m_-}^{m_+} w_j$, and that sum equals $\dbinom{N}{a+c}$ by
+Vandermonde's identity,
 
 \begin{equation}
 \sum_{j=m_-}^{m_+}\dbinom{a+b}{j}\dbinom{c+d}{a+c-j}=\dbinom{N}{a+c}.
@@ -608,12 +609,20 @@ As $L(\theta)>0$ and $\theta>0$, Eq. \@ref(eq:fisher-score) vanishes exactly
 when
 
 \begin{equation}
-\operatorname{E}_{\theta}(A \mid a+b,c+d,a+c,b+d)=a .
+\operatorname{E}_{\theta}(A \mid a+b,c+d,a+c,b+d)=a ,
 (\#eq:conditional-mle)
 \end{equation}
 
-where the expectation refers to the distribution of Eq.
-\@ref(eq:fisher-noncentral). Note that this estimator differs from the unconditional
+where the expectation refers to the distribution of Eq. \@ref(eq:fisher-noncentral). The conditional maximum likelihood estimate $\hat\theta_{\mathrm{cond}}$ is therefore the value of
+$\theta$ satisfying
+
+\begin{equation}
+\operatorname{E}_{\hat\theta_{\mathrm{cond}}}(A \mid a+b,c+d,a+c,b+d)=a ,
+(\#eq:theta-cond)
+\end{equation}
+
+which has no closed form and is solved numerically by `fisher.test()`. It is the conditional odds
+ratio reported for $2\times 2$ tables in the [effect-size table](#tab:effect-size-formulae). Note that this estimator differs from the unconditional
 maximum likelihood estimator, the sample odds ratio
 
 \[

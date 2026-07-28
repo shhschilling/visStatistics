@@ -1,0 +1,135 @@
+---
+title: "The leading level error of the two-sample Welch statistic is governed by the smaller group"
+subtitle: "Note --- derivation from the expansion of Zhou and Dinh (2005), not part of the vignette"
+output:
+  bookdown::pdf_document2:
+    toc: false
+    number_sections: false
+    latex_engine: xelatex
+geometry: margin=2.5cm
+---
+
+# Starting point
+
+Let $Y_{11},\dots,Y_{1n_1}$ and $Y_{21},\dots,Y_{2n_2}$ be independent samples from distributions
+with means $M_1, M_2$, variances $V_1, V_2$ and skewnesses $\gamma_1, \gamma_2$, let
+$N = n_1 + n_2$ and let
+
+\begin{equation}
+\lambda = \frac{n_1}{N}
+(\#eq:lambda)
+\end{equation}
+
+be the share of the total sample held by the first group. Let $T$ denote the unpooled two-sample
+$t$-statistic, that is Welch's statistic for $k = 2$.
+
+Proposition 1 of Zhou and Dinh [-@Zhou:2005], proved there under the regularity conditions of
+Hall (1992a) and assuming $\lambda_N = \lambda + O(N^{-r})$ for some $r \ge 0$, states
+
+\begin{equation}
+P(T \le x) = \Phi(x) + \frac{1}{\sqrt N}\,\frac{A}{6}\,(2x^{2}+1)\varphi(x)
+             + O\!\left(N^{-\min(1,\,r+1/2)}\right),
+(\#eq:zhou-dinh)
+\end{equation}
+
+where $\Phi$ and $\varphi$ are the standard normal distribution and density functions and
+
+\begin{equation}
+A = \left(\frac{V_1}{\lambda}+\frac{V_2}{1-\lambda}\right)^{-3/2}
+    \left(\frac{V_1^{3/2}\gamma_1}{\lambda^{2}}
+        - \frac{V_2^{3/2}\gamma_2}{(1-\lambda)^{2}}\right).
+(\#eq:coefficient)
+\end{equation}
+
+The departure of the distribution of $T$ from normality is thus of order $N^{-1/2}$ with the
+coefficient $A/6$, and Eq. \@ref(eq:coefficient) shows that this coefficient carries both the
+skewnesses and the imbalance: it vanishes when the two groups agree in size, variance and
+skewness, since then the two terms of the second factor are equal.
+
+# The limit of a small first group
+
+Everything below is a consequence of Eq. \@ref(eq:coefficient); it is not stated by Zhou and Dinh
+[-@Zhou:2005].
+
+Consider $\lambda \to 0$, the first group becoming a vanishing share of the total. Factor the
+first bracket of Eq. \@ref(eq:coefficient),
+
+\begin{equation}
+\frac{V_1}{\lambda}+\frac{V_2}{1-\lambda}
+= \frac{V_1}{\lambda}\left(1+\frac{V_2}{V_1}\cdot\frac{\lambda}{1-\lambda}\right),
+(\#eq:bracket)
+\end{equation}
+
+so that, by the binomial series for the exponent $-3/2$,
+
+\begin{equation}
+\left(\frac{V_1}{\lambda}+\frac{V_2}{1-\lambda}\right)^{-3/2}
+= \left(\frac{\lambda}{V_1}\right)^{3/2}
+  \left(1-\frac{3}{2}\cdot\frac{V_2}{V_1}\,\lambda + O(\lambda^{2})\right).
+(\#eq:first-factor)
+\end{equation}
+
+In the second bracket the term in $\lambda^{-2}$ dominates the term in $(1-\lambda)^{-2}$,
+
+\begin{equation}
+\frac{V_1^{3/2}\gamma_1}{\lambda^{2}}-\frac{V_2^{3/2}\gamma_2}{(1-\lambda)^{2}}
+= \frac{V_1^{3/2}\gamma_1}{\lambda^{2}}
+  \left(1-\frac{V_2^{3/2}\gamma_2}{V_1^{3/2}\gamma_1}\cdot
+        \frac{\lambda^{2}}{(1-\lambda)^{2}}\right)
+= \frac{V_1^{3/2}\gamma_1}{\lambda^{2}}\left(1+O(\lambda^{2})\right),
+(\#eq:second-factor)
+\end{equation}
+
+provided $\gamma_1 \neq 0$. Multiplying Eq. \@ref(eq:first-factor) by
+Eq. \@ref(eq:second-factor), the factor $V_1^{3/2}$ cancels and
+$\lambda^{3/2}\lambda^{-2} = \lambda^{-1/2}$, so that
+
+\begin{equation}
+A = \frac{\gamma_1}{\sqrt\lambda}
+    \left(1-\frac{3}{2}\cdot\frac{V_2}{V_1}\,\lambda + O(\lambda^{2})\right).
+(\#eq:A-limit)
+\end{equation}
+
+Dividing by $\sqrt N$ as it appears in Eq. \@ref(eq:zhou-dinh), and using $n_1 = \lambda N$ from
+Eq. \@ref(eq:lambda),
+
+\begin{equation}
+\frac{A}{\sqrt N} = \frac{\gamma_1}{\sqrt{\lambda N}}
+    \left(1-\frac{3}{2}\cdot\frac{V_2}{V_1}\,\lambda + O(\lambda^{2})\right)
+= \frac{\gamma_1}{\sqrt{n_1}}
+    \left(1-\frac{3}{2}\cdot\frac{V_2}{V_1}\,\lambda + O(\lambda^{2})\right).
+(\#eq:small-group-limit)
+\end{equation}
+
+# Reading
+
+Eq. \@ref(eq:small-group-limit) says that as one group becomes small relative to the other, the
+leading term of Eq. \@ref(eq:zhou-dinh) is governed by that group alone: its skewness divided by
+the square root of its own size, with the total sample size and the size of the other group
+entering only through the correction of order $\lambda$. Enlarging the second group does not
+reduce the leading error.
+
+The correction term is negative for $V_2 < \infty$, so the limit is approached from below, and its
+size is set by the variance ratio: for $V_1 = V_2$ the first correction is $-\tfrac{3}{2}\lambda$.
+
+# Numerical check
+
+For $V_1 = V_2 = 1$, $\gamma_1 = \gamma_2 = 2$ and $N = 1000$, the ratio of
+$A/\sqrt N$ from Eq. \@ref(eq:coefficient) to $\gamma_1/\sqrt{n_1}$ is
+
+| $\lambda$ | 0.10 | 0.05 | 0.02 | 0.01 |
+|---|---|---|---|---|
+| ratio | 0.843 | 0.923 | 0.970 | 0.985 |
+| $1-\tfrac32\lambda$ | 0.850 | 0.925 | 0.970 | 0.985 |
+
+confirming both the limit and the coefficient of the first correction in
+Eq. \@ref(eq:small-group-limit).
+
+# Scope
+
+Eq. \@ref(eq:zhou-dinh) is a two-sample result. Nothing here extends it to Welch's $F$ statistic
+for $k > 2$ groups, for which no corresponding expansion was found in the literature; the
+requirement reported by Delacre et al. [-@Delacre:2019] that groups hold at least 50 observations
+for up to four groups, and 100 beyond that, rests on simulation.
+
+# References

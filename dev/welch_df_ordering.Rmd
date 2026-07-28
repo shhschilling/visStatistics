@@ -1,0 +1,153 @@
+---
+title: "Sample size against variance heterogeneity in the denominator degrees of freedom of Welch's ANOVA"
+subtitle: "Draft for the appendix of visStatistics --- not yet included in the vignette"
+output:
+  bookdown::pdf_document2:
+    toc: false
+    number_sections: false
+    latex_engine: xelatex
+geometry: margin=2.5cm
+---
+
+This appendix separates the contribution of the group sizes from that of the variances in the
+denominator degrees of freedom of Welch's ANOVA, in balanced and in unbalanced designs.
+
+Throughout, $k$ is the number of groups, $i = 1,\dots,k$ the group index, $n_i$ the size of
+group $i$ and $\sigma_i^2$ its population variance. The denominator degrees of freedom of
+Eq. \@ref(eq:welch-f), as returned by `oneway.test()`, are
+
+\begin{equation}
+\nu = \frac{k^{2}-1}
+{3\displaystyle\sum_{i=1}^{k}\dfrac{\left(1-w_i/w\right)^{2}}{n_i-1}},
+\qquad w_i = \frac{n_i}{s_i^{2}}, \quad w = \sum_{i=1}^{k} w_i .
+(\#eq:welch-anova-df)
+\end{equation}
+
+The quantity examined here is Eq. \@ref(eq:welch-anova-df) with each $s_i^2$ replaced by
+$\sigma_i^2$, which is fixed by the design $(n_i, \sigma_i)$ alone and therefore comparable across
+configurations, whereas the computed value varies from replication to replication. No claim is
+made below about how closely the computed value tracks it at small $n_i$.
+
+# Separating the group sizes from the variances
+
+Let $\bar n = k^{-1}\sum_{i=1}^{k} n_i$ denote the mean group size and write
+
+\begin{equation}
+n_i = c_i\,\bar n, \qquad \sum_{i=1}^{k} c_i = k ,
+(\#eq:size-proportions)
+\end{equation}
+
+with design constants $c_i$ fixing the shape of the size vector while $\bar n$ carries its scale.
+In the simulations of Section \@ref(sec:simulation-results),
+$\mathbf c = (0.5,\,0.8,\,1.2,\,1.5)$ for the unbalanced designs and $\mathbf c = (1,1,1,1)$ for
+the balanced ones.
+
+Substituting Eq. \@ref(eq:size-proportions) into the weights of Eq. \@ref(eq:welch-anova-df), the
+factor $\bar n$ appears in $w_i$ and in $w$ alike and cancels in their ratio, so that the
+normalised weights
+
+\begin{equation}
+u_i = \frac{w_i}{w} = \frac{c_i/\sigma_i^{2}}{\displaystyle\sum_{j=1}^{k} c_j/\sigma_j^{2}},
+\qquad \sum_{i=1}^{k} u_i = 1 ,
+(\#eq:normalised-weights)
+\end{equation}
+
+depend on the variances and on the shape of the size vector, but not on $\bar n$. With
+Eq. \@ref(eq:normalised-weights),
+
+\begin{equation}
+\nu = \frac{k^{2}-1}
+{3\displaystyle\sum_{i=1}^{k}\dfrac{(1-u_i)^{2}}{c_i\bar n-1}} ,
+(\#eq:nu-exact)
+\end{equation}
+
+exactly. The mean group size now enters only through the denominators $c_i\bar n - 1$.
+
+# Balanced designs
+
+For $c_i = 1$, $i = 1,\dots,k$, every denominator term of Eq. \@ref(eq:nu-exact) carries the same
+factor $\bar n - 1$, which can therefore be taken out of the sum. Writing
+
+\begin{equation}
+D = \frac{k^{2}-1}{3\displaystyle\sum_{i=1}^{k}\dfrac{(1-u_i)^{2}}{c_i}} ,
+(\#eq:leading-factor)
+\end{equation}
+
+which does not depend on $\bar n$, Eq. \@ref(eq:nu-exact) becomes
+
+\begin{equation}
+\nu = D\,(\bar n - 1) .
+(\#eq:nu-balanced)
+\end{equation}
+
+# Unbalanced designs
+
+For general $c_i$ write $c_i\bar n - 1 = c_i\bar n\left(1 - (c_i\bar n)^{-1}\right)$ and expand
+the reciprocal as a geometric series in $(c_i\bar n)^{-1}$, which converges provided
+
+\begin{equation}
+c_i\,\bar n > 1 \qquad \text{for all } i = 1,\dots,k .
+(\#eq:expansion-condition)
+\end{equation}
+
+In the simulated designs $\min_i c_i = 0.5$, so Eq. \@ref(eq:expansion-condition) holds from
+$\bar n = 3$ on. The sum in Eq. \@ref(eq:nu-exact) becomes
+
+\begin{equation}
+\sum_{i=1}^{k}\frac{(1-u_i)^{2}}{c_i\bar n-1}
+= \frac{1}{\bar n}\sum_{i=1}^{k}\frac{(1-u_i)^{2}}{c_i}
+  \left(1+\frac{1}{c_i\bar n}+O(\bar n^{-2})\right)
+= \frac{1}{\bar n}\left(\frac{k^{2}-1}{3D} + \frac{E}{\bar n} + O(\bar n^{-2})\right),
+(\#eq:denominator-expansion)
+\end{equation}
+
+with $D$ from Eq. \@ref(eq:leading-factor) and
+
+\begin{equation}
+E = \sum_{i=1}^{k}\frac{(1-u_i)^{2}}{c_i^{2}} .
+(\#eq:second-moment)
+\end{equation}
+
+Inserting Eq. \@ref(eq:denominator-expansion) into Eq. \@ref(eq:nu-exact) and expanding the
+reciprocal once more gives
+
+\begin{equation}
+\nu = D\,\bar n \;-\; \frac{3D^{2}E}{k^{2}-1} \;+\; O(\bar n^{-1}) .
+(\#eq:nu-expansion)
+\end{equation}
+
+Eq. \@ref(eq:nu-balanced) is the special case $c_i \equiv 1$, for which $E = (k^{2}-1)/(3D)$ and
+the constant term reduces to $D$.
+
+# The ordering of the two influences
+
+The variances enter Eq. \@ref(eq:nu-expansion) only through $D$, which contains no $\bar n$. Since
+$\sum_i u_i = 1$ gives $\sum_i (1-u_i) = k-1$, the Cauchy--Schwarz inequality in the form
+$\left(\sum_i a_i\right)^{2} \le \left(\sum_i a_i^{2}/c_i\right)\left(\sum_i c_i\right)$ applied
+to $a_i = 1-u_i$ yields
+
+\begin{equation}
+\sum_{i=1}^{k}\frac{(1-u_i)^{2}}{c_i} \;\ge\; \frac{(k-1)^{2}}{k} ,
+(\#eq:cauchy-schwarz)
+\end{equation}
+
+with equality if and only if $(1-u_i)/c_i$ is constant in $i$, which holds in particular for a
+balanced design with equal variances. In the opposite extreme one weight tends to one and the
+others to zero, so that $\sum_i (1-u_i)^{2}/c_i \to \sum_{i \ne j} 1/c_i$. Hence
+
+\begin{equation}
+\frac{k^{2}-1}{3\displaystyle\sum_{i=1}^{k} 1/c_i} \;\le\; D \;\le\; \frac{k(k+1)}{3(k-1)} .
+(\#eq:D-bounds)
+\end{equation}
+
+The two contributions are thus of different kind. The group sizes enter as an unbounded scale,
+
+\begin{equation}
+\lim_{\bar n \to \infty} \frac{\nu}{\bar n} = D ,
+(\#eq:size-contribution)
+\end{equation}
+
+by Eq. \@ref(eq:nu-expansion), whereas the variances enter only through $D$, confined by
+Eq. \@ref(eq:D-bounds) to a fixed interval whose upper end is attained under homoscedasticity in a
+balanced design. No configuration of $\sigma_1,\dots,\sigma_k$ prevents $\nu$ from growing
+proportionally to $\bar n$.
