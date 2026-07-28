@@ -1,0 +1,240 @@
+# Decision logic {#sec:decision}
+
+The decision logic of `visstat()` is layered: The general branching, summarised in Figure \@ref(fig:overview), is driven by the `class` and number of factor levels of its input vectors.
+
+Only for a numeric response with a categorical predictor, the selection among tests of central tendency further depends on residual diagnostics from a fitted linear model (Section \@ref(sec:route-1)).
+
+## Top-level routing by input class {#sec:top-level}
+
+
+The main branching logic consists of four default routes summarised in Figure \@ref(fig:overview).
+
+- Route 1. Numeric responses with categorical predictors enter the central-tendency branch detailed in Section \@ref(sec:route-1).
+- Route 2. Ordered categorical responses with categorical predictors follow the non-parametric Wilcoxon or Kruskal--Wallis route (Section \@ref(sec:route-2)).
+- Route 3. Two numeric variables enter simple linear regression (Section \@ref(sec:route-3)).
+- Route 4. Two unordered factors enter the proportion-comparison branch (Section \@ref(sec:route-4)).
+
+Rank-correlation analyses are optional user-requested alternatives for ordered--ordered and numeric--numeric inputs.
+They are reached only when `correlation = TRUE` is set explicitly.
+
+```{r overview, echo=FALSE, fig.cap="Overview of all implemented tests selected based on input class.", fig.alt="Flowchart showing all implemented statistical tests organised by the class of the input vectors."}
+knitr::include_graphics("figures/overview.png")
+```
+
+## General linear model framework {#sec:glm}
+
+Student's t-test, Fisher's one-way ANOVA (both belonging to Route 1) and simple linear regression (in Route 3) are special cases of the general linear model framework [@Thompson:2015] and share the same model assumptions: the expected value of the response is a linear function of the predictors, the error terms are mutually independent and normally distributed with expectation 0, and the error variance is constant.
+
+Residuals are the empirical realisations of these error terms.
+To check whether the residuals fulfil the linear model assumptions, `visstat()` both *vis*ualises (see Section \@ref(sec:graphical)) and formally assesses the normality and homoscedasticity of the residuals by assumption tests (see Section \@ref(sec:assumption-tests)) for tests belonging to Route 1 and Route 3.
+Note that only in Route 1, $p$\ values derived from these assumption tests influence the test selection (Section \@ref(sec:route-1)).
+
+Below, Section \@ref(sec:math-glm) formally defines the general linear model framework in the context of the implemented tests.
+
+### General linear model definition {#sec:math-glm}
+
+In the general linear model, a response $Y$ is modelled as a linear combination of $k-1$ predictors $x_j$.
+The general linear model for observation $i,\;i = 1, \ldots, N$ is then
+
+\begin{equation}
+(\#eq:glm)
+Y_i = \beta_0 + \beta_1 x_{i1} + \cdots +
+  \beta_{k-1} x_{i,k-1} + \varepsilon_i,
+\end{equation}
+
+where $Y_i$ is the response for observation $i$, $x_{ij}$ is the value of predictor $j$ for observation $i$, $\beta_0, \beta_1, \ldots, \beta_{k-1}$ are the $k$ parameters, and $\varepsilon_i$ is the model error term assumed to be independent and normally distributed with expectation 0 and constant variance $\sigma^2$, in short $$\varepsilon_i \sim \mathscr{N}(0, \sigma^2),
+\quad\mathrm{mutually\; independent}. $$
+
+The variance $\sigma^2$ represents the variation of the data about the regression, $\operatorname{Var}(Y_i)=\operatorname{Var}(\varepsilon_i)=\sigma^2$, as both the (unknown) model parameters and predictors are not random.
+
+From Eq.
+\@ref(eq:glm), the special cases used by `visstat()` follow from the predictor structure:
+
+**Student's t-test** uses one binary indicator variable $x_{i1}$, with $x_{i1}=0$ for group 1 and $x_{i1}=1$ for group 2.
+Let $\mu_1$ and $\mu_2$ denote the expected mean values in the two population groups.
+For the expected values of the response, we then obtain $$E(Y_i \mid x_{i1}=0)=\mu_1=\beta_0$$ for group 1 and $$E(Y_i \mid x_{i1}=1)=\mu_2=\beta_0+\beta_1$$ for group 2.
+Testing $H_0: \beta_1 = 0$ is therefore equivalent to testing $H_0: \mu_1 = \mu_2$.
+
+**Fisher's one-way ANOVA** generalises this coding to $k-1$ binary indicator variables for $k$ groups; testing $H_0: \beta_1 = \cdots = \beta_{k-1} = 0$ is equivalent to testing equality of $k$ group population means.
+
+**Simple linear regression** uses one continuous predictor; $H_0: \beta_1 = 0$ examines whether a linear relationship exists.
+
+#### Residuals
+
+The observable counterparts of the model error terms $\varepsilon_i$ in Eq.
+\@ref(eq:glm) are the residuals.
+After fitting the data with the corresponding linear model, the raw residual is
+
+\begin{equation}
+e_i = y_i - \hat{y}_i,
+(\#eq:raw-residual)
+\end{equation}
+
+where $y_i$ is the observed value and $\hat{y}_i$ the fitted value for observation $i$;
+
+\begin{equation}
+\hat{y}_i = b_0 + b_1 x_{i1} + \cdots +
+  b_{k-1} x_{i,k-1}
+\end{equation} with the estimated values $b_0, b_1, \ldots, b_{k-1}$ for the unknown model parameters $\beta_0, \beta_1, \ldots, \beta_{k-1}$.
+
+The magnitude of the raw residuals depends on the unknown model error variance $\sigma^2$, which gets estimated by the square of the standard error $SE_\text{res}^2 = \frac{\sum_{i=1}^{N} e_i^2}{N-k}$.
+Dividing the raw residuals by the standard error we obtain the z-residual
+
+\begin{equation}
+z_i = \frac{e_i}{SE_\text{res}},
+(\#eq:z-residual)
+\end{equation}
+
+which facilitates model comparison across different scales of the raw data.
+
+##### Standardised residuals
+
+The residual standard error $SE_\text{res}$ is a *global* estimate for the unknown $\sigma$, but not an estimate for the variance of the *individual* residual $\operatorname{Var}(e_i)$.
+It can be shown [@Cook:1982, p. 14] that
+
+\begin{equation}
+\operatorname{Var}(e_i)=\sigma^2(1-h_{ii}),
+(\#eq:var-leverage)
+\end{equation}
+
+where the leverage $h_{ii}$ of observation $i$ is the $i$-th diagonal element of the $N \times N$ hat matrix $\mathbf{H}$, which maps the observed values onto the fitted values [@Cook:1982, p. 11].
+$h_{ii}$ measures how strongly observation $i$'s own observed value $y_i$ influences its fitted value $\hat{y}_i$.
+
+Equation \@ref(eq:var-leverage) shows that the raw residuals carry an unequal, leverage-dependent variance even when the errors are homoscedastic: observations with higher leverage have a smaller individual residual variance.
+Internally studentised ("standardised") residuals correct for this artefact.
+Dividing $e_i$ by its estimated individual standard error gives
+
+\begin{equation}
+r_i =\frac{e_i}{\sqrt{ SE_\text{res}^2\,(1-h_{ii})}}=
+\frac{z_i}{\sqrt{1-h_{ii}}}.
+(\#eq:standardised)
+\end{equation}
+
+### General linear model assumption tests {#sec:assumption-tests}
+
+**Normality tests** The normality of the standardised residuals is formally assessed using both the Shapiro--Wilk (SW) test [@Shapiro:1965; @Royston:1982; @Royston:1995] (`shapiro.test()`; Eq.
+\@ref(eq:shapiro-w)) and the Anderson--Darling test [@Anderson:1952] (`ad.test()`; Eq.
+\@ref(eq:anderson-a2)).
+These tests offer complementary strengths: Anderson--Darling is highly sensitive to tail deviations in larger samples [@Yap:2011], while Shapiro--Wilk generally exhibits greater power across non-normal distributions in small samples.
+Among the normality tests compared by @Razali:2011 the Shapiro--Wilk test was the most powerful against both symmetric and asymmetric alternatives, although all of them had low power below about 30 observations.
+Therefore, the Shapiro--Wilk test is used as the normality gate in the automated test selection (Section \@ref(sec:route-1)).
+
+
+**Homoscedasticity tests** For grouped central-tendency analyses, variance homogeneity of standardised residuals [@Cook:1982] is assessed using the package-implemented mean-centred Levene test [@Levene:1960] (`levene.test()`; Eq.
+\@ref(eq:levene-f)) and Bartlett's test [@Bartlett:1937] (`bartlett.test()`; Eq.
+\@ref(eq:bartlett-k2)).
+
+Bartlett's test is powerful under normality but sensitive to non-normality;
+Levene-type tests trade some power for greater robustness when distributions
+depart from normality [@Brown:1974].
+
+
+Therefore, Levene's test is used as the variance gate in the automated workflow.
+
+For simple linear regression, group-based variance tests are not applicable.
+There, `visStatistics` uses its package implementation `bp.test()` of the Breusch--Pagan test [@Breusch:1979] (Eq. \@ref(eq:breusch-pagan-bp)) on raw residuals [@Schutzenmeister:2012].
+
+### Visualisation of the assumptions of the general linear model {#sec:graphical}
+
+Since algorithmic logic based on $p$\ values of assumption tests cannot replace expert visual judgment, `visstat()` *vis*ualises the assumptions of the underlying linear model for the selection of tests of central tendency (Route 1) and for simple linear regression (`correlation = FALSE`) (Route 3).
+
+
+For numeric responses with categorical predictors (Route 1), the diagnostic panel displays the residual histogram, the normal Q--Q plot with simultaneous tolerance band (STB) and point-wise tolerance band (TB) [@Schutzenmeister:2012], and the absolute standardised residuals $|r_i|$ (Eq. \@ref(eq:standardised)) by group.
+The last panel shows whether residual spread is comparable across factor levels, the pattern assessed formally by the Levene (Eq. \@ref(eq:levene-f)) and Bartlett (Eq. \@ref(eq:bartlett-k2)) variance checks.
+
+For Route 3 (simple linear regression), the first two diagnostic panels follow the layout of Route 1, whereas the third panels displays z-scaled residuals versus fitted values.
+
+
+The first row of the outer tile of the diagnostic plot reports $p$\ values of residual-normality checks with the Shapiro--Wilk test and Anderson--Darling tests.
+The second row reports $p$\ values of variance checks: Levene and Bartlett for grouped central-tendency analyses, or Breusch--Pagan for simple regression.
+
+Note that among the displayed assumption tests, only the Shapiro--Wilk and Levene test results enter automated routing, and only in the central-tendency branch (see Section \@ref(sec:route-1)).
+Anderson--Darling, Bartlett, and Breusch--Pagan are diagnostic output only.
+
+
+The Route 1 and Route 3 diagnostic-panel designs are illustrated in the examples in Figures \@ref(fig:welch-anova-example), left, and \@ref(fig:regression-example), left.
+
+
+## Route-specific decision rules {#sec:route-rules}
+
+The general branching is driven by input class and factor levels (Section \@ref(sec:top-level)).
+Within the selected route, additional rules determine the selected test and output; these route-specific rules are detailed below.
+
+### Route 1: Numeric response, categorical predictor {#sec:route-1}
+
+A numeric response with a categorical predictor with $k$ "levels" (in the following "groups") asks whether the response differs between groups.
+
+Figure \@ref(fig:decision-tree) expands the default routing logic for tests of central tendencies.
+
+```{r decision-tree, echo=FALSE, fig.cap="Decision tree for the default Route 1 test selection (group\\_test = NULL). Shapiro--Wilk on model residuals determines whether the route remains mean-based or switches to rank-based tests; the Levene test then selects equal-variance or Welch-type procedures.", fig.alt="Decision tree for the default Route 1 test selection among Welch t-test, Student t-test, Wilcoxon, Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests, based on the Shapiro-Wilk test on model residuals and the Levene test for variance homogeneity."}
+knitr::include_graphics("figures/decision_tree.png")
+```
+
+
+A linear model of Eq.
+\@ref(eq:glm) is fitted between the numeric response and the categorical predictor, and the model residuals of Eq.
+\@ref(eq:raw-residual) are extracted.
+
+In the default setting (`group_test = NULL`), Route 1 uses the displayed residual diagnostics of the Shapiro--Wilk (SW) and Levene test (L) [@Levene:1960] as automatic gates:
+
+The Shapiro--Wilk (SW) test is an omnibus normality test, sensitive to both skewness and kurtosis [@DAgostino:1973].
+
+If the SW-test rejects residual normality ($p_\text{SW} \le \alpha$), robust non-parametric tests are selected: `wilcox.test()` (Eq. \@ref(eq:wilcoxon-w)) for two groups, or `kruskal.test()` (Eq. \@ref(eq:kruskal-h)) followed by Holm-adjusted `pairwise.wilcox.test()` for more than two groups.
+
+If residual normality is not rejected, the mean-centred Levene test (L) [@Levene:1960] (Eq. \@ref(eq:levene-f)) gates the variance assessment:
+
+For homoscedastic data ($p_\text{L} > \alpha$), `t.test(var.equal = TRUE)` (Eq. \@ref(eq:student-t)) is applied for two groups, or Fisher's `aov()` (Eq. \@ref(eq:fisher-f)) for more than two groups.
+For heteroscedastic data ($p_\text{L} \le \alpha$), Welch's `t.test()` (Eq. \@ref(eq:welch-t)) is applied for two groups, or Welch's `oneway.test()` (Eq. \@ref(eq:welch-f)) for more than two groups.
+
+
+Independent of assumption testing, the user can enforce group mean comparisons by the option `group_test = welch` which defaults to Welch variants of the t-test (`t.test()`) and ANOVA (`oneway.test()`), otherwise the option `group_test = rank`switches to the non-parametric alternatives `wilcox.test()` and `kruskal.test()`.
+
+The two overrides differ in what they display: `group_test = welch` still fits the linear model and shows the assumption-diagnostic panel, with a warning when the Shapiro--Wilk test rejects residual normality, whereas `group_test = rank` enters the rank branch directly and does not generate the assumption plot with its corresponding test statistics.
+
+The rationale for the automated gating, and the mean- and rank-based alternatives and the limitations of each approach are discussed in Section \@ref(sec:simulation-results) and Section \@ref(sec:discussion).
+
+
+#### Post-hoc tests {.unnumbered}
+
+ANOVA, Welch ANOVA, and Kruskal--Wallis are omnibus tests: a significant test result tells us that *some* group differs, but not which.
+
+To identify the differing pairs, `visstat()` tests all pairwise comparisons among the factor levels, defining a family of tests.
+Because the three omnibus tests rest on different assumptions, each branch uses a matching post-hoc procedure:
+
+- `TukeyHSD()` (Eq. \@ref(eq:tukey-hsd-q)) after `aov()` controls the family-wise error rate through the studentised range distribution under a common-variance assumption.
+
+- `games.howell()` after `oneway.test()` uses the Welch statistic (Eq. \@ref(eq:welch-t)) with separate variance estimates and Welch-adjusted degrees of freedom for each pair, making it the appropriate post-hoc procedure for the heteroscedastic Welch branch.
+
+- `pairwise.wilcox.test(p.adjust.method = "holm")` after `kruskal.test()` uses Holm's step-down adjustment for the pairwise Wilcoxon tests in the Kruskal--Wallis branch.
+
+The graphical results panel of these omnibus tests consists of box plots (see examples in Section \@ref(sec:examples-route1)) enriched with significance letters to visualise the post-hoc analysis: Pairs whose adjusted post-hoc $p$\ value falls below $\alpha$ are marked with different green significance letters below the box plots; pairs sharing a letter are not significantly different.
+
+
+### Route 2: Ordered response {#sec:route-2}
+
+An ordered categorical response with a categorical predictor or ordered categorical predictor is treated as a rank-based group comparison.
+The ordered response is converted to integer level codes and analysed with the Wilcoxon rank-sum test for two groups or the Kruskal--Wallis test for more than two groups.
+
+### Route 3: Numeric response, numeric predictor {#sec:route-3}
+
+Two numeric variables ask whether a numeric response changes with a numeric predictor.
+By default, `visstat()` fits a simple linear regression (Eq. \@ref(eq:simple-regression-fit)),
+and the diagnostic panel described in Section \@ref(sec:graphical) is displayed.
+If general linear model assumptions are violated, the corresponding $p$\ values trigger warnings and recommendations, but no automatic model replacement.
+The regression output is shown in Section \@ref(sec:lin-reg).
+
+### Route 4: Two unordered factors {#sec:route-4}
+
+Two unordered factors ask whether two categorical variables are independent.
+`visstat()` uses Pearson's $\chi^2$ test or Fisher's exact test, depending on expected cell counts following Cochran's rule [@Cochran:1954]: the $\chi^2$ approximation is used if no expected cell count is less than 1 and no more than 20% of cells have expected counts below 5.
+Yates' continuity correction is applied by default to $2 \times 2$ tables when the $\chi^2$ approximation is used.
+
+### Optional rank-correlation mode {#sec:rank-correlation-mode}
+
+The four routes above describe the default, automatic test selection behaviour.
+For ordered--ordered and numeric--numeric input vectors, the user can instead request a rank-correlation analysis by setting `correlation = TRUE`.
+
+Both optional analyses test monotone association and are computed by `cor.test()`: Kendall's $\tau_b$ (Eq. \@ref(eq:kendall-tau-b)) with `method = "kendall", exact = FALSE` for two ordered variables, and Spearman's $\rho$ (Eq. \@ref(eq:spearman-rho)) with `method = "spearman"` for two numeric variables.
+Kendall's $\tau_b$ corrects for ties present with few ordered levels [@Agresti:2010; @Xu:2013].
+
+Note that for numeric--numeric input, Pearson correlation is not implemented as a separate optional mode as in simple linear regression with an intercept, the two-sided test of zero slope and the two-sided Pearson correlation test return the same $p$\ value.

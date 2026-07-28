@@ -23,6 +23,10 @@ header-includes:
  - \usepackage{mathrsfs}
  - \providecommand{\citation}[1]{}
 bibliography: REFERENCES.bib
+# Sources of the effect size table (Appendix): cited there as hyperlinks inside
+# the raw table, so nocite is needed to list them in the References.
+nocite: |
+  @Hedges:1981, @Delacre:2021, @Kerby:2014, @Albers:2018, @Tomczak:2014
 pkgdown:
  as_is: true
 vignette: >
@@ -35,12 +39,60 @@ editor_options:
 ---
 
 ```{r knit-setup, include=FALSE}
-# The child documents are named relative to this file. Knitting from the
-# package root instead (RStudio's "Project Directory" setting) would look for
-# them there, so the root directory is moved back to vignettes/ in that case.
-if (!file.exists("children/_abstract.Rmd") && dir.exists("vignettes")) {
+# Knit either from vignettes/ or from the package root: child documents are
+# named relative to this file, so the root directory is moved to vignettes/
+# whenever the knit starts somewhere else (e.g. RStudio's "Project Directory").
+if (!dir.exists("children") && dir.exists(file.path("vignettes", "children"))) {
  knitr::opts_knit$set(root.dir = normalizePath("vignettes"))
 }
+```
+
+```{r setup, include=FALSE}
+library(visStatistics)
+knitr::opts_chunk$set(
+ fig.width = 7,
+ fig.height = 4.5,
+ out.width = "100%",
+ echo = TRUE
+)
+example_alpha <- 0.05
+options(visStatistics.qq_nsim = 999L)
+```
+
+```{=html}
+<style>
+body {
+ max-width: 1200px;
+}
+
+div.figure img[width="48%"] {
+ box-sizing: border-box;
+ margin-left: 0;
+ margin-right: 0;
+}
+
+p.caption,
+figcaption {
+ text-align: left;
+ font-size: 0.9em;
+ font-style: italic;
+ line-height: 1.35;
+}
+
+table a {
+ color: #0645ad;
+ text-decoration: underline;
+ text-underline-offset: 2px;
+}
+
+.rev-add {
+ color: #008000;
+}
+
+.rev-del {
+ text-decoration: line-through;
+}
+</style>
 ```
 
 # Abstract {.unnumbered}
@@ -48,10 +100,32 @@ if (!file.exists("children/_abstract.Rmd") && dir.exists("vignettes")) {
 ```{r abstract, child = "children/_abstract.Rmd"}
 ```
 
-```{r body, child = "children/_body.Rmd"}
+<!-- Introduction · Packages with related scope · Purpose of the vignette · Package overview -->
+```{r start, child = "children/_start.Rmd"}
 ```
 
+<!-- Decision logic -->
+```{r decision, child = "children/_decision.Rmd"}
+```
+
+<!-- Usage and examples -->
+```{r examples, child = "children/_examples.Rmd"}
+```
+
+<!-- Route 1 simulations -->
+```{r simulations, child = "children/_simulations.Rmd"}
+```
+
+<!-- Discussion · Limitations · Conclusion -->
+```{r conclusion, child = "children/_conclusion.Rmd"}
+```
+
+<!-- Assumption tests · Parametric tests · Non-parametric tests · Rank correlations · Chi-squared and Fisher's exact -->
 ```{r appendix, child = "children/_appendix.Rmd"}
+```
+
+<!-- Effect size table -->
+```{r effect-size-table-child, child = "children/_effect_size_table.Rmd"}
 ```
 
 # References {.unnumbered}

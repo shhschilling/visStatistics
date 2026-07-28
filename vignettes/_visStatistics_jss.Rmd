@@ -26,6 +26,10 @@ preamble: >
   \usepackage{mathrsfs}
   \makeatletter\renewcommand{\pdfbookmark}[3][]{}\makeatother
 bibliography: REFERENCES.bib
+# Sources of the effect size table (Appendix): cited there as hyperlinks inside
+# the raw table, so nocite is needed to list them in the References.
+nocite: |
+  @Hedges:1981, @Delacre:2021, @Kerby:2014, @Albers:2018, @Tomczak:2014
 output:
   bookdown::pdf_book:
     base_format: rticles::jss_article
@@ -33,17 +37,52 @@ output:
 ---
 
 ```{r knit-setup, include=FALSE}
-# See the note in visStatistics.Rmd: keep the child documents resolvable when
-# the knit starts from the package root rather than from vignettes/.
-if (!file.exists("children/_body.Rmd") && dir.exists("vignettes")) {
+# Knit either from vignettes/ or from the package root: child documents are
+# named relative to this file, so the root directory is moved to vignettes/
+# whenever the knit starts somewhere else (e.g. RStudio's "Project Directory").
+if (!dir.exists("children") && dir.exists(file.path("vignettes", "children"))) {
   knitr::opts_knit$set(root.dir = normalizePath("vignettes"))
 }
 ```
 
-```{r body, child = "children/_body.Rmd"}
+```{r setup, include=FALSE}
+library(visStatistics)
+knitr::opts_chunk$set(
+ fig.width = 7,
+ fig.height = 4.5,
+ out.width = "100%",
+ echo = TRUE
+)
+example_alpha <- 0.05
+options(visStatistics.qq_nsim = 999L)
 ```
 
+<!-- Introduction · Packages with related scope · Purpose of the vignette · Package overview -->
+```{r start, child = "children/_start.Rmd"}
+```
+
+<!-- Decision logic -->
+```{r decision, child = "children/_decision.Rmd"}
+```
+
+<!-- Usage and examples -->
+```{r examples, child = "children/_examples.Rmd"}
+```
+
+<!-- Route 1 simulations -->
+```{r simulations, child = "children/_simulations.Rmd"}
+```
+
+<!-- Discussion · Limitations · Conclusion -->
+```{r conclusion, child = "children/_conclusion.Rmd"}
+```
+
+<!-- Assumption tests · Parametric tests · Non-parametric tests · Rank correlations · Chi-squared and Fisher's exact -->
 ```{r appendix-child, child = "children/_appendix.Rmd"}
+```
+
+<!-- Effect size table -->
+```{r effect-size-table-child, child = "children/_effect_size_table.Rmd"}
 ```
 
 # References {.unnumbered}

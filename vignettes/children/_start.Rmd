@@ -1,0 +1,119 @@
+# Introduction
+
+In the frequentist tradition, the majority of routine data analyses reduce to a comparatively small set of inferential frameworks, including group comparisons, regression models and contingency-table analyses [@Fritz:2012; @Hayat:2017; @Sato:2017; @Brodeur:2020]. The correct use of these frameworks depends on assumptions that are often checked informally or not at all [@Hoekstra:2012; @Shatz:2024].
+`visStatistics` targets this gap by making routine frequentist test selection assumption-aware, visual, and reproducible.
+Rather than requiring users to choose the test function first, `visstat()` starts from two variables and routes common two-variable settings through a fixed decision workflow.
+The function selects a test from the variable classes, distributional assumptions, sample size, and expected cell counts; displays the diagnostics that led to the selected route. It then returns an R object whose `print()` and `summary()` methods expose the complete test results, including the reported effect size.
+
+
+
+
+
+The scripted workflow is well suited to browser-based applications where sensitive data (such as highly confidential medical records) are stored securely on a server and cannot be directly accessed by users.
+This approach has already been successfully applied to develop a medical scoring tool [@Bijlenga:2017].
+
+
+# Packages with related scope
+
+For group comparisons, packages with related scope include `compareGroups` [@Subirana:2014], `boxTest` [@Sau:2025], `autotestR` [@Garcia:2026], `automatedtests` [@Zeevat:2025], and `agrobox` [@SalinasAngeles:2026].
+`compareGroups` is primarily designed for bivariate descriptive tables and reports.
+`boxTest` covers only the two-group numeric-response case.
+`autotestR` provides automated recommendations for t-tests, ANOVA and correlation.
+`automatedTests` provides the most extensive range of coverage of the packages under consideration, incorporating one-sample, paired, repeated measures, regression, correlation, and contingency-table cases.
+`agrobox` automates the choice between Fisher's and Welch's ANOVA.
+
+For tests within the general linear-model framework like Student's t-test or Fisher's one-way ANOVA and linear regression, the normality assumption concerns the model residual errors (each observation minus its predicted value), not the raw data itself; the belief that the raw data must be normal is a widespread myth [@Kery:2003].
+
+Yet, `autotestR` and `boxTest` test the response separately within groups, whereas `automatedtests` and `compareGroups` test the response variable as a whole, ignoring the grouping.
+Among the reviewed automated test-selection packages, only `agrobox` base the central-tendency route on explicit residual diagnostics from the common linear model rather than on marginal or groupwise normality checks.
+
+
+<!-- The package is deliberately limited to common two-variable settings in which the route can be visualised and audited: residual-based diagnostics for the linear-model branches, the selected test, full test statistics, effect size, result plots, and post-hoc comparisons where required. -->
+
+Note that packages such as `rstatix` [@Kassambara:2025], `ggstatsplot` [@Patil:2021], and, in Python, `pingouin` [@Vallat:2018] provide individual diagnostic and test functions but leave the actual test choice to the user rather than automating it.
+
+
+
+# Purpose of the vignette
+The purpose of this vignette is two-fold: On the one hand it documents (Section \@ref(sec:decision)), justifies (Sections \@ref(sec:simulation-results) and \@ref(sec:discussion)) and illustrates (Section \@ref(sec:examples)) the decision logic of `visstat()`.
+On the other hand its Appendices serve as reference of all implemented tests, correlations
+and effect-sizes, so that the user easily understands the output without having to consult
+the code or literature.
+
+
+
+
+# Package overview
+
+## Installation 
+
+`visStatistics` [@Schilling:2026] is available on [CRAN](https://CRAN.R-project.org/package=visStatistics) as the latest stable release.
+This article refers to the latest development state in the [GitHub repository](https://github.com/shhschilling/visStatistics) (<https://github.com/shhschilling/visStatistics>), which may include minor changes between CRAN submissions.
+
+## Minimal function call
+
+Given two input vectors `x` and `y` of class `"numeric"`, `"integer"`, or `"factor"`, its main function `visstat()` can be called in two equivalent forms:
+
+``` r
+# Recommended form:
+visstat(x, y)
+
+# Formula interface:
+visstat(y ~ x, data = dataframe)
+```
+
+An exemplary function call is
+
+```{r npk, fig.show='hide', results='hide'}
+# Standardised form
+visstat(npk$block, npk$yield)
+```
+
+## Automated test selection
+
+From this single entry point, the package automatically selects among the implemented hypothesis tests,
+
+`t.test()`, `wilcox.test()`, `aov()`, `oneway.test()`, `kruskal.test()`, `chisq.test()`, `fisher.test()`, `lm()`.
+
+The underlying selection algorithm is detailed in Section \@ref(sec:decision).
+
+## p-values and effect size
+
+Among the returned components, `visstat()` reports the $p$\ value of the selected test quantifying evidence against the null hypothesis and a complementary `effect_size()` estimate describing the magnitude of the selected comparison, association, or model fit on the scale
+defined in the [effect-size table](#tab:effect-size-formulae) [@Fritz:2012; @Levine:2002], Appendix \@ref(sec:effect-sizes). 
+While $p$\ values are strongly affected by sample size, effect-size, estimates are intended to support comparisons across studies regardless of sample size [@Levine:2002]. Effect size is therefore an important determinant of power or required sample size or both [@Cohen:2013, p. 10].
+
+The effect size takes the value zero when the null hypothesis is true and some other, test-specific non-zero value when the null hypothesis is false, it is an index of degree of departure from the null hypothesis [@Cohen:2013, p. 10].
+
+To avoid additional package dependencies, the function `effect_size()` extracts, where possible, the effect sizes from base R `stats` output. Otherwise, it implements the remaining formulae internally.
+
+
+
+## Implemented functions
+
+
+Unless stated otherwise, R function names for selected tests refer to functions from the `stats` package distributed with R [@R:2026].
+
+To reduce dependencies on other packages, `visStatistics` implements `levene.test()` for the variance gate in grouped mean-based tests (Eq. \@ref(eq:levene-f)), `bp.test()` for regression diagnostics (Eq. \@ref(eq:breusch-pagan-bp)), `games.howell()` for Welch-ANOVA post-hoc comparisons using the Welch statistic (Eq. \@ref(eq:welch-t)), and `effect_size()` for the effect size reported with the selected test (Appendix \@ref(sec:effect-sizes)).
+
+Definitions of all implemented test statistics, rank-correlation coefficients, and effect sizes are given in Appendices \@ref(sec:tests)--\@ref(sec:effect-sizes).
+
+
+## The `visstat` methods {#sec:visstat-methods}
+
+
+Objects returned by `visstat()` are of class `"visstat"` and support the S3 methods `print()`, `summary()`, and `plot()`.
+Each is demonstrated on a worked object in Section \@ref(sec:anova-plantgrowth).
+
+- `print()` lists the returned components.
+- `summary()` prints the full returned object, including assumption tests, post-hoc comparisons, confidence level, and `effect_size` where available.
+- `plot()` lists the available plots by default; with `which`, it either replays a captured plot (in an interactive R session) or reports the selected saved file path.
+
+
+### Saved graphics
+
+When `visstat()` is called with `graphicsoutput` specified, `plot()` lists the generated file paths instead.
+All generated graphics can be saved in any file format supported by `Cairo()` [@Urbanek:2025], including "png", "jpeg", "pdf", "svg", "ps", and "tiff".
+If `plotName` is provided, the main result plot uses this name.
+The assumption-diagnostic plot adds the prefix `"glm_assumptions_"`.
+If `plotName` is not provided, file names are generated from the selected plot type and the input variable names.

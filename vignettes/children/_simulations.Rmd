@@ -1,0 +1,165 @@
+# Route 1 simulations {#sec:simulation-results}
+
+Route 1 can answer two different questions: Parametric tests such as Student's t-test, Fisher's one-way ANOVA, and their Welch variants test population means [@Welch:1951; @Rasch:2011; @Delacre:2019], whereas non-parametric tests such as Wilcoxon and Kruskal--Wallis test a rank-based distributional target.
+
+The simulation study the effect of the three implemented Route 1 test selections: 
+
+
+**Defaulting to Welch-type tests** Fixing the analysis to Welch-type tests costs little when the variances are in fact equal.
+In balanced, homoscedastic four-group case simulations, where the assumptions of the Fisher One way Anova are given, the relative difference between the Fisher and Welch-F-statistic for four group comparisons is of order $1/n$ (Eq. \@ref(eq:welch-anova-equal-var-reduction)) [@Welch:1951; @Rasch:2011; @Delacre:2019], resulting in a relative difference of $6.7\;\%$ for $n = 10$ and only $0.6\%$ for $n=100$ in our four group comparisons (Eq. \@ref(eq:welch-anova-four-groups)). 
+
+<!-- <!-- Caveat Welch under skew-> appendix? Derive in appendix that the errors fall with e error falls like skewness over $\sqrt{n}$, e error falls like skewness over $\sqrt{n}$, -->
+<!-- !-- -->
+Note that the Welch test assumes normality in the samples, an assumption which can only be safely neglected in larger samples, where the central limit theorem holds. The size required grows with the skewness and the imbalance of the samples, derived for two
+samples by [@Zhou:2005], and depends also on the number of compared groups. In a empirical study, Delacre et al.
+[@Delacre:2019] established that the Type I error of Welch's
+one-way ANOVA remained within Bradley's liberal robustness bounds of $[2.5\%, 7.5\%]$ [@Bradley:1978] across their simulated non-normal distributions 
+<!-- (including skewed chi-square cases with skewness 2 and excess kurtosis 6, and symmetric heavy-tailed mixed-normal cases with excess kurtosis about 9.7) -->
+for at least about 50 observations per group for up to four groups, and about 100 observations per group for more than four groups. 
+
+
+
+
+**Defaulting to rank-based tests** Rank-based tests reduce the distributional assumptions and can be more efficient under skewness when the variances are equal [@Bridge:1999]; what this costs under normality and what it gains under skew is quantified in the power simulations below
+(Fig. \@ref(fig:route1-power)).
+
+**Residual-based test selection** The default leaves the choice to the residual diagnostics, so its level and power follows from neither fixed strategy and is studied in the simulations below.
+
+
+The simulations display fixed tests and routed procedures
+side by side for four-group comparisons: fixed Fisher's one-way ANOVA (`F`), fixed Welch's one-way ANOVA (`W`), a Levene gate
+between them (`L`), fixed Kruskal--Wallis (`KW`), a Shapiro--Wilk gate
+between `W` and `KW` (`SW`), and the full Shapiro--Wilk plus Levene gate
+(`SW+L`) gating to either `F` or `W` within the mean branch, otherwise to `KW`.
+In the four-group setting simulated here, `W` is the test that `group_test = "welch"` selects, `KW` the test that `group_test = "rank"` selects, and `SW+L` the default routing.
+
+The aim of the simulations is not to re-establish the robustness evidence for Fisher's one-way ANOVA under homoscedasticity and non-normality [@Blanca:2017] or for Welch's ANOVA under heterogeneous variances [@Delacre:2019], but to contrast the three Route 1 strategies in level and in power across combinations of sample size, skewness, excess kurtosis and variance pairing, and to show under which of them the displayed residual diagnostics move the analysis from the mean-based branch to the rank-based one.
+
+
+The simulations address both homo- and heteroscedastic settings:
+Figure \@ref(fig:route1-identical-typeI) adapts the three-group zero-effect one-way ANOVA setting of Blanca et al. [@Blanca:2017] to four Route 1 groups with identical distributions; here both the equal-means null and the Kruskal--Wallis null are true.
+
+Figure \@ref(fig:route1-unequal-typeI) keeps the equal-means null and varies the group standard deviations and sample-size pairings as in Delacre et al. [@Delacre:2019].
+
+The route probabilities are printed in the heatmaps after "|", so that the final
+rejection rates can be read together with the path probabilities taken to the final test.
+
+
+Non-normal data are generated with Fleishman's polynomial transformation
+$Y = a + bX + cX^2 + dX^3$, where $X \sim N(0,1)$.
+The coefficients set mean 0, variance 1, and the target skewness and
+excess kurtosis [@Fleishman:1978].
+
+
+All simulations use four groups and $B=50{,}000$ Monte Carlo
+replications per cell. The scripts, the saved Monte Carlo output and the code
+that builds the three figures ship with the package in
+`system.file("simulations", package = "visStatistics")`
+For an estimated rejection probability $p$, the Monte Carlo standard error is [@Koehler:2009]
+$$SE_{\mathrm{MC}}=\sqrt{p(1-p)/B}.$$ This is about 0.10 percentage points at $p=0.05$, with a maximum of about 0.22 percentage points at $p=0.50$.
+
+## Type I error simulations: equal means, equal ranks, balanced or unbalanced group sizes
+
+Figure \@ref(fig:route1-identical-typeI) shows in panel (A) the density distributions of
+the four groups only differing in size: The balanced design in panel (B) varies the common group size
+$n \in \{10,20,50,100\}$ from top to bottom,
+whereas the unbalanced designs vary the target
+mean group size $\bar n = n$ (panel (C)), again from top to bottom.
+Within each row, the group-size vector is
+$\mathbf n=\bar n\cdot(0.5,0.8,1.2,1.5)$, rounded up component-wise.
+
+
+```{r simulation-captions, include=FALSE}
+cap_route1_identical_typeI <- paste(
+ "Route 1 Type I simulation under identical distributions and identical",
+ "means, with group mean 0 and SD = 1 in all four groups.",
+ "(A) input distributions, dashed lines mark means and dotted lines mark medians.",
+ "(B) balanced design with group sizes, listed from top to bottom, as 10, 20, 50, 100. ",
+ "(C) Unbalanced design with group sizes $\\bar{n} \\cdot ",
+ "(0.5, 0.8, 1.2, 1.5)$ with the target mean group size for unbalanced designs $\\bar{n} \\in \\{10, 20, 50, 100\\}$ ",
+ "rounded up to the next integer. The heatmaps in",
+ "(B) and (C) report final-test rejection rates at $\\alpha = 5\\%$.",
+ "All heatmap numbers are percentages; the first value is the",
+ "final-test rejection rate, and gated rows additionally list route splits after |."
+)
+
+cap_route1_unequal_typeI <- paste(
+ "Route 1 equal-means simulation with varied group SD",
+ "and sample-size pairings.",
+ "(A) input distributions",
+ "(B) balanced design with group sizes, listed from top to bottom, as 10, 20, 50, 100.",
+ "(C) unbalanced design with larger groups paired with larger SD.",
+ "(D) unbalanced design with larger groups paired with smaller SD."
+)
+```
+
+
+```{r route1-identical-typeI, echo=FALSE, fig.cap=cap_route1_identical_typeI, out.width="95%"}
+knitr::include_graphics(
+ "figures/route1_identical_distributions_typeI_with_kw_fleishman_B50000.png"
+)
+```
+
+
+This is a clean Type I check for Shapiro (`SW`) or Shapiro and Levene gate based (`SW+L`) automated routing, as routing to Kruskal--Wallis under non-normality does not change the truth status of the tested null, because the Kruskal--Wallis null is in this homoscedastic simulations also true. The type I error rate stays inside Bradley's bounds in all scenarios of this homoscedastic setting, ranging from 4.2% to 5.8% for `SW` and, more narrowly, from 4.8% to 5.6% for `SW+L`. The narrower spread follows from what the variance gate selects: with variances in fact equal it returns most of the mean branch to Fisher's exact `F` test, whereas `SW` always ends in Welch's test, whose level is only approximate at small and unequal group sizes. The two fixed options stay inside them as well, `KW` close to the nominal level throughout and `W` with the widest spread of all strategies at the smallest and most unequal group sizes.
+
+In the balanced (panel B) as in the unbalanced design (panel C), the route probabilities show the Shapiro-Wilk gate responding to kurtosis as well as to skewness: for the symmetric heavy-tailed input, with zero skewness and an excess kurtosis of 6, most replications are routed to the rank branch from a group size of 20 onwards. The same holds for every simulated departure from normality except the mildest, with a skewness of 0.5 and an excess kurtosis of 1, which reaches that point only at a group size of 50; under exact normality the rank branch is taken at the nominal level at every group size. As with any hypothesis test, the power of the gate grows with the sample size.
+
+With all four groups drawn from the same distribution every strategy keeps its nominal level, so what the gates decide here is not the validity of the answer but which question is answered.
+
+## Equal means, introducing heteroscedasticity
+
+In Fig. \@ref(fig:route1-unequal-typeI), all four group means remain zero,
+but the common standardised input distribution is multiplied by
+group-specific standard deviation (SD) scale factors introducing heteroscedasticity.
+The balanced block (panel B) uses
+$\mathbf n=(n,n,n,n)$ with $n \in \{10,20,50,100\}$ and $\mathbf s = (1.0,1.3,1.7,2.2)$.
+The unbalanced blocks use
+$\mathbf n=\bar n\cdot (0.5,0.8,1.2,1.5)$; this group-size vector is paired
+either with $\mathbf s = (1.0,1.3,1.7,2.2)$, so larger groups have larger
+SDs (panel C) or with $\mathbf s = (2.2,1.7,1.3,1.0)$, so larger groups have smaller
+SDs (panel D).
+
+
+The parametric equal-means null is true in all columns.
+Kruskal--Wallis tests the group rank distributions, not the means: SD scaling leaves them aligned in the two symmetric columns, so those are Type I checks for `F`, `W` and `KW` alike, but shifts them in the skewed columns, where `KW` is expected to reject and only `F` and `W` remain under a true null; `SW+L` and `SW` should reject there only when routed to Kruskal--Wallis.
+A high rejection rate after such a switch is not a Type I error for the equal-means null but power: the gate has changed the question to a rank comparison.
+
+```{r route1-unequal-typeI, echo=FALSE, fig.cap=cap_route1_unequal_typeI, out.width="94%"}
+knitr::include_graphics(
+ "figures/route1_equal_means_unequal_distributions_fleishman_B50000.png"
+)
+```
+
+
+
+The `SW` gate also reacts to unequal variances alone. In panel B, column 1 of Fig. \@ref(fig:route1-unequal-typeI) the balanced four groups are exactly normal and differ only in spread, yet the share of replications that the Shapiro--Wilk gate sends to Kruskal--Wallis rises from 13% at $n_i=10$ to a majority of $69\;\%$ at $n_i=100$ (panel B, column 1, row `SW`), against 5% in every row of the corresponding column 1 of Fig. \@ref(fig:route1-identical-typeI), where all standard deviations are equal. The gate applies one test to the standardised residuals of all four groups at once; mixing the four scales gives this single residual vector a positive excess kurtosis of about 0.9. This is the expected behaviour of residual-based routing, normally distributed and heteroscedastic group samples result in non-normal residuals. 
+
+### Bradley's boundaries in heteroscedastic simulations
+
+`F` assumes equal variances, and its pooled variance is dominated by the largest groups: it rejects too rarely when those groups also carry the largest standard deviations (panel C), too often in the reverse pairing (panel D), and inside the boundaries when the sizes are equal (panel B).
+
+In contrast, `W` holds in most cases: it leaves Bradley's boundaries in only two cells, where the reverse pairing of larger groups with smaller standard deviations (panel D) meets the strongest departure from normality (column 5) at the smallest mean group sizes $\bar n = 10$ and $\bar n = 20$. The groups in these two cells hold between 5 and 30 observations, below the minimal group size of 50 per group that Delacre et al. [@Delacre:2019] recommended for comparisons of at most four groups. 
+The same group sizes with the opposite pairing (panel C) leave `W` inside the boundaries, so in
+these simulations the group size alone does not decide the outcome.
+
+
+In the two symmetric columns 1 and 2 both gated strategies remain type I tests and stay within Bradley's boundaries in the balanced design (panel B) and in the unbalanced design of panel C. The adverse pairing of panel D defeats them both, and for different reasons. At the larger group sizes the normality gate is overpowered and sends most replications to `KW`, whose own level is affected by unequal variances at unequal group sizes [@Zimmerman:2004]. At the smallest group sizes the variance gate is underpowered instead and returns nearly half the replications to `F`, whose rejection rate under a true null is inflated to about 13% in this pairing. 
+
+
+Taken together, unequal variances push the routing out of the mean branch through the residual kurtosis they induce, so a mean comparison under suspected heteroscedasticity is better requested with group_test = "welch" than left to the default automated routing. 
+
+
+## Type II error (power) simulations
+
+
+The power simulation uses the same five fixed input distributions and adds ordered location shifts across the four groups.
+It uses balanced groups with equal SD, so $n_i=n$, $\mathrm{SD}_i=1$ for $i=1,...4$ and group means are shifted by $0,0.25,0.50,0.75$.
+
+
+```{r route1-power, echo=FALSE, fig.height=7.8, fig.cap="Route 1 power simulation with Fleishman input distributions. (A) Input distributions with group mean and median reference lines. (B) Simulated rejection rates for the six testing strategies."}
+knitr::include_graphics(
+ "figures/fleishman_4groups_power.png"
+)
+```
+Which strategy rejects the false null most often is decided by the shape of the input: under normality the mean-based tests reject at most three percentage points more often than Kruskal--Wallis at the smaller group sizes, while under heavy tails and under skewness Kruskal--Wallis rejects far more often (Fig. \@ref(fig:route1-power), panel B). The routed procedure follows whichever rejects most often -- the insets show the share sent to the rank branch growing with skewness and excess kurtosis -- rejecting at least as often as fixed Welch everywhere, more often than the better of the two fixed strategies in half of the cells that have not saturated, and less often than fixed Kruskal--Wallis in one. By a group size of 100 the false null is rejected in essentially every replication.
