@@ -49,6 +49,10 @@ Which of the two fixed defaults detects a true difference more often depends on 
 
 Power, however, is not the only criterion: a maximally powerful test is of little use if it answers the wrong question. This is the argument against fixing either default in advance: `visstat()` does not know the user's research question, so the residual diagnostics decide which estimand is tested, and the selected test is reported together with the diagnostics that led to it. Under normality the general linear model tests are uniformly most powerful [@Bridge:1999] and return effect estimates and confidence intervals on the scale of the original measurements, whereas the rank-based tests buy robustness under skewness at the price of a $p$\ value without a natural-scale effect. `visstat()` therefore keeps both branches and selects between them, rather than discarding the interpretability of the one or the robustness of the other a priori.
 
+The default is moreover retained because it maintains access to the general linear model and because the sequence it implements — fitting the model, examining the residual assumptions and then selecting the equal-variance test, its Welch variant or a rank-based test — is the two-stage procedure widely accepted in applied practice, and still presented in textbooks and standard software as the method for selecting a test [@Rochon:2012; @Zimmerman:2004].
+
+Rochon et al. [@Rochon:2012] studied precisely this construction, and concluded it maintained the nominal significance level with acceptable power in the cases they examined.
+
 
 # Limitations {#sec:limitations}
 
@@ -71,15 +75,9 @@ However, bootstrapping often requires thousands of resamples and may perform poo
 This runs counter to the purpose of the `visStatistics` package, which is designed to offer a rapid overview of the data, laying the groundwork for deeper analysis in subsequent steps.
 
 The default routing in tests of central tendencies (Route 1) is not the Type I optimal one.
-Section \@ref(sec:simulation-results) shows that a fixed Welch analysis keeps the Type I error rate within Bradley's bounds over almost the entire simulated grid, whereas the default gating does not in unbalanced designs whose smallest groups carry the largest standard deviations.
+Section \@ref(sec:simulation-results) shows that a fixed Welch analysis keeps the Type I error rate within Bradley's bounds over almost the entire simulated grid, whereas the default gating does not in unbalanced designs whose smallest groups carry the largest standard deviations. What the gating buys in return is power: it matches the fixed Welch analysis in every cell of Fig. \@ref(fig:route1-power) and trails the fixed rank analysis only in a single one.
 
-What the gating buys in return is power: it matches the fixed Welch analysis in every cell of Fig. \@ref(fig:route1-power) and trails the fixed rank analysis in a single one.
-
-The default is moreover retained because it maintains access to the general linear model and because the sequence it implements — fitting the model, examining the residual assumptions and then selecting the equal-variance test, its Welch variant or a rank-based test — is the two-stage procedure widely accepted in applied practice, and still presented in textbooks and standard software as the method for selecting a test [@Rochon:2012; @Zimmerman:2004].
-
-Rochon et al. [@Rochon:2012] studied precisely this construction, and concluded it maintained the nominal significance level with acceptable power in the cases they examined.
-Making that reasoning visible and auditable is therefore more useful to the intended audience than replacing it with a fixed choice.
-
+Any routing on $p$\ values inherits an arbitrary threshold: the branch changes abruptly at $\alpha$, so data on either side of it are treated differently while being statistically indistinguishable. In our gating approach, what changes at that boundary is the estimand, not the validity of the result, since near-normal input leaves every strategy at the nominal level (Fig. \@ref(fig:route1-identical-typeI)).
 
 At the graphical level, the design is also kept deliberately low-dependency.
 The package uses mostly R graphics, keeping the transitive dependency footprint minimal.
