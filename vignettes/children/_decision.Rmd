@@ -162,9 +162,7 @@ Within the selected route, additional rules determine the selected test and outp
 
 ### Route 1: Numeric response, categorical predictor {#sec:route-1}
 
-A numeric response with a categorical predictor with $k$ "levels" (in the following "groups") asks whether the response differs between groups.
-
-Figure \@ref(fig:decision-tree) expands the default routing logic for tests of central tendencies.
+A numeric response with a categorical predictor with $k$ "levels" (in the following "groups") asks whether the response differs between groups, Figure \@ref(fig:decision-tree) expands the default routing logic in this pairing of response and predictor. 
 
 ```{r decision-tree, echo=FALSE, fig.cap="Decision tree for the default Route 1 test selection (group\\_test = NULL). Shapiro--Wilk on model residuals determines whether the route remains mean-based or switches to rank-based tests; the Levene test then selects equal-variance or Welch-type procedures.", fig.alt="Decision tree for the default Route 1 test selection among Welch t-test, Student t-test, Wilcoxon, Fisher ANOVA, Welch ANOVA, and Kruskal-Wallis tests, based on the Shapiro-Wilk test on model residuals and the Levene test for variance homogeneity."}
 knitr::include_graphics("figures/decision_tree.png")
@@ -174,10 +172,9 @@ knitr::include_graphics("figures/decision_tree.png")
 A linear model of Eq.
 \@ref(eq:glm) is fitted between the numeric response and the categorical predictor, and the model residuals of Eq.
 \@ref(eq:raw-residual) are extracted.
-
 In the default setting (`group_test = NULL`), Route 1 uses the displayed residual diagnostics of the Shapiro--Wilk (SW) and Levene test (L) [@Levene:1960] as automatic gates:
 
-The Shapiro--Wilk (SW) test is an omnibus normality test, sensitive to both skewness and kurtosis [@DAgostino:1973].
+<!-- The Shapiro--Wilk (SW) test is an omnibus normality test, sensitive to both skewness and kurtosis [@DAgostino:1973]. -->
 
 If the SW-test rejects residual normality ($p_\text{SW} \le \alpha$), robust non-parametric tests are selected: `wilcox.test()` (Eq. \@ref(eq:wilcoxon-w)) for two groups, or `kruskal.test()` (Eq. \@ref(eq:kruskal-h)) followed by Holm-adjusted `pairwise.wilcox.test()` for more than two groups.
 
