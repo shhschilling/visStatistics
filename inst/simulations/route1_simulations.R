@@ -28,8 +28,27 @@ NCORES <- if (length(args) >= 2) {
 }
 ALPHA <- 0.05
 PANELS <- 1:5
-MEAN_NS <- c(10, 20, 50, 100)
-POWER_NS <- c(10, 20, 50, 100, 200)
+MEAN_NS <- c(10, 20, 30, 50, 100, 200)
+POWER_NS <- c(10, 20, 30, 50, 100, 200)
+
+## Power designs. The multipliers sum to 4, so mean(n_vec) == mean_n exactly and
+## both series share an x-axis tick. The Fleishman panels are drawn with unit
+## variance, so the four groups stay identically distributed under H0, the rank
+## branch's null is exactly true, and a single density heads each column of the
+## figure. The only thing that differs between the two designs is the imbalance.
+## Appended designs keep the stream positions of the first two, so their cells
+## reproduce bit-identically. The heteroscedastic blocks hold the effect size
+## fixed: shifts are scaled by sqrt(mean(sd^2)), so omega^2 matches the
+## homoscedastic blocks and the comparison isolates unequal variances.
+POWER_DESIGNS <- list(
+  list(design = "balanced n, equal SD",   multipliers = c(1, 1, 1, 1),        sd = c(1, 1, 1, 1)),
+  list(design = "unbalanced n, equal SD", multipliers = c(0.5, 0.8, 1.2, 1.5), sd = c(1, 1, 1, 1)),
+  list(design = "balanced n, unequal SD", multipliers = c(1, 1, 1, 1),        sd = c(1, 1.3, 1.7, 2.2)),
+  list(design = "unbalanced n, larger n with larger SD",
+       multipliers = c(0.5, 0.8, 1.2, 1.5), sd = c(1, 1.3, 1.7, 2.2)),
+  list(design = "unbalanced n, larger n with smaller SD",
+       multipliers = c(0.5, 0.8, 1.2, 1.5), sd = c(2.2, 1.7, 1.3, 1))
+)
 SHIFT_SCENARIOS <- list(
   "moderate ordered effect: 0, 0.25, 0.50, 0.75 SD" = c(0, 0.25, 0.50, 0.75)
 )
@@ -62,6 +81,21 @@ normality_p <- function(rs) {
   stats::shapiro.test(rs)$p.value
 }
 
+## Sample skewness and excess kurtosis of the standardised residuals, the
+## vector the Shapiro-Wilk gate is applied to. A scale mixture of symmetric
+## distributions induces excess kurtosis but no skewness; skewed input carries
+## both, so the two channels are recorded separately.
+resid_moments <- function(x) {
+  x <- x - mean(x)
+  n <- length(x)
+  m2 <- sum(x^2) / n
+  if (m2 <= 0) return(c(skewness = NA_real_, excess_kurtosis = NA_real_))
+  c(
+    skewness = (sum(x^3) / n) / m2^1.5,
+    excess_kurtosis = (sum(x^4) / n) / m2^2 - 3
+  )
+}
+
 route_once <- function(y, g, alpha = ALPHA) {
   g <- factor(g)
   fit <- standardised_residuals(y, g)
@@ -77,7 +111,11 @@ route_once <- function(y, g, alpha = ALPHA) {
   p_sw <- if (normality_met) p_welch else p_rank
   p_gate <- if (normality_met) p_levene_route else p_rank
 
+  mom <- resid_moments(fit$rs)
+
   c(
+    resid_skewness = unname(mom["skewness"]),
+    resid_excess_kurtosis = unname(mom["excess_kurtosis"]),
     fisher_reject = p_fisher < alpha,
     welch_reject = p_welch < alpha,
     levene_route_reject = p_levene_route < alpha,
@@ -131,11 +169,16 @@ run_type1_cell <- function(panel, n_vec, sd_vec) {
     route_once(dat$y, dat$g)
   }, mc.cores = NCORES)
   names_out <- names(out[[1]])
-  stats <- lapply(names_out, function(nm) {
-    summarise_binary(vapply(out, `[[`, logical(1), nm))
+  moment_names <- c("resid_skewness", "resid_excess_kurtosis")
+  flag_names <- setdiff(names_out, moment_names)
+  stats <- lapply(flag_names, function(nm) {
+    summarise_binary(vapply(out, `[[`, numeric(1), nm) > 0.5)
   })
-  names(stats) <- names_out
-  unlist(stats)
+  names(stats) <- flag_names
+  moments <- vapply(moment_names, function(nm) {
+    mean(vapply(out, `[[`, numeric(1), nm), na.rm = TRUE)
+  }, numeric(1))
+  c(unlist(stats), moments)
 }
 
 case_label <- function(panel) {
@@ -162,6 +205,8 @@ for (mean_n in MEAN_NS) {
         excess_kurtosis = one$excess_kurtosis,
         groups = 4,
         group_means = "0, 0, 0, 0",
+        resid_skewness = res["resid_skewness"],
+        resid_excess_kurtosis = res["resid_excess_kurtosis"],
         fisher_rejection = res["fisher_reject.rate"],
         fisher_mc_se = res["fisher_reject.mc_se"],
         welch_rejection = res["welch_reject.rate"],
@@ -209,58 +254,72 @@ write.csv(type1, file.path(OUTDIR, "route1_equal_mean_blanca_zimmerman.csv"),
 )
 saveRDS(type1, file.path(OUTDIR, "route1_equal_mean_blanca_zimmerman.rds"), version = 2)
 
-make_shift_data <- function(panel, n, shifts) {
+make_shift_data <- function(panel, n_vec, shifts, sd_vec = rep(1, length(shifts))) {
   k <- length(shifts)
-  g <- factor(rep(seq_len(k), each = n))
+  stopifnot(length(n_vec) == k, length(sd_vec) == k)
+  g <- factor(rep(seq_len(k), times = n_vec))
   y <- unlist(lapply(seq_len(k), function(i) {
-    draw_fleishman_panel(n, panel) + shifts[i]
+    sd_vec[i] * draw_fleishman_panel(n_vec[i], panel) + shifts[i]
   }))
   list(y = y, g = g)
 }
 
-run_power_cell <- function(panel, n, shifts) {
+run_power_cell <- function(panel, n_vec, shifts, sd_vec = rep(1, length(shifts))) {
   seeds <- cell_seeds(NREP)
   out <- parallel::mclapply(seq_len(NREP), function(i) {
     assign(".Random.seed", seeds[[i]], envir = globalenv())
-    dat <- make_shift_data(panel, n, shifts)
+    dat <- make_shift_data(panel, n_vec, shifts, sd_vec)
     route_once(dat$y, dat$g)
   }, mc.cores = NCORES)
   c(
-    fisher = summarise_binary(vapply(out, `[[`, logical(1), "fisher_reject")),
-    welch = summarise_binary(vapply(out, `[[`, logical(1), "welch_reject")),
-    mean = summarise_binary(vapply(out, `[[`, logical(1), "levene_route_reject")),
-    rank = summarise_binary(vapply(out, `[[`, logical(1), "rank_reject")),
-    sw = summarise_binary(vapply(out, `[[`, logical(1), "sw_reject_final")),
-    gate = summarise_binary(vapply(out, `[[`, logical(1), "sw_gate_reject")),
-    sw_route_welch = summarise_binary(vapply(out, `[[`, logical(1), "sw_route_welch")),
-    sw_route_rank = summarise_binary(vapply(out, `[[`, logical(1), "sw_route_rank")),
-    route_rank = summarise_binary(vapply(out, `[[`, logical(1), "route_rank")),
-    route_fisher = summarise_binary(vapply(out, `[[`, logical(1), "route_fisher")),
-    route_welch = summarise_binary(vapply(out, `[[`, logical(1), "route_welch")),
-    mean_route_fisher = summarise_binary(vapply(out, `[[`, logical(1), "levene_select_fisher")),
-    mean_route_welch = summarise_binary(vapply(out, `[[`, logical(1), "levene_select_welch")),
-    levene_reject = summarise_binary(vapply(out, `[[`, logical(1), "levene_reject"))
+    fisher = summarise_binary(vapply(out, `[[`, numeric(1), "fisher_reject") > 0.5),
+    welch = summarise_binary(vapply(out, `[[`, numeric(1), "welch_reject") > 0.5),
+    mean = summarise_binary(vapply(out, `[[`, numeric(1), "levene_route_reject") > 0.5),
+    rank = summarise_binary(vapply(out, `[[`, numeric(1), "rank_reject") > 0.5),
+    sw = summarise_binary(vapply(out, `[[`, numeric(1), "sw_reject_final") > 0.5),
+    gate = summarise_binary(vapply(out, `[[`, numeric(1), "sw_gate_reject") > 0.5),
+    sw_route_welch = summarise_binary(vapply(out, `[[`, numeric(1), "sw_route_welch") > 0.5),
+    sw_route_rank = summarise_binary(vapply(out, `[[`, numeric(1), "sw_route_rank") > 0.5),
+    route_rank = summarise_binary(vapply(out, `[[`, numeric(1), "route_rank") > 0.5),
+    route_fisher = summarise_binary(vapply(out, `[[`, numeric(1), "route_fisher") > 0.5),
+    route_welch = summarise_binary(vapply(out, `[[`, numeric(1), "route_welch") > 0.5),
+    mean_route_fisher = summarise_binary(vapply(out, `[[`, numeric(1), "levene_select_fisher") > 0.5),
+    mean_route_welch = summarise_binary(vapply(out, `[[`, numeric(1), "levene_select_welch") > 0.5),
+    levene_reject = summarise_binary(vapply(out, `[[`, numeric(1), "levene_reject") > 0.5),
+    resid_skewness = mean(vapply(out, `[[`, numeric(1), "resid_skewness"), na.rm = TRUE),
+    resid_excess_kurtosis = mean(vapply(out, `[[`, numeric(1), "resid_excess_kurtosis"), na.rm = TRUE)
   )
 }
 
 power_rows <- list()
 idx <- 1
-for (n in POWER_NS) {
+for (pdesign in POWER_DESIGNS) {
+ for (n in POWER_NS) {
+  n_vec <- as.integer(round(n * pdesign$multipliers))
+  stopifnot(mean(n_vec) == n)
   for (panel in PANELS) {
     for (scenario_name in names(SHIFT_SCENARIOS)) {
-      shifts <- SHIFT_SCENARIOS[[scenario_name]]
-      res <- run_power_cell(panel, n, shifts)
+      sd_vec <- pdesign$sd
+      shift_scale <- sqrt(mean(sd_vec^2))
+      shifts <- SHIFT_SCENARIOS[[scenario_name]] * shift_scale
+      res <- run_power_cell(panel, n_vec, shifts, sd_vec)
       one <- fleishman_cases[fleishman_cases$panel == panel, , drop = FALSE]
       power_rows[[idx]] <- data.frame(
+        design = pdesign$design,
         scenario = paste("four groups with", scenario_name),
         effect_size = scenario_name,
-        group_mean_offsets = paste(format(shifts, nsmall = 2), collapse = ", "),
+        group_mean_offsets = paste(format(round(shifts, 3), nsmall = 2), collapse = ", "),
+        sd_per_group = paste(format(sd_vec, nsmall = 1), collapse = ", "),
+        shift_scale = shift_scale,
+        n_vector = paste(n_vec, collapse = ", "),
         distribution = one$distribution,
         panel = panel,
         skew = one$skew,
         excess_kurtosis = one$excess_kurtosis,
         n_per_group = n,
         groups = 4,
+        resid_skewness = res["resid_skewness"],
+        resid_excess_kurtosis = res["resid_excess_kurtosis"],
         fisher_power = res["fisher.rate"],
         fisher_mc_se = res["fisher.mc_se"],
         welch_power = res["welch.rate"],
@@ -291,13 +350,18 @@ for (n in POWER_NS) {
         levene_reject_mc_se = res["levene_reject.mc_se"],
         row.names = NULL
       )
-      cat(sprintf("power done: n=%d | panel=%d | %s\n", n, panel, scenario_name))
+      cat(sprintf("power done: %s | n=%d (%s) | panel=%d\n",
+                  pdesign$design, n, paste(n_vec, collapse = ","), panel))
       idx <- idx + 1
     }
   }
+ }
 }
 
 power <- do.call(rbind, power_rows)
+power$design <- factor(power$design,
+  levels = vapply(POWER_DESIGNS, `[[`, character(1), "design")
+)
 power$skew_label <- factor(vapply(power$panel, case_label, character(1)),
   levels = case_levels
 )

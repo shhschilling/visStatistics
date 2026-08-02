@@ -16,6 +16,33 @@ dir.create(FIGDIR, showWarnings = FALSE, recursive = TRUE)
 RESULTS <- file.path(OUTDIR, "fleishman_4groups_power.rds")
 power <- readRDS(RESULTS)
 
+## Results from before the unbalanced design was added carry no `design`
+## column; treat them as the balanced series so the script still runs on them.
+if (is.null(power$design)) {
+  power$design <- "balanced n, equal SD"
+  power$n_vector <- paste(rep(power$n_per_group, each = 1), collapse = ", ")
+}
+power$design <- as.character(power$design)
+
+DESIGN_BALANCED <- "balanced n, equal SD"
+DESIGN_UNBALANCED <- "unbalanced n, equal SD"
+
+## Panel headers in the wording of the Type I figures: the two lines differ in
+## the multiplier vector alone. The SDs are 1 by construction of the Fleishman
+## draw; stating the tuple keeps the two figures symmetric.
+HEADER_BALANCED <- paste0(
+  "power simulations, balanced; ",
+  "(n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = ",
+  "n&#772;(1, 1, 1, 1); ",
+  "(SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1, 1, 1, 1)"
+)
+HEADER_UNBALANCED <- paste0(
+  "power simulations, unbalanced; ",
+  "(n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = ",
+  "n&#772;(0.5, 0.8, 1.2, 1.5); ",
+  "(SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1, 1, 1, 1)"
+)
+
 ggplot2 <- asNamespace("ggplot2")
 patchwork <- asNamespace("patchwork")
 scales <- asNamespace("scales")
@@ -243,7 +270,7 @@ STRATEGY_COLOURS <- c(
   "5. Shapiro-Wilk routed Welch/KW" = "#D55E00",
   "6. Shapiro-Wilk plus Levene" = "#0072B2"
 )
-NS_TO_PLOT <- c(10, 20, 50, 100)
+NS_TO_PLOT <- c(10, 20, 30, 50, 100)
 EFFECTS_TO_PLOT <- "moderate ordered effect: 0, 0.25, 0.50, 0.75 SD"
 
 power$effect_size <- factor(power$effect_size, levels = EFFECTS_TO_PLOT)
@@ -265,35 +292,50 @@ to_long <- function(dat) {
   out
 }
 
-power_long <- to_long(power)
-power_plot <- subset(power_long, n_per_group %in% NS_TO_PLOT)
+## One power panel per design. Everything below is identical between the two
+## series except the data subset and the header, so it is built once.
+make_power_plot <- function(design_name, panel_letter, panel_description,
+                            show_legend = TRUE,
+                            x_label = "n per group") {
+  dat <- power[power$design == design_name, , drop = FALSE]
+  if (nrow(dat) == 0) {
+    stop("No power results for design: ", design_name)
+  }
 
-gate_labels <- subset(power, n_per_group %in% NS_TO_PLOT)
-gate_labels$gate_title <- "SW+L selection (%)"
-gate_labels$gate_row <- "SW+L"
-gate_labels$gate_y <- 0.085
+  power_long <- to_long(dat)
+  power_plot <- subset(power_long, n_per_group %in% NS_TO_PLOT)
 
-gate_rate_values <- rbind(
-  transform(gate_labels,
-    gate_row = "F", gate_y = 0.085,
-    gate_rate = route_fisher_probability
-  ),
-  transform(gate_labels,
-    gate_row = "W", gate_y = 0.055,
-    gate_rate = route_welch_probability
-  ),
-  transform(gate_labels,
-    gate_row = "KW", gate_y = 0.025,
-    gate_rate = route_rank_probability
+  gate_labels <- subset(dat, n_per_group %in% NS_TO_PLOT)
+  gate_labels$gate_title <- "SW+L selection (%)"
+  gate_labels$gate_row <- "SW+L"
+  gate_labels$gate_y <- 0.085
+
+  gate_rate_values <- rbind(
+    transform(gate_labels,
+      gate_row = "F", gate_y = 0.085,
+      gate_rate = route_fisher_probability
+    ),
+    transform(gate_labels,
+      gate_row = "W", gate_y = 0.055,
+      gate_rate = route_welch_probability
+    ),
+    transform(gate_labels,
+      gate_row = "KW", gate_y = 0.025,
+      gate_rate = route_rank_probability
+    )
   )
-)
-gate_rate_values$gate_rate_label <- sprintf("%.0f", 100 * gate_rate_values$gate_rate)
-gate_rate_rows <- unique(gate_rate_values[c("power_panel", "gate_row", "gate_y")])
-gate_rate_title <- unique(gate_labels["power_panel"])
-gate_rate_title$gate_title <- "SW+L selection (%)"
+  gate_rate_values$gate_rate_label <- sprintf("%.0f", 100 * gate_rate_values$gate_rate)
+  gate_rate_rows <- unique(gate_rate_values[c("power_panel", "gate_row", "gate_y")])
+  gate_rate_title <- unique(gate_labels["power_panel"])
+  gate_rate_title$gate_title <- "SW+L selection (%)"
 
-p_power <- ggplot2$ggplot() +
+  ggplot2$ggplot() +
   ggplot2$geom_vline(xintercept = NS_TO_PLOT, colour = "grey88", linewidth = 0.35) +
+  ## horizontal guides start at 20 %: the band below carries the SW+L selection
+  ## inset, which the lines would otherwise cross.
+  ggplot2$geom_hline(
+    yintercept = seq(0.2, 1, by = 0.1), colour = "grey88", linewidth = 0.35
+  ) +
   ggplot2$geom_point(
     data = power_plot,
     ggplot2$aes(
@@ -325,7 +367,11 @@ p_power <- ggplot2$ggplot() +
     size = FLEISHMAN_GEOM_TEXT$inset
   ) +
   ggplot2$facet_grid(stats::as.formula(". ~ power_panel")) +
-  ggplot2$scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+  ggplot2$scale_y_continuous(
+    limits = c(0, 1),
+    breaks = seq(0.1, 1, by = 0.1),
+    labels = scales::percent
+  ) +
   ggplot2$scale_x_log10(breaks = NS_TO_PLOT, limits = c(5.5, 130)) +
   ggplot2$scale_shape_manual(
     values = STRATEGY_SHAPES,
@@ -343,8 +389,8 @@ p_power <- ggplot2$ggplot() +
     labels = STRATEGY_LABELS
   ) +
   ggplot2$labs(
-    title = fleishman_panel_title("B", "power simulations"),
-    x = "n per group",
+    title = fleishman_panel_title(panel_letter, panel_description),
+    x = x_label,
     y = "simulated rejection rate",
     colour = "test strategy",
     shape = "test strategy",
@@ -355,7 +401,8 @@ p_power <- ggplot2$ggplot() +
     base_family = FLEISHMAN_FONT_FAMILY
   ) +
   ggplot2$theme(
-    legend.position = "right",
+    legend.position = if (show_legend) "bottom" else "none",
+    legend.box = "horizontal",
     legend.title = ggplot2$element_text(size = FLEISHMAN_TEXT$legend),
     legend.text = ggplot2$element_text(size = FLEISHMAN_TEXT$legend),
     axis.title.x = ggplot2$element_text(size = FLEISHMAN_TEXT$axis_title),
@@ -381,11 +428,26 @@ p_power <- ggplot2$ggplot() +
     ),
     plot.title.position = "plot"
   )
+}
+
+p_power <- make_power_plot(DESIGN_BALANCED, "B", HEADER_BALANCED,
+  show_legend = TRUE
+)
+## The unbalanced series is indexed by the mean group size, not by a common
+## group size, so its axis is labelled accordingly.
+p_power_unbalanced <- make_power_plot(DESIGN_UNBALANCED, "C", HEADER_UNBALANCED,
+  show_legend = TRUE,
+  x_label = expression(paste(bar(n), " per group"))
+)
+
+## The remaining single-panel figures describe the balanced design only, as
+## they did before the unbalanced series was added.
+power_balanced <- power[power$design == DESIGN_BALANCED, , drop = FALSE]
 
 parametric_long <- rbind(
-  transform(power, strategy = "Fisher always", power = fisher_power),
-  transform(power, strategy = "Welch always", power = welch_power),
-  transform(power, strategy = "Levene-gated Fisher/Welch", power = mean_power)
+  transform(power_balanced, strategy = "Fisher always", power = fisher_power),
+  transform(power_balanced, strategy = "Welch always", power = welch_power),
+  transform(power_balanced, strategy = "Levene-gated Fisher/Welch", power = mean_power)
 )
 parametric_long$strategy <- factor(
   parametric_long$strategy,
@@ -478,7 +540,17 @@ p_fisher_welch <- ggplot2$ggplot(
     legend.position = "right"
   )
 
-combined <- patchwork$wrap_plots(p_pdf, p_power, ncol = 1, heights = c(1, 2.35))
+## A: densities. B: balanced power. C: unbalanced power.
+## The width is unchanged, so the printed point sizes are unchanged; only the
+## height grows. 24.3 / 20 = 1.215 against the 257 / 170 = 1.512 that an A4
+## portrait text block allows, so the figure fits one page at \textwidth.
+combined <- patchwork$wrap_plots(
+  p_pdf, p_power, p_power_unbalanced,
+  ncol = 1, heights = c(1, 2.0, 2.35)
+)
+
+COMBINED_WIDTH <- 20
+COMBINED_HEIGHT <- 24.3
 
 ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_power_pdf.png"),
   p_pdf,
@@ -490,19 +562,19 @@ ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_power_pdf.png"),
 )
 ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_power.png"),
   combined,
-  width = 20, height = 15.2, dpi = FLEISHMAN_DPI
+  width = COMBINED_WIDTH, height = COMBINED_HEIGHT, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_power.png"),
   combined,
-  width = 20, height = 15.2, dpi = FLEISHMAN_DPI
+  width = COMBINED_WIDTH, height = COMBINED_HEIGHT, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_power_with_pdf.png"),
   combined,
-  width = 20, height = 15.2, dpi = FLEISHMAN_DPI
+  width = COMBINED_WIDTH, height = COMBINED_HEIGHT, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_power_with_pdf.png"),
   combined,
-  width = 20, height = 15.2, dpi = FLEISHMAN_DPI
+  width = COMBINED_WIDTH, height = COMBINED_HEIGHT, dpi = FLEISHMAN_DPI
 )
 ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_parametric_branch_power.png"),
   p_parametric,

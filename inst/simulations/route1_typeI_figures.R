@@ -639,7 +639,7 @@ make_equal_plot <- function() {
   )
   plot_list[[3]] <- panel_header(
     "B",
-    "balanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = <b>n</b>; (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = 1"
+    "balanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(1, 1, 1, 1); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1, 1, 1, 1)"
   )
   height_list[3] <- 0.03
   plot_list[[4]] <- balanced_plot
@@ -648,7 +648,7 @@ make_equal_plot <- function() {
   height_list[5] <- 0.06
   plot_list[[6]] <- panel_header(
     "C",
-    "unbalanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = 1"
+    "unbalanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1, 1, 1, 1)"
   )
   height_list[6] <- 0.03
   plot_list[[7]] <- unbalanced_plot
@@ -713,7 +713,7 @@ make_unequal_plot <- function() {
   height_list[2] <- 1.15
   plot_list[[3]] <- panel_header(
     "B",
-    "balanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = <b>n</b>; (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
+    "balanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(1, 1, 1, 1); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
   )
   height_list[3] <- 0.03
   plot_list[[4]] <- make_rejection_plot(

@@ -5,15 +5,20 @@
 #' (t.test,var=EQUAL)
 #' Fisher oneway ANOVA (aov) or simple linear regression.
 #' Performs the Shapiro-Wilk and Anderson-Darling tests for normality, and
-#' for grouped data also Levene's and Bartlett's tests for homogeneity of
-#' variances. For simple linear regression, heteroscedasticity is assessed
-#' with the Breusch-Pagan test [@Koenker:1981], which regresses squared raw
-#' residuals on fitted values. The normality tests, the grouped variance tests,
+#' for grouped data also \code{\link{levene.test}} and Bartlett's test for
+#' homogeneity of variances. For simple linear regression, heteroscedasticity
+#' is assessed with \code{\link{bp.test}}, the studentised Breusch-Pagan test,
+#' which regresses squared raw residuals on fitted values. The normality tests,
+#' the grouped variance tests,
 #' and the histogram and Q-Q panels are computed from the internally
 #' studentised residuals r_i = e_i / (SE_res sqrt(1 - h_i)), which remove the
 #' leverage-dependent variance of the raw residuals (Var(e_i) = sigma^2
 #' (1 - h_i)). The residuals-vs-fitted panel (regression mode) uses the
 #' z-residuals z_i = e_i / SE_res, which retain the leverage-dependent spread.
+#'
+#' The Q-Q panel shows the simultaneous and point-wise tolerance bands computed
+#' by \code{\link{qq_lm_envelope}}, which documents their construction and
+#' gives the reference for it.
 #'
 #' @param samples Numeric vector; the dependent variable.
 #' @param fact Factor; the independent variable.
@@ -34,6 +39,17 @@
 #'   \item{bartlett_test}{Result from \code{bartlett.test()} (grouped diagnostics only).}
 #'   \item{bp_test}{Result from \code{bp.test()} (regression diagnostics only).}
 #' }
+#'
+#' @references
+#' \enc{Schützenmeister}{Schuetzenmeister}, A., Jensen, U., & Piepho, H.-P.
+#' (2012). Checking
+#' Normality and Homoscedasticity in the General Linear Model Using
+#' Diagnostic Plots. \emph{Communications in Statistics - Simulation and
+#' Computation}, 41(2). doi:10.1080/03610918.2011.582560. (Q-Q
+#' simultaneous tolerance band, see \code{\link{qq_lm_envelope}}.)
+#'
+#' See \code{\link{levene.test}} and \code{\link{bp.test}} for the references
+#' of those two tests.
 #'
 #' @examples
 #' ToothGrowth$dose <- as.factor(ToothGrowth$dose)

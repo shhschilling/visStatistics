@@ -1,45 +1,63 @@
-# Route 1 simulations {#sec:simulation-results}
+# Group comparison simulations {#sec:simulation-results}
 
-Route 1 can answer two different questions: Parametric tests such as Student's t-test, Fisher's one-way ANOVA, and their Welch variants test population means [@Welch:1951; @Rasch:2011; @Delacre:2019], whereas non-parametric tests such as Wilcoxon and Kruskal--Wallis test a rank-based distributional target.
-
-The simulation study the effect of the three implemented Route 1 test selections: 
+Group comparisons ( here in Route 1) can answer two different questions: Parametric tests such as Student's t-test, Fisher's one-way ANOVA, and their Welch variants test population means [@Welch:1951; @Rasch:2011; @Delacre:2019], whereas non-parametric tests such as Wilcoxon and Kruskal--Wallis test a rank-based distributional target.
 
 
-**Defaulting to Welch-type tests** Fixing the analysis to Welch-type tests costs little when the variances are in fact equal.
-In balanced, homoscedastic four-group case simulations, where the assumptions of the Fisher One way Anova are given, the relative difference between the Fisher and Welch-F-statistic for four group comparisons is of order $1/n$ (Eq. \@ref(eq:welch-anova-equal-var-reduction)) [@Welch:1951; @Rasch:2011; @Delacre:2019], resulting in a relative difference of $6.7\;\%$ for $n = 10$ and only $0.6\%$ for $n=100$ in our four group comparisons (Eq. \@ref(eq:welch-anova-four-groups)). 
 
-<!-- <!-- Caveat Welch under skew-> appendix? Derive in appendix that the errors fall with e error falls like skewness over $\sqrt{n}$, e error falls like skewness over $\sqrt{n}$, -->
-<!-- !-- -->
-Note that the Welch test assumes normality in the samples, an assumption which can only be safely neglected in larger samples, where the central limit theorem holds. The size required grows with the skewness and the imbalance of the samples, derived for two
-samples by [@Zhou:2005], and depends also on the number of compared groups. In a empirical study, Delacre et al.
+
+
+**Defaulting to Welch-type tests** 
+Welch type mean comparisons  assumes normality in the samples, an assumption which can only be safely neglected in larger samples, where the central limit theorem holds. The size required grows with the skewness and the imbalance of the samples, derived for two
+samples by [@Zhou:2005], and depends also on the number of compared groups. 
+
+
+In a empirical study, Delacre et al.
 [@Delacre:2019] established that the Type I error of Welch's
 one-way ANOVA remained within Bradley's liberal robustness bounds of $[2.5\%, 7.5\%]$ [@Bradley:1978] across their simulated non-normal distributions 
-<!-- (including skewed chi-square cases with skewness 2 and excess kurtosis 6, and symmetric heavy-tailed mixed-normal cases with excess kurtosis about 9.7) -->
+ (including skewed chi-square cases with skewness 2 and excess kurtosis 6, and symmetric heavy-tailed mixed-normal cases with excess kurtosis about 9.7)
 for at least about 50 observations per group for up to four groups, and about 100 observations per group for more than four groups. 
 
 
 
 
-**Defaulting to rank-based tests** Rank-based tests reduce the distributional assumptions and can be more efficient under skewness when the variances are equal [@Bridge:1999]; what this costs under normality and what it gains under skew is quantified in the power simulations below
-(Fig. \@ref(fig:route1-power)).
 
-**Residual-based test selection** The default leaves the choice to the residual diagnostics, so its level and power follows from neither fixed strategy and is studied in the simulations below.
+When the variances in the samples are in fact equal, fixing the analysis to Welch-type tests rather than the corresponding mean group comparisons in the GLM framework (Student's t-test and Fisher's test), which assume normality and homoscedasticity in the residuals, costs little;
+in balanced, homoscedastic group comparisons, where the assumptions of the Fisher One way Anova are met, the relative difference between the Fisher and Welch-F-statistic decreases with increasing sample size by order $1/n$ (Eq. \@ref(eq:welch-anova-equal-var-reduction)) [@Welch:1951; @Rasch:2011; @Delacre:2019], In four group -comparisons, simulated below, this results  in a relative difference of $6.7\;\%$ for $n = 10$ and only $0.6\%$ for $n=100$ (Eq. \@ref(eq:welch-anova-four-groups)). 
+
+<!-- <!-- Caveat Welch under skew-> appendix? Derive in appendix that the errors fall like skewness over $\sqrt{n}$, e error falls like skewness over $\sqrt{n}$, -->
+<!-- !-- -->
 
 
-The simulations display fixed tests and routed procedures
+
+
+
+**Defaulting to rank-based tests** Rank-based tests reduce the distributional assumptions and can be more efficient under skewness when the variances are equal [@Bridge:1999].
+
+
+
+
+<!-- ; what this costs under normality and what it gains under skew is quantified in the power simulations below -->
+<!-- (Fig. \@ref(fig:route1-power)). -->
+
+**Residual-based test selection** The default leaves the choice to the residual diagnostics, so its level and power follows from neither fixed strategy.
+
+On examplary input distributions, the simulations demonstrate
+the effect of the three implemented Route 1 test selections. They display fixed tests and routed procedures
 side by side for four-group comparisons: fixed Fisher's one-way ANOVA (`F`), fixed Welch's one-way ANOVA (`W`), a Levene gate
 between them (`L`), fixed Kruskal--Wallis (`KW`), a Shapiro--Wilk gate
 between `W` and `KW` (`SW`), and the full Shapiro--Wilk plus Levene gate
 (`SW+L`) gating to either `F` or `W` within the mean branch, otherwise to `KW`.
 In the four-group setting simulated here, `W` is the test that `group_test = "welch"` selects, `KW` the test that `group_test = "rank"` selects, and `SW+L` the default routing.
 
+<!-- Goal of the simulations -->
 The aim of the simulations is not to re-establish the robustness evidence for Fisher's one-way ANOVA under homoscedasticity and non-normality [@Blanca:2017] or for Welch's ANOVA under heterogeneous variances [@Delacre:2019], but to contrast the three Route 1 strategies in level and in power across combinations of sample size, skewness, excess kurtosis and variance pairing, and to show under which of them the displayed residual diagnostics move the analysis from the mean-based branch to the rank-based one.
 
-
+<!--Setup -->
 The simulations address both homo- and heteroscedastic settings:
-Figure \@ref(fig:route1-identical-typeI) adapts the three-group zero-effect one-way ANOVA setting of Blanca et al. [@Blanca:2017] to four Route 1 groups with identical distributions; here both the equal-means null and the Kruskal--Wallis null are true.
+In the homoscedastic simulations of Figure \@ref(fig:route1-identical-typeI), the three-group zero-effect one-way ANOVA setting of Blanca et al. [@Blanca:2017] is extended to four groups with identical distributions; here both the equal-means null and the Kruskal--Wallis null are true.
 
-Figure \@ref(fig:route1-unequal-typeI) keeps the equal-means null and varies the group standard deviations and sample-size pairings as in Delacre et al. [@Delacre:2019].
+
+Figure \@ref(fig:route1-unequal-typeI) keeps the equal-means null and varies the group standard deviations and sample-size pairings following Delacre et al. [@Delacre:2019].
 
 The route probabilities are printed in the heatmaps after "|", so that the final
 rejection rates can be read together with the path probabilities taken to the final test.
@@ -123,7 +141,9 @@ SDs (panel D).
 
 The parametric equal-means null is true in all columns.
 Kruskal--Wallis tests the group rank distributions, not the means: SD scaling leaves them aligned in the two symmetric columns, so those are Type I checks for `F`, `W` and `KW` alike, but shifts them in the skewed columns, where `KW` is expected to reject and only `F` and `W` remain under a true null; `SW+L` and `SW` should reject there only when routed to Kruskal--Wallis.
-A high rejection rate after such a switch is not a Type I error for the equal-means null but power: the gate has changed the question to a rank comparison.
+A high rejection rate after such a switch is not a Type I error rate for the equal-means null but one minus the type II error rate of the rank comparison the gate has switched to.
+
+In column 5, the input with the highest skewness and excess kurtosis, the scaling separates the group medians by only 0.33 SD between the extreme groups, resulting in a small Kruskal--Wallis effect size of $\eta_H^2 \approx 0.02$ (defined in the [effect-size table](#tab:effect-size-formulae)); `KW` correctly rejects in only roughly half the replications even at $\bar n = 100$, a type II error rate of about 50 %.
 
 ```{r route1-unequal-typeI, echo=FALSE, fig.cap=cap_route1_unequal_typeI, out.width="94%"}
 knitr::include_graphics(

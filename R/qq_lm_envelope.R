@@ -4,8 +4,10 @@
 #' studentised residuals from an unweighted \code{lm} or \code{aov} object by
 #' repeatedly simulating responses from the fitted normal-error model and
 #' refitting the model. The simultaneous envelope follows the Monte Carlo
-#' tolerance-band idea of Schuetzenmeister et al. (2012,
-#' doi:10.1080/03610918.2011.582560).
+#' tolerance-band idea of \enc{Schützenmeister}{Schuetzenmeister} et al.
+#' (2012); see
+#' \code{\link{vis_lm_assumptions}} and \code{\link{visstat}} for where these
+#' bands are drawn.
 #'
 #' @param model An unweighted \code{lm} or \code{aov} object.
 #' @param conf.level Numeric confidence level for the envelopes.
@@ -18,6 +20,13 @@
 #'   residuals, theoretical quantiles, pointwise bounds, simultaneous bounds,
 #'   the simulated sorted residual matrix, and the achieved simultaneous
 #'   coverage.
+#'
+#' @references
+#' \enc{Schützenmeister}{Schuetzenmeister}, A., Jensen, U., & Piepho, H.-P.
+#' (2012). Checking
+#' Normality and Homoscedasticity in the General Linear Model Using
+#' Diagnostic Plots. \emph{Communications in Statistics - Simulation and
+#' Computation}, 41(2). doi:10.1080/03610918.2011.582560.
 #'
 #' @examples
 #' fit <- lm(mpg ~ wt, data = mtcars)

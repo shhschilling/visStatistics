@@ -245,6 +245,38 @@ visstat(iris$Species, iris$Petal.Width,
 options(visStatistics.qq_nsim = old_qq_nsim)
 
 }
+\references{
+Welch, B. L. (1951). On the Comparison of Several Mean Values: An
+Alternative Approach. \emph{Biometrika}, 38(3/4). doi:10.2307/2332579.
+
+Kruskal, W. H., & Wallis, W. A. (1952). Use of Ranks in One-Criterion
+Variance Analysis. \emph{Journal of the American Statistical Association},
+47(260). doi:10.2307/2280779.
+
+Bradley, J. V. (1978). Robustness? \emph{British Journal of Mathematical
+and Statistical Psychology}, 31(2). doi:10.1111/j.2044-8317.1978.tb00581.x.
+(Liberal robustness bounds of 2.5\%-7.5\%, used to judge Type I error
+control in the size and variance-pairing warnings below.)
+
+Zimmerman, D. W. (2004). A Note on Preliminary Tests of Equality of
+Variances. \emph{British Journal of Mathematical and Statistical
+Psychology}, 57(1). doi:10.1348/000711004849222. (Sensitivity of
+rank-based tests to unequal variances at unequal group sizes, underlying
+the adverse-pairing warning.)
+
+Delacre, M., Leys, C., Mora, Y. L., & Lakens, D. (2019). Taking Parametric
+Assumptions Seriously: Arguments for the Use of Welch's F-test instead of
+the Classical F-test in One-Way ANOVA. \emph{International Review of
+Social Psychology}, 32(1). doi:10.5334/irsp.198. (Sample-size thresholds
+below which Welch's Type I error control is not guaranteed under
+skewness, used in the small-group warning under
+\code{group_test = "welch"}.)
+
+See \code{\link{qq_lm_envelope}} and \code{\link{vis_lm_assumptions}} for
+the Q-Q tolerance-band construction, and \code{\link{levene.test}} and
+\code{\link{bp.test}} for the two variance tests implemented by this
+package.
+}
 \seealso{
 \code{\link{visstat_core}} defining the decision logic, the
 package's vignette \code{vignette("visStatistics")} explaining the decision

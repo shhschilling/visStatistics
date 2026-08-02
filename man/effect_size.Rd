@@ -159,6 +159,7 @@ doi:10.1016/j.jesp.2017.09.004.
 Tomczak, M., & Tomczak, E. (2014). The need to report effect size estimates
 revisited. An overview of some recommended measures of effect size.
 \emph{Trends in Sport Sciences}, 1(21), 19--25.
+\url{https://tss.awf.poznan.pl/The-need-to-report-effect-size-estimates-revisited-An-overview-of-some-recommended,188960,0,2.html}
 
 Cohen, J. (2013). \emph{Statistical power analysis for the behavioural
 sciences}. Routledge. doi:10.4324/9780203771587.

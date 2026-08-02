@@ -91,7 +91,8 @@ warn_adverse_variance_pairing <- function(pairing, route) {
     ),
     rank = paste(
       "the residual-normality gate selected a rank-based test, whose Type I",
-      "error is itself affected by unequal variances at unequal group sizes"
+      "error is itself affected by unequal variances at unequal group sizes",
+      "(Zimmerman 2004 <doi:10.1348/000711004849222>)"
     )
   )
 
@@ -100,7 +101,8 @@ warn_adverse_variance_pairing <- function(pairing, route) {
     "smallest groups (group sizes ", paste(pairing$n, collapse = ", "),
     "; standard deviation ratio ",
     format(round(pairing$sd_ratio, 2), nsmall = 2), "). Here ", reason,
-    ", so the reported test can exceed the nominal significance level. ",
+    ", so the reported test can exceed Bradley's liberal robustness bounds ",
+    "of 2.5%-7.5% (Bradley 1978 <doi:10.1111/j.2044-8317.1978.tb00581.x>). ",
     "Consider group_test = \"welch\" if the comparison is about population ",
     "means; see vignette(\"visStatistics\").",
     call. = FALSE
@@ -410,10 +412,38 @@ visstat_core <- function(dataframe,
     }
 
     # Explicit Route 1 overrides bypass route selection. The Welch override
-    # still shows/checks the assumption diagnostics, but does not switch to
-    # the rank branch when residual normality is rejected.
+    # always runs Welch: no normality statistic is computed, because nothing
+    # routes on one here.
+    # Carries the per-group normality table on the Welch route only; stays NULL
+    # on every other route, where the residual-based diagnostics apply.
+    group_normality <- NULL
+
     if (group_test == "rank" || ordinal_response) {
       normality_met <- FALSE
+    } else if (group_test == "welch") {
+      # Welch assumes normality within each group with group-specific variances
+      # (Welch 1951), so the diagnostic is the per-group display, not the
+      # pooled residual panel: pooled internally studentised residuals are a
+      # scale mixture of normals under the unequal variances Welch exists for,
+      # and would flag exactly the data this route is meant to handle. The
+      # caution is therefore on the group sizes alone.
+      openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
+      group_normality <- vis_group_normality(samples, fact,
+        conf.level = conf.level, cex = 0.8, plot_args = plot_args
+      )
+
+      if (is.null(plotName)) {
+        filename <- paste("group_normality_", name_of_sample, "_", name_of_factor, sep = "")
+      } else {
+        filename <- paste("group_normality_", plotName, sep = "")
+      }
+      plot_paths <- c(plot_paths, saveGraphVisstat(
+        fileName = filename, type = graphicsoutput,
+        fileDirectory = plotDirectory, capture_env = capture_env
+      ))
+
+      welch_small_group_warning(fact)
+      normality_met <- TRUE
     } else {
       # MANDATORY DIAGNOSTIC: Provide visual evidence for the decision pipeline
       openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
@@ -460,19 +490,6 @@ visstat_core <- function(dataframe,
         normality_p <- shapiro.test(scaled_residuals)$p.value
       }
       normality_met <- normality_p >= alpha
-
-      if (group_test == "welch" && !normality_met) {
-        warning(
-          normality_test_name,
-          " test p = ", format.pval(normality_p, digits = 3),
-          " is below alpha = ",
-          signif(alpha, 3),
-          "; normality assumption violated. Consider switching to the ",
-          "\"rank\" method.",
-          call. = FALSE
-        )
-        normality_met <- TRUE
-      }
     }
 
     # Flag the configuration in which the automatic route is unreliable, once
@@ -569,6 +586,13 @@ visstat_core <- function(dataframe,
           fileName = filename, type = graphicsoutput,
           fileDirectory = plotDirectory, capture_env = capture_env
         ))
+      }
+
+      # Welch route only: the object carries the per-group normality table in
+      # place of the residual-based Shapiro-Wilk / Anderson-Darling that the
+      # automatic route reports.
+      if (!is.null(group_normality)) {
+        vis_sample_fact[["normality by group"]] <- group_normality$results_table
       }
     }
   }

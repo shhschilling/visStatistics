@@ -112,7 +112,7 @@ test_that("Route 1 override selects Welch or rank family", {
   expect_s3_class(rank4[["Kruskal Wallis rank sum test"]], "htest")
 })
 
-test_that("Welch route warns when residual normality is violated", {
+test_that("Welch route warns below the per-group size threshold", {
   setup_test_graphics()
   on.exit(cleanup_test_graphics())
 
@@ -120,12 +120,50 @@ test_that("Welch route warns when residual normality is violated", {
   group <- factor(rep(c("A", "B"), each = 40))
   response <- c(rexp(40, rate = 1), rexp(40, rate = 0.7))
 
+  # Two groups of 40: below the 50-per-group threshold that applies for at
+  # most four groups. The residuals are strongly non-normal, but that no
+  # longer decides anything on this route -- Welch runs either way.
   expect_warning(
     result <- visstat(group, response, route = "welch"),
-    "Shapiro-Wilk test p = .*below alpha = 0.05"
+    "Smallest group has 40 observations"
   )
 
   expect_match(result[["t-test-statistics"]]$method, "Welch")
+})
+
+test_that("Welch route stays silent at or above the size threshold", {
+  setup_test_graphics()
+  on.exit(cleanup_test_graphics())
+
+  set.seed(20260607)
+  group <- factor(rep(c("A", "B"), each = 60))
+  response <- c(rexp(60, rate = 1), rexp(60, rate = 0.7))
+
+  w <- NULL
+  withCallingHandlers(
+    result <- visstat(group, response, route = "welch"),
+    warning = function(cond) {
+      w <<- c(w, conditionMessage(cond))
+      invokeRestart("muffleWarning")
+    }
+  )
+
+  expect_false(any(grepl("Smallest group has", w)))
+  expect_match(result[["t-test-statistics"]]$method, "Welch")
+})
+
+test_that("Welch route uses the 100-per-group threshold above four groups", {
+  setup_test_graphics()
+  on.exit(cleanup_test_graphics())
+
+  set.seed(20260607)
+  group <- factor(rep(paste0("g", 1:5), each = 60))
+  response <- rnorm(300)
+
+  expect_warning(
+    visstat(group, response, route = "welch"),
+    "Smallest group has 60 observations \\(5 groups\\).*below 100"
+  )
 })
 
 test_that("visstat standardised syntax works with numeric regression", {
