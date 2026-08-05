@@ -38,7 +38,7 @@ Quick overview of the statistical analysis results.
 ## Examples
 
 ``` r
-anova=visstat(npk$block, npk$yield)
+anova <- visstat(npk$block, npk$yield)
 
 
 print(anova)
@@ -46,5 +46,5 @@ print(anova)
 #> 
 #> Available components:
 #> [1] "summary statistics of ANOVA" "post-hoc analysis "         
-#> [3] "conf.level"                 
+#> [3] "conf.level"                  "effect_size"                
 ```

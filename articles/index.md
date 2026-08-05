@@ -2,5 +2,5 @@
 
 ### Vignette
 
-- [visStatistics: The right test,
+- [visStatistics: automated test selection,
   visualised](https://shhschilling.github.io/visStatistics/articles/visStatistics.md):

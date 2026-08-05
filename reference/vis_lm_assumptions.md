@@ -1,22 +1,34 @@
-# Visualisation of the normality distribution of the standardised residuals
+# Visualisation of linear model assumption diagnostics
 
-Checks for normality of the standardised residuals in the general linear
-model (Student's t-test, Fisher one-way ANOVA, or simple linear
-regression). Performs the Shapiro-Wilk test and Anderson-Darling test
-for normality and, if not a regression, also the Levene-Brown-Forsythe
-and Bartlett's test for homogeneity of variances. It produces a
-histogram with normal overlay, a residuals vs fitted plot, and a normal
-Q-Q plot.
-
-`vis_anova_assumptions` is a deprecated wrapper for
-`vis_lm_assumptions`.
+Checks the residual diagnostics in the general linear model Student's
+t-test (t.test,var=EQUAL) Fisher oneway ANOVA (aov) or simple linear
+regression. Performs the Shapiro-Wilk and Anderson-Darling tests for
+normality, and for grouped data also
+[`levene.test`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
+and Bartlett's test for homogeneity of variances. For simple linear
+regression, heteroscedasticity is assessed with
+[`bp.test`](https://shhschilling.github.io/visStatistics/reference/bp.test.md),
+the studentised Breusch-Pagan test, which regresses squared raw
+residuals on fitted values. The normality tests, the grouped variance
+tests, and the histogram and Q-Q panels are computed from the internally
+studentised residuals r_i = e_i / (SE_res sqrt(1 - h_i)), which remove
+the leverage-dependent variance of the raw residuals (Var(e_i) = sigma^2
+(1 - h_i)). The residuals-vs-fitted panel (regression mode) uses the
+z-residuals z_i = e_i / SE_res, which retain the leverage-dependent
+spread.
 
 ## Usage
 
 ``` r
-vis_lm_assumptions(samples, fact, cex = 1, regression = FALSE)
-
-vis_anova_assumptions(...)
+vis_lm_assumptions(
+  samples,
+  fact,
+  cex = 1,
+  correlation = FALSE,
+  conf.level = 0.95,
+  qq_nsim = getOption("visStatistics.qq_nsim", 5000L),
+  plot_args = list()
+)
 ```
 
 ## Arguments
@@ -33,14 +45,23 @@ vis_anova_assumptions(...)
 
   Numeric; scaling factor for plot text and symbols (default: 1).
 
-- regression:
+- correlation:
 
-  Logical; if TRUE, skips Bartlett's test (for regression diagnostics).
-  Default is FALSE.
+  Logical. If `FALSE` and `fact` is numeric, regression diagnostics are
+  shown. If `TRUE`, no regression diagnostics are shown. Default is
+  `FALSE`.
 
-- ...:
+- conf.level:
 
-  Arguments passed to `vis_lm_assumptions()`.
+  Numeric confidence level for the simulated Q-Q envelopes.
+
+- qq_nsim:
+
+  Integer number of simulated refits for the Q-Q envelopes.
+
+- plot_args:
+
+  Optional named list of base graphics parameters.
 
 ## Value
 
@@ -65,24 +86,46 @@ A list with elements:
 
   Result from
   [`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
-  (only if `regression = FALSE`).
+  (grouped diagnostics only).
 
 - bartlett_test:
 
   Result from
-  [`bartlett.test()`](https://rdrr.io/r/stats/bartlett.test.html) (only
-  if `regression = FALSE`).
+  [`bartlett.test()`](https://rdrr.io/r/stats/bartlett.test.html)
+  (grouped diagnostics only).
 
 - bp_test:
 
   Result from
   [`bp.test()`](https://shhschilling.github.io/visStatistics/reference/bp.test.md)
-  (only if `regression = TRUE`).
+  (regression diagnostics only).
+
+## Details
+
+The Q-Q panel shows the simultaneous and point-wise tolerance bands
+computed by
+[`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md),
+which documents their construction and gives the reference for it.
+
+## References
+
+Schützenmeister, A., Jensen, U., & Piepho, H.-P. (2012). Checking
+Normality and Homoscedasticity in the General Linear Model Using
+Diagnostic Plots. *Communications in Statistics - Simulation and
+Computation*, 41(2). doi:10.1080/03610918.2011.582560. (Q-Q simultaneous
+tolerance band, see
+[`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md).)
+
+See
+[`levene.test`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
+and
+[`bp.test`](https://shhschilling.github.io/visStatistics/reference/bp.test.md)
+for the references of those two tests.
 
 ## Examples
 
 ``` r
 ToothGrowth$dose <- as.factor(ToothGrowth$dose)
-vis_lm_assumptions(ToothGrowth$len, ToothGrowth$dose)
+vis_lm_assumptions(ToothGrowth$len, ToothGrowth$dose, qq_nsim = 100L)
 
 ```

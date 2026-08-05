@@ -43,8 +43,8 @@ saveGraphVisstat(
 
 ## Value
 
-NULL, if no `type` or `fileName` is provided, file path if graph is
-created
+NULL, if no `type` or `fileName` is provided or if no graphics file was
+created, file path if graph is created
 
 ## Examples
 

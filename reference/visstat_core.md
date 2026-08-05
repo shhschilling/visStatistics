@@ -1,18 +1,10 @@
 # Automated Visualization of Statistical Hypothesis Testing
 
-`visstat_core()` provides automated selection and visualization of a
-statistical hypothesis test between a two vectors in a given
-`data.frame` named `dataframe` based on the data's type, distribution,
-sample size, and the specified `conf.level`. `visstat_core()` is called
-by the main wrapper function
-[`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md).
-`varsample` and `varfactor` are `character` strings corresponding to the
-column names of the chosen vectors in `dataframe`. These vectors must be
-of type `integer`, `numeric` or `factor`. The automatically generated
-output figures illustrate the selected statistical hypothesis test,
-display the main test statistics, and include assumption checks and post
-hoc comparisons when applicable. The primary test results are returned
-as a list object.
+`visstat_core()` implements the decision tree used by
+[`visstat`](https://shhschilling.github.io/visStatistics/reference/visstat.md).
+It receives a `data.frame` and two column names, determines the
+corresponding analysis route, creates the diagnostic and result plots,
+and returns the selected test results as a `visstat` object.
 
 ## Usage
 
@@ -25,9 +17,11 @@ visstat_core(
   correlation = FALSE,
   numbers = TRUE,
   minpercent = 0.05,
+  group_test = NULL,
   graphicsoutput = NULL,
   plotName = NULL,
-  plotDirectory = getwd()
+  plotDirectory = getwd(),
+  plot_args = list()
 )
 ```
 
@@ -58,8 +52,8 @@ visstat_core(
 
   Logical. If FALSE (default), performs simple linear regression
   analysis with confidence and prediction bands. If TRUE, performs
-  Spearman rank correlation for two numeric variables, or Kendall's
-  tau_b when both variables are ordered factors.
+  Spearman correlation analysis with trend line only (no regression
+  interpretation).
 
 - numbers:
 
@@ -70,11 +64,20 @@ visstat_core(
   number between 0 and 1 indicating minimal fraction of total count data
   of a category to be displayed in mosaic count plots.
 
+- group_test:
+
+  Optional character. For Route 1 only, `NULL` keeps the default
+  assumption gates, `"welch"` forces Welch-type mean tests, but still
+  displays the assumption-diagnostic plot and warns when residual
+  normality is rejected, whereas `"rank"` forces Wilcoxon/Kruskal-Wallis
+  rank tests without assessing the assumptions.
+
 - graphicsoutput:
 
-  saves plot(s) of type "png", "jpg", "tiff" or "bmp" in directory
-  specified in `plotDirectory`. If graphicsoutput=NULL, no plots are
-  saved.
+  saves plot(s) of type "png", "jpeg", "pdf", "svg", "ps" or "tiff" in
+  directory specified in `plotDirectory`. If graphicsoutput=NULL, no
+  plots are saved. Any other value is not supported by `Cairo()`: it
+  triggers a warning and no file is written.
 
 - plotName:
 
@@ -87,6 +90,10 @@ visstat_core(
 
   specifies directory, where generated plots are stored. Default is
   current working directory.
+
+- plot_args:
+
+  Optional named list of base graphics parameters.
 
 ## Value
 
@@ -103,35 +110,38 @@ attributes:
 
 ## Details
 
-The decision logic for selecting a statistical test is described below.
-For more details, please refer to the package's
+The decision logic is organised into four routes. Route 1 handles a
+numeric response with a categorical predictor. By default, Route 1 uses
+residual-based test selection: Shapiro–Wilk on model residuals gates
+mean-based versus rank-based analysis, and Levene gates equal-variance
+versus Welch-type mean tests inside the mean branch. Above 5000
+observations, where
+[`shapiro.test()`](https://rdrr.io/r/stats/shapiro.test.html) is
+undefined, the Anderson–Darling test takes over as the
+residual-normality gate. Alternatively, `group_test = "welch"` forces
+Welch-type mean tests, and `group_test = "rank"` forces
+Wilcoxon/Kruskal–Wallis tests.
+
+Route 2 handles ordered responses with categorical predictors by
+converting the ordered response to integer level codes and applying
+Wilcoxon or Kruskal–Wallis tests. Route 3 handles two numeric variables
+by fitting [`lm()`](https://rdrr.io/r/stats/lm.html) by default, or
+Spearman rank correlation when `correlation = TRUE`. Route 4 handles two
+unordered factors with Pearson's \\\chi^2\\ test or Fisher's exact test,
+depending on expected counts. If both variables are ordered and
+`correlation = TRUE`, Kendall's \\\tau_b\\ is used.
+
+The significance level `alpha` is defined as `1 - conf.level`.
+Assumption tests are interpreted relative to this threshold.
+
+Under the default `group_test = NULL`, Route 1 issues a warning when the
+group sizes are unbalanced, the largest group standard deviations occur
+in the smallest groups, and the route selected is either the
+equal-variance test or a rank-based test. In that configuration those
+two routes can exceed the nominal significance level, whereas a selected
+Welch test does not and is therefore not flagged; see the Route 1
+simulations in
 [`vignette("visStatistics")`](https://shhschilling.github.io/visStatistics/articles/visStatistics.md).
-Throughout, data of class `numeric` or `integer` are referred to as
-numeric, while data of class `factor` are referred to as categorical.
-The significance level `alpha` is defined as one minus the confidence
-level, given by the argument `conf.level`. Assumptions of normality and
-homoscedasticity are considered met when the corresponding test yields a
-p-value greater than `alpha = 1 - conf.level`. The choice of statistical
-tests performed by `visstat_core()` depends on whether the data are
-numeric or categorical, the number of levels in the categorical
-variable, the distribution of the data, and the chosen `conf.level`. The
-function prioritises interpretable visual output and tests that remain
-valid under their assumptions, following the logic below:
-
-\(1\) When the response is numerical and the predictor is categorical,
-tests of central tendencies are performed. For the decision logic,
-please refer to the packages vignette
-[`vignette("visStatistics")`](https://shhschilling.github.io/visStatistics/articles/visStatistics.md)
-
-(2): When both the response and predictor are numerical, a linear model
-[`lm()`](https://rdrr.io/r/stats/lm.html) is fitted, with residual
-diagnostics and a confidence band plot.
-
-(3): When both variables are categorical, `visstat_core()` uses
-[`chisq.test()`](https://rdrr.io/r/stats/chisq.test.html) or
-[`fisher.test()`](https://rdrr.io/r/stats/fisher.test.html) depending on
-expected counts, following Cochran's rule (Cochran (1954)
-\<doi:10.2307/3001666\>).
 
 Implemented main tests:
 
@@ -153,18 +163,32 @@ Implemented tests for assumptions:
 - Heteroscedasticity:
   [`bartlett.test()`](https://rdrr.io/r/stats/bartlett.test.html) and
   [`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
-  and `bp_test()`
+  and
+  [`bp.test()`](https://shhschilling.github.io/visStatistics/reference/bp.test.md)
+
+For the general linear model the Shapiro-Wilk, Anderson-Darling, Levene
+and Bartlett tests are applied to the internally studentised residuals
+r_i = e_i / (SE_res sqrt(1 - h_i)), which remove the leverage-dependent
+variance of the raw residuals (Var(e_i) = sigma^2 (1 - h_i)).
 
 Implemented post hoc tests:
 
 - [`TukeyHSD()`](https://rdrr.io/r/stats/TukeyHSD.html) for
   [`aov()`](https://rdrr.io/r/stats/aov.html)
 
-- `games.howell` for
-  [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html)
+- [`games.howell()`](https://shhschilling.github.io/visStatistics/reference/games.howell.md)
+  for [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html)
 
 - [`pairwise.wilcox.test()`](https://rdrr.io/r/stats/pairwise.wilcox.test.html)
   for [`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html)
+
+The Q-Q envelopes in the assumption diagnostics are simulated (see
+[`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md)).
+The number of simulated refits is taken from the option
+`visStatistics.qq_nsim` and defaults to 5000. As `visstat_core()` has no
+corresponding argument, this option is the only way to change it here;
+lower it to trade precision for speed, for instance
+`options(visStatistics.qq_nsim = 1000L)`.
 
 ## See also
 
@@ -174,16 +198,24 @@ for a description of the decision logic, illustrated with numerous
 examples. The package is accompanied by its webpage
 <https://shhschilling.github.io/visStatistics/>. The main function
 [`visstat`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
-for a detailed description of the return value.
+provides a detailed description of the return value.
 
 ## Examples
 
 ``` r
+old_qq_nsim <- getOption("visStatistics.qq_nsim")
+options(visStatistics.qq_nsim = 100L)
+
 # Welch Two Sample t-test (t.test())
 visstat_core(mtcars, "mpg", "am")
 
 
-
+#> Warning: Statistical assumptions violated:
+#> Homoscedasticity violated (Breusch-Pagan p = 0.0242 )
+#> Analysis proceeded but interpret results cautiously.
+#> RECOMMENDATION: Consider exploring alternatives outside visstat() such as data transformations,
+#> generalised linear models, or robust regression. For a non-causal alternative
+#> consider rerunning with correlation = TRUE.
 
 ## Wilcoxon rank sum test (wilcox.test())
 grades_gender <- data.frame(
@@ -208,7 +240,7 @@ anova_npk # prints summary of tests
 #> 
 #> Available components:
 #> [1] "summary statistics of ANOVA" "post-hoc analysis "         
-#> [3] "conf.level"                 
+#> [3] "conf.level"                  "effect_size"                
 
 ## Kruskal-Wallis rank sum test (kruskal.test())
 visstat_core(iris, "Petal.Width", "Species")
@@ -237,4 +269,6 @@ blackBrownHazelGreen <- HairEyeColorMaleFisher[1:2, 3:4]
 blackBrownHazelGreen <- counts_to_cases(as.data.frame(blackBrownHazelGreen))
 fisher_stats <- visstat_core(blackBrownHazelGreen, "Hair", "Eye")
 
+
+options(visStatistics.qq_nsim = old_qq_nsim)
 ```
