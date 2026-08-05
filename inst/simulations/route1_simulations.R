@@ -249,10 +249,10 @@ type1$design <- factor(type1$design, levels = unique(type1$design))
 type1$skew_label <- factor(vapply(type1$panel, case_label, character(1)),
   levels = case_levels
 )
-write.csv(type1, file.path(OUTDIR, "route1_equal_mean_blanca_zimmerman.csv"),
+write.csv(type1, file.path(OUTDIR, "route1_equal_mean_simulations.csv"),
   row.names = FALSE
 )
-saveRDS(type1, file.path(OUTDIR, "route1_equal_mean_blanca_zimmerman.rds"), version = 2)
+saveRDS(type1, file.path(OUTDIR, "route1_equal_mean_simulations.rds"), version = 2)
 
 make_shift_data <- function(panel, n_vec, shifts, sd_vec = rep(1, length(shifts))) {
   k <- length(shifts)

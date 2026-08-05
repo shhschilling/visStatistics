@@ -2,14 +2,9 @@
 
 Group comparisons ( here in Route 1) can answer two different questions: Parametric tests such as Student's t-test, Fisher's one-way ANOVA, and their Welch variants test population means [@Welch:1951; @Rasch:2011; @Delacre:2019], whereas non-parametric tests such as Wilcoxon and Kruskal--Wallis test a rank-based distributional target.
 
-
-
-
-
 **Defaulting to Welch-type tests** 
 Welch type mean comparisons  assumes normality in the samples, an assumption which can only be safely neglected in larger samples, where the central limit theorem holds. The size required grows with the skewness and the imbalance of the samples, derived for two
 samples by [@Zhou:2005], and depends also on the number of compared groups. 
-
 
 In a empirical study, Delacre et al.
 [@Delacre:2019] established that the Type I error of Welch's
@@ -17,27 +12,14 @@ one-way ANOVA remained within Bradley's liberal robustness bounds of $[2.5\%, 7.
  (including skewed chi-square cases with skewness 2 and excess kurtosis 6, and symmetric heavy-tailed mixed-normal cases with excess kurtosis about 9.7)
 for at least about 50 observations per group for up to four groups, and about 100 observations per group for more than four groups. 
 
-
-
-
-
 When the variances in the samples are in fact equal, fixing the analysis to Welch-type tests rather than the corresponding mean group comparisons in the GLM framework (Student's t-test and Fisher's test), which assume normality and homoscedasticity in the residuals, costs little;
 in balanced, homoscedastic group comparisons, where the assumptions of the Fisher One way Anova are met, the relative difference between the Fisher and Welch-F-statistic decreases with increasing sample size by order $1/n$ (Eq. \@ref(eq:welch-anova-equal-var-reduction)) [@Welch:1951; @Rasch:2011; @Delacre:2019], In four group -comparisons, simulated below, this results  in a relative difference of $6.7\;\%$ for $n = 10$ and only $0.6\%$ for $n=100$ (Eq. \@ref(eq:welch-anova-four-groups)). 
 
-<!-- <!-- Caveat Welch under skew-> appendix? Derive in appendix that the errors fall like skewness over $\sqrt{n}$, e error falls like skewness over $\sqrt{n}$, -->
+<!-- <!-- Caveat Welch under skew-> appendix? Derive in appendix that the errors fall like skewness over $\sqrt{n}$ -->
 <!-- !-- -->
-
-
-
-
 
 **Defaulting to rank-based tests** Rank-based tests reduce the distributional assumptions and can be more efficient under skewness when the variances are equal [@Bridge:1999].
 
-
-
-
-<!-- ; what this costs under normality and what it gains under skew is quantified in the power simulations below -->
-<!-- (Fig. \@ref(fig:route1-power)). -->
 
 **Residual-based test selection** The default leaves the choice to the residual diagnostics, so its level and power follows from neither fixed strategy.
 
@@ -62,12 +44,10 @@ Figure \@ref(fig:route1-unequal-typeI) keeps the equal-means null and varies the
 The route probabilities are printed in the heatmaps after "|", so that the final
 rejection rates can be read together with the path probabilities taken to the final test.
 
-
 Non-normal data are generated with Fleishman's polynomial transformation
 $Y = a + bX + cX^2 + dX^3$, where $X \sim N(0,1)$.
 The coefficients set mean 0, variance 1, and the target skewness and
 excess kurtosis [@Fleishman:1978].
-
 
 All simulations use four groups and $B=50{,}000$ Monte Carlo
 replications per cell. The scripts, the saved Monte Carlo output and the code
@@ -85,7 +65,6 @@ whereas the unbalanced designs vary the target
 mean group size $\bar n = n$ (panel (C)), again from top to bottom.
 Within each row, the group-size vector is
 $\mathbf n=\bar n\cdot(0.5,0.8,1.2,1.5)$, rounded up component-wise.
-
 
 ```{r simulation-captions, include=FALSE}
 cap_route1_identical_typeI <- paste(
@@ -136,7 +115,7 @@ The unbalanced blocks use
 $\mathbf n=\bar n\cdot (0.5,0.8,1.2,1.5)$; this group-size vector is paired
 either with $\mathbf s = (1.0,1.3,1.7,2.2)$, so larger groups have larger
 SDs (panel C) or with $\mathbf s = (2.2,1.7,1.3,1.0)$, so larger groups have smaller
-SDs (panel D).
+SDs, the reverse pairing (panel D).
 
 
 The parametric equal-means null is true in all columns.
@@ -151,31 +130,22 @@ knitr::include_graphics(
 )
 ```
 
-
-
 The `SW` gate also reacts to unequal variances alone. In panel B, column 1 of Fig. \@ref(fig:route1-unequal-typeI) the balanced four groups are exactly normal and differ only in spread, yet the share of replications that the Shapiro--Wilk gate sends to Kruskal--Wallis rises from 13% at $n_i=10$ to a majority of $69\;\%$ at $n_i=100$ (panel B, column 1, row `SW`), against 5% in every row of the corresponding column 1 of Fig. \@ref(fig:route1-identical-typeI), where all standard deviations are equal. The gate applies one test to the standardised residuals of all four groups at once; mixing the four scales gives this single residual vector a positive excess kurtosis of about 0.9. This is the expected behaviour of residual-based routing, normally distributed and heteroscedastic group samples result in non-normal residuals. 
 
 ### Bradley's boundaries in heteroscedastic simulations
 
 `F` assumes equal variances, and its pooled variance is dominated by the largest groups: it rejects too rarely when those groups also carry the largest standard deviations (panel C), too often in the reverse pairing (panel D), and inside the boundaries when the sizes are equal (panel B).
 
-In contrast, `W` holds in most cases: it leaves Bradley's boundaries in only two cells, where the reverse pairing of larger groups with smaller standard deviations (panel D) meets the strongest departure from normality (column 5) at the smallest mean group sizes $\bar n = 10$ and $\bar n = 20$. The groups in these two cells hold between 5 and 30 observations, below the minimal group size of 50 per group that Delacre et al. [@Delacre:2019] recommended for comparisons of at most four groups. 
-The same group sizes with the opposite pairing (panel C) leave `W` inside the boundaries, so in
-these simulations the group size alone does not decide the outcome.
-
+In contrast, `W` holds throughout except in the most adverse corner, where the reverse pairing (panel D) meets the strongest departure from normality at group sizes below the minimum of 50 per group that Delacre et al. [@Delacre:2019] recommend for comparisons of at most four groups.
 
 In the two symmetric columns 1 and 2 both gated strategies remain type I tests and stay within Bradley's boundaries in the balanced design (panel B) and in the unbalanced design of panel C. The adverse pairing of panel D defeats them both, and for different reasons. At the larger group sizes the normality gate is overpowered and sends most replications to `KW`, whose own level is affected by unequal variances at unequal group sizes [@Zimmerman:2004]. At the smallest group sizes the variance gate is underpowered instead and returns nearly half the replications to `F`, whose rejection rate under a true null is inflated to about 13% in this pairing. 
 
-
 Taken together, unequal variances push the routing out of the mean branch through the residual kurtosis they induce, so a mean comparison under suspected heteroscedasticity is better requested with group_test = "welch" than left to the default automated routing. 
-
 
 ## Type II error (power) simulations
 
-
 The power simulation uses the same five fixed input distributions and adds ordered location shifts across the four groups.
 It uses balanced groups with equal SD, so $n_i=n$, $\mathrm{SD}_i=1$ for $i=1,...4$ and group means are shifted by $0,0.25,0.50,0.75$.
-
 
 ```{r route1-power, echo=FALSE, fig.height=7.8, fig.cap="Route 1 power simulation with Fleishman input distributions. (A) Input distributions with group mean and median reference lines. (B) Simulated rejection rates for the six testing strategies."}
 knitr::include_graphics(

@@ -5,15 +5,33 @@ if (!requireNamespace("patchwork", quietly = TRUE)) stop("Package 'patchwork' is
 if (!requireNamespace("scales", quietly = TRUE)) stop("Package 'scales' is required.")
 if (!requireNamespace("ggtext", quietly = TRUE)) stop("Package 'ggtext' is required.")
 
-source("fleishman_route1_residual_helpers.R")
-source("fleishman_figure_typography.R")
+## Locate the simulation output and the shared helpers, whether this script is
+## sourced from inside inst/simulations/ or from anywhere else with the package
+## installed. A referee replicating the figures reads the saved Monte Carlo
+## output; the simulation itself is not rerun.
+SIMDIR <- local({
+  here <- getwd()
+  if (file.exists(file.path(here, "fleishman_route1_residual_helpers.R"))) {
+    here
+  } else {
+    installed <- system.file("simulations", package = "visStatistics")
+    if (!nzchar(installed)) {
+      stop("Cannot locate the simulations directory: run from inst/simulations/ ",
+           "or install visStatistics.")
+    }
+    installed
+  }
+})
+
+source(file.path(SIMDIR, "fleishman_route1_residual_helpers.R"))
+source(file.path(SIMDIR, "fleishman_figure_typography.R"))
 
 OUTDIR <- "."
 FIGDIR <- "."
 dir.create(OUTDIR, showWarnings = FALSE, recursive = TRUE)
 dir.create(FIGDIR, showWarnings = FALSE, recursive = TRUE)
 
-RESULTS <- file.path(OUTDIR, "fleishman_4groups_power.rds")
+RESULTS <- file.path(SIMDIR, "fleishman_4groups_power.rds")
 power <- readRDS(RESULTS)
 
 ## Results from before the unbalanced design was added carry no `design`
@@ -26,22 +44,33 @@ power$design <- as.character(power$design)
 
 DESIGN_BALANCED <- "balanced n, equal SD"
 DESIGN_UNBALANCED <- "unbalanced n, equal SD"
+DESIGN_BAL_UNEQ <- "balanced n, unequal SD"
+DESIGN_UNBAL_POS <- "unbalanced n, larger n with larger SD"
+DESIGN_UNBAL_NEG <- "unbalanced n, larger n with smaller SD"
 
 ## Panel headers in the wording of the Type I figures: the two lines differ in
 ## the multiplier vector alone. The SDs are 1 by construction of the Fleishman
 ## draw; stating the tuple keeps the two figures symmetric.
-HEADER_BALANCED <- paste0(
-  "power simulations, balanced; ",
+## All four panel headers are built the same way, so they read symmetrically:
+## design in words, then the size multipliers, then the SD vector. The
+## heteroscedastic blocks scale the mean shifts by sqrt(mean(SD^2)) so that the
+## population omega^2 matches the equal-SD panels.
+sd_header <- function(what, nmult, sdvec) paste0(
+  "power simulations, ", what, "; ",
   "(n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = ",
-  "n&#772;(1, 1, 1, 1); ",
-  "(SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1, 1, 1, 1)"
+  "n&#772;(", nmult, "); ",
+  "(SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (", sdvec, ")"
 )
-HEADER_UNBALANCED <- paste0(
-  "power simulations, unbalanced; ",
-  "(n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = ",
-  "n&#772;(0.5, 0.8, 1.2, 1.5); ",
-  "(SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1, 1, 1, 1)"
-)
+NMULT_BAL <- "1, 1, 1, 1"
+NMULT_UNBAL <- "0.5, 0.8, 1.2, 1.5"
+SDV_EQ <- "1, 1, 1, 1"
+SDV_POS <- "1, 1.3, 1.7, 2.2"
+SDV_NEG <- "2.2, 1.7, 1.3, 1"
+
+HEADER_BALANCED  <- sd_header("balanced, equal SD",   NMULT_BAL,   SDV_EQ)
+HEADER_BAL_UNEQ  <- sd_header("balanced, unequal SD", NMULT_BAL,   SDV_POS)
+HEADER_UNBAL_POS <- sd_header("unbalanced, larger n with larger SD",  NMULT_UNBAL, SDV_POS)
+HEADER_UNBAL_NEG <- sd_header("unbalanced, larger n with smaller SD", NMULT_UNBAL, SDV_NEG)
 
 ggplot2 <- asNamespace("ggplot2")
 patchwork <- asNamespace("patchwork")
@@ -107,136 +136,149 @@ names(group_legend_labels) <- groups
 xlim <- c(-2.5, 5)
 y_cap <- 0.7
 
-make_density <- function(panel, shift) {
+make_density <- function(panel, shift, sd_i) {
   x <- seq(xlim[1], xlim[2], length.out = 700)
-  density <- fleishman_scaled_density(x, panel, sd = 1, shift = shift)
+  density <- fleishman_scaled_density(x, panel, sd = sd_i, shift = shift)
   density[!is.finite(density)] <- NA_real_
   data.frame(x = x, density = density, piece = "density")
 }
 
-pdf_rows <- list()
-idx <- 1
-for (panel in sort(unique(power$panel))) {
-  for (i in seq_along(group_means)) {
-    curve <- make_density(panel, group_means[i])
-    pdf_rows[[idx]] <- data.frame(
-      panel = panel,
-      distribution = panel_title(panel),
-      group = groups[i],
-      shift = group_means[i],
-      x = curve$x,
-      density = curve$density,
-      piece = curve$piece,
-      stringsAsFactors = FALSE
-    )
-    idx <- idx + 1
-  }
-}
-pdf_data <- do.call(rbind, pdf_rows)
-pdf_data$distribution <- factor(
-  pdf_data$distribution,
-  levels = vapply(sort(unique(power$panel)), panel_title, character(1))
-)
-pdf_panel_numbers <- data.frame(
-  distribution = factor(
-    vapply(sort(unique(power$panel)), panel_title, character(1)),
-    levels = levels(pdf_data$distribution)
-  ),
-  number = paste0(sort(unique(power$panel)), ")"),
-  x = xlim[1],
-  y = y_cap,
-  stringsAsFactors = FALSE
-)
-reference_lines <- do.call(rbind, lapply(sort(unique(power$panel)), function(panel) {
-  one <- fleishman_cases[fleishman_cases$panel == panel, , drop = FALSE]
-  data.frame(
-    distribution = factor(panel_title(panel), levels = levels(pdf_data$distribution)),
-    group = factor(rep(groups, 2), levels = groups),
-    value = c(group_means, one$a + group_means),
-    line_type = factor(
-      rep(c("mean", "median"), each = length(groups)),
-      levels = c("mean", "median")
-    )
-  )
-}))
+## One density strip per variance configuration: the shift vector is the same in
+## every design, so a strip is fixed by the SD vector alone. The reverse pairing
+## puts the largest shift on the narrowest group and therefore needs its own.
+make_pdf_panel <- function(sd_vec, shifts, panel_letter, panel_description) {
+  num <- function(x) format(x, trim = TRUE, drop0trailing = TRUE)
+  legend_labels <- sprintf("%s (mean shift = %s, SD = %s)", groups, num(round(shifts, 2)), num(sd_vec))
+  names(legend_labels) <- groups
 
-p_pdf <- ggplot2$ggplot(
-  pdf_data,
-  ggplot2$aes(x = x, y = density, colour = group, group = interaction(group, piece))
-) +
-  ggplot2$geom_vline(
-    data = reference_lines,
-    ggplot2$aes(xintercept = value, colour = group, linetype = line_type),
-    linewidth = 0.42,
-    alpha = 0.75,
-    inherit.aes = FALSE,
-    show.legend = c(colour = FALSE, linetype = TRUE)
-  ) +
-  ggplot2$geom_line(linewidth = 0.7, na.rm = TRUE) +
-  ggplot2$geom_text(
-    data = pdf_panel_numbers,
-    ggplot2$aes(x = x, y = y, label = number),
-    inherit.aes = FALSE,
-    family = FLEISHMAN_FONT_FAMILY,
-    fontface = "plain",
-    hjust = 0,
-    vjust = -2.0,
-    size = FLEISHMAN_GEOM_TEXT$panel_number
-  ) +
-  ggplot2$facet_wrap(~distribution, nrow = 1) +
-  ggplot2$coord_cartesian(xlim = xlim, ylim = c(0, y_cap), clip = "off") +
-  ggplot2$scale_colour_manual(
-    values = group_cols,
-    breaks = groups,
-    labels = group_legend_labels,
-    name = "group,\ngroup mean offset"
-  ) +
-  ggplot2$scale_linetype_manual(
-    values = c(mean = "dashed", median = "dotted"),
-    name = "reference line"
-  ) +
-  ggplot2$guides(
-    colour = ggplot2$guide_legend(
-      order = 1
-    ),
-    linetype = ggplot2$guide_legend(
-      order = 2,
-      override.aes = list(colour = "grey25")
-    )
-  ) +
-  ggplot2$labs(
-    title = fleishman_panel_title("A", "input distributions"),
-    subtitle = NULL,
-    x = "Response value with group shift",
-    y = "Theoretical density"
-  ) +
-  ggplot2$theme_minimal(
-    base_size = FLEISHMAN_TEXT$section_title,
-    base_family = FLEISHMAN_FONT_FAMILY
-  ) +
-  ggplot2$theme(
-    panel.grid.minor = ggplot2$element_blank(),
-    panel.border = ggplot2$element_rect(colour = "grey35", fill = NA, linewidth = 0.35),
-    strip.text = ggplot2$element_text(
-      size = FLEISHMAN_TEXT$panel_title,
-      family = FLEISHMAN_FONT_FAMILY,
-      lineheight = FLEISHMAN_LINEHEIGHT$panel_title
-    ),
-    strip.background = ggplot2$element_blank(),
-    legend.position = "right",
-    legend.title = ggplot2$element_text(size = FLEISHMAN_TEXT$legend),
-    legend.text = ggplot2$element_text(size = FLEISHMAN_TEXT$legend),
-    axis.title.x = ggplot2$element_text(size = FLEISHMAN_TEXT$axis_title),
-    axis.title.y = ggplot2$element_text(size = FLEISHMAN_TEXT$axis_title),
-    plot.title = ggtext::element_markdown(
-      hjust = 0,
-      size = FLEISHMAN_TEXT$panel_letter,
-      family = FLEISHMAN_FONT_FAMILY
-    ),
-    plot.subtitle = ggplot2$element_text(size = FLEISHMAN_TEXT$section_title),
-    plot.title.position = "plot",
-    plot.margin = ggplot2$margin(14, 5.5, 5.5, 5.5)
+  pdf_rows <- list()
+  idx <- 1
+  for (panel in sort(unique(power$panel))) {
+    for (i in seq_along(shifts)) {
+      curve <- make_density(panel, shifts[i], sd_vec[i])
+      pdf_rows[[idx]] <- data.frame(
+        panel = panel,
+        distribution = panel_title(panel),
+        group = groups[i],
+        shift = shifts[i],
+        x = curve$x,
+        density = curve$density,
+        piece = curve$piece,
+        stringsAsFactors = FALSE
+      )
+      idx <- idx + 1
+    }
+  }
+  pdf_data <- do.call(rbind, pdf_rows)
+  pdf_data$distribution <- factor(
+    pdf_data$distribution,
+    levels = vapply(sort(unique(power$panel)), panel_title, character(1))
   )
+  pdf_panel_numbers <- data.frame(
+    distribution = factor(
+      vapply(sort(unique(power$panel)), panel_title, character(1)),
+      levels = levels(pdf_data$distribution)
+    ),
+    number = paste0(sort(unique(power$panel)), ")"),
+    x = xlim[1],
+    y = y_cap,
+    stringsAsFactors = FALSE
+  )
+  reference_lines <- do.call(rbind, lapply(sort(unique(power$panel)), function(panel) {
+    one <- fleishman_cases[fleishman_cases$panel == panel, , drop = FALSE]
+    data.frame(
+      distribution = factor(panel_title(panel), levels = levels(pdf_data$distribution)),
+      group = factor(rep(groups, 2), levels = groups),
+      value = c(shifts, one$a * sd_vec + shifts),
+      line_type = factor(
+        rep(c("mean", "median"), each = length(groups)),
+        levels = c("mean", "median")
+      )
+    )
+  }))
+
+    ggplot2$ggplot(
+    pdf_data,
+    ggplot2$aes(x = x, y = density, colour = group, group = interaction(group, piece))
+  ) +
+    ggplot2$geom_vline(
+      data = reference_lines,
+      ggplot2$aes(xintercept = value, colour = group, linetype = line_type),
+      linewidth = 0.42,
+      alpha = 0.75,
+      inherit.aes = FALSE,
+      show.legend = c(colour = FALSE, linetype = TRUE)
+    ) +
+    ggplot2$geom_line(linewidth = 0.7, na.rm = TRUE) +
+    ggplot2$geom_text(
+      data = pdf_panel_numbers,
+      ggplot2$aes(x = x, y = y, label = number),
+      inherit.aes = FALSE,
+      family = FLEISHMAN_FONT_FAMILY,
+      fontface = "plain",
+      hjust = 0,
+      vjust = -2.0,
+      size = FLEISHMAN_GEOM_TEXT$panel_number
+    ) +
+    ggplot2$facet_wrap(~distribution, nrow = 1) +
+    ggplot2$coord_cartesian(xlim = xlim, ylim = c(0, y_cap), clip = "off") +
+    ggplot2$scale_colour_manual(
+      values = group_cols,
+      breaks = groups,
+      labels = legend_labels,
+      name = "group,\ngroup mean offset"
+    ) +
+    ggplot2$scale_linetype_manual(
+      values = c(mean = "dashed", median = "dotted"),
+      name = "reference line"
+    ) +
+    ggplot2$guides(
+      colour = ggplot2$guide_legend(
+        order = 1
+      ),
+      linetype = ggplot2$guide_legend(
+        order = 2,
+        override.aes = list(colour = "grey25")
+      )
+    ) +
+    ggplot2$labs(
+      title = fleishman_panel_title(panel_letter, panel_description),
+      subtitle = NULL,
+      x = "Response value with group shift",
+      y = "Theoretical density"
+    ) +
+    ggplot2$theme_minimal(
+      base_size = FLEISHMAN_TEXT$section_title,
+      base_family = FLEISHMAN_FONT_FAMILY
+    ) +
+    ggplot2$theme(
+      panel.grid.minor = ggplot2$element_blank(),
+      panel.border = ggplot2$element_rect(colour = "grey35", fill = NA, linewidth = 0.35),
+      strip.text = ggplot2$element_text(
+        size = FLEISHMAN_TEXT$panel_title,
+        family = FLEISHMAN_FONT_FAMILY,
+        lineheight = FLEISHMAN_LINEHEIGHT$panel_title
+      ),
+      strip.background = ggplot2$element_blank(),
+      legend.position = "right",
+      legend.title = ggplot2$element_text(size = FLEISHMAN_TEXT$legend),
+      legend.text = ggplot2$element_text(size = FLEISHMAN_TEXT$legend),
+      axis.title.x = ggplot2$element_text(size = FLEISHMAN_TEXT$axis_title),
+      axis.title.y = ggplot2$element_text(size = FLEISHMAN_TEXT$axis_title),
+      plot.title = ggtext::element_markdown(
+        hjust = 0,
+        size = FLEISHMAN_TEXT$panel_letter,
+        family = FLEISHMAN_FONT_FAMILY
+      ),
+      plot.subtitle = ggplot2$element_text(size = FLEISHMAN_TEXT$section_title),
+      plot.title.position = "plot",
+      plot.margin = ggplot2$margin(14, 5.5, 5.5, 5.5)
+    )
+}
+
+SD_HOMO <- c(1, 1, 1, 1)
+SD_POS <- c(1.0, 1.3, 1.7, 2.2)
+SD_NEG <- rev(SD_POS)
 
 STRATEGY_LABELS <- c(
   "1. Fisher always" = "F",
@@ -401,8 +443,7 @@ make_power_plot <- function(design_name, panel_letter, panel_description,
     base_family = FLEISHMAN_FONT_FAMILY
   ) +
   ggplot2$theme(
-    legend.position = if (show_legend) "bottom" else "none",
-    legend.box = "horizontal",
+    legend.position = if (show_legend) "right" else "none",
     legend.title = ggplot2$element_text(size = FLEISHMAN_TEXT$legend),
     legend.text = ggplot2$element_text(size = FLEISHMAN_TEXT$legend),
     axis.title.x = ggplot2$element_text(size = FLEISHMAN_TEXT$axis_title),
@@ -433,172 +474,56 @@ make_power_plot <- function(design_name, panel_letter, panel_description,
 p_power <- make_power_plot(DESIGN_BALANCED, "B", HEADER_BALANCED,
   show_legend = TRUE
 )
-## The unbalanced series is indexed by the mean group size, not by a common
-## group size, so its axis is labelled accordingly.
-p_power_unbalanced <- make_power_plot(DESIGN_UNBALANCED, "C", HEADER_UNBALANCED,
-  show_legend = TRUE,
-  x_label = expression(paste(bar(n), " per group"))
+
+nbar_label <- expression(paste(bar(n), " per group"))
+p_power_bal_uneq  <- make_power_plot(DESIGN_BAL_UNEQ,  "D", HEADER_BAL_UNEQ,  show_legend = TRUE)
+p_power_unbal_pos <- make_power_plot(DESIGN_UNBAL_POS, "B", HEADER_UNBAL_POS, show_legend = TRUE,
+                                     x_label = nbar_label)
+p_power_unbal_neg <- make_power_plot(DESIGN_UNBAL_NEG, "D", HEADER_UNBAL_NEG, show_legend = TRUE,
+                                     x_label = nbar_label)
+
+## Two figures, each carrying the densities actually simulated beneath it.
+SHIFTS_HOMO <- as.numeric(strsplit(
+  power$group_mean_offsets[power$design == DESIGN_BALANCED][1], ", ")[[1]])
+SHIFTS_HETERO <- as.numeric(strsplit(
+  power$group_mean_offsets[power$design == DESIGN_UNBAL_POS][1], ", ")[[1]])
+
+p_pdf_homo <- make_pdf_panel(SD_HOMO, SHIFTS_HOMO, "A", "input distributions, equal SD")
+p_pdf_pos <- make_pdf_panel(SD_POS, SHIFTS_HETERO, "A",
+  "input distributions, SD = (1, 1.3, 1.7, 2.2)")
+p_pdf_neg <- make_pdf_panel(SD_NEG, SHIFTS_HETERO, "D",
+  "input distributions, SD = (2.2, 1.7, 1.3, 1)")
+
+## One figure per size design: balanced, then unbalanced. Each carries two
+## density strips, because the equal-SD and unequal-SD blocks below them are
+## drawn from different distributions, and in the unbalanced figure the reverse
+## pairing puts the largest mean shift on the narrowest group.
+p_pdf_homo_A <- make_pdf_panel(SD_HOMO, SHIFTS_HOMO, "A", "input distributions, equal SD")
+p_pdf_pos_C  <- make_pdf_panel(SD_POS,  SHIFTS_HETERO, "C",
+  "input distributions, SD = (1, 1.3, 1.7, 2.2)")
+p_pdf_pos_A  <- make_pdf_panel(SD_POS,  SHIFTS_HETERO, "A",
+  "input distributions, SD = (1, 1.3, 1.7, 2.2)")
+p_pdf_neg_C  <- make_pdf_panel(SD_NEG,  SHIFTS_HETERO, "C",
+  "input distributions, SD = (2.2, 1.7, 1.3, 1)")
+
+combined_balanced <- patchwork$wrap_plots(
+  p_pdf_homo_A, p_power, p_pdf_pos_C, p_power_bal_uneq,
+  ncol = 1, heights = c(1, 2.0, 1, 2.0)
 )
-
-## The remaining single-panel figures describe the balanced design only, as
-## they did before the unbalanced series was added.
-power_balanced <- power[power$design == DESIGN_BALANCED, , drop = FALSE]
-
-parametric_long <- rbind(
-  transform(power_balanced, strategy = "Fisher always", power = fisher_power),
-  transform(power_balanced, strategy = "Welch always", power = welch_power),
-  transform(power_balanced, strategy = "Levene-gated Fisher/Welch", power = mean_power)
-)
-parametric_long$strategy <- factor(
-  parametric_long$strategy,
-  levels = c("Fisher always", "Welch always", "Levene-gated Fisher/Welch")
-)
-
-p_parametric <- ggplot2$ggplot(
-  parametric_long,
-  ggplot2$aes(x = n_per_group, y = power, colour = strategy, shape = strategy)
-) +
-  ggplot2$geom_point(size = 2.4, fill = "white", stroke = 0.9) +
-  ggplot2$facet_grid(stats::as.formula("effect_size ~ skew_label")) +
-  ggplot2$scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
-  ggplot2$scale_x_log10(breaks = sort(unique(power$n_per_group))) +
-  ggplot2$scale_shape_manual(values = c(
-    "Fisher always" = 21,
-    "Welch always" = 24,
-    "Levene-gated Fisher/Welch" = 22
-  )) +
-  ggplot2$labs(
-    title = "Parametric branch power under true homoscedasticity",
-    subtitle = "Fisher always, Welch always, and Levene-gated Fisher/Welch",
-    x = "n per group",
-    y = "simulated rejection rate",
-    colour = "parametric strategy",
-    shape = "parametric strategy"
-  ) +
-  ggplot2$theme_minimal(base_size = 11, base_family = "serif") +
-  ggplot2$theme(
-    legend.position = "right",
-    axis.text.x = ggplot2$element_text(angle = 45, hjust = 1),
-    plot.title = ggplot2$element_text(hjust = 0),
-    plot.title.position = "plot"
-  )
-
-p_route <- ggplot2$ggplot(
-  power,
-  ggplot2$aes(x = skew_label, y = n_label, fill = route_rank_probability)
-) +
-  ggplot2$geom_tile(colour = "white", linewidth = 0.7) +
-  ggplot2$geom_text(
-    ggplot2$aes(label = sprintf("%.0f%%", 100 * route_rank_probability)),
-    size = 3.1
-  ) +
-  ggplot2$scale_fill_gradient(
-    limits = c(0, 1),
-    low = "#edf8fb",
-    high = "#006d2c",
-    labels = scales::percent,
-    name = "% routed\nto non-parametric\nbranch"
-  ) +
-  ggplot2$facet_wrap(stats::as.formula("~ effect_size"), nrow = 2) +
-  ggplot2$labs(
-    title = "Probability of routing to the non-parametric branch",
-    subtitle = "Cells show how often Shapiro-Wilk rejects residual normality",
-    x = "residual distribution",
-    y = "n per group"
-  ) +
-  ggplot2$theme_minimal(base_size = 11, base_family = "serif") +
-  ggplot2$theme(
-    axis.text.x = ggplot2$element_text(size = 7.5),
-    legend.position = "right"
-  )
-
-p_fisher_welch <- ggplot2$ggplot(
-  power,
-  ggplot2$aes(x = skew_label, y = n_label, fill = route_welch_probability)
-) +
-  ggplot2$geom_tile(colour = "white", linewidth = 0.7) +
-  ggplot2$geom_text(
-    ggplot2$aes(label = sprintf("%.1f%%", 100 * route_welch_probability)),
-    size = 3.1
-  ) +
-  ggplot2$scale_fill_gradient(
-    limits = c(0, 0.20),
-    low = "#f7fbff",
-    high = "#08519c",
-    labels = scales::percent,
-    name = "% routed\nto Welch"
-  ) +
-  ggplot2$labs(
-    title = "False Welch routing in the homoscedastic simulation",
-    subtitle = "Cells show Levene false positives after passing the Shapiro-Wilk gate",
-    x = "residual distribution",
-    y = "n per group"
-  ) +
-  ggplot2$theme_minimal(base_size = 11, base_family = "serif") +
-  ggplot2$theme(
-    axis.text.x = ggplot2$element_text(size = 7.5),
-    legend.position = "right"
-  )
-
-## A: densities. B: balanced power. C: unbalanced power.
-## The width is unchanged, so the printed point sizes are unchanged; only the
-## height grows. 24.3 / 20 = 1.215 against the 257 / 170 = 1.512 that an A4
-## portrait text block allows, so the figure fits one page at \textwidth.
-combined <- patchwork$wrap_plots(
-  p_pdf, p_power, p_power_unbalanced,
-  ncol = 1, heights = c(1, 2.0, 2.35)
+combined_unbalanced <- patchwork$wrap_plots(
+  p_pdf_pos_A, p_power_unbal_pos, p_pdf_neg_C, p_power_unbal_neg,
+  ncol = 1, heights = c(1, 2.0, 1, 2.0)
 )
 
 COMBINED_WIDTH <- 20
-COMBINED_HEIGHT <- 24.3
+HEIGHT_BALANCED <- 27.5
+HEIGHT_UNBALANCED <- 27.5
 
-ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_power_pdf.png"),
-  p_pdf,
-  width = 20, height = 5.2, dpi = FLEISHMAN_DPI
-)
-ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_power_pdf.png"),
-  p_pdf,
-  width = 20, height = 5.2, dpi = FLEISHMAN_DPI
-)
-ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_power.png"),
-  combined,
-  width = COMBINED_WIDTH, height = COMBINED_HEIGHT, dpi = FLEISHMAN_DPI
-)
-ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_power.png"),
-  combined,
-  width = COMBINED_WIDTH, height = COMBINED_HEIGHT, dpi = FLEISHMAN_DPI
-)
-ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_power_with_pdf.png"),
-  combined,
-  width = COMBINED_WIDTH, height = COMBINED_HEIGHT, dpi = FLEISHMAN_DPI
-)
-ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_power_with_pdf.png"),
-  combined,
-  width = COMBINED_WIDTH, height = COMBINED_HEIGHT, dpi = FLEISHMAN_DPI
-)
-ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_parametric_branch_power.png"),
-  p_parametric,
-  width = 14, height = 7.8, dpi = FLEISHMAN_DPI
-)
-ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_parametric_branch_power.png"),
-  p_parametric,
-  width = 14, height = 7.8, dpi = FLEISHMAN_DPI
-)
-ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_route_probability.png"),
-  p_route,
-  width = 12, height = 7.2, dpi = FLEISHMAN_DPI
-)
-ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_route_probability.png"),
-  p_route,
-  width = 12, height = 7.2, dpi = FLEISHMAN_DPI
-)
-ggplot2$ggsave(file.path(OUTDIR, "fleishman_4groups_fisher_welch_route_probability.png"),
-  p_fisher_welch,
-  width = 12, height = 5.4, dpi = FLEISHMAN_DPI
-)
-ggplot2$ggsave(file.path(FIGDIR, "fleishman_4groups_fisher_welch_route_probability.png"),
-  p_fisher_welch,
-  width = 12, height = 5.4, dpi = FLEISHMAN_DPI
-)
+for (dir in unique(c(OUTDIR, FIGDIR))) {
+  ggplot2$ggsave(file.path(dir, "fleishman_4groups_power_balanced.png"),
+    combined_balanced, width = COMBINED_WIDTH, height = HEIGHT_BALANCED, dpi = FLEISHMAN_DPI)
+  ggplot2$ggsave(file.path(dir, "fleishman_4groups_power_unbalanced.png"),
+    combined_unbalanced, width = COMBINED_WIDTH, height = HEIGHT_UNBALANCED, dpi = FLEISHMAN_DPI)
+}
 
 message("Updated plots in: ", OUTDIR)

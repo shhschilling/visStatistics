@@ -20,12 +20,12 @@ For group comparisons, packages with related scope include `compareGroups` [@Sub
 `boxTest` covers only the two-group numeric-response case.
 `autotestR` provides automated recommendations for t-tests, ANOVA and correlation.
 `automatedTests` provides the most extensive range of coverage of the packages under consideration, incorporating one-sample, paired, repeated measures, regression, correlation, and contingency-table cases.
-`agrobox` automates the choice between Fisher's and Welch's ANOVA.
+`agrobox` automates the choice between Fisher's and Welch's ANOVA from residual-normality and variance diagnostics, covering the one-way layout alone; when residual normality is rejected it reports the group means without any test, rather than falling back to a rank-based alternative.
 
 For tests within the general linear-model framework like Student's t-test or Fisher's one-way ANOVA and linear regression, the normality assumption concerns the model residual errors (each observation minus its predicted value), not the raw data itself; the belief that the raw data must be normal is a widespread myth [@Kery:2003].
 
 Yet, `autotestR` and `boxTest` test the response separately within groups, whereas `automatedtests` and `compareGroups` test the response variable as a whole, ignoring the grouping.
-Among the reviewed automated test-selection packages, only `agrobox` base the central-tendency route on explicit residual diagnostics from the common linear model rather than on marginal or groupwise normality checks.
+Among the reviewed automated test-selection packages, only `visStatistics` and `agrobox` base the central-tendency route on explicit residual diagnostics from the common linear model rather than on marginal or groupwise normality checks, and only `visStatistics` continues to a rank-based test when those diagnostics reject normality.
 
 
 <!-- The package is deliberately limited to common two-variable settings in which the route can be visualised and audited: residual-based diagnostics for the linear-model branches, the selected test, full test statistics, effect size, result plots, and post-hoc comparisons where required. -->

@@ -38,7 +38,7 @@ For comparisons of more than two groups, Delacre et al. [@Delacre:2019] recommen
 
 
 
-A Welch default (by the option `group_test = "welch"`) gives directly interpretable estimates and confidence intervals; by the Central Limit Theorem it also remains valid in large samples even when residual normality is rejected, although how large is large enough depends on skewness, tail weight [@Lumley:2002] and balance of the input samples, so that no threshold can be fixed in advance. Welch-type tests can be weak for strongly skewed small samples [@Blanca:2017; @Fagerland:2012] and can answer the wrong scientific question when the mean lies in a long tail [@Fagerland:2009]. On exactly normal input it also forfeits power to Fisher's one-way ANOVA at group sizes up to 50
+A Welch default (by the option `group_test = "welch"`) gives directly interpretable estimates and confidence intervals; by the Central Limit Theorem it also remains valid in large samples even when residual normality is rejected, although how large is large enough depends on skewness, tail weight [@Lumley:2002] and balance of the input samples, so that no threshold can be fixed in advance. Welch-type tests can be weak for strongly skewed small samples [@Fagerland:2012] and can answer the wrong scientific question when the mean lies in a long tail [@Fagerland:2009]. On exactly normal input it also forfeits power to Fisher's one-way ANOVA at group sizes up to 50
 (Section \@ref(sec:simulation-results)).
 
 

@@ -6,6 +6,24 @@
 ## Uses saved Monte Carlo output only. Does not rerun the simulation.
 ## ---------------------------------------------------------------------------
 
+## Locate the simulation output and the shared helpers, whether this script is
+## sourced from inside inst/simulations/ or from anywhere else with the package
+## installed. A referee replicating the figures reads the saved Monte Carlo
+## output; the simulation itself is not rerun.
+SIMDIR <- local({
+  here <- getwd()
+  if (file.exists(file.path(here, "fleishman_route1_residual_helpers.R"))) {
+    here
+  } else {
+    installed <- system.file("simulations", package = "visStatistics")
+    if (!nzchar(installed)) {
+      stop("Cannot locate the simulations directory: run from inst/simulations/ ",
+           "or install visStatistics.")
+    }
+    installed
+  }
+})
+
 OUTDIR <- "."
 FIGDIR <- "."
 dir.create(FIGDIR, showWarnings = FALSE, recursive = TRUE)
@@ -34,14 +52,14 @@ if (!requireNamespace("ggtext", quietly = TRUE)) {
   stop("Package 'ggtext' is required.")
 }
 
-sim <- readRDS(file.path(OUTDIR, "route1_equal_mean_blanca_zimmerman.rds"))
+sim <- readRDS(file.path(SIMDIR, "route1_equal_mean_simulations.rds"))
 
 ALPHA <- 0.05
 ggplot2 <- asNamespace("ggplot2")
 patchwork <- asNamespace("patchwork")
 scales <- asNamespace("scales")
-source("fleishman_route1_residual_helpers.R")
-source("fleishman_figure_typography.R")
+source(file.path(SIMDIR, "fleishman_route1_residual_helpers.R"))
+source(file.path(SIMDIR, "fleishman_figure_typography.R"))
 group_cols <- fleishman_group_cols
 names(group_cols) <- LETTERS[seq_along(group_cols)]
 

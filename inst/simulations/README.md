@@ -22,7 +22,7 @@ the scripts read and write in the current working directory.
 | `route1_power_figure.R` | builds the power figure from the saved results |
 | `fleishman_route1_residual_helpers.R` | Fleishman coefficients, densities and group colours |
 | `fleishman_figure_typography.R` | shared figure typography |
-| `route1_equal_mean_blanca_zimmerman.csv`, `.rds` | Type I results, 5 designs x 4 sample sizes x 5 input distributions |
+| `route1_equal_mean_simulations.csv`, `.rds` | Type I results, 5 designs x 4 sample sizes x 5 input distributions |
 | `fleishman_4groups_power.csv`, `.rds` | power results, 5 sample sizes x 5 input distributions |
 | `sim_README.txt` | run log of the saved output: replications, cores, Monte Carlo SE, input distributions |
 

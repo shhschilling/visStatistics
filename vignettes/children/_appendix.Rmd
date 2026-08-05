@@ -308,11 +308,11 @@ of freedom in Eq. \@ref(eq:welch-satterthwaite-df) reduce to
 
 ###### More than two group comparisons {.unnumbered}
 
-This exact equivalence does not extend beyond two groups: even under equal variances and equal group sizes, the Welch statistic $F_W$ in Eq. \@ref(eq:welch-f) is not algebraically identical to the classical $F$ in Eq. \@ref(eq:fisher-f) for $k>2$; it nevertheless converges to it as $n$ increases: Under equal variances and equal group sizes, $s_1^2 = \cdots = s_k^2 = s^2$ and $n_1 = \cdots = n_k = n$. Hence, $w_i = n/s^2$, $w = kn/s^2$, $w_i/w = 1/k$, and $\bar{x}_w = \bar{x}$. The numerator of Eq. \@ref(eq:welch-f) then reduces to \begin{equation}
+This exact equivalence does not extend beyond two groups: even under equal variances, the Welch statistic $F_W$ in Eq. \@ref(eq:welch-f) is not algebraically identical to the classical $F$ in Eq. \@ref(eq:fisher-f) for $k>2$; it nevertheless converges to it as the group sizes grow. Under equal variances, $s_1^2 = \cdots = s_k^2 = s^2$, so $w_i = n_i/s^2$, $w = N/s^2$, $w_i/w = n_i/N$, and $\bar{x}_w = \bar{x}$. The numerator of Eq. \@ref(eq:welch-f) then reduces to \begin{equation}
 \frac{\sum_{i=1}^{k} w_i(\bar{x}_i-\bar{x}_w)^2}{k-1}
 =
 \frac{1}{s^2}
-\frac{\sum_{i=1}^{k} n(\bar{x}_i-\bar{x})^2}{k-1}
+\frac{\sum_{i=1}^{k} n_i(\bar{x}_i-\bar{x})^2}{k-1}
 =
 \frac{MS_\text{between}}{s^2}.
 (\#eq:welch-anova-equal-var-numerator)
@@ -322,22 +322,21 @@ Because $MS_\text{within}=s^2$ under the same assumptions, this is the numerator
 
 \begin{equation}
 1+
-\frac{2(k-2)(k-1)}{k(k+1)(n-1)}.
+\frac{2(k-2)}{k^{2}-1}\sum_{i=1}^{k}\frac{\left(1-n_i/N\right)^{2}}{n_i-1}.
 (\#eq:welch-anova-equal-var-correction)
 \end{equation}
 
 Thus
 
 \begin{equation}
-F_W =
-\frac{F}
-{1+\dfrac{2(k-2)(k-1)}{k(k+1)(n-1)}}.
+\frac{F}{F_W} - 1 =
+\frac{2(k-2)}{k^{2}-1}\sum_{i=1}^{k}\frac{\left(1-n_i/N\right)^{2}}{n_i-1}.
 (\#eq:welch-anova-equal-var-reduction)
 \end{equation}
 
-For $k=2$, the correction term is zero, so Welch's ANOVA form gives the same statistic as Fisher's ANOVA Eq. \@ref(eq:fisher-f).
+For $k=2$ the correction term vanishes, so Welch's ANOVA form gives the same statistic as Fisher's ANOVA Eq. \@ref(eq:fisher-f), whatever the group sizes. Each summand in Eq. \@ref(eq:welch-anova-equal-var-reduction) is of order $n_i^{-1}$, so when all group sizes grow in fixed proportion the relative excess is $O(n^{-1})$; imbalance changes its constant, not its order. For balanced designs $n_i = n$ the sum equals $(k-1)^2/[k(n-1)]$, giving a relative excess of $2(k-2)(k-1)/[k(k+1)(n-1)]$.
 
-For the four-group case used in the examples, $k=4$ and therefore
+For the balanced four-group case used in the examples, $k=4$ and therefore
 
 \begin{equation}
 F_W =
