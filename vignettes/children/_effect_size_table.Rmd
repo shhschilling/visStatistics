@@ -56,12 +56,12 @@ $R^2=1-SS_\text{res}/SS_\text{tot}$ &
 \hline
 \hyperref[sec:rho]{Spearman} &
 $\rho$ &
-$\rho=r(\operatorname{rank}(x),\operatorname{rank}(y))$ &
+$\rho = r(\operatorname{rank}(x), \operatorname{rank}(y))$ (Eq.~\ref{eq:spearman-rho}) &
 \texttt{cor.test(method = "spearman")\$estimate} \\
 \hline
 \hyperref[sec:tau]{Kendall} &
 $\tau_b$ &
-$\tau_b=(n_c-n_d)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$ &
+$\tau_b = \dfrac{n_c - n_d}{\sqrt{\left(n_0 - n_1\right)\left(n_0 - n_2\right)}}$ (Eq.~\ref{eq:kendall-tau-b}) &
 \texttt{cor.test(method = "kendall")\$estimate} \\
 \hline
 \hyperref[sec:fisher-exact]{Pearson $\chi^2$ ($R\times C$)} &
@@ -138,13 +138,13 @@ Lakens 2018, Appendix A</a></td>
 <tr>
 <td><a href="#sec:rho">Spearman</a></td>
 <td>$\rho$</td>
-<td>$\rho=r(\operatorname{rank}(x),\operatorname{rank}(y))$</td>
+<td>$\rho = r(\operatorname{rank}(x), \operatorname{rank}(y))$ Eq. \@ref(eq:spearman-rho)</td>
 <td><code>cor.test(method = "spearman")&#36;estimate</code></td>
 </tr>
 <tr>
 <td><a href="#sec:tau">Kendall</a></td>
 <td>$\tau_b$</td>
-<td>$\tau_b=(n_c-n_d)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}$</td>
+<td>$\tau_b = \dfrac{n_c - n_d}{\sqrt{\left(n_0 - n_1\right)\left(n_0 - n_2\right)}}$ Eq. \@ref(eq:kendall-tau-b)</td>
 <td><code>cor.test(method = "kendall")&#36;estimate</code></td>
 </tr>
 <tr>
@@ -196,13 +196,8 @@ where $s^{*}$ denotes the average-variance standardizer.
 
 $\nu_1$ and $\nu_2$ denote the numerator and denominator degrees of freedom; for Fisher's ANOVA, $\nu_1=k-1$ and $\nu_2=N-k$; for Welch's ANOVA, $\nu_1=k-1$ and $\nu_2$ is the usually fractional denominator degree of freedom returned by `oneway.test()`.
 
-For simple linear regression, the coefficient of determination is
-
-\begin{equation}
-R^2 = 1 - \frac{SS_\text{res}}{SS_\text{tot}},
-(\#eq:r-squared)
-\end{equation}
-
-where $SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2$ is the residual sum of squares, $\hat{y}_i$ is the predicted value, and $SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2$ is the total sum of squares.
+In the the coefficient of determination $R^2$, 
+the residual sum of square is defined as 
+ $SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2$, where  $\hat{y}_i$ is the predicted value,  and the total sum of squares is given by  $SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2$ .
 
 All other variables used in the [effect-size table](#tab:effect-size-formulae) are defined in the corresponding "Analysis" section.

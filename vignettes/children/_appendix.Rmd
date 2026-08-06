@@ -387,9 +387,10 @@ For \(k\) independent groups, the observations from all groups are ranked
 together as described above. Let \(\bar R_i\) be the mean rank assigned back
 to group \(i\). If all groups have the same rank distribution, each group has
 expected mean rank
-\[
+\begin{equation}
 \bar R=\frac{N+1}{2}.
-\]
+(\#eq:kw-expected-mean-rank)
+\end{equation}
 The Kruskal--Wallis statistic measures how far the group mean ranks
 \(\bar R_i\) are from this common expected rank [@Kruskal:1952]:
 
@@ -420,7 +421,7 @@ For $k=2$, Kruskal--Wallis and Wilcoxon are based on the same pooled ranks. The 
 
 # Rank correlations {#sec:rank-correlations}
 
-Rank correlations are used when `correlation = TRUE`.
+Rank correlations are used when `correlation = TRUE`. Note that the correlation measure are effect size measure and are therefore reported in both roles in the output.
 
 ## Kendall rank correlation `cor.test(..., method="kendall")` {#sec:tau}
 
@@ -434,7 +435,7 @@ Kendall's $\tau_b$ tests the null hypothesis of no monotone association between 
 
 where $n_0 = n(n-1)/2$ is the total number of observation pairs, $n_1 = \sum_i t_i(t_i-1)/2$ is the number of pairs tied in the response, and $n_2 = \sum_j u_j(u_j-1)/2$ is the number of pairs tied in the predictor. The denominator correction makes $\tau_b$ attain $\pm 1$ even with ties, which Spearman's $\rho$ does not [@Kendall:1945]. With few ordered levels (e.g., five-point Likert items), ties are common; this is the principal reason to prefer $\tau_b$ over Spearman's $\rho$ in this setting [@Agresti:2010].
 
-`visstat()` calls `cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)` and reports $\tau_b$, the asymptotic test statistic $z = \tau_b / \operatorname{SE}(\tau_b)$, and the two-sided $p$\ value.
+`visstat()` calls `cor.test(as.numeric(y), as.numeric(x), method = "kendall", exact = FALSE)` and reports $\tau_b$, the asymptotic test statistic $z = \tau_b / \operatorname{SE}(\tau_b)$, and the two-sided $p$\ value.  
 
 ## Spearman rank correlation `cor.test(..., method="spearman")` {#sec:rho}
 
@@ -455,7 +456,9 @@ $$r(u,v)
 
 Here $u_i = \operatorname{rank}(x_i)$ and $v_i = \operatorname{rank}(y_i)$ are the ranks of the $n$ paired observations, and $\bar{u}$ and $\bar{v}$ are their sample means.
 
-For inference, `cor.test(..., method = "spearman")` computes an exact $p$\ value for small samples without ties by evaluating all $n!$ rank permutations. For larger samples or when ties are present, it uses an approximation to the null distribution of the rank association measure or its asymptotic transformation. No distributional assumptions on the original data are required.A separate Pearson-correlation branch is not implemented. In simple linear regression with an intercept, the two-sided test of zero slope and the two-sided test of zero Pearson correlation return the same $p$\ value. Pearson correlation would therefore not add a separate inferential route to the default regression branch.
+For inference, `cor.test(..., method = "spearman")` computes an exact $p$\ value for small samples without ties by evaluating all $n!$ rank permutations. For larger samples or when ties are present, it uses an approximation to the null distribution of the rank association measure or its asymptotic transformation. No distributional assumptions on the original data are required.
+
+A separate Pearson-correlation branch is not implemented. In simple linear regression with an intercept, the two-sided test of zero slope and the two-sided test of zero Pearson correlation return the same $p$\ value. Pearson correlation would therefore not add a separate inferential route to the default regression branch.
 
 ```{=html}
 ```

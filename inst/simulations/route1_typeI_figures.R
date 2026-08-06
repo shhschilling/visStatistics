@@ -54,6 +54,28 @@ if (!requireNamespace("ggtext", quietly = TRUE)) {
 
 sim <- readRDS(file.path(SIMDIR, "route1_equal_mean_simulations.rds"))
 
+## Sizes displayed. The grid is simulated at 10, 20, 30, 50, 100 and 200 and the
+## saved results ship all six, but 200 adds nothing the trend at 100 does not
+## already show, so it is not plotted. Same convention as NS_TO_PLOT in
+## route1_power_figure.R. Set NS_TO_PLOT (and FIG_SUFFIX, to keep the vignette
+## figures from being overwritten) before sourcing to draw the full grid:
+##   NS_TO_PLOT <- c(10, 20, 30, 50, 100, 200)
+##   FIG_SUFFIX <- "_with_n200"
+##   source("route1_typeI_figures.R")
+if (!exists("NS_TO_PLOT")) {
+  NS_TO_PLOT <- c(10, 20, 30, 50, 100)
+}
+if (!exists("FIG_SUFFIX")) {
+  FIG_SUFFIX <- ""
+}
+sim <- sim[sim$mean_n_per_group %in% NS_TO_PLOT, , drop = FALSE]
+
+## Figure heights are set for five displayed sizes and scale with the number
+## actually drawn, so the heatmap row pitch stays constant and the rejection
+## numbers never collide.
+HEIGHT_EQUAL <- 22 * length(NS_TO_PLOT) / 5
+HEIGHT_UNEQUAL <- 26 * length(NS_TO_PLOT) / 5
+
 ALPHA <- 0.05
 ggplot2 <- asNamespace("ggplot2")
 patchwork <- asNamespace("patchwork")
@@ -138,9 +160,12 @@ distribution_plot_title <- function(skew_label, number) {
   )
 }
 
+## One common limit for all five columns, so the densities stay comparable,
+## cut just above the tallest curve in the grid: column 5 at SD = 1 peaks at
+## 0.679. Everything above that was empty, and the height it took belongs to
+## the heatmaps below.
 density_y_limit <- function(skew_label) {
-  one <- sim[sim$skew_label == skew_label, ][1, ]
-  if (one$panel == 5) 0.75 else 0.70
+  0.70
 }
 
 make_density_curve <- function(panel, sd, xlim) {
@@ -640,7 +665,7 @@ make_equal_plot <- function() {
     show_group_legend = FALSE,
     black_curves = TRUE
   )
-  height_list[2] <- 1.15
+  height_list[2] <- 0.30
   balanced_plot <- make_rejection_plot(
     "balanced n, equal SD",
     strategies,
@@ -690,7 +715,7 @@ make_unequal_design_plot <- function(design_name, panel_label, show_legend = TRU
     show_group_legend = TRUE,
     show_sd_mapping = TRUE
   )
-  height_list[1] <- 1.15
+  height_list[1] <- 0.30
   plot_list[[2]] <- block_title(
     panel_label
   )
@@ -728,7 +753,7 @@ make_unequal_plot <- function() {
     show_group_legend = TRUE,
     show_sd_mapping = TRUE
   )
-  height_list[2] <- 1.15
+  height_list[2] <- 0.30
   plot_list[[3]] <- panel_header(
     "B",
     "balanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(1, 1, 1, 1); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
@@ -789,14 +814,15 @@ save_plot <- function(filename, plot, width, height, dpi = FLEISHMAN_DPI) {
 }
 
 equal_name <- sprintf(
-  "route1_identical_distributions_typeI_with_kw_fleishman_%s.png", B_SUFFIX
+  "route1_identical_distributions_typeI_with_kw_fleishman_%s%s.png",
+  B_SUFFIX, FIG_SUFFIX
 )
 equal_outfile <- file.path(OUTDIR, equal_name)
 ggplot2$ggsave(
   equal_outfile,
   make_equal_plot(),
   width = 20,
-  height = 22,
+  height = HEIGHT_EQUAL,
   dpi = FLEISHMAN_DPI
 )
 message("Wrote: ", equal_outfile)
@@ -810,8 +836,11 @@ if (normalizePath(OUTDIR) != normalizePath(FIGDIR)) {
 }
 
 save_plot(
-  sprintf("route1_equal_means_unequal_distributions_fleishman_%s.png", B_SUFFIX),
+  sprintf(
+    "route1_equal_means_unequal_distributions_fleishman_%s%s.png",
+    B_SUFFIX, FIG_SUFFIX
+  ),
   make_unequal_plot(),
   width = 20,
-  height = 26
+  height = HEIGHT_UNEQUAL
 )

@@ -186,7 +186,7 @@ For heteroscedastic data ($p_\text{L} \le \alpha$), Welch's `t.test()` (Eq. \@re
 
 Independent of assumption testing, the user can enforce group mean comparisons by the option `group_test = welch` which defaults to Welch variants of the t-test (`t.test()`) and ANOVA (`oneway.test()`), otherwise the option `group_test = rank`switches to the non-parametric alternatives `wilcox.test()` and `kruskal.test()`.
 
-The two overrides differ in what they display: `group_test = welch` still fits the linear model and shows the assumption-diagnostic panel, with a warning when the Shapiro--Wilk test rejects residual normality, whereas `group_test = rank` enters the rank branch directly and does not generate the assumption plot with its corresponding test statistics.
+The two overrides differ in what they display: `group_test = welch` shows a per-group normality panel, since Welch's tests assume normality within each group, and warns when the smallest group falls below 50 observations for up to four groups, or below 100 for more, whereas `group_test = rank` enters the rank branch directly and does not generate an assumption plot with its corresponding test statistics.
 
 The rationale for the automated gating, and the mean- and rank-based alternatives and the limitations of each approach are discussed in Section \@ref(sec:simulation-results) and Section \@ref(sec:discussion).
 
@@ -234,4 +234,4 @@ For ordered--ordered and numeric--numeric input vectors, the user can instead re
 Both optional analyses test monotone association and are computed by `cor.test()`: Kendall's $\tau_b$ (Eq. \@ref(eq:kendall-tau-b)) with `method = "kendall", exact = FALSE` for two ordered variables, and Spearman's $\rho$ (Eq. \@ref(eq:spearman-rho)) with `method = "spearman"` for two numeric variables.
 Kendall's $\tau_b$ corrects for ties present with few ordered levels [@Agresti:2010; @Xu:2013].
 
-Note that for numeric--numeric input, Pearson correlation is not implemented as a separate optional mode as in simple linear regression with an intercept, the two-sided test of zero slope and the two-sided Pearson correlation test return the same $p$\ value.
+Note that for numeric--numeric input, Pearson correlation is not implemented as a separate optional mode, as in simple linear regression with an intercept, the two-sided test of zero slope and the two-sided Pearson correlation test return the same $p$\ value.
