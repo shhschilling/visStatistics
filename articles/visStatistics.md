@@ -526,7 +526,7 @@ robust non-parametric tests are selected:
 [`wilcox.test()`](https://rdrr.io/r/stats/wilcox.test.html) (Eq.
 [(C.1)](#eq:wilcoxon-w)) for two groups, or
 [`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html) (Eq.
-[(C.2)](#eq:kruskal-h)) followed by Holm-adjusted
+[(C.3)](#eq:kruskal-h)) followed by Holm-adjusted
 [`pairwise.wilcox.test()`](https://rdrr.io/r/stats/pairwise.wilcox.test.html)
 for more than two groups.
 
@@ -554,10 +554,11 @@ alternatives [`wilcox.test()`](https://rdrr.io/r/stats/wilcox.test.html)
 and [`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html).
 
 The two overrides differ in what they display: `group_test = welch`
-still fits the linear model and shows the assumption-diagnostic panel,
-with a warning when the Shapiro–Wilk test rejects residual normality,
-whereas `group_test = rank` enters the rank branch directly and does not
-generate the assumption plot with its corresponding test statistics.
+shows a per-group normality panel, since Welch’s tests assume normality
+within each group, and warns when the smallest group falls below 50
+observations for up to four groups, or below 100 for more, whereas
+`group_test = rank` enters the rank branch directly and does not
+generate an assumption plot with its corresponding test statistics.
 
 The rationale for the automated gating, and the mean- and rank-based
 alternatives and the limitations of each approach are discussed in
@@ -649,7 +650,7 @@ corrects for ties present with few ordered levels ([Agresti
 2010](#ref-Agresti:2010); [Xu et al. 2013](#ref-Xu:2013)).
 
 Note that for numeric–numeric input, Pearson correlation is not
-implemented as a separate optional mode as in simple linear regression
+implemented as a separate optional mode, as in simple linear regression
 with an intercept, the two-sided test of zero slope and the two-sided
 Pearson correlation test return the same \\p\\ value.
 
@@ -1099,8 +1100,8 @@ confidence and prediction bands at the specified `conf.level`.
 
 The returned object contains the regression statistics,
 residual-normality tests, pointwise confidence and prediction bands, and
-the coefficient of determination \\R^2\\ (Eq. [(F.1)](#eq:r-squared)) as
-effect size.
+the coefficient of determination \\R^2\\ (Eq. [(**??**)](#eq:r-squared))
+as effect size.
 
 ``` r
 
@@ -1493,7 +1494,7 @@ the variances are equal ([Bridge and Sawilowsky
 residual diagnostics, so its level and power follows from neither fixed
 strategy.
 
-On examplary input distributions, the simulations demonstrate the effect
+On exemplary input distributions, the simulations demonstrate the effect
 of the three implemented Route 1 test selections. They display fixed
 tests and routed procedures side by side for four-group comparisons:
 fixed Fisher’s one-way ANOVA (`F`), fixed Welch’s one-way ANOVA (`W`), a
@@ -1796,30 +1797,37 @@ Fisher’s one-way ANOVA test statistic (Eq.
 [(B.11)](#eq:welch-anova-equal-var-reduction)).
 
 In our simulations a type II error of the Shapiro–Wilk assumption test
-is of limited consequence, too: the retained mean test stays within
-Bradley’s robustness bounds (Fig. [7.1](#fig:route1-identical-typeI))
-and forfeits only power. A type II error of the Levene assumption test
-is more consequential, since Fisher’s one-way ANOVA is then applied to
+is of limited consequence, too: the retained mean test keeps its Type I
+error rate within Bradley’s robustness bounds (Fig.
+[7.1](#fig:route1-identical-typeI)) and forfeits only power. In previous
+Shapiro–Wilk gated two-group comparison ([Rochon et al.
+2012](#ref-Rochon:2012)) and three-group comparison ([Lantz et al.
+2016](#ref-Lantz:2016)) as well as our four-group comparison (`SW`), the
+normality-gated procedure holds the nominal level in all tested input
+distributions under homoscedasticity (Fig.
+[7.1](#fig:route1-identical-typeI)). Neither earlier study included a
+secondary gate to test for variance homogeneity. A type II error of the
+Levene assumption test in smaller, unbalanced data sets is more
+consequential, since Fisher’s one-way ANOVA is then applied to
 heteroscedastic data and rejects a true null hypothesis too often when
 the smaller groups carry the larger variances (panel D) and too rarely
-in the reverse case (panel C, Fig. [7.2](#fig:route1-unequal-typeI));
-both failures are confined to the smallest simulated group sizes, where
-the assumption tests lack power.
-
-The power of every hypothesis test grows with sample size ([Kozak and
-Piepho 2018](#ref-Kozak:2018)), and at large group sizes this becomes
-the main drawback of the automated routing. Under exact normality it
-rejects at the nominal level at every group size, but any real departure
-from normality is eventually detected: at a hundred observations per
-group the rank branch is taken in 90% of the replications for even the
-mildest simulated departure, a skewness of 0.5 with an excess kurtosis
-of 1, and in every replication for the stronger departures from
-normality (Fig. [7.1](#fig:route1-identical-typeI)). In large samples
-the mean-based branch is therefore kept only for input that is close to
-exactly normal, even though mean-based tests become more tolerant of
-non-normality as the sample grows. Users comparing population means in
-large samples should therefore set `group_test = "welch"`, whilst
-carefully studying the assumption diagnostics provided.
+in the reverse case (panel C, Fig. [7.2](#fig:route1-unequal-typeI)),
+only the first leaves Bradley’s bounds, and only at the smaller group
+sizes, where assumptions tests lack power. But the growth of power of
+assumptions tests with group sizes ([Kozak and Piepho
+2018](#ref-Kozak:2018)) can be also problematic in automatic testing:
+Under exact normality the Shapiro-Wilk test rejects at the nominal level
+at every group size, but any real departure from normality is eventually
+detected: at a hundred observations per group the rank branch is taken
+in 90% of the replications for even the mildest simulated departure, a
+skewness of 0.5 with an excess kurtosis of 1, and in every replication
+for the stronger departures from normality (Fig.
+[7.1](#fig:route1-identical-typeI)). In large samples the mean-based
+branch is therefore kept only for input that is close to exactly normal,
+even though mean-based tests become more tolerant of non-normality as
+the sample grows. Users comparing population means in large samples
+should therefore set `group_test = "welch"`, whilst carefully studying
+the assumption diagnostics provided.
 
 Gates and selected test are computed from the same data, so conditioning
 on the gate outcomes leaves the procedure off the chosen significance
@@ -1852,16 +1860,22 @@ rate closer to the nominal level than either gate does.
 
 A Welch default (by the option `group_test = "welch"`) gives directly
 interpretable estimates and confidence intervals; by the Central Limit
-Theorem it also remains valid in large samples even when residual
-normality is rejected, although how large is large enough depends on
-skewness, tail weight ([Lumley et al. 2002](#ref-Lumley:2002)) and
-balance of the input samples, so that no threshold can be fixed in
-advance. Welch-type tests can be weak for strongly skewed small samples
-([Fagerland 2012](#ref-Fagerland:2012)) and can answer the wrong
-scientific question when the mean lies in a long tail ([Fagerland and
-Sandvik 2009](#ref-Fagerland:2009)). On exactly normal input it also
-forfeits power to Fisher’s one-way ANOVA at group sizes up to 50
-(Section [7](#sec:simulation-results)).
+Theorem it also remains valid in large samples even when normality
+within the groups is rejected, provided the observations in each group
+are independent and drawn from a distribution with a finite standard
+deviation ([Tijms 2012, 163](#ref-Tijms:2012)). How large is large
+enough then depends on skewness, tail weight ([Lumley et al.
+2002](#ref-Lumley:2002)) and balance of the input samples, so that no
+threshold can be fixed in advance. Welch-type tests can be weak for
+strongly skewed small samples ([Fagerland 2012](#ref-Fagerland:2012))
+and can answer the wrong scientific question when the mean lies in a
+long tail ([Fagerland and Sandvik 2009](#ref-Fagerland:2009)). On
+exactly normal input it also forfeits power to Fisher’s one-way ANOVA at
+group sizes up to 50 (Section [7](#sec:simulation-results)). The
+obstacle is not merely that this threshold is unknown: a \\p\\ value is
+read from the tail, and it is there that a test statistic’s
+approximation by its limiting distribution converges last ([Shao et al.
+2016](#ref-Shao:2016)).
 
 Alternatively, defaulting to rank-based tests (option
 `group_test = "rank"`) reduces distributional assumptions and can be
@@ -1904,10 +1918,6 @@ two-stage procedure widely accepted in applied practice, and still
 presented in textbooks and standard software as the method for selecting
 a test ([Rochon et al. 2012](#ref-Rochon:2012); [Zimmerman
 2004](#ref-Zimmerman:2004)).
-
-Rochon et al. ([Rochon et al. 2012](#ref-Rochon:2012)) studied precisely
-this construction, and concluded it maintained the nominal significance
-level with acceptable power in the cases they examined.
 
 ## 9 Limitations
 
@@ -2409,13 +2419,13 @@ correction.
 For \\k\\ independent groups, the observations from all groups are
 ranked together as described above. Let \\\bar R_i\\ be the mean rank
 assigned back to group \\i\\. If all groups have the same rank
-distribution, each group has expected mean rank \\ \bar R=\frac{N+1}{2}.
-\\ The Kruskal–Wallis statistic measures how far the group mean ranks
-\\\bar R_i\\ are from this common expected rank ([Kruskal and Wallis
-1952](#ref-Kruskal:1952)):
+distribution, each group has expected mean rank \\\begin{equation} \bar
+R=\frac{N+1}{2}. \tag{C.2} \end{equation}\\ The Kruskal–Wallis statistic
+measures how far the group mean ranks \\\bar R_i\\ are from this common
+expected rank ([Kruskal and Wallis 1952](#ref-Kruskal:1952)):
 
 \\\begin{equation} H = \frac{12}{N(N+1)} \sum\_{i=1}^{k} n_i
-\left(\bar{R}\_i - \bar{R}\right)^2, \tag{C.2} \end{equation}\\
+\left(\bar{R}\_i - \bar{R}\right)^2, \tag{C.3} \end{equation}\\
 
 The prefactor \\12/\[N(N+1)\]\\ rescales the weighted squared deviations
 of the group mean ranks by the sample variance of the \\N\\ pooled
@@ -2463,7 +2473,9 @@ multiplicity using Holm’s step-down method ([Holm
 
 ## D Rank correlations
 
-Rank correlations are used when `correlation = TRUE`.
+Rank correlations are used when `correlation = TRUE`. Note that the
+correlation measure are effect size measure and are therefore reported
+in both roles in the output.
 
 ### D.1 Kendall rank correlation `cor.test(..., method="kendall")`
 
@@ -2518,12 +2530,13 @@ For inference, `cor.test(..., method = "spearman")` computes an exact
 permutations. For larger samples or when ties are present, it uses an
 approximation to the null distribution of the rank association measure
 or its asymptotic transformation. No distributional assumptions on the
-original data are required.A separate Pearson-correlation branch is not
-implemented. In simple linear regression with an intercept, the
-two-sided test of zero slope and the two-sided test of zero Pearson
-correlation return the same \\p\\ value. Pearson correlation would
-therefore not add a separate inferential route to the default regression
-branch.
+original data are required.
+
+A separate Pearson-correlation branch is not implemented. In simple
+linear regression with an intercept, the two-sided test of zero slope
+and the two-sided test of zero Pearson correlation return the same
+\\p\\ value. Pearson correlation would therefore not add a separate
+inferential route to the default regression branch.
 
 ## E Pearson’s \\\chi^2\\ test and Fisher’s exact test
 
@@ -2685,8 +2698,8 @@ respective effect sizes and formulae.
 | [Welch’s ANOVA](#sec:welch-aov) | \\\omega^2\\ (approx.) | \\\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W+\nu_2+1)\\ | [F-form from Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
 | [Kruskal–Wallis](#sec:kw) | \\\eta_H^2\\ | \\(H-k+1)/(N-k)\\ | [Tomczak and Tomczak 2014](https://tss.awf.poznan.pl/The-need-to-report-effect-size-estimates-revisited-An-overview-of-some-recommended,188960,0,2.html) |
 | [Simple linear regression](#sec:lin-reg) | \\R^2\\ | \\R^2=1-SS\_\text{res}/SS\_\text{tot}\\ | `summary(lm())$r.squared` |
-| [Spearman](#sec:rho) | \\\rho\\ | \\\rho=r(\operatorname{rank}(x),\operatorname{rank}(y))\\ | `cor.test(method = “spearman”)$estimate` |
-| [Kendall](#sec:tau) | \\\tau_b\\ | \\\tau_b=(n_c-n_d)/\sqrt{\left(n_0-n_1\right)\left(n_0-n_2\right)}\\ | `cor.test(method = “kendall”)$estimate` |
+| [Spearman](#sec:rho) | \\\rho\\ | \\\rho = r(\operatorname{rank}(x), \operatorname{rank}(y))\\ Eq. [(D.2)](#eq:spearman-rho) | `cor.test(method = “spearman”)$estimate` |
+| [Kendall](#sec:tau) | \\\tau_b\\ | \\\tau_b = \dfrac{n_c - n_d}{\sqrt{\left(n_0 - n_1\right)\left(n_0 - n_2\right)}}\\ Eq. [(D.1)](#eq:kendall-tau-b) | `cor.test(method = “kendall”)$estimate` |
 | [Pearson \\\chi^2\\ (\\R\times C\\)](#sec:fisher-exact) | Cramér’s \\V\\ | \\V\_{R\times C}=\sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}\\ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
 | [Pearson \\\chi^2\\ (\\2\times 2\\)](#sec:fisher-exact) | \\\phi\\ | \\\phi=\sqrt{\chi^2/N}\\ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
 | [Fisher’s exact (\\2\times 2\\)](#sec:fisher-exact) | conditional odds ratio | \\\hat\theta\_{\mathrm{cond}}\\ | `fisher.test()$estimate` |
@@ -2719,15 +2732,11 @@ Welch’s ANOVA, \\\nu_1=k-1\\ and \\\nu_2\\ is the usually fractional
 denominator degree of freedom returned by
 [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html).
 
-For simple linear regression, the coefficient of determination is
-
-\\\begin{equation} R^2 = 1 - \frac{SS\_\text{res}}{SS\_\text{tot}},
-\tag{F.1} \end{equation}\\
-
-where \\SS\_\text{res}=\sum\_{i=1}^{N}(y_i-\hat{y}\_i)^2\\ is the
-residual sum of squares, \\\hat{y}\_i\\ is the predicted value, and
-\\SS\_\text{tot}=\sum\_{i=1}^{N}(y_i-\bar{y})^2\\ is the total sum of
-squares.
+In the the coefficient of determination \\R^2\\, the residual sum of
+square is defined as
+\\SS\_\text{res}=\sum\_{i=1}^{N}(y_i-\hat{y}\_i)^2\\, where
+\\\hat{y}\_i\\ is the predicted value, and the total sum of squares is
+given by \\SS\_\text{tot}=\sum\_{i=1}^{N}(y_i-\bar{y})^2\\ .
 
 All other variables used in the [effect-size
 table](#tab:effect-size-formulae) are defined in the corresponding
@@ -2945,6 +2954,11 @@ Kruskal, William H., and W. Allen Wallis. 1952. “Use of Ranks in
 One-Criterion Variance Analysis.” *Journal of the American Statistical
 Association* 47 (260): 583–621. <https://doi.org/10.2307/2280779>.
 
+Lantz, Björn, Roy Andersson, and Peter Manfredsson. 2016. “Preliminary
+Tests of Normality When Comparing Three Independent Samples.” *Journal
+of Modern Applied Statistical Methods* 15 (2): Article 11.
+<https://doi.org/10.22237/jmasm/1478002140>.
+
 Levene, Howard. 1960. “Robust Tests for Equality of Variances.” In
 *Contributions to Probability and Statistics: Essays in Honor of Harold
 Hotelling*, edited by Ingram Olkin. Stanford University Press.
@@ -3046,6 +3060,11 @@ Diagnostic Plots.” *Communications in Statistics - Simulation and
 Computation* 41 (2): 141–54.
 <https://doi.org/10.1080/03610918.2011.582560>.
 
+Shao, Qi-Man, Kan Zhang, and Wen-Xin Zhou. 2016. “Stein’s Method for
+Nonlinear Statistics: A Brief Survey and Recent Progress.” *Journal of
+Statistical Planning and Inference* 168 (January): 68–89.
+<https://doi.org/10.1016/j.jspi.2015.06.008>.
+
 Shapiro, S. S., and M. B. Wilk. 1965. “An Analysis of Variance Test for
 Normality (Complete Samples).” *Biometrika* 52 (3-4): 591–611.
 <https://doi.org/10.1093/biomet/52.3-4.591>.
@@ -3069,6 +3088,9 @@ Thompson, Bruce. 2015. “The Case for Using the General Linear Model as a
 Unifying Conceptual Framework for Teaching Statistics and Psychometric
 Theory.” *Journal of Methods and Measurement in the Social Sciences* 6
 (2). <https://doi.org/10.2458/v6i2.18801>.
+
+Tijms, Henk C. 2012. *Understanding Probability*. 3rd ed. Cambridge
+University Press.
 
 Tomczak, Maciej, and Ewa Tomczak. 2014. “The Need to Report Effect Size
 Estimates Revisited. An Overview of Some Recommended Measures of Effect
