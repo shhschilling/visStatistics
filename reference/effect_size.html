@@ -116,8 +116,8 @@ vector \(y\) in group \(j\).</p>
     \(r = 2W/(n_1 n_2)-1\), where \(W\) is the statistic returned by
     <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> for the first group.</p></li>
 <li><p>Fisher's one-way ANOVA: omega-squared
-    \(\omega^2 = \nu_1(F-1)/(\nu_1F+\nu_2+1)\), where \(F\) is the
-    ordinary one-way ANOVA statistic, \(\nu_1=k-1\), and
+    \(\widehat{\omega}^2 = \nu_1(F-1)/(\nu_1F+\nu_2+1)\), where \(F\) is
+    the ordinary one-way ANOVA statistic, \(\nu_1=k-1\), and
     \(\nu_2=N-k\). Negative estimates are truncated to zero.</p></li>
 <li><p>Welch's one-way test: approximate omega-squared-type estimate
     \(\nu_1(F_W-1)/(\nu_1F_W+\nu_2+1)\), where \(F_W\) is the
@@ -125,7 +125,7 @@ vector \(y\) in group \(j\).</p>
     usually fractional denominator degree of freedom returned by
     <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>. Negative estimates are truncated to zero.</p></li>
 <li><p>Kruskal-Wallis test: eta-squared based on
-    \(H\), \(\eta_H^2=(H-k+1)/(N-k)\), where \(H\) is the
+    \(H\), \(\widehat{\eta}_H^2=(H-k+1)/(N-k)\), where \(H\) is the
     Kruskal-Wallis statistic. Negative estimates are truncated to zero.</p></li>
 <li><p>Pearson's chi-squared test: Cramer's \(V\) for general
     \(R\times C\) tables,

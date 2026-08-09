@@ -73,7 +73,7 @@ The following estimates are computed internally:
   [`wilcox.test()`](https://rdrr.io/r/stats/wilcox.test.html) for the
   first group.
 
-- Fisher's one-way ANOVA: omega-squared \\\omega^2 =
+- Fisher's one-way ANOVA: omega-squared \\\widehat{\omega}^2 =
   \nu_1(F-1)/(\nu_1F+\nu_2+1)\\, where \\F\\ is the ordinary one-way
   ANOVA statistic, \\\nu_1=k-1\\, and \\\nu_2=N-k\\. Negative estimates
   are truncated to zero.
@@ -86,8 +86,8 @@ The following estimates are computed internally:
   estimates are truncated to zero.
 
 - Kruskal-Wallis test: eta-squared based on \\H\\,
-  \\\eta_H^2=(H-k+1)/(N-k)\\, where \\H\\ is the Kruskal-Wallis
-  statistic. Negative estimates are truncated to zero.
+  \\\widehat{\eta}\_H^2=(H-k+1)/(N-k)\\, where \\H\\ is the
+  Kruskal-Wallis statistic. Negative estimates are truncated to zero.
 
 - Pearson's chi-squared test: Cramer's \\V\\ for general \\R\times C\\
   tables, \\V=\sqrt{\chi^2/(N\cdot(\min(R,C)-1))}\\, where \\R\\ and

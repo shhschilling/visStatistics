@@ -56,8 +56,8 @@ anova_path <- visstat(
 )
 
 plot(anova_path)
-#> Plot [1] stored in /tmp/RtmpTUiBDs/glm_assumptions_yield_block.png
-#> Plot [2] stored in /tmp/RtmpTUiBDs/anova_yield_block.png
+#> Plot [1] stored in /tmp/Rtmp1FvXh5/glm_assumptions_yield_block.png
+#> Plot [2] stored in /tmp/Rtmp1FvXh5/anova_yield_block.png
 
 # Interactive output: plot() lists available plots,
 # plot(obj, which = n) replays a specific one

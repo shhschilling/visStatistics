@@ -428,7 +428,7 @@ test is used as the normality gate in the automated test selection
 **Homoscedasticity tests** For grouped central-tendency analyses,
 variance homogeneity of standardised residuals ([Cook and Weisberg
 1982](#ref-Cook:1982)) is assessed using the package-implemented
-mean-centred Levene test ([Levene 1960](#ref-Levene:1960))
+mean-centred Levene test ([**Levene:1960?**](#ref-Levene:1960))
 ([`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md);
 Eq. [(A.3)](#eq:levene-f)) and Bartlett’s test ([Bartlett
 1937](#ref-Bartlett:1937))
@@ -518,8 +518,8 @@ A linear model of Eq. [(5.1)](#eq:glm) is fitted between the numeric
 response and the categorical predictor, and the model residuals of Eq.
 [(5.2)](#eq:raw-residual) are extracted. In the default setting
 (`group_test = NULL`), Route 1 uses the displayed residual diagnostics
-of the Shapiro–Wilk (SW) and Levene test (L) ([Levene
-1960](#ref-Levene:1960)) as automatic gates:
+of the Shapiro–Wilk (SW) and Levene test (L)
+([**Levene:1960?**](#ref-Levene:1960)) as automatic gates:
 
 If the SW-test rejects residual normality (\\p\_\text{SW} \le \alpha\\),
 robust non-parametric tests are selected:
@@ -531,8 +531,8 @@ robust non-parametric tests are selected:
 for more than two groups.
 
 If residual normality is not rejected, the mean-centred Levene test (L)
-([Levene 1960](#ref-Levene:1960)) (Eq. [(A.3)](#eq:levene-f)) gates the
-variance assessment:
+([**Levene:1960?**](#ref-Levene:1960)) (Eq. [(A.3)](#eq:levene-f)) gates
+the variance assessment:
 
 For homoscedastic data (\\p\_\text{L} \> \alpha\\),
 `t.test(var.equal = TRUE)` (Eq. [(B.1)](#eq:student-t)) is applied for
@@ -1447,12 +1447,17 @@ Figure [6.13](#fig:kendall-spearman-example), right.
 
 ## 7 Group comparison simulations
 
-Group comparisons ( here in Route 1) can answer two different questions:
+Group comparisons (here in Route 1) can answer two different questions:
 Parametric tests such as Student’s t-test, Fisher’s one-way ANOVA, and
 their Welch variants test population means ([Welch
 1951](#ref-Welch:1951); [Rasch et al. 2011](#ref-Rasch:2011); [Delacre
 et al. 2019](#ref-Delacre:2019)), whereas non-parametric tests such as
 Wilcoxon and Kruskal–Wallis test a rank-based distributional target.
+Parametric test are related to the expected values of the observations,
+while rank- and pseudo-rank-based methods are related to relative
+effects comparing the distributions in the different treatment groups to
+an average distribution ([Konietschke and Brunner
+2023](#ref-Konietschke:2023)).
 
 **Defaulting to Welch-type tests** Welch type mean comparisons assumes
 normality in the samples, an assumption which can only be safely
@@ -1480,9 +1485,9 @@ Fisher One way Anova are met, the relative difference between the Fisher
 and Welch-F-statistic decreases with increasing sample size by order
 \\1/n\\ (Eq. [(B.11)](#eq:welch-anova-equal-var-reduction)) ([Welch
 1951](#ref-Welch:1951); [Rasch et al. 2011](#ref-Rasch:2011); [Delacre
-et al. 2019](#ref-Delacre:2019)), In four group -comparisons, simulated
-below, this results in a relative difference of \\6.7\\\\\\ for \\n =
-10\\ and only \\0.6\\\\ for \\n=100\\ (Eq.
+et al. 2019](#ref-Delacre:2019)). In the four group-comparisons
+simulated below this results in a relative difference of \\6.7\\\\\\ for
+\\n = 10\\ and only \\0.6\\\\ for \\n=100\\ (Eq.
 [(B.12)](#eq:welch-anova-four-groups)).
 
 **Defaulting to rank-based tests** Rank-based tests reduce the
@@ -1579,19 +1584,20 @@ rejection rates at \\\alpha = 5\\\\. All heatmap numbers are
 percentages; the first value is the final-test rejection rate, and gated
 rows additionally list route splits after \|.
 
-This is a clean Type I check for Shapiro (`SW`) or Shapiro and Levene
-gate based (`SW+L`) automated routing, as routing to Kruskal–Wallis
-under non-normality does not change the truth status of the tested null,
-because the Kruskal–Wallis null is in this homoscedastic simulations
-also true. The type I error rate stays inside Bradley’s bounds in all
-scenarios of this homoscedastic setting, ranging from 4.2% to 5.8% for
-`SW` and, more narrowly, from 4.8% to 5.6% for `SW+L`. The narrower
-spread follows from what the variance gate selects: with variances in
-fact equal it returns most of the mean branch to Fisher’s exact `F`
-test, whereas `SW` always ends in Welch’s test, whose level is only
-approximate at small and unequal group sizes. The two fixed options stay
-inside them as well, `KW` close to the nominal level throughout and `W`
-with the widest spread of all strategies at the smallest and most
+With all four groups drawn from the same distribution every strategy
+keeps its nominal level, so what the gates decide here is not the
+validity of the answer but which question is answered. It is a clean
+Type I check for all strategies including the automated routing Shapiro
+(`SW`) or Shapiro and Levene gate based (`SW+L`), as routing to
+Kruskal–Wallis under non-normality does not change the truth status of
+the tested null, because the Kruskal–Wallis null is in this
+homoscedastic simulations also true. The type I error rate stays inside
+Bradley’s bounds in all scenarios of this homoscedastic setting. In the
+gated scenarios, it ranging from 4.2% to 5.8% for `SW` and, more
+narrowly, from 4.8% to 5.6% for `SW+L`. The narrower spread follows from
+what the variance gate selects: with variances in fact equal it returns
+most of the mean branch to Fisher’s exact `F` test, whereas `SW` always
+ends in Welch’s test, whose level is only approximate at small and
 unequal group sizes.
 
 In the balanced (panel B) as in the unbalanced design (panel C), the
@@ -1604,10 +1610,6 @@ skewness of 0.5 and an excess kurtosis of 1, which reaches that point
 only at a group size of 50; under exact normality the rank branch is
 taken at the nominal level at every group size. As with any hypothesis
 test, the power of the gate grows with the sample size.
-
-With all four groups drawn from the same distribution every strategy
-keeps its nominal level, so what the gates decide here is not the
-validity of the answer but which question is answered.
 
 ### 7.2 Equal means, introducing heteroscedasticity
 
@@ -1623,11 +1625,11 @@ n=(n,n,n,n)\\ with \\n \in \\10,20,50,100\\\\ and \\\mathbf s =
 have smaller SDs, the reverse pairing (panel D).
 
 The parametric equal-means null is true in all columns. Kruskal–Wallis
-tests the group rank distributions, not the means: SD scaling leaves
-them aligned in the two symmetric columns, so those are Type I checks
-for `F`, `W` and `KW` alike, but shifts them in the skewed columns,
-where `KW` is expected to reject and only `F` and `W` remain under a
-true null; `SW+L` and `SW` should reject there only when routed to
+tests the group rank distributions, SD scaling leaves them aligned in
+the two symmetric columns, so those are Type I checks for `F`, `W` and
+`KW` alike, but shifts them in the skewed columns, where `KW` is
+expected to reject and only `F` and `W` remain under a true null; the
+gated routing`SW+L` and `SW` should reject there only when routed to
 Kruskal–Wallis. A high rejection rate after such a switch is not a Type
 I error rate for the equal-means null but one minus the type II error
 rate of the rank comparison the gate has switched to.
@@ -1679,28 +1681,41 @@ normality at group sizes below the minimum of 50 per group that Delacre
 et al. ([Delacre et al. 2019](#ref-Delacre:2019)) recommend for
 comparisons of at most four groups.
 
-In the two symmetric columns 1 and 2 both gated strategies remain type I
-tests and stay within Bradley’s boundaries in the balanced design (panel
-B) and in the unbalanced design of panel C. The adverse pairing of panel
-D defeats them both, and for different reasons. At the larger group
-sizes the normality gate is overpowered and sends most replications to
-`KW`, whose own level is affected by unequal variances at unequal group
-sizes ([Zimmerman 2004](#ref-Zimmerman:2004)). At the smallest group
-sizes the variance gate is underpowered instead and returns nearly half
-the replications to `F`, whose rejection rate under a true null is
-inflated to about 13% in this pairing.
+In the two symmetric columns 1 and 2 both gated strategies stay within
+Bradley’s boundaries in the balanced design (panel B) and in the
+unbalanced positive design of panel C. The adverse pairing of panel D
+defeats them both, and for different reasons. At the larger group sizes
+the normality gate is overpowered and sends most replications to `KW`,
+*whose own level is affected by unequal variances at unequal group sizes
+([Brunner et al. 2017](#ref-Brunner:2017))*. At the smallest group sizes
+the variance gate is underpowered instead and returns nearly half the
+replications to `F`, whose rejection rate under a true null is inflated
+to about 13% in this pairing.
 
-Taken together, unequal variances push the routing out of the mean
+*Taken together, unequal variances push the routing out of the mean
 branch through the residual kurtosis they induce, so a mean comparison
 under suspected heteroscedasticity is better requested with group_test =
-“welch” than left to the default automated routing.
+“welch” than left to the default automated routing.*
 
 ### 7.3 Type II error (power) simulations
 
 The power simulation uses the same five fixed input distributions and
-adds ordered location shifts across the four groups. It uses balanced
-groups with equal SD, so \\n_i=n\\, \\\mathrm{SD}\_i=1\\ for
-\\i=1,...4\\ and group means are shifted by \\0,0.25,0.50,0.75\\.
+adds ordered location shifts across the four groups. For the baseline
+balanced homoscedastic design (Figure [7.3](#fig:route1-power), panel
+B), balanced groups with equal SD are used: \\n_i=n\\,
+\\\mathrm{SD}\_i=1\\ for \\i=1,...4\\ and group means are shifted by
+\\0,0.25,0.50,0.75\\.
+
+A simplified variant holds the shifts and SDs fixed at their
+homoscedastic baseline values while varying only the sample-size balance
+structure (balanced vs. two unbalanced pairings).
+
+In this design, the population effect size \\\omega^2\\ naturally
+differs across balance conditions due to unequal group sizes, but shifts
+are not rescaled. This isolates how sample-size imbalance affects power
+for each test strategy, clarifying which tests are robust to imbalance
+and which are sensitive. The resulting \\\omega^2\\ values are recorded
+in the simulation output.
 
 ![Route 1 power simulation with Fleishman input distributions. (A) Input
 distributions with group mean and median reference lines. (B) Simulated
@@ -2073,7 +2088,7 @@ uses `ad.test()` from `nortest` ([Gross and Ligges
 #### A.2.1 The mean-centred Levene test `levene.test()`
 
 The package implementation uses Levene’s original mean-centred proposal
-([Levene 1960](#ref-Levene:1960)).
+([**Levene:1960?**](#ref-Levene:1960)).
 
 The Levene test statistic is the one-way ANOVA \\F\\ statistic, computed
 on the absolute residuals \\\|e\_{ij}\|\\ in place of the responses
@@ -2694,43 +2709,87 @@ respective effect sizes and formulae.
 | [Student’s \\t\\-test](#sec:tt) | Hedges’ \\g\_{s_p}\\ (pooled) | \\g\_{s_p}=J(N-2)\cdot(\bar{x}\_1-\bar{x}\_2)/s_p\\ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
 | [Welch’s \\t\\-test](#sec:welch-tt) | Hedges’ \\g\_{s^{\*}}\\ (non-pooled) | \\g\_{s^{\*}}=J(\nu^{\*})\cdot(\bar{x}\_1-\bar{x}\_2)/s^{\*}\\ | [Delacre et al. 2021](https://doi.org/10.31234/osf.io/tu6mp) |
 | [Wilcoxon rank-sum](#sec:wilc) | rank-biserial \\r\\ | \\r=2\cdot W/(n_1\cdot n_2)-1\\ | [Kerby 2014](https://doi.org/10.2466/11.IT.3.1) |
-| [Fisher’s ANOVA](#sec:fisher-aov) | \\\omega^2\\ | \\\nu_1\cdot(F-1)/(\nu_1\cdot F+\nu_2+1)\\ | [Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
-| [Welch’s ANOVA](#sec:welch-aov) | \\\omega^2\\ (approx.) | \\\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W+\nu_2+1)\\ | [F-form from Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
-| [Kruskal–Wallis](#sec:kw) | \\\eta_H^2\\ | \\(H-k+1)/(N-k)\\ | [Tomczak and Tomczak 2014](https://tss.awf.poznan.pl/The-need-to-report-effect-size-estimates-revisited-An-overview-of-some-recommended,188960,0,2.html) |
+| [Fisher’s ANOVA](#sec:fisher-aov) | \\\widehat{\omega}^2\\ | \\\nu_1\cdot(F-1)/(\nu_1\cdot F+\nu_2+1)\\ | [Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
+| [Welch’s ANOVA](#sec:welch-aov) | \\\widehat{\omega}^2\\ (approx.) | \\\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W+\nu_2+1)\\ | [F-form from Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
+| [Kruskal–Wallis](#sec:kw) | \\\widehat{\eta}\_H^2\\ | \\(H-k+1)/(N-k)\\ | [Tomczak and Tomczak 2014](https://tss.awf.poznan.pl/The-need-to-report-effect-size-estimates-revisited-An-overview-of-some-recommended,188960,0,2.html) |
 | [Simple linear regression](#sec:lin-reg) | \\R^2\\ | \\R^2=1-SS\_\text{res}/SS\_\text{tot}\\ | `summary(lm())$r.squared` |
 | [Spearman](#sec:rho) | \\\rho\\ | \\\rho = r(\operatorname{rank}(x), \operatorname{rank}(y))\\ Eq. [(D.2)](#eq:spearman-rho) | `cor.test(method = “spearman”)$estimate` |
 | [Kendall](#sec:tau) | \\\tau_b\\ | \\\tau_b = \dfrac{n_c - n_d}{\sqrt{\left(n_0 - n_1\right)\left(n_0 - n_2\right)}}\\ Eq. [(D.1)](#eq:kendall-tau-b) | `cor.test(method = “kendall”)$estimate` |
 | [Pearson \\\chi^2\\ (\\R\times C\\)](#sec:fisher-exact) | Cramér’s \\V\\ | \\V\_{R\times C}=\sqrt{\chi^2/\left(N\cdot(\min(R,C)-1)\right)}\\ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
 | [Pearson \\\chi^2\\ (\\2\times 2\\)](#sec:fisher-exact) | \\\phi\\ | \\\phi=\sqrt{\chi^2/N}\\ | [Cohen 2013, p. 223](https://doi.org/10.4324/9780203771587) |
-| [Fisher’s exact (\\2\times 2\\)](#sec:fisher-exact) | conditional odds ratio | \\\hat\theta\_{\mathrm{cond}}\\ | `fisher.test()$estimate` |
+| [Fisher’s exact (\\2\times 2\\)](#sec:fisher-exact) | conditional odds ratio | \\\hat\theta\_{\mathrm{cond}}\\ Eq. [(E.4)](#eq:odds-ratio) | `fisher.test()$estimate` |
 
 Effect sizes returned by
 [`effect_size()`](https://shhschilling.github.io/visStatistics/reference/effect_size.md).
 {#tab:effect-size-formulae .table}
 
-Here, Hedges’ small-sample correction factor is
+In the \\t\\-tests effect sizes, Hedges’ small-sample correction factor
+\\J(\nu)\\ is defined as
 
 \\\begin{equation\*} J(\nu) = \frac{\Gamma(\nu/2)}
-{\sqrt{\nu/2}\\\Gamma((\nu-1)/2)}, \end{equation\*}\\
+{\sqrt{\nu/2}\\\Gamma((\nu-1)/2)}. \end{equation\*}\\
 
-where \\J\\ denotes Hedges’ correction factor. For Student’s \\t\\-test,
-\\\nu=N-2\\; for Welch’s \\t\\-test, \\\nu=\nu^{\*}\\ with
+For Student’s \\t\\-test, \\\nu=N-2\\; for Welch’s \\t\\-test,
+\\\nu=\nu^{\*}\\ with
 
 \\\begin{equation\*} \nu^{\*} = \frac{(n_1-1)(n_2-1)(s_1^2+s_2^2)^2}
 {(n_2-1)s_1^4+(n_1-1)s_2^4}. \end{equation\*}\\
 
-The non-pooled average-variance standardizer is
+The non-pooled average-variance standardizer in Welch’s \\t\\-test is
+defined as
 
-\\\begin{equation\*} s^{\*} = \sqrt{\frac{s_1^2+s_2^2}{2}},
+\\\begin{equation\*} s^{\*} = \sqrt{\frac{s_1^2+s_2^2}{2}}.
 \end{equation\*}\\
 
-where \\s^{\*}\\ denotes the average-variance standardizer.
-
-\\\nu_1\\ and \\\nu_2\\ denote the numerator and denominator degrees of
-freedom; for Fisher’s ANOVA, \\\nu_1=k-1\\ and \\\nu_2=N-k\\; for
-Welch’s ANOVA, \\\nu_1=k-1\\ and \\\nu_2\\ is the usually fractional
-denominator degree of freedom returned by
+In the ANOVA effect sizes, \\\nu_1\\ and \\\nu_2\\ denote the numerator
+and denominator degrees of freedom; for Fisher’s ANOVA, \\\nu_1=k-1\\
+and \\\nu_2=N-k\\; for Welch’s ANOVA, \\\nu_1=k-1\\ and \\\nu_2\\ is the
+usually fractional denominator degree of freedom returned by
 [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html).
+
+In a balanced design, \\\widehat{\omega}^2\\ estimates the population
+parameter \\\begin{equation} \omega^2
+=\frac{\sigma^2\_{\mathrm{Effect}}}{\sigma^2\_{\mathrm{Effect}}+\sigma^2},
+\tag{F.1} \end{equation}\\ with
+\\\sigma^2\_{\mathrm{Effect}}=\frac1k\sum\_{j=1}^k(\mu_j-\bar\mu)^2\\
+and \\\sigma^2\\ the constant error variance of the general linear model
+(Eq. [(5.1)](#eq:glm)) ([Steiger 2004](#ref-Steiger:2004)).
+
+The rank-based effect size has a population counterpart of the same
+kind. Let \\n_i\\ be the size of group \\i\\, \\N=\sum\_{i=1}^{k}n_i\\,
+and \\p_i=n_i/N\\. Writing
+
+\\\begin{equation} \widehat{r}\_i=\frac{\bar R_i-\tfrac12}{N},\qquad
+i=1,\dots,k, \tag{F.2} \end{equation}\\
+
+for the estimated relative effect of group \\i\\, the deviation entering
+Eq. [(C.3)](#eq:kruskal-h) is \\\bar R_i-\bar
+R=N\left(\widehat{r}\_i-\tfrac12\right)\\, so that
+
+\\\begin{equation}
+H=\frac{12N^{2}}{N+1}\sum\_{i=1}^{k}p_i\left(\widehat{r}\_i-\frac12\right)^{2}.
+\tag{F.3} \end{equation}\\
+
+\\H\\ grows in proportion to \\N\\, and the denominator \\N-k\\ of
+\\\widehat{\eta}\_H^2\\ removes that growth. With the group sizes
+\\n_i\\ growing in fixed proportions \\p_i\\,
+
+\\\begin{equation}
+\widehat{\eta}\_H^2\\\longrightarrow\\\eta_H^2=12\sum\_{i=1}^{k}p_i\left(r_i-\frac12\right)^{2},
+\tag{F.4} \end{equation}\\
+
+where \\F_i\\ denotes the distribution of group \\i\\ and
+
+\\\begin{equation} r_i=\int G\\\mathrm{d}F_i,\qquad
+G=\sum\_{l=1}^{k}p_l\\F_l . \tag{F.5} \end{equation}\\
+
+This is the cancellation that also takes \\\widehat{\omega}^2\\ to Eq.
+[(F.1)](#eq:omega-sq-population), where \\\nu_2=N-k\\ removes the linear
+growth of \\\nu_1F\\. The pooled distribution \\G\\ of Eq.
+[(F.5)](#eq:weighted-relative-effect) carries the size fractions
+\\p_l\\, so the \\r_i\\ are weighted relative effects and \\\eta_H^2\\
+is a property of the group sizes together with the distributions, not of
+the distributions alone ([Brunner et al. 2017](#ref-Brunner:2017)).
 
 In the the coefficient of determination \\R^2\\, the residual sum of
 square is defined as
@@ -2803,6 +2862,12 @@ Brown, Morton B., and Alan B. Forsythe. 1974. “Robust Tests for the
 Equality of Variances.” *Journal of the American Statistical
 Association* 69 (346): 364–67.
 <https://doi.org/10.1080/01621459.1974.10482955>.
+
+Brunner, Edgar, Frank Konietschke, Markus Pauly, and Madan L. Puri.
+2017. “Rank-Based Procedures in Factorial Designs: Hypotheses About
+Non-Parametric Treatment Effects.” *Journal of the Royal Statistical
+Society Series B: Statistical Methodology* 79 (5): 1463–85.
+<https://doi.org/10.1111/rssb.12222>.
 
 Canty, Angelo, and Brian Ripley. 2025. *Boot: Bootstrap Functions*.
 Manual. <https://doi.org/10.32614/CRAN.package.boot>.
@@ -2945,6 +3010,11 @@ Koenker, Roger. 1981. “A Note on Studentizing a Test for
 Heteroscedasticity.” *Journal of Econometrics* 17 (1): 107–12.
 <https://doi.org/10.1016/0304-4076(81)90062-2>.
 
+Konietschke, Frank, and Edgar Brunner. 2023. “The R Journal: rankFD: An
+R Software Package for Nonparametric Analysis of General Factorial
+Designs.” *The R Journal* 15 (1): 142–58.
+<https://doi.org/10.32614/RJ-2023-029>.
+
 Kozak, M., and H.-P. Piepho. 2018. “What’s Normal Anyway? Residual Plots
 Are More Telling Than Significance Tests When Checking ANOVA
 Assumptions.” *Journal of Agronomy and Crop Science* 204 (1): 86–98.
@@ -2958,10 +3028,6 @@ Lantz, Björn, Roy Andersson, and Peter Manfredsson. 2016. “Preliminary
 Tests of Normality When Comparing Three Independent Samples.” *Journal
 of Modern Applied Statistical Methods* 15 (2): Article 11.
 <https://doi.org/10.22237/jmasm/1478002140>.
-
-Levene, Howard. 1960. “Robust Tests for Equality of Variances.” In
-*Contributions to Probability and Statistics: Essays in Honor of Harold
-Hotelling*, edited by Ingram Olkin. Stanford University Press.
 
 Levine, Timothy R., and Craig R. Hullett. 2002. “Eta Squared, Partial
 Eta Squared, and Misreporting of Effect Size in Communication Research.”
@@ -3073,6 +3139,11 @@ Shatz, Itamar. 2024. “Assumption-Checking Rather Than (Just) Testing:
 The Importance of Visualization and Effect Size in Statistical
 Diagnostics.” *Behavior Research Methods* 56 (2): 826–45.
 <https://doi.org/10.3758/s13428-023-02072-x>.
+
+Steiger, James H. 2004. “Beyond the F Test: Effect Size Confidence
+Intervals and Tests of Close Fit in the Analysis of Variance and
+Contrast Analysis.” *Psychological Methods*, ahead of print.
+<https://doi.org/10.1037/1082-989X.9.2.164>.
 
 Strasak, Alexander M., Qamruz Zaman, Gerhard Marinell, Karl P. Pfeiffer,
 and Hanno Ulmer. 2007. “The Use of Statistics in Medical Research: A
