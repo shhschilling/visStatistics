@@ -28,6 +28,11 @@
 #' of freedom and does not pool variances. P-values are adjusted using the
 #' Holm method to control family-wise error rate.
 #'
+#' @references
+#' Games, P. A., & Howell, J. F. (1976). Pairwise Multiple Comparison
+#' Procedures with Unequal N's and/or Variances: A Monte Carlo Study.
+#' \emph{Journal of Educational Statistics}, 1(2). doi:10.2307/1164979.
+#'
 #' @examples
 #' # Convert dose to factor
 #' ToothGrowth$dose <- as.factor(ToothGrowth$dose)

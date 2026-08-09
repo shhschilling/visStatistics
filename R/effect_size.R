@@ -181,8 +181,8 @@ effect_size_kendall <- function(result) {
 #'     \eqn{r = 2W/(n_1 n_2)-1}, where \eqn{W} is the statistic returned by
 #'     \code{wilcox.test()} for the first group.
 #'   \item Fisher's one-way ANOVA: omega-squared
-#'     \eqn{\omega^2 = \nu_1(F-1)/(\nu_1F+\nu_2+1)}, where \eqn{F} is the
-#'     ordinary one-way ANOVA statistic, \eqn{\nu_1=k-1}, and
+#'     \eqn{\widehat{\omega}^2 = \nu_1(F-1)/(\nu_1F+\nu_2+1)}, where \eqn{F} is
+#'     the ordinary one-way ANOVA statistic, \eqn{\nu_1=k-1}, and
 #'     \eqn{\nu_2=N-k}. Negative estimates are truncated to zero.
 #'   \item Welch's one-way test: approximate omega-squared-type estimate
 #'     \eqn{\nu_1(F_W-1)/(\nu_1F_W+\nu_2+1)}, where \eqn{F_W} is the
@@ -190,7 +190,7 @@ effect_size_kendall <- function(result) {
 #'     usually fractional denominator degree of freedom returned by
 #'     \code{oneway.test()}. Negative estimates are truncated to zero.
 #'   \item Kruskal-Wallis test: eta-squared based on
-#'     \eqn{H}, \eqn{\eta_H^2=(H-k+1)/(N-k)}, where \eqn{H} is the
+#'     \eqn{H}, \eqn{\widehat{\eta}_H^2=(H-k+1)/(N-k)}, where \eqn{H} is the
 #'     Kruskal-Wallis statistic. Negative estimates are truncated to zero.
 #'   \item Pearson's chi-squared test: Cramer's \eqn{V} for general
 #'     \eqn{R\times C} tables,

@@ -48,3 +48,8 @@ result <- games.howell(ToothGrowth$len, ToothGrowth$dose)
 print(result)
 
 }
+\references{
+Games, P. A., & Howell, J. F. (1976). Pairwise Multiple Comparison
+Procedures with Unequal N's and/or Variances: A Monte Carlo Study.
+\emph{Journal of Educational Statistics}, 1(2). doi:10.2307/1164979.
+}

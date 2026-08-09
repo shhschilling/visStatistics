@@ -91,8 +91,9 @@ warn_adverse_variance_pairing <- function(pairing, route) {
     ),
     rank = paste(
       "the residual-normality gate selected a rank-based test, whose Type I",
-      "error is itself affected by unequal variances at unequal group sizes",
-      "(Zimmerman 2004 <doi:10.1348/000711004849222>)"
+      "error is itself affected by unequal variances at unequal group sizes,",
+      "because the rank test's consistency region depends on the relative",
+      "sample sizes n_i/N (Brunner et al. 2017 <doi:10.1111/rssb.12222>)"
     )
   )
 

@@ -44,17 +44,63 @@ power$design <- as.character(power$design)
 
 DESIGN_BALANCED <- "balanced n, equal SD"
 DESIGN_UNBALANCED <- "unbalanced n, equal SD"
+DESIGN_UNBAL_HOMO <- DESIGN_UNBALANCED
 DESIGN_BAL_UNEQ <- "balanced n, unequal SD"
 DESIGN_UNBAL_POS <- "unbalanced n, larger n with larger SD"
 DESIGN_UNBAL_NEG <- "unbalanced n, larger n with smaller SD"
 
-## Panel headers in the wording of the Type I figures: the two lines differ in
-## the multiplier vector alone. The SDs are 1 by construction of the Fleishman
-## draw; stating the tuple keeps the two figures symmetric.
-## All four panel headers are built the same way, so they read symmetrically:
-## design in words, then the size multipliers, then the SD vector. The
-## heteroscedastic blocks scale the mean shifts by sqrt(mean(SD^2)) so that the
-## population omega^2 matches the equal-SD panels.
+## Pseudo-rank arm (RK, ATS), simulated by rankfd_route1_power.R on streams
+## that continue where route1_simulations.R stopped. Joined on design, group
+## size and input shape; both rows are omitted when the file is absent.
+RKP_FILE <- file.path(SIMDIR, "rankfd_route1_power_B50000.csv")
+HAS_RKP <- file.exists(RKP_FILE)
+if (HAS_RKP) {
+  rkp <- read.csv(RKP_FILE)
+  keyp <- function(d) paste(d$design, d$n_per_group, d$panel)
+  power$rk_power <- rkp$ps_kw_power[match(keyp(power), keyp(rkp))]
+  power$ats_power <- rkp$ps_ats_power[match(keyp(power), keyp(rkp))]
+} else {
+  power$rk_power <- NA_real_
+  power$ats_power <- NA_real_
+}
+
+## Population effect sizes of each (design, panel) cell, from
+## effect_sizes_by_design_panel.R. Both are needed to read a power column: a
+## strategy that rejects rarely may be a weak test, or may be facing a nearly
+## zero effect. omega^2 is constant across the panels of a design (the
+## Fleishman panels are standardised to variance 1) but eta_H^2 is not, so the
+## columns of one design are NOT equally hard for the rank-based tests.
+## Set ES_SCALING to "omega_fixed" before sourcing to label the rerun grid.
+if (!exists("ES_SCALING")) ES_SCALING <- "legacy"
+ES_FILE <- file.path(SIMDIR, sprintf("effect_sizes_by_design_panel_%s.csv", ES_SCALING))
+HAS_ES <- file.exists(ES_FILE)
+ES_TAB <- if (HAS_ES) read.csv(ES_FILE, stringsAsFactors = FALSE) else NULL
+if (!HAS_ES) {
+  message("Effect-size table not found (", ES_FILE,
+          "); power columns will be labelled by number only.")
+}
+
+## ATS under the nonparametric Behrens-Fisher null H0p (rankfd_route1_power_h0p.R),
+## joined the same way as the RKP arm above. Omitted when the file is absent.
+RKP_H0P_FILE <- file.path(SIMDIR, "rankfd_route1_power_h0p_B50000.csv")
+HAS_RKP_H0P <- file.exists(RKP_H0P_FILE)
+if (HAS_RKP_H0P) {
+  rkp_h0p <- read.csv(RKP_H0P_FILE)
+  keyp <- function(d) paste(d$design, d$n_per_group, d$panel)
+  power$ats_h0p_power <- rkp_h0p$ats_h0p_power[match(keyp(power), keyp(rkp_h0p))]
+} else {
+  power$ats_h0p_power <- NA_real_
+}
+
+## Panel headers, all built the same way: design in words, then the size
+## multipliers, then the SD vector (each group is scaled by its own SD,
+## route1_simulations.R:262; the common shift vector is scaled once more, by
+## sqrt(mean(SD^2)), so that omega^2 stays fixed across the panels -- this
+## does not hold the rank-based effect fixed, see Brunner et al. 2017, JRSSB,
+## pp. 1464-1465).
+## Naming follows Brunner et al. 2017, JRSSB, Table 2 (p. 1477): homoscedastic
+## vs heteroscedastic, and positive/negative pairing for the direction in
+## which the SDs are paired with the (unbalanced) group sizes.
 sd_header <- function(what, nmult, sdvec) paste0(
   "power simulations, ", what, "; ",
   "(n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = ",
@@ -67,10 +113,11 @@ SDV_EQ <- "1, 1, 1, 1"
 SDV_POS <- "1, 1.3, 1.7, 2.2"
 SDV_NEG <- "2.2, 1.7, 1.3, 1"
 
-HEADER_BALANCED  <- sd_header("balanced, equal SD",   NMULT_BAL,   SDV_EQ)
-HEADER_BAL_UNEQ  <- sd_header("balanced, unequal SD", NMULT_BAL,   SDV_POS)
-HEADER_UNBAL_POS <- sd_header("unbalanced, larger n with larger SD",  NMULT_UNBAL, SDV_POS)
-HEADER_UNBAL_NEG <- sd_header("unbalanced, larger n with smaller SD", NMULT_UNBAL, SDV_NEG)
+HEADER_BALANCED   <- sd_header("balanced homoscedastic",   NMULT_BAL,   SDV_EQ)
+HEADER_BAL_UNEQ   <- sd_header("balanced heteroscedastic", NMULT_BAL,   SDV_POS)
+HEADER_UNBAL_HOMO <- sd_header("unbalanced homoscedastic", NMULT_UNBAL, SDV_EQ)
+HEADER_UNBAL_POS  <- sd_header("unbalanced heteroscedastic (positive pairing)", NMULT_UNBAL, SDV_POS)
+HEADER_UNBAL_NEG  <- sd_header("unbalanced heteroscedastic (negative pairing)", NMULT_UNBAL, SDV_NEG)
 
 ggplot2 <- asNamespace("ggplot2")
 patchwork <- asNamespace("patchwork")
@@ -285,6 +332,9 @@ STRATEGY_LABELS <- c(
   "2. Welch always" = "W",
   "3. Levene-gated Fisher/Welch" = "L",
   "4. Kruskal-Wallis always" = "KW",
+  "4b. Pseudo-rank Kruskal-Wallis" = "RK",
+  "4c. ANOVA-type statistic" = "ATS",
+  "4d. ANOVA-type statistic (H0p)" = "ATSp",
   "5. Shapiro-Wilk routed Welch/KW" = "SW",
   "6. Shapiro-Wilk plus Levene" = "SW+L"
 )
@@ -293,6 +343,9 @@ STRATEGY_SHAPES <- c(
   "2. Welch always" = 2,
   "3. Levene-gated Fisher/Welch" = 5,
   "4. Kruskal-Wallis always" = 4,
+  "4b. Pseudo-rank Kruskal-Wallis" = 3,
+  "4c. ANOVA-type statistic" = 6,
+  "4d. ANOVA-type statistic (H0p)" = 8,
   "5. Shapiro-Wilk routed Welch/KW" = 1,
   "6. Shapiro-Wilk plus Levene" = 1
 )
@@ -301,6 +354,9 @@ STRATEGY_SIZES <- c(
   "2. Welch always" = 3.2,
   "3. Levene-gated Fisher/Welch" = 3.6,
   "4. Kruskal-Wallis always" = 3.8,
+  "4b. Pseudo-rank Kruskal-Wallis" = 3.8,
+  "4c. ANOVA-type statistic" = 3.8,
+  "4d. ANOVA-type statistic (H0p)" = 3.8,
   "5. Shapiro-Wilk routed Welch/KW" = 5.8,
   "6. Shapiro-Wilk plus Levene" = 7.2
 )
@@ -309,6 +365,9 @@ STRATEGY_COLOURS <- c(
   "2. Welch always" = "#56B4E9",
   "3. Levene-gated Fisher/Welch" = "#009E73",
   "4. Kruskal-Wallis always" = "#000000",
+  "4b. Pseudo-rank Kruskal-Wallis" = "#999999",
+  "4c. ANOVA-type statistic" = "#CC79A7",
+  "4d. ANOVA-type statistic (H0p)" = "#E69F00",
   "5. Shapiro-Wilk routed Welch/KW" = "#D55E00",
   "6. Shapiro-Wilk plus Levene" = "#0072B2"
 )
@@ -322,14 +381,28 @@ power$n_label <- factor(paste0("n = ", power$n_per_group),
 )
 
 to_long <- function(dat) {
-  out <- rbind(
+  rows <- list(
     transform(dat, strategy = "1. Fisher always", power = fisher_power),
     transform(dat, strategy = "2. Welch always", power = welch_power),
     transform(dat, strategy = "3. Levene-gated Fisher/Welch", power = mean_power),
-    transform(dat, strategy = "4. Kruskal-Wallis always", power = rank_power),
+    transform(dat, strategy = "4. Kruskal-Wallis always", power = rank_power)
+  )
+  if (HAS_RKP) {
+    rows <- c(rows, list(
+      transform(dat, strategy = "4b. Pseudo-rank Kruskal-Wallis", power = rk_power),
+      transform(dat, strategy = "4c. ANOVA-type statistic", power = ats_power)
+    ))
+  }
+  if (HAS_RKP_H0P) {
+    rows <- c(rows, list(
+      transform(dat, strategy = "4d. ANOVA-type statistic (H0p)", power = ats_h0p_power)
+    ))
+  }
+  rows <- c(rows, list(
     transform(dat, strategy = "5. Shapiro-Wilk routed Welch/KW", power = sw_power),
     transform(dat, strategy = "6. Shapiro-Wilk plus Levene", power = gate_power)
-  )
+  ))
+  out <- do.call(rbind, rows)
   out$strategy <- factor(out$strategy, levels = names(STRATEGY_LABELS))
   out
 }
@@ -342,6 +415,41 @@ make_power_plot <- function(design_name, panel_letter, panel_description,
   dat <- power[power$design == design_name, , drop = FALSE]
   if (nrow(dat) == 0) {
     stop("No power results for design: ", design_name)
+  }
+
+  ## Column headers carry both effect sizes of this design, so each column can
+  ## be judged on its own: without them a low rejection rate cannot be told
+  ## apart from a nearly zero effect.
+  if (HAS_ES) {
+    es <- ES_TAB[ES_TAB$design == design_name, , drop = FALSE]
+    es <- es[order(es$panel), , drop = FALSE]
+    if (nrow(es) == length(panel_levels)) {
+      ## plotmath, so omega^2 and eta_H^2 render with a real superscript and
+      ## subscript rather than as literal text; drawn via label_parsed below.
+      ## Both are population parameters, not simulation estimates: omega^2 from
+      ## its closed form, eta_H^2 from quadrature (eta_h_population.R). Values
+      ## that are zero by construction print as "0", not "0.000"; quadrature
+      ## leaves those at ~1e-27 rather than at 0, hence the tolerance.
+      fmt <- function(x) {
+        out <- sprintf("%.3f", round(x, 3))
+        out[out == "-0.000"] <- "0.000"
+        out[abs(x) < 1e-12] <- "0"
+        out
+      }
+      es_lab <- stats::setNames(
+        sprintf('"%d)"~~omega^2*"=%s"~~eta[H]^2*"=%s"',
+                es$panel, fmt(es$omega_sq), fmt(es$eta_h_sq)),
+        paste0(es$panel, ")")
+      )
+      dat$power_panel <- factor(
+        unname(es_lab[as.character(dat$power_panel)]),
+        levels = unname(es_lab[panel_levels])
+      )
+    } else {
+      warning("Effect-size table has ", nrow(es), " rows for design '",
+              design_name, "'; expected ", length(panel_levels),
+              ". Columns labelled by number only.")
+    }
   }
 
   power_long <- to_long(dat)
@@ -408,7 +516,12 @@ make_power_plot <- function(design_name, panel_letter, panel_description,
     family = FLEISHMAN_FONT_FAMILY,
     size = FLEISHMAN_GEOM_TEXT$inset
   ) +
-  ggplot2$facet_grid(stats::as.formula(". ~ power_panel")) +
+  ## label_parsed only when the labels are plotmath; the bare "1)" fallback
+  ## is not parseable.
+  ggplot2$facet_grid(
+    stats::as.formula(". ~ power_panel"),
+    labeller = if (HAS_ES) ggplot2$label_parsed else ggplot2$label_value
+  ) +
   ggplot2$scale_y_continuous(
     limits = c(0, 1),
     breaks = seq(0.1, 1, by = 0.1),
@@ -476,10 +589,17 @@ p_power <- make_power_plot(DESIGN_BALANCED, "B", HEADER_BALANCED,
 )
 
 nbar_label <- expression(paste(bar(n), " per group"))
-p_power_bal_uneq  <- make_power_plot(DESIGN_BAL_UNEQ,  "D", HEADER_BAL_UNEQ,  show_legend = TRUE)
-p_power_unbal_pos <- make_power_plot(DESIGN_UNBAL_POS, "B", HEADER_UNBAL_POS, show_legend = TRUE,
+p_power_bal_uneq   <- make_power_plot(DESIGN_BAL_UNEQ,   "D", HEADER_BAL_UNEQ,   show_legend = TRUE)
+## Unbalanced homoscedastic (DESIGN_UNBALANCED) had no panel anywhere despite
+## being simulated (fleishman_4groups_power.csv carries it). Added here as the
+## first block of the unbalanced figure, ahead of the two heteroscedastic
+## pairings, so the homoscedastic baseline is seen before the contrast it sets
+## up.
+p_power_unbal_homo <- make_power_plot(DESIGN_UNBAL_HOMO, "B", HEADER_UNBAL_HOMO, show_legend = TRUE,
                                      x_label = nbar_label)
-p_power_unbal_neg <- make_power_plot(DESIGN_UNBAL_NEG, "D", HEADER_UNBAL_NEG, show_legend = TRUE,
+p_power_unbal_pos <- make_power_plot(DESIGN_UNBAL_POS, "D", HEADER_UNBAL_POS, show_legend = TRUE,
+                                     x_label = nbar_label)
+p_power_unbal_neg <- make_power_plot(DESIGN_UNBAL_NEG, "F", HEADER_UNBAL_NEG, show_legend = TRUE,
                                      x_label = nbar_label)
 
 ## Two figures, each carrying the densities actually simulated beneath it.
@@ -501,9 +621,7 @@ p_pdf_neg <- make_pdf_panel(SD_NEG, SHIFTS_HETERO, "D",
 p_pdf_homo_A <- make_pdf_panel(SD_HOMO, SHIFTS_HOMO, "A", "input distributions, equal SD")
 p_pdf_pos_C  <- make_pdf_panel(SD_POS,  SHIFTS_HETERO, "C",
   "input distributions, SD = (1, 1.3, 1.7, 2.2)")
-p_pdf_pos_A  <- make_pdf_panel(SD_POS,  SHIFTS_HETERO, "A",
-  "input distributions, SD = (1, 1.3, 1.7, 2.2)")
-p_pdf_neg_C  <- make_pdf_panel(SD_NEG,  SHIFTS_HETERO, "C",
+p_pdf_neg_E  <- make_pdf_panel(SD_NEG,  SHIFTS_HETERO, "E",
   "input distributions, SD = (2.2, 1.7, 1.3, 1)")
 
 combined_balanced <- patchwork$wrap_plots(
@@ -511,13 +629,15 @@ combined_balanced <- patchwork$wrap_plots(
   ncol = 1, heights = c(1, 2.0, 1, 2.0)
 )
 combined_unbalanced <- patchwork$wrap_plots(
-  p_pdf_pos_A, p_power_unbal_pos, p_pdf_neg_C, p_power_unbal_neg,
-  ncol = 1, heights = c(1, 2.0, 1, 2.0)
+  p_pdf_homo_A, p_power_unbal_homo,
+  p_pdf_pos_C,  p_power_unbal_pos,
+  p_pdf_neg_E,  p_power_unbal_neg,
+  ncol = 1, heights = c(1, 2.0, 1, 2.0, 1, 2.0)
 )
 
 COMBINED_WIDTH <- 20
 HEIGHT_BALANCED <- 27.5
-HEIGHT_UNBALANCED <- 27.5
+HEIGHT_UNBALANCED <- 27.5 * 3 / 2
 
 for (dir in unique(c(OUTDIR, FIGDIR))) {
   ggplot2$ggsave(file.path(dir, "fleishman_4groups_power_balanced.png"),

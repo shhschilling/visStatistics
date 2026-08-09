@@ -258,9 +258,10 @@ and Statistical Psychology}, 31(2). doi:10.1111/j.2044-8317.1978.tb00581.x.
 (Liberal robustness bounds of 2.5\%-7.5\%, used to judge Type I error
 control in the size and variance-pairing warnings below.)
 
-Zimmerman, D. W. (2004). A Note on Preliminary Tests of Equality of
-Variances. \emph{British Journal of Mathematical and Statistical
-Psychology}, 57(1). doi:10.1348/000711004849222. (Sensitivity of
+Brunner, E., Konietschke, F., Pauly, M., & Puri, M. L. (2017). Rank-Based
+Procedures in Factorial Designs: Hypotheses About Non-Parametric Treatment
+Effects. \emph{Journal of the Royal Statistical Society Series B:
+Statistical Methodology}, 79(5). doi:10.1111/rssb.12222. (Sensitivity of
 rank-based tests to unequal variances at unequal group sizes, underlying
 the adverse-pairing warning.)
 

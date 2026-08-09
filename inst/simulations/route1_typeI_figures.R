@@ -70,11 +70,65 @@ if (!exists("FIG_SUFFIX")) {
 }
 sim <- sim[sim$mean_n_per_group %in% NS_TO_PLOT, , drop = FALSE]
 
+## Pseudo-rank arm (RK), simulated by rankfd_route1_typeI.R on streams that
+## continue where route1_simulations.R stopped. Joined on design, mean group
+## size and input shape; the row is omitted when the file is absent.
+## "RK" appears as a row only when the pseudo-rank results are present.
+RK_ROW <- character(0)
+RK_FILE <- file.path(SIMDIR, "rankfd_route1_typeI_B50000.csv")
+HAS_RK <- file.exists(RK_FILE)
+if (HAS_RK) {
+  rk <- read.csv(RK_FILE)
+  key <- function(d) paste(d$design, d$mean_n_per_group, d$panel)
+  sim$rk_rejection <- rk$ps_kw_rejection[match(key(sim), key(rk))]
+  sim$ats_rejection <- rk$ps_ats_rejection[match(key(sim), key(rk))]
+  RK_ROW <- c("RK", "ATS")
+} else {
+  sim$rk_rejection <- NA_real_
+  sim$ats_rejection <- NA_real_
+}
+
+## ATS under the nonparametric Behrens-Fisher null H0p (rankfd_route1_typeI_h0p.R),
+## joined the same way as the RK arm above. Under equal variances H0p and H0F
+## coincide, so this row reproduces ATS there to within Monte Carlo error; under
+## unequal variances it reflects the relative-effects null rather than the
+## equal-means null, and can therefore differ sharply from the ATS row above
+## (Brunner et al. 2017, JRSSB, p. 1464).
+ATS_H0P_ROW <- character(0)
+ATS_H0P_FILE <- file.path(SIMDIR, "rankfd_route1_typeI_h0p_B50000.csv")
+HAS_ATS_H0P <- file.exists(ATS_H0P_FILE)
+if (HAS_ATS_H0P) {
+  ats_h0p <- read.csv(ATS_H0P_FILE)
+  key <- function(d) paste(d$design, d$mean_n_per_group, d$panel)
+  sim$ats_h0p_rejection <- ats_h0p$ats_h0p_rejection[match(key(sim), key(ats_h0p))]
+  ATS_H0P_ROW <- "ATSp"
+} else {
+  sim$ats_h0p_rejection <- NA_real_
+}
+
+## Population effect sizes of each (design, panel) cell of the equal-means
+## grid, from effect_sizes_by_design_panel.R with scaling = "typeI".
+## omega^2 is 0 in every cell here, the means being equal by construction.
+## eta_H^2 is not: scaling a skewed distribution by different SDs moves its
+## median, so in the unequal-SD designs the groups still differ on the rank
+## scale. Printing both separates a Kruskal-Wallis rejection rate above alpha
+## that is a genuine level violation (eta_H^2 = 0) from one that is power
+## against a false rank null (eta_H^2 > 0).
+ES_FILE <- file.path(SIMDIR, "effect_sizes_by_design_panel_typeI.csv")
+HAS_ES <- file.exists(ES_FILE)
+ES_TAB <- if (HAS_ES) read.csv(ES_FILE, stringsAsFactors = FALSE) else NULL
+if (!HAS_ES) {
+  message("Effect-size table not found (", ES_FILE,
+          "); heatmap columns will be labelled by number only.")
+}
+
 ## Figure heights are set for five displayed sizes and scale with the number
 ## actually drawn, so the heatmap row pitch stays constant and the rejection
 ## numbers never collide.
-HEIGHT_EQUAL <- 22 * length(NS_TO_PLOT) / 5
-HEIGHT_UNEQUAL <- 26 * length(NS_TO_PLOT) / 5
+## and with the number of strategy rows, six without the pseudo-rank arm.
+ROW_SCALE <- (6 + length(RK_ROW) + length(ATS_H0P_ROW)) / 6
+HEIGHT_EQUAL <- 22 * length(NS_TO_PLOT) / 5 * ROW_SCALE
+HEIGHT_UNEQUAL <- 26 * length(NS_TO_PLOT) / 5 * ROW_SCALE
 
 ALPHA <- 0.05
 ggplot2 <- asNamespace("ggplot2")
@@ -397,6 +451,12 @@ make_rejection_rows <- function(dat, strategies) {
                              rejection = levene_route_rejection),
     KW = transform(dat, strategy = "KW",
                                  rejection = rank_rejection),
+    RK = transform(dat, strategy = "RK",
+                                 rejection = rk_rejection),
+    ATS = transform(dat, strategy = "ATS",
+                                 rejection = ats_rejection),
+    ATSp = transform(dat, strategy = "ATSp",
+                                 rejection = ats_h0p_rejection),
     SW = transform(dat, strategy = "SW",
                    rejection = sw_rejection),
     `SW+L` = transform(dat, strategy = "SW+L",
@@ -571,6 +631,46 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
   strategy_y["header"] <- length(strategies) + 1.25
   one$plot_strategy <- factor(one$plot_strategy, levels = strategy_levels)
   one$plot_y <- unname(strategy_y[as.character(one$plot_strategy)])
+
+  ## Column headers carry both effect sizes of this design, so a column can be
+  ## judged on its own. Panels are matched through sim, not through the order
+  ## of skew_levels, so the labels cannot silently pair up with the wrong cell.
+  x_labels <- column_number_labels
+  if (HAS_ES) {
+    es <- ES_TAB[ES_TAB$design == design_name, , drop = FALSE]
+    panels_in_order <- vapply(
+      names(column_number_labels),
+      function(lbl) sim$panel[sim$skew_base_label == lbl][1],
+      numeric(1)
+    )
+    hit <- match(panels_in_order, es$panel)
+    if (!anyNA(hit)) {
+      ## plotmath, so omega^2 and eta_H^2 render with a real superscript and
+      ## subscript instead of as literal text.
+      ##
+      ## Both are population parameters, not simulation estimates: omega^2 from
+      ## its closed form, eta_H^2 from quadrature on 12*sum p_j (r_j-1/2)^2.
+      ## Cells that are zero by construction are printed "0" rather than
+      ## "0.000": omega^2 because the means are equal throughout this grid, and
+      ## eta_H^2 wherever the groups are identical, or symmetric about a common
+      ## centre so that every relative effect is exactly 1/2. Quadrature leaves
+      ## those at ~1e-27 rather than at 0, hence the tolerance.
+      fmt <- function(x) {
+        out <- sprintf("%.3f", round(x, 3))
+        out[out == "-0.000"] <- "0.000"
+        out[abs(x) < 1e-12] <- "0"
+        out
+      }
+      x_labels <- stats::setNames(
+        sprintf('"%d)"~~omega^2*"=%s"~~eta[H]^2*"=%s"',
+                es$panel[hit], fmt(es$omega_sq[hit]), fmt(es$eta_h_sq[hit])),
+        names(column_number_labels)
+      )
+    } else {
+      warning("Effect-size table does not cover every panel of design '",
+              design_name, "'; columns labelled by number only.")
+    }
+  }
   ggplot2$ggplot(
     one,
     ggplot2$aes(x = skew_base_label, y = plot_y, fill = rejection)
@@ -608,7 +708,13 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
     ) +
     ggplot2$scale_x_discrete(
       position = "top",
-      labels = column_number_labels
+      ## Parsed only when the labels are plotmath; the bare "1)" fallback
+      ## is not parseable.
+      labels = if (HAS_ES) {
+        function(brk) parse(text = x_labels[brk])
+      } else {
+        x_labels
+      }
     ) +
     ggplot2$facet_grid(
       stats::as.formula("mean_n_label ~ ."),
@@ -650,7 +756,7 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
 }
 
 make_equal_plot <- function() {
-  strategies <- c("F", "W", "L", "KW", "SW", "SW+L")
+  strategies <- c("F", "W", "L", "KW", RK_ROW, ATS_H0P_ROW, "SW", "SW+L")
   plot_list <- list()
   height_list <- numeric()
   plot_list[[1]] <- panel_header(
@@ -682,7 +788,7 @@ make_equal_plot <- function() {
   )
   plot_list[[3]] <- panel_header(
     "B",
-    "balanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(1, 1, 1, 1); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1, 1, 1, 1)"
+    "balanced homoscedastic; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(1, 1, 1, 1); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1, 1, 1, 1)"
   )
   height_list[3] <- 0.03
   plot_list[[4]] <- balanced_plot
@@ -691,7 +797,7 @@ make_equal_plot <- function() {
   height_list[5] <- 0.06
   plot_list[[6]] <- panel_header(
     "C",
-    "unbalanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1, 1, 1, 1)"
+    "unbalanced homoscedastic; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1, 1, 1, 1)"
   )
   height_list[6] <- 0.03
   plot_list[[7]] <- unbalanced_plot
@@ -706,7 +812,7 @@ make_equal_plot <- function() {
 }
 
 make_unequal_design_plot <- function(design_name, panel_label, show_legend = TRUE) {
-  strategies <- c("F", "W", "L", "SW", "SW+L")
+  strategies <- c("F", "W", "L", "KW", RK_ROW, ATS_H0P_ROW, "SW", "SW+L")
   plot_list <- list()
   height_list <- numeric()
   plot_list[[1]] <- make_pdf_plot(
@@ -738,7 +844,7 @@ make_unequal_design_plot <- function(design_name, panel_label, show_legend = TRU
 }
 
 make_unequal_plot <- function() {
-  strategies <- c("F", "W", "L", "SW", "SW+L")
+  strategies <- c("F", "W", "L", "KW", RK_ROW, ATS_H0P_ROW, "SW", "SW+L")
   plot_list <- list()
   height_list <- numeric()
   plot_list[[1]] <- panel_header(
@@ -756,7 +862,7 @@ make_unequal_plot <- function() {
   height_list[2] <- 0.30
   plot_list[[3]] <- panel_header(
     "B",
-    "balanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(1, 1, 1, 1); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
+    "balanced heteroscedastic; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(1, 1, 1, 1); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
   )
   height_list[3] <- 0.03
   plot_list[[4]] <- make_rejection_plot(
@@ -769,7 +875,7 @@ make_unequal_plot <- function() {
   height_list[4] <- 0.90
   plot_list[[5]] <- panel_header(
     "C",
-    "unbalanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
+    "unbalanced heteroscedastic (positive pairing); (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
   )
   height_list[5] <- 0.03
   plot_list[[6]] <- make_rejection_plot(
@@ -782,7 +888,7 @@ make_unequal_plot <- function() {
   height_list[6] <- 0.90
   plot_list[[7]] <- panel_header(
     "D",
-    "unbalanced; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (2.2, 1.7, 1.3, 1.0)"
+    "unbalanced heteroscedastic (negative pairing); (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (2.2, 1.7, 1.3, 1.0)"
   )
   height_list[7] <- 0.03
   plot_list[[8]] <- make_rejection_plot(
