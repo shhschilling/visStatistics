@@ -2708,7 +2708,7 @@ respective effect sizes and formulae.
 |----|----|----|----|
 | [Student’s \\t\\-test](#sec:tt) | Hedges’ \\g\_{s_p}\\ (pooled) | \\g\_{s_p}=J(N-2)\cdot(\bar{x}\_1-\bar{x}\_2)/s_p\\ | [Hedges 1981](https://doi.org/10.3102/10769986006002107) |
 | [Welch’s \\t\\-test](#sec:welch-tt) | Hedges’ \\g\_{s^{\*}}\\ (non-pooled) | \\g\_{s^{\*}}=J(\nu^{\*})\cdot(\bar{x}\_1-\bar{x}\_2)/s^{\*}\\ | [Delacre et al. 2021](https://doi.org/10.31234/osf.io/tu6mp) |
-| [Wilcoxon rank-sum](#sec:wilc) | rank-biserial \\r\\ | \\r=2\cdot W/(n_1\cdot n_2)-1\\ | [Kerby 2014](https://doi.org/10.2466/11.IT.3.1) |
+| [Wilcoxon rank-sum](#sec:wilc) | rank-biserial \\r\\ | \\r=2\cdot W/(n_1\cdot n_2)-1\\ | [Wendt 1972](https://doi.org/10.1002/ejsp.2420020412) |
 | [Fisher’s ANOVA](#sec:fisher-aov) | \\\widehat{\omega}^2\\ | \\\nu_1\cdot(F-1)/(\nu_1\cdot F+\nu_2+1)\\ | [Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
 | [Welch’s ANOVA](#sec:welch-aov) | \\\widehat{\omega}^2\\ (approx.) | \\\nu_1\cdot(F_W-1)/(\nu_1\cdot F_W+\nu_2+1)\\ | [F-form from Albers and Lakens 2018, Appendix A](https://doi.org/10.1016/j.jesp.2017.09.004) |
 | [Kruskal–Wallis](#sec:kw) | \\\widehat{\eta}\_H^2\\ | \\(H-k+1)/(N-k)\\ | [Tomczak and Tomczak 2014](https://tss.awf.poznan.pl/The-need-to-report-effect-size-estimates-revisited-An-overview-of-some-recommended,188960,0,2.html) |
@@ -2747,50 +2747,6 @@ and \\\nu_2=N-k\\; for Welch’s ANOVA, \\\nu_1=k-1\\ and \\\nu_2\\ is the
 usually fractional denominator degree of freedom returned by
 [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html).
 
-In a balanced design, \\\widehat{\omega}^2\\ estimates the population
-parameter \\\begin{equation} \omega^2
-=\frac{\sigma^2\_{\mathrm{Effect}}}{\sigma^2\_{\mathrm{Effect}}+\sigma^2},
-\tag{F.1} \end{equation}\\ with
-\\\sigma^2\_{\mathrm{Effect}}=\frac1k\sum\_{j=1}^k(\mu_j-\bar\mu)^2\\
-and \\\sigma^2\\ the constant error variance of the general linear model
-(Eq. [(5.1)](#eq:glm)) ([Steiger 2004](#ref-Steiger:2004)).
-
-The rank-based effect size has a population counterpart of the same
-kind. Let \\n_i\\ be the size of group \\i\\, \\N=\sum\_{i=1}^{k}n_i\\,
-and \\p_i=n_i/N\\. Writing
-
-\\\begin{equation} \widehat{r}\_i=\frac{\bar R_i-\tfrac12}{N},\qquad
-i=1,\dots,k, \tag{F.2} \end{equation}\\
-
-for the estimated relative effect of group \\i\\, the deviation entering
-Eq. [(C.3)](#eq:kruskal-h) is \\\bar R_i-\bar
-R=N\left(\widehat{r}\_i-\tfrac12\right)\\, so that
-
-\\\begin{equation}
-H=\frac{12N^{2}}{N+1}\sum\_{i=1}^{k}p_i\left(\widehat{r}\_i-\frac12\right)^{2}.
-\tag{F.3} \end{equation}\\
-
-\\H\\ grows in proportion to \\N\\, and the denominator \\N-k\\ of
-\\\widehat{\eta}\_H^2\\ removes that growth. With the group sizes
-\\n_i\\ growing in fixed proportions \\p_i\\,
-
-\\\begin{equation}
-\widehat{\eta}\_H^2\\\longrightarrow\\\eta_H^2=12\sum\_{i=1}^{k}p_i\left(r_i-\frac12\right)^{2},
-\tag{F.4} \end{equation}\\
-
-where \\F_i\\ denotes the distribution of group \\i\\ and
-
-\\\begin{equation} r_i=\int G\\\mathrm{d}F_i,\qquad
-G=\sum\_{l=1}^{k}p_l\\F_l . \tag{F.5} \end{equation}\\
-
-This is the cancellation that also takes \\\widehat{\omega}^2\\ to Eq.
-[(F.1)](#eq:omega-sq-population), where \\\nu_2=N-k\\ removes the linear
-growth of \\\nu_1F\\. The pooled distribution \\G\\ of Eq.
-[(F.5)](#eq:weighted-relative-effect) carries the size fractions
-\\p_l\\, so the \\r_i\\ are weighted relative effects and \\\eta_H^2\\
-is a property of the group sizes together with the distributions, not of
-the distributions alone ([Brunner et al. 2017](#ref-Brunner:2017)).
-
 In the the coefficient of determination \\R^2\\, the residual sum of
 square is defined as
 \\SS\_\text{res}=\sum\_{i=1}^{N}(y_i-\hat{y}\_i)^2\\, where
@@ -2800,6 +2756,47 @@ given by \\SS\_\text{tot}=\sum\_{i=1}^{N}(y_i-\bar{y})^2\\ .
 All other variables used in the [effect-size
 table](#tab:effect-size-formulae) are defined in the corresponding
 “Analysis” section.
+
+## G Population effect sizes
+
+To quantify the different desings in our simulations section:ref of the
+type I error rates and power of the parametric and non-parametric tests,
+we extend the effect sizes to the population level.
+
+### G.1 Population effect sizes of parametric tests
+
+**balanced homoscedastic** In a balanced homoscedastic design,
+\\\widehat{\omega}^2\\ estimates the population parameter
+\\\begin{equation} \omega^2\_{\text{bal}}
+=\frac{\sigma^2\_{\text{between}}}{\sigma^2\_{\text{between}}+\sigma^2},
+\tag{G.1} \end{equation}\\ with
+\\\sigma^2\_{\text{between}}=\frac1k\sum\_{j=1}^k(\mu_j-\bar\mu)^2\\ and
+\\\sigma^2\\ the constant error variance of the general linear model
+(Eq. [(5.1)](#eq:glm)) ([Steiger 2004](#ref-Steiger:2004)).
+
+**unbalanced homoscedastic** For unbalanced, homoscedastic designs, with
+\\p_j=n_j/N\\ the (fixed) relative size of group \\j\\ and
+\\\bar\mu_p=\sum\_{j=1}^k p_j\mu_j\\ the allocation-weighted grand mean,
+the same ratio defines \\\omega^2\_{\text{unbal}}\\, now with
+\\\begin{equation} \sigma^2\_{\text{between}}=\sum\_{j=1}^k
+p_j(\mu_j-\bar\mu_p)^2, \tag{G.2} \end{equation}\\ so that
+\\\omega^2\_{\text{unbal}}=\omega^2\_{\text{bal}}\\ when \\p_j=1/k\\
+([Carroll and Nordholm 1975](#ref-Carroll:1975)).
+
+**unbalanced heteroscedastic**
+
+For Welch’s ANOVA, allowing the group variances \\\sigma_j^2\\ to
+differ, \\\widehat\omega^2\\ (approx.) estimates the heteroscedastic
+extension of Eq. [(G.2)](#eq:omega-sq-population-unbalanced). With
+\\w_j=n_j/\sigma_j^2\\ and \\\tilde\mu_w=\sum\_{j=1}^k
+w_j\mu_j\big/\sum\_{j=1}^k w_j\\ the inverse-variance-weighted grand
+mean, \\\begin{equation}
+\omega^2\_{\text{het}}=\frac{\lambda}{1+\lambda},\qquad
+\lambda=\sum\_{j=1}^k
+p_j\left(\frac{\mu_j-\tilde\mu_w}{\sigma_j}\right)^2, \tag{G.3}
+\end{equation}\\ so that
+\\\omega^2\_{\text{het}}=\omega^2\_{\text{unbal}}\\ when
+\\\sigma_j^2=\sigma^2\\ for every \\j\\ ([Shieh 2012](#ref-Shieh:2012))
 
 ## References
 
@@ -2871,6 +2868,11 @@ Society Series B: Statistical Methodology* 79 (5): 1463–85.
 
 Canty, Angelo, and Brian Ripley. 2025. *Boot: Bootstrap Functions*.
 Manual. <https://doi.org/10.32614/CRAN.package.boot>.
+
+Carroll, Robert M., and Lena A. Nordholm. 1975. “Sampling
+Characteristics of Kelley’s \\\varepsilon\\ and Hays’ \\\omega\\.”
+*Educational and Psychological Measurement*, ahead of print.
+<https://doi.org/10.1177/001316447503500304>.
 
 Chicco, Davide, Andrea Sichenze, and Giuseppe Jurman. 2025. “A Simple
 Guide to the Use of Student’s t-Test, Mann-Whitney U Test, Chi-squared
@@ -3139,6 +3141,11 @@ Shatz, Itamar. 2024. “Assumption-Checking Rather Than (Just) Testing:
 The Importance of Visualization and Effect Size in Statistical
 Diagnostics.” *Behavior Research Methods* 56 (2): 826–45.
 <https://doi.org/10.3758/s13428-023-02072-x>.
+
+Shieh, Gwowen. 2012. “Confidence Intervals and Sample Size Calculations
+for the Weighted Eta-Squared Effect Sizes in One-Way Heteroscedastic
+ANOVA.” *Behavior Research Methods*, ahead of print.
+<https://doi.org/10.3758/s13428-012-0228-7>.
 
 Steiger, James H. 2004. “Beyond the F Test: Effect Size Confidence
 Intervals and Tests of Close Fit in the Analysis of Variance and

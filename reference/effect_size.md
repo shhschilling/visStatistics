@@ -124,9 +124,10 @@ Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why
 Hedges' g\*s based on the non-pooled standard deviation should be
 reported with Welch's t-test. *PsyArXiv*. doi:10.31234/osf.io/tu6mp.
 
-Kerby, D. S. (2014). The simple difference formula: An approach to
-teaching nonparametric correlation. *Comprehensive Psychology*, 3,
-11.IT.3.1. doi:10.2466/11.IT.3.1.
+Wendt, H. W. (1972). Dealing with a common problem in social science: A
+simplified rank-biserial coefficient of correlation based on the U
+statistic. *European Journal of Social Psychology*, 2(4), 463–465.
+doi:10.1002/ejsp.2420020412.
 
 Albers, C., & Lakens, D. (2018). When power analyses based on pilot data
 are biased: Inaccurate effect size estimators and follow-up bias.

@@ -57,7 +57,7 @@
       <h1>visStatistics: automated test selection, visualised</h1>
                         <h4 data-toc-skip class="author">Sabine Schilling</h4>
             
-            <h4 data-toc-skip class="date">2026-08-09</h4>
+            <h4 data-toc-skip class="date">2026-08-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -1761,7 +1761,7 @@ rank-biserial <span class="math inline">\(r\)</span>
 <span class="math inline">\(r=2\cdot W/(n_1\cdot n_2)-1\)</span>
 </td>
 <td>
-<a href="https://doi.org/10.2466/11.IT.3.1" class="external-link">Kerby 2014</a>
+<a href="https://doi.org/10.1002/ejsp.2420020412" class="external-link">Wendt 1972</a>
 </td>
 </tr>
 <tr>
@@ -1909,48 +1909,43 @@ J(\nu) =
 s^{*} = \sqrt{\frac{s_1^2+s_2^2}{2}}.
 \end{equation*}\]</span></p>
 <p>In the ANOVA effect sizes, <span class="math inline">\(\nu_1\)</span> and <span class="math inline">\(\nu_2\)</span> denote the numerator and denominator degrees of freedom; for Fisher’s ANOVA, <span class="math inline">\(\nu_1=k-1\)</span> and <span class="math inline">\(\nu_2=N-k\)</span>; for Welch’s ANOVA, <span class="math inline">\(\nu_1=k-1\)</span> and <span class="math inline">\(\nu_2\)</span> is the usually fractional denominator degree of freedom returned by <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>.</p>
-<p>In a balanced design, <span class="math inline">\(\widehat{\omega}^2\)</span> estimates the population parameter
-<span class="math display" id="eq:omega-sq-population">\[\begin{equation}
-\omega^2 =\frac{\sigma^2_{\mathrm{Effect}}}{\sigma^2_{\mathrm{Effect}}+\sigma^2},
-\tag{F.1}
-\end{equation}\]</span>
-with <span class="math inline">\(\sigma^2_{\mathrm{Effect}}=\frac1k\sum_{j=1}^k(\mu_j-\bar\mu)^2\)</span> and <span class="math inline">\(\sigma^2\)</span> the constant error variance of the general linear model (Eq. <a href="#eq:glm">(5.1)</a>) <span class="citation">(<a href="#ref-Steiger:2004">Steiger 2004</a>)</span>.</p>
-<p>The rank-based effect size has a population counterpart of the same kind. Let
-<span class="math inline">\(n_i\)</span> be the size of group <span class="math inline">\(i\)</span>, <span class="math inline">\(N=\sum_{i=1}^{k}n_i\)</span>, and <span class="math inline">\(p_i=n_i/N\)</span>. Writing</p>
-<p><span class="math display" id="eq:relative-effect-estimator">\[\begin{equation}
-\widehat{r}_i=\frac{\bar R_i-\tfrac12}{N},\qquad i=1,\dots,k,
-\tag{F.2}
-\end{equation}\]</span></p>
-<p>for the estimated relative effect of group <span class="math inline">\(i\)</span>, the deviation entering
-Eq. <a href="#eq:kruskal-h">(C.3)</a> is <span class="math inline">\(\bar R_i-\bar R=N\left(\widehat{r}_i-\tfrac12\right)\)</span>,
-so that</p>
-<p><span class="math display" id="eq:kruskal-h-relative">\[\begin{equation}
-H=\frac{12N^{2}}{N+1}\sum_{i=1}^{k}p_i\left(\widehat{r}_i-\frac12\right)^{2}.
-\tag{F.3}
-\end{equation}\]</span></p>
-<p><span class="math inline">\(H\)</span> grows in proportion to <span class="math inline">\(N\)</span>, and the denominator <span class="math inline">\(N-k\)</span> of
-<span class="math inline">\(\widehat{\eta}_H^2\)</span> removes that growth. With the group sizes <span class="math inline">\(n_i\)</span> growing in
-fixed proportions <span class="math inline">\(p_i\)</span>,</p>
-<p><span class="math display" id="eq:eta-h-population">\[\begin{equation}
-\widehat{\eta}_H^2\;\longrightarrow\;\eta_H^2=12\sum_{i=1}^{k}p_i\left(r_i-\frac12\right)^{2},
-\tag{F.4}
-\end{equation}\]</span></p>
-<p>where <span class="math inline">\(F_i\)</span> denotes the distribution of group <span class="math inline">\(i\)</span> and</p>
-<p><span class="math display" id="eq:weighted-relative-effect">\[\begin{equation}
-r_i=\int G\,\mathrm{d}F_i,\qquad G=\sum_{l=1}^{k}p_l\,F_l .
-\tag{F.5}
-\end{equation}\]</span></p>
-<p>This is the cancellation that also takes <span class="math inline">\(\widehat{\omega}^2\)</span> to
-Eq. <a href="#eq:omega-sq-population">(F.1)</a>, where <span class="math inline">\(\nu_2=N-k\)</span> removes the linear growth
-of <span class="math inline">\(\nu_1F\)</span>. The pooled distribution <span class="math inline">\(G\)</span> of
-Eq. <a href="#eq:weighted-relative-effect">(F.5)</a> carries the size fractions <span class="math inline">\(p_l\)</span>, so the
-<span class="math inline">\(r_i\)</span> are weighted relative effects and <span class="math inline">\(\eta_H^2\)</span> is a property of the group
-sizes together with the distributions, not of the distributions alone
-<span class="citation">(<a href="#ref-Brunner:2017">Brunner et al. 2017</a>)</span>.</p>
 <p>In the the coefficient of determination <span class="math inline">\(R^2\)</span>,
 the residual sum of square is defined as
 <span class="math inline">\(SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2\)</span>, where <span class="math inline">\(\hat{y}_i\)</span> is the predicted value, and the total sum of squares is given by <span class="math inline">\(SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2\)</span> .</p>
 <p>All other variables used in the <a href="#tab:effect-size-formulae">effect-size table</a> are defined in the corresponding “Analysis” section.</p>
+</div>
+<div class="section level2" number="17">
+<h2 id="sec:population-effect-sizes">
+<span class="header-section-number">G</span> Population effect sizes<a class="anchor" aria-label="anchor" href="#sec:population-effect-sizes"></a>
+</h2>
+<p>To quantify the different desings in our simulations section:ref of the type I error rates and power of the parametric and non-parametric tests, we extend the effect sizes to the population level.</p>
+<div class="section level3" number="17.1">
+<h3 id="population-effect-sizes-of-parametric-tests">
+<span class="header-section-number">G.1</span> Population effect sizes of parametric tests<a class="anchor" aria-label="anchor" href="#population-effect-sizes-of-parametric-tests"></a>
+</h3>
+<p><strong>balanced homoscedastic</strong>
+In a balanced homoscedastic design, <span class="math inline">\(\widehat{\omega}^2\)</span> estimates the population parameter
+<span class="math display" id="eq:omega-sq-population">\[\begin{equation}
+\omega^2_{\text{bal}} =\frac{\sigma^2_{\text{between}}}{\sigma^2_{\text{between}}+\sigma^2},
+\tag{G.1}
+\end{equation}\]</span>
+with <span class="math inline">\(\sigma^2_{\text{between}}=\frac1k\sum_{j=1}^k(\mu_j-\bar\mu)^2\)</span> and <span class="math inline">\(\sigma^2\)</span> the constant error variance of the general linear model (Eq. <a href="#eq:glm">(5.1)</a>) <span class="citation">(<a href="#ref-Steiger:2004">Steiger 2004</a>)</span>.</p>
+<p><strong>unbalanced homoscedastic</strong>
+For unbalanced, homoscedastic designs, with <span class="math inline">\(p_j=n_j/N\)</span> the (fixed) relative size of group <span class="math inline">\(j\)</span> and <span class="math inline">\(\bar\mu_p=\sum_{j=1}^k p_j\mu_j\)</span> the allocation-weighted grand mean, the same ratio defines <span class="math inline">\(\omega^2_{\text{unbal}}\)</span>, now with
+<span class="math display" id="eq:omega-sq-population-unbalanced">\[\begin{equation}
+\sigma^2_{\text{between}}=\sum_{j=1}^k p_j(\mu_j-\bar\mu_p)^2,
+\tag{G.2}
+\end{equation}\]</span>
+so that <span class="math inline">\(\omega^2_{\text{unbal}}=\omega^2_{\text{bal}}\)</span> when <span class="math inline">\(p_j=1/k\)</span> <span class="citation">(<a href="#ref-Carroll:1975">Carroll and Nordholm 1975</a>)</span>.</p>
+<p><strong>unbalanced heteroscedastic</strong></p>
+<p>For Welch’s ANOVA, allowing the group variances <span class="math inline">\(\sigma_j^2\)</span> to differ, <span class="math inline">\(\widehat\omega^2\)</span> (approx.) estimates the heteroscedastic extension of Eq. <a href="#eq:omega-sq-population-unbalanced">(G.2)</a>. With <span class="math inline">\(w_j=n_j/\sigma_j^2\)</span> and <span class="math inline">\(\tilde\mu_w=\sum_{j=1}^k w_j\mu_j\big/\sum_{j=1}^k w_j\)</span> the inverse-variance-weighted grand mean,
+<span class="math display" id="eq:omega-sq-population-heteroscedastic">\[\begin{equation}
+\omega^2_{\text{het}}=\frac{\lambda}{1+\lambda},\qquad \lambda=\sum_{j=1}^k p_j\left(\frac{\mu_j-\tilde\mu_w}{\sigma_j}\right)^2,
+\tag{G.3}
+\end{equation}\]</span>
+so that <span class="math inline">\(\omega^2_{\text{het}}=\omega^2_{\text{unbal}}\)</span> when <span class="math inline">\(\sigma_j^2=\sigma^2\)</span> for every <span class="math inline">\(j\)</span> <span class="citation">(<a href="#ref-Shieh:2012">Shieh 2012</a>)</span>
+<!-- attributing the construction to Kulinskaya and Staudte 2006]. --></p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -2000,6 +1995,9 @@ Brunner, Edgar, Frank Konietschke, Markus Pauly, and Madan L. Puri. 2017. <span>
 </div>
 <div id="ref-boot:2025" class="csl-entry">
 Canty, Angelo, and Brian Ripley. 2025. <em>Boot: <span>Bootstrap</span> Functions</em>. Manual. <a href="https://doi.org/10.32614/CRAN.package.boot" class="external-link">https://doi.org/10.32614/CRAN.package.boot</a>.
+</div>
+<div id="ref-Carroll:1975" class="csl-entry">
+Carroll, Robert M., and Lena A. Nordholm. 1975. <span>“Sampling <span>Characteristics</span> of <span>Kelley</span>’s <span><span class="math inline">\(\varepsilon\)</span></span> and <span>Hays</span>’ <span><span class="math inline">\(\omega\)</span></span>.”</span> <em>Educational and Psychological Measurement</em>, ahead of print. <a href="https://doi.org/10.1177/001316447503500304" class="external-link">https://doi.org/10.1177/001316447503500304</a>.
 </div>
 <div id="ref-Chicco:2025" class="csl-entry">
 Chicco, Davide, Andrea Sichenze, and Giuseppe Jurman. 2025. <span>“A Simple Guide to the Use of <span>Student</span>’s t-Test, <span>Mann-Whitney U</span> Test, <span class="nocase">Chi-squared</span> Test, and <span>Kruskal-Wallis</span> Test in Biostatistics.”</span> <em>BioData Mining</em> 18 (1): 56. <a href="https://doi.org/10.1186/s13040-025-00465-6" class="external-link">https://doi.org/10.1186/s13040-025-00465-6</a>.
@@ -2180,6 +2178,9 @@ Shapiro, S. S., and M. B. Wilk. 1965. <span>“An Analysis of Variance Test for 
 </div>
 <div id="ref-Shatz:2024" class="csl-entry">
 Shatz, Itamar. 2024. <span>“Assumption-Checking Rather Than (Just) Testing: <span>The</span> Importance of Visualization and Effect Size in Statistical Diagnostics.”</span> <em>Behavior Research Methods</em> 56 (2): 826–45. <a href="https://doi.org/10.3758/s13428-023-02072-x" class="external-link">https://doi.org/10.3758/s13428-023-02072-x</a>.
+</div>
+<div id="ref-Shieh:2012" class="csl-entry">
+Shieh, Gwowen. 2012. <span>“Confidence Intervals and Sample Size Calculations for the Weighted Eta-Squared Effect Sizes in One-Way Heteroscedastic <span>ANOVA</span>.”</span> <em>Behavior Research Methods</em>, ahead of print. <a href="https://doi.org/10.3758/s13428-012-0228-7" class="external-link">https://doi.org/10.3758/s13428-012-0228-7</a>.
 </div>
 <div id="ref-Steiger:2004" class="csl-entry">
 Steiger, James H. 2004. <span>“Beyond the <span>F Test</span>: <span>Effect Size Confidence Intervals</span> and <span>Tests</span> of <span>Close Fit</span> in the <span>Analysis</span> of <span>Variance</span> and <span>Contrast Analysis</span>.”</span> <em>Psychological Methods</em>, ahead of print. <a href="https://doi.org/10.1037/1082-989X.9.2.164" class="external-link">https://doi.org/10.1037/1082-989X.9.2.164</a>.
