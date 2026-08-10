@@ -415,9 +415,9 @@ If the group distributions are the same distribution up to group-specific additi
 
 For $k=2$, Kruskal--Wallis and Wilcoxon are based on the same pooled ranks. The two group mean ranks are $\bar R_1=W_1/n_1$ and $\bar R_2=W_2/n_2$, and $W=U_1$ is the reported Wilcoxon statistic from Eq. \@ref(eq:wilcoxon-w). In the large-sample approximation, the two-group Kruskal--Wallis statistic $H$ corresponds to a squared, centred, and rescaled form of the reported Wilcoxon statistic $W$. Therefore, the two tests give identical two-sided $p$\ values only when Wilcoxon is forced to use the uncorrected large-sample approximation, `wilcox.test(..., exact = FALSE, correct = FALSE)`. In `visstat()`, `wilcox.test()` is used with R's default settings, while `kruskal.test()` uses the large-sample $\chi^2$ approximation to $H$. Therefore, the two routes should not be expected to return identical two-group $p$\ values under the defaults.
 
-#### Post-hoc comparison `pairwise.wilcox.test()` {#sec:pairwise-wilcox}
+#### Post-hoc comparison `dunn.test()` {#sec:dunn}
 
-`pairwise.wilcox.test()` compares each pair of factor levels via the Wilcoxon rank-sum test on ranks rather than means. The resulting $p$\ values are adjusted for multiplicity using Holm's step-down method [@Holm:1979].
+`dunn.test()` compares each pair of factor levels on the mean ranks of a single joint ranking of all groups, the same ranking that enters $H$ in Eq. \@ref(eq:kruskal-h) [@Dunn:1964]. For groups $i$ and $j$ the statistic is $z_{ij}=(\bar R_i-\bar R_j)/\sigma_{ij}$ with $\sigma_{ij}^2=\left[\frac{N(N+1)}{12}-\frac{\sum_{s=1}^{r}(t_s^3-t_s)}{12(N-1)}\right]\left(\frac{1}{n_i}+\frac{1}{n_j}\right)$, where the $r$ groups of tied scores contain $t_s$ observations each. The resulting $p$\ values are adjusted for multiplicity using Holm's step-down method [@Holm:1979].
 
 # Rank correlations {#sec:rank-correlations}
 

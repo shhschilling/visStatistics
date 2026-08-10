@@ -172,7 +172,7 @@ warn_adverse_variance_pairing <- function(pairing, route) {
 #' \itemize{
 #'   \item \code{TukeyHSD()} for \code{aov()}
 #'   \item \code{games.howell()} for  \code{oneway.test()}
-#'   \item \code{pairwise.wilcox.test()} for \code{kruskal.test()}
+#'   \item \code{dunn.test()} for \code{kruskal.test()}
 #' }
 #' @seealso
 #' The package's vignette

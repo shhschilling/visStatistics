@@ -176,7 +176,7 @@ In the default setting (`group_test = NULL`), Route 1 uses the displayed residua
 
 <!-- The Shapiro--Wilk (SW) test is an omnibus normality test, sensitive to both skewness and kurtosis [@DAgostino:1973]. -->
 
-If the SW-test rejects residual normality ($p_\text{SW} \le \alpha$), robust non-parametric tests are selected: `wilcox.test()` (Eq. \@ref(eq:wilcoxon-w)) for two groups, or `kruskal.test()` (Eq. \@ref(eq:kruskal-h)) followed by Holm-adjusted `pairwise.wilcox.test()` for more than two groups.
+If the SW-test rejects residual normality ($p_\text{SW} \le \alpha$), robust non-parametric tests are selected: `wilcox.test()` (Eq. \@ref(eq:wilcoxon-w)) for two groups, or `kruskal.test()` (Eq. \@ref(eq:kruskal-h)) followed by Holm-adjusted `dunn.test()` [@Dunn:1964] for more than two groups.
 
 If residual normality is not rejected, the mean-centred Levene test (L) [@Levene:1960] (Eq. \@ref(eq:levene-f)) gates the variance assessment:
 
@@ -202,7 +202,7 @@ Because the three omnibus tests rest on different assumptions, each branch uses 
 
 - `games.howell()` after `oneway.test()` uses the Welch statistic (Eq. \@ref(eq:welch-t)) with separate variance estimates and Welch-adjusted degrees of freedom for each pair, making it the appropriate post-hoc procedure for the heteroscedastic Welch branch.
 
-- `pairwise.wilcox.test(p.adjust.method = "holm")` after `kruskal.test()` uses Holm's step-down adjustment for the pairwise Wilcoxon tests in the Kruskal--Wallis branch.
+- `dunn.test()` after `kruskal.test()` [@Dunn:1964] compares mean ranks from the same joint ranking the Kruskal--Wallis statistic uses, so each pairwise decision concerns the quantity the omnibus test rejected, with Holm's step-down adjustment.
 
 The graphical results panel of these omnibus tests consists of box plots (see examples in Section \@ref(sec:examples-route1)) enriched with significance letters to visualise the post-hoc analysis: Pairs whose adjusted post-hoc $p$\ value falls below $\alpha$ are marked with different green significance letters below the box plots; pairs sharing a letter are not significantly different.
 

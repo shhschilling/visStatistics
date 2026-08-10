@@ -137,7 +137,7 @@ Implemented post hoc tests:
 \itemize{
   \item \code{TukeyHSD()} for \code{aov()}
   \item \code{games.howell()} for  \code{oneway.test()}
-  \item \code{pairwise.wilcox.test()} for \code{kruskal.test()}
+  \item \code{dunn.test()} for \code{kruskal.test()}
 }
 
 The Q-Q envelopes in the assumption diagnostics are simulated (see

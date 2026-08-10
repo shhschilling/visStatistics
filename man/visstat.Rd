@@ -218,7 +218,7 @@ groups <- factor(rep(c("A", "B", "C"), each = 20))
 visstat(groups, values)
 ## Kruskal-Wallis (non-normal, >2 groups)
 # When residuals are not normally distributed, kruskal.test() is followed by
-# pairwise.wilcox.test.
+# dunn.test.
 visstat(iris$Species, iris$Petal.Width)
 
 ## Simple linear regression (both numeric)

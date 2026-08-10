@@ -110,14 +110,14 @@ Using wool type (`A` or `B`) as predictor and the number of breaks as response, 
 wilcoxon_stats <- visstat(warpbreaks$wool, warpbreaks$breaks)
 ```
 
-#### Kruskal--Wallis rank sum test with pairwise Wilcoxon post-hoc comparisons
+#### Kruskal--Wallis rank sum test with Dunn post-hoc comparisons
 
 In the `iris` data set, `Petal.Width` by `Species` follows a different route than `Sepal.Length` by `Species` above (Figure \@ref(fig:welch-anova-example)), because the assumption diagnostics differ.
 The assumption-diagnostic panel shows clear departures from normality, and both normality tests return very small $p$\ values.
-Since Shapiro--Wilk falls below $\alpha$, `visstat()` switches to `kruskal.test()` followed by Holm-adjusted `pairwise.wilcox.test()`.
+Since Shapiro--Wilk falls below $\alpha$, `visstat()` switches to `kruskal.test()` followed by Holm-adjusted `dunn.test()`.
 The result panel shows the box plots and Holm-adjusted significance letters; all three species differ significantly in petal width, as indicated by distinct letters.
 
-```{r kruskal-example, fig.cap=paste0("Kruskal-Wallis test applied to the `iris` dataset (`Petal.Width` vs.\\ `Species`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted pairwise Wilcoxon significance letters ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
+```{r kruskal-example, fig.cap=paste0("Kruskal-Wallis test applied to the `iris` dataset (`Petal.Width` vs.\\ `Species`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted Dunn significance letters ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
 kruskal_iris <- visstat(iris$Species, iris$Petal.Width)
 ```
 
@@ -142,7 +142,7 @@ wilcox_ordered <- visstat(titanic_df$Sex, titanic_df$Class)
 
 #### Kruskal--Wallis test with ordered response
 
-With three predictor groups, `visstat()` routes to `kruskal.test()` followed by Holm-adjusted `pairwise.wilcox.test()`.
+With three predictor groups, `visstat()` routes to `kruskal.test()` followed by Holm-adjusted `dunn.test()`.
 The result panel shows the Kruskal--Wallis comparison and Holm-adjusted significance letters on the numeric level scores (see Figure \@ref(fig:ordinal-wilcoxon-kruskal-example), right).
 A synthetic survey records perceived car comfort on a five-point scale across three markets.
 
@@ -167,7 +167,7 @@ ordinal_wilcoxon_kruskal_cap <- paste0(
  "expanded `Titanic` data (left) and its multi-group generalisation, ",
  "the Kruskal-Wallis test for ordered car comfort ratings by market ",
  "(right). ",
- "Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as ",
+ "Holm-adjusted Dunn post-hoc comparisons are shown as ",
  "significance letters for the Kruskal-Wallis example ($\\alpha = ",
  example_alpha, "$)."
 )

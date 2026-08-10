@@ -37,9 +37,24 @@ POWER_NS <- c(10, 20, 30, 50, 100, 200)
 ## branch's null is exactly true, and a single density heads each column of the
 ## figure. The only thing that differs between the two designs is the imbalance.
 ## Appended designs keep the stream positions of the first two, so their cells
-## reproduce bit-identically. The heteroscedastic blocks hold the effect size
-## fixed: shifts are scaled by sqrt(mean(sd^2)), so omega^2 matches the
-## homoscedastic blocks and the comparison isolates unequal variances.
+## reproduce bit-identically.
+##
+## The heteroscedastic blocks scale the common shift vector by sqrt(mean(sd^2))
+## (line 303 below). CORRECTION, 10 Aug 2026: an earlier version of this comment
+## claimed that this holds omega^2 equal to the homoscedastic blocks. It does
+## not. With SD = (1, 1.3, 1.7, 2.2) the factor is 1.614 and the balanced
+## heteroscedastic design reaches omega^2 = 0.0803 against the homoscedastic
+## 0.0725. The average of the variances is not the quantity entering omega^2,
+## which uses the inverse-variance-weighted grand mean (omega_scaling_helpers.R;
+## Eq. omega-sq-population-heteroscedastic in _effect_size_table.Rmd, citing
+## Shieh 2012 reporting Kulinskaya and Staudte 2006). The scaling is therefore
+## only a standardisation of the shifts by an average SD, and the comparison
+## across blocks does NOT hold the effect size fixed.
+##
+## Nothing here is changed, so this grid and every figure built from it stay
+## reproducible. The variant that keeps the shifts identical across designs and
+## reports omega^2 as the consequence, with the SD vectors of Brunner et al.
+## (2017), JRSS-B, Table 2, is route1_power_design_variants.R.
 POWER_DESIGNS <- list(
   list(design = "balanced n, equal SD",   multipliers = c(1, 1, 1, 1),        sd = c(1, 1, 1, 1)),
   list(design = "unbalanced n, equal SD", multipliers = c(0.5, 0.8, 1.2, 1.5), sd = c(1, 1, 1, 1)),

@@ -751,7 +751,7 @@ vis_Kruskal_Wallis <- function(samples,
   my_list <-
     list(
       "Kruskal Wallis rank sum test" = kk,
-      "post-hoc by pairwise Wilcoxon rank sum test " = post_hoc_kruskal
+      "post-hoc by Dunn's test" = post_hoc_kruskal
     )
   return(my_list)
 }
@@ -1348,22 +1348,24 @@ check_assumptions_count_data <- function(samples, fact) {
 }
 
 sig_diffs_nongauss <- function(samples, fact, conf.level = conf.level) {
-  # function to produce a table similar to that produced for TukeyHSD,
-  # but for non-normally distributed data
-  # calculate p values for each data classification based on pairwise.wilcox.test
+  # Post-hoc table for the Kruskal-Wallis branch, in the shape TukeyHSD
+  # returns so that the caller can treat both alike.
+  #
+  # The comparisons come from dunn.test(), which ranks all groups together,
+  # exactly as kruskal.test() does, so each pairwise decision concerns the
+  # quantity the omnibus test rejected; see Dunn (1964), Technometrics 6(3),
+  # 241-252, doi:10.2307/1266041.
+  #
+  # `diff`, `lwr` and `upr` stay NA: Dunn's statistic is a difference in mean
+  # ranks, not in the response, so there is no interval on the response scale
+  # to report in those columns.
 
   if (missing(conf.level)) {
     conf.level <- 0.95
   }
 
   ufactor <- levels(fact)
-  pwt <- pairwise.wilcox.test(samples, fact, conf.level = conf.level)
-  factormeans <- matrix(0, length(ufactor), 1)
-  for (ii in seq_along(ufactor)) {
-    pos <- which(fact == ufactor[ii])
-
-    factormeans[ii] <- mean(samples[pos])
-  }
+  dt <- dunn.test(samples, fact, conf.level = conf.level)
 
   # make a matrix with a row for every possible combination of
   # 2 data classifications and populate it with the calculated
@@ -1374,10 +1376,13 @@ sig_diffs_nongauss <- function(samples, fact, conf.level = conf.level) {
   colnames(tukeylike) <- c("diff", "lwr", "upr", "p adj")
   tukeynames <- vector("list", ncol(xcomb))
   for (ii in seq_len(ncol(xcomb))) {
-    tukeynames[ii] <-
-      paste(ufactor[xcomb[2, ii]], "-", ufactor[xcomb[1, ii]], sep = "")
+    g1 <- ufactor[xcomb[1, ii]]
+    g2 <- ufactor[xcomb[2, ii]]
+    tukeynames[ii] <- paste(g2, "-", g1, sep = "")
 
-    p_value <- pwt$p.value[xcomb[2, ii] - 1, xcomb[1, ii]]
+    hit <- (dt$group1 == g1 & dt$group2 == g2) |
+      (dt$group1 == g2 & dt$group2 == g1)
+    p_value <- if (any(hit)) dt$p_adj[which(hit)[1]] else NA_real_
 
     if (is.na(p_value)) {
       p_value <- 1
