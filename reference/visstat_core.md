@@ -179,7 +179,7 @@ Implemented post hoc tests:
 - [`games.howell()`](https://shhschilling.github.io/visStatistics/reference/games.howell.md)
   for [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html)
 
-- [`pairwise.wilcox.test()`](https://rdrr.io/r/stats/pairwise.wilcox.test.html)
+- [`dunn.test()`](https://shhschilling.github.io/visStatistics/reference/dunn.test.md)
   for [`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html)
 
 The Q-Q envelopes in the assumption diagnostics are simulated (see

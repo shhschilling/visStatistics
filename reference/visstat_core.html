@@ -197,7 +197,7 @@ r_i = e_i / (SE_res sqrt(1 - h_i)), which remove the leverage-dependent
 variance of the raw residuals (Var(e_i) = sigma^2 (1 - h_i)).</p>
 <p>Implemented post hoc tests:</p><ul><li><p><code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> for <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code></p></li>
 <li><p><code><a href="games.howell.html">games.howell()</a></code> for  <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code></p></li>
-<li><p><code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> for <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code></p></li>
+<li><p><code><a href="dunn.test.html">dunn.test()</a></code> for <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code></p></li>
 </ul><p>The Q-Q envelopes in the assumption diagnostics are simulated (see
 <code><a href="qq_lm_envelope.html">qq_lm_envelope</a></code>). The number of simulated refits is taken from
 the option <code>visStatistics.qq_nsim</code> and defaults to 5000. As

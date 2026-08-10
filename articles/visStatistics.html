@@ -387,7 +387,7 @@ Figure 5.2: Decision tree for the default Route 1 test selection (group_test = N
 <a href="#eq:raw-residual">(5.2)</a> are extracted.
 In the default setting (<code>group_test = NULL</code>), Route 1 uses the displayed residual diagnostics of the Shapiro–Wilk (SW) and Levene test (L) <span class="citation">(<a href="#ref-Levene:1960"><strong>Levene:1960?</strong></a>)</span> as automatic gates:</p>
 <!-- The Shapiro--Wilk (SW) test is an omnibus normality test, sensitive to both skewness and kurtosis [@DAgostino:1973]. -->
-<p>If the SW-test rejects residual normality (<span class="math inline">\(p_\text{SW} \le \alpha\)</span>), robust non-parametric tests are selected: <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> (Eq. <a href="#eq:wilcoxon-w">(C.1)</a>) for two groups, or <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> (Eq. <a href="#eq:kruskal-h">(C.3)</a>) followed by Holm-adjusted <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> for more than two groups.</p>
+<p>If the SW-test rejects residual normality (<span class="math inline">\(p_\text{SW} \le \alpha\)</span>), robust non-parametric tests are selected: <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> (Eq. <a href="#eq:wilcoxon-w">(C.1)</a>) for two groups, or <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> (Eq. <a href="#eq:kruskal-h">(C.3)</a>) followed by Holm-adjusted <code><a href="../reference/dunn.test.html">dunn.test()</a></code> <span class="citation">(<a href="#ref-Dunn:1964">Dunn 1964</a>)</span> for more than two groups.</p>
 <p>If residual normality is not rejected, the mean-centred Levene test (L) <span class="citation">(<a href="#ref-Levene:1960"><strong>Levene:1960?</strong></a>)</span> (Eq. <a href="#eq:levene-f">(A.3)</a>) gates the variance assessment:</p>
 <p>For homoscedastic data (<span class="math inline">\(p_\text{L} &gt; \alpha\)</span>), <code>t.test(var.equal = TRUE)</code> (Eq. <a href="#eq:student-t">(B.1)</a>) is applied for two groups, or Fisher’s <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> (Eq. <a href="#eq:fisher-f">(B.2)</a>) for more than two groups.
 For heteroscedastic data (<span class="math inline">\(p_\text{L} \le \alpha\)</span>), Welch’s <code><a href="https://rdrr.io/r/stats/t.test.html" class="external-link">t.test()</a></code> (Eq. <a href="#eq:welch-t">(B.4)</a>) is applied for two groups, or Welch’s <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> (Eq. <a href="#eq:welch-f">(B.6)</a>) for more than two groups.</p>
@@ -403,7 +403,7 @@ Because the three omnibus tests rest on different assumptions, each branch uses 
 <ul>
 <li><p><code><a href="https://rdrr.io/r/stats/TukeyHSD.html" class="external-link">TukeyHSD()</a></code> (Eq. <a href="#eq:tukey-hsd-q">(B.3)</a>) after <code><a href="https://rdrr.io/r/stats/aov.html" class="external-link">aov()</a></code> controls the family-wise error rate through the studentised range distribution under a common-variance assumption.</p></li>
 <li><p><code><a href="../reference/games.howell.html">games.howell()</a></code> after <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code> uses the Welch statistic (Eq. <a href="#eq:welch-t">(B.4)</a>) with separate variance estimates and Welch-adjusted degrees of freedom for each pair, making it the appropriate post-hoc procedure for the heteroscedastic Welch branch.</p></li>
-<li><p><code>pairwise.wilcox.test(p.adjust.method = "holm")</code> after <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> uses Holm’s step-down adjustment for the pairwise Wilcoxon tests in the Kruskal–Wallis branch.</p></li>
+<li><p><code><a href="../reference/dunn.test.html">dunn.test()</a></code> after <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> <span class="citation">(<a href="#ref-Dunn:1964">Dunn 1964</a>)</span> compares mean ranks from the same joint ranking the Kruskal–Wallis statistic uses, so each pairwise decision concerns the quantity the omnibus test rejected, with Holm’s step-down adjustment.</p></li>
 </ul>
 <p>The graphical results panel of these omnibus tests consists of box plots (see examples in Section <a href="#sec:examples-route1">6.1</a>) enriched with significance letters to visualise the post-hoc analysis: Pairs whose adjusted post-hoc <span class="math inline">\(p\)</span> value falls below <span class="math inline">\(\alpha\)</span> are marked with different green significance letters below the box plots; pairs sharing a letter are not significantly different.</p>
 </div>
@@ -625,19 +625,19 @@ Figure 6.5: Wilcoxon rank-sum test applied to the <code>warpbreaks</code> datase
 </div>
 </div>
 <div class="section level5" number="6.1.3.2">
-<h5 id="kruskalwallis-rank-sum-test-with-pairwise-wilcoxon-post-hoc-comparisons">
-<span class="header-section-number">6.1.3.2</span> Kruskal–Wallis rank sum test with pairwise Wilcoxon post-hoc comparisons<a class="anchor" aria-label="anchor" href="#kruskalwallis-rank-sum-test-with-pairwise-wilcoxon-post-hoc-comparisons"></a>
+<h5 id="kruskalwallis-rank-sum-test-with-dunn-post-hoc-comparisons">
+<span class="header-section-number">6.1.3.2</span> Kruskal–Wallis rank sum test with Dunn post-hoc comparisons<a class="anchor" aria-label="anchor" href="#kruskalwallis-rank-sum-test-with-dunn-post-hoc-comparisons"></a>
 </h5>
 <p>In the <code>iris</code> data set, <code>Petal.Width</code> by <code>Species</code> follows a different route than <code>Sepal.Length</code> by <code>Species</code> above (Figure <a href="#fig:welch-anova-example">6.4</a>), because the assumption diagnostics differ.
 The assumption-diagnostic panel shows clear departures from normality, and both normality tests return very small <span class="math inline">\(p\)</span> values.
-Since Shapiro–Wilk falls below <span class="math inline">\(\alpha\)</span>, <code><a href="../reference/visstat.html">visstat()</a></code> switches to <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> followed by Holm-adjusted <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>.
+Since Shapiro–Wilk falls below <span class="math inline">\(\alpha\)</span>, <code><a href="../reference/visstat.html">visstat()</a></code> switches to <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> followed by Holm-adjusted <code><a href="../reference/dunn.test.html">dunn.test()</a></code>.
 The result panel shows the box plots and Holm-adjusted significance letters; all three species differ significantly in petal width, as indicated by distinct letters.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">kruskal_iris</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/visstat.html">visstat</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">$</span><span class="va">Petal.Width</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <span style="display:block;" id="fig:kruskal-example"></span>
-<img src="visStatistics_files/figure-html/kruskal-example-1.png" alt="Kruskal-Wallis test applied to the `iris` dataset (`Petal.Width` vs.\ `Species`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted pairwise Wilcoxon significance letters ($\alpha = 0.05$)." width="48%"><img src="visStatistics_files/figure-html/kruskal-example-2.png" alt="Kruskal-Wallis test applied to the `iris` dataset (`Petal.Width` vs.\ `Species`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted pairwise Wilcoxon significance letters ($\alpha = 0.05$)." width="48%"><p class="caption">
-Figure 6.6: Kruskal-Wallis test applied to the <code>iris</code> dataset (<code>Petal.Width</code> vs. <code>Species</code>). Assumption diagnostics (Shapiro–Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted pairwise Wilcoxon significance letters (<span class="math inline">\(\alpha = 0.05\)</span>).
+<img src="visStatistics_files/figure-html/kruskal-example-1.png" alt="Kruskal-Wallis test applied to the `iris` dataset (`Petal.Width` vs.\ `Species`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted Dunn significance letters ($\alpha = 0.05$)." width="48%"><img src="visStatistics_files/figure-html/kruskal-example-2.png" alt="Kruskal-Wallis test applied to the `iris` dataset (`Petal.Width` vs.\ `Species`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted Dunn significance letters ($\alpha = 0.05$)." width="48%"><p class="caption">
+Figure 6.6: Kruskal-Wallis test applied to the <code>iris</code> dataset (<code>Petal.Width</code> vs. <code>Species</code>). Assumption diagnostics (Shapiro–Wilk rejects residual normality; non-parametric path selected) and box plots with Holm-adjusted Dunn significance letters (<span class="math inline">\(\alpha = 0.05\)</span>).
 </p>
 </div>
 </div>
@@ -672,7 +672,7 @@ The result panel therefore displays the rank-test comparison on the numeric leve
 <h5 id="kruskalwallis-test-with-ordered-response">
 <span class="header-section-number">6.2.1.2</span> Kruskal–Wallis test with ordered response<a class="anchor" aria-label="anchor" href="#kruskalwallis-test-with-ordered-response"></a>
 </h5>
-<p>With three predictor groups, <code><a href="../reference/visstat.html">visstat()</a></code> routes to <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> followed by Holm-adjusted <code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code>.
+<p>With three predictor groups, <code><a href="../reference/visstat.html">visstat()</a></code> routes to <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> followed by Holm-adjusted <code><a href="../reference/dunn.test.html">dunn.test()</a></code>.
 The result panel shows the Kruskal–Wallis comparison and Holm-adjusted significance letters on the numeric level scores (see Figure <a href="#fig:ordinal-wilcoxon-kruskal-example">6.7</a>, right).
 A synthetic survey records perceived car comfort on a five-point scale across three markets.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
@@ -692,8 +692,8 @@ A synthetic survey records perceived car comfort on a five-point scale across th
 <span><span class="co">## non-parametric analysis.</span></span></code></pre>
 <div class="figure">
 <span style="display:block;" id="fig:ordinal-wilcoxon-kruskal-example"></span>
-<img src="visStatistics_files/figure-html/ordinal-wilcoxon-kruskal-example-1.png" alt="Wilcoxon rank-sum test for ordered passenger class by sex in the expanded `Titanic` data (left) and its multi-group generalisation, the Kruskal-Wallis test for ordered car comfort ratings by market (right). Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significance letters for the Kruskal-Wallis example ($\alpha = 0.05$)." width="48%"><img src="visStatistics_files/figure-html/ordinal-wilcoxon-kruskal-example-2.png" alt="Wilcoxon rank-sum test for ordered passenger class by sex in the expanded `Titanic` data (left) and its multi-group generalisation, the Kruskal-Wallis test for ordered car comfort ratings by market (right). Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significance letters for the Kruskal-Wallis example ($\alpha = 0.05$)." width="48%"><p class="caption">
-Figure 6.7: Wilcoxon rank-sum test for ordered passenger class by sex in the expanded <code>Titanic</code> data (left) and its multi-group generalisation, the Kruskal-Wallis test for ordered car comfort ratings by market (right). Holm-adjusted pairwise Wilcoxon post-hoc comparisons are shown as significance letters for the Kruskal-Wallis example (<span class="math inline">\(\alpha = 0.05\)</span>).
+<img src="visStatistics_files/figure-html/ordinal-wilcoxon-kruskal-example-1.png" alt="Wilcoxon rank-sum test for ordered passenger class by sex in the expanded `Titanic` data (left) and its multi-group generalisation, the Kruskal-Wallis test for ordered car comfort ratings by market (right). Holm-adjusted Dunn post-hoc comparisons are shown as significance letters for the Kruskal-Wallis example ($\alpha = 0.05$)." width="48%"><img src="visStatistics_files/figure-html/ordinal-wilcoxon-kruskal-example-2.png" alt="Wilcoxon rank-sum test for ordered passenger class by sex in the expanded `Titanic` data (left) and its multi-group generalisation, the Kruskal-Wallis test for ordered car comfort ratings by market (right). Holm-adjusted Dunn post-hoc comparisons are shown as significance letters for the Kruskal-Wallis example ($\alpha = 0.05$)." width="48%"><p class="caption">
+Figure 6.7: Wilcoxon rank-sum test for ordered passenger class by sex in the expanded <code>Titanic</code> data (left) and its multi-group generalisation, the Kruskal-Wallis test for ordered car comfort ratings by market (right). Holm-adjusted Dunn post-hoc comparisons are shown as significance letters for the Kruskal-Wallis example (<span class="math inline">\(\alpha = 0.05\)</span>).
 </p>
 </div>
 </div>
@@ -1510,10 +1510,10 @@ have been assigned average ranks.</p>
 <p>If the group distributions are the same distribution up to group-specific additive constants, the test can be read as a location test and, because such shifts move all quantiles by the same amount, also as a median test <span class="citation">(<a href="#ref-Hollander:2014">Hollander et al. 2014</a>)</span>.</p>
 <p>For <span class="math inline">\(k=2\)</span>, Kruskal–Wallis and Wilcoxon are based on the same pooled ranks. The two group mean ranks are <span class="math inline">\(\bar R_1=W_1/n_1\)</span> and <span class="math inline">\(\bar R_2=W_2/n_2\)</span>, and <span class="math inline">\(W=U_1\)</span> is the reported Wilcoxon statistic from Eq. <a href="#eq:wilcoxon-w">(C.1)</a>. In the large-sample approximation, the two-group Kruskal–Wallis statistic <span class="math inline">\(H\)</span> corresponds to a squared, centred, and rescaled form of the reported Wilcoxon statistic <span class="math inline">\(W\)</span>. Therefore, the two tests give identical two-sided <span class="math inline">\(p\)</span> values only when Wilcoxon is forced to use the uncorrected large-sample approximation, <code>wilcox.test(..., exact = FALSE, correct = FALSE)</code>. In <code><a href="../reference/visstat.html">visstat()</a></code>, <code><a href="https://rdrr.io/r/stats/wilcox.test.html" class="external-link">wilcox.test()</a></code> is used with R’s default settings, while <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> uses the large-sample <span class="math inline">\(\chi^2\)</span> approximation to <span class="math inline">\(H\)</span>. Therefore, the two routes should not be expected to return identical two-group <span class="math inline">\(p\)</span> values under the defaults.</p>
 <div class="section level5" number="13.1.2.1">
-<h5 id="sec:pairwise-wilcox">
-<span class="header-section-number">C.1.2.1</span> Post-hoc comparison <code>pairwise.wilcox.test()</code><a class="anchor" aria-label="anchor" href="#sec:pairwise-wilcox"></a>
+<h5 id="sec:dunn">
+<span class="header-section-number">C.1.2.1</span> Post-hoc comparison <code>dunn.test()</code><a class="anchor" aria-label="anchor" href="#sec:dunn"></a>
 </h5>
-<p><code><a href="https://rdrr.io/r/stats/pairwise.wilcox.test.html" class="external-link">pairwise.wilcox.test()</a></code> compares each pair of factor levels via the Wilcoxon rank-sum test on ranks rather than means. The resulting <span class="math inline">\(p\)</span> values are adjusted for multiplicity using Holm’s step-down method <span class="citation">(<a href="#ref-Holm:1979">Holm 1979</a>)</span>.</p>
+<p><code><a href="../reference/dunn.test.html">dunn.test()</a></code> compares each pair of factor levels on the mean ranks of a single joint ranking of all groups, the same ranking that enters <span class="math inline">\(H\)</span> in Eq. <a href="#eq:kruskal-h">(C.3)</a> <span class="citation">(<a href="#ref-Dunn:1964">Dunn 1964</a>)</span>. For groups <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> the statistic is <span class="math inline">\(z_{ij}=(\bar R_i-\bar R_j)/\sigma_{ij}\)</span> with <span class="math inline">\(\sigma_{ij}^2=\left[\frac{N(N+1)}{12}-\frac{\sum_{s=1}^{r}(t_s^3-t_s)}{12(N-1)}\right]\left(\frac{1}{n_i}+\frac{1}{n_j}\right)\)</span>, where the <span class="math inline">\(r\)</span> groups of tied scores contain <span class="math inline">\(t_s\)</span> observations each. The resulting <span class="math inline">\(p\)</span> values are adjusted for multiplicity using Holm’s step-down method <span class="citation">(<a href="#ref-Holm:1979">Holm 1979</a>)</span>.</p>
 </div>
 </div>
 </div>
@@ -1916,13 +1916,9 @@ the residual sum of square is defined as
 </div>
 <div class="section level2" number="17">
 <h2 id="sec:population-effect-sizes">
-<span class="header-section-number">G</span> Population effect sizes<a class="anchor" aria-label="anchor" href="#sec:population-effect-sizes"></a>
+<span class="header-section-number">G</span> Population effect sizes of parametric tests<a class="anchor" aria-label="anchor" href="#sec:population-effect-sizes"></a>
 </h2>
-<p>To quantify the different desings in our simulations section:ref of the type I error rates and power of the parametric and non-parametric tests, we extend the effect sizes to the population level.</p>
-<div class="section level3" number="17.1">
-<h3 id="population-effect-sizes-of-parametric-tests">
-<span class="header-section-number">G.1</span> Population effect sizes of parametric tests<a class="anchor" aria-label="anchor" href="#population-effect-sizes-of-parametric-tests"></a>
-</h3>
+<p>To quantify the different designs of the power simulations, we extend the effect size <span class="math inline">\(\widehat{\omega}^2\)</span> to the population level for the different designs.</p>
 <p><strong>balanced homoscedastic</strong>
 In a balanced homoscedastic design, <span class="math inline">\(\widehat{\omega}^2\)</span> estimates the population parameter
 <span class="math display" id="eq:omega-sq-population">\[\begin{equation}
@@ -1945,7 +1941,6 @@ so that <span class="math inline">\(\omega^2_{\text{unbal}}=\omega^2_{\text{bal}
 \end{equation}\]</span>
 so that <span class="math inline">\(\omega^2_{\text{het}}=\omega^2_{\text{unbal}}\)</span> when <span class="math inline">\(\sigma_j^2=\sigma^2\)</span> for every <span class="math inline">\(j\)</span> <span class="citation">(<a href="#ref-Shieh:2012">Shieh 2012</a>)</span>
 <!-- attributing the construction to Kulinskaya and Staudte 2006]. --></p>
-</div>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -2022,6 +2017,9 @@ Delacre, Marie, Daniël Lakens, and Christophe Leys. 2017. <span>“Why Psycholo
 </div>
 <div id="ref-Delacre:2019" class="csl-entry">
 Delacre, Marie, Christophe Leys, Youri L. Mora, and Daniël Lakens. 2019. <span>“Taking <span>Parametric Assumptions Seriously</span>: <span>Arguments</span> for the <span>Use</span> of <span>Welch</span>’s <span class="nocase">F-test</span> Instead of the <span class="nocase">Classical F-test</span> in <span>One-Way ANOVA</span>.”</span> <em>International Review of Social Psychology</em> 32 (1). <a href="https://doi.org/10.5334/irsp.198" class="external-link">https://doi.org/10.5334/irsp.198</a>.
+</div>
+<div id="ref-Dunn:1964" class="csl-entry">
+Dunn, Olive Jean. 1964. <span>“Multiple <span>Comparisons Using Rank Sums</span>.”</span> <em>Technometrics</em> 6 (3): 241–52. <a href="https://doi.org/10.1080/00401706.1964.10490181" class="external-link">https://doi.org/10.1080/00401706.1964.10490181</a>.
 </div>
 <div id="ref-Ernst:2017" class="csl-entry">
 Ernst, Anja F., and Casper J. Albers. 2017. <span>“Regression Assumptions in Clinical Psychology Research Practice—a Systematic Review of Common Misconceptions.”</span> <em>PeerJ</em> 5 (May): e3323. <a href="https://doi.org/10.7717/peerj.3323" class="external-link">https://doi.org/10.7717/peerj.3323</a>.

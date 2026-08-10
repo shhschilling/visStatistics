@@ -315,7 +315,7 @@ visstat(groups, values)
 
 ## Kruskal-Wallis (non-normal, >2 groups)
 # When residuals are not normally distributed, kruskal.test() is followed by
-# pairwise.wilcox.test.
+# dunn.test.
 visstat(iris$Species, iris$Petal.Width)
 
 
