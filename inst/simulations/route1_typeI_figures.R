@@ -106,21 +106,10 @@ if (HAS_ATS_H0P) {
   sim$ats_h0p_rejection <- NA_real_
 }
 
-## Population effect sizes of each (design, panel) cell of the equal-means
-## grid, from effect_sizes_by_design_panel.R with scaling = "typeI".
-## omega^2 is 0 in every cell here, the means being equal by construction.
-## eta_H^2 is not: scaling a skewed distribution by different SDs moves its
-## median, so in the unequal-SD designs the groups still differ on the rank
-## scale. Printing both separates a Kruskal-Wallis rejection rate above alpha
-## that is a genuine level violation (eta_H^2 = 0) from one that is power
-## against a false rank null (eta_H^2 > 0).
-ES_FILE <- file.path(SIMDIR, "effect_sizes_by_design_panel_typeI.csv")
-HAS_ES <- file.exists(ES_FILE)
-ES_TAB <- if (HAS_ES) read.csv(ES_FILE, stringsAsFactors = FALSE) else NULL
-if (!HAS_ES) {
-  message("Effect-size table not found (", ES_FILE,
-          "); heatmap columns will be labelled by number only.")
-}
+## omega^2 is 0 in every cell of this grid (the means are equal by
+## construction, testing Type I error), so labelling columns with it would
+## be uninformative. Columns are labelled by panel number only.
+HAS_ES <- FALSE
 
 ## Figure heights are set for five displayed sizes and scale with the number
 ## actually drawn, so the heatmap row pitch stays constant and the rejection
@@ -645,16 +634,15 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
     )
     hit <- match(panels_in_order, es$panel)
     if (!anyNA(hit)) {
-      ## plotmath, so omega^2 and eta_H^2 render with a real superscript and
-      ## subscript instead of as literal text.
+      ## plotmath, so omega^2 renders with a real superscript instead of as
+      ## literal text. omega^2 is a population parameter with a closed form.
+      ## eta_H^2 is deliberately NOT shown: it has no established population
+      ## definition independent of N -- ranks have no population-level
+      ## existence the way (mu_j, sigma_j^2) do, so any number here would be
+      ## invented, not cited.
       ##
-      ## Both are population parameters, not simulation estimates: omega^2 from
-      ## its closed form, eta_H^2 from quadrature on 12*sum p_j (r_j-1/2)^2.
-      ## Cells that are zero by construction are printed "0" rather than
-      ## "0.000": omega^2 because the means are equal throughout this grid, and
-      ## eta_H^2 wherever the groups are identical, or symmetric about a common
-      ## centre so that every relative effect is exactly 1/2. Quadrature leaves
-      ## those at ~1e-27 rather than at 0, hence the tolerance.
+      ## Cells that are zero by construction (means equal throughout this
+      ## grid) are printed "0" rather than "0.000".
       fmt <- function(x) {
         out <- sprintf("%.3f", round(x, 3))
         out[out == "-0.000"] <- "0.000"
@@ -662,8 +650,8 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
         out
       }
       x_labels <- stats::setNames(
-        sprintf('"%d)"~~omega^2*"=%s"~~eta[H]^2*"=%s"',
-                es$panel[hit], fmt(es$omega_sq[hit]), fmt(es$eta_h_sq[hit])),
+        sprintf('"%d)"~~omega^2*"=%s"',
+                es$panel[hit], fmt(es$omega_sq[hit])),
         names(column_number_labels)
       )
     } else {

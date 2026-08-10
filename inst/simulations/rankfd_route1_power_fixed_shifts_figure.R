@@ -1,4 +1,8 @@
-## Generate power figure from fixed-shifts simulation results, showing omega^2 and eta_H^2
+## Generate power figure from fixed-shifts simulation results: same shifts
+## and SDs held fixed across all three designs, only the sample-size
+## allocation (balance) varies. omega^2 therefore differs by design (not
+## held artificially equal), shown once per row. eta_H^2 is not shown: it
+## has no established population definition independent of N.
 
 if (!requireNamespace("ggplot2", quietly = TRUE)) stop("Package 'ggplot2' is required.")
 if (!requireNamespace("patchwork", quietly = TRUE)) stop("Package 'patchwork' is required.")
@@ -34,11 +38,17 @@ if (!file.exists(RESULTS_FILE)) {
 
 power <- read.csv(RESULTS_FILE)
 
-## One omega^2 (parametric) and one eta_H^2 (non-parametric) per condition.
+## One row per design. The design specification (n multipliers, SD vector,
+## shift vector) is shown explicitly, not just its name -- shifts and SDs
+## are identical across rows by construction (that is the whole point of
+## this comparison), only the n multipliers differ. omega^2 is shown once
+## per row since it is constant within a design across n and panel here.
 power$header <- with(power,
-  paste0(design, " | n=", n_per_group,
-         " | ω²=", format(round(omega_sq, 3), nsmall = 3),
-         " ηᴴ²=", format(round(eta_h_sq, 3), nsmall = 3))
+  paste0(design,
+         "  |  (n₁,n₂,n₃,n₄)=n̄(", multipliers, ")",
+         "  |  (SD₁,...,SD₄)=(", sd_per_group, ")",
+         "  |  shifts=(", shifts, ")",
+         "  |  ω²=", format(round(omega_sq, 4), nsmall = 4))
 )
 power$header <- factor(power$header, levels = unique(power$header))
 
@@ -75,10 +85,10 @@ fig <- ggplot2$ggplot(power_long, ggplot2$aes(x = n_per_group, y = power, colour
     name = "Test"
   ) +
   ggplot2$labs(
-    title = "Rank-based power with fixed shifts and SDs: balance effect",
+    title = "Rank-based power, same distributions across designs: balance effect only",
     x = "Sample size per group (log scale)",
     y = "Simulated rejection rate (power)",
-    subtitle = "Effect sizes ω² and η_H² shown for each condition"
+    subtitle = "Shifts and SDs held identical across rows; only the sample-size allocation differs"
   ) +
   ggplot2$theme_minimal(base_size = 10) +
   ggplot2$theme(

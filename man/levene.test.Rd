@@ -73,7 +73,7 @@ levene.test(y_unequal, g_unequal)
 
 }
 \references{
-Levene, H. (1960). Robust tests for equality of variances. In I. Olkin
-(Ed.), Contributions to Probability and Statistics (pp. 278-292).
-Stanford University Press.
+Gastwirth, J. L., Gel, Y. R., & Miao, W. (2009). The Impact of Levene's
+Test of Equality of Variances on Statistical Theory and Practice.
+\emph{Statistical Science}, 24(3), 343--360. doi:10.1214/09-STS301.
 }

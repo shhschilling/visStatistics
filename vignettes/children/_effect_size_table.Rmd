@@ -34,7 +34,7 @@ Hedges' $g_{s^{*}}$ (non-pooled) & $g_{s^{*}}=J(\nu^{*})\cdot(\bar{x}_1-\bar{x}_
 \hline
 \hyperref[sec:wilc]{Wilcoxon rank-sum} &
 rank-biserial $r$ & $r=2\cdot W/(n_1\cdot n_2)-1$ &
-\tbdoi{10.2466/11.IT.3.1}{Kerby 2014} \\
+\tbdoi{10.1002/ejsp.2420020412}{Wendt 1972} \\
 \hline
 \hyperref[sec:fisher-aov]{Fisher's ANOVA} & $\widehat{\omega}^2$ &
 $\nu_1\cdot(F-1)/(\nu_1\cdot F+\nu_2+1)$ &
@@ -108,7 +108,7 @@ conditional odds ratio &
 <td><a href="#sec:wilc">Wilcoxon rank-sum</a></td>
 <td>rank-biserial $r$</td>
 <td>$r=2\cdot W/(n_1\cdot n_2)-1$</td>
-<td><a href="https://doi.org/10.2466/11.IT.3.1">Kerby 2014</a></td>
+<td><a href="https://doi.org/10.1002/ejsp.2420020412">Wendt 1972</a></td>
 </tr>
 <tr>
 <td><a href="#sec:fisher-aov">Fisher's ANOVA</a></td>
@@ -194,56 +194,6 @@ s^{*} = \sqrt{\frac{s_1^2+s_2^2}{2}}.
 
 In the ANOVA effect sizes, $\nu_1$ and $\nu_2$ denote the numerator and denominator degrees of freedom; for Fisher's ANOVA, $\nu_1=k-1$ and $\nu_2=N-k$; for Welch's ANOVA, $\nu_1=k-1$ and $\nu_2$ is the usually fractional denominator degree of freedom returned by `oneway.test()`.
 
-In a balanced design, $\widehat{\omega}^2$ estimates the population parameter
-\begin{equation}
-\omega^2 =\frac{\sigma^2_{\mathrm{Effect}}}{\sigma^2_{\mathrm{Effect}}+\sigma^2},
-(\#eq:omega-sq-population)
-\end{equation}
-with $\sigma^2_{\mathrm{Effect}}=\frac1k\sum_{j=1}^k(\mu_j-\bar\mu)^2$  and $\sigma^2$ the constant error variance of the general linear model (Eq. \@ref(eq:glm)) [@Steiger:2004].
-
-The rank-based effect size has a population counterpart of the same kind. Let
-$n_i$ be the size of group $i$, $N=\sum_{i=1}^{k}n_i$, and $p_i=n_i/N$. Writing
-
-\begin{equation}
-\widehat{r}_i=\frac{\bar R_i-\tfrac12}{N},\qquad i=1,\dots,k,
-(\#eq:relative-effect-estimator)
-\end{equation}
-
-for the estimated relative effect of group $i$, the deviation entering
-Eq. \@ref(eq:kruskal-h) is $\bar R_i-\bar R=N\left(\widehat{r}_i-\tfrac12\right)$,
-so that
-
-\begin{equation}
-H=\frac{12N^{2}}{N+1}\sum_{i=1}^{k}p_i\left(\widehat{r}_i-\frac12\right)^{2}.
-(\#eq:kruskal-h-relative)
-\end{equation}
-
-$H$ grows in proportion to $N$, and the denominator $N-k$ of
-$\widehat{\eta}_H^2$ removes that growth. With the group sizes $n_i$ growing in
-fixed proportions $p_i$,
-
-\begin{equation}
-\widehat{\eta}_H^2\;\longrightarrow\;\eta_H^2=12\sum_{i=1}^{k}p_i\left(r_i-\frac12\right)^{2},
-(\#eq:eta-h-population)
-\end{equation}
-
-where $F_i$ denotes the distribution of group $i$ and
-
-\begin{equation}
-r_i=\int G\,\mathrm{d}F_i,\qquad G=\sum_{l=1}^{k}p_l\,F_l .
-(\#eq:weighted-relative-effect)
-\end{equation}
-
-This is the cancellation that also takes $\widehat{\omega}^2$ to
-Eq. \@ref(eq:omega-sq-population), where $\nu_2=N-k$ removes the linear growth
-of $\nu_1F$. The pooled distribution $G$ of
-Eq. \@ref(eq:weighted-relative-effect) carries the size fractions $p_l$, so the
-$r_i$ are weighted relative effects and $\eta_H^2$ is a property of the group
-sizes together with the distributions, not of the distributions alone
-[@Brunner:2017].
-
-
-
 In the the coefficient of determination $R^2$,
 the residual sum of square is defined as
  $SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2$, where  $\hat{y}_i$ is the predicted value,  and the total sum of squares is given by  $SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2$ .
@@ -251,3 +201,36 @@ the residual sum of square is defined as
 
 
 All other variables used in the [effect-size table](#tab:effect-size-formulae) are defined in the corresponding "Analysis" section.
+
+# Population effect sizes {#sec:population-effect-sizes}
+
+To quantify the different desings in our simulations section:ref of the type I error rates and power of the parametric and non-parametric tests, we extend the effect sizes to the population level.
+
+
+##  Population effect sizes of parametric tests
+
+**balanced homoscedastic** 
+In a balanced homoscedastic  design, $\widehat{\omega}^2$ estimates the population parameter
+\begin{equation}
+\omega^2_{\text{bal}} =\frac{\sigma^2_{\text{between}}}{\sigma^2_{\text{between}}+\sigma^2},
+(\#eq:omega-sq-population)
+\end{equation}
+with $\sigma^2_{\text{between}}=\frac1k\sum_{j=1}^k(\mu_j-\bar\mu)^2$ and $\sigma^2$ the constant error variance of the general linear model (Eq. \@ref(eq:glm)) [@Steiger:2004].
+
+**unbalanced homoscedastic** 
+For unbalanced, homoscedastic designs, with $p_j=n_j/N$ the (fixed) relative size of group $j$ and $\bar\mu_p=\sum_{j=1}^k p_j\mu_j$ the allocation-weighted grand mean, the same ratio defines $\omega^2_{\text{unbal}}$, now with
+\begin{equation}
+\sigma^2_{\text{between}}=\sum_{j=1}^k p_j(\mu_j-\bar\mu_p)^2,
+(\#eq:omega-sq-population-unbalanced)
+\end{equation}
+so that $\omega^2_{\text{unbal}}=\omega^2_{\text{bal}}$ when $p_j=1/k$ [@Carroll:1975].
+
+**unbalanced heteroscedastic** 
+
+For Welch's ANOVA, allowing the group variances $\sigma_j^2$ to differ, $\widehat\omega^2$ (approx.) estimates the heteroscedastic extension of Eq. \@ref(eq:omega-sq-population-unbalanced). With $w_j=n_j/\sigma_j^2$ and $\tilde\mu_w=\sum_{j=1}^k w_j\mu_j\big/\sum_{j=1}^k w_j$ the inverse-variance-weighted grand mean,
+\begin{equation}
+\omega^2_{\text{het}}=\frac{\lambda}{1+\lambda},\qquad \lambda=\sum_{j=1}^k p_j\left(\frac{\mu_j-\tilde\mu_w}{\sigma_j}\right)^2,
+(\#eq:omega-sq-population-heteroscedastic)
+\end{equation}
+so that $\omega^2_{\text{het}}=\omega^2_{\text{unbal}}$ when $\sigma_j^2=\sigma^2$ for every $j$ [@Shieh:2012]
+<!-- attributing the construction to Kulinskaya and Staudte 2006]. -->

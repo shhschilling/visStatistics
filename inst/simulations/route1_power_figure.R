@@ -25,6 +25,8 @@ SIMDIR <- local({
 
 source(file.path(SIMDIR, "fleishman_route1_residual_helpers.R"))
 source(file.path(SIMDIR, "fleishman_figure_typography.R"))
+## omega_sq_regime(), to name which of the three population omega^2 applies.
+source(file.path(SIMDIR, "omega_scaling_helpers.R"))
 
 OUTDIR <- "."
 FIGDIR <- "."
@@ -49,11 +51,21 @@ DESIGN_BAL_UNEQ <- "balanced n, unequal SD"
 DESIGN_UNBAL_POS <- "unbalanced n, larger n with larger SD"
 DESIGN_UNBAL_NEG <- "unbalanced n, larger n with smaller SD"
 
+## Two knobs, both defaulting to the behaviour this script has always had, so
+## that a caller can source it for a variant without copying it (see
+## figure_power_kw_only.R). Set them BEFORE sourcing.
+##   POWER_INCLUDE_PSEUDORANK  FALSE drops the RK, ATS and ATSp rows, leaving
+##                             the six strategies of the current implementation.
+##   POWER_OUT_PREFIX          output basename, so a variant cannot overwrite
+##                             the reference PNGs.
+if (!exists("POWER_INCLUDE_PSEUDORANK")) POWER_INCLUDE_PSEUDORANK <- TRUE
+if (!exists("POWER_OUT_PREFIX")) POWER_OUT_PREFIX <- "fleishman_4groups_power"
+
 ## Pseudo-rank arm (RK, ATS), simulated by rankfd_route1_power.R on streams
 ## that continue where route1_simulations.R stopped. Joined on design, group
 ## size and input shape; both rows are omitted when the file is absent.
 RKP_FILE <- file.path(SIMDIR, "rankfd_route1_power_B50000.csv")
-HAS_RKP <- file.exists(RKP_FILE)
+HAS_RKP <- POWER_INCLUDE_PSEUDORANK && file.exists(RKP_FILE)
 if (HAS_RKP) {
   rkp <- read.csv(RKP_FILE)
   keyp <- function(d) paste(d$design, d$n_per_group, d$panel)
@@ -83,7 +95,7 @@ if (!HAS_ES) {
 ## ATS under the nonparametric Behrens-Fisher null H0p (rankfd_route1_power_h0p.R),
 ## joined the same way as the RKP arm above. Omitted when the file is absent.
 RKP_H0P_FILE <- file.path(SIMDIR, "rankfd_route1_power_h0p_B50000.csv")
-HAS_RKP_H0P <- file.exists(RKP_H0P_FILE)
+HAS_RKP_H0P <- POWER_INCLUDE_PSEUDORANK && file.exists(RKP_H0P_FILE)
 if (HAS_RKP_H0P) {
   rkp_h0p <- read.csv(RKP_H0P_FILE)
   keyp <- function(d) paste(d$design, d$n_per_group, d$panel)
@@ -101,23 +113,57 @@ if (HAS_RKP_H0P) {
 ## Naming follows Brunner et al. 2017, JRSSB, Table 2 (p. 1477): homoscedastic
 ## vs heteroscedastic, and positive/negative pairing for the direction in
 ## which the SDs are paired with the (unbalanced) group sizes.
-sd_header <- function(what, nmult, sdvec) paste0(
-  "power simulations, ", what, "; ",
-  "(n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = ",
-  "n&#772;(", nmult, "); ",
-  "(SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (", sdvec, ")"
-)
+## omega^2 is constant across the 5 panels of a design (verified against
+## effect_sizes_by_design_panel_<ES_SCALING>.csv: identical to 6 decimals in
+## every panel of every design), so it belongs once in the row header, after
+## the N and SD vectors -- not repeated in every column header.
+omega_sq_for_design <- function(design_name) {
+  if (!HAS_ES) return(NA_real_)
+  es <- ES_TAB[ES_TAB$design == design_name, , drop = FALSE]
+  if (nrow(es) == 0) return(NA_real_)
+  unique(round(es$omega_sq, 3))[1]
+}
+
+## Three different population parameters are written omega^2 in
+## _effect_size_table.Rmd, Eqs. (omega-sq-population),
+## (-unbalanced) and (-heteroscedastic): they are not the same quantity, so a
+## row must name the one that applies to its design rather than a bare
+## "omega^2". The subscripts bal/unb/het are those returned by
+## omega_sq_regime() in omega_scaling_helpers.R, so figure, text and code use
+## one vocabulary. Any unequal SD makes a design heteroscedastic whether or not
+## the group sizes are balanced.
+## The subscript is exactly what omega_sq_regime() returns -- bal, unbal, het --
+## the same three strings the vignette uses, so there is no mapping to keep in
+## step between figure, text and code.
+omega_sq_symbol <- function(nmult, sdvec) {
+  num <- function(s) as.numeric(strsplit(s, ",[ ]*")[[1]])
+  paste0("&omega;<sup>2</sup><sub>", omega_sq_regime(num(nmult), num(sdvec)), "</sub>")
+}
+
+sd_header <- function(what, nmult, sdvec, design_name) {
+  omega <- omega_sq_for_design(design_name)
+  omega_part <- if (is.na(omega)) "" else {
+    sprintf("; %s = %s", omega_sq_symbol(nmult, sdvec), format(omega, nsmall = 3))
+  }
+  paste0(
+    "power simulations, ", what, "; ",
+    "(n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = ",
+    "n&#772;(", nmult, "); ",
+    "(SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (", sdvec, ")",
+    omega_part
+  )
+}
 NMULT_BAL <- "1, 1, 1, 1"
 NMULT_UNBAL <- "0.5, 0.8, 1.2, 1.5"
 SDV_EQ <- "1, 1, 1, 1"
 SDV_POS <- "1, 1.3, 1.7, 2.2"
 SDV_NEG <- "2.2, 1.7, 1.3, 1"
 
-HEADER_BALANCED   <- sd_header("balanced homoscedastic",   NMULT_BAL,   SDV_EQ)
-HEADER_BAL_UNEQ   <- sd_header("balanced heteroscedastic", NMULT_BAL,   SDV_POS)
-HEADER_UNBAL_HOMO <- sd_header("unbalanced homoscedastic", NMULT_UNBAL, SDV_EQ)
-HEADER_UNBAL_POS  <- sd_header("unbalanced heteroscedastic (positive pairing)", NMULT_UNBAL, SDV_POS)
-HEADER_UNBAL_NEG  <- sd_header("unbalanced heteroscedastic (negative pairing)", NMULT_UNBAL, SDV_NEG)
+HEADER_BALANCED   <- sd_header("balanced homoscedastic",   NMULT_BAL,   SDV_EQ,  DESIGN_BALANCED)
+HEADER_BAL_UNEQ   <- sd_header("balanced heteroscedastic", NMULT_BAL,   SDV_POS, DESIGN_BAL_UNEQ)
+HEADER_UNBAL_HOMO <- sd_header("unbalanced homoscedastic", NMULT_UNBAL, SDV_EQ,  DESIGN_UNBAL_HOMO)
+HEADER_UNBAL_POS  <- sd_header("unbalanced heteroscedastic (positive pairing)", NMULT_UNBAL, SDV_POS, DESIGN_UNBAL_POS)
+HEADER_UNBAL_NEG  <- sd_header("unbalanced heteroscedastic (negative pairing)", NMULT_UNBAL, SDV_NEG, DESIGN_UNBAL_NEG)
 
 ggplot2 <- asNamespace("ggplot2")
 patchwork <- asNamespace("patchwork")
@@ -417,40 +463,9 @@ make_power_plot <- function(design_name, panel_letter, panel_description,
     stop("No power results for design: ", design_name)
   }
 
-  ## Column headers carry both effect sizes of this design, so each column can
-  ## be judged on its own: without them a low rejection rate cannot be told
-  ## apart from a nearly zero effect.
-  if (HAS_ES) {
-    es <- ES_TAB[ES_TAB$design == design_name, , drop = FALSE]
-    es <- es[order(es$panel), , drop = FALSE]
-    if (nrow(es) == length(panel_levels)) {
-      ## plotmath, so omega^2 and eta_H^2 render with a real superscript and
-      ## subscript rather than as literal text; drawn via label_parsed below.
-      ## Both are population parameters, not simulation estimates: omega^2 from
-      ## its closed form, eta_H^2 from quadrature (eta_h_population.R). Values
-      ## that are zero by construction print as "0", not "0.000"; quadrature
-      ## leaves those at ~1e-27 rather than at 0, hence the tolerance.
-      fmt <- function(x) {
-        out <- sprintf("%.3f", round(x, 3))
-        out[out == "-0.000"] <- "0.000"
-        out[abs(x) < 1e-12] <- "0"
-        out
-      }
-      es_lab <- stats::setNames(
-        sprintf('"%d)"~~omega^2*"=%s"~~eta[H]^2*"=%s"',
-                es$panel, fmt(es$omega_sq), fmt(es$eta_h_sq)),
-        paste0(es$panel, ")")
-      )
-      dat$power_panel <- factor(
-        unname(es_lab[as.character(dat$power_panel)]),
-        levels = unname(es_lab[panel_levels])
-      )
-    } else {
-      warning("Effect-size table has ", nrow(es), " rows for design '",
-              design_name, "'; expected ", length(panel_levels),
-              ". Columns labelled by number only.")
-    }
-  }
+  ## omega^2 is constant across the 5 panels of a design (see
+  ## omega_sq_for_design() above), so it is stated once in the row header,
+  ## not repeated in every column -- columns are labelled by panel number only.
 
   power_long <- to_long(dat)
   power_plot <- subset(power_long, n_per_group %in% NS_TO_PLOT)
@@ -516,12 +531,7 @@ make_power_plot <- function(design_name, panel_letter, panel_description,
     family = FLEISHMAN_FONT_FAMILY,
     size = FLEISHMAN_GEOM_TEXT$inset
   ) +
-  ## label_parsed only when the labels are plotmath; the bare "1)" fallback
-  ## is not parseable.
-  ggplot2$facet_grid(
-    stats::as.formula(". ~ power_panel"),
-    labeller = if (HAS_ES) ggplot2$label_parsed else ggplot2$label_value
-  ) +
+  ggplot2$facet_grid(stats::as.formula(". ~ power_panel")) +
   ggplot2$scale_y_continuous(
     limits = c(0, 1),
     breaks = seq(0.1, 1, by = 0.1),
@@ -640,10 +650,10 @@ HEIGHT_BALANCED <- 27.5
 HEIGHT_UNBALANCED <- 27.5 * 3 / 2
 
 for (dir in unique(c(OUTDIR, FIGDIR))) {
-  ggplot2$ggsave(file.path(dir, "fleishman_4groups_power_balanced.png"),
+  ggplot2$ggsave(file.path(dir, paste0(POWER_OUT_PREFIX, "_balanced.png")),
     combined_balanced, width = COMBINED_WIDTH, height = HEIGHT_BALANCED, dpi = FLEISHMAN_DPI)
-  ggplot2$ggsave(file.path(dir, "fleishman_4groups_power_unbalanced.png"),
+  ggplot2$ggsave(file.path(dir, paste0(POWER_OUT_PREFIX, "_unbalanced.png")),
     combined_unbalanced, width = COMBINED_WIDTH, height = HEIGHT_UNBALANCED, dpi = FLEISHMAN_DPI)
 }
 
-message("Updated plots in: ", OUTDIR)
+message("Updated plots in: ", OUTDIR, " (prefix ", POWER_OUT_PREFIX, ")")
