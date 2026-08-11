@@ -8,9 +8,11 @@
 ## Notation {.unnumbered}
 In the following, \(k\) denotes the number of groups,
 \(n_i\) the sample size of group \(i\), and
-\(N=\sum_{i=1}^{k}n_i\) the total sample size. Observations are written as
-\(x_{ij}\), with group mean \(\bar x_i\), grand mean \(\bar x\), and group
-sample variance \(s_i^2\). The pooled variance is
+\(N=\sum_{i=1}^{k}n_i\) the total sample size, with group-size ratios
+\(q_i=n_i/N\). Observations are written as
+\(x_{ij}\), drawn from the distribution function \(F_i\) of group \(i\), with
+group mean \(\bar x_i\), grand mean \(\bar x\), and group sample variance
+\(s_i^2\). The pooled variance is
 \begin{equation}
 s_p^2=\frac{1}{N-k}\sum_{i=1}^{k}(n_i-1)s_i^2 .
 (\#eq:pooled-variance)
@@ -402,7 +404,7 @@ n_i \left(\bar{R}_i - \bar{R}\right)^2,
 
 The prefactor $12/[N(N+1)]$ rescales the weighted squared deviations of the group mean ranks by the sample variance of the $N$ pooled ranks.
 
-$H$  \@ref(eq:kruskal-h) depends on the balance of design through its dependence on $n_i/N$. Writing
+$H$  \@ref(eq:kruskal-h) depends on the balance of design through its dependence on the group-size ratios $q_i$; writing
 
 \begin{equation}
 \widehat p_i=\frac{\bar R_i-\tfrac12}{N}
@@ -412,12 +414,28 @@ $H$  \@ref(eq:kruskal-h) depends on the balance of design through its dependence
 for the average position of the observations of group $i$ within the pooled sample, Eq. \@ref(eq:kw-expected-mean-rank) gives $\bar R_i-\bar R=N(\widehat p_i-\tfrac12)$ exactly, so that, in the absence of ties,
 
 \begin{equation}
-H=\frac{12N^{2}}{N+1}\sum_{i=1}^{k}\frac{n_i}{N}
+H=\frac{12N^{2}}{N+1}\sum_{i=1}^{k} q_i
   \left(\widehat p_i-\frac12\right)^{2}.
 (\#eq:kruskal-h-ratios)
 \end{equation}
 
-The group-size ratios $n_i/N$ enter twice: once as the weights shown in Eq. \@ref(eq:kruskal-h-ratios), and once inside $\widehat p_i$ itself, since a rank taken over all $N$ observations measures position relative to the pooled sample, in which group $i$ is represented in proportion $n_i/N$. With ties, both sides carry the tie factor below and the identity is unchanged.
+The $q_i$ enter twice: once as the weights shown in Eq. \@ref(eq:kruskal-h-ratios), and once inside $\widehat p_i$ itself, since a rank taken over all $N$ observations measures position relative to the pooled sample, in which group $i$ is represented in proportion $q_i$. With ties, both sides carry the tie factor below and the identity is unchanged.
+
+Pooling the $k$ groups in the proportions $q_i$ corresponds, at the population level, to the mixture distribution
+
+\begin{equation}
+\bar F_q(x)=\sum_{i=1}^{k} q_i F_i(x),
+(\#eq:weighted-average-cdf)
+\end{equation}
+
+itself a distribution function: it describes a draw obtained by picking group $i$ with probability $q_i$ and then drawing from $F_i$. What $\widehat p_i$ estimates, unbiasedly and consistently, is the weighted relative effect [@Brunner:2021]
+
+\begin{equation}
+p_i=\int_{-\infty}^{\infty}\bar F_q(y)\,\mathrm{d}F_i(y),
+(\#eq:weighted-relative-effect)
+\end{equation}
+
+the probability that an observation from group $i$ exceeds an independent draw from the pooled population, plus half the probability of a tie.
 
 Large values of $H$ occur when at least one group has systematically higher or lower ranks than expected under equal rank distributions. `kruskal.test()` evaluates $H$ against the asymptotic $\chi^2(k-1)$ null distribution. 
 If ties are present,  $H$ is divided by the tie factor

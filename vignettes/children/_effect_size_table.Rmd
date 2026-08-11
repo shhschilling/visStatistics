@@ -194,8 +194,7 @@ s^{*} = \sqrt{\frac{s_1^2+s_2^2}{2}}.
 
 In the ANOVA effect sizes, $\nu_1$ and $\nu_2$ denote the numerator and denominator degrees of freedom; for Fisher's ANOVA, $\nu_1=k-1$ and $\nu_2=N-k$; for Welch's ANOVA, $\nu_1=k-1$ and $\nu_2$ is the usually fractional denominator degree of freedom returned by `oneway.test()`.
 
-In the Kruskal-Wallis "effect size" $\widehat{\eta}_H^2$,
-the joint ranking of all $N$ observations enters $H$ (Eq. \@ref(eq:kruskal-h)) depending thus on the group-size ratios $n_i/N, i=1,\dots,k$. It is therefore not an effect size in the strict sense: a model parameter should be a function of the distributions $F_1,\dots,F_k$ alone, not of the sampling design [@Zimmermann:2021].
+In the Kruskal--Wallis effect size $\widehat{\eta}_H^2$, the joint ranking of all $N$ observations enters $H$ (Eq. \@ref(eq:kruskal-h)), so $\widehat{\eta}_H^2$ depends on the group-size ratios $q_i$ and is not comparable across designs whose groups stand in different size ratios [@Zimmermann:2021].
 
 In the coefficient of determination $R^2$,
 the residual sum of square is defined as
@@ -205,10 +204,13 @@ the residual sum of square is defined as
 
 All other variables used in the [effect-size table](#tab:effect-size-formulae) are defined in the corresponding "Analysis" section.
 
-#  Population effect sizes of parametric tests {#sec:population-effect-sizes}
+#  Population effect sizes {#sec:population-effect-sizes}
+
+All quantities in this section are defined for a fixed set of group-size ratios $q_i=n_i/N$, $i=1,\dots,k$, held constant as $N$ grows. This is a restriction, not a convention: $\omega^2_{\text{unbal}}$ and $\omega^2_{\text{het}}$ below depend on the fixed $q_i$, as does $\eta_H^2$, so none of them is comparable between designs whose groups stand in different size ratios. Within one such family each is a function of the distributions alone.
+
+##  Population effect sizes of parametric tests
 
 To quantify the different designs of the power simulations, we extend the effect size $\widehat{\omega}^2$ to the population level for the different designs. 
-
 
 
 
@@ -238,3 +240,17 @@ With $w_j=n_j/\sigma_j^2$ and $\tilde\mu_w=\sum_{j=1}^k w_j\mu_j\big/\sum_{j=1}^
 \end{equation}
 so that $\omega^2_{\text{het}}=\omega^2_{\text{unbal}}$ when $\sigma_j^2=\sigma^2$ for every $j$ [@Shieh:2012].
 <!-- attributing the construction to Kulinskaya and Staudte 2006]. -->
+
+##  Population effect size of the rank-based test
+
+With the group-size ratios $q_i$ held fixed, $\widehat\eta_H^2$ converges to a function of the weighted relative effects $p_i$ of Eq. \@ref(eq:weighted-relative-effect):
+
+\begin{equation}
+\widehat\eta_H^2=\frac{H-k+1}{N-k}\;\xrightarrow{N\to\infty}\;
+\eta_H^2=12\sum_{i=1}^{k} q_i\left(p_i-\frac12\right)^{2}.
+(\#eq:eta-h-population)
+\end{equation}
+
+
+
+Unlike $\omega^2$, which sees the group distributions only through $(\mu_j,\sigma_j^2)$, Eq. \@ref(eq:eta-h-population) depends on their whole shape through Eq. \@ref(eq:weighted-relative-effect).
