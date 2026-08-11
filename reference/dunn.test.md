@@ -83,7 +83,7 @@ advance as Dunn's formulation assumes.
 ## References
 
 Dunn, O. J. (1964). Multiple Comparisons Using Rank Sums.
-*Technometrics*, 6(3), 241-252. doi:10.2307/1266041.
+*Technometrics*, 6(3), 241-252. doi:10.1080/00401706.1964.10490181.
 
 ## Examples
 

@@ -2446,11 +2446,32 @@ The prefactor \\12/\[N(N+1)\]\\ rescales the weighted squared deviations
 of the group mean ranks by the sample variance of the \\N\\ pooled
 ranks.
 
+\\H\\ [(C.3)](#eq:kruskal-h) depends on the balance of design through
+its dependence on \\n_i/N\\. Writing
+
+\\\begin{equation} \widehat p_i=\frac{\bar R_i-\tfrac12}{N} \tag{C.4}
+\end{equation}\\
+
+for the average position of the observations of group \\i\\ within the
+pooled sample, Eq. [(C.2)](#eq:kw-expected-mean-rank) gives \\\bar
+R_i-\bar R=N(\widehat p_i-\tfrac12)\\ exactly, so that, in the absence
+of ties,
+
+\\\begin{equation} H=\frac{12N^{2}}{N+1}\sum\_{i=1}^{k}\frac{n_i}{N}
+\left(\widehat p_i-\frac12\right)^{2}. \tag{C.5} \end{equation}\\
+
+The group-size ratios \\n_i/N\\ enter twice: once as the weights shown
+in Eq. [(C.5)](#eq:kruskal-h-ratios), and once inside \\\widehat p_i\\
+itself, since a rank taken over all \\N\\ observations measures position
+relative to the pooled sample, in which group \\i\\ is represented in
+proportion \\n_i/N\\. With ties, both sides carry the tie factor below
+and the identity is unchanged.
+
 Large values of \\H\\ occur when at least one group has systematically
 higher or lower ranks than expected under equal rank distributions.
 [`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html) evaluates
 \\H\\ against the asymptotic \\\chi^2(k-1)\\ null distribution. If ties
-are present, R first divides \\H\\ by the tie factor \\
+are present, \\H\\ is divided by the tie factor \\
 1-\frac{\sum_j(t_j^3-t_j)}{N^3-N}, \\ where \\t_j\\ is the number of
 observations in tie block \\j\\. This factor is the proportion of the
 original rank variance that remains after tied observations have been
@@ -2752,11 +2773,18 @@ and \\\nu_2=N-k\\; for Welch’s ANOVA, \\\nu_1=k-1\\ and \\\nu_2\\ is the
 usually fractional denominator degree of freedom returned by
 [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html).
 
-In the the coefficient of determination \\R^2\\, the residual sum of
-square is defined as
-\\SS\_\text{res}=\sum\_{i=1}^{N}(y_i-\hat{y}\_i)^2\\, where
-\\\hat{y}\_i\\ is the predicted value, and the total sum of squares is
-given by \\SS\_\text{tot}=\sum\_{i=1}^{N}(y_i-\bar{y})^2\\ .
+In the Kruskal-Wallis “effect size” \\\widehat{\eta}\_H^2\\, the joint
+ranking of all \\N\\ observations enters \\H\\ (Eq.
+[(C.3)](#eq:kruskal-h)) depending thus on the group-size ratios \\n_i/N,
+i=1,\dots,k\\. It is therefore not an effect size in the strict sense: a
+model parameter should be a function of the distributions
+\\F_1,\dots,F_k\\ alone, not of the sampling design ([Zimmermann et al.
+2021](#ref-Zimmermann:2021)).
+
+In the coefficient of determination \\R^2\\, the residual sum of square
+is defined as \\SS\_\text{res}=\sum\_{i=1}^{N}(y_i-\hat{y}\_i)^2\\,
+where \\\hat{y}\_i\\ is the predicted value, and the total sum of
+squares is given by \\SS\_\text{tot}=\sum\_{i=1}^{N}(y_i-\bar{y})^2\\ .
 
 All other variables used in the [effect-size
 table](#tab:effect-size-formulae) are defined in the corresponding
@@ -2799,7 +2827,7 @@ mean, \\\begin{equation}
 p_j\left(\frac{\mu_j-\tilde\mu_w}{\sigma_j}\right)^2, \tag{G.3}
 \end{equation}\\ so that
 \\\omega^2\_{\text{het}}=\omega^2\_{\text{unbal}}\\ when
-\\\sigma_j^2=\sigma^2\\ for every \\j\\ ([Shieh 2012](#ref-Shieh:2012))
+\\\sigma_j^2=\sigma^2\\ for every \\j\\ ([Shieh 2012](#ref-Shieh:2012)).
 
 ## References
 
@@ -3225,3 +3253,8 @@ Two-Sample Problems.” *Biostatistics*, ahead of print.
 Zimmerman, Donald W. 2004. “A Note on Preliminary Tests of Equality of
 Variances.” *British Journal of Mathematical and Statistical Psychology*
 57 (1): 173–81. <https://doi.org/10.1348/000711004849222>.
+
+Zimmermann, Georg, Edgar Brunner, Werner Brannath, Martin Happ, and Al
+Et. 2021. “Pseudo-Ranks: The Better Way of Ranking?” *The American
+Statistician*, ahead of print.
+<https://doi.org/10.1080/00031305.2021.1972836>.

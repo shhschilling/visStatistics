@@ -57,7 +57,7 @@
       <h1>visStatistics: automated test selection, visualised</h1>
                         <h4 data-toc-skip class="author">Sabine Schilling</h4>
             
-            <h4 data-toc-skip class="date">2026-08-10</h4>
+            <h4 data-toc-skip class="date">2026-08-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/shhschilling/visStatistics/blob/master/vignettes/visStatistics.Rmd" class="external-link"><code>vignettes/visStatistics.Rmd</code></a></small>
       <div class="d-none name"><code>visStatistics.Rmd</code></div>
@@ -1499,8 +1499,20 @@ n_i \left(\bar{R}_i - \bar{R}\right)^2,
 \tag{C.3}
 \end{equation}\]</span></p>
 <p>The prefactor <span class="math inline">\(12/[N(N+1)]\)</span> rescales the weighted squared deviations of the group mean ranks by the sample variance of the <span class="math inline">\(N\)</span> pooled ranks.</p>
+<p><span class="math inline">\(H\)</span> <a href="#eq:kruskal-h">(C.3)</a> depends on the balance of design through its dependence on <span class="math inline">\(n_i/N\)</span>. Writing</p>
+<p><span class="math display" id="eq:kw-relative-position">\[\begin{equation}
+\widehat p_i=\frac{\bar R_i-\tfrac12}{N}
+\tag{C.4}
+\end{equation}\]</span></p>
+<p>for the average position of the observations of group <span class="math inline">\(i\)</span> within the pooled sample, Eq. <a href="#eq:kw-expected-mean-rank">(C.2)</a> gives <span class="math inline">\(\bar R_i-\bar R=N(\widehat p_i-\tfrac12)\)</span> exactly, so that, in the absence of ties,</p>
+<p><span class="math display" id="eq:kruskal-h-ratios">\[\begin{equation}
+H=\frac{12N^{2}}{N+1}\sum_{i=1}^{k}\frac{n_i}{N}
+  \left(\widehat p_i-\frac12\right)^{2}.
+\tag{C.5}
+\end{equation}\]</span></p>
+<p>The group-size ratios <span class="math inline">\(n_i/N\)</span> enter twice: once as the weights shown in Eq. <a href="#eq:kruskal-h-ratios">(C.5)</a>, and once inside <span class="math inline">\(\widehat p_i\)</span> itself, since a rank taken over all <span class="math inline">\(N\)</span> observations measures position relative to the pooled sample, in which group <span class="math inline">\(i\)</span> is represented in proportion <span class="math inline">\(n_i/N\)</span>. With ties, both sides carry the tie factor below and the identity is unchanged.</p>
 <p>Large values of <span class="math inline">\(H\)</span> occur when at least one group has systematically higher or lower ranks than expected under equal rank distributions. <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> evaluates <span class="math inline">\(H\)</span> against the asymptotic <span class="math inline">\(\chi^2(k-1)\)</span> null distribution.
-If ties are present, R first divides <span class="math inline">\(H\)</span> by the tie factor
+If ties are present, <span class="math inline">\(H\)</span> is divided by the tie factor
 <span class="math display">\[
 1-\frac{\sum_j(t_j^3-t_j)}{N^3-N},
 \]</span>
@@ -1909,7 +1921,9 @@ J(\nu) =
 s^{*} = \sqrt{\frac{s_1^2+s_2^2}{2}}.
 \end{equation*}\]</span></p>
 <p>In the ANOVA effect sizes, <span class="math inline">\(\nu_1\)</span> and <span class="math inline">\(\nu_2\)</span> denote the numerator and denominator degrees of freedom; for Fisher’s ANOVA, <span class="math inline">\(\nu_1=k-1\)</span> and <span class="math inline">\(\nu_2=N-k\)</span>; for Welch’s ANOVA, <span class="math inline">\(\nu_1=k-1\)</span> and <span class="math inline">\(\nu_2\)</span> is the usually fractional denominator degree of freedom returned by <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>.</p>
-<p>In the the coefficient of determination <span class="math inline">\(R^2\)</span>,
+<p>In the Kruskal-Wallis “effect size” <span class="math inline">\(\widehat{\eta}_H^2\)</span>,
+the joint ranking of all <span class="math inline">\(N\)</span> observations enters <span class="math inline">\(H\)</span> (Eq. <a href="#eq:kruskal-h">(C.3)</a>) depending thus on the group-size ratios <span class="math inline">\(n_i/N, i=1,\dots,k\)</span>. It is therefore not an effect size in the strict sense: a model parameter should be a function of the distributions <span class="math inline">\(F_1,\dots,F_k\)</span> alone, not of the sampling design <span class="citation">(<a href="#ref-Zimmermann:2021">Zimmermann et al. 2021</a>)</span>.</p>
+<p>In the coefficient of determination <span class="math inline">\(R^2\)</span>,
 the residual sum of square is defined as
 <span class="math inline">\(SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2\)</span>, where <span class="math inline">\(\hat{y}_i\)</span> is the predicted value, and the total sum of squares is given by <span class="math inline">\(SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2\)</span> .</p>
 <p>All other variables used in the <a href="#tab:effect-size-formulae">effect-size table</a> are defined in the corresponding “Analysis” section.</p>
@@ -1934,12 +1948,13 @@ For unbalanced, homoscedastic designs, with <span class="math inline">\(p_j=n_j/
 \end{equation}\]</span>
 so that <span class="math inline">\(\omega^2_{\text{unbal}}=\omega^2_{\text{bal}}\)</span> when <span class="math inline">\(p_j=1/k\)</span> <span class="citation">(<a href="#ref-Carroll:1975">Carroll and Nordholm 1975</a>)</span>.</p>
 <p><strong>unbalanced heteroscedastic</strong></p>
-<p>For Welch’s ANOVA, allowing the group variances <span class="math inline">\(\sigma_j^2\)</span> to differ, <span class="math inline">\(\widehat\omega^2\)</span> (approx.) estimates the heteroscedastic extension of Eq. <a href="#eq:omega-sq-population-unbalanced">(G.2)</a>. With <span class="math inline">\(w_j=n_j/\sigma_j^2\)</span> and <span class="math inline">\(\tilde\mu_w=\sum_{j=1}^k w_j\mu_j\big/\sum_{j=1}^k w_j\)</span> the inverse-variance-weighted grand mean,
+<p>For Welch’s ANOVA, allowing the group variances <span class="math inline">\(\sigma_j^2\)</span> to differ, <span class="math inline">\(\widehat\omega^2\)</span> (approx.) estimates the heteroscedastic extension of Eq. <a href="#eq:omega-sq-population-unbalanced">(G.2)</a>.
+With <span class="math inline">\(w_j=n_j/\sigma_j^2\)</span> and <span class="math inline">\(\tilde\mu_w=\sum_{j=1}^k w_j\mu_j\big/\sum_{j=1}^k w_j\)</span> the inverse-variance-weighted grand mean,
 <span class="math display" id="eq:omega-sq-population-heteroscedastic">\[\begin{equation}
 \omega^2_{\text{het}}=\frac{\lambda}{1+\lambda},\qquad \lambda=\sum_{j=1}^k p_j\left(\frac{\mu_j-\tilde\mu_w}{\sigma_j}\right)^2,
 \tag{G.3}
 \end{equation}\]</span>
-so that <span class="math inline">\(\omega^2_{\text{het}}=\omega^2_{\text{unbal}}\)</span> when <span class="math inline">\(\sigma_j^2=\sigma^2\)</span> for every <span class="math inline">\(j\)</span> <span class="citation">(<a href="#ref-Shieh:2012">Shieh 2012</a>)</span>
+so that <span class="math inline">\(\omega^2_{\text{het}}=\omega^2_{\text{unbal}}\)</span> when <span class="math inline">\(\sigma_j^2=\sigma^2\)</span> for every <span class="math inline">\(j\)</span> <span class="citation">(<a href="#ref-Shieh:2012">Shieh 2012</a>)</span>.
 <!-- attributing the construction to Kulinskaya and Staudte 2006]. --></p>
 </div>
 <div class="section level2">
@@ -2230,6 +2245,9 @@ Zhou, X. H. 2005. <span>“Nonparametric Confidence Intervals for the One- and T
 </div>
 <div id="ref-Zimmerman:2004" class="csl-entry">
 Zimmerman, Donald W. 2004. <span>“A Note on Preliminary Tests of Equality of Variances.”</span> <em>British Journal of Mathematical and Statistical Psychology</em> 57 (1): 173–81. <a href="https://doi.org/10.1348/000711004849222" class="external-link">https://doi.org/10.1348/000711004849222</a>.
+</div>
+<div id="ref-Zimmermann:2021" class="csl-entry">
+Zimmermann, Georg, Edgar Brunner, Werner Brannath, Martin Happ, and Al Et. 2021. <span>“Pseudo-<span>Ranks</span>: <span>The Better Way</span> of <span>Ranking</span>?”</span> <em>The American Statistician</em>, ahead of print. <a href="https://doi.org/10.1080/00031305.2021.1972836" class="external-link">https://doi.org/10.1080/00031305.2021.1972836</a>.
 </div>
 </div>
 </div>
