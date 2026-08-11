@@ -194,7 +194,10 @@ s^{*} = \sqrt{\frac{s_1^2+s_2^2}{2}}.
 
 In the ANOVA effect sizes, $\nu_1$ and $\nu_2$ denote the numerator and denominator degrees of freedom; for Fisher's ANOVA, $\nu_1=k-1$ and $\nu_2=N-k$; for Welch's ANOVA, $\nu_1=k-1$ and $\nu_2$ is the usually fractional denominator degree of freedom returned by `oneway.test()`.
 
-In the the coefficient of determination $R^2$,
+In the Kruskal-Wallis "effect size" $\widehat{\eta}_H^2$,
+the joint ranking of all $N$ observations enters $H$ (Eq. \@ref(eq:kruskal-h)) depending thus on the group-size ratios $n_i/N, i=1,\dots,k$. It is therefore not an effect size in the strict sense: a model parameter should be a function of the distributions $F_1,\dots,F_k$ alone, not of the sampling design [@Zimmermann:2021].
+
+In the coefficient of determination $R^2$,
 the residual sum of square is defined as
  $SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2$, where  $\hat{y}_i$ is the predicted value,  and the total sum of squares is given by  $SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2$ .
 
@@ -227,10 +230,11 @@ so that $\omega^2_{\text{unbal}}=\omega^2_{\text{bal}}$ when $p_j=1/k$ [@Carroll
 
 **unbalanced heteroscedastic** 
 
-For Welch's ANOVA, allowing the group variances $\sigma_j^2$ to differ, $\widehat\omega^2$ (approx.) estimates the heteroscedastic extension of Eq. \@ref(eq:omega-sq-population-unbalanced). With $w_j=n_j/\sigma_j^2$ and $\tilde\mu_w=\sum_{j=1}^k w_j\mu_j\big/\sum_{j=1}^k w_j$ the inverse-variance-weighted grand mean,
+For Welch's ANOVA, allowing the group variances $\sigma_j^2$ to differ, $\widehat\omega^2$ (approx.) estimates the heteroscedastic extension of Eq. \@ref(eq:omega-sq-population-unbalanced). 
+With $w_j=n_j/\sigma_j^2$ and $\tilde\mu_w=\sum_{j=1}^k w_j\mu_j\big/\sum_{j=1}^k w_j$ the inverse-variance-weighted grand mean,
 \begin{equation}
 \omega^2_{\text{het}}=\frac{\lambda}{1+\lambda},\qquad \lambda=\sum_{j=1}^k p_j\left(\frac{\mu_j-\tilde\mu_w}{\sigma_j}\right)^2,
 (\#eq:omega-sq-population-heteroscedastic)
 \end{equation}
-so that $\omega^2_{\text{het}}=\omega^2_{\text{unbal}}$ when $\sigma_j^2=\sigma^2$ for every $j$ [@Shieh:2012]
+so that $\omega^2_{\text{het}}=\omega^2_{\text{unbal}}$ when $\sigma_j^2=\sigma^2$ for every $j$ [@Shieh:2012].
 <!-- attributing the construction to Kulinskaya and Staudte 2006]. -->

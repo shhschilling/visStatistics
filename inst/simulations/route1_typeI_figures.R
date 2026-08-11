@@ -106,10 +106,34 @@ if (HAS_ATS_H0P) {
   sim$ats_h0p_rejection <- NA_real_
 }
 
-## omega^2 is 0 in every cell of this grid (the means are equal by
-## construction, testing Type I error), so labelling columns with it would
-## be uninformative. Columns are labelled by panel number only.
-HAS_ES <- FALSE
+## omega^2 is 0 in every cell of this grid, because the group means are equal by
+## construction, so labelling columns with it would say nothing.
+##
+## eta_H^2 is not 0. Scaling a SKEWED distribution moves its mass even when its
+## mean does not, so the rank null fails in the skewed columns while it holds in
+## the symmetric ones. That is the distinction rankfd_route1_typeI.R:137 makes
+## qualitatively with `rank_null_true = panel %in% c(1, 2)`; the numbers below
+## put a size on it, and show which columns of this figure are a Type I check
+## for the rank branch and which are really power.
+##
+## The zeros in the symmetric columns are a check on the computation, not
+## evidence for the derivation: under symmetry the relative effects are 1/2
+## whatever the scale, so any rank-based effect measure vanishes there.
+##
+## eta_H^2 is our own derivation, written up in the "Population effect size of
+## the rank-based test" subsection of _effect_size_table.Rmd; see
+## eta_h_own_derivation.R.
+ETA_OWN <- local({
+  f <- file.path(SIMDIR, "eta_h_own_by_design_panel.csv")
+  if (!file.exists(f)) return(NULL)
+  e <- read.csv(f, stringsAsFactors = FALSE)
+  e <- e[e$grid == "typeI", , drop = FALSE]
+  if (nrow(e) == 0) NULL else e
+})
+HAS_ES <- !is.null(ETA_OWN)
+if (!HAS_ES) {
+  message("eta_h_own_by_design_panel.csv not found; columns labelled by number only.")
+}
 
 ## Figure heights are set for five displayed sizes and scale with the number
 ## actually drawn, so the heatmap row pitch stays constant and the rejection
@@ -626,7 +650,7 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
   ## of skew_levels, so the labels cannot silently pair up with the wrong cell.
   x_labels <- column_number_labels
   if (HAS_ES) {
-    es <- ES_TAB[ES_TAB$design == design_name, , drop = FALSE]
+    es <- ETA_OWN[ETA_OWN$design == design_name, , drop = FALSE]
     panels_in_order <- vapply(
       names(column_number_labels),
       function(lbl) sim$panel[sim$skew_base_label == lbl][1],
@@ -634,24 +658,19 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
     )
     hit <- match(panels_in_order, es$panel)
     if (!anyNA(hit)) {
-      ## plotmath, so omega^2 renders with a real superscript instead of as
-      ## literal text. omega^2 is a population parameter with a closed form.
-      ## eta_H^2 is deliberately NOT shown: it has no established population
-      ## definition independent of N -- ranks have no population-level
-      ## existence the way (mu_j, sigma_j^2) do, so any number here would be
-      ## invented, not cited.
-      ##
-      ## Cells that are zero by construction (means equal throughout this
-      ## grid) are printed "0" rather than "0.000".
+      ## plotmath, so the subscript and exponent of eta_H^2 are typeset rather
+      ## than printed as literal characters. Values below the Monte Carlo
+      ## resolution of the grid are printed "0": in the symmetric columns the
+      ## rank null holds exactly and the estimate is zero to five decimals.
       fmt <- function(x) {
         out <- sprintf("%.3f", round(x, 3))
         out[out == "-0.000"] <- "0.000"
-        out[abs(x) < 1e-12] <- "0"
+        out[abs(x) < 5e-4] <- "0"
         out
       }
       x_labels <- stats::setNames(
-        sprintf('"%d)"~~omega^2*"=%s"',
-                es$panel[hit], fmt(es$omega_sq[hit])),
+        sprintf('"%d)"~~eta[H]^2*"="*"%s"',
+                es$panel[hit], fmt(es$eta_h_sq_own[hit])),
         names(column_number_labels)
       )
     } else {

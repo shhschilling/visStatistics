@@ -136,6 +136,18 @@ H_PDF <- 1
 H_POWER <- 2
 BAND_SCALE <- 2 / H_POWER
 
+## eta_H^2 per (design, panel), from eta_h_own_derivation.R. Unlike omega^2 it
+## varies BETWEEN COLUMNS of the same row, because it responds to distribution
+## shape, so it goes in the column strips rather than the row header. It is OUR
+## OWN derivation and not a citable population parameter: the strip says so, and
+## the figure is for understanding the designs, not for the vignette.
+ETA_FILE <- file.path(SIMDIR, "psi_by_design_panel.csv")
+ETA <- if (file.exists(ETA_FILE)) read.csv(ETA_FILE, stringsAsFactors = FALSE) else NULL
+if (!is.null(ETA)) ETA <- ETA[ETA$grid == "brunner" | ETA$grid == "legacy", , drop = FALSE]
+if (is.null(ETA)) {
+  message("eta_h_own_by_design_panel.csv not found; columns labelled by number only.")
+}
+
 PANELS <- sort(unique(power$panel))
 power$power_panel <- factor(paste0(power$panel, ")"), levels = paste0(PANELS, ")"))
 NS_TO_PLOT <- c(10, 20, 30, 50, 100)
@@ -229,6 +241,27 @@ make_pdf_panel <- function(sd_vec, letter, description) {
 make_power_panel <- function(design_name, letter) {
   dat <- power[power$design == design_name, , drop = FALSE]
   if (!nrow(dat)) stop("no rows for ", design_name)
+
+  ## Column strips carry this design's eta_H^2 for each panel. Written as
+  ## plotmath and drawn with label_parsed, so the subscript H and the exponent 2
+  ## are typeset rather than printed as the literal characters "eta^2_H".
+  eta_lab <- setNames(paste0(PANELS, ")"), paste0(PANELS, ")"))
+  has_eta <- FALSE
+  if (!is.null(ETA)) {
+    e <- ETA[ETA$design == design_name, , drop = FALSE]
+    if (nrow(e) == length(PANELS)) {
+      e <- e[order(e$panel), ]
+      eta_lab <- setNames(
+        sprintf('"%d)"~~psi == "%s"', e$panel,
+                vapply(strsplit(e$psi, ",[ ]*"), function(v)
+                  paste(sprintf("%.2f", as.numeric(v)), collapse = " "), character(1))),
+        paste0(e$panel, ")")
+      )
+      has_eta <- TRUE
+    }
+  }
+  dat$power_panel <- factor(unname(eta_lab[as.character(dat$power_panel)]),
+                            levels = unname(eta_lab[paste0(PANELS, ")")]))
   long <- do.call(rbind, lapply(USE, function(s) {
     v <- dat[[COLUMN[[s]]]]
     if (all(is.na(v))) return(NULL)
@@ -244,7 +277,12 @@ make_power_panel <- function(design_name, letter) {
   ## is offset by a constant FACTOR, so the spread looks identical at n = 10 and
   ## n = 100. DODGE_SPAN is the total width as a fraction of the tick spacing;
   ## the ticks are a factor 2 apart at the narrowest, so 12% stays unambiguous.
-  DODGE_SPAN <- if (length(USE) > 6) 0.55 else 0.30
+  ## Only the "full" variant dodges. With nine strategies KW, RK, ATS, ATSp, SW
+  ## and SW+L land on the same value under heteroscedasticity and stack into one
+  ## blob, so they are offset to be legible at all. The "kw" variant has six
+  ## strategies that separate on their own, and there the markers stay exactly
+  ## on their tick.
+  DODGE_SPAN <- if (length(USE) > 6) 0.55 else 0
   ns <- length(USE)
   step <- if (ns > 1) DODGE_SPAN / (ns - 1) else 0
   offset <- (match(as.character(long$strategy), USE) - (ns + 1) / 2) * step
@@ -302,7 +340,8 @@ make_power_panel <- function(design_name, letter) {
     ggplot2$geom_text(data = gv,
       ggplot2$aes(x = n_per_group, y = gate_y, label = lab), colour = "grey25",
       family = FLEISHMAN_FONT_FAMILY, size = FLEISHMAN_GEOM_TEXT$inset) +
-    ggplot2$facet_grid(stats::as.formula(". ~ power_panel")) +
+    ggplot2$facet_grid(stats::as.formula(". ~ power_panel"),
+      labeller = if (has_eta) ggplot2$label_parsed else ggplot2$label_value) +
     ## limits reach below 0 to hold the routing band; breaks stop at 0 so the
     ## axis never labels a negative rejection rate.
     ggplot2$scale_y_continuous(limits = c(y_min, 1), breaks = seq(0, 1, by = 0.1),

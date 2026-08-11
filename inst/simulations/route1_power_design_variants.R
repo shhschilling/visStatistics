@@ -98,9 +98,57 @@ local({
 stopifnot(is.function(route_once), is.function(summarise_binary))
 
 PANELS <- 1:5
-POWER_NS <- c(10, 20, 30, 50, 100, 200)
-BASE_SHIFTS <- c(0, 0.25, 0.50, 0.75)
-SCENARIO <- "moderate ordered effect: 0, 0.25, 0.50, 0.75 SD"
+## n_bar sweep. 200 is dropped: every strategy is saturated there and the cell
+## adds nothing the trend at 100 does not already show. The allocation ratios
+## are held FIXED across this sweep by construction, so moving along it changes
+## the sample size and nothing else -- which matters because H's target depends
+## on those ratios (see the Kruskal-Wallis section of the appendix). Brunner's
+## scheme instead ADDS a constant to every group, so his ratios drift from
+## 1:2:3:4 toward 1:1:1:1 as the sample grows, confounding size with balance.
+POWER_NS <- c(10, 20, 30, 50, 100)
+
+## Shift pattern.
+##
+##   "onepoint" (default) shifts ONLY THE LAST GROUP: mu = (0, 0, 0, delta).
+##      This is the alternative used by Brunner et al. (2017), JRSS-B, p. 1480,
+##      and by Delacre et al. (2019), who state that "all samples but one was
+##      generated from the same population, and only one group had a different
+##      population mean". Exactly one distribution differs from the others, so
+##      the effect is not confounded with the SD assignment.
+##
+##   "gradient" is the package's older vector (0, 0.25, 0.50, 0.75), in which
+##      all four groups differ at once. Kept so the earlier grid can be
+##      reproduced, not because it is preferable.
+##
+## delta = 1 is Delacre et al. (2019), who set mu_k = mu_j + 1. Brunner does not
+## fix delta at all -- he sweeps it over 0, 0.1, ..., 1.6 at fixed n and plots
+## power against delta; because we sweep n instead, delta only decides where on
+## the n-axis the transition falls, and Delacre's construction is the one being
+## followed. At delta = 1 the balanced homoscedastic cell reaches omega^2 = 0.158
+## and saturates by n_bar of about 30, which is acceptable: it is the baseline,
+## not the comparison. The heteroscedastic cells sit at 0.043, 0.057 and 0.123
+## and span the sweep.
+##
+## delta is in units of the group-1 standard deviation, which is 1 in every
+## design. Under heteroscedasticity the shifted group's own SD differs, and that
+## is the point of the pairing contrast: positive pairing puts the shift on the
+## group with sigma = sqrt(5), negative pairing on the group with sigma = 1, so
+## the same delta buys a 2.2-fold different effect.
+SHIFT_PATTERN <- if (length(args) >= 5) args[5] else "onepoint"
+DELTA <- if (length(args) >= 6) as.numeric(args[6]) else 1
+if (!SHIFT_PATTERN %in% c("onepoint", "gradient")) {
+  stop("SHIFT_PATTERN must be \"onepoint\" or \"gradient\".")
+}
+BASE_SHIFTS <- if (SHIFT_PATTERN == "onepoint") {
+  c(0, 0, 0, DELTA)
+} else {
+  c(0, 0.25, 0.50, 0.75)
+}
+SCENARIO <- if (SHIFT_PATTERN == "onepoint") {
+  sprintf("one-point alternative: last group shifted by %.2f", DELTA)
+} else {
+  "moderate ordered effect: 0, 0.25, 0.50, 0.75 SD"
+}
 
 NMULT_BAL <- c(1, 1, 1, 1)
 NMULT_UNBAL <- c(0.5, 0.8, 1.2, 1.5)
@@ -141,10 +189,16 @@ shift_scale_for <- function(sd_vec) {
 ## not the skip is enabled.
 SKIP_UNCHANGED <- if (length(args) >= 4) !identical(toupper(args[4]), "FALSE") else TRUE
 
+## A design may only be skipped when EVERY input matches the existing grid: the
+## SD vector, the shift scaling, and the shift vector itself. The last condition
+## matters because the existing grid was simulated with the gradient shifts, so
+## under SHIFT_PATTERN = "onepoint" nothing can be reused and all five designs
+## must be run.
 unchanged_from_existing <- function(pd) {
   legacy_sd <- SD_SETS[["legacy"]]
-  matches_eq <- isTRUE(all.equal(pd$sd, legacy_sd$eq))
-  matches_eq && isTRUE(all.equal(shift_scale_for(pd$sd), sqrt(mean(legacy_sd$eq^2))))
+  isTRUE(all.equal(pd$sd, legacy_sd$eq)) &&
+    isTRUE(all.equal(shift_scale_for(pd$sd), sqrt(mean(legacy_sd$eq^2)))) &&
+    identical(SHIFT_PATTERN, "gradient")
 }
 
 ## Own seed, so these streams cannot collide with any existing grid.
@@ -189,7 +243,14 @@ run_power_cell <- function(panel, n_vec, shifts, sd_vec) {
   )
 }
 
-OUTFILE <- sprintf("fleishman_4groups_power_design_%s_B%d.csv", DESIGN_SET, NREP)
+## The shift pattern is part of the file name, so the one-point grid cannot
+## overwrite the gradient grid already on disk.
+OUTFILE <- if (SHIFT_PATTERN == "gradient") {
+  sprintf("fleishman_4groups_power_design_%s_B%d.csv", DESIGN_SET, NREP)
+} else {
+  sprintf("fleishman_4groups_power_design_%s_onepoint_d%s_B%d.csv",
+          DESIGN_SET, sub("\\.", "", format(DELTA, nsmall = 2)), NREP)
+}
 done_keys <- character(0)
 if (file.exists(OUTFILE)) {
   ex <- read.csv(OUTFILE, stringsAsFactors = FALSE)

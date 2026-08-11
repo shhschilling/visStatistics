@@ -35,6 +35,9 @@ SIMDIR <- local({
 })
 source(file.path(SIMDIR, "power_figure_fixed_effect_size_helpers.R"))
 
+## Select the eta_H^2 rows computed from THIS grid's own design constants.
+ETA_OWN_GRID <- "etaH_fixed"
+
 ## es_label = NA: no eta_H^2 number is printed in the row headers, deliberately,
 ## because no source we have read defines a population counterpart of
 ## (H - k + 1)/(N - k). A row header states a property of the design, so it may

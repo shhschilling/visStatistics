@@ -28,6 +28,20 @@ source(file.path(SIMDIR, "fleishman_figure_typography.R"))
 ## omega_sq_regime(), to name which of the three population omega^2 applies.
 source(file.path(SIMDIR, "omega_scaling_helpers.R"))
 
+## Unweighted relative effects psi_i per (design, panel) for THIS grid, from
+## psi_relative_effects.R. Rows are selected by grid == "legacy" so the labels
+## can only come from the design constants this grid actually simulated.
+ETA_OWN <- local({
+  f <- file.path(SIMDIR, "psi_by_design_panel.csv")
+  if (!file.exists(f)) {
+    message("eta_h_own_by_design_panel.csv not found; columns labelled by number only.")
+    return(NULL)
+  }
+  e <- read.csv(f, stringsAsFactors = FALSE)
+  e <- e[e$grid == "legacy", , drop = FALSE]
+  if (nrow(e) == 0) NULL else e
+})
+
 OUTDIR <- "."
 FIGDIR <- "."
 dir.create(OUTDIR, showWarnings = FALSE, recursive = TRUE)
@@ -464,8 +478,32 @@ make_power_plot <- function(design_name, panel_letter, panel_description,
   }
 
   ## omega^2 is constant across the 5 panels of a design (see
-  ## omega_sq_for_design() above), so it is stated once in the row header,
-  ## not repeated in every column -- columns are labelled by panel number only.
+  ## omega_sq_for_design() above), so it is stated once in the row header.
+  ##
+  ## The unweighted relative effects psi_i are NOT constant across columns: they
+  ## respond to distribution shape, so they belong in the column strips. psi_i
+  ## is allocation-free and is an effect size in the strict sense
+  ## (Zimmermann et al. 2021, p. 125), unlike the weighted theta_i that
+  ## kruskal.test() actually estimates. All designs here have a = 4, which is
+  ## the condition under which deviations from 1/2 are comparable
+  ## (Zimmermann et al. 2021, Sect. 3.3). See psi_relative_effects.R.
+  eta_lab <- stats::setNames(panel_levels, panel_levels)
+  has_eta <- FALSE
+  if (!is.null(ETA_OWN)) {
+    e <- ETA_OWN[ETA_OWN$design == design_name, , drop = FALSE]
+    if (nrow(e) == length(panel_levels)) {
+      e <- e[order(e$panel), ]
+      eta_lab <- stats::setNames(
+        sprintf('"%d)"~~psi == "%s"', e$panel,
+                vapply(strsplit(e$psi, ",[ ]*"), function(v)
+                  paste(sprintf("%.2f", as.numeric(v)), collapse = " "), character(1))),
+        paste0(e$panel, ")")
+      )
+      has_eta <- TRUE
+    }
+  }
+  dat$power_panel <- factor(unname(eta_lab[as.character(dat$power_panel)]),
+                            levels = unname(eta_lab[panel_levels]))
 
   power_long <- to_long(dat)
   power_plot <- subset(power_long, n_per_group %in% NS_TO_PLOT)
@@ -531,7 +569,8 @@ make_power_plot <- function(design_name, panel_letter, panel_description,
     family = FLEISHMAN_FONT_FAMILY,
     size = FLEISHMAN_GEOM_TEXT$inset
   ) +
-  ggplot2$facet_grid(stats::as.formula(". ~ power_panel")) +
+  ggplot2$facet_grid(stats::as.formula(". ~ power_panel"),
+    labeller = if (has_eta) ggplot2$label_parsed else ggplot2$label_value) +
   ggplot2$scale_y_continuous(
     limits = c(0, 1),
     breaks = seq(0.1, 1, by = 0.1),

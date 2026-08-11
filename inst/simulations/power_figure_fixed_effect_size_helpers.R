@@ -264,9 +264,37 @@ row_header <- function(design_name, nmult, sdvec, es_label, es_value) {
   paste0(base, sprintf("; %s = %s", es_label, es_txt))
 }
 
+## eta_H^2 per (design, panel) for the grid being drawn, from
+## eta_h_own_derivation.R. Set ETA_OWN_GRID before calling build_fixed_es_figures
+## so the rows can only come from the design constants that grid simulated.
+ETA_OWN_GRID <- NULL
+eta_own_for <- function(design_name, panels) {
+  f <- file.path(SIMDIR, "eta_h_own_by_design_panel.csv")
+  if (is.null(ETA_OWN_GRID) || !file.exists(f)) return(NULL)
+  e <- read.csv(f, stringsAsFactors = FALSE)
+  e <- e[e$grid == ETA_OWN_GRID & e$design == design_name, , drop = FALSE]
+  if (nrow(e) != length(panels)) return(NULL)
+  e[order(e$panel), ]
+}
+
 make_power_plot <- function(power, design_name, panel_letter, header, show_legend = TRUE) {
   dat <- power[power$design == design_name, , drop = FALSE]
   if (nrow(dat) == 0) stop("No power results for design: ", design_name)
+
+  ## eta_H^2 varies between the columns of one row, because it responds to
+  ## distribution shape, so it goes in the column strips. Our own derivation,
+  ## not a citable population parameter; see eta_h_own_derivation.R.
+  panels_here <- sort(unique(dat$panel))
+  e <- eta_own_for(design_name, panels_here)
+  has_eta <- !is.null(e)
+  if (has_eta) {
+    eta_lab <- stats::setNames(
+      sprintf('"%d)"~~eta[H]^2 == "%.3f"', e$panel, e$eta_h_sq_own),
+      paste0(e$panel, ")")
+    )
+    dat$power_panel <- factor(unname(eta_lab[as.character(dat$power_panel)]),
+                              levels = unname(eta_lab[paste0(panels_here, ")")]))
+  }
 
   rows <- list(
     transform(dat, strategy = "1. Fisher always", power = fisher_power),
@@ -313,7 +341,8 @@ make_power_plot <- function(power, design_name, panel_letter, header, show_legen
       ggplot2$aes(x = n_per_group, y = gate_y, label = gate_rate_label),
       colour = "grey25", family = FLEISHMAN_FONT_FAMILY, size = FLEISHMAN_GEOM_TEXT$inset
     ) +
-    ggplot2$facet_grid(stats::as.formula(". ~ power_panel")) +
+    ggplot2$facet_grid(stats::as.formula(". ~ power_panel"),
+      labeller = if (has_eta) ggplot2$label_parsed else ggplot2$label_value) +
     ggplot2$scale_y_continuous(limits = c(0, 1), breaks = seq(0.1, 1, by = 0.1),
                                labels = scales::percent) +
     ggplot2$scale_x_log10(breaks = NS_TO_PLOT, limits = c(5.5, 130)) +

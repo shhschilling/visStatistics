@@ -1354,7 +1354,7 @@ sig_diffs_nongauss <- function(samples, fact, conf.level = conf.level) {
   # The comparisons come from dunn.test(), which ranks all groups together,
   # exactly as kruskal.test() does, so each pairwise decision concerns the
   # quantity the omnibus test rejected; see Dunn (1964), Technometrics 6(3),
-  # 241-252, doi:10.2307/1266041.
+  # 241-252, doi:10.1080/00401706.1964.10490181.
   #
   # `diff`, `lwr` and `upr` stay NA: Dunn's statistic is a difference in mean
   # ranks, not in the response, so there is no interval on the response scale

@@ -31,6 +31,9 @@ SIMDIR <- local({
 })
 source(file.path(SIMDIR, "power_figure_fixed_effect_size_helpers.R"))
 
+## Select the eta_H^2 rows computed from THIS grid's own design constants.
+ETA_OWN_GRID <- "omega_fixed"
+
 build_fixed_es_figures(
   results_file = file.path(SIMDIR, "fleishman_4groups_power_omega_fixed_B50000.csv"),
   es_column    = "omega_sq",
