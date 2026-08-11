@@ -2023,10 +2023,11 @@ effect sizes, and plots that should inform that judgment.
 ### Notation
 
 In the following, \\k\\ denotes the number of groups, \\n_i\\ the sample
-size of group \\i\\, and \\N=\sum\_{i=1}^{k}n_i\\ the total sample size.
-Observations are written as \\x\_{ij}\\, with group mean \\\bar x_i\\,
-grand mean \\\bar x\\, and group sample variance \\s_i^2\\. The pooled
-variance is \\\begin{equation}
+size of group \\i\\, and \\N=\sum\_{i=1}^{k}n_i\\ the total sample size,
+with group-size ratios \\q_i=n_i/N\\. Observations are written as
+\\x\_{ij}\\, drawn from the distribution function \\F_i\\ of group
+\\i\\, with group mean \\\bar x_i\\, grand mean \\\bar x\\, and group
+sample variance \\s_i^2\\. The pooled variance is \\\begin{equation}
 s_p^2=\frac{1}{N-k}\sum\_{i=1}^{k}(n_i-1)s_i^2 . \tag{10.1}
 \end{equation}\\
 
@@ -2447,7 +2448,7 @@ of the group mean ranks by the sample variance of the \\N\\ pooled
 ranks.
 
 \\H\\ [(C.3)](#eq:kruskal-h) depends on the balance of design through
-its dependence on \\n_i/N\\. Writing
+its dependence on the group-size ratios \\q_i\\; writing
 
 \\\begin{equation} \widehat p_i=\frac{\bar R_i-\tfrac12}{N} \tag{C.4}
 \end{equation}\\
@@ -2457,15 +2458,33 @@ pooled sample, Eq. [(C.2)](#eq:kw-expected-mean-rank) gives \\\bar
 R_i-\bar R=N(\widehat p_i-\tfrac12)\\ exactly, so that, in the absence
 of ties,
 
-\\\begin{equation} H=\frac{12N^{2}}{N+1}\sum\_{i=1}^{k}\frac{n_i}{N}
+\\\begin{equation} H=\frac{12N^{2}}{N+1}\sum\_{i=1}^{k} q_i
 \left(\widehat p_i-\frac12\right)^{2}. \tag{C.5} \end{equation}\\
 
-The group-size ratios \\n_i/N\\ enter twice: once as the weights shown
-in Eq. [(C.5)](#eq:kruskal-h-ratios), and once inside \\\widehat p_i\\
-itself, since a rank taken over all \\N\\ observations measures position
+The \\q_i\\ enter twice: once as the weights shown in Eq.
+[(C.5)](#eq:kruskal-h-ratios), and once inside \\\widehat p_i\\ itself,
+since a rank taken over all \\N\\ observations measures position
 relative to the pooled sample, in which group \\i\\ is represented in
-proportion \\n_i/N\\. With ties, both sides carry the tie factor below
-and the identity is unchanged.
+proportion \\q_i\\. With ties, both sides carry the tie factor below and
+the identity is unchanged.
+
+Pooling the \\k\\ groups in the proportions \\q_i\\ corresponds, at the
+population level, to the mixture distribution
+
+\\\begin{equation} \bar F_q(x)=\sum\_{i=1}^{k} q_i F_i(x), \tag{C.6}
+\end{equation}\\
+
+itself a distribution function: it describes a draw obtained by picking
+group \\i\\ with probability \\q_i\\ and then drawing from \\F_i\\. What
+\\\widehat p_i\\ estimates, unbiasedly and consistently, is the weighted
+relative effect ([Brunner et al. 2021](#ref-Brunner:2021))
+
+\\\begin{equation} p_i=\int\_{-\infty}^{\infty}\bar
+F_q(y)\\\mathrm{d}F_i(y), \tag{C.7} \end{equation}\\
+
+the probability that an observation from group \\i\\ exceeds an
+independent draw from the pooled population, plus half the probability
+of a tie.
 
 Large values of \\H\\ occur when at least one group has systematically
 higher or lower ranks than expected under equal rank distributions.
@@ -2773,12 +2792,11 @@ and \\\nu_2=N-k\\; for Welch’s ANOVA, \\\nu_1=k-1\\ and \\\nu_2\\ is the
 usually fractional denominator degree of freedom returned by
 [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html).
 
-In the Kruskal-Wallis “effect size” \\\widehat{\eta}\_H^2\\, the joint
+In the Kruskal–Wallis effect size \\\widehat{\eta}\_H^2\\, the joint
 ranking of all \\N\\ observations enters \\H\\ (Eq.
-[(C.3)](#eq:kruskal-h)) depending thus on the group-size ratios \\n_i/N,
-i=1,\dots,k\\. It is therefore not an effect size in the strict sense: a
-model parameter should be a function of the distributions
-\\F_1,\dots,F_k\\ alone, not of the sampling design ([Zimmermann et al.
+[(C.3)](#eq:kruskal-h)), so \\\widehat{\eta}\_H^2\\ depends on the
+group-size ratios \\q_i\\ and is not comparable across designs whose
+groups stand in different size ratios ([Zimmermann et al.
 2021](#ref-Zimmermann:2021)).
 
 In the coefficient of determination \\R^2\\, the residual sum of square
@@ -2790,7 +2808,17 @@ All other variables used in the [effect-size
 table](#tab:effect-size-formulae) are defined in the corresponding
 “Analysis” section.
 
-## G Population effect sizes of parametric tests
+## G Population effect sizes
+
+All quantities in this section are defined for a fixed set of group-size
+ratios \\q_i=n_i/N\\, \\i=1,\dots,k\\, held constant as \\N\\ grows.
+This is a restriction, not a convention: \\\omega^2\_{\text{unbal}}\\
+and \\\omega^2\_{\text{het}}\\ below depend on the fixed \\q_i\\, as
+does \\\eta_H^2\\, so none of them is comparable between designs whose
+groups stand in different size ratios. Within one such family each is a
+function of the distributions alone.
+
+### G.1 Population effect sizes of parametric tests
 
 To quantify the different designs of the power simulations, we extend
 the effect size \\\widehat{\omega}^2\\ to the population level for the
@@ -2828,6 +2856,21 @@ p_j\left(\frac{\mu_j-\tilde\mu_w}{\sigma_j}\right)^2, \tag{G.3}
 \end{equation}\\ so that
 \\\omega^2\_{\text{het}}=\omega^2\_{\text{unbal}}\\ when
 \\\sigma_j^2=\sigma^2\\ for every \\j\\ ([Shieh 2012](#ref-Shieh:2012)).
+
+### G.2 Population effect size of the rank-based test
+
+With the group-size ratios \\q_i\\ held fixed, \\\widehat\eta_H^2\\
+converges to a function of the weighted relative effects \\p_i\\ of Eq.
+[(C.7)](#eq:weighted-relative-effect):
+
+\\\begin{equation}
+\widehat\eta_H^2=\frac{H-k+1}{N-k}\\\xrightarrow{N\to\infty}\\
+\eta_H^2=12\sum\_{i=1}^{k} q_i\left(p_i-\frac12\right)^{2}. \tag{G.4}
+\end{equation}\\
+
+Unlike \\\omega^2\\, which sees the group distributions only through
+\\(\mu_j,\sigma_j^2)\\, Eq. [(G.4)](#eq:eta-h-population) depends on
+their whole shape through Eq. [(C.7)](#eq:weighted-relative-effect).
 
 ## References
 
@@ -2890,6 +2933,11 @@ Brown, Morton B., and Alan B. Forsythe. 1974. “Robust Tests for the
 Equality of Variances.” *Journal of the American Statistical
 Association* 69 (346): 364–67.
 <https://doi.org/10.1080/01621459.1974.10482955>.
+
+Brunner, Edgar, Frank Konietschke, Arne C. Bathke, and Markus Pauly.
+2021. “Ranks and Pseudo-ranks—Surprising Results of Certain Rank Tests
+in Unbalanced Designs.” *International Statistical Review* 89 (2):
+349–66. <https://doi.org/10.1111/insr.12418>.
 
 Brunner, Edgar, Frank Konietschke, Markus Pauly, and Madan L. Puri.
 2017. “Rank-Based Procedures in Factorial Designs: Hypotheses About

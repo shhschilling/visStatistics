@@ -1111,9 +1111,11 @@ The design of the study is thus a combination of “assumption checking” <span
 </h3>
 <p>In the following, <span class="math inline">\(k\)</span> denotes the number of groups,
 <span class="math inline">\(n_i\)</span> the sample size of group <span class="math inline">\(i\)</span>, and
-<span class="math inline">\(N=\sum_{i=1}^{k}n_i\)</span> the total sample size. Observations are written as
-<span class="math inline">\(x_{ij}\)</span>, with group mean <span class="math inline">\(\bar x_i\)</span>, grand mean <span class="math inline">\(\bar x\)</span>, and group
-sample variance <span class="math inline">\(s_i^2\)</span>. The pooled variance is
+<span class="math inline">\(N=\sum_{i=1}^{k}n_i\)</span> the total sample size, with group-size ratios
+<span class="math inline">\(q_i=n_i/N\)</span>. Observations are written as
+<span class="math inline">\(x_{ij}\)</span>, drawn from the distribution function <span class="math inline">\(F_i\)</span> of group <span class="math inline">\(i\)</span>, with
+group mean <span class="math inline">\(\bar x_i\)</span>, grand mean <span class="math inline">\(\bar x\)</span>, and group sample variance
+<span class="math inline">\(s_i^2\)</span>. The pooled variance is
 <span class="math display" id="eq:pooled-variance">\[\begin{equation}
 s_p^2=\frac{1}{N-k}\sum_{i=1}^{k}(n_i-1)s_i^2 .
 \tag{10.1}
@@ -1499,18 +1501,29 @@ n_i \left(\bar{R}_i - \bar{R}\right)^2,
 \tag{C.3}
 \end{equation}\]</span></p>
 <p>The prefactor <span class="math inline">\(12/[N(N+1)]\)</span> rescales the weighted squared deviations of the group mean ranks by the sample variance of the <span class="math inline">\(N\)</span> pooled ranks.</p>
-<p><span class="math inline">\(H\)</span> <a href="#eq:kruskal-h">(C.3)</a> depends on the balance of design through its dependence on <span class="math inline">\(n_i/N\)</span>. Writing</p>
+<p><span class="math inline">\(H\)</span> <a href="#eq:kruskal-h">(C.3)</a> depends on the balance of design through its dependence on the group-size ratios <span class="math inline">\(q_i\)</span>; writing</p>
 <p><span class="math display" id="eq:kw-relative-position">\[\begin{equation}
 \widehat p_i=\frac{\bar R_i-\tfrac12}{N}
 \tag{C.4}
 \end{equation}\]</span></p>
 <p>for the average position of the observations of group <span class="math inline">\(i\)</span> within the pooled sample, Eq. <a href="#eq:kw-expected-mean-rank">(C.2)</a> gives <span class="math inline">\(\bar R_i-\bar R=N(\widehat p_i-\tfrac12)\)</span> exactly, so that, in the absence of ties,</p>
 <p><span class="math display" id="eq:kruskal-h-ratios">\[\begin{equation}
-H=\frac{12N^{2}}{N+1}\sum_{i=1}^{k}\frac{n_i}{N}
+H=\frac{12N^{2}}{N+1}\sum_{i=1}^{k} q_i
   \left(\widehat p_i-\frac12\right)^{2}.
 \tag{C.5}
 \end{equation}\]</span></p>
-<p>The group-size ratios <span class="math inline">\(n_i/N\)</span> enter twice: once as the weights shown in Eq. <a href="#eq:kruskal-h-ratios">(C.5)</a>, and once inside <span class="math inline">\(\widehat p_i\)</span> itself, since a rank taken over all <span class="math inline">\(N\)</span> observations measures position relative to the pooled sample, in which group <span class="math inline">\(i\)</span> is represented in proportion <span class="math inline">\(n_i/N\)</span>. With ties, both sides carry the tie factor below and the identity is unchanged.</p>
+<p>The <span class="math inline">\(q_i\)</span> enter twice: once as the weights shown in Eq. <a href="#eq:kruskal-h-ratios">(C.5)</a>, and once inside <span class="math inline">\(\widehat p_i\)</span> itself, since a rank taken over all <span class="math inline">\(N\)</span> observations measures position relative to the pooled sample, in which group <span class="math inline">\(i\)</span> is represented in proportion <span class="math inline">\(q_i\)</span>. With ties, both sides carry the tie factor below and the identity is unchanged.</p>
+<p>Pooling the <span class="math inline">\(k\)</span> groups in the proportions <span class="math inline">\(q_i\)</span> corresponds, at the population level, to the mixture distribution</p>
+<p><span class="math display" id="eq:weighted-average-cdf">\[\begin{equation}
+\bar F_q(x)=\sum_{i=1}^{k} q_i F_i(x),
+\tag{C.6}
+\end{equation}\]</span></p>
+<p>itself a distribution function: it describes a draw obtained by picking group <span class="math inline">\(i\)</span> with probability <span class="math inline">\(q_i\)</span> and then drawing from <span class="math inline">\(F_i\)</span>. What <span class="math inline">\(\widehat p_i\)</span> estimates, unbiasedly and consistently, is the weighted relative effect <span class="citation">(<a href="#ref-Brunner:2021">Brunner et al. 2021</a>)</span></p>
+<p><span class="math display" id="eq:weighted-relative-effect">\[\begin{equation}
+p_i=\int_{-\infty}^{\infty}\bar F_q(y)\,\mathrm{d}F_i(y),
+\tag{C.7}
+\end{equation}\]</span></p>
+<p>the probability that an observation from group <span class="math inline">\(i\)</span> exceeds an independent draw from the pooled population, plus half the probability of a tie.</p>
 <p>Large values of <span class="math inline">\(H\)</span> occur when at least one group has systematically higher or lower ranks than expected under equal rank distributions. <code><a href="https://rdrr.io/r/stats/kruskal.test.html" class="external-link">kruskal.test()</a></code> evaluates <span class="math inline">\(H\)</span> against the asymptotic <span class="math inline">\(\chi^2(k-1)\)</span> null distribution.
 If ties are present, <span class="math inline">\(H\)</span> is divided by the tie factor
 <span class="math display">\[
@@ -1921,8 +1934,7 @@ J(\nu) =
 s^{*} = \sqrt{\frac{s_1^2+s_2^2}{2}}.
 \end{equation*}\]</span></p>
 <p>In the ANOVA effect sizes, <span class="math inline">\(\nu_1\)</span> and <span class="math inline">\(\nu_2\)</span> denote the numerator and denominator degrees of freedom; for Fisher’s ANOVA, <span class="math inline">\(\nu_1=k-1\)</span> and <span class="math inline">\(\nu_2=N-k\)</span>; for Welch’s ANOVA, <span class="math inline">\(\nu_1=k-1\)</span> and <span class="math inline">\(\nu_2\)</span> is the usually fractional denominator degree of freedom returned by <code><a href="https://rdrr.io/r/stats/oneway.test.html" class="external-link">oneway.test()</a></code>.</p>
-<p>In the Kruskal-Wallis “effect size” <span class="math inline">\(\widehat{\eta}_H^2\)</span>,
-the joint ranking of all <span class="math inline">\(N\)</span> observations enters <span class="math inline">\(H\)</span> (Eq. <a href="#eq:kruskal-h">(C.3)</a>) depending thus on the group-size ratios <span class="math inline">\(n_i/N, i=1,\dots,k\)</span>. It is therefore not an effect size in the strict sense: a model parameter should be a function of the distributions <span class="math inline">\(F_1,\dots,F_k\)</span> alone, not of the sampling design <span class="citation">(<a href="#ref-Zimmermann:2021">Zimmermann et al. 2021</a>)</span>.</p>
+<p>In the Kruskal–Wallis effect size <span class="math inline">\(\widehat{\eta}_H^2\)</span>, the joint ranking of all <span class="math inline">\(N\)</span> observations enters <span class="math inline">\(H\)</span> (Eq. <a href="#eq:kruskal-h">(C.3)</a>), so <span class="math inline">\(\widehat{\eta}_H^2\)</span> depends on the group-size ratios <span class="math inline">\(q_i\)</span> and is not comparable across designs whose groups stand in different size ratios <span class="citation">(<a href="#ref-Zimmermann:2021">Zimmermann et al. 2021</a>)</span>.</p>
 <p>In the coefficient of determination <span class="math inline">\(R^2\)</span>,
 the residual sum of square is defined as
 <span class="math inline">\(SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2\)</span>, where <span class="math inline">\(\hat{y}_i\)</span> is the predicted value, and the total sum of squares is given by <span class="math inline">\(SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2\)</span> .</p>
@@ -1930,8 +1942,13 @@ the residual sum of square is defined as
 </div>
 <div class="section level2" number="17">
 <h2 id="sec:population-effect-sizes">
-<span class="header-section-number">G</span> Population effect sizes of parametric tests<a class="anchor" aria-label="anchor" href="#sec:population-effect-sizes"></a>
+<span class="header-section-number">G</span> Population effect sizes<a class="anchor" aria-label="anchor" href="#sec:population-effect-sizes"></a>
 </h2>
+<p>All quantities in this section are defined for a fixed set of group-size ratios <span class="math inline">\(q_i=n_i/N\)</span>, <span class="math inline">\(i=1,\dots,k\)</span>, held constant as <span class="math inline">\(N\)</span> grows. This is a restriction, not a convention: <span class="math inline">\(\omega^2_{\text{unbal}}\)</span> and <span class="math inline">\(\omega^2_{\text{het}}\)</span> below depend on the fixed <span class="math inline">\(q_i\)</span>, as does <span class="math inline">\(\eta_H^2\)</span>, so none of them is comparable between designs whose groups stand in different size ratios. Within one such family each is a function of the distributions alone.</p>
+<div class="section level3" number="17.1">
+<h3 id="population-effect-sizes-of-parametric-tests">
+<span class="header-section-number">G.1</span> Population effect sizes of parametric tests<a class="anchor" aria-label="anchor" href="#population-effect-sizes-of-parametric-tests"></a>
+</h3>
 <p>To quantify the different designs of the power simulations, we extend the effect size <span class="math inline">\(\widehat{\omega}^2\)</span> to the population level for the different designs.</p>
 <p><strong>balanced homoscedastic</strong>
 In a balanced homoscedastic design, <span class="math inline">\(\widehat{\omega}^2\)</span> estimates the population parameter
@@ -1956,6 +1973,19 @@ With <span class="math inline">\(w_j=n_j/\sigma_j^2\)</span> and <span class="ma
 \end{equation}\]</span>
 so that <span class="math inline">\(\omega^2_{\text{het}}=\omega^2_{\text{unbal}}\)</span> when <span class="math inline">\(\sigma_j^2=\sigma^2\)</span> for every <span class="math inline">\(j\)</span> <span class="citation">(<a href="#ref-Shieh:2012">Shieh 2012</a>)</span>.
 <!-- attributing the construction to Kulinskaya and Staudte 2006]. --></p>
+</div>
+<div class="section level3" number="17.2">
+<h3 id="population-effect-size-of-the-rank-based-test">
+<span class="header-section-number">G.2</span> Population effect size of the rank-based test<a class="anchor" aria-label="anchor" href="#population-effect-size-of-the-rank-based-test"></a>
+</h3>
+<p>With the group-size ratios <span class="math inline">\(q_i\)</span> held fixed, <span class="math inline">\(\widehat\eta_H^2\)</span> converges to a function of the weighted relative effects <span class="math inline">\(p_i\)</span> of Eq. <a href="#eq:weighted-relative-effect">(C.7)</a>:</p>
+<p><span class="math display" id="eq:eta-h-population">\[\begin{equation}
+\widehat\eta_H^2=\frac{H-k+1}{N-k}\;\xrightarrow{N\to\infty}\;
+\eta_H^2=12\sum_{i=1}^{k} q_i\left(p_i-\frac12\right)^{2}.
+\tag{G.4}
+\end{equation}\]</span></p>
+<p>Unlike <span class="math inline">\(\omega^2\)</span>, which sees the group distributions only through <span class="math inline">\((\mu_j,\sigma_j^2)\)</span>, Eq. <a href="#eq:eta-h-population">(G.4)</a> depends on their whole shape through Eq. <a href="#eq:weighted-relative-effect">(C.7)</a>.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -1999,6 +2029,9 @@ Brodeur, Abel, Nikolai Cook, and Anthony Heyes. 2020. <span>“Methods <span>Mat
 </div>
 <div id="ref-Brown:1974" class="csl-entry">
 Brown, Morton B., and Alan B. Forsythe. 1974. <span>“Robust <span>Tests</span> for the <span>Equality</span> of <span>Variances</span>.”</span> <em>Journal of the American Statistical Association</em> 69 (346): 364–67. <a href="https://doi.org/10.1080/01621459.1974.10482955" class="external-link">https://doi.org/10.1080/01621459.1974.10482955</a>.
+</div>
+<div id="ref-Brunner:2021" class="csl-entry">
+Brunner, Edgar, Frank Konietschke, Arne C. Bathke, and Markus Pauly. 2021. <span>“Ranks and <span class="nocase">Pseudo-ranks</span>—<span>Surprising Results</span> of <span>Certain Rank Tests</span> in <span>Unbalanced Designs</span>.”</span> <em>International Statistical Review</em> 89 (2): 349–66. <a href="https://doi.org/10.1111/insr.12418" class="external-link">https://doi.org/10.1111/insr.12418</a>.
 </div>
 <div id="ref-Brunner:2017" class="csl-entry">
 Brunner, Edgar, Frank Konietschke, Markus Pauly, and Madan L. Puri. 2017. <span>“Rank-<span>Based Procedures</span> in <span>Factorial Designs</span>: <span>Hypotheses About Non-Parametric Treatment Effects</span>.”</span> <em>Journal of the Royal Statistical Society Series B: Statistical Methodology</em> 79 (5): 1463–85. <a href="https://doi.org/10.1111/rssb.12222" class="external-link">https://doi.org/10.1111/rssb.12222</a>.
