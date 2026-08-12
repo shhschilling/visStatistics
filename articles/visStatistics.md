@@ -487,7 +487,7 @@ only.
 
 The Route 1 and Route 3 diagnostic-panel designs are illustrated in the
 examples in Figures [6.4](#fig:welch-anova-example), left, and
-[6.8](#fig:regression-example), left.
+[6.9](#fig:regression-example), left.
 
 ### 5.3 Route-specific decision rules
 
@@ -942,13 +942,12 @@ plot(welch_anova_iris_assumption, which = 1)
 
 ![Enforcing Welch tests changes the assumption panel to normality
 density and Q-Q plots for each group, The test statistics are
-Shapiro-Wilk (SW) and Anderson-Darling (AD) normality tests,
-](visStatistics_files/figure-html/welch-anova-assumption%20example-1.png)
+Shapiro-Wilk (SW) and Anderson-Darling (AD) normality tests.
+](visStatistics_files/figure-html/welch-anova-assumption-example-1.png)
 
-(#fig:welch-anova-assumption example)Enforcing Welch tests changes the
-assumption panel to normality density and Q-Q plots for each group, The
-test statistics are Shapiro-Wilk (SW) and Anderson-Darling (AD)
-normality tests,
+Figure 6.5: Enforcing Welch tests changes the assumption panel to
+normality density and Q-Q plots for each group, The test statistics are
+Shapiro-Wilk (SW) and Anderson-Darling (AD) normality tests.
 
 #### 6.1.3 Wilcoxon rank-sum test and Kruskal–Wallis test
 
@@ -977,7 +976,7 @@ rank-sum test applied to the \`warpbreaks\` dataset (\`breaks\` vs.\\
 normality; non-parametric path selected) and box plots with the Wilcoxon
 test result.](visStatistics_files/figure-html/wilcoxon-example-2.png)
 
-Figure 6.5: Wilcoxon rank-sum test applied to the `warpbreaks` dataset
+Figure 6.6: Wilcoxon rank-sum test applied to the `warpbreaks` dataset
 (`breaks` vs. `wool`). Assumption diagnostics (Shapiro–Wilk rejects
 residual normality; non-parametric path selected) and box plots with the
 Wilcoxon test result.
@@ -1015,7 +1014,7 @@ normality; non-parametric path selected) and box plots with
 Holm-adjusted Dunn significance letters (\$\alpha =
 0.05\$).](visStatistics_files/figure-html/kruskal-example-2.png)
 
-Figure 6.6: Kruskal-Wallis test applied to the `iris` dataset
+Figure 6.7: Kruskal-Wallis test applied to the `iris` dataset
 (`Petal.Width` vs. `Species`). Assumption diagnostics (Shapiro–Wilk
 rejects residual normality; non-parametric path selected) and box plots
 with Holm-adjusted Dunn significance letters (\\\alpha = 0.05\\).
@@ -1033,7 +1032,7 @@ two-level predictor.
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 selects the Wilcoxon rank-sum test. The result panel therefore displays
 the rank-test comparison on the numeric level scores (see Figure
-[6.7](#fig:ordinal-wilcoxon-kruskal-example), left).
+[6.8](#fig:ordinal-wilcoxon-kruskal-example), left).
 
 ``` r
 
@@ -1056,7 +1055,7 @@ followed by Holm-adjusted
 [`dunn.test()`](https://shhschilling.github.io/visStatistics/reference/dunn.test.md).
 The result panel shows the Kruskal–Wallis comparison and Holm-adjusted
 significance letters on the numeric level scores (see Figure
-[6.7](#fig:ordinal-wilcoxon-kruskal-example), right). A synthetic survey
+[6.8](#fig:ordinal-wilcoxon-kruskal-example), right). A synthetic survey
 records perceived car comfort on a five-point scale across three
 markets.
 
@@ -1092,7 +1091,7 @@ Holm-adjusted Dunn post-hoc comparisons are shown as significance
 letters for the Kruskal-Wallis example (\$\alpha =
 0.05\$).](visStatistics_files/figure-html/ordinal-wilcoxon-kruskal-example-2.png)
 
-Figure 6.7: Wilcoxon rank-sum test for ordered passenger class by sex in
+Figure 6.8: Wilcoxon rank-sum test for ordered passenger class by sex in
 the expanded `Titanic` data (left) and its multi-group generalisation,
 the Kruskal-Wallis test for ordered car comfort ratings by market
 (right). Holm-adjusted Dunn post-hoc comparisons are shown as
@@ -1107,7 +1106,7 @@ indicators for 47 French-speaking Swiss provinces in 1888. We examine
 how the share of draftees achieving the highest army examination score
 (`Examination`) predicts the fertility measure (`Fertility`), with
 `conf.level = 0.99`. The diagnostic panel in Figure
-[6.8](#fig:regression-example), left, shows that both normality tests
+[6.9](#fig:regression-example), left, shows that both normality tests
 pass and the Breusch–Pagan test confirms homoscedasticity, supporting
 the linear model. The assumption-diagnostic panel is displayed, but its
 checks do not trigger automatic model replacement. The regression plot
@@ -1146,7 +1145,7 @@ interval for an individual response, and 99\\ confidence interval for
 the mean
 response.](visStatistics_files/figure-html/regression-example-2.png)
 
-Figure 6.8: Simple linear regression of `Fertility` on `Examination` for
+Figure 6.9: Simple linear regression of `Fertility` on `Examination` for
 the `swiss` dataset (`conf.level = 0.99`). Left: residual-diagnostic
 panel with histogram, normal Q-Q plot with simultaneous tolerance band
 (STB) and point-wise tolerance band (TB), and residuals versus fitted
@@ -1186,7 +1185,7 @@ dataset. Assumption diagnostics flag non-normal model residuals and
 heteroscedasticity before alternative routes are
 considered.](visStatistics_files/figure-html/ozone-lm-triage-2.png)
 
-Figure 6.9: Default simple linear regression for `Ozone` by `Wind` in
+Figure 6.10: Default simple linear regression for `Ozone` by `Wind` in
 the `airquality` dataset. Assumption diagnostics flag non-normal model
 residuals and heteroscedasticity before alternative routes are
 considered.
@@ -1233,7 +1232,7 @@ model_lm$aic
 vs. \`Wind\`. The red curve shows the fitted Gamma GLM; the y-axis is on
 a log scale.](visStatistics_files/figure-html/gamma-glm-plot-1.png)
 
-Figure 6.10: Gamma GLM with log link fitted to the `airquality` dataset
+Figure 6.11: Gamma GLM with log link fitted to the `airquality` dataset
 `Ozone` vs. `Wind`. The red curve shows the fitted Gamma GLM; the y-axis
 is on a log scale.
 
@@ -1315,7 +1314,7 @@ chart of eye colour by hair colour and mosaic plot with tiles coloured
 by Pearson residuals (blue: over-represented, red:
 under-represented).](visStatistics_files/figure-html/chisq-example-2.png)
 
-Figure 6.11: Pearson’s \\\chi^2\\ test applied to the `HairEyeColor`
+Figure 6.12: Pearson’s \\\chi^2\\ test applied to the `HairEyeColor`
 dataset. Grouped bar chart of eye colour by hair colour and mosaic plot
 with tiles coloured by Pearson residuals (blue: over-represented, red:
 under-represented).
@@ -1330,7 +1329,7 @@ yields a \\2 \times 2\\ table. Cochran’s rule is still satisfied, so
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 applies Pearson’s \\\chi^2\\ test with Yates’ continuity correction. The
 resulting grouped column plot is shown in Figure
-[6.12](#fig:yates-fisher-example), left.
+[6.13](#fig:yates-fisher-example), left.
 
 ``` r
 
@@ -1375,7 +1374,7 @@ frequency is less than 5, violating Cochran’s rule ([Cochran
 therefore applies Fisher’s exact test. The graphical output shows
 absolute counts with count labels above each bar and the \\p\\ value in
 the title, so the small cell counts that trigger the exact test remain
-visible (see Figure [6.12](#fig:yates-fisher-example), right).
+visible (see Figure [6.13](#fig:yates-fisher-example), right).
 
 ``` r
 
@@ -1405,7 +1404,7 @@ right). The Yates-corrected plot shows row percentages; the Fisher plot
 shows absolute
 counts.](visStatistics_files/figure-html/yates-fisher-example-2.png)
 
-Figure 6.12: Two \\2 \times 2\\ categorical routes in `HairEyeColor`:
+Figure 6.13: Two \\2 \times 2\\ categorical routes in `HairEyeColor`:
 Yates-corrected Pearson \\\chi^2\\ when Cochran’s rule is satisfied
 (black/brown hair and brown/blue eyes; left), and Fisher’s exact test
 when expected counts are too small (male participants, black/brown hair,
@@ -1423,7 +1422,7 @@ consumption frequency and academic performance on five-point ordinal
 scales. A negative monotone association is induced by construction:
 students who consume alcohol more frequently tend to have lower academic
 performance. The Kendall result is shown in Figure
-[6.13](#fig:kendall-spearman-example), left.
+[6.14](#fig:kendall-spearman-example), left.
 
 ``` r
 
@@ -1452,7 +1451,7 @@ Right: Spearman rank correlation of \`Wind\` and \`Ozone\` from the
 annotate the corresponding effect measure and \$p\$\\
 value.](visStatistics_files/figure-html/kendall-spearman-example-2.png)
 
-Figure 6.13: Rank-based correlations: Left: Kendall’s \\\tau_b\\ for a
+Figure 6.14: Rank-based correlations: Left: Kendall’s \\\tau_b\\ for a
 hypothetical survey (\\n = 150\\): alcohol consumption frequency
 vs. academic performance. Right: Spearman rank correlation of `Wind` and
 `Ozone` from the `airquality` dataset (`correlation = TRUE`; right).
@@ -1464,7 +1463,7 @@ For the ozone example introduced in Section [6.3.1](#sec:lin-reg),
 staying within
 [`visstat()`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
 with the flag `correlation = TRUE` gives the Spearman analysis shown in
-Figure [6.13](#fig:kendall-spearman-example), right.
+Figure [6.14](#fig:kendall-spearman-example), right.
 
 ## 7 Group comparison simulations
 
@@ -1742,16 +1741,11 @@ sizes, while under heavy tails (column 2) and under high skewness
 (columns 4 and 5 of Fig. [7.3](#fig:route1-power)) Kruskal–Wallis
 rejects far more often. The routed procedure follows whichever rejects
 most often – the insets show the share sent to the rank branch growing
-with skewness and excess kurtosis. Similar results were obtained with
-unbalanced inputs, were, like in the type I simulations, the size of the
-four input distributions were given by \\\overline n (0.5, 0.8, 1.2,
-1.5)\\ with \\n \in {10,20,30,50,100}\\.
-
-Replacing the ordered location shift by a one-point shift of 0.5 or 1
-(data not shown) of a single group, with the other three identical,
-leaves this qualitative result unchanged: the panels in which the rank
-branch gains are the same, and the routed procedure follows still the
-fixed test with the highest rejection rate.
+with skewness and excess kurtosis. This qualitative result remains
+unchanged with unbalanced inputs or replacing the ordered location shift
+by a one-point shift of 0.5 or 1 of a single group, with the other three
+identical; the routed procedure follows still the fixed test with the
+highest rejection rate (data not shown).
 
 ## 8 Discussion
 
