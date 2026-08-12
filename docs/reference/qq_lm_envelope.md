@@ -4,8 +4,11 @@ Computes pointwise and simultaneous Q-Q envelopes for internally
 studentised residuals from an unweighted `lm` or `aov` object by
 repeatedly simulating responses from the fitted normal-error model and
 refitting the model. The simultaneous envelope follows the Monte Carlo
-tolerance-band idea of Schuetzenmeister et al. (2012,
-doi:10.1080/03610918.2011.582560).
+tolerance-band idea of Schützenmeister et al. (2012); see
+[`vis_lm_assumptions`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md)
+and
+[`visstat`](https://shhschilling.github.io/visStatistics/reference/visstat.md)
+for where these bands are drawn.
 
 ## Usage
 
@@ -53,6 +56,13 @@ A list of class `qq_lm_envelope` with the observed sorted residuals,
 theoretical quantiles, pointwise bounds, simultaneous bounds, the
 simulated sorted residual matrix, and the achieved simultaneous
 coverage.
+
+## References
+
+Schützenmeister, A., Jensen, U., & Piepho, H.-P. (2012). Checking
+Normality and Homoscedasticity in the General Linear Model Using
+Diagnostic Plots. *Communications in Statistics - Simulation and
+Computation*, 41(2). doi:10.1080/03610918.2011.582560.
 
 ## Examples
 

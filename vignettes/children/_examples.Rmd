@@ -100,7 +100,7 @@ welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length)
 The user can eforce the Welch type analysis, by setting  `group_test="Welch`, this changes the assumption panel from the GLM assumption panel to normality tests by density plots and QQ plots for each group.
 
 
-```{r welch-anova-assumption example, fig.cap=paste0("Enforcing Welch tests changes the assumption panel to normality density  and Q-Q plots for each group, The test statistics are Shapiro-Wilk (SW) and Anderson-Darling (AD) normality tests, "), out.width="80%", fig.height=4.5, fig.keep="last"}
+```{r welch-anova-assumption-example, fig.cap=paste0("Enforcing Welch tests changes the assumption panel to normality density  and Q-Q plots for each group, The test statistics are Shapiro-Wilk (SW) and Anderson-Darling (AD) normality tests. "), out.width="80%", fig.height=4.5, fig.keep="last"}
 welch_anova_iris_assumption <- visstat(iris$Species, iris$Sepal.Length, group_test = "welch")
 plot(welch_anova_iris_assumption, which = 1)
 ```

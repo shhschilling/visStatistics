@@ -79,6 +79,12 @@ The implementation uses the Welch-Satterthwaite approximation for
 degrees of freedom and does not pool variances. P-values are adjusted
 using the Holm method to control family-wise error rate.
 
+## References
+
+Games, P. A., & Howell, J. F. (1976). Pairwise Multiple Comparison
+Procedures with Unequal N's and/or Variances: A Monte Carlo Study.
+*Journal of Educational Statistics*, 1(2). doi:10.2307/1164979.
+
 ## Examples
 
 ``` r

@@ -3,14 +3,16 @@
 Checks the residual diagnostics in the general linear model Student's
 t-test (t.test,var=EQUAL) Fisher oneway ANOVA (aov) or simple linear
 regression. Performs the Shapiro-Wilk and Anderson-Darling tests for
-normality, and for grouped data also Levene's and Bartlett's tests for
-homogeneity of variances. For simple linear regression,
-heteroscedasticity is assessed with the Breusch-Pagan test
-\[@Koenker:1981\], which regresses squared raw residuals on fitted
-values. The normality tests, the grouped variance tests, and the
-histogram and Q-Q panels are computed from the internally studentised
-residuals r_i = e_i / (SE_res sqrt(1 - h_i)), which remove the
-leverage-dependent variance of the raw residuals (Var(e_i) = sigma^2
+normality, and for grouped data also
+[`levene.test`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
+and Bartlett's test for homogeneity of variances. For simple linear
+regression, heteroscedasticity is assessed with
+[`bp.test`](https://shhschilling.github.io/visStatistics/reference/bp.test.md),
+the studentised Breusch-Pagan test, which regresses squared raw
+residuals on fitted values. The normality tests, the grouped variance
+tests, and the histogram and Q-Q panels are computed from the internally
+studentised residuals r_i = e_i / (SE_res sqrt(1 - h_i)), which remove
+the leverage-dependent variance of the raw residuals (Var(e_i) = sigma^2
 (1 - h_i)). The residuals-vs-fitted panel (regression mode) uses the
 z-residuals z_i = e_i / SE_res, which retain the leverage-dependent
 spread.
@@ -97,6 +99,28 @@ A list with elements:
   Result from
   [`bp.test()`](https://shhschilling.github.io/visStatistics/reference/bp.test.md)
   (regression diagnostics only).
+
+## Details
+
+The Q-Q panel shows the simultaneous and point-wise tolerance bands
+computed by
+[`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md),
+which documents their construction and gives the reference for it.
+
+## References
+
+Schützenmeister, A., Jensen, U., & Piepho, H.-P. (2012). Checking
+Normality and Homoscedasticity in the General Linear Model Using
+Diagnostic Plots. *Communications in Statistics - Simulation and
+Computation*, 41(2). doi:10.1080/03610918.2011.582560. (Q-Q simultaneous
+tolerance band, see
+[`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md).)
+
+See
+[`levene.test`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
+and
+[`bp.test`](https://shhschilling.github.io/visStatistics/reference/bp.test.md)
+for the references of those two tests.
 
 ## Examples
 

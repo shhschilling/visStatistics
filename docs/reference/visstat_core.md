@@ -17,10 +17,11 @@ visstat_core(
   correlation = FALSE,
   numbers = TRUE,
   minpercent = 0.05,
-  group_test = NULL,
+  group_test = "gated",
   graphicsoutput = NULL,
   plotName = NULL,
   plotDirectory = getwd(),
+  qq_nsim = getOption("visStatistics.qq_nsim", 5000L),
   plot_args = list()
 )
 ```
@@ -66,7 +67,7 @@ visstat_core(
 
 - group_test:
 
-  Optional character. For Route 1 only, `NULL` keeps the default
+  Character. For Route 1 only, `"gated"` (the default) keeps the
   assumption gates, `"welch"` forces Welch-type mean tests, but still
   displays the assumption-diagnostic plot and warns when residual
   normality is rejected, whereas `"rank"` forces Wilcoxon/Kruskal-Wallis
@@ -90,6 +91,12 @@ visstat_core(
 
   specifies directory, where generated plots are stored. Default is
   current working directory.
+
+- qq_nsim:
+
+  Integer number of simulated refits for the Q-Q envelopes in the
+  assumption diagnostics. Defaults to the option
+  `visStatistics.qq_nsim`, or 5000 if that is unset.
 
 - plot_args:
 
@@ -134,9 +141,9 @@ depending on expected counts. If both variables are ordered and
 The significance level `alpha` is defined as `1 - conf.level`.
 Assumption tests are interpreted relative to this threshold.
 
-Under the default `group_test = NULL`, Route 1 issues a warning when the
-group sizes are unbalanced, the largest group standard deviations occur
-in the smallest groups, and the route selected is either the
+Under the default `group_test = "gated"`, Route 1 issues a warning when
+the group sizes are unbalanced, the largest group standard deviations
+occur in the smallest groups, and the route selected is either the
 equal-variance test or a rank-based test. In that configuration those
 two routes can exceed the nominal significance level, whereas a selected
 Welch test does not and is therefore not flagged; see the Route 1
@@ -179,15 +186,15 @@ Implemented post hoc tests:
 - [`games.howell()`](https://shhschilling.github.io/visStatistics/reference/games.howell.md)
   for [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html)
 
-- [`pairwise.wilcox.test()`](https://rdrr.io/r/stats/pairwise.wilcox.test.html)
+- [`dunn.test()`](https://shhschilling.github.io/visStatistics/reference/dunn.test.md)
   for [`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html)
 
 The Q-Q envelopes in the assumption diagnostics are simulated (see
 [`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md)).
-The number of simulated refits is taken from the option
-`visStatistics.qq_nsim` and defaults to 5000. As `visstat_core()` has no
-corresponding argument, this option is the only way to change it here;
-lower it to trade precision for speed, for instance
+The number of simulated refits is taken from the `qq_nsim` argument,
+which itself defaults to the option `visStatistics.qq_nsim` and to 5000
+if that is unset. Lower it to trade precision for speed, either per call
+with `qq_nsim = 1000L` or session wide with
 `options(visStatistics.qq_nsim = 1000L)`.
 
 ## See also

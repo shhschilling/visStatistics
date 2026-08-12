@@ -73,7 +73,7 @@ The following estimates are computed internally:
   [`wilcox.test()`](https://rdrr.io/r/stats/wilcox.test.html) for the
   first group.
 
-- Fisher's one-way ANOVA: omega-squared \\\omega^2 =
+- Fisher's one-way ANOVA: omega-squared \\\widehat{\omega}^2 =
   \nu_1(F-1)/(\nu_1F+\nu_2+1)\\, where \\F\\ is the ordinary one-way
   ANOVA statistic, \\\nu_1=k-1\\, and \\\nu_2=N-k\\. Negative estimates
   are truncated to zero.
@@ -85,9 +85,9 @@ The following estimates are computed internally:
   [`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html). Negative
   estimates are truncated to zero.
 
-- Kruskal-Wallis test: Kelley-adjusted eta-squared based on \\H\\,
-  \\\eta_H^2=(H-k+1)/(N-k)\\, where \\H\\ is the Kruskal-Wallis
-  statistic. Negative estimates are truncated to zero.
+- Kruskal-Wallis test: eta-squared based on \\H\\,
+  \\\widehat{\eta}\_H^2=(H-k+1)/(N-k)\\, where \\H\\ is the
+  Kruskal-Wallis statistic. Negative estimates are truncated to zero.
 
 - Pearson's chi-squared test: Cramer's \\V\\ for general \\R\times C\\
   tables, \\V=\sqrt{\chi^2/(N\cdot(\min(R,C)-1))}\\, where \\R\\ and
@@ -97,11 +97,18 @@ The following estimates are computed internally:
 
 The following estimates are extracted from existing result objects:
 
-- \\R^2\\ from `summary(lm())$r.squared`.
+- \\R^2\\ from `summary(lm())$r.squared`, the coefficient of
+  determination \\R^2 = 1 - SS\_{res}/SS\_{tot}\\, where \\SS\_{res}\\
+  is the residual and \\SS\_{tot}\\ the total sum of squares.
 
-- Spearman's \\\rho\\ from `cor.test(method = "spearman")$estimate`.
+- Spearman's \\\rho\\ from `cor.test(method = "spearman")$estimate`, the
+  Pearson correlation of the ranks, \\\rho = r(rank(x), rank(y))\\.
 
-- Kendall's \\\tau_b\\ from `cor.test(method = "kendall")$estimate`.
+- Kendall's \\\tau_b\\ from `cor.test(method = "kendall")$estimate`,
+  \\\tau_b = (n_c - n_d)/\sqrt{(n_0 - n_1)(n_0 - n_2)}\\, where \\n_c\\
+  and \\n_d\\ are the numbers of concordant and discordant pairs, \\n_0
+  = n(n-1)/2\\ the total number of pairs, and \\n_1\\ and \\n_2\\ the
+  numbers of pairs tied in the response and in the predictor.
 
 - The conditional maximum-likelihood odds ratio from
   `fisher.test()$estimate` and its confidence interval from
@@ -117,18 +124,20 @@ Delacre, M., Lakens, D., Ley, C., Liu, L., & Leys, C. (2021). Why
 Hedges' g\*s based on the non-pooled standard deviation should be
 reported with Welch's t-test. *PsyArXiv*. doi:10.31234/osf.io/tu6mp.
 
-Kerby, D. S. (2014). The simple difference formula: An approach to
-teaching nonparametric correlation. *Comprehensive Psychology*, 3,
-11.IT.3.1. doi:10.2466/11.IT.3.1.
+Wendt, H. W. (1972). Dealing with a common problem in social science: A
+simplified rank-biserial coefficient of correlation based on the U
+statistic. *European Journal of Social Psychology*, 2(4), 463–465.
+doi:10.1002/ejsp.2420020412.
 
 Albers, C., & Lakens, D. (2018). When power analyses based on pilot data
 are biased: Inaccurate effect size estimators and follow-up bias.
 *Journal of Experimental Social Psychology*, 74, 187–195.
 doi:10.1016/j.jesp.2017.09.004.
 
-Kelley, T. L. (1935). An unbiased correlation ratio measure.
-*Proceedings of the National Academy of Sciences*, 21(9), 554–559.
-doi:10.1073/pnas.21.9.554.
+Tomczak, M., & Tomczak, E. (2014). The need to report effect size
+estimates revisited. An overview of some recommended measures of effect
+size. *Trends in Sport Sciences*, 1(21), 19–25.
+<https://tss.awf.poznan.pl/The-need-to-report-effect-size-estimates-revisited-An-overview-of-some-recommended,188960,0,2.html>
 
 Cohen, J. (2013). *Statistical power analysis for the behavioural
 sciences*. Routledge. doi:10.4324/9780203771587.

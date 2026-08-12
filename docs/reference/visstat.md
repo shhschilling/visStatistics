@@ -35,10 +35,11 @@ visstat(
   correlation = FALSE,
   numbers = TRUE,
   minpercent = 0.05,
-  group_test = NULL,
+  group_test = "gated",
   graphicsoutput = NULL,
   plotName = NULL,
-  plotDirectory = getwd()
+  plotDirectory = getwd(),
+  qq_nsim = getOption("visStatistics.qq_nsim", 5000L)
 )
 ```
 
@@ -97,10 +98,10 @@ visstat(
 
 - group_test:
 
-  Optional character. For a numeric response and factor predictor,
-  `NULL` keeps the default assumption gates, `"welch"` forces Welch-type
-  mean tests, but still displays the assumption-diagnostic plot and
-  warns when residual normality is rejected, whereas `"rank"` forces
+  Character. For a numeric response and factor predictor, `"gated"` (the
+  default) keeps the assumption gates, `"welch"` forces Welch-type mean
+  tests, but still displays the assumption-diagnostic plot and warns
+  when residual normality is rejected, whereas `"rank"` forces
   Wilcoxon/Kruskal-Wallis rank tests without assessing the assumptions.
 
 - graphicsoutput:
@@ -122,6 +123,12 @@ visstat(
 
   Specifies directory where generated plots are stored. Default is
   current working directory.
+
+- qq_nsim:
+
+  Integer number of simulated refits for the Q-Q envelopes in the
+  assumption diagnostics. Defaults to the option
+  `visStatistics.qq_nsim`, or 5000 if that is unset.
 
 ## Value
 
@@ -185,15 +192,11 @@ assumption diagnostics.
 
 The Q-Q envelopes in the assumption diagnostics are simulated (see
 [`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md)).
-The number of simulated refits is taken from the option
-`visStatistics.qq_nsim` and defaults to 5000. As `visstat()` has no
-corresponding argument, this option is the only way to change it here;
-lower it to trade precision for speed, for instance
-`options(visStatistics.qq_nsim = 1000L)`. Use
-[`vis_lm_assumptions`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md)
-or
-[`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md)
-directly if you prefer to set the number of refits per call.
+The number of simulated refits is taken from the `qq_nsim` argument,
+which itself defaults to the option `visStatistics.qq_nsim` and to 5000
+if that is unset. Lower it to trade precision for speed, either per call
+with `qq_nsim = 1000L` or session wide with
+`options(visStatistics.qq_nsim = 1000L)`.
 
 ## Note
 
@@ -201,6 +204,46 @@ For best visualization, ensure that the RStudio Plots pane is adequately
 sized. If you get "figure margins too large" errors, try expanding the
 Plots pane in RStudio, or using `dev.new(width=10, height=6)` for a
 larger plot window.
+
+## References
+
+Welch, B. L. (1951). On the Comparison of Several Mean Values: An
+Alternative Approach. *Biometrika*, 38(3/4). doi:10.2307/2332579.
+
+Kruskal, W. H., & Wallis, W. A. (1952). Use of Ranks in One-Criterion
+Variance Analysis. *Journal of the American Statistical Association*,
+47(260). doi:10.2307/2280779.
+
+Bradley, J. V. (1978). Robustness? *British Journal of Mathematical and
+Statistical Psychology*, 31(2). doi:10.1111/j.2044-8317.1978.tb00581.x.
+(Liberal robustness bounds of 2.5%-7.5%, used to judge Type I error
+control in the size and variance-pairing warnings below.)
+
+Brunner, E., Konietschke, F., Pauly, M., & Puri, M. L. (2017).
+Rank-Based Procedures in Factorial Designs: Hypotheses About
+Non-Parametric Treatment Effects. *Journal of the Royal Statistical
+Society Series B: Statistical Methodology*, 79(5).
+doi:10.1111/rssb.12222. (Sensitivity of rank-based tests to unequal
+variances at unequal group sizes, underlying the adverse-pairing
+warning.)
+
+Delacre, M., Leys, C., Mora, Y. L., & Lakens, D. (2019). Taking
+Parametric Assumptions Seriously: Arguments for the Use of Welch's
+F-test instead of the Classical F-test in One-Way ANOVA. *International
+Review of Social Psychology*, 32(1). doi:10.5334/irsp.198. (Sample-size
+thresholds below which Welch's Type I error control is not guaranteed
+under skewness, used in the small-group warning under
+`group_test = "welch"`.)
+
+See
+[`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md)
+and
+[`vis_lm_assumptions`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md)
+for the Q-Q tolerance-band construction, and
+[`levene.test`](https://shhschilling.github.io/visStatistics/reference/levene.test.md)
+and
+[`bp.test`](https://shhschilling.github.io/visStatistics/reference/bp.test.md)
+for the two variance tests implemented by this package.
 
 ## See also
 
@@ -275,7 +318,7 @@ visstat(groups, values)
 
 ## Kruskal-Wallis (non-normal, >2 groups)
 # When residuals are not normally distributed, kruskal.test() is followed by
-# pairwise.wilcox.test.
+# dunn.test.
 visstat(iris$Species, iris$Petal.Width)
 
 
