@@ -97,6 +97,14 @@ The result panel shows the box plots and Games--Howell significance letters.
 ```{r welch-anova-example, fig.cap=paste0("Welch's heteroscedastic one-way ANOVA applied to the `iris` dataset (`Sepal.Length` vs.\\ `Species`). Assumption diagnostics (Shapiro--Wilk does not reject residual normality; Levene rejects residual variance homogeneity) select the unequal-variance mean-based path, followed by box plots with Games--Howell significance letters ($\\alpha = ", example_alpha, "$)."), out.width="48%", fig.height=4.5, fig.show="hold"}
 welch_anova_iris <- visstat(iris$Species, iris$Sepal.Length)
 ```
+The user can eforce the Welch type analysis, by setting  `group_test="Welch`, this changes the assumption panel from the GLM assumption panel to normality tests by density plots and QQ plots for each group.
+
+
+```{r welch-anova-assumption example, fig.cap=paste0("Enforcing Welch tests changes the assumption panel to normality density  and Q-Q plots for each group, The test statistics are Shapiro-Wilk (SW) and Anderson-Darling (AD) normality tests, "), out.width="80%", fig.height=4.5, fig.keep="last"}
+welch_anova_iris_assumption <- visstat(iris$Species, iris$Sepal.Length, group_test = "welch")
+plot(welch_anova_iris_assumption, which = 1)
+```
+
 
 ### Wilcoxon rank-sum test and Kruskal--Wallis test
 
@@ -109,6 +117,9 @@ Using wool type (`A` or `B`) as predictor and the number of breaks as response, 
 ```{r wilcoxon-example, fig.cap="Wilcoxon rank-sum test applied to the `warpbreaks` dataset (`breaks` vs.\\ `wool`). Assumption diagnostics (Shapiro--Wilk rejects residual normality; non-parametric path selected) and box plots with the Wilcoxon test result.", out.width="48%", fig.height=4.5, fig.show="hold"}
 wilcoxon_stats <- visstat(warpbreaks$wool, warpbreaks$breaks)
 ```
+
+
+
 
 #### Kruskal--Wallis rank sum test with Dunn post-hoc comparisons
 

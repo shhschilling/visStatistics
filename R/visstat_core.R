@@ -144,7 +144,7 @@ warn_adverse_variance_pairing <- function(pairing, route) {
 #' The significance level \code{alpha} is defined as \code{1 - conf.level}.
 #' Assumption tests are interpreted relative to this threshold.
 #'
-#' Under the default \code{group_test = NULL}, Route 1 issues a warning when the
+#' Under the default \code{group_test = "gated"}, Route 1 issues a warning when the
 #' group sizes are unbalanced, the largest group standard deviations occur in the
 #' smallest groups, and the route selected is either the equal-variance test or a
 #' rank-based test. In that configuration those two routes can exceed the nominal
@@ -200,8 +200,8 @@ warn_adverse_variance_pairing <- function(pairing, route) {
 #'   plots.
 #' @param minpercent number between 0 and 1 indicating minimal fraction of total
 #'   count data of a category to be displayed	in mosaic count plots.
-#' @param group_test Optional character. For Route 1 only, \code{NULL} keeps the
-#'   default assumption gates, \code{"welch"} forces Welch-type mean tests, but
+#' @param group_test Character. For Route 1 only, \code{"gated"} (the default)
+#'   keeps the assumption gates, \code{"welch"} forces Welch-type mean tests, but
 #'   still displays the assumption-diagnostic plot and warns when residual
 #'   normality is rejected, whereas \code{"rank"} forces Wilcoxon/Kruskal-Wallis
 #'   rank tests without assessing the assumptions.
@@ -215,14 +215,17 @@ warn_adverse_variance_pairing <- function(pairing, route) {
 #'   "statisticalTestName_varsample_varfactor".
 #' @param plotDirectory specifies directory, where generated plots are stored.
 #'   Default is current working directory.
+#' @param qq_nsim Integer number of simulated refits for the Q-Q envelopes in
+#'   the assumption diagnostics. Defaults to the option
+#'   \code{visStatistics.qq_nsim}, or 5000 if that is unset.
 #' @param plot_args Optional named list of base graphics parameters.
 #' @details
 #' The Q-Q envelopes in the assumption diagnostics are simulated (see
 #' \code{\link{qq_lm_envelope}}). The number of simulated refits is taken from
-#' the option \code{visStatistics.qq_nsim} and defaults to 5000. As
-#' \code{visstat_core()} has no corresponding argument, this option is the only
-#' way to change it here; lower it to trade precision for speed, for instance
-#' \code{options(visStatistics.qq_nsim = 1000L)}.
+#' the \code{qq_nsim} argument, which itself defaults to the option
+#' \code{visStatistics.qq_nsim} and to 5000 if that is unset. Lower it to trade
+#' precision for speed, either per call with \code{qq_nsim = 1000L} or session
+#' wide with \code{options(visStatistics.qq_nsim = 1000L)}.
 #' @return An object of class \code{"visstat"} containing the results of
 #' the automatically selected statistical test. The specific contents depend on
 #'  which test was performed.
@@ -297,10 +300,11 @@ visstat_core <- function(dataframe,
                          correlation = FALSE,
                          numbers = TRUE,
                          minpercent = 0.05,
-                         group_test = NULL,
+                         group_test = "gated",
                          graphicsoutput = NULL,
                          plotName = NULL,
                          plotDirectory = getwd(),
+                         qq_nsim = getOption("visStatistics.qq_nsim", 5000L),
                          plot_args = list()) {
   stopifnot(is.data.frame(dataframe))
   stopifnot(varsample %in% names(dataframe))
@@ -324,7 +328,7 @@ visstat_core <- function(dataframe,
 
   # Set default values---------------------------
   alpha <- 1 - conf.level
-  group_test <- if (is.null(group_test)) "automatic" else match.arg(group_test, c("welch", "rank"))
+  group_test <- match.arg(group_test, c("gated", "welch", "rank"))
 
   ## Get input variables---------------------------------
   input <-
@@ -450,6 +454,7 @@ visstat_core <- function(dataframe,
       openGraphCairo(type = graphicsoutput, fileDirectory = plotDirectory)
       vis_lm_assumptions(samples, fact,
         cex = 0.8, conf.level = conf.level,
+        qq_nsim = qq_nsim,
         plot_args = plot_args
       )
 
@@ -495,7 +500,7 @@ visstat_core <- function(dataframe,
 
     # Flag the configuration in which the automatic route is unreliable, once
     # the route is known: only the equal-variance and rank routes are affected.
-    adverse_pairing <- if (group_test == "automatic" && !ordinal_response) {
+    adverse_pairing <- if (group_test == "gated" && !ordinal_response) {
       detect_adverse_variance_pairing(samples, fact)
     } else {
       list(adverse = FALSE)
@@ -547,7 +552,7 @@ visstat_core <- function(dataframe,
       # heteroscedasticity of the raw residuals (Var(e_i) = sigma^2 (1 - h_i)),
       # matching the |r_i| spread panel of vis_lm_assumptions().
       var_p <- levene.test(scaled_residuals, fact)$p.value
-      use_fisher <- group_test == "automatic" && var_p >= alpha
+      use_fisher <- group_test == "gated" && var_p >= alpha
       if (use_fisher) {
         warn_adverse_variance_pairing(adverse_pairing, "fisher")
       }
@@ -827,6 +832,7 @@ visstat_core <- function(dataframe,
         cex = 0.8,
         correlation = FALSE,
         conf.level = conf.level,
+        qq_nsim = qq_nsim,
         plot_args = plot_args
       )
 

@@ -404,7 +404,19 @@ n_i \left(\bar{R}_i - \bar{R}\right)^2,
 
 The prefactor $12/[N(N+1)]$ rescales the weighted squared deviations of the group mean ranks by the sample variance of the $N$ pooled ranks.
 
-$H$  \@ref(eq:kruskal-h) depends on the balance of design through its dependence on the group-size ratios $q_i$; writing
+Large values of $H$ occur when at least one group has systematically higher or lower ranks than expected under equal rank distributions. `kruskal.test()` evaluates $H$ against the asymptotic $\chi^2(k-1)$ null distribution.
+If ties are present, $H$ is divided by the tie factor
+
+\begin{equation}
+C=1-\frac{\sum_j(t_j^3-t_j)}{N^3-N},
+(\#eq:tie-factor)
+\end{equation}
+
+where $t_j$ is the number of observations in tie block $j$ [@Kruskal:1952; @Hollander:2014, p. 205]. $C$ is the
+proportion of the original rank variance that remains after tied observations
+have been assigned average ranks.
+
+$H$  depends on the balance of design through its dependence on the group-size ratios $q_i$; writing
 
 \begin{equation}
 \widehat p_i=\frac{\bar R_i-\tfrac12}{N}
@@ -419,7 +431,7 @@ H=\frac{12N^{2}}{N+1}\sum_{i=1}^{k} q_i
 (\#eq:kruskal-h-ratios)
 \end{equation}
 
-The $q_i$ enter twice: once as the weights shown in Eq. \@ref(eq:kruskal-h-ratios), and once inside $\widehat p_i$ itself, since a rank taken over all $N$ observations measures position relative to the pooled sample, in which group $i$ is represented in proportion $q_i$. With ties, both sides carry the tie factor below and the identity is unchanged.
+$H$ depends directly on $q_i$ by the weights in Eq. \@ref(eq:kruskal-h-ratios), and through $\widehat p_i$, since a rank taken over all $N$ observations measures position relative to the pooled sample, in which group $i$ is represented in proportion $q_i$. With ties, both sides carry the tie factor $C$ of Eq. \@ref(eq:tie-factor) and the identity is unchanged.
 
 Pooling the $k$ groups in the proportions $q_i$ corresponds, at the population level, to the mixture distribution
 
@@ -435,16 +447,7 @@ p_i=\int_{-\infty}^{\infty}\bar F_q(y)\,\mathrm{d}F_i(y),
 (\#eq:weighted-relative-effect)
 \end{equation}
 
-the probability that an observation from group $i$ exceeds an independent draw from the pooled population, plus half the probability of a tie.
-
-Large values of $H$ occur when at least one group has systematically higher or lower ranks than expected under equal rank distributions. `kruskal.test()` evaluates $H$ against the asymptotic $\chi^2(k-1)$ null distribution. 
-If ties are present,  $H$ is divided by the tie factor
-\[
-1-\frac{\sum_j(t_j^3-t_j)}{N^3-N},
-\]
-where $t_j$ is the number of observations in tie block $j$. This factor is the
-proportion of the original rank variance that remains after tied observations
-have been assigned average ranks.
+the probability that an observation from group $i$ exceeds an independent draw from the pooled population.
 
 If the group distributions are the same distribution up to group-specific additive constants, the test can be read as a location test and, because such shifts move all quantiles by the same amount, also as a median test [@Hollander:2014].
 
@@ -452,7 +455,11 @@ For $k=2$, Kruskal--Wallis and Wilcoxon are based on the same pooled ranks. The 
 
 #### Post-hoc comparison `dunn.test()` {#sec:dunn}
 
-`dunn.test()` compares each pair of factor levels on the mean ranks of a single joint ranking of all groups, the same ranking that enters $H$ in Eq. \@ref(eq:kruskal-h) [@Dunn:1964]. For groups $i$ and $j$ the statistic is $z_{ij}=(\bar R_i-\bar R_j)/\sigma_{ij}$ with $\sigma_{ij}^2=\left[\frac{N(N+1)}{12}-\frac{\sum_{s=1}^{r}(t_s^3-t_s)}{12(N-1)}\right]\left(\frac{1}{n_i}+\frac{1}{n_j}\right)$, where the $r$ groups of tied scores contain $t_s$ observations each. The resulting $p$\ values are adjusted for multiplicity using Holm's step-down method [@Holm:1979].
+`dunn.test()` compares each pair of factor levels on the mean ranks of a single joint ranking of all groups, the same ranking that enters $H$ in Eq. \@ref(eq:kruskal-h) [@Dunn:1964]. For groups $i$ and $j$ the statistic is \[z_{ij}=(\bar R_i-\bar R_j)/\sigma_{ij}\] with
+
+\[\sigma_{ij}^2=\frac{N(N+1)}{12}\,C\left(\frac{1}{n_i}+\frac{1}{n_j}\right),\]
+
+where $C$ is the tie factor of Eq. \@ref(eq:tie-factor), over the same tie blocks. The resulting $p$\ values are adjusted for multiplicity using Holm's step-down method [@Holm:1979].
 
 # Rank correlations {#sec:rank-correlations}
 

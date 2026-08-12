@@ -56,12 +56,12 @@ $R^2=1-SS_\text{res}/SS_\text{tot}$ &
 \hline
 \hyperref[sec:rho]{Spearman} &
 $\rho$ &
-$\rho = r(\operatorname{rank}(x), \operatorname{rank}(y))$ (Eq.~\ref{eq:spearman-rho}) &
+$\rho = r(\operatorname{rank}(x), \operatorname{rank}(y))$ (Eq. \@ref(eq:spearman-rho)) &
 \texttt{cor.test(method = "spearman")\$estimate} \\
 \hline
 \hyperref[sec:tau]{Kendall} &
 $\tau_b$ &
-$\tau_b = \dfrac{n_c - n_d}{\sqrt{\left(n_0 - n_1\right)\left(n_0 - n_2\right)}}$ (Eq.~\ref{eq:kendall-tau-b}) &
+$\tau_b = \dfrac{n_c - n_d}{\sqrt{\left(n_0 - n_1\right)\left(n_0 - n_2\right)}}$ (Eq. \@ref(eq:kendall-tau-b)) &
 \texttt{cor.test(method = "kendall")\$estimate} \\
 \hline
 \hyperref[sec:fisher-exact]{Pearson $\chi^2$ ($R\times C$)} &
@@ -75,7 +75,7 @@ $\phi$ & $\phi=\sqrt{\chi^2/N}$ &
 \hline
 \hyperref[sec:fisher-exact]{Fisher's exact ($2\times2$)} &
 conditional odds ratio &
-\(\hat\theta_{\mathrm{cond}}\) (Eq.~\ref{eq:odds-ratio}) &
+\(\hat\theta_{\mathrm{cond}}\) (Eq. \@ref(eq:odds-ratio)) &
 \texttt{fisher.test()\$estimate} \\
 \hline
 \end{tabular}
@@ -197,8 +197,13 @@ In the ANOVA effect sizes, $\nu_1$ and $\nu_2$ denote the numerator and denomina
 In the Kruskal--Wallis effect size $\widehat{\eta}_H^2$, the joint ranking of all $N$ observations enters $H$ (Eq. \@ref(eq:kruskal-h)), so $\widehat{\eta}_H^2$ depends on the group-size ratios $q_i$ and is not comparable across designs whose groups stand in different size ratios [@Zimmermann:2021].
 
 In the coefficient of determination $R^2$,
-the residual sum of square is defined as
- $SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2$, where  $\hat{y}_i$ is the predicted value,  and the total sum of squares is given by  $SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2$ .
+
+\begin{equation}
+R^2=1-\frac{SS_\text{res}}{SS_\text{tot}},
+(\#eq:r-squared)
+\end{equation}
+
+the residual sum of squares is $SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2$, where $\hat{y}_i$ is the predicted value, and the total sum of squares is $SS_\text{tot}=\sum_{i=1}^{N}(y_i-\bar{y})^2$.
 
 
 

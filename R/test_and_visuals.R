@@ -622,7 +622,7 @@ vis_chi_squared_test <- function(samples,
 
 
 ###### Visualize Kruskal_Wallis ###############################
-## performs Kruskal Wallis and post-hoc Wilcoxon:
+## performs Kruskal Wallis and post-hoc Dunn:
 
 vis_Kruskal_Wallis <- function(samples,
                                fact,
@@ -740,7 +740,7 @@ vis_Kruskal_Wallis <- function(samples,
   legend("bottomleft",
     legend = c(
       "a, b, ...: significance letters",
-      paste0("(Wilcoxon, Holm; alpha = ", signif(alpha, 2), ")")
+      paste0("(Dunn, Holm; alpha = ", signif(alpha, 2), ")")
     ),
     text.col = colors()[81],
     bty = "n",

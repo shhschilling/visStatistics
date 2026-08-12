@@ -12,10 +12,11 @@ visstat_core(
   correlation = FALSE,
   numbers = TRUE,
   minpercent = 0.05,
-  group_test = NULL,
+  group_test = "gated",
   graphicsoutput = NULL,
   plotName = NULL,
   plotDirectory = getwd(),
+  qq_nsim = getOption("visStatistics.qq_nsim", 5000L),
   plot_args = list()
 )
 }
@@ -45,8 +46,8 @@ plots.}
 \item{minpercent}{number between 0 and 1 indicating minimal fraction of total
 count data of a category to be displayed    in mosaic count plots.}
 
-\item{group_test}{Optional character. For Route 1 only, \code{NULL} keeps the
-default assumption gates, \code{"welch"} forces Welch-type mean tests, but
+\item{group_test}{Character. For Route 1 only, \code{"gated"} (the default)
+keeps the assumption gates, \code{"welch"} forces Welch-type mean tests, but
 still displays the assumption-diagnostic plot and warns when residual
 normality is rejected, whereas \code{"rank"} forces Wilcoxon/Kruskal-Wallis
 rank tests without assessing the assumptions.}
@@ -63,6 +64,10 @@ parameter, plotName is automatically generated following the convention
 
 \item{plotDirectory}{specifies directory, where generated plots are stored.
 Default is current working directory.}
+
+\item{qq_nsim}{Integer number of simulated refits for the Q-Q envelopes in
+the assumption diagnostics. Defaults to the option
+\code{visStatistics.qq_nsim}, or 5000 if that is unset.}
 
 \item{plot_args}{Optional named list of base graphics parameters.}
 }
@@ -109,7 +114,7 @@ Kendall's \eqn{\tau_b} is used.
 The significance level \code{alpha} is defined as \code{1 - conf.level}.
 Assumption tests are interpreted relative to this threshold.
 
-Under the default \code{group_test = NULL}, Route 1 issues a warning when the
+Under the default \code{group_test = "gated"}, Route 1 issues a warning when the
 group sizes are unbalanced, the largest group standard deviations occur in the
 smallest groups, and the route selected is either the equal-variance test or a
 rank-based test. In that configuration those two routes can exceed the nominal
@@ -142,10 +147,10 @@ Implemented post hoc tests:
 
 The Q-Q envelopes in the assumption diagnostics are simulated (see
 \code{\link{qq_lm_envelope}}). The number of simulated refits is taken from
-the option \code{visStatistics.qq_nsim} and defaults to 5000. As
-\code{visstat_core()} has no corresponding argument, this option is the only
-way to change it here; lower it to trade precision for speed, for instance
-\code{options(visStatistics.qq_nsim = 1000L)}.
+the \code{qq_nsim} argument, which itself defaults to the option
+\code{visStatistics.qq_nsim} and to 5000 if that is unset. Lower it to trade
+precision for speed, either per call with \code{qq_nsim = 1000L} or session
+wide with \code{options(visStatistics.qq_nsim = 1000L)}.
 }
 \examples{
 old_qq_nsim <- getOption("visStatistics.qq_nsim")

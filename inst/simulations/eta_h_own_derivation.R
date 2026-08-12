@@ -20,7 +20,7 @@
 ##
 ## Design constants are read from each grid's OWN results file rather than
 ## re-declared here, so a grid can never be labelled with an effect size
-## belonging to inputs it did not simulate (CLAUDE.md, rule 3). The homoscedastic
+## belonging to inputs it did not simulate. The homoscedastic
 ## designs of the brunner grid were not rerun and are taken, as everywhere else,
 ## from the legacy grid whose inputs are identical.
 ##
@@ -121,6 +121,39 @@ grids <- list(
       names(d)[names(d) == "n_per_group"] <- "n_vector"
       d$group_mean_offsets <- "0, 0, 0, 0"
       d
+    }
+  ),
+  ## The two grids below are appended LAST so that every grid above them draws
+  ## from the same stream positions as before and reproduces bit-identically.
+
+  ## The one-point alternative, mu = (0, 0, 0, delta).
+  brunner_onepoint = list(
+    file = "fleishman_4groups_power_design_brunner_onepoint_d100_B50000.csv",
+    read = function(f) {
+      d <- read.csv(file.path(SIMDIR, f), stringsAsFactors = FALSE)
+      d[!duplicated(paste(d$design, d$panel)),
+        c("design", "panel", "n_vector", "sd_per_group", "group_mean_offsets")]
+    }
+  ),
+  ## The Type I grid on the SD vectors (1, sqrt(2), 2, sqrt(5)) and its reverse.
+  typeI_brunner = list(
+    file = "route1_typeI_design_brunner_B50000.csv",
+    read = function(f) {
+      d <- read.csv(file.path(SIMDIR, f), stringsAsFactors = FALSE)
+      d <- d[!duplicated(paste(d$design, d$panel)),
+             c("design", "panel", "n_per_group", "sd_per_group")]
+      names(d)[names(d) == "n_per_group"] <- "n_vector"
+      d$group_mean_offsets <- "0, 0, 0, 0"
+      d
+    }
+  ),
+  ## The one-point alternative at delta = 0.5.
+  brunner_onepoint_d050 = list(
+    file = "fleishman_4groups_power_design_brunner_onepoint_d050_B50000.csv",
+    read = function(f) {
+      d <- read.csv(file.path(SIMDIR, f), stringsAsFactors = FALSE)
+      d[!duplicated(paste(d$design, d$panel)),
+        c("design", "panel", "n_vector", "sd_per_group", "group_mean_offsets")]
     }
   )
 )

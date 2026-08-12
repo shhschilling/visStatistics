@@ -43,11 +43,10 @@ ETA_OWN_GRID <- "etaH_fixed"
 ## (H - k + 1)/(N - k). A row header states a property of the design, so it may
 ## carry omega^2, which has cited population definitions, and not eta_H^2.
 ##
-## This is NOT an N-dependence objection, and an earlier version of this comment
-## claiming it was is wrong. The sample quantity does converge: simulated at
-## n per group 10, 20, 30, 50, 100, 200 (balanced equal SD, panel 1, 4000 reps
-## each) it reads 0.0681, 0.0699, 0.0701, 0.0700, 0.0697, 0.0702, against the
-## 0.0709 the grid was solved for at N = 40000
+## The sample quantity converges: simulated at n per group 10, 20, 30, 50, 100,
+## 200 (balanced equal SD, panel 1, 4000 reps each) it reads 0.0681, 0.0699,
+## 0.0701, 0.0700, 0.0697, 0.0702, against the 0.0709 the grid was solved for
+## at N = 40000
 ## (route1_power_etaH_fixed.R:77). Convergence is all that can be shown; the
 ## limit has no name in the literature, so it is not labelled here.
 build_fixed_es_figures(

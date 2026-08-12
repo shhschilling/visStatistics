@@ -10,7 +10,9 @@
 ## sourced from inside inst/simulations/ or from anywhere else with the package
 ## installed. A referee replicating the figures reads the saved Monte Carlo
 ## output; the simulation itself is not rerun.
-SIMDIR <- local({
+## HELPERDIR holds the shared helpers and the effect-size table; it is always
+## the simulations directory itself.
+HELPERDIR <- local({
   here <- getwd()
   if (file.exists(file.path(here, "fleishman_route1_residual_helpers.R"))) {
     here
@@ -23,6 +25,43 @@ SIMDIR <- local({
     installed
   }
 })
+
+## SIMDIR holds the simulation results. Set it before sourcing to draw a
+## figure from a grid written to its own output directory.
+if (!exists("SIMDIR")) {
+  SIMDIR <- HELPERDIR
+}
+
+## Which grid of eta_h_own_by_design_panel.csv labels the columns. Must match
+## the design behind SIMDIR.
+if (!exists("ETA_GRID")) {
+  ETA_GRID <- "typeI"
+}
+
+## SD_SET must match the grid in SIMDIR: "legacy" for the original vectors,
+## "brunner" for the vectors whose variances are the integers (1, 2, 4, 5).
+## Every SD written in a caption comes from here, and the values are checked
+## against the grid below, so a caption cannot disagree with what is drawn.
+if (!exists("SD_SET")) {
+  SD_SET <- "legacy"
+}
+SD_HET <- switch(SD_SET,
+  legacy  = c(1, 1.3, 1.7, 2.2),
+  brunner = c(1, sqrt(2), 2, sqrt(5)),
+  stop("SD_SET must be \"legacy\" or \"brunner\", not \"", SD_SET, "\"")
+)
+SD_HET_REV <- rev(SD_HET)
+sd_text <- function(v) {
+  paste0("(", paste(vapply(v, function(x) {
+    if (isTRUE(all.equal(x^2, round(x^2))) && !isTRUE(all.equal(x, round(x)))) {
+      paste0("√", format(round(x^2)))
+    } else {
+      format(round(x, 1), nsmall = 1)
+    }
+  }, character(1)), collapse = ", "), ")")
+}
+SD_HET_TXT <- sd_text(SD_HET)
+SD_HET_REV_TXT <- sd_text(SD_HET_REV)
 
 OUTDIR <- "."
 FIGDIR <- "."
@@ -53,6 +92,20 @@ if (!requireNamespace("ggtext", quietly = TRUE)) {
 }
 
 sim <- readRDS(file.path(SIMDIR, "route1_equal_mean_simulations.rds"))
+
+## Fail loudly if SD_SET does not describe the grid that was loaded, so the
+## captions can never be written for a different design than the one drawn.
+local({
+  in_grid <- unique(sim$sd_per_group[sim$design == "balanced n, unequal SD"])
+  stopifnot(length(in_grid) == 1)
+  from_grid <- as.numeric(strsplit(in_grid, ",[ ]*")[[1]])
+  if (!isTRUE(all.equal(from_grid, SD_HET, tolerance = 1e-5))) {
+    stop("SD_SET = \"", SD_SET, "\" gives (",
+         paste(round(SD_HET, 4), collapse = ", "),
+         ") but the grid holds (", paste(round(from_grid, 4), collapse = ", "),
+         "). Set SD_SET to match SIMDIR.")
+  }
+})
 
 ## Sizes displayed. The grid is simulated at 10, 20, 30, 50, 100 and 200 and the
 ## saved results ship all six, but 200 adds nothing the trend at 100 does not
@@ -124,10 +177,10 @@ if (HAS_ATS_H0P) {
 ## the rank-based test" subsection of _effect_size_table.Rmd; see
 ## eta_h_own_derivation.R.
 ETA_OWN <- local({
-  f <- file.path(SIMDIR, "eta_h_own_by_design_panel.csv")
+  f <- file.path(HELPERDIR, "eta_h_own_by_design_panel.csv")
   if (!file.exists(f)) return(NULL)
   e <- read.csv(f, stringsAsFactors = FALSE)
-  e <- e[e$grid == "typeI", , drop = FALSE]
+  e <- e[e$grid == ETA_GRID, , drop = FALSE]
   if (nrow(e) == 0) NULL else e
 })
 HAS_ES <- !is.null(ETA_OWN)
@@ -139,7 +192,11 @@ if (!HAS_ES) {
 ## actually drawn, so the heatmap row pitch stays constant and the rejection
 ## numbers never collide.
 ## and with the number of strategy rows, six without the pseudo-rank arm.
-ROW_SCALE <- (6 + length(RK_ROW) + length(ATS_H0P_ROW)) / 6
+## Set ROW_SCALE before sourcing to pin the canvas height when a grid has no
+## pseudo-rank arm, so the density panels keep their usual size.
+if (!exists("ROW_SCALE")) {
+  ROW_SCALE <- (6 + length(RK_ROW) + length(ATS_H0P_ROW)) / 6
+}
 HEIGHT_EQUAL <- 22 * length(NS_TO_PLOT) / 5 * ROW_SCALE
 HEIGHT_UNEQUAL <- 26 * length(NS_TO_PLOT) / 5 * ROW_SCALE
 
@@ -147,8 +204,8 @@ ALPHA <- 0.05
 ggplot2 <- asNamespace("ggplot2")
 patchwork <- asNamespace("patchwork")
 scales <- asNamespace("scales")
-source(file.path(SIMDIR, "fleishman_route1_residual_helpers.R"))
-source(file.path(SIMDIR, "fleishman_figure_typography.R"))
+source(file.path(HELPERDIR, "fleishman_route1_residual_helpers.R"))
+source(file.path(HELPERDIR, "fleishman_figure_typography.R"))
 group_cols <- fleishman_group_cols
 names(group_cols) <- LETTERS[seq_along(group_cols)]
 
@@ -318,8 +375,8 @@ make_pdf_plot <- function(design_name, title, show_group_legend = TRUE,
         values = group_cols,
         name = "group",
         labels = if (show_sd_mapping) {
-          c("Group A, SD=1", "Group B, SD=1.3",
-            "Group C, SD=1.7", "Group D, SD=2.2")
+          sprintf("Group %s, SD=%s", LETTERS[1:4],
+                  sub("^\\(|\\)$", "", strsplit(SD_HET_TXT, ", ")[[1]]))
         } else {
           ggplot2$waiver()
         }
@@ -551,7 +608,7 @@ design_formula_label <- function(design_name, subtitle) {
     return(bquote(paste(
       "balanced ", n[i], ", unequal SD: ", .(subtitle), "; ",
       n[i] == n, "; ",
-      SD[i] == .("(1.0, 1.3, 1.7, 2.2)")
+      SD[i] == .(SD_HET_TXT)
     )))
   }
   if (design_name == "unbalanced n, larger n with larger SD") {
@@ -559,7 +616,7 @@ design_formula_label <- function(design_name, subtitle) {
       "unbalanced ", n[i], ", larger ", n[i], " with larger SD: ",
       .(subtitle), "; ",
       n[i] == ceiling(bar(n) %.% .("(0.5, 0.8, 1.2, 1.5)")), "; ",
-      SD[i] == .("(1.0, 1.3, 1.7, 2.2)")
+      SD[i] == .(SD_HET_TXT)
     )))
   }
   if (design_name == "unbalanced n, larger n with smaller SD") {
@@ -567,7 +624,7 @@ design_formula_label <- function(design_name, subtitle) {
       "unbalanced ", n[i], ", larger ", n[i], " with smaller SD: ",
       .(subtitle), "; ",
       n[i] == ceiling(bar(n) %.% .("(0.5, 0.8, 1.2, 1.5)")), "; ",
-      SD[i] == .("(2.2, 1.7, 1.3, 1.0)")
+      SD[i] == .(SD_HET_REV_TXT)
     )))
   }
   ""
@@ -649,7 +706,14 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
   ## judged on its own. Panels are matched through sim, not through the order
   ## of skew_levels, so the labels cannot silently pair up with the wrong cell.
   x_labels <- column_number_labels
-  if (HAS_ES) {
+  ## Under homoscedasticity with equal means the groups are identically
+  ## distributed, so eta_H^2 is zero in every column. Printing a row of zeros
+  ## says nothing, and the columns keep their number alone.
+  es_all_zero <- HAS_ES && {
+    e <- ETA_OWN[ETA_OWN$design == design_name, , drop = FALSE]
+    nrow(e) > 0 && all(abs(e$eta_h_sq_own) < 5e-4)
+  }
+  if (HAS_ES && !es_all_zero) {
     es <- ETA_OWN[ETA_OWN$design == design_name, , drop = FALSE]
     panels_in_order <- vapply(
       names(column_number_labels),
@@ -717,7 +781,7 @@ make_rejection_plot <- function(design_name, strategies, subtitle,
       position = "top",
       ## Parsed only when the labels are plotmath; the bare "1)" fallback
       ## is not parseable.
-      labels = if (HAS_ES) {
+      labels = if (!identical(x_labels, column_number_labels)) {
         function(brk) parse(text = x_labels[brk])
       } else {
         x_labels
@@ -856,20 +920,20 @@ make_unequal_plot <- function() {
   height_list <- numeric()
   plot_list[[1]] <- panel_header(
     "A",
-    "identical means; (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
+    paste0("identical means; (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = ", SD_HET_TXT)
   )
   height_list[1] <- 0.10
   plot_list[[2]] <- make_pdf_plot(
     "balanced n, unequal SD",
     expression(paste("identical means; (", SD[1], ", ..., ", SD[4],
-                     ") = ", "(1.0, 1.3, 1.7, 2.2)")),
+                     ") = ", SD_HET_TXT)),
     show_group_legend = TRUE,
     show_sd_mapping = TRUE
   )
   height_list[2] <- 0.30
   plot_list[[3]] <- panel_header(
     "B",
-    "balanced heteroscedastic; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(1, 1, 1, 1); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
+    paste0("balanced heteroscedastic; (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(1, 1, 1, 1); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = ", SD_HET_TXT)
   )
   height_list[3] <- 0.03
   plot_list[[4]] <- make_rejection_plot(
@@ -882,7 +946,7 @@ make_unequal_plot <- function() {
   height_list[4] <- 0.90
   plot_list[[5]] <- panel_header(
     "C",
-    "unbalanced heteroscedastic (positive pairing); (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (1.0, 1.3, 1.7, 2.2)"
+    paste0("unbalanced heteroscedastic (positive pairing); (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = ", SD_HET_TXT)
   )
   height_list[5] <- 0.03
   plot_list[[6]] <- make_rejection_plot(
@@ -895,7 +959,7 @@ make_unequal_plot <- function() {
   height_list[6] <- 0.90
   plot_list[[7]] <- panel_header(
     "D",
-    "unbalanced heteroscedastic (negative pairing); (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = (2.2, 1.7, 1.3, 1.0)"
+    paste0("unbalanced heteroscedastic (negative pairing); (n<sub>1</sub>, n<sub>2</sub>, n<sub>3</sub>, n<sub>4</sub>) = n&#772;(0.5, 0.8, 1.2, 1.5); (SD<sub>1</sub>, SD<sub>2</sub>, SD<sub>3</sub>, SD<sub>4</sub>) = ", SD_HET_REV_TXT)
   )
   height_list[7] <- 0.03
   plot_list[[8]] <- make_rejection_plot(

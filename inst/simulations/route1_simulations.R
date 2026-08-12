@@ -21,6 +21,20 @@ cell_seeds <- function(n) {
 
 args <- commandArgs(trailingOnly = TRUE)
 NREP <- if (length(args) >= 1) as.integer(args[1]) else 50000
+
+## SD_SET selects the standard deviations of the heteroscedastic designs.
+## "legacy" (default) reproduces the existing grid exactly. "brunner" uses the
+## vectors of Brunner et al. (2017), JRSS-B, Table 2, p. 1477, whose variances
+## are the integers sigma^2 = (1, 2, 4, 5).
+SD_SET <- if (length(args) >= 3) args[3] else "legacy"
+if (!SD_SET %in% c("legacy", "brunner")) {
+  stop("SD_SET must be \"legacy\" or \"brunner\", not \"", SD_SET, "\"")
+}
+SD_HET <- switch(SD_SET,
+  legacy  = c(1, 1.3, 1.7, 2.2),
+  brunner = c(1, sqrt(2), 2, sqrt(5))
+)
+SD_HET_REV <- rev(SD_HET)
 NCORES <- if (length(args) >= 2) {
   as.integer(args[2])
 } else {
@@ -40,9 +54,8 @@ POWER_NS <- c(10, 20, 30, 50, 100, 200)
 ## reproduce bit-identically.
 ##
 ## The heteroscedastic blocks scale the common shift vector by sqrt(mean(sd^2))
-## (line 303 below). CORRECTION, 10 Aug 2026: an earlier version of this comment
-## claimed that this holds omega^2 equal to the homoscedastic blocks. It does
-## not. With SD = (1, 1.3, 1.7, 2.2) the factor is 1.614 and the balanced
+## (line 303 below). This does NOT hold omega^2 equal to the homoscedastic
+## blocks. With SD = (1, 1.3, 1.7, 2.2) the factor is 1.614 and the balanced
 ## heteroscedastic design reaches omega^2 = 0.0803 against the homoscedastic
 ## 0.0725. The average of the variances is not the quantity entering omega^2,
 ## which uses the inverse-variance-weighted grand mean (omega_scaling_helpers.R;
@@ -58,16 +71,20 @@ POWER_NS <- c(10, 20, 30, 50, 100, 200)
 POWER_DESIGNS <- list(
   list(design = "balanced n, equal SD",   multipliers = c(1, 1, 1, 1),        sd = c(1, 1, 1, 1)),
   list(design = "unbalanced n, equal SD", multipliers = c(0.5, 0.8, 1.2, 1.5), sd = c(1, 1, 1, 1)),
-  list(design = "balanced n, unequal SD", multipliers = c(1, 1, 1, 1),        sd = c(1, 1.3, 1.7, 2.2)),
+  list(design = "balanced n, unequal SD", multipliers = c(1, 1, 1, 1),        sd = SD_HET),
   list(design = "unbalanced n, larger n with larger SD",
-       multipliers = c(0.5, 0.8, 1.2, 1.5), sd = c(1, 1.3, 1.7, 2.2)),
+       multipliers = c(0.5, 0.8, 1.2, 1.5), sd = SD_HET),
   list(design = "unbalanced n, larger n with smaller SD",
-       multipliers = c(0.5, 0.8, 1.2, 1.5), sd = c(2.2, 1.7, 1.3, 1))
+       multipliers = c(0.5, 0.8, 1.2, 1.5), sd = SD_HET_REV)
 )
 SHIFT_SCENARIOS <- list(
   "moderate ordered effect: 0, 0.25, 0.50, 0.75 SD" = c(0, 0.25, 0.50, 0.75)
 )
-OUTDIR <- sprintf("fleishman_route1_power_B%d_outputs", NREP)
+OUTDIR <- if (identical(SD_SET, "legacy")) {
+  sprintf("fleishman_route1_power_B%d_outputs", NREP)
+} else {
+  sprintf("fleishman_route1_power_B%d_%s_outputs", NREP, SD_SET)
+}
 dir.create(OUTDIR, showWarnings = FALSE, recursive = TRUE)
 
 stopifnot(NREP > 0)
@@ -161,10 +178,10 @@ make_conditions <- function(mean_n) {
   stopifnot(mean(unbalanced_n) == mean_n)
   list(
     list(design = "balanced n, equal SD", n = balanced_n, sd = c(1, 1, 1, 1)),
-    list(design = "balanced n, unequal SD", n = balanced_n, sd = c(1, 1.3, 1.7, 2.2)),
+    list(design = "balanced n, unequal SD", n = balanced_n, sd = SD_HET),
     list(design = "unbalanced n, equal SD", n = unbalanced_n, sd = c(1, 1, 1, 1)),
-    list(design = "unbalanced n, larger n with larger SD", n = unbalanced_n, sd = c(1, 1.3, 1.7, 2.2)),
-    list(design = "unbalanced n, larger n with smaller SD", n = unbalanced_n, sd = c(2.2, 1.7, 1.3, 1))
+    list(design = "unbalanced n, larger n with larger SD", n = unbalanced_n, sd = SD_HET),
+    list(design = "unbalanced n, larger n with smaller SD", n = unbalanced_n, sd = SD_HET_REV)
   )
 }
 

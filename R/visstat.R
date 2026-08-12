@@ -51,8 +51,8 @@
 #' @param numbers Logical. Whether to annotate plots with numeric values.
 #' @param minpercent Number between 0 and 1 indicating minimal fraction of
 #'   total count data of a category to be displayed in mosaic count plots.
-#' @param group_test Optional character. For a numeric response and factor predictor,
-#'   \code{NULL} keeps the default assumption gates, \code{"welch"} forces
+#' @param group_test Character. For a numeric response and factor predictor,
+#'   \code{"gated"} (the default) keeps the assumption gates, \code{"welch"} forces
 #'   Welch-type mean tests, but still displays the assumption-diagnostic plot
 #'   and warns when residual normality is rejected, whereas \code{"rank"} forces
 #'   Wilcoxon/Kruskal-Wallis rank tests without assessing the assumptions.
@@ -67,6 +67,9 @@
 #'   following the convention \code{"statisticalTestName_varsample_varfactor"}.
 #' @param plotDirectory Specifies directory where generated plots are stored.
 #'   Default is current working directory.
+#' @param qq_nsim Integer number of simulated refits for the Q-Q envelopes in
+#'   the assumption diagnostics. Defaults to the option
+#'   \code{visStatistics.qq_nsim}, or 5000 if that is unset.
 #'
 #' @details This wrapper supports three input formats:
 #'
@@ -111,12 +114,10 @@
 #'
 #' The Q-Q envelopes in the assumption diagnostics are simulated (see
 #' \code{\link{qq_lm_envelope}}). The number of simulated refits is taken from
-#' the option \code{visStatistics.qq_nsim} and defaults to 5000. As
-#' \code{visstat()} has no corresponding argument, this option is the only way
-#' to change it here; lower it to trade precision for speed, for instance
-#' \code{options(visStatistics.qq_nsim = 1000L)}. Use
-#' \code{\link{vis_lm_assumptions}} or \code{\link{qq_lm_envelope}} directly if
-#' you prefer to set the number of refits per call.
+#' the \code{qq_nsim} argument, which itself defaults to the option
+#' \code{visStatistics.qq_nsim} and to 5000 if that is unset. Lower it to trade
+#' precision for speed, either per call with \code{qq_nsim = 1000L} or session
+#' wide with \code{options(visStatistics.qq_nsim = 1000L)}.
 #'
 #' @return An object of class \code{"visstat"} containing the results of
 #' the automatically selected statistical test. The specific contents depend on
@@ -259,13 +260,20 @@ visstat <- function(x,
                     correlation = FALSE,
                     numbers = TRUE,
                     minpercent = 0.05,
-                    group_test = NULL,
+                    group_test = "gated",
                     graphicsoutput = NULL,
                     plotName = NULL,
-                    plotDirectory = getwd()) {
+                    plotDirectory = getwd(),
+                    qq_nsim = getOption("visStatistics.qq_nsim", 5000L)) {
   # store default graphical parameters------
+  if (any(par("pin") <= 0)) {
+    stop("the graphics device is too small to draw in: enlarge the plot pane ",
+         "and rerun", call. = FALSE)
+  }
+
   oldparvisstat <- par(no.readonly = TRUE)
   on.exit(par(oldparvisstat))
+  par(mfrow = c(1, 1), new = FALSE)
 
   check_visstat_input(x, y, ..., data = data)
   dots <- list(...)
@@ -280,7 +288,7 @@ visstat <- function(x,
   }
   plot_args <- named_dots[setdiff(names(named_dots), "route")]
   visstat_check_dots(plot_args)
-  group_test <- if (is.null(group_test)) NULL else match.arg(group_test, c("welch", "rank"))
+  group_test <- match.arg(group_test, c("gated", "welch", "rank"))
 
   clean_name <- function(expr) {
     sub(".*\\$", "", deparse(expr))
@@ -312,6 +320,7 @@ visstat <- function(x,
       graphicsoutput = graphicsoutput,
       plotName = plotName,
       plotDirectory = plotDirectory,
+      qq_nsim = qq_nsim,
       plot_args = plot_args
     ))
   }
@@ -347,6 +356,7 @@ visstat <- function(x,
       graphicsoutput = graphicsoutput,
       plotName = plotName,
       plotDirectory = plotDirectory,
+      qq_nsim = qq_nsim,
       plot_args = plot_args
     ))
   }
@@ -376,6 +386,7 @@ visstat <- function(x,
     graphicsoutput = graphicsoutput,
     plotName = plotName,
     plotDirectory = plotDirectory,
+    qq_nsim = qq_nsim,
     plot_args = plot_args
   )))
 }

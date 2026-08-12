@@ -1,27 +1,23 @@
 ## ---------------------------------------------------------------------------
-## Power figures for the Brunner-SD design variant.
+## Power figures for the one-point alternative mu = (0, 0, 0, delta) on the SD
+## vectors (1, sqrt(2), 2, sqrt(5)) and its reverse.
 ##
-## Inputs, pooled by variance structure rather than by balance, so that no
-## density strip is drawn twice:
+## Kruskal-Wallis is the only rank test drawn, matching what visstat_core()
+## selects.
 ##
-##   homoscedastic  SD = (1,1,1,1)                 both designs from
-##                                                 fleishman_4groups_power.rds
-##                                                 (inputs identical, not rerun)
-##   heteroscedastic SD = (1, sqrt(2), 2, sqrt(5)) and its reverse, from
-##                                                 fleishman_4groups_power_design_brunner_B50000.csv
-##                                                 + rankfd_route1_power_design_brunner_B50000.csv
+## Both population effect sizes are shown: omega^2 with its regime subscript in
+## the row header, constant down the row because it is a property of the design;
+## eta_H^2 in the column strips, which varies between columns because it
+## responds to distribution shape. omega^2 is recomputed from the design
+## constants; eta_H^2 is read from the grid == "brunner_onepoint" rows of
+## eta_h_own_by_design_panel.csv.
 ##
-## The shift vector is (0, 0.25, 0.50, 0.75) in EVERY design -- no rescaling --
-## so omega^2 is reported as the consequence of the design.
+## Usage:
+##   Rscript figure_power_brunner_onepoint.R [DELTA]
+## DELTA defaults to 1, selects the input grid and appears in both output names.
 ##
-## Two variants, chosen by the first argument:
-##   kw    (default) only Kruskal-Wallis among the rank tests, matching what
-##         visstat_core() can select
-##   full  adds RK, ATS and ATSp, for inspection
-##
-## Output (new names; nothing existing is overwritten):
-##   fleishman_4groups_power_brunner_<variant>_homoscedastic.png
-##   fleishman_4groups_power_brunner_<variant>_heteroscedastic.png
+## Output:
+##   fleishman_4groups_power_brunner_onepoint_d<delta>_kw_{homo,hetero}scedastic.png
 ## ---------------------------------------------------------------------------
 
 for (pkg in c("ggplot2", "patchwork", "scales", "ggtext")) {
@@ -42,8 +38,10 @@ source(file.path(SIMDIR, "fleishman_figure_typography.R"))
 source(file.path(SIMDIR, "omega_scaling_helpers.R"))
 
 args <- commandArgs(trailingOnly = TRUE)
-VARIANT <- if (length(args) >= 1) args[1] else "kw"
-if (!VARIANT %in% c("kw", "full")) stop("VARIANT must be \"kw\" or \"full\".")
+DELTA <- if (length(args) >= 1) as.numeric(args[1]) else 1
+if (!is.finite(DELTA) || DELTA <= 0) stop("DELTA must be a positive number.")
+## Same encoding as route1_power_design_variants.R: 1 -> "100".
+DELTA_TAG <- sub("\\.", "", format(DELTA, nsmall = 2))
 
 ggplot2 <- asNamespace("ggplot2"); patchwork <- asNamespace("patchwork")
 scales <- asNamespace("scales")
@@ -67,14 +65,16 @@ names(NMULT) <- names(DESIGN_WORDS)
 SD_EQ  <- c(1, 1, 1, 1)
 SD_POS <- c(1, sqrt(2), 2, sqrt(5))
 SD_NEG <- rev(SD_POS)
-SHIFTS <- c(0, 0.25, 0.50, 0.75)
+
+## The one-point alternative: only the last group moves. Delacre et al. (2019)
+## generate all samples but one from the same population and give the remaining
+## group a different mean; delta = 1 is their mu_k = mu_j + 1.
+SHIFTS <- c(0, 0, 0, DELTA)
 
 ## Brunner et al. (2017), Table 2, p. 1477 writes the scaling vectors as
 ## (1, sqrt(2), 2, sqrt(5)) and its reverse, because the variances behind them
 ## are the integers sigma^2 = (1, 2, 4, 5). Printing 1.414 and 2.236 loses that,
-## so every label -- panel titles, row headers and the density legend -- goes
-## through this formatter. U+221A renders in plain ggplot text and in the
-## ggtext markdown titles alike.
+## so every label goes through this formatter.
 sd_label <- function(x) {
   vapply(x, function(v) {
     if (isTRUE(all.equal(v, round(v)))) return(format(round(v)))
@@ -86,36 +86,40 @@ sd_label <- function(x) {
 sd_vector_label <- function(x) paste(sd_label(x), collapse = ", ")
 
 ## ---- assemble the grid ------------------------------------------------------
-het <- read.csv(file.path(SIMDIR, "fleishman_4groups_power_design_brunner_B50000.csv"),
-                stringsAsFactors = FALSE)
-rk <- read.csv(file.path(SIMDIR, "rankfd_route1_power_design_brunner_B50000.csv"),
-               stringsAsFactors = FALSE)
-key <- function(d) paste(d$design, d$n_per_group, d$panel)
-het$rk_power   <- rk$ps_kw_power[match(key(het), key(rk))]
-het$ats_power  <- rk$ps_ats_power[match(key(het), key(rk))]
-het$atsp_power <- rk$ats_h0p_power[match(key(het), key(rk))]
+POWER_FILE <- file.path(
+  SIMDIR, sprintf("fleishman_4groups_power_design_brunner_onepoint_d%s_B50000.csv",
+                  DELTA_TAG))
+if (!file.exists(POWER_FILE)) {
+  stop("Input grid not found: ", basename(POWER_FILE),
+       "\nRun route1_power_design_variants.R with SHIFT_PATTERN = onepoint first.")
+}
+power <- read.csv(POWER_FILE, stringsAsFactors = FALSE)
 
-## The two homoscedastic designs were not rerun: their inputs are identical to
-## the existing grid, so they are taken from it and their rank arms from the
-## existing rankfd files.
-homo <- readRDS(file.path(SIMDIR, "fleishman_4groups_power.rds"))
-homo <- homo[homo$design %in% c(D_BAL_EQ, D_UNB_EQ), , drop = FALSE]
-rkh <- read.csv(file.path(SIMDIR, "rankfd_route1_power_B50000.csv"), stringsAsFactors = FALSE)
-homo$rk_power  <- rkh$ps_kw_power[match(key(homo), key(rkh))]
-homo$ats_power <- rkh$ps_ats_power[match(key(homo), key(rkh))]
-rkp <- file.path(SIMDIR, "rankfd_route1_power_h0p_B50000.csv")
-homo$atsp_power <- if (file.exists(rkp)) {
-  h <- read.csv(rkp); h$ats_h0p_power[match(key(homo), key(h))]
-} else NA_real_
+## Fail loudly rather than draw a partial grid: 5 designs x 5 n x 5 panels.
+EXPECTED_CELLS <- 125
+if (nrow(power) != EXPECTED_CELLS) {
+  stop(sprintf("%s holds %d cells, expected %d -- the run is incomplete.",
+               basename(POWER_FILE), nrow(power), EXPECTED_CELLS))
+}
+missing_designs <- setdiff(names(DESIGN_WORDS), unique(power$design))
+if (length(missing_designs)) {
+  stop("designs absent from the grid: ", paste(missing_designs, collapse = "; "))
+}
 
 keep <- c("design", "n_per_group", "panel", "fisher_power", "welch_power",
           "mean_power", "rank_power", "sw_power", "gate_power",
           "route_fisher_probability", "route_welch_probability",
-          "route_rank_probability", "rk_power", "ats_power", "atsp_power")
-power <- rbind(homo[, keep], het[, keep])
+          "route_rank_probability")
+missing_cols <- setdiff(keep, names(power))
+if (length(missing_cols)) {
+  stop("columns absent from ", basename(POWER_FILE), ": ",
+       paste(missing_cols, collapse = ", "))
+}
+power <- power[, keep]
 
 ## omega^2 recomputed from the design constants actually simulated, never read
-## from a stored column.
+## from a stored column. SHIFTS above is the vector the simulation used, so the
+## two cannot drift apart.
 SDS <- list(SD_EQ, SD_EQ, SD_POS, SD_POS, SD_NEG)
 names(SDS) <- names(DESIGN_WORDS)
 omega_of <- function(d) population_omega_sq(
@@ -123,28 +127,32 @@ omega_of <- function(d) population_omega_sq(
 regime_of <- function(d) omega_sq_regime(
   as.numeric(strsplit(NMULT[[d]], ",[ ]*")[[1]]), SDS[[d]])
 
-## Relative block heights: a power panel is twice a density strip.
-##
-## The routing inset is positioned in data units while its text is sized in
-## points, so a shorter panel would need a proportionally taller band to keep
-## the same physical line spacing. BAND_SCALE carries that correction and is 1
-## at the full height used here; it exists so that changing H_POWER cannot
-## silently make the three split rows close up.
+## eta_H^2 per (design, panel) for this design, from eta_h_own_derivation.R.
+ETA_FILE <- file.path(SIMDIR, "eta_h_own_by_design_panel.csv")
+if (!file.exists(ETA_FILE)) {
+  stop("eta_h_own_by_design_panel.csv not found; run eta_h_own_derivation.R first.")
+}
+ETA <- read.csv(ETA_FILE, stringsAsFactors = FALSE)
+## delta = 1 was registered before the tag was added to the grid names.
+ETA_GRID <- if (identical(DELTA_TAG, "100")) {
+  "brunner_onepoint"
+} else {
+  sprintf("brunner_onepoint_d%s", DELTA_TAG)
+}
+ETA <- ETA[ETA$grid == ETA_GRID, , drop = FALSE]
+EXPECTED_ETA_ROWS <- length(DESIGN_WORDS) * length(unique(power$panel))
+if (nrow(ETA) != EXPECTED_ETA_ROWS) {
+  stop("eta_h_own_by_design_panel.csv holds ", nrow(ETA), " ", ETA_GRID,
+       " rows, expected ", EXPECTED_ETA_ROWS,
+       " -- rerun eta_h_own_derivation.R now that the one-point grid exists.")
+}
+
+## Relative block heights: a power panel is twice a density strip. BAND_SCALE
+## carries the correction that keeps the routing inset's physical line spacing
+## fixed when H_POWER changes; it is 1 at the full height used here.
 H_PDF <- 1
 H_POWER <- 2
 BAND_SCALE <- 2 / H_POWER
-
-## eta_H^2 per (design, panel), from eta_h_own_derivation.R. Unlike omega^2 it
-## varies BETWEEN COLUMNS of the same row, because it responds to distribution
-## shape, so it goes in the column strips rather than the row header. It is OUR
-## OWN derivation and not a citable population parameter: the strip says so, and
-## the figure is for understanding the designs, not for the vignette.
-ETA_FILE <- file.path(SIMDIR, "psi_by_design_panel.csv")
-ETA <- if (file.exists(ETA_FILE)) read.csv(ETA_FILE, stringsAsFactors = FALSE) else NULL
-if (!is.null(ETA)) ETA <- ETA[ETA$grid == "brunner" | ETA$grid == "legacy", , drop = FALSE]
-if (is.null(ETA)) {
-  message("eta_h_own_by_design_panel.csv not found; columns labelled by number only.")
-}
 
 PANELS <- sort(unique(power$panel))
 power$power_panel <- factor(paste0(power$panel, ")"), levels = paste0(PANELS, ")"))
@@ -152,26 +160,19 @@ NS_TO_PLOT <- c(10, 20, 30, 50, 100)
 groups <- c("A", "B", "C", "D")
 xlim <- c(-2.5, 5); y_cap <- 0.7
 
+## Six strategies: the rank arm is Kruskal-Wallis alone, as visstat_core()
+## selects it. RK, ATS and ATSp are absent by construction, not filtered out.
 STRATS <- c("1. Fisher always" = "F", "2. Welch always" = "W",
             "3. Levene-gated Fisher/Welch" = "L", "4. Kruskal-Wallis always" = "KW",
-            "4b. Pseudo-rank Kruskal-Wallis" = "RK", "4c. ANOVA-type statistic" = "ATS",
-            "4d. ANOVA-type statistic (H0p)" = "ATSp",
-            "5. Shapiro-Wilk routed Welch/KW" = "SW", "6. Shapiro-Wilk plus Levene" = "SW+L")
-COLS <- c("#B79F00", "#56B4E9", "#009E73", "#000000", "#999999", "#CC79A7",
-          "#E69F00", "#D55E00", "#0072B2")
-SHP <- c(0, 2, 5, 4, 3, 6, 8, 1, 1); SZ <- c(4, 3.2, 3.6, 3.8, 3.8, 3.8, 3.8, 5.8, 7.2)
+            "5. Shapiro-Wilk routed Welch/KW" = "SW",
+            "6. Shapiro-Wilk plus Levene" = "SW+L")
+COLS <- c("#B79F00", "#56B4E9", "#009E73", "#000000", "#D55E00", "#0072B2")
+SHP <- c(0, 2, 5, 4, 1, 1); SZ <- c(4, 3.2, 3.6, 3.8, 5.8, 7.2)
 names(COLS) <- names(SHP) <- names(SZ) <- names(STRATS)
-## The SW and SW+L markers are oversized so that, when the gate reproduces one
-## of the fixed strategies, the ring reads as "these coincide". Once nine
-## strategies are dodged side by side that sizing only costs separation, so the
-## full variant shrinks everything to a common small marker.
-if (length(STRATS) > 0 && identical(VARIANT, "full")) SZ[] <- 2.9
-COLUMN <- c("fisher_power", "welch_power", "mean_power", "rank_power", "rk_power",
-            "ats_power", "atsp_power", "sw_power", "gate_power")
+COLUMN <- c("fisher_power", "welch_power", "mean_power", "rank_power",
+            "sw_power", "gate_power")
 names(COLUMN) <- names(STRATS)
-USE <- if (VARIANT == "kw")
-  setdiff(names(STRATS), c("4b. Pseudo-rank Kruskal-Wallis", "4c. ANOVA-type statistic",
-                           "4d. ANOVA-type statistic (H0p)")) else names(STRATS)
+USE <- names(STRATS)
 
 panel_title <- function(p) {
   one <- fleishman_cases[fleishman_cases$panel == p, , drop = FALSE]
@@ -181,6 +182,8 @@ panel_title <- function(p) {
           one$a, one$b, one$d, one$skew, one$excess_kurtosis)
 }
 
+## Groups A, B and C share the same mean, so in the homoscedastic strip their
+## densities coincide and only one curve is visible beside the shifted group D.
 make_pdf_panel <- function(sd_vec, letter, description) {
   num <- function(x) format(round(x, 3), trim = TRUE, drop0trailing = TRUE)
   lab <- sprintf("%s (mean shift = %s, SD = %s)", groups, num(SHIFTS), sd_label(sd_vec))
@@ -240,26 +243,16 @@ make_power_panel <- function(design_name, letter) {
   dat <- power[power$design == design_name, , drop = FALSE]
   if (!nrow(dat)) stop("no rows for ", design_name)
 
-  ## Column strips carry this design's eta_H^2 for each panel. Written as
-  ## plotmath and drawn with label_parsed, so the subscript H and the exponent 2
-  ## are typeset rather than printed as the literal characters "eta^2_H".
-  eta_lab <- setNames(paste0(PANELS, ")"), paste0(PANELS, ")"))
-  has_eta <- FALSE
-  if (!is.null(ETA)) {
-    e <- ETA[ETA$design == design_name, , drop = FALSE]
-    if (nrow(e) == length(PANELS)) {
-      e <- e[order(e$panel), ]
-      eta_lab <- setNames(
-        sprintf('"%d)"~~psi == "%s"', e$panel,
-                vapply(strsplit(e$psi, ",[ ]*"), function(v)
-                  paste(sprintf("%.2f", as.numeric(v)), collapse = " "), character(1))),
-        paste0(e$panel, ")")
-      )
-      has_eta <- TRUE
-    }
-  }
+  ## Column strips carry this design's eta_H^2 for each panel, as plotmath, so
+  ## the subscript H and the exponent 2 are typeset rather than printed.
+  e <- ETA[ETA$design == design_name, , drop = FALSE]
+  if (nrow(e) != length(PANELS)) stop("eta_H^2 missing for ", design_name)
+  e <- e[order(e$panel), ]
+  eta_lab <- setNames(sprintf('"%d)"~~eta[H]^2 == "%.3f"', e$panel, e$eta_h_sq_own),
+                      paste0(e$panel, ")"))
   dat$power_panel <- factor(unname(eta_lab[as.character(dat$power_panel)]),
                             levels = unname(eta_lab[paste0(PANELS, ")")]))
+
   long <- do.call(rbind, lapply(USE, function(s) {
     v <- dat[[COLUMN[[s]]]]
     if (all(is.na(v))) return(NULL)
@@ -268,33 +261,12 @@ make_power_panel <- function(design_name, letter) {
   long$strategy <- factor(long$strategy, levels = names(STRATS))
   long <- subset(long, n_per_group %in% NS_TO_PLOT)
 
-  ## Under heteroscedasticity the gate routes to KW in most replications, so
-  ## SW, SW+L and KW take the same value, and RK/ATS/ATSp sit on it too. Drawn
-  ## at the same x they stack into one blob and only the last one plotted is
-  ## visible. Dodge multiplicatively, because the axis is log10: each strategy
-  ## is offset by a constant FACTOR, so the spread looks identical at n = 10 and
-  ## n = 100. DODGE_SPAN is the total width as a fraction of the tick spacing;
-  ## the ticks are a factor 2 apart at the narrowest, so 12% stays unambiguous.
-  ## Only the "full" variant dodges. With nine strategies KW, RK, ATS, ATSp, SW
-  ## and SW+L land on the same value under heteroscedasticity and stack into one
-  ## blob, so they are offset to be legible at all. The "kw" variant has six
-  ## strategies that separate on their own, and there the markers stay exactly
-  ## on their tick.
-  DODGE_SPAN <- if (length(USE) > 6) 0.55 else 0
-  ns <- length(USE)
-  step <- if (ns > 1) DODGE_SPAN / (ns - 1) else 0
-  offset <- (match(as.character(long$strategy), USE) - (ns + 1) / 2) * step
-  long$x_dodged <- long$n_per_group * (1 + offset)
+  ## No dodging. Six strategies separate on their own, and the markers stay
+  ## exactly on their tick so a rejection rate can be read off the axis.
 
-  ## Where the routing inset goes depends on the data, because it only ever
-  ## conflicts with it in one direction. The original placement puts the three
-  ## split rows inside the 0-12% strip of the plotting area, which is free
-  ## whenever power stays clear of it. At omega^2_het = 0.024-0.030 it is not:
-  ## rejection rates fall to about 5% and the markers overprint the numbers.
-  ##
-  ## So: keep the inset inside the panel when the lowest plotted rate leaves
-  ## room, and only then carve out a band below zero, which costs 21% of the
-  ## panel's height. The homoscedastic block keeps its full 0-100%.
+  ## The routing inset sits inside the panel when the lowest plotted rate leaves
+  ## room, and only otherwise gets a reserved band below zero, which costs 21%
+  ## of the panel's height.
   base <- subset(dat, n_per_group %in% NS_TO_PLOT)
   INSET_HEADROOM <- 0.15 * BAND_SCALE
   inset_below <- min(long$power, na.rm = TRUE) < INSET_HEADROOM
@@ -323,13 +295,12 @@ make_power_panel <- function(design_name, letter) {
     ggplot2$geom_vline(xintercept = NS_TO_PLOT, colour = "grey88", linewidth = 0.35) +
     ggplot2$geom_hline(yintercept = seq(hline_from, 1, by = 0.1), colour = "grey88",
                        linewidth = 0.35) +
-    ## rule separating the reserved routing band, only when there is one
     (if (inset_below)
        ggplot2$geom_hline(yintercept = -0.02 * BAND_SCALE, colour = "grey60",
                           linewidth = 0.3)
      else ggplot2$geom_blank()) +
     ggplot2$geom_point(data = long,
-      ggplot2$aes(x = x_dodged, y = power, colour = strategy, shape = strategy,
+      ggplot2$aes(x = n_per_group, y = power, colour = strategy, shape = strategy,
                   size = strategy, group = strategy), stroke = 1.15) +
     ggplot2$geom_text(data = gtit, ggplot2$aes(x = 26, y = title_y, label = t),
       colour = "grey25", family = FLEISHMAN_FONT_FAMILY, size = FLEISHMAN_GEOM_TEXT$inset) +
@@ -339,9 +310,7 @@ make_power_panel <- function(design_name, letter) {
       ggplot2$aes(x = n_per_group, y = gate_y, label = lab), colour = "grey25",
       family = FLEISHMAN_FONT_FAMILY, size = FLEISHMAN_GEOM_TEXT$inset) +
     ggplot2$facet_grid(stats::as.formula(". ~ power_panel"),
-      labeller = if (has_eta) ggplot2$label_parsed else ggplot2$label_value) +
-    ## limits reach below 0 to hold the routing band; breaks stop at 0 so the
-    ## axis never labels a negative rejection rate.
+      labeller = ggplot2$label_parsed) +
     ggplot2$scale_y_continuous(limits = c(y_min, 1), breaks = seq(0, 1, by = 0.1),
                                labels = scales::percent) +
     ggplot2$scale_x_log10(breaks = NS_TO_PLOT, limits = c(5.5, 130)) +
@@ -377,12 +346,7 @@ make_power_panel <- function(design_name, letter) {
 pdf_title <- function(sd_vec) sprintf("input distributions, SD = (%s)",
                                       sd_vector_label(sd_vec))
 
-## H_PDF and H_POWER are defined above, with BAND_SCALE, because the inset
-## geometry depends on them.
-## Inches per unit of the heights vector, chosen so a density strip is the same
-## physical size as before (27.5/6 in per unit).
 IN_PER_UNIT <- 27.5 / 6
-
 homo_h <- c(H_PDF, H_POWER, H_POWER)
 het_h <- c(H_PDF, H_POWER, H_POWER, H_PDF, H_POWER)
 
@@ -400,10 +364,23 @@ het_fig <- patchwork$wrap_plots(
   make_power_panel(D_NEG, "E"),
   ncol = 1, heights = het_h)
 
-f1 <- sprintf("fleishman_4groups_power_brunner_%s_homoscedastic.png", VARIANT)
-f2 <- sprintf("fleishman_4groups_power_brunner_%s_heteroscedastic.png", VARIANT)
+f1 <- sprintf("fleishman_4groups_power_brunner_onepoint_d%s_kw_homoscedastic.png",
+              DELTA_TAG)
+f2 <- sprintf("fleishman_4groups_power_brunner_onepoint_d%s_kw_heteroscedastic.png",
+              DELTA_TAG)
+
+## Guard against overwriting the existing figures.
+PROTECTED <- c("fleishman_4groups_power_brunner_kw_homoscedastic.png",
+               "fleishman_4groups_power_brunner_kw_heteroscedastic.png",
+               "fleishman_4groups_power_brunner_full_homoscedastic.png",
+               "fleishman_4groups_power_brunner_full_heteroscedastic.png")
+if (any(c(f1, f2) %in% PROTECTED)) {
+  stop("refusing to overwrite an existing gradient figure: ",
+       paste(intersect(c(f1, f2), PROTECTED), collapse = ", "))
+}
+
 ggplot2$ggsave(f1, homo_fig, width = 20, height = sum(homo_h) * IN_PER_UNIT,
                dpi = FLEISHMAN_DPI)
 ggplot2$ggsave(f2, het_fig, width = 20, height = sum(het_h) * IN_PER_UNIT,
                dpi = FLEISHMAN_DPI)
-message("Saved (variant = ", VARIANT, "):\n  ", f1, "\n  ", f2)
+message("Saved (one-point, delta = ", format(DELTA), "):\n  ", f1, "\n  ", f2)

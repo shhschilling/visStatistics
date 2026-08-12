@@ -172,7 +172,7 @@ knitr::include_graphics("figures/decision_tree.png")
 A linear model of Eq.
 \@ref(eq:glm) is fitted between the numeric response and the categorical predictor, and the model residuals of Eq.
 \@ref(eq:raw-residual) are extracted.
-In the default setting (`group_test = NULL`), Route 1 uses the displayed residual diagnostics of the Shapiro--Wilk (SW) and Levene test (L) [@Levene:1960] as automatic gates:
+In the default setting (`group_test = "gated"`), Route 1 uses the displayed residual diagnostics of the Shapiro--Wilk (SW) and Levene test (L) [@Levene:1960] as automatic gates:
 
 <!-- The Shapiro--Wilk (SW) test is an omnibus normality test, sensitive to both skewness and kurtosis [@DAgostino:1973]. -->
 
@@ -184,9 +184,9 @@ For homoscedastic data ($p_\text{L} > \alpha$), `t.test(var.equal = TRUE)` (Eq. 
 For heteroscedastic data ($p_\text{L} \le \alpha$), Welch's `t.test()` (Eq. \@ref(eq:welch-t)) is applied for two groups, or Welch's `oneway.test()` (Eq. \@ref(eq:welch-f)) for more than two groups.
 
 
-Independent of assumption testing, the user can enforce group mean comparisons by the option `group_test = welch` which defaults to Welch variants of the t-test (`t.test()`) and ANOVA (`oneway.test()`), otherwise the option `group_test = rank`switches to the non-parametric alternatives `wilcox.test()` and `kruskal.test()`.
+Independent of assumption testing, the user can enforce group mean comparisons by the option `group_test = "welch"` which defaults to Welch variants of the t-test (`t.test()`) and ANOVA (`oneway.test()`), otherwise the option `group_test = "rank"` switches to the non-parametric alternatives `wilcox.test()` and `kruskal.test()`.
 
-The two overrides differ in what they display: `group_test = welch` shows a per-group normality panel, since Welch's tests assume normality within each group, and warns when the smallest group falls below 50 observations for up to four groups, or below 100 for more, whereas `group_test = rank` enters the rank branch directly and does not generate an assumption plot with its corresponding test statistics.
+The two overrides differ in what they display: `group_test = "welch"` shows a per-group normality panel, since Welch's tests assume normality within each group, and warns when the smallest group falls below 50 observations for up to four groups, or below 100 for more, whereas `group_test = "rank"` enters the rank branch directly and does not generate an assumption plot with its corresponding test statistics.
 
 The rationale for the automated gating, and the mean- and rank-based alternatives and the limitations of each approach are discussed in Section \@ref(sec:simulation-results) and Section \@ref(sec:discussion).
 

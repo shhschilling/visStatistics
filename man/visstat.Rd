@@ -13,10 +13,11 @@ visstat(
   correlation = FALSE,
   numbers = TRUE,
   minpercent = 0.05,
-  group_test = NULL,
+  group_test = "gated",
   graphicsoutput = NULL,
   plotName = NULL,
-  plotDirectory = getwd()
+  plotDirectory = getwd(),
+  qq_nsim = getOption("visStatistics.qq_nsim", 5000L)
 )
 }
 \arguments{
@@ -56,8 +57,8 @@ with trend line only (no regression interpretation).}
 \item{minpercent}{Number between 0 and 1 indicating minimal fraction of
 total count data of a category to be displayed in mosaic count plots.}
 
-\item{group_test}{Optional character. For a numeric response and factor predictor,
-\code{NULL} keeps the default assumption gates, \code{"welch"} forces
+\item{group_test}{Character. For a numeric response and factor predictor,
+\code{"gated"} (the default) keeps the assumption gates, \code{"welch"} forces
 Welch-type mean tests, but still displays the assumption-diagnostic plot
 and warns when residual normality is rejected, whereas \code{"rank"} forces
 Wilcoxon/Kruskal-Wallis rank tests without assessing the assumptions.}
@@ -75,6 +76,10 @@ following the convention \code{"statisticalTestName_varsample_varfactor"}.}
 
 \item{plotDirectory}{Specifies directory where generated plots are stored.
 Default is current working directory.}
+
+\item{qq_nsim}{Integer number of simulated refits for the Q-Q envelopes in
+the assumption diagnostics. Defaults to the option
+\code{visStatistics.qq_nsim}, or 5000 if that is unset.}
 }
 \value{
 An object of class \code{"visstat"} containing the results of
@@ -157,12 +162,10 @@ assumption diagnostics.
 
 The Q-Q envelopes in the assumption diagnostics are simulated (see
 \code{\link{qq_lm_envelope}}). The number of simulated refits is taken from
-the option \code{visStatistics.qq_nsim} and defaults to 5000. As
-\code{visstat()} has no corresponding argument, this option is the only way
-to change it here; lower it to trade precision for speed, for instance
-\code{options(visStatistics.qq_nsim = 1000L)}. Use
-\code{\link{vis_lm_assumptions}} or \code{\link{qq_lm_envelope}} directly if
-you prefer to set the number of refits per call.
+the \code{qq_nsim} argument, which itself defaults to the option
+\code{visStatistics.qq_nsim} and to 5000 if that is unset. Lower it to trade
+precision for speed, either per call with \code{qq_nsim = 1000L} or session
+wide with \code{options(visStatistics.qq_nsim = 1000L)}.
 }
 \note{
 For best visualization, ensure that the RStudio Plots pane is adequately
