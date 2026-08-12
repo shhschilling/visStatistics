@@ -428,7 +428,7 @@ test is used as the normality gate in the automated test selection
 **Homoscedasticity tests** For grouped central-tendency analyses,
 variance homogeneity of standardised residuals ([Cook and Weisberg
 1982](#ref-Cook:1982)) is assessed using the package-implemented
-mean-centred Levene test ([**Levene:1960?**](#ref-Levene:1960))
+mean-centred Levene test ([Levene 1960](#ref-Levene:1960))
 ([`levene.test()`](https://shhschilling.github.io/visStatistics/reference/levene.test.md);
 Eq. [(A.3)](#eq:levene-f)) and Bartlett’s test ([Bartlett
 1937](#ref-Bartlett:1937))
@@ -517,9 +517,9 @@ test then selects equal-variance or Welch-type procedures.
 A linear model of Eq. [(5.1)](#eq:glm) is fitted between the numeric
 response and the categorical predictor, and the model residuals of Eq.
 [(5.2)](#eq:raw-residual) are extracted. In the default setting
-(`group_test = NULL`), Route 1 uses the displayed residual diagnostics
-of the Shapiro–Wilk (SW) and Levene test (L)
-([**Levene:1960?**](#ref-Levene:1960)) as automatic gates:
+(`group_test = "gated"`), Route 1 uses the displayed residual
+diagnostics of the Shapiro–Wilk (SW) and Levene test (L) ([Levene
+1960](#ref-Levene:1960)) as automatic gates:
 
 If the SW-test rejects residual normality (\\p\_\text{SW} \le \alpha\\),
 robust non-parametric tests are selected:
@@ -531,8 +531,8 @@ robust non-parametric tests are selected:
 ([Dunn 1964](#ref-Dunn:1964)) for more than two groups.
 
 If residual normality is not rejected, the mean-centred Levene test (L)
-([**Levene:1960?**](#ref-Levene:1960)) (Eq. [(A.3)](#eq:levene-f)) gates
-the variance assessment:
+([Levene 1960](#ref-Levene:1960)) (Eq. [(A.3)](#eq:levene-f)) gates the
+variance assessment:
 
 For homoscedastic data (\\p\_\text{L} \> \alpha\\),
 `t.test(var.equal = TRUE)` (Eq. [(B.1)](#eq:student-t)) is applied for
@@ -545,19 +545,19 @@ data (\\p\_\text{L} \le \alpha\\), Welch’s
 [(B.6)](#eq:welch-f)) for more than two groups.
 
 Independent of assumption testing, the user can enforce group mean
-comparisons by the option `group_test = welch` which defaults to Welch
+comparisons by the option `group_test = "welch"` which defaults to Welch
 variants of the t-test
 ([`t.test()`](https://rdrr.io/r/stats/t.test.html)) and ANOVA
 ([`oneway.test()`](https://rdrr.io/r/stats/oneway.test.html)), otherwise
-the option `group_test = rank`switches to the non-parametric
+the option `group_test = "rank"` switches to the non-parametric
 alternatives [`wilcox.test()`](https://rdrr.io/r/stats/wilcox.test.html)
 and [`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html).
 
-The two overrides differ in what they display: `group_test = welch`
+The two overrides differ in what they display: `group_test = "welch"`
 shows a per-group normality panel, since Welch’s tests assume normality
 within each group, and warns when the smallest group falls below 50
 observations for up to four groups, or below 100 for more, whereas
-`group_test = rank` enters the rank branch directly and does not
+`group_test = "rank"` enters the rank branch directly and does not
 generate an assumption plot with its corresponding test statistics.
 
 The rationale for the automated gating, and the mean- and rank-based
@@ -929,6 +929,27 @@ residual variance homogeneity) select the unequal-variance mean-based
 path, followed by box plots with Games–Howell significance letters
 (\\\alpha = 0.05\\).
 
+The user can eforce the Welch type analysis, by setting
+`group_test="Welch`, this changes the assumption panel from the GLM
+assumption panel to normality tests by density plots and QQ plots for
+each group.
+
+``` r
+
+welch_anova_iris_assumption <- visstat(iris$Species, iris$Sepal.Length, group_test = "welch")
+plot(welch_anova_iris_assumption, which = 1)
+```
+
+![Enforcing Welch tests changes the assumption panel to normality
+density and Q-Q plots for each group, The test statistics are
+Shapiro-Wilk (SW) and Anderson-Darling (AD) normality tests,
+](visStatistics_files/figure-html/welch-anova-assumption%20example-1.png)
+
+(#fig:welch-anova-assumption example)Enforcing Welch tests changes the
+assumption panel to normality density and Q-Q plots for each group, The
+test statistics are Shapiro-Wilk (SW) and Anderson-Darling (AD)
+normality tests,
+
 #### 6.1.3 Wilcoxon rank-sum test and Kruskal–Wallis test
 
 ##### 6.1.3.1 Wilcoxon rank-sum test
@@ -1100,8 +1121,8 @@ confidence and prediction bands at the specified `conf.level`.
 
 The returned object contains the regression statistics,
 residual-normality tests, pointwise confidence and prediction bands, and
-the coefficient of determination \\R^2\\ (Eq. [(**??**)](#eq:r-squared))
-as effect size.
+the coefficient of determination \\R^2\\ (Eq. [(F.1)](#eq:r-squared)) as
+effect size.
 
 ``` r
 
@@ -1554,7 +1575,7 @@ about 0.22 percentage points at \\p=0.50\\.
 Figure [7.1](#fig:route1-identical-typeI) shows in panel (A) the density
 distributions of the four groups only differing in size: The balanced
 design in panel (B) varies the common group size \\n \in
-\\10,20,50,100\\\\ from top to bottom, whereas the unbalanced designs
+\\20,30,50,100\\\\ from top to bottom, whereas the unbalanced designs
 vary the target mean group size \\\bar n = n\\ (panel (C)), again from
 top to bottom. Within each row, the group-size vector is \\\mathbf
 n=\bar n\cdot(0.5,0.8,1.2,1.5)\\, rounded up component-wise.
@@ -1562,10 +1583,10 @@ n=\bar n\cdot(0.5,0.8,1.2,1.5)\\, rounded up component-wise.
 ![Route 1 Type I simulation under identical distributions and identical
 means, with group mean 0 and SD = 1 in all four groups. (A) input
 distributions, dashed lines mark means and dotted lines mark medians.
-(B) balanced design with group sizes, listed from top to bottom, as 10,
-20, 50, 100. (C) Unbalanced design with group sizes \$\bar{n} \cdot
+(B) balanced design with group sizes, listed from top to bottom, as 20,
+30, 50, 100. (C) Unbalanced design with group sizes \$\bar{n} \cdot
 (0.5, 0.8, 1.2, 1.5)\$ with the target mean group size for unbalanced
-designs \$\bar{n} \in \\10, 20, 50, 100\\\$ rounded up to the next
+designs \$\bar{n} \in \\20, 30, 50, 100\\\$ rounded up to the next
 integer. The heatmaps in (B) and (C) report final-test rejection rates
 at \$\alpha = 5\\\$. All heatmap numbers are percentages; the first
 value is the final-test rejection rate, and gated rows additionally list
@@ -1576,9 +1597,9 @@ Figure 7.1: Route 1 Type I simulation under identical distributions and
 identical means, with group mean 0 and SD = 1 in all four groups. (A)
 input distributions, dashed lines mark means and dotted lines mark
 medians. (B) balanced design with group sizes, listed from top to
-bottom, as 10, 20, 50, 100. (C) Unbalanced design with group sizes
+bottom, as 20, 30, 50, 100. (C) Unbalanced design with group sizes
 \\\bar{n} \cdot (0.5, 0.8, 1.2, 1.5)\\ with the target mean group size
-for unbalanced designs \\\bar{n} \in \\10, 20, 50, 100\\\\ rounded up to
+for unbalanced designs \\\bar{n} \in \\20, 30, 50, 100\\\\ rounded up to
 the next integer. The heatmaps in (B) and (C) report final-test
 rejection rates at \\\alpha = 5\\\\. All heatmap numbers are
 percentages; the first value is the final-test rejection rate, and gated
@@ -1593,12 +1614,11 @@ Kruskal–Wallis under non-normality does not change the truth status of
 the tested null, because the Kruskal–Wallis null is in this
 homoscedastic simulations also true. The type I error rate stays inside
 Bradley’s bounds in all scenarios of this homoscedastic setting. In the
-gated scenarios, it ranging from 4.2% to 5.8% for `SW` and, more
-narrowly, from 4.8% to 5.6% for `SW+L`. The narrower spread follows from
-what the variance gate selects: with variances in fact equal it returns
-most of the mean branch to Fisher’s exact `F` test, whereas `SW` always
-ends in Welch’s test, whose level is only approximate at small and
-unequal group sizes.
+gated scenarios, it ranging from 4.8% to 5.5% for `SW` and, from 4.8% to
+5.6% for `SW+L`. The narrower spread follows from what the variance gate
+selects: with variances in fact equal it returns most of the mean branch
+to Fisher’s exact `F` test, whereas `SW` always ends in Welch’s test,
+whose level is only approximate at small and unequal group sizes.
 
 In the balanced (panel B) as in the unbalanced design (panel C), the
 route probabilities show the Shapiro-Wilk gate responding to kurtosis as
@@ -1617,12 +1637,13 @@ In Fig. [7.2](#fig:route1-unequal-typeI), all four group means remain
 zero, but the common standardised input distribution is multiplied by
 group-specific standard deviation (SD) scale factors introducing
 heteroscedasticity. The balanced block (panel B) uses \\\mathbf
-n=(n,n,n,n)\\ with \\n \in \\10,20,50,100\\\\ and \\\mathbf s =
-(1.0,1.3,1.7,2.2)\\. The unbalanced blocks use \\\mathbf n=\bar n\cdot
-(0.5,0.8,1.2,1.5)\\; this group-size vector is paired either with
-\\\mathbf s = (1.0,1.3,1.7,2.2)\\, so larger groups have larger SDs
-(panel C) or with \\\mathbf s = (2.2,1.7,1.3,1.0)\\, so larger groups
-have smaller SDs, the reverse pairing (panel D).
+n=(n,n,n,n)\\ with \\n \in \\20,30,50,100\\\\ and \\\mathbf s =
+(1.0,\sqrt{2},2.0,\sqrt{5})\\. The unbalanced blocks use \\\mathbf
+n=\bar n\cdot (0.5,0.8,1.2,1.5)\\; this group-size vector is paired
+either with \\\mathbf s = (1.0,\sqrt{2},2.0,\sqrt{5})\\, so larger
+groups have larger SDs (panel C) or with \\\mathbf s =
+(\sqrt{5},2.0,\sqrt{2},1.0)\\, so larger groups have smaller SDs, the
+reverse pairing (panel D).
 
 The parametric equal-means null is true in all columns. Kruskal–Wallis
 tests the group rank distributions, SD scaling leaves them aligned in
@@ -1635,38 +1656,38 @@ I error rate for the equal-means null but one minus the type II error
 rate of the rank comparison the gate has switched to.
 
 In column 5, the input with the highest skewness and excess kurtosis,
-the scaling separates the group medians by only 0.33 SD between the
+the scaling separates the group medians by only 0.34 SD between the
 extreme groups, resulting in a small Kruskal–Wallis effect size of
 \\\eta_H^2 \approx 0.02\\ (defined in the [effect-size
-table](#tab:effect-size-formulae)); `KW` correctly rejects in only
-roughly half the replications even at \\\bar n = 100\\, a type II error
-rate of about 50 %.
+table](#tab:effect-size-formulae)); `KW` still fails to reject in
+roughly a third of the replications at the largest group size simulated.
 
 ![Route 1 equal-means simulation with varied group SD and sample-size
 pairings. (A) input distributions (B) balanced design with group sizes,
-listed from top to bottom, as 10, 20, 50, 100. (C) unbalanced design
+listed from top to bottom, as 20, 30, 50, 100. (C) unbalanced design
 with larger groups paired with larger SD. (D) unbalanced design with
 larger groups paired with smaller
 SD.](figures/route1_equal_means_unequal_distributions_fleishman_B50000.png)
 
 Figure 7.2: Route 1 equal-means simulation with varied group SD and
 sample-size pairings. (A) input distributions (B) balanced design with
-group sizes, listed from top to bottom, as 10, 20, 50, 100. (C)
+group sizes, listed from top to bottom, as 20, 30, 50, 100. (C)
 unbalanced design with larger groups paired with larger SD. (D)
 unbalanced design with larger groups paired with smaller SD.
 
 The `SW` gate also reacts to unequal variances alone. In panel B, column
 1 of Fig. [7.2](#fig:route1-unequal-typeI) the balanced four groups are
 exactly normal and differ only in spread, yet the share of replications
-that the Shapiro–Wilk gate sends to Kruskal–Wallis rises from 13% at
-\\n_i=10\\ to a majority of \\69\\\\\\ at \\n_i=100\\ (panel B, column
+that the Shapiro–Wilk gate sends to Kruskal–Wallis rises from 19% at
+\\n_i=20\\ to a majority of \\66\\\\\\ at \\n_i=100\\ (panel B, column
 1, row `SW`), against 5% in every row of the corresponding column 1 of
 Fig. [7.1](#fig:route1-identical-typeI), where all standard deviations
 are equal. The gate applies one test to the standardised residuals of
 all four groups at once; mixing the four scales gives this single
-residual vector a positive excess kurtosis of about 0.9. This is the
-expected behaviour of residual-based routing, normally distributed and
-heteroscedastic group samples result in non-normal residuals.
+residual vector a positive excess kurtosis, between 0.6 and 0.8 for
+group sizes from 20 to 100. This is the expected behaviour of
+residual-based routing, normally distributed and heteroscedastic group
+samples result in non-normal residuals.
 
 #### 7.2.1 Bradley’s boundaries in heteroscedastic simulations
 
@@ -1690,7 +1711,7 @@ the normality gate is overpowered and sends most replications to `KW`,
 ([Brunner et al. 2017](#ref-Brunner:2017))*. At the smallest group sizes
 the variance gate is underpowered instead and returns nearly half the
 replications to `F`, whose rejection rate under a true null is inflated
-to about 13% in this pairing.
+in this pairing.
 
 *Taken together, unequal variances push the routing out of the mean
 branch through the residual kurtosis they induce, so a mean comparison
@@ -1700,22 +1721,10 @@ under suspected heteroscedasticity is better requested with group_test =
 ### 7.3 Type II error (power) simulations
 
 The power simulation uses the same five fixed input distributions and
-adds ordered location shifts across the four groups. For the baseline
-balanced homoscedastic design (Figure [7.3](#fig:route1-power), panel
-B), balanced groups with equal SD are used: \\n_i=n\\,
-\\\mathrm{SD}\_i=1\\ for \\i=1,...4\\ and group means are shifted by
-\\0,0.25,0.50,0.75\\.
-
-A simplified variant holds the shifts and SDs fixed at their
-homoscedastic baseline values while varying only the sample-size balance
-structure (balanced vs. two unbalanced pairings).
-
-In this design, the population effect size \\\omega^2\\ naturally
-differs across balance conditions due to unequal group sizes, but shifts
-are not rescaled. This isolates how sample-size imbalance affects power
-for each test strategy, clarifying which tests are robust to imbalance
-and which are sensitive. The resulting \\\omega^2\\ values are recorded
-in the simulation output.
+adds ordered location shifts across the four groups. In the
+homoscedastic design (Figure [7.3](#fig:route1-power), panel B),
+balanced groups with equal SD are used: \\n_i=n\\, \\\mathrm{SD}\_i=1\\
+for \\i=1,...4\\ and group means are shifted by \\0,0.25,0.50,0.75\\.
 
 ![Route 1 power simulation with Fleishman input distributions. (A) Input
 distributions with group mean and median reference lines. (B) Simulated
@@ -1729,15 +1738,20 @@ Simulated rejection rates for the six testing strategies.
 Which strategy rejects the false null most often is decided by the shape
 of the input: under normality the mean-based tests reject at most three
 percentage points more often than Kruskal–Wallis at the smaller group
-sizes, while under heavy tails and under skewness Kruskal–Wallis rejects
-far more often (Fig. [7.3](#fig:route1-power), panel B). The routed
-procedure follows whichever rejects most often – the insets show the
-share sent to the rank branch growing with skewness and excess kurtosis
-– rejecting at least as often as fixed Welch everywhere, more often than
-the better of the two fixed strategies in half of the cells that have
-not saturated, and less often than fixed Kruskal–Wallis in one. By a
-group size of 100 the false null is rejected in essentially every
-replication.
+sizes, while under heavy tails (column 2) and under high skewness
+(columns 4 and 5 of Fig. [7.3](#fig:route1-power)) Kruskal–Wallis
+rejects far more often. The routed procedure follows whichever rejects
+most often – the insets show the share sent to the rank branch growing
+with skewness and excess kurtosis. Similar results were obtained with
+unbalanced inputs, were, like in the type I simulations, the size of the
+four input distributions were given by \\\overline n (0.5, 0.8, 1.2,
+1.5)\\ with \\n \in {10,20,30,50,100}\\.
+
+Replacing the ordered location shift by a one-point shift of 0.5 or 1
+(data not shown) of a single group, with the other three identical,
+leaves this qualitative result unchanged: the panels in which the rank
+branch gains are the same, and the routed procedure follows still the
+fixed test with the highest rejection rate.
 
 ## 8 Discussion
 
@@ -2089,7 +2103,7 @@ uses `ad.test()` from `nortest` ([Gross and Ligges
 #### A.2.1 The mean-centred Levene test `levene.test()`
 
 The package implementation uses Levene’s original mean-centred proposal
-([**Levene:1960?**](#ref-Levene:1960)).
+([Levene 1960](#ref-Levene:1960)).
 
 The Levene test statistic is the one-way ANOVA \\F\\ statistic, computed
 on the absolute residuals \\\|e\_{ij}\|\\ in place of the responses
@@ -2447,10 +2461,25 @@ The prefactor \\12/\[N(N+1)\]\\ rescales the weighted squared deviations
 of the group mean ranks by the sample variance of the \\N\\ pooled
 ranks.
 
-\\H\\ [(C.3)](#eq:kruskal-h) depends on the balance of design through
-its dependence on the group-size ratios \\q_i\\; writing
+Large values of \\H\\ occur when at least one group has systematically
+higher or lower ranks than expected under equal rank distributions.
+[`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html) evaluates
+\\H\\ against the asymptotic \\\chi^2(k-1)\\ null distribution. If ties
+are present, \\H\\ is divided by the tie factor
 
-\\\begin{equation} \widehat p_i=\frac{\bar R_i-\tfrac12}{N} \tag{C.4}
+\\\begin{equation} C=1-\frac{\sum_j(t_j^3-t_j)}{N^3-N}, \tag{C.4}
+\end{equation}\\
+
+where \\t_j\\ is the number of observations in tie block \\j\\ ([Kruskal
+and Wallis 1952](#ref-Kruskal:1952); [Hollander et al. 2014,
+205](#ref-Hollander:2014)). \\C\\ is the proportion of the original rank
+variance that remains after tied observations have been assigned average
+ranks.
+
+\\H\\ depends on the balance of design through its dependence on the
+group-size ratios \\q_i\\; writing
+
+\\\begin{equation} \widehat p_i=\frac{\bar R_i-\tfrac12}{N} \tag{C.5}
 \end{equation}\\
 
 for the average position of the observations of group \\i\\ within the
@@ -2459,19 +2488,19 @@ R_i-\bar R=N(\widehat p_i-\tfrac12)\\ exactly, so that, in the absence
 of ties,
 
 \\\begin{equation} H=\frac{12N^{2}}{N+1}\sum\_{i=1}^{k} q_i
-\left(\widehat p_i-\frac12\right)^{2}. \tag{C.5} \end{equation}\\
+\left(\widehat p_i-\frac12\right)^{2}. \tag{C.6} \end{equation}\\
 
-The \\q_i\\ enter twice: once as the weights shown in Eq.
-[(C.5)](#eq:kruskal-h-ratios), and once inside \\\widehat p_i\\ itself,
-since a rank taken over all \\N\\ observations measures position
-relative to the pooled sample, in which group \\i\\ is represented in
-proportion \\q_i\\. With ties, both sides carry the tie factor below and
-the identity is unchanged.
+\\H\\ depends directly on \\q_i\\ by the weights in Eq.
+[(C.6)](#eq:kruskal-h-ratios), and through \\\widehat p_i\\, since a
+rank taken over all \\N\\ observations measures position relative to the
+pooled sample, in which group \\i\\ is represented in proportion
+\\q_i\\. With ties, both sides carry the tie factor \\C\\ of Eq.
+[(C.4)](#eq:tie-factor) and the identity is unchanged.
 
 Pooling the \\k\\ groups in the proportions \\q_i\\ corresponds, at the
 population level, to the mixture distribution
 
-\\\begin{equation} \bar F_q(x)=\sum\_{i=1}^{k} q_i F_i(x), \tag{C.6}
+\\\begin{equation} \bar F_q(x)=\sum\_{i=1}^{k} q_i F_i(x), \tag{C.7}
 \end{equation}\\
 
 itself a distribution function: it describes a draw obtained by picking
@@ -2480,21 +2509,10 @@ group \\i\\ with probability \\q_i\\ and then drawing from \\F_i\\. What
 relative effect ([Brunner et al. 2021](#ref-Brunner:2021))
 
 \\\begin{equation} p_i=\int\_{-\infty}^{\infty}\bar
-F_q(y)\\\mathrm{d}F_i(y), \tag{C.7} \end{equation}\\
+F_q(y)\\\mathrm{d}F_i(y), \tag{C.8} \end{equation}\\
 
 the probability that an observation from group \\i\\ exceeds an
-independent draw from the pooled population, plus half the probability
-of a tie.
-
-Large values of \\H\\ occur when at least one group has systematically
-higher or lower ranks than expected under equal rank distributions.
-[`kruskal.test()`](https://rdrr.io/r/stats/kruskal.test.html) evaluates
-\\H\\ against the asymptotic \\\chi^2(k-1)\\ null distribution. If ties
-are present, \\H\\ is divided by the tie factor \\
-1-\frac{\sum_j(t_j^3-t_j)}{N^3-N}, \\ where \\t_j\\ is the number of
-observations in tie block \\j\\. This factor is the proportion of the
-original rank variance that remains after tied observations have been
-assigned average ranks.
+independent draw from the pooled population.
 
 If the group distributions are the same distribution up to
 group-specific additive constants, the test can be read as a location
@@ -2526,10 +2544,13 @@ ranking of all groups, the same ranking that enters \\H\\ in Eq.
 [(C.3)](#eq:kruskal-h) ([Dunn 1964](#ref-Dunn:1964)). For groups \\i\\
 and \\j\\ the statistic is \\z\_{ij}=(\bar R_i-\bar R_j)/\sigma\_{ij}\\
 with
-\\\sigma\_{ij}^2=\left\[\frac{N(N+1)}{12}-\frac{\sum\_{s=1}^{r}(t_s^3-t_s)}{12(N-1)}\right\]\left(\frac{1}{n_i}+\frac{1}{n_j}\right)\\,
-where the \\r\\ groups of tied scores contain \\t_s\\ observations each.
-The resulting \\p\\ values are adjusted for multiplicity using Holm’s
-step-down method ([Holm 1979](#ref-Holm:1979)).
+
+\\\sigma\_{ij}^2=\frac{N(N+1)}{12}\\C\left(\frac{1}{n_i}+\frac{1}{n_j}\right),\\
+
+where \\C\\ is the tie factor of Eq. [(C.4)](#eq:tie-factor), over the
+same tie blocks. The resulting \\p\\ values are adjusted for
+multiplicity using Holm’s step-down method ([Holm
+1979](#ref-Holm:1979)).
 
 ## D Rank correlations
 
@@ -2799,10 +2820,15 @@ group-size ratios \\q_i\\ and is not comparable across designs whose
 groups stand in different size ratios ([Zimmermann et al.
 2021](#ref-Zimmermann:2021)).
 
-In the coefficient of determination \\R^2\\, the residual sum of square
-is defined as \\SS\_\text{res}=\sum\_{i=1}^{N}(y_i-\hat{y}\_i)^2\\,
-where \\\hat{y}\_i\\ is the predicted value, and the total sum of
-squares is given by \\SS\_\text{tot}=\sum\_{i=1}^{N}(y_i-\bar{y})^2\\ .
+In the coefficient of determination \\R^2\\,
+
+\\\begin{equation} R^2=1-\frac{SS\_\text{res}}{SS\_\text{tot}},
+\tag{F.1} \end{equation}\\
+
+the residual sum of squares is
+\\SS\_\text{res}=\sum\_{i=1}^{N}(y_i-\hat{y}\_i)^2\\, where
+\\\hat{y}\_i\\ is the predicted value, and the total sum of squares is
+\\SS\_\text{tot}=\sum\_{i=1}^{N}(y_i-\bar{y})^2\\.
 
 All other variables used in the [effect-size
 table](#tab:effect-size-formulae) are defined in the corresponding
@@ -2861,7 +2887,7 @@ p_j\left(\frac{\mu_j-\tilde\mu_w}{\sigma_j}\right)^2, \tag{G.3}
 
 With the group-size ratios \\q_i\\ held fixed, \\\widehat\eta_H^2\\
 converges to a function of the weighted relative effects \\p_i\\ of Eq.
-[(C.7)](#eq:weighted-relative-effect):
+[(C.8)](#eq:weighted-relative-effect):
 
 \\\begin{equation}
 \widehat\eta_H^2=\frac{H-k+1}{N-k}\\\xrightarrow{N\to\infty}\\
@@ -2870,7 +2896,7 @@ converges to a function of the weighted relative effects \\p_i\\ of Eq.
 
 Unlike \\\omega^2\\, which sees the group distributions only through
 \\(\mu_j,\sigma_j^2)\\, Eq. [(G.4)](#eq:eta-h-population) depends on
-their whole shape through Eq. [(C.7)](#eq:weighted-relative-effect).
+their whole shape through Eq. [(C.8)](#eq:weighted-relative-effect).
 
 ## References
 
@@ -3113,6 +3139,9 @@ Lantz, Björn, Roy Andersson, and Peter Manfredsson. 2016. “Preliminary
 Tests of Normality When Comparing Three Independent Samples.” *Journal
 of Modern Applied Statistical Methods* 15 (2): Article 11.
 <https://doi.org/10.22237/jmasm/1478002140>.
+
+Levene, Howard. 1960. “Robust Tests for Equality of Variances.”
+*Contributions to Probability and Statistics*, 278–92.
 
 Levine, Timothy R., and Craig R. Hullett. 2002. “Eta Squared, Partial
 Eta Squared, and Misreporting of Effect Size in Communication Research.”

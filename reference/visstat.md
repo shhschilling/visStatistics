@@ -35,10 +35,11 @@ visstat(
   correlation = FALSE,
   numbers = TRUE,
   minpercent = 0.05,
-  group_test = NULL,
+  group_test = "gated",
   graphicsoutput = NULL,
   plotName = NULL,
-  plotDirectory = getwd()
+  plotDirectory = getwd(),
+  qq_nsim = getOption("visStatistics.qq_nsim", 5000L)
 )
 ```
 
@@ -97,10 +98,10 @@ visstat(
 
 - group_test:
 
-  Optional character. For a numeric response and factor predictor,
-  `NULL` keeps the default assumption gates, `"welch"` forces Welch-type
-  mean tests, but still displays the assumption-diagnostic plot and
-  warns when residual normality is rejected, whereas `"rank"` forces
+  Character. For a numeric response and factor predictor, `"gated"` (the
+  default) keeps the assumption gates, `"welch"` forces Welch-type mean
+  tests, but still displays the assumption-diagnostic plot and warns
+  when residual normality is rejected, whereas `"rank"` forces
   Wilcoxon/Kruskal-Wallis rank tests without assessing the assumptions.
 
 - graphicsoutput:
@@ -122,6 +123,12 @@ visstat(
 
   Specifies directory where generated plots are stored. Default is
   current working directory.
+
+- qq_nsim:
+
+  Integer number of simulated refits for the Q-Q envelopes in the
+  assumption diagnostics. Defaults to the option
+  `visStatistics.qq_nsim`, or 5000 if that is unset.
 
 ## Value
 
@@ -185,15 +192,11 @@ assumption diagnostics.
 
 The Q-Q envelopes in the assumption diagnostics are simulated (see
 [`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md)).
-The number of simulated refits is taken from the option
-`visStatistics.qq_nsim` and defaults to 5000. As `visstat()` has no
-corresponding argument, this option is the only way to change it here;
-lower it to trade precision for speed, for instance
-`options(visStatistics.qq_nsim = 1000L)`. Use
-[`vis_lm_assumptions`](https://shhschilling.github.io/visStatistics/reference/vis_lm_assumptions.md)
-or
-[`qq_lm_envelope`](https://shhschilling.github.io/visStatistics/reference/qq_lm_envelope.md)
-directly if you prefer to set the number of refits per call.
+The number of simulated refits is taken from the `qq_nsim` argument,
+which itself defaults to the option `visStatistics.qq_nsim` and to 5000
+if that is unset. Lower it to trade precision for speed, either per call
+with `qq_nsim = 1000L` or session wide with
+`options(visStatistics.qq_nsim = 1000L)`.
 
 ## Note
 

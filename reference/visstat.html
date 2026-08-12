@@ -111,10 +111,11 @@ Pearson's \(\chi^2\) test or Fisher's exact test.</p>
 <span>  correlation <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  numbers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  minpercent <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>  group_test <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  group_test <span class="op">=</span> <span class="st">"gated"</span>,</span>
 <span>  graphicsoutput <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plotName <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  plotDirectory <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  qq_nsim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"visStatistics.qq_nsim"</span>, <span class="fl">5000L</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -175,8 +176,8 @@ total count data of a category to be displayed in mosaic count plots.</p></dd>
 
 
 <dt id="arg-group-test">group_test<a class="anchor" aria-label="anchor" href="#arg-group-test"></a></dt>
-<dd><p>Optional character. For a numeric response and factor predictor,
-<code>NULL</code> keeps the default assumption gates, <code>"welch"</code> forces
+<dd><p>Character. For a numeric response and factor predictor,
+<code>"gated"</code> (the default) keeps the assumption gates, <code>"welch"</code> forces
 Welch-type mean tests, but still displays the assumption-diagnostic plot
 and warns when residual normality is rejected, whereas <code>"rank"</code> forces
 Wilcoxon/Kruskal-Wallis rank tests without assessing the assumptions.</p></dd>
@@ -200,6 +201,12 @@ following the convention <code>"statisticalTestName_varsample_varfactor"</code>.
 <dt id="arg-plotdirectory">plotDirectory<a class="anchor" aria-label="anchor" href="#arg-plotdirectory"></a></dt>
 <dd><p>Specifies directory where generated plots are stored.
 Default is current working directory.</p></dd>
+
+
+<dt id="arg-qq-nsim">qq_nsim<a class="anchor" aria-label="anchor" href="#arg-qq-nsim"></a></dt>
+<dd><p>Integer number of simulated refits for the Q-Q envelopes in
+the assumption diagnostics. Defaults to the option
+<code>visStatistics.qq_nsim</code>, or 5000 if that is unset.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -250,12 +257,10 @@ which selects and executes the appropriate test with visual output and
 assumption diagnostics.</p>
 <p>The Q-Q envelopes in the assumption diagnostics are simulated (see
 <code><a href="qq_lm_envelope.html">qq_lm_envelope</a></code>). The number of simulated refits is taken from
-the option <code>visStatistics.qq_nsim</code> and defaults to 5000. As
-<code>visstat()</code> has no corresponding argument, this option is the only way
-to change it here; lower it to trade precision for speed, for instance
-<code>options(visStatistics.qq_nsim = 1000L)</code>. Use
-<code><a href="vis_lm_assumptions.html">vis_lm_assumptions</a></code> or <code><a href="qq_lm_envelope.html">qq_lm_envelope</a></code> directly if
-you prefer to set the number of refits per call.</p>
+the <code>qq_nsim</code> argument, which itself defaults to the option
+<code>visStatistics.qq_nsim</code> and to 5000 if that is unset. Lower it to trade
+precision for speed, either per call with <code>qq_nsim = 1000L</code> or session
+wide with <code>options(visStatistics.qq_nsim = 1000L)</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
