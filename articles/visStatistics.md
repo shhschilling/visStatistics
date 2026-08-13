@@ -1720,10 +1720,19 @@ under suspected heteroscedasticity is better requested with group_test =
 ### 7.3 Type II error (power) simulations
 
 The power simulation uses the same five fixed input distributions and
-adds ordered location shifts across the four groups. In the
-homoscedastic design (Figure [7.3](#fig:route1-power), panel B),
+adds location shifts across the four groups in homo- and heteroscedastic
+designs. In samples of \\n \ge 50\\, the test with the higher population
+effect size — \\\omega^2\\ for `F` and `W`, \\\eta_H^2\\ for `KW`, both
+printed in the figures below — has the higher power in every simulated
+cell. The insets show the share sent to the rank branch: it stays at the
+nominal level only when the variances are equal and the input is exactly
+normal, and otherwise grows with the sample size, the skewness, the
+excess kurtosis and the variance heterogeneity, where introduced..
+
+In the homoscedastic design (Figure [7.3](#fig:route1-power), panel B),
 balanced groups with equal SD are used: \\n_i=n\\, \\\mathrm{SD}\_i=1\\
-for \\i=1,...4\\ and group means are shifted by \\0,0.25,0.50,0.75\\.
+for \\i=1,...4\\ and group meanswith orderd lactions shits.
+\\0,0.25,0.50,0.75\\.
 
 ![Route 1 power simulation with Fleishman input distributions. (A) Input
 distributions with group mean and median reference lines. (B) Simulated
@@ -1734,18 +1743,39 @@ Figure 7.3: Route 1 power simulation with Fleishman input distributions.
 (A) Input distributions with group mean and median reference lines. (B)
 Simulated rejection rates for the six testing strategies.
 
-Which strategy rejects the false null most often is decided by the shape
-of the input: under normality the mean-based tests reject at most three
-percentage points more often than Kruskal–Wallis at the smaller group
-sizes, while under heavy tails (column 2) and under high skewness
-(columns 4 and 5 of Fig. [7.3](#fig:route1-power)) Kruskal–Wallis
-rejects far more often. The routed procedure follows whichever rejects
-most often – the insets show the share sent to the rank branch growing
-with skewness and excess kurtosis. This qualitative result remains
-unchanged with unbalanced inputs or replacing the ordered location shift
-by a one-point shift of 0.5 or 1 of a single group, with the other three
-identical; the routed procedure follows still the fixed test with the
-highest rejection rate (data not shown).
+In this homoscedastic designs the routed procedure matches the best
+fixed strategy throughout. This qualitative result remains unchanged
+with unbalanced inputs (data not shown).
+
+Replacing the ordered location shift by a one-point shift of a single
+group, with the other three identical; the routed procedure follows
+still the fixed test with the highest rejection rate (see Fig.
+[H.1](#fig:supp-onepoint-both)).
+
+We introduced heteroscedasticity both in a balanced design (panel B of
+Fig. [7.4](#fig:route1-power-heteroscedastic)) and in unbalanced designs
+with positive (panel C) and negative pairing (panel E).
+
+![Route 1 power simulation with heteroscedastic Fleishman input
+distributions. (A) input distributions, SD = (1, sqrt 2, 2, sqrt 5). (B)
+balanced design. (C) unbalanced design, larger groups with larger SD.
+(D) input distributions, SD = (sqrt 5, 2, sqrt 2, 1). (E) unbalanced
+design, larger groups with smaller
+SD.](figures/fleishman_4groups_power_brunner_kw_heteroscedastic.png)
+
+Figure 7.4: Route 1 power simulation with heteroscedastic Fleishman
+input distributions. (A) input distributions, SD = (1, sqrt 2, 2, sqrt
+5). (B) balanced design. (C) unbalanced design, larger groups with
+larger SD. (D) input distributions, SD = (sqrt 5, 2, sqrt 2, 1). (E)
+unbalanced design, larger groups with smaller SD.
+
+In the heteroscedastic designs the routed procedure no longer matches
+the best fixed strategy in most settings: `KW` has a higher effect size
+than the parametric tests only in the heavy-tailed simulations (column
+2) of all designs and the skewed, unbalanced heteroscedastic simulations
+with negative pairing (columns 3-5 of panel E), while the routing sends
+in all cells a growing share to `KW` with increasing sample size,
+skewness and excess kurtosis.
 
 ## 8 Discussion
 
@@ -2891,6 +2921,403 @@ converges to a function of the weighted relative effects \\p_i\\ of Eq.
 Unlike \\\omega^2\\, which sees the group distributions only through
 \\(\mu_j,\sigma_j^2)\\, Eq. [(G.4)](#eq:eta-h-population) depends on
 their whole shape through Eq. [(C.8)](#eq:weighted-relative-effect).
+
+## H Supplementary material
+
+This section reports the simulated results that the figures of Section
+[7](#sec:simulation-results) do not show. All rejection rates come from
+\\B = 50{,}000\\ replications per cell at \\\alpha = 5\\\\.
+
+Figure [H.1](#fig:supp-onepoint-both) repeats the design of Section
+[7](#sec:simulation-results) under the one-point alternative, in which
+three groups are identical and only the fourth is shifted. All designs
+are balanced and homoscedastic.
+
+![Power under the one-point alternative, mean shifts (0, 0, 0, 0.50),
+balanced homoscedastic design. (A) input distributions. (B) power of the
+six
+strategies.](../figures/fleishman_4groups_power_homoscedastic_onepoint_d050.png)
+
+Figure H.1: Power under the one-point alternative, mean shifts (0, 0, 0,
+0.50), balanced homoscedastic design. (A) input distributions. (B) power
+of the six strategies.
+
+### H.1 Power against the shift size
+
+Table [H.1](#tab:supp-delta-sweep) varies \\\delta\\ at fixed balanced
+sample sizes, following the power study of Brunner et al. ([Brunner et
+al. 2017, 1480](#ref-Brunner:2017)), where \\\delta\\ is the horizontal
+axis and \\n\\ is held fixed. It is the only grid presented as a table,
+because its purpose is a direct comparison of rejection rates with their
+Table 5. Rates are given to three decimals, which is where the Monte
+Carlo error of \\B = 50{,}000\\ puts the last informative digit.
+
+| Alternative | Distribution | \\n\\ | \\\delta\\ | F | W | L | KW | SW | SW+L |
+|----|----|----|----|----|----|----|----|----|----|
+| increasing trend | normal | 10 | 0 | 0.05 | 0.05 | 0.052 | 0.044 | 0.051 | 0.054 |
+| increasing trend | normal | 10 | 0.2 | 0.056 | 0.056 | 0.059 | 0.051 | 0.057 | 0.061 |
+| increasing trend | normal | 10 | 0.4 | 0.077 | 0.075 | 0.079 | 0.07 | 0.076 | 0.081 |
+| increasing trend | normal | 10 | 0.6 | 0.116 | 0.11 | 0.12 | 0.103 | 0.112 | 0.122 |
+| increasing trend | normal | 10 | 0.8 | 0.177 | 0.166 | 0.18 | 0.157 | 0.168 | 0.182 |
+| increasing trend | normal | 10 | 1 | 0.259 | 0.239 | 0.262 | 0.234 | 0.242 | 0.264 |
+| increasing trend | normal | 10 | 1.2 | 0.362 | 0.335 | 0.365 | 0.327 | 0.338 | 0.367 |
+| increasing trend | normal | 10 | 1.4 | 0.475 | 0.44 | 0.477 | 0.436 | 0.444 | 0.479 |
+| increasing trend | normal | 10 | 1.6 | 0.602 | 0.561 | 0.603 | 0.556 | 0.565 | 0.605 |
+| increasing trend | normal | 20 | 0 | 0.05 | 0.049 | 0.051 | 0.047 | 0.05 | 0.052 |
+| increasing trend | normal | 20 | 0.2 | 0.064 | 0.063 | 0.065 | 0.06 | 0.065 | 0.066 |
+| increasing trend | normal | 20 | 0.4 | 0.115 | 0.112 | 0.116 | 0.106 | 0.114 | 0.117 |
+| increasing trend | normal | 20 | 0.6 | 0.201 | 0.193 | 0.203 | 0.188 | 0.195 | 0.205 |
+| increasing trend | normal | 20 | 0.8 | 0.339 | 0.329 | 0.342 | 0.319 | 0.331 | 0.343 |
+| increasing trend | normal | 20 | 1 | 0.515 | 0.497 | 0.516 | 0.484 | 0.499 | 0.518 |
+| increasing trend | normal | 20 | 1.2 | 0.689 | 0.669 | 0.689 | 0.657 | 0.671 | 0.69 |
+| increasing trend | normal | 20 | 1.4 | 0.826 | 0.81 | 0.827 | 0.799 | 0.811 | 0.827 |
+| increasing trend | normal | 20 | 1.6 | 0.92 | 0.908 | 0.92 | 0.902 | 0.909 | 0.92 |
+| increasing trend | normal | 50 | 0 | 0.049 | 0.049 | 0.049 | 0.047 | 0.049 | 0.05 |
+| increasing trend | normal | 50 | 0.2 | 0.09 | 0.089 | 0.09 | 0.088 | 0.09 | 0.091 |
+| increasing trend | normal | 50 | 0.4 | 0.228 | 0.225 | 0.229 | 0.217 | 0.226 | 0.229 |
+| increasing trend | normal | 50 | 0.6 | 0.48 | 0.473 | 0.481 | 0.456 | 0.473 | 0.481 |
+| increasing trend | normal | 50 | 0.8 | 0.749 | 0.741 | 0.749 | 0.723 | 0.742 | 0.749 |
+| increasing trend | normal | 50 | 1 | 0.922 | 0.918 | 0.922 | 0.908 | 0.918 | 0.922 |
+| increasing trend | normal | 50 | 1.2 | 0.986 | 0.984 | 0.985 | 0.98 | 0.984 | 0.985 |
+| increasing trend | normal | 50 | 1.4 | 0.998 | 0.998 | 0.998 | 0.997 | 0.998 | 0.998 |
+| increasing trend | normal | 50 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | normal | 100 | 0 | 0.052 | 0.052 | 0.052 | 0.051 | 0.052 | 0.052 |
+| increasing trend | normal | 100 | 0.2 | 0.135 | 0.133 | 0.135 | 0.129 | 0.134 | 0.135 |
+| increasing trend | normal | 100 | 0.4 | 0.435 | 0.431 | 0.435 | 0.412 | 0.43 | 0.434 |
+| increasing trend | normal | 100 | 0.6 | 0.809 | 0.807 | 0.809 | 0.789 | 0.807 | 0.809 |
+| increasing trend | normal | 100 | 0.8 | 0.976 | 0.975 | 0.976 | 0.969 | 0.975 | 0.976 |
+| increasing trend | normal | 100 | 1 | 0.998 | 0.998 | 0.998 | 0.998 | 0.998 | 0.998 |
+| increasing trend | normal | 100 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | normal | 100 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | normal | 100 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 0, excess kurtosis 6 | 10 | 0 | 0.044 | 0.035 | 0.043 | 0.044 | 0.043 | 0.051 |
+| increasing trend | skew 0, excess kurtosis 6 | 10 | 0.2 | 0.054 | 0.046 | 0.053 | 0.056 | 0.056 | 0.064 |
+| increasing trend | skew 0, excess kurtosis 6 | 10 | 0.4 | 0.077 | 0.071 | 0.078 | 0.087 | 0.085 | 0.094 |
+| increasing trend | skew 0, excess kurtosis 6 | 10 | 0.6 | 0.125 | 0.121 | 0.127 | 0.15 | 0.145 | 0.156 |
+| increasing trend | skew 0, excess kurtosis 6 | 10 | 0.8 | 0.195 | 0.198 | 0.2 | 0.239 | 0.233 | 0.245 |
+| increasing trend | skew 0, excess kurtosis 6 | 10 | 1 | 0.286 | 0.297 | 0.294 | 0.357 | 0.346 | 0.359 |
+| increasing trend | skew 0, excess kurtosis 6 | 10 | 1.2 | 0.402 | 0.418 | 0.412 | 0.493 | 0.476 | 0.488 |
+| increasing trend | skew 0, excess kurtosis 6 | 10 | 1.4 | 0.522 | 0.539 | 0.532 | 0.627 | 0.608 | 0.62 |
+| increasing trend | skew 0, excess kurtosis 6 | 10 | 1.6 | 0.637 | 0.656 | 0.646 | 0.741 | 0.721 | 0.733 |
+| increasing trend | skew 0, excess kurtosis 6 | 20 | 0 | 0.048 | 0.042 | 0.048 | 0.049 | 0.051 | 0.053 |
+| increasing trend | skew 0, excess kurtosis 6 | 20 | 0.2 | 0.061 | 0.056 | 0.061 | 0.069 | 0.071 | 0.074 |
+| increasing trend | skew 0, excess kurtosis 6 | 20 | 0.4 | 0.114 | 0.114 | 0.115 | 0.147 | 0.148 | 0.151 |
+| increasing trend | skew 0, excess kurtosis 6 | 20 | 0.6 | 0.215 | 0.223 | 0.219 | 0.291 | 0.29 | 0.293 |
+| increasing trend | skew 0, excess kurtosis 6 | 20 | 0.8 | 0.359 | 0.375 | 0.364 | 0.488 | 0.482 | 0.483 |
+| increasing trend | skew 0, excess kurtosis 6 | 20 | 1 | 0.536 | 0.552 | 0.541 | 0.691 | 0.679 | 0.683 |
+| increasing trend | skew 0, excess kurtosis 6 | 20 | 1.2 | 0.701 | 0.72 | 0.706 | 0.848 | 0.837 | 0.84 |
+| increasing trend | skew 0, excess kurtosis 6 | 20 | 1.4 | 0.827 | 0.84 | 0.831 | 0.937 | 0.928 | 0.93 |
+| increasing trend | skew 0, excess kurtosis 6 | 20 | 1.6 | 0.911 | 0.918 | 0.913 | 0.978 | 0.973 | 0.974 |
+| increasing trend | skew 0, excess kurtosis 6 | 50 | 0 | 0.047 | 0.045 | 0.047 | 0.047 | 0.048 | 0.048 |
+| increasing trend | skew 0, excess kurtosis 6 | 50 | 0.2 | 0.089 | 0.089 | 0.089 | 0.112 | 0.112 | 0.112 |
+| increasing trend | skew 0, excess kurtosis 6 | 50 | 0.4 | 0.231 | 0.241 | 0.233 | 0.339 | 0.339 | 0.339 |
+| increasing trend | skew 0, excess kurtosis 6 | 50 | 0.6 | 0.495 | 0.506 | 0.497 | 0.684 | 0.684 | 0.684 |
+| increasing trend | skew 0, excess kurtosis 6 | 50 | 0.8 | 0.755 | 0.767 | 0.758 | 0.911 | 0.91 | 0.91 |
+| increasing trend | skew 0, excess kurtosis 6 | 50 | 1 | 0.916 | 0.92 | 0.917 | 0.986 | 0.986 | 0.986 |
+| increasing trend | skew 0, excess kurtosis 6 | 50 | 1.2 | 0.98 | 0.98 | 0.981 | 0.999 | 0.999 | 0.999 |
+| increasing trend | skew 0, excess kurtosis 6 | 50 | 1.4 | 0.997 | 0.997 | 0.997 | 1 | 1 | 1 |
+| increasing trend | skew 0, excess kurtosis 6 | 50 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 0, excess kurtosis 6 | 100 | 0 | 0.051 | 0.049 | 0.051 | 0.051 | 0.051 | 0.051 |
+| increasing trend | skew 0, excess kurtosis 6 | 100 | 0.2 | 0.135 | 0.137 | 0.135 | 0.185 | 0.185 | 0.185 |
+| increasing trend | skew 0, excess kurtosis 6 | 100 | 0.4 | 0.444 | 0.449 | 0.445 | 0.637 | 0.637 | 0.637 |
+| increasing trend | skew 0, excess kurtosis 6 | 100 | 0.6 | 0.81 | 0.814 | 0.811 | 0.949 | 0.949 | 0.949 |
+| increasing trend | skew 0, excess kurtosis 6 | 100 | 0.8 | 0.972 | 0.973 | 0.972 | 0.998 | 0.998 | 0.998 |
+| increasing trend | skew 0, excess kurtosis 6 | 100 | 1 | 0.998 | 0.998 | 0.998 | 1 | 1 | 1 |
+| increasing trend | skew 0, excess kurtosis 6 | 100 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 0, excess kurtosis 6 | 100 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 0, excess kurtosis 6 | 100 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 10 | 0 | 0.05 | 0.05 | 0.051 | 0.047 | 0.051 | 0.055 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 10 | 0.2 | 0.058 | 0.055 | 0.06 | 0.052 | 0.058 | 0.063 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 10 | 0.4 | 0.078 | 0.075 | 0.081 | 0.073 | 0.079 | 0.085 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 10 | 0.6 | 0.117 | 0.113 | 0.119 | 0.111 | 0.118 | 0.126 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 10 | 0.8 | 0.177 | 0.171 | 0.181 | 0.169 | 0.178 | 0.19 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 10 | 1 | 0.262 | 0.251 | 0.267 | 0.253 | 0.261 | 0.278 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 10 | 1.2 | 0.37 | 0.352 | 0.375 | 0.361 | 0.366 | 0.39 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 10 | 1.4 | 0.49 | 0.464 | 0.494 | 0.482 | 0.481 | 0.511 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 10 | 1.6 | 0.612 | 0.584 | 0.615 | 0.604 | 0.601 | 0.631 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 20 | 0 | 0.05 | 0.05 | 0.051 | 0.048 | 0.053 | 0.054 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 20 | 0.2 | 0.063 | 0.063 | 0.064 | 0.061 | 0.066 | 0.068 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 20 | 0.4 | 0.11 | 0.11 | 0.112 | 0.109 | 0.114 | 0.117 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 20 | 0.6 | 0.205 | 0.203 | 0.207 | 0.207 | 0.213 | 0.219 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 20 | 0.8 | 0.345 | 0.337 | 0.347 | 0.349 | 0.356 | 0.363 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 20 | 1 | 0.511 | 0.501 | 0.513 | 0.524 | 0.525 | 0.538 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 20 | 1.2 | 0.689 | 0.678 | 0.691 | 0.702 | 0.702 | 0.712 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 20 | 1.4 | 0.826 | 0.814 | 0.827 | 0.838 | 0.835 | 0.846 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 20 | 1.6 | 0.918 | 0.91 | 0.918 | 0.926 | 0.923 | 0.929 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 50 | 0 | 0.05 | 0.051 | 0.05 | 0.049 | 0.052 | 0.052 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 50 | 0.2 | 0.085 | 0.085 | 0.085 | 0.088 | 0.091 | 0.091 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 50 | 0.4 | 0.231 | 0.23 | 0.232 | 0.241 | 0.244 | 0.246 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 50 | 0.6 | 0.485 | 0.481 | 0.486 | 0.505 | 0.508 | 0.51 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 50 | 0.8 | 0.752 | 0.749 | 0.753 | 0.773 | 0.774 | 0.776 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 50 | 1 | 0.921 | 0.919 | 0.921 | 0.935 | 0.934 | 0.935 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 50 | 1.2 | 0.985 | 0.983 | 0.985 | 0.989 | 0.988 | 0.989 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 50 | 1.4 | 0.998 | 0.998 | 0.998 | 0.999 | 0.999 | 0.999 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 50 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 100 | 0 | 0.051 | 0.052 | 0.052 | 0.051 | 0.051 | 0.051 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 100 | 0.2 | 0.13 | 0.131 | 0.13 | 0.135 | 0.136 | 0.136 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 100 | 0.4 | 0.438 | 0.435 | 0.438 | 0.458 | 0.459 | 0.459 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 100 | 0.6 | 0.807 | 0.806 | 0.808 | 0.83 | 0.83 | 0.83 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 100 | 0.8 | 0.974 | 0.973 | 0.974 | 0.981 | 0.98 | 0.98 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 100 | 1 | 0.999 | 0.999 | 0.999 | 0.999 | 0.999 | 0.999 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 100 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 100 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 0.5, excess kurtosis 1 | 100 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 10 | 0 | 0.048 | 0.05 | 0.05 | 0.045 | 0.052 | 0.055 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 10 | 0.2 | 0.056 | 0.059 | 0.058 | 0.054 | 0.062 | 0.065 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 10 | 0.4 | 0.077 | 0.08 | 0.08 | 0.074 | 0.084 | 0.088 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 10 | 0.6 | 0.12 | 0.122 | 0.123 | 0.12 | 0.131 | 0.137 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 10 | 0.8 | 0.182 | 0.179 | 0.185 | 0.185 | 0.195 | 0.203 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 10 | 1 | 0.265 | 0.259 | 0.269 | 0.274 | 0.283 | 0.296 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 10 | 1.2 | 0.373 | 0.356 | 0.376 | 0.384 | 0.392 | 0.41 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 10 | 1.4 | 0.495 | 0.475 | 0.499 | 0.513 | 0.517 | 0.538 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 10 | 1.6 | 0.61 | 0.586 | 0.614 | 0.632 | 0.633 | 0.653 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 20 | 0 | 0.048 | 0.05 | 0.049 | 0.048 | 0.051 | 0.052 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 20 | 0.2 | 0.064 | 0.068 | 0.065 | 0.064 | 0.069 | 0.069 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 20 | 0.4 | 0.113 | 0.116 | 0.114 | 0.12 | 0.125 | 0.126 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 20 | 0.6 | 0.206 | 0.205 | 0.207 | 0.223 | 0.228 | 0.229 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 20 | 0.8 | 0.351 | 0.345 | 0.352 | 0.383 | 0.388 | 0.391 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 20 | 1 | 0.519 | 0.512 | 0.521 | 0.565 | 0.57 | 0.573 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 20 | 1.2 | 0.691 | 0.679 | 0.693 | 0.74 | 0.743 | 0.746 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 20 | 1.4 | 0.827 | 0.82 | 0.829 | 0.87 | 0.871 | 0.873 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 20 | 1.6 | 0.92 | 0.916 | 0.922 | 0.946 | 0.947 | 0.948 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 50 | 0 | 0.05 | 0.051 | 0.05 | 0.05 | 0.05 | 0.05 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 50 | 0.2 | 0.087 | 0.089 | 0.088 | 0.095 | 0.094 | 0.095 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 50 | 0.4 | 0.232 | 0.232 | 0.233 | 0.263 | 0.263 | 0.263 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 50 | 0.6 | 0.481 | 0.478 | 0.482 | 0.541 | 0.541 | 0.541 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 50 | 0.8 | 0.751 | 0.748 | 0.752 | 0.812 | 0.812 | 0.812 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 50 | 1 | 0.921 | 0.92 | 0.922 | 0.953 | 0.953 | 0.953 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 50 | 1.2 | 0.984 | 0.983 | 0.984 | 0.993 | 0.993 | 0.993 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 50 | 1.4 | 0.998 | 0.998 | 0.998 | 0.999 | 0.999 | 0.999 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 50 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 100 | 0 | 0.048 | 0.049 | 0.049 | 0.048 | 0.048 | 0.048 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 100 | 0.2 | 0.134 | 0.135 | 0.134 | 0.149 | 0.149 | 0.149 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 100 | 0.4 | 0.437 | 0.435 | 0.437 | 0.499 | 0.499 | 0.499 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 100 | 0.6 | 0.809 | 0.807 | 0.81 | 0.867 | 0.867 | 0.867 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 100 | 0.8 | 0.974 | 0.973 | 0.974 | 0.989 | 0.989 | 0.989 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 100 | 1 | 0.999 | 0.999 | 0.999 | 1 | 1 | 1 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 100 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 100 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 1, excess kurtosis 1.6 | 100 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 10 | 0 | 0.043 | 0.051 | 0.045 | 0.043 | 0.049 | 0.049 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 10 | 0.2 | 0.051 | 0.061 | 0.054 | 0.057 | 0.063 | 0.064 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 10 | 0.4 | 0.077 | 0.094 | 0.081 | 0.101 | 0.106 | 0.107 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 10 | 0.6 | 0.126 | 0.143 | 0.13 | 0.18 | 0.184 | 0.186 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 10 | 0.8 | 0.198 | 0.22 | 0.205 | 0.295 | 0.296 | 0.3 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 10 | 1 | 0.291 | 0.317 | 0.302 | 0.426 | 0.428 | 0.43 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 10 | 1.2 | 0.411 | 0.429 | 0.422 | 0.569 | 0.57 | 0.573 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 10 | 1.4 | 0.524 | 0.541 | 0.538 | 0.694 | 0.695 | 0.697 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 10 | 1.6 | 0.639 | 0.653 | 0.653 | 0.797 | 0.798 | 0.799 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 20 | 0 | 0.046 | 0.057 | 0.05 | 0.047 | 0.047 | 0.047 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 20 | 0.2 | 0.06 | 0.074 | 0.064 | 0.077 | 0.078 | 0.078 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 20 | 0.4 | 0.115 | 0.132 | 0.12 | 0.183 | 0.183 | 0.183 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 20 | 0.6 | 0.219 | 0.236 | 0.223 | 0.369 | 0.369 | 0.369 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 20 | 0.8 | 0.37 | 0.386 | 0.375 | 0.595 | 0.595 | 0.595 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 20 | 1 | 0.541 | 0.557 | 0.55 | 0.784 | 0.784 | 0.784 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 20 | 1.2 | 0.7 | 0.714 | 0.71 | 0.906 | 0.906 | 0.906 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 20 | 1.4 | 0.828 | 0.841 | 0.838 | 0.966 | 0.966 | 0.966 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 20 | 1.6 | 0.911 | 0.921 | 0.918 | 0.989 | 0.989 | 0.989 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 50 | 0 | 0.048 | 0.055 | 0.051 | 0.05 | 0.05 | 0.05 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 50 | 0.2 | 0.092 | 0.1 | 0.094 | 0.138 | 0.138 | 0.138 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 50 | 0.4 | 0.235 | 0.247 | 0.238 | 0.442 | 0.442 | 0.442 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 50 | 0.6 | 0.494 | 0.505 | 0.498 | 0.797 | 0.797 | 0.797 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 50 | 0.8 | 0.755 | 0.764 | 0.759 | 0.962 | 0.962 | 0.962 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 50 | 1 | 0.919 | 0.925 | 0.923 | 0.997 | 0.997 | 0.997 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 50 | 1.2 | 0.982 | 0.985 | 0.984 | 1 | 1 | 1 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 50 | 1.4 | 0.996 | 0.997 | 0.997 | 1 | 1 | 1 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 50 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 100 | 0 | 0.049 | 0.052 | 0.05 | 0.05 | 0.05 | 0.05 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 100 | 0.2 | 0.134 | 0.139 | 0.135 | 0.236 | 0.236 | 0.236 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 100 | 0.4 | 0.443 | 0.45 | 0.445 | 0.765 | 0.765 | 0.765 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 100 | 0.6 | 0.808 | 0.812 | 0.811 | 0.983 | 0.983 | 0.983 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 100 | 0.8 | 0.972 | 0.974 | 0.973 | 1 | 1 | 1 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 100 | 1 | 0.998 | 0.998 | 0.998 | 1 | 1 | 1 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 100 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 100 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| increasing trend | skew 2, excess kurtosis 6.6 | 100 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | normal | 10 | 0 | 0.049 | 0.05 | 0.052 | 0.044 | 0.051 | 0.053 |
+| one-point | normal | 10 | 0.2 | 0.067 | 0.066 | 0.07 | 0.059 | 0.067 | 0.071 |
+| one-point | normal | 10 | 0.4 | 0.121 | 0.115 | 0.124 | 0.108 | 0.117 | 0.125 |
+| one-point | normal | 10 | 0.6 | 0.23 | 0.215 | 0.234 | 0.205 | 0.217 | 0.236 |
+| one-point | normal | 10 | 0.8 | 0.383 | 0.352 | 0.386 | 0.344 | 0.356 | 0.388 |
+| one-point | normal | 10 | 1 | 0.57 | 0.525 | 0.571 | 0.523 | 0.529 | 0.573 |
+| one-point | normal | 10 | 1.2 | 0.748 | 0.698 | 0.747 | 0.699 | 0.701 | 0.748 |
+| one-point | normal | 10 | 1.4 | 0.877 | 0.834 | 0.875 | 0.838 | 0.836 | 0.875 |
+| one-point | normal | 10 | 1.6 | 0.95 | 0.921 | 0.948 | 0.926 | 0.922 | 0.948 |
+| one-point | normal | 20 | 0 | 0.05 | 0.05 | 0.052 | 0.048 | 0.051 | 0.052 |
+| one-point | normal | 20 | 0.2 | 0.085 | 0.084 | 0.087 | 0.08 | 0.085 | 0.088 |
+| one-point | normal | 20 | 0.4 | 0.217 | 0.21 | 0.218 | 0.201 | 0.212 | 0.22 |
+| one-point | normal | 20 | 0.6 | 0.447 | 0.431 | 0.448 | 0.416 | 0.433 | 0.45 |
+| one-point | normal | 20 | 0.8 | 0.719 | 0.693 | 0.719 | 0.685 | 0.695 | 0.72 |
+| one-point | normal | 20 | 1 | 0.901 | 0.885 | 0.901 | 0.879 | 0.886 | 0.901 |
+| one-point | normal | 20 | 1.2 | 0.978 | 0.971 | 0.978 | 0.97 | 0.971 | 0.978 |
+| one-point | normal | 20 | 1.4 | 0.997 | 0.996 | 0.997 | 0.995 | 0.996 | 0.997 |
+| one-point | normal | 20 | 1.6 | 1 | 0.999 | 1 | 0.999 | 0.999 | 1 |
+| one-point | normal | 50 | 0 | 0.049 | 0.048 | 0.05 | 0.048 | 0.048 | 0.05 |
+| one-point | normal | 50 | 0.2 | 0.15 | 0.149 | 0.151 | 0.144 | 0.15 | 0.152 |
+| one-point | normal | 50 | 0.4 | 0.508 | 0.501 | 0.508 | 0.484 | 0.501 | 0.508 |
+| one-point | normal | 50 | 0.6 | 0.874 | 0.867 | 0.873 | 0.854 | 0.867 | 0.873 |
+| one-point | normal | 50 | 0.8 | 0.99 | 0.987 | 0.989 | 0.985 | 0.987 | 0.989 |
+| one-point | normal | 50 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | normal | 50 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | normal | 50 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | normal | 50 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | normal | 100 | 0 | 0.05 | 0.05 | 0.051 | 0.049 | 0.051 | 0.051 |
+| one-point | normal | 100 | 0.2 | 0.272 | 0.27 | 0.273 | 0.256 | 0.27 | 0.273 |
+| one-point | normal | 100 | 0.4 | 0.835 | 0.832 | 0.835 | 0.814 | 0.831 | 0.834 |
+| one-point | normal | 100 | 0.6 | 0.996 | 0.995 | 0.996 | 0.993 | 0.995 | 0.995 |
+| one-point | normal | 100 | 0.8 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | normal | 100 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | normal | 100 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | normal | 100 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | normal | 100 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0, excess kurtosis 6 | 10 | 0 | 0.044 | 0.036 | 0.043 | 0.045 | 0.044 | 0.051 |
+| one-point | skew 0, excess kurtosis 6 | 10 | 0.2 | 0.062 | 0.056 | 0.062 | 0.068 | 0.066 | 0.075 |
+| one-point | skew 0, excess kurtosis 6 | 10 | 0.4 | 0.126 | 0.127 | 0.129 | 0.153 | 0.149 | 0.159 |
+| one-point | skew 0, excess kurtosis 6 | 10 | 0.6 | 0.251 | 0.255 | 0.257 | 0.307 | 0.299 | 0.311 |
+| one-point | skew 0, excess kurtosis 6 | 10 | 0.8 | 0.426 | 0.435 | 0.435 | 0.51 | 0.495 | 0.512 |
+| one-point | skew 0, excess kurtosis 6 | 10 | 1 | 0.604 | 0.61 | 0.612 | 0.69 | 0.674 | 0.691 |
+| one-point | skew 0, excess kurtosis 6 | 10 | 1.2 | 0.764 | 0.753 | 0.767 | 0.832 | 0.815 | 0.833 |
+| one-point | skew 0, excess kurtosis 6 | 10 | 1.4 | 0.87 | 0.853 | 0.871 | 0.914 | 0.903 | 0.917 |
+| one-point | skew 0, excess kurtosis 6 | 10 | 1.6 | 0.936 | 0.914 | 0.935 | 0.959 | 0.951 | 0.962 |
+| one-point | skew 0, excess kurtosis 6 | 20 | 0 | 0.047 | 0.041 | 0.046 | 0.047 | 0.049 | 0.052 |
+| one-point | skew 0, excess kurtosis 6 | 20 | 0.2 | 0.086 | 0.084 | 0.086 | 0.104 | 0.106 | 0.109 |
+| one-point | skew 0, excess kurtosis 6 | 20 | 0.4 | 0.226 | 0.235 | 0.229 | 0.307 | 0.305 | 0.308 |
+| one-point | skew 0, excess kurtosis 6 | 20 | 0.6 | 0.472 | 0.485 | 0.477 | 0.618 | 0.608 | 0.612 |
+| one-point | skew 0, excess kurtosis 6 | 20 | 0.8 | 0.728 | 0.734 | 0.731 | 0.859 | 0.849 | 0.852 |
+| one-point | skew 0, excess kurtosis 6 | 20 | 1 | 0.894 | 0.888 | 0.894 | 0.965 | 0.959 | 0.961 |
+| one-point | skew 0, excess kurtosis 6 | 20 | 1.2 | 0.969 | 0.959 | 0.968 | 0.994 | 0.991 | 0.993 |
+| one-point | skew 0, excess kurtosis 6 | 20 | 1.4 | 0.992 | 0.986 | 0.991 | 0.999 | 0.998 | 0.999 |
+| one-point | skew 0, excess kurtosis 6 | 20 | 1.6 | 0.998 | 0.995 | 0.998 | 1 | 1 | 1 |
+| one-point | skew 0, excess kurtosis 6 | 50 | 0 | 0.047 | 0.045 | 0.048 | 0.048 | 0.048 | 0.048 |
+| one-point | skew 0, excess kurtosis 6 | 50 | 0.2 | 0.153 | 0.156 | 0.153 | 0.214 | 0.214 | 0.214 |
+| one-point | skew 0, excess kurtosis 6 | 50 | 0.4 | 0.518 | 0.528 | 0.521 | 0.705 | 0.705 | 0.705 |
+| one-point | skew 0, excess kurtosis 6 | 50 | 0.6 | 0.875 | 0.872 | 0.875 | 0.971 | 0.971 | 0.971 |
+| one-point | skew 0, excess kurtosis 6 | 50 | 0.8 | 0.986 | 0.982 | 0.986 | 0.999 | 0.999 | 0.999 |
+| one-point | skew 0, excess kurtosis 6 | 50 | 1 | 0.999 | 0.998 | 0.999 | 1 | 1 | 1 |
+| one-point | skew 0, excess kurtosis 6 | 50 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0, excess kurtosis 6 | 50 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0, excess kurtosis 6 | 50 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0, excess kurtosis 6 | 100 | 0 | 0.051 | 0.049 | 0.051 | 0.051 | 0.051 | 0.051 |
+| one-point | skew 0, excess kurtosis 6 | 100 | 0.2 | 0.275 | 0.281 | 0.276 | 0.413 | 0.413 | 0.413 |
+| one-point | skew 0, excess kurtosis 6 | 100 | 0.4 | 0.837 | 0.839 | 0.838 | 0.96 | 0.96 | 0.96 |
+| one-point | skew 0, excess kurtosis 6 | 100 | 0.6 | 0.995 | 0.993 | 0.994 | 1 | 1 | 1 |
+| one-point | skew 0, excess kurtosis 6 | 100 | 0.8 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0, excess kurtosis 6 | 100 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0, excess kurtosis 6 | 100 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0, excess kurtosis 6 | 100 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0, excess kurtosis 6 | 100 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0.5, excess kurtosis 1 | 10 | 0 | 0.05 | 0.05 | 0.052 | 0.046 | 0.051 | 0.055 |
+| one-point | skew 0.5, excess kurtosis 1 | 10 | 0.2 | 0.066 | 0.063 | 0.068 | 0.06 | 0.066 | 0.071 |
+| one-point | skew 0.5, excess kurtosis 1 | 10 | 0.4 | 0.122 | 0.117 | 0.126 | 0.115 | 0.122 | 0.132 |
+| one-point | skew 0.5, excess kurtosis 1 | 10 | 0.6 | 0.229 | 0.219 | 0.233 | 0.219 | 0.228 | 0.244 |
+| one-point | skew 0.5, excess kurtosis 1 | 10 | 0.8 | 0.395 | 0.377 | 0.399 | 0.381 | 0.39 | 0.414 |
+| one-point | skew 0.5, excess kurtosis 1 | 10 | 1 | 0.576 | 0.558 | 0.581 | 0.567 | 0.574 | 0.597 |
+| one-point | skew 0.5, excess kurtosis 1 | 10 | 1.2 | 0.751 | 0.735 | 0.755 | 0.746 | 0.749 | 0.77 |
+| one-point | skew 0.5, excess kurtosis 1 | 10 | 1.4 | 0.879 | 0.868 | 0.881 | 0.878 | 0.878 | 0.892 |
+| one-point | skew 0.5, excess kurtosis 1 | 10 | 1.6 | 0.95 | 0.945 | 0.951 | 0.951 | 0.951 | 0.957 |
+| one-point | skew 0.5, excess kurtosis 1 | 20 | 0 | 0.049 | 0.049 | 0.049 | 0.047 | 0.051 | 0.053 |
+| one-point | skew 0.5, excess kurtosis 1 | 20 | 0.2 | 0.083 | 0.084 | 0.084 | 0.083 | 0.088 | 0.089 |
+| one-point | skew 0.5, excess kurtosis 1 | 20 | 0.4 | 0.216 | 0.212 | 0.217 | 0.216 | 0.224 | 0.23 |
+| one-point | skew 0.5, excess kurtosis 1 | 20 | 0.6 | 0.454 | 0.453 | 0.457 | 0.465 | 0.473 | 0.478 |
+| one-point | skew 0.5, excess kurtosis 1 | 20 | 0.8 | 0.718 | 0.721 | 0.722 | 0.735 | 0.74 | 0.744 |
+| one-point | skew 0.5, excess kurtosis 1 | 20 | 1 | 0.903 | 0.907 | 0.905 | 0.915 | 0.917 | 0.918 |
+| one-point | skew 0.5, excess kurtosis 1 | 20 | 1.2 | 0.979 | 0.981 | 0.979 | 0.984 | 0.984 | 0.984 |
+| one-point | skew 0.5, excess kurtosis 1 | 20 | 1.4 | 0.997 | 0.997 | 0.997 | 0.998 | 0.998 | 0.998 |
+| one-point | skew 0.5, excess kurtosis 1 | 20 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0.5, excess kurtosis 1 | 50 | 0 | 0.051 | 0.051 | 0.051 | 0.051 | 0.053 | 0.054 |
+| one-point | skew 0.5, excess kurtosis 1 | 50 | 0.2 | 0.151 | 0.152 | 0.152 | 0.156 | 0.159 | 0.16 |
+| one-point | skew 0.5, excess kurtosis 1 | 50 | 0.4 | 0.509 | 0.513 | 0.511 | 0.532 | 0.536 | 0.537 |
+| one-point | skew 0.5, excess kurtosis 1 | 50 | 0.6 | 0.88 | 0.886 | 0.881 | 0.9 | 0.9 | 0.9 |
+| one-point | skew 0.5, excess kurtosis 1 | 50 | 0.8 | 0.99 | 0.992 | 0.991 | 0.993 | 0.993 | 0.993 |
+| one-point | skew 0.5, excess kurtosis 1 | 50 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0.5, excess kurtosis 1 | 50 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0.5, excess kurtosis 1 | 50 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0.5, excess kurtosis 1 | 50 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0.5, excess kurtosis 1 | 100 | 0 | 0.049 | 0.049 | 0.049 | 0.049 | 0.049 | 0.05 |
+| one-point | skew 0.5, excess kurtosis 1 | 100 | 0.2 | 0.272 | 0.273 | 0.273 | 0.288 | 0.289 | 0.289 |
+| one-point | skew 0.5, excess kurtosis 1 | 100 | 0.4 | 0.838 | 0.845 | 0.84 | 0.864 | 0.864 | 0.864 |
+| one-point | skew 0.5, excess kurtosis 1 | 100 | 0.6 | 0.996 | 0.996 | 0.996 | 0.998 | 0.998 | 0.998 |
+| one-point | skew 0.5, excess kurtosis 1 | 100 | 0.8 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0.5, excess kurtosis 1 | 100 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0.5, excess kurtosis 1 | 100 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0.5, excess kurtosis 1 | 100 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 0.5, excess kurtosis 1 | 100 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 1, excess kurtosis 1.6 | 10 | 0 | 0.049 | 0.052 | 0.051 | 0.046 | 0.054 | 0.055 |
+| one-point | skew 1, excess kurtosis 1.6 | 10 | 0.2 | 0.066 | 0.068 | 0.068 | 0.063 | 0.072 | 0.074 |
+| one-point | skew 1, excess kurtosis 1.6 | 10 | 0.4 | 0.121 | 0.123 | 0.124 | 0.119 | 0.132 | 0.136 |
+| one-point | skew 1, excess kurtosis 1.6 | 10 | 0.6 | 0.229 | 0.226 | 0.234 | 0.231 | 0.245 | 0.255 |
+| one-point | skew 1, excess kurtosis 1.6 | 10 | 0.8 | 0.392 | 0.389 | 0.4 | 0.405 | 0.421 | 0.433 |
+| one-point | skew 1, excess kurtosis 1.6 | 10 | 1 | 0.581 | 0.588 | 0.591 | 0.608 | 0.627 | 0.632 |
+| one-point | skew 1, excess kurtosis 1.6 | 10 | 1.2 | 0.752 | 0.771 | 0.764 | 0.788 | 0.804 | 0.802 |
+| one-point | skew 1, excess kurtosis 1.6 | 10 | 1.4 | 0.882 | 0.901 | 0.89 | 0.91 | 0.921 | 0.917 |
+| one-point | skew 1, excess kurtosis 1.6 | 10 | 1.6 | 0.951 | 0.966 | 0.957 | 0.969 | 0.975 | 0.971 |
+| one-point | skew 1, excess kurtosis 1.6 | 20 | 0 | 0.049 | 0.052 | 0.05 | 0.049 | 0.052 | 0.053 |
+| one-point | skew 1, excess kurtosis 1.6 | 20 | 0.2 | 0.088 | 0.091 | 0.089 | 0.09 | 0.095 | 0.095 |
+| one-point | skew 1, excess kurtosis 1.6 | 20 | 0.4 | 0.216 | 0.219 | 0.219 | 0.232 | 0.24 | 0.241 |
+| one-point | skew 1, excess kurtosis 1.6 | 20 | 0.6 | 0.456 | 0.467 | 0.464 | 0.506 | 0.514 | 0.513 |
+| one-point | skew 1, excess kurtosis 1.6 | 20 | 0.8 | 0.722 | 0.749 | 0.731 | 0.787 | 0.794 | 0.79 |
+| one-point | skew 1, excess kurtosis 1.6 | 20 | 1 | 0.904 | 0.93 | 0.911 | 0.946 | 0.949 | 0.947 |
+| one-point | skew 1, excess kurtosis 1.6 | 20 | 1.2 | 0.98 | 0.989 | 0.983 | 0.992 | 0.993 | 0.992 |
+| one-point | skew 1, excess kurtosis 1.6 | 20 | 1.4 | 0.997 | 0.999 | 0.998 | 0.999 | 0.999 | 0.999 |
+| one-point | skew 1, excess kurtosis 1.6 | 20 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 1, excess kurtosis 1.6 | 50 | 0 | 0.05 | 0.052 | 0.05 | 0.05 | 0.05 | 0.05 |
+| one-point | skew 1, excess kurtosis 1.6 | 50 | 0.2 | 0.151 | 0.152 | 0.152 | 0.167 | 0.167 | 0.167 |
+| one-point | skew 1, excess kurtosis 1.6 | 50 | 0.4 | 0.511 | 0.527 | 0.516 | 0.58 | 0.58 | 0.58 |
+| one-point | skew 1, excess kurtosis 1.6 | 50 | 0.6 | 0.88 | 0.903 | 0.885 | 0.933 | 0.933 | 0.933 |
+| one-point | skew 1, excess kurtosis 1.6 | 50 | 0.8 | 0.991 | 0.995 | 0.992 | 0.997 | 0.997 | 0.997 |
+| one-point | skew 1, excess kurtosis 1.6 | 50 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 1, excess kurtosis 1.6 | 50 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 1, excess kurtosis 1.6 | 50 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 1, excess kurtosis 1.6 | 50 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 1, excess kurtosis 1.6 | 100 | 0 | 0.05 | 0.051 | 0.05 | 0.05 | 0.05 | 0.05 |
+| one-point | skew 1, excess kurtosis 1.6 | 100 | 0.2 | 0.277 | 0.28 | 0.278 | 0.314 | 0.314 | 0.314 |
+| one-point | skew 1, excess kurtosis 1.6 | 100 | 0.4 | 0.837 | 0.856 | 0.841 | 0.899 | 0.899 | 0.899 |
+| one-point | skew 1, excess kurtosis 1.6 | 100 | 0.6 | 0.996 | 0.998 | 0.997 | 0.999 | 0.999 | 0.999 |
+| one-point | skew 1, excess kurtosis 1.6 | 100 | 0.8 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 1, excess kurtosis 1.6 | 100 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 1, excess kurtosis 1.6 | 100 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 1, excess kurtosis 1.6 | 100 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 1, excess kurtosis 1.6 | 100 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 2, excess kurtosis 6.6 | 10 | 0 | 0.043 | 0.052 | 0.046 | 0.045 | 0.051 | 0.052 |
+| one-point | skew 2, excess kurtosis 6.6 | 10 | 0.2 | 0.063 | 0.073 | 0.066 | 0.073 | 0.079 | 0.08 |
+| one-point | skew 2, excess kurtosis 6.6 | 10 | 0.4 | 0.127 | 0.148 | 0.137 | 0.178 | 0.184 | 0.186 |
+| one-point | skew 2, excess kurtosis 6.6 | 10 | 0.6 | 0.249 | 0.283 | 0.267 | 0.36 | 0.365 | 0.367 |
+| one-point | skew 2, excess kurtosis 6.6 | 10 | 0.8 | 0.421 | 0.478 | 0.452 | 0.589 | 0.597 | 0.594 |
+| one-point | skew 2, excess kurtosis 6.6 | 10 | 1 | 0.607 | 0.689 | 0.642 | 0.787 | 0.794 | 0.792 |
+| one-point | skew 2, excess kurtosis 6.6 | 10 | 1.2 | 0.768 | 0.852 | 0.8 | 0.908 | 0.913 | 0.911 |
+| one-point | skew 2, excess kurtosis 6.6 | 10 | 1.4 | 0.875 | 0.936 | 0.898 | 0.965 | 0.967 | 0.966 |
+| one-point | skew 2, excess kurtosis 6.6 | 10 | 1.6 | 0.943 | 0.979 | 0.955 | 0.989 | 0.99 | 0.989 |
+| one-point | skew 2, excess kurtosis 6.6 | 20 | 0 | 0.046 | 0.056 | 0.049 | 0.048 | 0.048 | 0.048 |
+| one-point | skew 2, excess kurtosis 6.6 | 20 | 0.2 | 0.084 | 0.1 | 0.088 | 0.121 | 0.121 | 0.121 |
+| one-point | skew 2, excess kurtosis 6.6 | 20 | 0.4 | 0.226 | 0.252 | 0.237 | 0.384 | 0.384 | 0.384 |
+| one-point | skew 2, excess kurtosis 6.6 | 20 | 0.6 | 0.473 | 0.534 | 0.497 | 0.742 | 0.742 | 0.742 |
+| one-point | skew 2, excess kurtosis 6.6 | 20 | 0.8 | 0.732 | 0.814 | 0.758 | 0.944 | 0.944 | 0.944 |
+| one-point | skew 2, excess kurtosis 6.6 | 20 | 1 | 0.902 | 0.956 | 0.92 | 0.993 | 0.993 | 0.993 |
+| one-point | skew 2, excess kurtosis 6.6 | 20 | 1.2 | 0.974 | 0.994 | 0.981 | 0.999 | 0.999 | 0.999 |
+| one-point | skew 2, excess kurtosis 6.6 | 20 | 1.4 | 0.995 | 1 | 0.997 | 1 | 1 | 1 |
+| one-point | skew 2, excess kurtosis 6.6 | 20 | 1.6 | 0.999 | 1 | 0.999 | 1 | 1 | 1 |
+| one-point | skew 2, excess kurtosis 6.6 | 50 | 0 | 0.047 | 0.053 | 0.049 | 0.048 | 0.048 | 0.048 |
+| one-point | skew 2, excess kurtosis 6.6 | 50 | 0.2 | 0.149 | 0.161 | 0.154 | 0.272 | 0.272 | 0.272 |
+| one-point | skew 2, excess kurtosis 6.6 | 50 | 0.4 | 0.52 | 0.567 | 0.537 | 0.844 | 0.844 | 0.844 |
+| one-point | skew 2, excess kurtosis 6.6 | 50 | 0.6 | 0.878 | 0.929 | 0.894 | 0.996 | 0.996 | 0.996 |
+| one-point | skew 2, excess kurtosis 6.6 | 50 | 0.8 | 0.99 | 0.998 | 0.994 | 1 | 1 | 1 |
+| one-point | skew 2, excess kurtosis 6.6 | 50 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 2, excess kurtosis 6.6 | 50 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 2, excess kurtosis 6.6 | 50 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 2, excess kurtosis 6.6 | 50 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 2, excess kurtosis 6.6 | 100 | 0 | 0.049 | 0.053 | 0.051 | 0.051 | 0.051 | 0.051 |
+| one-point | skew 2, excess kurtosis 6.6 | 100 | 0.2 | 0.274 | 0.286 | 0.281 | 0.534 | 0.534 | 0.534 |
+| one-point | skew 2, excess kurtosis 6.6 | 100 | 0.4 | 0.839 | 0.88 | 0.85 | 0.994 | 0.994 | 0.994 |
+| one-point | skew 2, excess kurtosis 6.6 | 100 | 0.6 | 0.996 | 0.999 | 0.998 | 1 | 1 | 1 |
+| one-point | skew 2, excess kurtosis 6.6 | 100 | 0.8 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 2, excess kurtosis 6.6 | 100 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 2, excess kurtosis 6.6 | 100 | 1.2 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 2, excess kurtosis 6.6 | 100 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| one-point | skew 2, excess kurtosis 6.6 | 100 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
+
+Table H.1: Power against the shift size δ at fixed balanced n, SD = 1 in
+all four groups, under the one-point alternative μ = (0, 0, 0, δ) and
+the increasing trend alternative μ = (δ/4, δ/2, 3δ/4, δ). {.table}
 
 ## References
 
