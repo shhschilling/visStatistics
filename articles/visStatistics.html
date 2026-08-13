@@ -987,9 +987,11 @@ Within each row, the group-size vector is
 Figure 7.1: Route 1 Type I simulation under identical distributions and identical means, with group mean 0 and SD = 1 in all four groups. (A) input distributions, dashed lines mark means and dotted lines mark medians. (B) balanced design with group sizes, listed from top to bottom, as 20, 30, 50, 100. (C) Unbalanced design with group sizes <span class="math inline">\(\bar{n} \cdot  (0.5, 0.8, 1.2, 1.5)\)</span> with the target mean group size for unbalanced designs <span class="math inline">\(\bar{n} \in \{20, 30, 50, 100\}\)</span> rounded up to the next integer. The heatmaps in (B) and (C) report final-test rejection rates at <span class="math inline">\(\alpha = 5\%\)</span>. All heatmap numbers are percentages; the first value is the final-test rejection rate, and gated rows additionally list route splits after |.
 </p>
 </div>
-<p>With all four groups drawn from the same distribution every strategy keeps its nominal level, so what the gates decide here is not the validity of the answer but which question is answered. It is a clean Type I check for all strategies including the automated routing Shapiro (<code>SW</code>) or Shapiro and Levene gate based (<code>SW+L</code>), as routing to Kruskal–Wallis under non-normality does not change the truth status of the tested null, because the Kruskal–Wallis null is in this homoscedastic simulations also true. The type I error rate stays inside Bradley’s bounds in all scenarios of this homoscedastic setting.
-In the gated scenarios, it ranging from 4.8% to 5.5% for <code>SW</code> and, from 4.8% to 5.6% for <code>SW+L</code>. The narrower spread follows from what the variance gate selects: with variances in fact equal it returns most of the mean branch to Fisher’s exact <code>F</code> test, whereas <code>SW</code> always ends in Welch’s test, whose level is only approximate at small and unequal group sizes.
-<!-- The two fixed options stay inside them as well, `KW` close to the nominal level throughout and `W` with the widest spread of all strategies at the smallest and most unequal group sizes.  --></p>
+<p>With all four groups drawn from the same distribution every strategy keeps its nominal level, so what the gates decide here is not the validity of the answer but which question is answered. It is a clean Type I check for all strategies including the automated routing Shapiro (<code>SW</code>) or Shapiro and Levene gate based (<code>SW+L</code>).</p>
+<!-- , as routing to Kruskal--Wallis under non-normality does not change the truth status of the tested null, because the Kruskal--Wallis null is in this homoscedastic simulations also true.  -->
+<p>The type I error rate stays inside Bradley’s bounds in all scenarios of this homoscedastic setting.
+<!-- In the gated scenarios, it  ranging from 4.8% to 5.5% for `SW` and, from 4.8% to 5.6% for `SW+L`. The narrower spread follows from what the variance gate selects: with variances in fact equal it returns most of the mean branch to Fisher's exact `F` test, whereas `SW` always ends in Welch's test, whose level is only approximate at small and unequal group sizes.  --></p>
+<!-- The two fixed options stay inside them as well, `KW` close to the nominal level throughout and `W` with the widest spread of all strategies at the smallest and most unequal group sizes.  -->
 <p>In the balanced (panel B) as in the unbalanced design (panel C), the route probabilities show the Shapiro-Wilk gate responding to kurtosis as well as to skewness: for the symmetric heavy-tailed input, with zero skewness and an excess kurtosis of 6, most replications are routed to the rank branch from a group size of 20 onwards. The same holds for every simulated departure from normality except the mildest, with a skewness of 0.5 and an excess kurtosis of 1, which reaches that point only at a group size of 50; under exact normality the rank branch is taken at the nominal level at every group size. As with any hypothesis test, the power of the gate grows with the sample size.</p>
 </div>
 <div class="section level3" number="7.2">
@@ -1006,10 +1008,11 @@ The unbalanced blocks use
 either with <span class="math inline">\(\mathbf s = (1.0,\sqrt{2},2.0,\sqrt{5})\)</span>, so larger groups have larger
 SDs (panel C) or with <span class="math inline">\(\mathbf s = (\sqrt{5},2.0,\sqrt{2},1.0)\)</span>, so larger groups have smaller
 SDs, the reverse pairing (panel D).</p>
-<p>The parametric equal-means null is true in all columns.
-Kruskal–Wallis tests the group rank distributions, SD scaling leaves them aligned in the two symmetric columns, so those are Type I checks for <code>F</code>, <code>W</code> and <code>KW</code> alike, but shifts them in the skewed columns, where <code>KW</code> is expected to reject and only <code>F</code> and <code>W</code> remain under a true null; the gated routing<code>SW+L</code> and <code>SW</code> should reject there only when routed to Kruskal–Wallis.
-A high rejection rate after such a switch is not a Type I error rate for the equal-means null but one minus the type II error rate of the rank comparison the gate has switched to.</p>
-<p>In column 5, the input with the highest skewness and excess kurtosis, the scaling separates the group medians by only 0.34 SD between the extreme groups, resulting in a small Kruskal–Wallis effect size of <span class="math inline">\(\eta_H^2 \approx 0.02\)</span> (defined in the <a href="#tab:effect-size-formulae">effect-size table</a>); <code>KW</code> still fails to reject in roughly a third of the replications at the largest group size simulated.</p>
+<p>The parametric equal-means null is true in all columns.</p>
+<p>Kruskal–Wallis tests the group rank distributions, SD scaling leaves them aligned only in two symmetric columns 1 and 2. Therfore these columns remain Type I checks for all fixed strategies alike.
+In the skewed columns 3-5,SD scaling shifts the group rank distributions; here <code>KW</code> is expected to reject and only <code>F</code> and <code>W</code> remain under a true null; the gated routing<code>SW+L</code> and <code>SW</code> should therefore reject when routed to Kruskal–Wallis.
+A high rejection rate after such a switch `KW is therefore not a Type I error rate for the equal-means nulo, but one minus the type II error rate of the Kruskal-Wallis test the gate has switched to.</p>
+<p>In column 5, the input with the highest skewness and excess kurtosis, the scaling separates the group medians by only 0.34 SD between the extreme groups, resulting in a small Kruskal–Wallis population effect size of <span class="math inline">\(\eta_H^2 \approx 0.02\)</span> (Eq. <a href="#eq:eta-h-population">(G.4)</a>); <code>KW</code> still fails to reject in roughly a third of the replications at the largest group size simulated.</p>
 <div class="figure">
 <span style="display:block;" id="fig:route1-unequal-typeI"></span>
 <img src="figures/route1_equal_means_unequal_distributions_fleishman_B50000.png" alt="Route 1 equal-means simulation with varied group SD and sample-size pairings. (A) input distributions (B) balanced design with group sizes, listed from top to bottom, as 20, 30, 50, 100. (C) unbalanced design with larger groups paired with larger SD. (D) unbalanced design with larger groups paired with smaller SD." width="74%"><p class="caption">
@@ -1023,8 +1026,8 @@ Figure 7.2: Route 1 equal-means simulation with varied group SD and sample-size 
 </h4>
 <p><code>F</code> assumes equal variances, and its pooled variance is dominated by the largest groups: it rejects too rarely when those groups also carry the largest standard deviations (panel C), too often in the reverse pairing (panel D), and inside the boundaries when the sizes are equal (panel B).</p>
 <p>In contrast, <code>W</code> holds throughout except in the most adverse corner, where the reverse pairing (panel D) meets the strongest departure from normality at group sizes below the minimum of 50 per group that Delacre et al. <span class="citation">(<a href="#ref-Delacre:2019">Delacre et al. 2019</a>)</span> recommend for comparisons of at most four groups.</p>
-<p>In the two symmetric columns 1 and 2 both gated strategies stay within Bradley’s boundaries in the balanced design (panel B) and in the unbalanced positive design of panel C. The adverse pairing of panel D defeats them both, and for different reasons. At the larger group sizes the normality gate is overpowered and sends most replications to <code>KW</code>, <em>whose own level is affected by unequal variances at unequal group sizes <span class="citation">(<a href="#ref-Brunner:2017">Brunner et al. 2017</a>)</span></em>. At the smallest group sizes the variance gate is underpowered instead and returns nearly half the replications to <code>F</code>, whose rejection rate under a true null is inflated in this pairing.</p>
-<p><em>Taken together, unequal variances push the routing out of the mean branch through the residual kurtosis they induce, so a mean comparison under suspected heteroscedasticity is better requested with group_test = “welch” than left to the default automated routing.</em></p>
+<p>In the two symmetric columns 1 and 2 both gated strategies stay within Bradley’s boundaries in the balanced design (panel B) and in the unbalanced positive design of panel C. The adverse pairing of panel D defeats them both, and for different reasons. At the larger group sizes the normality gate is overpowered and sends most replications to <code>KW</code>, whose own level is affected by unequal variances at unequal group sizes <span class="citation">(<a href="#ref-Brunner:2017">Brunner et al. 2017</a>)</span>. At the smallest group sizes the variance gate is underpowered instead and returns nearly half the replications to <code>F</code>, whose rejection rate under a true null is inflated in this pairing.</p>
+<p>Taken together, unequal variances push the routing out of the mean branch through the residual kurtosis they induce, so a mean comparison under suspected heteroscedasticity is better requested with group_test = “welch” than left to the default automated routing.</p>
 </div>
 </div>
 <div class="section level3" number="7.3">
@@ -1047,7 +1050,7 @@ Figure 7.3: Route 1 power simulation with Fleishman input distributions. (A) Inp
 <p>We introduced heteroscedasticity both in a balanced design (panel B of Fig. <a href="#fig:route1-power-heteroscedastic">7.4</a>) and in unbalanced designs with positive (panel C) and negative pairing (panel E).</p>
 <div class="figure">
 <span style="display:block;" id="fig:route1-power-heteroscedastic"></span>
-<img src="figures/fleishman_4groups_power_brunner_kw_heteroscedastic.png" alt="Route 1 power simulation with heteroscedastic Fleishman input distributions. (A) input distributions, SD = (1, sqrt 2, 2, sqrt 5). (B) balanced design. (C) unbalanced design, larger groups with larger SD. (D) input distributions, SD = (sqrt 5, 2, sqrt 2, 1). (E) unbalanced design, larger groups with smaller SD." width="85%"><p class="caption">
+<img src="figures/fleishman_4groups_power_brunner_kw_heteroscedastic.png" alt="Route 1 power simulation with heteroscedastic Fleishman input distributions. (A) input distributions, SD = (1, sqrt 2, 2, sqrt 5). (B) balanced design. (C) unbalanced design, larger groups with larger SD. (D) input distributions, SD = (sqrt 5, 2, sqrt 2, 1). (E) unbalanced design, larger groups with smaller SD." width="58%"><p class="caption">
 Figure 7.4: Route 1 power simulation with heteroscedastic Fleishman input distributions. (A) input distributions, SD = (1, sqrt 2, 2, sqrt 5). (B) balanced design. (C) unbalanced design, larger groups with larger SD. (D) input distributions, SD = (sqrt 5, 2, sqrt 2, 1). (E) unbalanced design, larger groups with smaller SD.
 </p>
 </div>
@@ -2030,7 +2033,7 @@ which three groups are identical and only the fourth is shifted. All designs
 are balanced and homoscedastic.</p>
 <div class="figure">
 <span style="display:block;" id="fig:supp-onepoint-both"></span>
-<img src="../figures/fleishman_4groups_power_homoscedastic_onepoint_d050.png" alt="Power under the one-point alternative, mean shifts (0, 0, 0, 0.50), balanced homoscedastic design. (A) input distributions. (B) power of the six strategies." width="85%"><p class="caption">
+<img src="figures/fleishman_4groups_power_homoscedastic_onepoint_d050.png" alt="Power under the one-point alternative, mean shifts (0, 0, 0, 0.50), balanced homoscedastic design. (A) input distributions. (B) power of the six strategies." width="85%"><p class="caption">
 Figure H.1: Power under the one-point alternative, mean shifts (0, 0, 0, 0.50), balanced homoscedastic design. (A) input distributions. (B) power of the six strategies.
 </p>
 </div>
@@ -2046,7 +2049,7 @@ rejection rates with their Table 5. Rates are given to three decimals, which is
 where the Monte Carlo error of <span class="math inline">\(B = 50{,}000\)</span> puts the last informative digit.</p>
 <table class="table">
 <caption>
-<span id="tab:supp-delta-sweep">Table H.1: </span> Power against the shift size δ at fixed balanced n, SD = 1 in all four groups, under the one-point alternative μ = (0, 0, 0, δ) and the increasing trend alternative μ = (δ/4, δ/2, 3δ/4, δ).
+<span id="tab:supp-delta-sweep">Table H.1: </span> Power against the shift size <span class="math inline">\(\delta\)</span> at fixed balanced <span class="math inline">\(n\)</span>, SD = 1 in all four groups, under the one-point alternative <span class="math inline">\(\mu = (0, 0, 0, \delta)\)</span> and the increasing trend alternative <span class="math inline">\(\mu = (\delta/4, \delta/2, 3\delta/4, \delta)\)</span>.
 </caption>
 <tr>
 <th>

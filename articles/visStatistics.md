@@ -1608,16 +1608,10 @@ With all four groups drawn from the same distribution every strategy
 keeps its nominal level, so what the gates decide here is not the
 validity of the answer but which question is answered. It is a clean
 Type I check for all strategies including the automated routing Shapiro
-(`SW`) or Shapiro and Levene gate based (`SW+L`), as routing to
-Kruskal–Wallis under non-normality does not change the truth status of
-the tested null, because the Kruskal–Wallis null is in this
-homoscedastic simulations also true. The type I error rate stays inside
-Bradley’s bounds in all scenarios of this homoscedastic setting. In the
-gated scenarios, it ranging from 4.8% to 5.5% for `SW` and, from 4.8% to
-5.6% for `SW+L`. The narrower spread follows from what the variance gate
-selects: with variances in fact equal it returns most of the mean branch
-to Fisher’s exact `F` test, whereas `SW` always ends in Welch’s test,
-whose level is only approximate at small and unequal group sizes.
+(`SW`) or Shapiro and Levene gate based (`SW+L`).
+
+The type I error rate stays inside Bradley’s bounds in all scenarios of
+this homoscedastic setting.
 
 In the balanced (panel B) as in the unbalanced design (panel C), the
 route probabilities show the Shapiro-Wilk gate responding to kurtosis as
@@ -1644,22 +1638,25 @@ groups have larger SDs (panel C) or with \\\mathbf s =
 (\sqrt{5},2.0,\sqrt{2},1.0)\\, so larger groups have smaller SDs, the
 reverse pairing (panel D).
 
-The parametric equal-means null is true in all columns. Kruskal–Wallis
-tests the group rank distributions, SD scaling leaves them aligned in
-the two symmetric columns, so those are Type I checks for `F`, `W` and
-`KW` alike, but shifts them in the skewed columns, where `KW` is
-expected to reject and only `F` and `W` remain under a true null; the
-gated routing`SW+L` and `SW` should reject there only when routed to
-Kruskal–Wallis. A high rejection rate after such a switch is not a Type
-I error rate for the equal-means null but one minus the type II error
-rate of the rank comparison the gate has switched to.
+The parametric equal-means null is true in all columns.
+
+Kruskal–Wallis tests the group rank distributions, SD scaling leaves
+them aligned only in two symmetric columns 1 and 2. Therfore these
+columns remain Type I checks for all fixed strategies alike. In the
+skewed columns 3-5,SD scaling shifts the group rank distributions; here
+`KW` is expected to reject and only `F` and `W` remain under a true
+null; the gated routing`SW+L` and `SW` should therefore reject when
+routed to Kruskal–Wallis. A high rejection rate after such a switch \`KW
+is therefore not a Type I error rate for the equal-means nulo, but one
+minus the type II error rate of the Kruskal-Wallis test the gate has
+switched to.
 
 In column 5, the input with the highest skewness and excess kurtosis,
 the scaling separates the group medians by only 0.34 SD between the
-extreme groups, resulting in a small Kruskal–Wallis effect size of
-\\\eta_H^2 \approx 0.02\\ (defined in the [effect-size
-table](#tab:effect-size-formulae)); `KW` still fails to reject in
-roughly a third of the replications at the largest group size simulated.
+extreme groups, resulting in a small Kruskal–Wallis population effect
+size of \\\eta_H^2 \approx 0.02\\ (Eq. [(G.4)](#eq:eta-h-population));
+`KW` still fails to reject in roughly a third of the replications at the
+largest group size simulated.
 
 ![Route 1 equal-means simulation with varied group SD and sample-size
 pairings. (A) input distributions (B) balanced design with group sizes,
@@ -1706,16 +1703,16 @@ Bradley’s boundaries in the balanced design (panel B) and in the
 unbalanced positive design of panel C. The adverse pairing of panel D
 defeats them both, and for different reasons. At the larger group sizes
 the normality gate is overpowered and sends most replications to `KW`,
-*whose own level is affected by unequal variances at unequal group sizes
-([Brunner et al. 2017](#ref-Brunner:2017))*. At the smallest group sizes
+whose own level is affected by unequal variances at unequal group sizes
+([Brunner et al. 2017](#ref-Brunner:2017)). At the smallest group sizes
 the variance gate is underpowered instead and returns nearly half the
 replications to `F`, whose rejection rate under a true null is inflated
 in this pairing.
 
-*Taken together, unequal variances push the routing out of the mean
+Taken together, unequal variances push the routing out of the mean
 branch through the residual kurtosis they induce, so a mean comparison
 under suspected heteroscedasticity is better requested with group_test =
-“welch” than left to the default automated routing.*
+“welch” than left to the default automated routing.
 
 ### 7.3 Type II error (power) simulations
 
@@ -2936,7 +2933,7 @@ are balanced and homoscedastic.
 ![Power under the one-point alternative, mean shifts (0, 0, 0, 0.50),
 balanced homoscedastic design. (A) input distributions. (B) power of the
 six
-strategies.](../figures/fleishman_4groups_power_homoscedastic_onepoint_d050.png)
+strategies.](figures/fleishman_4groups_power_homoscedastic_onepoint_d050.png)
 
 Figure H.1: Power under the one-point alternative, mean shifts (0, 0, 0,
 0.50), balanced homoscedastic design. (A) input distributions. (B) power
@@ -3315,9 +3312,10 @@ Carlo error of \\B = 50{,}000\\ puts the last informative digit.
 | one-point | skew 2, excess kurtosis 6.6 | 100 | 1.4 | 1 | 1 | 1 | 1 | 1 | 1 |
 | one-point | skew 2, excess kurtosis 6.6 | 100 | 1.6 | 1 | 1 | 1 | 1 | 1 | 1 |
 
-Table H.1: Power against the shift size δ at fixed balanced n, SD = 1 in
-all four groups, under the one-point alternative μ = (0, 0, 0, δ) and
-the increasing trend alternative μ = (δ/4, δ/2, 3δ/4, δ). {.table}
+Table H.1: Power against the shift size \\\delta\\ at fixed balanced
+\\n\\, SD = 1 in all four groups, under the one-point alternative \\\mu
+= (0, 0, 0, \delta)\\ and the increasing trend alternative \\\mu =
+(\delta/4, \delta/2, 3\delta/4, \delta)\\. {.table}
 
 ## References
 
