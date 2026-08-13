@@ -15,7 +15,9 @@ are balanced and homoscedastic.
 supp_fig <- function(file) {
   cand <- file.path(c("figures", "../figures", "vignettes/figures"), file)
   hit <- cand[file.exists(cand)]
-  if (length(hit)) hit[[1]] else file.path("figures", file)
+  ## Absolute: a relative path is resolved against the working directory by
+  ## HTML but against the .tex location by LaTeX, and the two differ.
+  if (length(hit)) normalizePath(hit[[1]], winslash = "/") else file.path("figures", file)
 }
 ```
 
@@ -66,14 +68,18 @@ supp_table <- function(file, caption, label) {
                        stringsAsFactors = FALSE)
   n_lab <- sum(!names(d) %in% c("F", "W", "L", "KW", "SW", "SW+L"))
   if (knitr::is_latex_output()) {
+    ## longtable, not table: a float cannot break across pages, and the delta
+    ## sweep is 360 rows.
     al <- paste(c(rep("l", n_lab), rep("r", ncol(d) - n_lab)), collapse = "")
-    cat("\\begin{table}[!htbp]\n\\caption{", caption, "}\n",
-        "\\label{tab:", label, "}\n\\centering\n",
-        "\\begin{tabular}{", al, "}\n\\hline\n", sep = "")
-    cat(paste(names(d), collapse = " & "), "\\\\\n\\hline\n")
+    hdr <- paste(names(d), collapse = " & ")
+    cat("\\begin{longtable}{", al, "}\n", sep = "")
+    cat("\\caption{", caption, "}\n\\label{tab:", label, "}\\\\\n", sep = "")
+    cat("\\hline\n", hdr, " \\\\\n\\hline\n\\endfirsthead\n", sep = "")
+    cat("\\hline\n", hdr, " \\\\\n\\hline\n\\endhead\n", sep = "")
+    cat("\\hline\n\\endfoot\n")
     cat(apply(d, 1, function(r) paste(paste(r, collapse = " & "), "\\\\")),
         sep = "\n")
-    cat("\n\\hline\n\\end{tabular}\n\\end{table}\n")
+    cat("\n\\end{longtable}\n")
   } else {
     cat("<table>\n<caption>(#tab:", label, ") ", caption, "</caption>\n",
         sep = "")
@@ -91,10 +97,12 @@ supp_table <- function(file, caption, label) {
 ```{r supp-delta-sweep, echo=FALSE, results='asis'}
 supp_table(
   "supplement_table_3_power_delta_sweep.csv",
-  paste("Power against the shift size &delta; at fixed balanced n, SD = 1 in",
-        "all four groups, under the one-point alternative",
-        "&mu; = (0, 0, 0, &delta;) and the increasing trend alternative",
-        "&mu; = (&delta;/4, &delta;/2, 3&delta;/4, &delta;)."),
+  ## No HTML entities: "&" is LaTeX's alignment character and breaks the PDF
+  ## branch. Math delimiters render in both outputs.
+  paste("Power against the shift size $\\delta$ at fixed balanced $n$, SD = 1",
+        "in all four groups, under the one-point alternative",
+        "$\\mu = (0, 0, 0, \\delta)$ and the increasing trend alternative",
+        "$\\mu = (\\delta/4, \\delta/2, 3\\delta/4, \\delta)$."),
   "supp-delta-sweep"
 )
 ```
