@@ -82,6 +82,22 @@ cap_route1_identical_typeI <- paste(
  "final-test rejection rate, and gated rows additionally list route splits after |."
 )
 
+## STUMP -- to be edited.
+## The figure shows, from top to bottom: a density strip for
+## SD = (1, sqrt2, 2, sqrt5); the balanced heteroscedastic design; the
+## unbalanced design with larger groups paired with larger SD; a density strip
+## for the reversed vector; and the unbalanced design with larger groups paired
+## with smaller SD. Mean shifts are (0, 0.25, 0.50, 0.75) throughout.
+## Row headers carry omega^2 with its regime subscript, column strips eta_H^2.
+cap_route1_power_heteroscedastic <- paste(
+ "Route 1 power simulation with heteroscedastic Fleishman input distributions.",
+ "(A) input distributions, SD = (1, sqrt 2, 2, sqrt 5).",
+ "(B) balanced design.",
+ "(C) unbalanced design, larger groups with larger SD.",
+ "(D) input distributions, SD = (sqrt 5, 2, sqrt 2, 1).",
+ "(E) unbalanced design, larger groups with smaller SD."
+)
+
 cap_route1_unequal_typeI <- paste(
  "Route 1 equal-means simulation with varied group SD",
  "and sample-size pairings.",
@@ -146,8 +162,16 @@ In the two symmetric columns 1 and 2 both gated strategies stay within Bradley's
 
 ## Type II error (power) simulations
 
-The power simulation uses the same five fixed input distributions and adds ordered location shifts across the four groups.
-In the  homoscedastic design (Figure \@ref(fig:route1-power), panel B), balanced groups with equal SD are used: $n_i=n$, $\mathrm{SD}_i=1$ for $i=1,...4$ and group means are shifted by $0,0.25,0.50,0.75$.
+
+
+The power simulation uses the same five fixed input distributions and adds location shifts across the four groups in homo- and heteroscedastic designs. In samples of $n \ge 50$, the test with the higher population effect size — $\omega^2$ for `F` and `W`, $\eta_H^2$ for `KW`, both printed in the figures below — has the higher power in every simulated cell. The insets show the share sent to the rank branch: it stays at the nominal level only when the variances are equal and the input is exactly normal, and otherwise grows with the sample size, the skewness, the excess kurtosis and the variance heterogeneity, where introduced..
+
+
+
+
+
+
+In the  homoscedastic design (Figure \@ref(fig:route1-power), panel B), balanced groups with equal SD are used: $n_i=n$, $\mathrm{SD}_i=1$ for $i=1,...4$ and group meanswith orderd lactions shits.  $0,0.25,0.50,0.75$.
 
 <!-- A simplified variant holds the shifts and SDs fixed at their homoscedastic baseline values while varying only the sample-size balance structure (balanced vs. two unbalanced pairings).  -->
 
@@ -158,4 +182,31 @@ knitr::include_graphics(
  "figures/fleishman_4groups_power.png"
 )
 ```
-Which strategy rejects the false null most often is decided by the shape of the input: under normality the mean-based tests reject at most three percentage points more often than Kruskal--Wallis at the smaller group sizes, while under heavy tails (column 2) and under high skewness (columns 4 and 5 of Fig. \@ref(fig:route1-power)) Kruskal--Wallis rejects far more often. The routed procedure follows whichever rejects most often -- the insets show the share sent to the rank branch growing with skewness and excess kurtosis. This qualitative result remains unchanged with unbalanced inputs or replacing the ordered location shift  by a one-point shift of 0.5 or 1  of a single group, with the other three identical; the routed procedure follows still the fixed test with the highest rejection rate (data not shown).
+
+
+
+
+
+<!-- Under normality the mean-based tests reject at most three percentage points more often than Kruskal--Wallis at the smaller group sizes, while under heavy tails (column 2) and under high skewness (columns 4 and 5 of Fig. \@ref(fig:route1-power)) Kruskal--Wallis rejects far more often.  -->
+
+In this homoscedastic designs the routed procedure matches the best fixed strategy throughout. This qualitative result remains unchanged with unbalanced inputs (data not shown). 
+
+Replacing the ordered location shift  by a one-point shift of a single group, with the other three identical; the routed procedure follows still the fixed test with the highest rejection rate (see Fig. \@ref(fig:supp-onepoint-both)).
+
+We introduced  heteroscedasticity both in a balanced design (panel B of Fig. \@ref(fig:route1-power-heteroscedastic)) and in unbalanced designs with positive (panel C) and negative pairing (panel E).
+
+```{r route1-power-heteroscedastic, echo=FALSE, fig.cap=cap_route1_power_heteroscedastic, out.width="85%"}
+knitr::include_graphics(
+ "figures/fleishman_4groups_power_brunner_kw_heteroscedastic.png"
+)
+```
+
+In the heteroscedastic designs the routed procedure no longer matches the best fixed strategy in most settings: `KW` has a higher effect size than the parametric tests only in the heavy-tailed simulations (column 2) of all designs and the skewed, unbalanced heteroscedastic simulations with negative pairing  (columns 3-5 of panel E), while the routing sends in all cells a growing share to `KW` with  increasing sample size, skewness and excess kurtosis.
+
+
+
+<!-- `KW` is the strongest test under negative pairing (panel E), where the rank effect size exceeds $\omega^2$ in all simulated cells,  -->
+<!-- whereas in B... much more complex  -->
+
+
+<!-- In contrast to common belief, non - parametric tests are not "assumption free", they still assume that the data come from the same distribution and  they have an incnreased type 1 error (column 1 and 2 of Fig. \@ref(fig:route1-power-heteroscedastic)) and lack power in case of heteroscedasticy (see also columnen 3-5 of Fig. \@ref(fig:route1-power-heteroscedastic)) -->

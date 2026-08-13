@@ -32,12 +32,21 @@ double-exponential and log-normal.
 Under heteroscedasticity a single \(\delta\) buys a different effect size in
 every design: at \(\delta=1\) the one-point alternative gives
 \(\omega^2 = 0.043\) balanced heteroscedastic, 0.057 positive pairing and 0.123
-negative pairing. A power difference between those rows therefore measures the
-effect size, not the test, and the mean shift is confounded with the variance
-assignment. There is no comparison to be made and no effect to find, which is
-why the heteroscedastic case is a **Type I** question — where all means are
-equal and the variance structure is the only thing that varies — and never a
-power question.
+negative pairing. A power difference **between those rows** therefore measures
+the effect size, not the test, and the mean shift is confounded with the
+variance assignment. Which design is "harder" cannot be read off such a grid.
+
+The comparison **within** a cell is not confounded. At one design, one
+\(\delta\) and one panel, every strategy sees the same data-generating process,
+so a difference between strategies is a property of the strategies alone. That
+is what makes the heteroscedastic power grid worth keeping: at balanced
+heteroscedastic, \(n=100\), panel 4, Fisher reaches 0.495 and the
+Shapiro-Wilk-plus-Levene gate only 0.310, because the mixed scales make the
+pooled residuals non-normal and the gate sends 99.99% of replications to the
+rank branch. It is the evidence for recommending `group_test = "welch"` under
+suspected heteroscedasticity.
+
+So: read heteroscedastic power grids down a column, never across rows.
 
 ## Type I design, for contrast
 

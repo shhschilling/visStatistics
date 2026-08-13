@@ -66,13 +66,25 @@ cell_seeds <- function(n) {
 }
 
 run_cell <- function(panel, n, shifts, seeds) {
-  out <- parallel::mclapply(seeds, function(s) {
+  draw <- function(cores) parallel::mclapply(seeds, function(s) {
     assign(".Random.seed", s, envir = globalenv())
     y <- unlist(lapply(seq_along(shifts),
                        function(i) draw_fleishman_panel(n, panel) + shifts[i]))
     g <- factor(rep(seq_along(shifts), each = n))
     route_once(y, g, alpha = ALPHA)
-  }, mc.cores = NCORES)
+  }, mc.cores = cores)
+  out <- draw(NCORES)
+  ## A worker killed under memory pressure comes back as an error object rather
+  ## than a list. The seeds are fixed, so redoing the cell serially reproduces.
+  ## route_once() returns a NAMED NUMERIC VECTOR, not a list, so the check is
+  ## on the name being present. A worker killed under memory pressure comes
+  ## back as a try-error instead.
+  ok <- function(o) vapply(o, function(x)
+    !inherits(x, "try-error") && "fisher_reject" %in% names(x), logical(1))
+  if (!all(ok(out))) {
+    message("cell retried serially after a worker failure")
+    out <- draw(1L)
+  }
   pick <- function(nm) vapply(out, `[[`, numeric(1), nm)
   c(fisher = summarise_binary(pick("fisher_reject")),
     welch  = summarise_binary(pick("welch_reject")),

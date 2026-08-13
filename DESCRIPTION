@@ -39,7 +39,7 @@ Description: Automated test selection, visualised. 'visStatistics'
     NULL), residual normality is assessed at every group size using
     shapiro.test() applied to the standardised residuals of lm(). If
     normality is not met, wilcox.test() is used when the predictor has two
-    levels and kruskal.test() followed by pairwise.wilcox.test()
+    levels and kruskal.test() followed by dunn.test()
     otherwise. If normality is met, levene.test() assesses variance
     homogeneity. For two-level predictors, Student's t.test(var.equal =
     TRUE) is applied if variances are homogeneous and Welch's t.test()

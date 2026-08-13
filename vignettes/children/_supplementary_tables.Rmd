@@ -1,0 +1,100 @@
+# Supplementary material {#sec:supplementary-tables}
+
+This section reports the simulated results that the figures of Section
+\@ref(sec:simulation-results) do not show. All rejection rates come from
+$B = 50{,}000$ replications per cell at $\alpha = 5\%$.
+
+Figure \@ref(fig:supp-onepoint-both) repeats the design of
+Section \@ref(sec:simulation-results) under the one-point alternative, in
+which three groups are identical and only the fourth is shifted. All designs
+are balanced and homoscedastic.
+
+```{r supp-figure-path, include=FALSE}
+## Resolved rather than hard-coded, so the child renders both through the
+## parent (working directory vignettes/) and on its own (vignettes/children/).
+supp_fig <- function(file) {
+  cand <- file.path(c("figures", "../figures", "vignettes/figures"), file)
+  hit <- cand[file.exists(cand)]
+  if (length(hit)) hit[[1]] else file.path("figures", file)
+}
+```
+
+```{r supp-figure-captions, include=FALSE}
+cap_supp_onepoint_both <- paste(
+ "Power under the one-point alternative, mean shifts (0, 0, 0, 0.50),",
+ "balanced homoscedastic design.",
+ "(A) input distributions.",
+ "(B) power of the six strategies."
+)
+```
+
+```{r supp-onepoint-both, echo=FALSE, fig.cap=cap_supp_onepoint_both, out.width="85%"}
+knitr::include_graphics(
+ supp_fig("fleishman_4groups_power_homoscedastic_onepoint_d050.png")
+)
+```
+
+## Power against the shift size
+
+Table \@ref(tab:supp-delta-sweep) varies $\delta$ at fixed balanced sample
+sizes, following the power study of Brunner et al. [@Brunner:2017, p. 1480],
+where $\delta$ is the horizontal axis and $n$ is held fixed. It is the only
+grid presented as a table, because its purpose is a direct comparison of
+rejection rates with their Table 5. Rates are given to three decimals, which is
+where the Monte Carlo error of $B = 50{,}000$ puts the last informative digit.
+
+```{r supplement-table-helpers, echo=FALSE}
+## The source tree is preferred over the installed package, because the tables
+## are regenerated there. A directory only counts if it actually holds the
+## table being asked for, so a stale installed copy cannot win.
+supp_dir_for <- function(file) {
+  cand <- c("../inst/simulations", "inst/simulations", "../../inst/simulations",
+            system.file("simulations", package = "visStatistics"))
+  cand <- cand[nzchar(cand)]
+  hit <- cand[file.exists(file.path(cand, file))]
+  if (length(hit)) hit[[1]] else ""
+}
+
+supp_table <- function(file, caption, label) {
+  dir <- supp_dir_for(file)
+  if (!nzchar(dir)) {
+    cat("<!-- ", file, " not found; table omitted -->\n", sep = "")
+    message("supplementary table missing: ", file)
+    return(invisible(NULL))
+  }
+  d <- utils::read.csv(file.path(dir, file), check.names = FALSE,
+                       stringsAsFactors = FALSE)
+  n_lab <- sum(!names(d) %in% c("F", "W", "L", "KW", "SW", "SW+L"))
+  if (knitr::is_latex_output()) {
+    al <- paste(c(rep("l", n_lab), rep("r", ncol(d) - n_lab)), collapse = "")
+    cat("\\begin{table}[!htbp]\n\\caption{", caption, "}\n",
+        "\\label{tab:", label, "}\n\\centering\n",
+        "\\begin{tabular}{", al, "}\n\\hline\n", sep = "")
+    cat(paste(names(d), collapse = " & "), "\\\\\n\\hline\n")
+    cat(apply(d, 1, function(r) paste(paste(r, collapse = " & "), "\\\\")),
+        sep = "\n")
+    cat("\n\\hline\n\\end{tabular}\n\\end{table}\n")
+  } else {
+    cat("<table>\n<caption>(#tab:", label, ") ", caption, "</caption>\n",
+        sep = "")
+    cat("<tr>", paste0("<th>", names(d), "</th>", collapse = ""), "</tr>\n")
+    for (i in seq_len(nrow(d))) {
+      cat("<tr>", paste0("<td>", unlist(d[i, ]), "</td>", collapse = ""),
+          "</tr>\n")
+    }
+    cat("</table>\n")
+  }
+  invisible(NULL)
+}
+```
+
+```{r supp-delta-sweep, echo=FALSE, results='asis'}
+supp_table(
+  "supplement_table_3_power_delta_sweep.csv",
+  paste("Power against the shift size &delta; at fixed balanced n, SD = 1 in",
+        "all four groups, under the one-point alternative",
+        "&mu; = (0, 0, 0, &delta;) and the increasing trend alternative",
+        "&mu; = (&delta;/4, &delta;/2, 3&delta;/4, &delta;)."),
+  "supp-delta-sweep"
+)
+```
