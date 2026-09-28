@@ -72,8 +72,14 @@ DESIGN_UNBAL_NEG <- "unbalanced n, larger n with smaller SD"
 ##                             the six strategies of the current implementation.
 ##   POWER_OUT_PREFIX          output basename, so a variant cannot overwrite
 ##                             the reference PNGs.
+##   POWER_BALANCED_INCLUDE_HET  FALSE drops the balanced heteroscedastic block
+##                             (strip C and its power panel D) from the balanced
+##                             figure, leaving the two panels A and B that the
+##                             vignette includes. The unbalanced figure is
+##                             unaffected.
 if (!exists("POWER_INCLUDE_PSEUDORANK")) POWER_INCLUDE_PSEUDORANK <- TRUE
 if (!exists("POWER_OUT_PREFIX")) POWER_OUT_PREFIX <- "fleishman_4groups_power"
+if (!exists("POWER_BALANCED_INCLUDE_HET")) POWER_BALANCED_INCLUDE_HET <- TRUE
 
 ## Pseudo-rank arm (RK, ATS), simulated by rankfd_route1_power.R on streams
 ## that continue where route1_simulations.R stopped. Joined on design, group
@@ -127,37 +133,34 @@ if (HAS_RKP_H0P) {
 ## Naming follows Brunner et al. 2017, JRSSB, Table 2 (p. 1477): homoscedastic
 ## vs heteroscedastic, and positive/negative pairing for the direction in
 ## which the SDs are paired with the (unbalanced) group sizes.
-## omega^2 is constant across the 5 panels of a design (verified against
-## effect_sizes_by_design_panel_<ES_SCALING>.csv: identical to 6 decimals in
-## every panel of every design), so it belongs once in the row header, after
-## the N and SD vectors -- not repeated in every column header.
-omega_sq_for_design <- function(design_name) {
-  if (!HAS_ES) return(NA_real_)
-  es <- ES_TAB[ES_TAB$design == design_name, , drop = FALSE]
-  if (nrow(es) == 0) return(NA_real_)
-  unique(round(es$omega_sq, 3))[1]
+## The noncentrality per observation is constant across the 5 panels of a
+## design, so it belongs once in the row header, after the N and SD vectors --
+## not repeated in every column header. It is recomputed here from the group
+## mean offsets the simulation actually used, never read from a stored effect
+## size column.
+num_vec <- function(s) as.numeric(strsplit(s, ",[ ]*")[[1]])
+
+offsets_of <- function(design_name) {
+  o <- power$group_mean_offsets[power$design == design_name]
+  if (length(o) == 0) return(NULL)
+  num_vec(o[1])
 }
 
-## Three different population parameters are written omega^2 in
-## _effect_size_table.Rmd, Eqs. (omega-sq-population),
-## (-unbalanced) and (-heteroscedastic): they are not the same quantity, so a
-## row must name the one that applies to its design rather than a bare
-## "omega^2". The subscripts bal/unb/het are those returned by
-## omega_sq_regime() in omega_scaling_helpers.R, so figure, text and code use
-## one vocabulary. Any unequal SD makes a design heteroscedastic whether or not
-## the group sizes are balanced.
-## The subscript is exactly what omega_sq_regime() returns -- bal, unbal, het --
-## the same three strings the vignette uses, so there is no mapping to keep in
-## step between figure, text and code.
-omega_sq_symbol <- function(nmult, sdvec) {
-  num <- function(s) as.numeric(strsplit(s, ",[ ]*")[[1]])
-  paste0("&omega;<sup>2</sup><sub>", omega_sq_regime(num(nmult), num(sdvec)), "</sub>")
+## lambda of Eq. (omega-sq-population-heteroscedastic) in
+## _effect_size_table.Rmd: the noncentrality of the noncentral F approximating
+## Welch's statistic, divided by N. One symbol in every design, so that one
+## figure never appears to plot two different quantities; its reduction to
+## Cohen's f^2 under equal variances is stated in the vignette instead.
+lambda_for_design <- function(design_name, nmult, sdvec) {
+  mu <- offsets_of(design_name)
+  if (is.null(mu)) return(NA_real_)
+  population_lambda(num_vec(nmult), num_vec(sdvec), mu, 1)
 }
 
 sd_header <- function(what, nmult, sdvec, design_name) {
-  omega <- omega_sq_for_design(design_name)
-  omega_part <- if (is.na(omega)) "" else {
-    sprintf("; %s = %s", omega_sq_symbol(nmult, sdvec), format(omega, nsmall = 3))
+  lambda <- lambda_for_design(design_name, nmult, sdvec)
+  omega_part <- if (is.na(lambda)) "" else {
+    sprintf("; %s = %s", ES_SYMBOL_HTML, format(round(lambda, 3), nsmall = 3))
   }
   paste0(
     "power simulations, ", what, "; ",
@@ -666,10 +669,14 @@ p_pdf_pos_C  <- make_pdf_panel(SD_POS,  SHIFTS_HETERO, "C",
 p_pdf_neg_E  <- make_pdf_panel(SD_NEG,  SHIFTS_HETERO, "E",
   "input distributions, SD = (2.2, 1.7, 1.3, 1)")
 
-combined_balanced <- patchwork$wrap_plots(
-  p_pdf_homo_A, p_power, p_pdf_pos_C, p_power_bal_uneq,
-  ncol = 1, heights = c(1, 2.0, 1, 2.0)
-)
+combined_balanced <- if (POWER_BALANCED_INCLUDE_HET) {
+  patchwork$wrap_plots(
+    p_pdf_homo_A, p_power, p_pdf_pos_C, p_power_bal_uneq,
+    ncol = 1, heights = c(1, 2.0, 1, 2.0)
+  )
+} else {
+  patchwork$wrap_plots(p_pdf_homo_A, p_power, ncol = 1, heights = c(1, 2.0))
+}
 combined_unbalanced <- patchwork$wrap_plots(
   p_pdf_homo_A, p_power_unbal_homo,
   p_pdf_pos_C,  p_power_unbal_pos,
@@ -678,7 +685,7 @@ combined_unbalanced <- patchwork$wrap_plots(
 )
 
 COMBINED_WIDTH <- 20
-HEIGHT_BALANCED <- 27.5
+HEIGHT_BALANCED <- if (POWER_BALANCED_INCLUDE_HET) 27.5 else 27.5 / 2
 HEIGHT_UNBALANCED <- 27.5 * 3 / 2
 
 for (dir in unique(c(OUTDIR, FIGDIR))) {

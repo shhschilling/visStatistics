@@ -122,10 +122,9 @@ power <- power[, keep]
 ## two cannot drift apart.
 SDS <- list(SD_EQ, SD_EQ, SD_POS, SD_POS, SD_NEG)
 names(SDS) <- names(DESIGN_WORDS)
-omega_of <- function(d) population_omega_sq(
+lambda_of <- function(d) population_lambda(
   as.numeric(strsplit(NMULT[[d]], ",[ ]*")[[1]]), SDS[[d]], SHIFTS, 1)
-regime_of <- function(d) omega_sq_regime(
-  as.numeric(strsplit(NMULT[[d]], ",[ ]*")[[1]]), SDS[[d]])
+symbol_of <- function(d) ES_SYMBOL_HTML
 
 ## eta_H^2 per (design, panel) for this design, from eta_h_own_derivation.R.
 ETA_FILE <- file.path(SIMDIR, "eta_h_own_by_design_panel.csv")
@@ -284,12 +283,12 @@ make_power_panel <- function(design_name, letter) {
   grows <- unique(gv[c("power_panel", "gate_row", "gate_y")])
   gtit <- unique(base["power_panel"]); gtit$t <- "SW+L selection (%)"
 
-  omega <- omega_of(design_name)
+  lambda <- lambda_of(design_name)
   header <- sprintf(paste0("power simulations, %s; (n<sub>1</sub>, n<sub>2</sub>, ",
       "n<sub>3</sub>, n<sub>4</sub>) = n&#772;(%s); (SD<sub>1</sub>, SD<sub>2</sub>, ",
-      "SD<sub>3</sub>, SD<sub>4</sub>) = (%s); &omega;<sup>2</sup><sub>%s</sub> = %.3f"),
+      "SD<sub>3</sub>, SD<sub>4</sub>) = (%s); %s = %.3f"),
     DESIGN_WORDS[[design_name]], NMULT[[design_name]],
-    sd_vector_label(SDS[[design_name]]), regime_of(design_name), omega)
+    sd_vector_label(SDS[[design_name]]), symbol_of(design_name), lambda)
 
   ggplot2$ggplot() +
     ggplot2$geom_vline(xintercept = NS_TO_PLOT, colour = "grey88", linewidth = 0.35) +

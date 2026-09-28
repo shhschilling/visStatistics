@@ -164,7 +164,7 @@ The `SW` gate also reacts to unequal variances alone. In panel B, column 1 of Fi
 
 In contrast, `W` holds throughout except in the most adverse corner, where the reverse pairing (panel D) meets the strongest departure from normality at group sizes below the minimum of 50 per group that Delacre et al. [@Delacre:2019] recommend for comparisons of at most four groups.
 
-In the two symmetric columns 1 and 2 both gated strategies stay within Bradley's boundaries in the balanced design (panel B) and in the unbalanced  positive design of panel C. The adverse pairing of panel D defeats them both, and for different reasons. At the larger group sizes the normality gate is overpowered and sends most replications to `KW`, whose own level is affected by unequal variances at unequal group sizes [@Brunner:2017]. At the smallest group sizes the variance gate is underpowered instead and returns nearly half the replications to `F`, whose rejection rate under a true null is inflated in this pairing. 
+In the two symmetric columns 1 and 2 both gated strategies stay within Bradley's boundaries in the balanced design (panel B) and in the unbalanced  positive design of panel C. In the negative pairing of panel D the normality gate is overpowered  for larger group sizes and sends most replications to `KW`, whose own level is affected by unequal variances at unequal group sizes [@Brunner:2017]. At the smallest group sizes the variance gate is underpowered instead and sends replications to `F`, whose rejection rate under a true null is inflated in this pairing. 
 
 Taken together, unequal variances push the routing out of the mean branch through the residual kurtosis they induce, so a mean comparison under suspected heteroscedasticity is better requested with group_test = "welch" than left to the default automated routing. 
 
@@ -172,7 +172,7 @@ Taken together, unequal variances push the routing out of the mean branch throug
 
 
 
-The power simulation uses the same five fixed input distributions and adds location shifts across the four groups in homo- and heteroscedastic designs. In samples of $n \ge 50$, the test with the higher population effect size — $\omega^2$ for `F` and `W`, $\eta_H^2$ for `KW`, both printed in the figures below — has the higher power in every simulated cell. The insets show the share sent to the rank branch: it stays at the nominal level only when the variances are equal and the input is exactly normal, and otherwise grows with the sample size, the skewness, the excess kurtosis and the variance heterogeneity, where introduced..
+The power simulation uses the same five fixed input distributions and adds location shifts across the four groups in homo- and heteroscedastic designs. In samples of $n \ge 50$, the test with the larger of the two constants whose products with $N$ are the noncentralities — $\lambda$ for `F` and `W`, $\eta_H^2$ for `KW`, both printed in the figures below — has the higher power in every simulated cell. The insets show the share sent to the rank branch: it stays at the nominal level only when the variances are equal and the input is exactly normal, and otherwise grows with the sample size, the skewness, the excess kurtosis and the variance heterogeneity, where introduced..
 
 
 
@@ -200,13 +200,13 @@ Replacing the ordered location shift  by a one-point shift of a single group, wi
 
 We introduced  heteroscedasticity both in a balanced design (panel B of Fig. \@ref(fig:route1-power-heteroscedastic)) and in unbalanced designs with positive (panel C) and negative pairing (panel E).
 
-```{r route1-power-heteroscedastic, echo=FALSE, fig.cap=cap_route1_power_heteroscedastic, out.width="58%"}
+```{r route1-power-heteroscedastic, echo=FALSE, fig.cap=cap_route1_power_heteroscedastic, out.width="85%"}
 knitr::include_graphics(
  "figures/fleishman_4groups_power_brunner_kw_heteroscedastic.png"
 )
 ```
 
-In the heteroscedastic designs the routed procedure no longer matches the best fixed strategy in most settings: `KW` has a higher effect size than the parametric tests only in the heavy-tailed simulations (column 2) of all designs and the skewed, unbalanced heteroscedastic simulations with negative pairing  (columns 3-5 of panel E), while the routing sends in all cells a growing share to `KW` with  increasing sample size, skewness and excess kurtosis.
+In the heteroscedastic designs the routed procedure no longer matches the best fixed strategy in most settings: `KW` has a higher $\eta_H^2$ than the parametric $\lambda$ only in the heavy-tailed simulations (column 2) of all designs and the skewed, unbalanced heteroscedastic simulations with negative pairing  (columns 3-5 of panel E), while the routing sends in all cells a growing share to `KW` with  increasing sample size, skewness and excess kurtosis.
 
 
 

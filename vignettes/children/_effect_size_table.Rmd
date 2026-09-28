@@ -1,3 +1,9 @@
+---
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
 # Effect size table {#sec:effect-sizes}
 
 The following tables summarise the statistical analyses with their respective effect sizes and formulae.
@@ -209,41 +215,83 @@ the residual sum of squares is $SS_\text{res}=\sum_{i=1}^{N}(y_i-\hat{y}_i)^2$, 
 
 All other variables used in the [effect-size table](#tab:effect-size-formulae) are defined in the corresponding "Analysis" section.
 
-#  Population effect sizes {#sec:population-effect-sizes}
+#  Population effect sizes for fixed group size ratios {#sec:population-effect-sizes}
 
-All quantities in this section are defined for a fixed set of group-size ratios $q_i=n_i/N$, $i=1,\dots,k$, held constant as $N$ grows. This is a restriction, not a convention: $\omega^2_{\text{unbal}}$ and $\omega^2_{\text{het}}$ below depend on the fixed $q_i$, as does $\eta_H^2$, so none of them is comparable between designs whose groups stand in different size ratios. Within one such family each is a function of the distributions alone.
+In the simulation studies of Section \@ref(sec:simulation-results) comparing the different Route 1 strategies, we keep the group-size ratios $q_i=n_i/N$, $i=1,\dots,k$, fixed as $N$ grows. All quantities below follow this restriction; $\lambda$ and $\omega^2$ below depend on the fixed $q_i$, as does $\eta_H^2$, so none of them is comparable between designs whose groups stand in different size ratios. Within one fixed groups size vector $(q_1,\dots,q_k)$ each is a function of the distributions alone.
 
 ##  Population effect sizes of parametric tests
 
-To quantify the different designs of the power simulations, we extend the effect size $\widehat{\omega}^2$ to the population level for the different designs. 
+In every design $\widehat{\omega}^2$ and its Welch variant estimate the same
+population ratio,
 
-
-
-**balanced homoscedastic** 
-In a balanced homoscedastic  design, $\widehat{\omega}^2$ estimates the population parameter
 \begin{equation}
-\omega^2_{\text{bal}} =\frac{\sigma^2_{\text{between}}}{\sigma^2_{\text{between}}+\sigma^2},
+\omega^2=\frac{\lambda}{1+\lambda},
 (\#eq:omega-sq-population)
 \end{equation}
-with $\sigma^2_{\text{between}}=\frac1k\sum_{j=1}^k(\mu_j-\bar\mu)^2$ and $\sigma^2$ the constant error variance of the general linear model (Eq. \@ref(eq:glm)) [@Steiger:2004].
 
-**unbalanced homoscedastic** 
-For unbalanced, homoscedastic designs, with $p_j=n_j/N$ the (fixed) relative size of group $j$ and $\bar\mu_p=\sum_{j=1}^k p_j\mu_j$ the allocation-weighted grand mean, the same ratio defines $\omega^2_{\text{unbal}}$, now with
+built from  [@Shieh:2012]
+
 \begin{equation}
-\sigma^2_{\text{between}}=\sum_{j=1}^k p_j(\mu_j-\bar\mu_p)^2,
+\lambda=\sum_{i=1}^{k} q_i\left(\frac{\mu_i-\tilde\mu_w}{\sigma_i}\right)^{2},
+\qquad
+\tilde\mu_w=\frac{\sum_{i=1}^{k} w_i\mu_i}{\sum_{i=1}^{k} w_i},
+\qquad
+w_i=\frac{n_i}{\sigma_i^{2}},
+(\#eq:lambda-population)
+\end{equation}
+
+where $\mu_i$ and $\sigma_i^2$ are the mean and the variance of group $i$ and
+$\tilde\mu_w$ is the inverse-variance-weighted grand mean.
+
+Under the null $F_W$ follows an $F$ distribution. Under an alternative it
+follows a noncentral $F$, which carries one extra parameter $\Lambda$. It is
+zero under the null, and the power grows with it.
+
+Multiplying Eq. \@ref(eq:lambda-population) by $N$ and using $q_i=n_i/N$ gives
+the numerator sum of $F_W$ in Eq. \@ref(eq:welch-f) at the population values,
+which is that parameter [@Shieh:2012]:
+
+\begin{equation}
+\Lambda=N\lambda=\sum_{i=1}^{k} n_i(\mu_i-\tilde\mu_w)^{2}/\sigma_i^{2}.
+(\#eq:welch-noncentrality)
+\end{equation}
+
+So $\Lambda$ depends on the total sample size, and $\lambda$ does not.
+
+<!-- That -->
+<!-- is why the power figures of Section \@ref(sec:simulation-results) report -->
+<!-- $\lambda$ rather than $\omega^2$, which is a strictly increasing function of it -->
+<!-- and carries the same ordering. -->
+
+Two reductions connect Eq. \@ref(eq:lambda-population) to the variance
+proportions usually written for the analysis of variance. Let the group
+variances be equal to a common value,
+\begin{equation}
+\sigma^2_{\text{within}}=\sigma_i^2,\qquad i=1,\dots,k .
+\end{equation}
+That constant cancels from $\tilde\mu_w$, which becomes the allocation-weighted
+grand mean $\bar\mu_q=\sum_{i=1}^{k} q_i\mu_i$, and it leaves the sum in
+Eq. \@ref(eq:lambda-population), so that
+\begin{equation}
+\lambda=\frac{\sigma^2_{\text{between},q}}{\sigma^2_{\text{within}}},
+\qquad
+\sigma^2_{\text{between},q}=\sum_{i=1}^{k} q_i(\mu_i-\bar\mu_q)^{2},
+(\#eq:sigma-between-q)
+\end{equation}
+the allocation-weighted variance of the group means, and
+Eq. \@ref(eq:omega-sq-population) becomes the familiar proportion
+\begin{equation}
+\omega^2=\frac{\sigma^2_{\text{between},q}}
+{\sigma^2_{\text{between},q}+\sigma^2_{\text{within}}}
 (\#eq:omega-sq-population-unbalanced)
 \end{equation}
-so that $\omega^2_{\text{unbal}}=\omega^2_{\text{bal}}$ when $p_j=1/k$ [@Carroll:1975].
-
-**unbalanced heteroscedastic** 
-
-For Welch's ANOVA, allowing the group variances $\sigma_j^2$ to differ, $\widehat\omega^2$ (approx.) estimates the heteroscedastic extension of Eq. \@ref(eq:omega-sq-population-unbalanced). 
-With $w_j=n_j/\sigma_j^2$ and $\tilde\mu_w=\sum_{j=1}^k w_j\mu_j\big/\sum_{j=1}^k w_j$ the inverse-variance-weighted grand mean,
-\begin{equation}
-\omega^2_{\text{het}}=\frac{\lambda}{1+\lambda},\qquad \lambda=\sum_{j=1}^k p_j\left(\frac{\mu_j-\tilde\mu_w}{\sigma_j}\right)^2,
-(\#eq:omega-sq-population-heteroscedastic)
-\end{equation}
-so that $\omega^2_{\text{het}}=\omega^2_{\text{unbal}}$ when $\sigma_j^2=\sigma^2$ for every $j$ [@Shieh:2012].
+[@Carroll:1975]. If the group sizes are equal as well, $q_i=1/k$, then
+$\bar\mu_q$ is the unweighted grand mean $\bar\mu$, the numerator is the
+unweighted variance of the group means $\frac1k\sum_{i=1}^{k}(\mu_i-\bar\mu)^2$,
+and $\sigma^2_{\text{within}}$ is the error variance of the general linear model
+(Eq. \@ref(eq:glm)) [@Steiger:2004]. Neither reduction is available when the
+$\sigma_i^2$ differ, and Eq. \@ref(eq:lambda-population) then stands as written
+[@Shieh:2012].
 <!-- attributing the construction to Kulinskaya and Staudte 2006]. -->
 
 ##  Population effect size of the rank-based test
@@ -256,6 +304,18 @@ With the group-size ratios $q_i$ held fixed, $\widehat\eta_H^2$ converges to a f
 (\#eq:eta-h-population)
 \end{equation}
 
+Rearranging Eq. \@ref(eq:eta-h-population) shows that $\eta_H^2$ plays for $H$
+the role that $\lambda$ plays for $F_W$,
 
+\begin{equation}
+\operatorname{E}[H]-(k-1)=(N-k)\operatorname{E}\!\left[\widehat\eta_H^2\right]
+=N\eta_H^2+o(N).
+(\#eq:kw-noncentrality)
+\end{equation}
 
-Unlike $\omega^2$, which sees the group distributions only through $(\mu_j,\sigma_j^2)$, Eq. \@ref(eq:eta-h-population) depends on their whole shape through Eq. \@ref(eq:weighted-relative-effect).
+Where the rank variances are homogeneous, so that $H$ is referred to
+$\chi^2_{k-1}$, the two branches are carried on the same $k-1$ degrees of
+freedom with noncentralities $N\lambda$ and $N\eta_H^2$, so the larger of
+$\lambda$ and $\eta_H^2$ marks the more powerful test at any common $N$.
+
+Unlike $\omega^2$, which sees the group distributions only through $(\mu_i,\sigma_i^2)$, Eq. \@ref(eq:eta-h-population) depends on their whole shape through Eq. \@ref(eq:weighted-relative-effect).

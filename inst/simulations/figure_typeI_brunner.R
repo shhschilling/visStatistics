@@ -117,8 +117,7 @@ if (length(missing_cols)) {
 typeI <- typeI[, keep]
 names(typeI)[names(typeI) == "mean_n_per_group"] <- "n_per_group"
 
-regime_of <- function(d) omega_sq_regime(
-  as.numeric(strsplit(NMULT[[d]], ",[ ]*")[[1]]), SDS[[d]])
+symbol_of <- function(d) ES_SYMBOL_HTML
 
 ## eta_H^2 per (design, panel) for this grid, from eta_h_own_derivation.R.
 ETA_FILE <- file.path(SIMDIR, "eta_h_own_by_design_panel.csv")
@@ -261,9 +260,9 @@ make_typeI_panel <- function(design_name, letter) {
   header <- sprintf(paste0("Type I simulations, %s; (n<sub>1</sub>, n<sub>2</sub>, ",
       "n<sub>3</sub>, n<sub>4</sub>) = n&#772;(%s); (SD<sub>1</sub>, SD<sub>2</sub>, ",
       "SD<sub>3</sub>, SD<sub>4</sub>) = (%s); all group means 0, so ",
-      "&omega;<sup>2</sup><sub>%s</sub> = 0"),
+      "%s = 0"),
     DESIGN_WORDS[[design_name]], NMULT[[design_name]],
-    sd_vector_label(SDS[[design_name]]), regime_of(design_name))
+    sd_vector_label(SDS[[design_name]]), symbol_of(design_name))
 
   ggplot2$ggplot() +
     ggplot2$geom_vline(xintercept = NS_TO_PLOT, colour = "grey88", linewidth = 0.35) +

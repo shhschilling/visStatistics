@@ -143,10 +143,9 @@ COLUMN <- c("fisher_power", "welch_power", "mean_power", "rank_power",
 names(COLUMN) <- names(STRATS)
 USE <- names(STRATS)
 
-omega_of <- function(design_name, shifts) population_omega_sq(
+lambda_of <- function(design_name, shifts) population_lambda(
   as.numeric(strsplit(NMULT[[design_name]], ",[ ]*")[[1]]), SD_EQ, shifts, 1)
-regime_of <- function(design_name) omega_sq_regime(
-  as.numeric(strsplit(NMULT[[design_name]], ",[ ]*")[[1]]), SD_EQ)
+symbol_of <- function(design_name) ES_SYMBOL_HTML
 
 panel_title <- function(p) {
   one <- fleishman_cases[fleishman_cases$panel == p, , drop = FALSE]
@@ -251,10 +250,9 @@ make_power_panel <- function(power, eta, shifts, design_name, letter) {
 
   header <- sprintf(paste0("power simulations, %s; (n<sub>1</sub>, n<sub>2</sub>, ",
       "n<sub>3</sub>, n<sub>4</sub>) = n&#772;(%s); (SD<sub>1</sub>, SD<sub>2</sub>, ",
-      "SD<sub>3</sub>, SD<sub>4</sub>) = (1, 1, 1, 1); &omega;<sup>2</sup>",
-      "<sub>%s</sub> = %.3f"),
+      "SD<sub>3</sub>, SD<sub>4</sub>) = (1, 1, 1, 1); %s = %.3f"),
     DESIGN_WORDS[[design_name]], NMULT[[design_name]],
-    regime_of(design_name), omega_of(design_name, shifts))
+    symbol_of(design_name), lambda_of(design_name, shifts))
 
   ggplot2$ggplot() +
     ggplot2$geom_vline(xintercept = NS_TO_PLOT, colour = "grey88", linewidth = 0.35) +

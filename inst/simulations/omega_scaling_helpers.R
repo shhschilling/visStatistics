@@ -33,6 +33,12 @@
 ##   lambda   = sum_j p_j ((mu_j - mu_tilde_w) / sigma_j)^2
 ##   omega^2  = lambda / (1 + lambda)
 ##
+## lambda itself is the weighted signal-to-noise ratio (Shieh 2012, Eq. 9),
+## the noncentrality of the noncentral F approximating Welch's statistic,
+## divided by N. Under homoscedasticity it reduces to Cohen's f^2. It is what
+## the power figures label, because it is on the same footing as eta_H^2:
+## both are noncentralities per observation on k-1 degrees of freedom.
+##
 ## This reduces to the balanced formula when p_j = 1/k and sigma_j = sigma
 ## for all j (mu_tilde_w becomes the unweighted grand mean, sigma_j cancels
 ## to a constant sigma, and lambda = sigma^2_between / sigma^2), and to the
@@ -48,12 +54,16 @@ weighted_var <- function(x, p) {
 ## Population omega^2 of a design, for a given scale c (mu_j = c * shifts_j).
 ## Always the general (heteroscedastic) formula; see header for why this is
 ## correct in the balanced and unbalanced-homoscedastic special cases too.
-population_omega_sq <- function(multipliers, sd_vec, shifts, c) {
+population_lambda <- function(multipliers, sd_vec, shifts, c) {
   p <- multipliers / sum(multipliers)
   w <- multipliers / sd_vec^2
   mu <- c * shifts
   mu_tilde_w <- sum(w * mu) / sum(w)
-  lambda <- sum(p * ((mu - mu_tilde_w) / sd_vec)^2)
+  sum(p * ((mu - mu_tilde_w) / sd_vec)^2)
+}
+
+population_omega_sq <- function(multipliers, sd_vec, shifts, c) {
+  lambda <- population_lambda(multipliers, sd_vec, shifts, c)
   lambda / (1 + lambda)
 }
 
@@ -65,6 +75,13 @@ omega_sq_regime <- function(multipliers, sd_vec) {
   homoscedastic <- length(unique(sd_vec)) == 1
   if (!homoscedastic) "het" else if (balanced) "bal" else "unbal"
 }
+
+## Label for the quantity population_lambda() returns. One symbol in every
+## design: lambda is the general weighted signal-to-noise ratio, and calling it
+## f^2 in the homoscedastic panels would make one figure appear to plot two
+## different quantities. The reduction to Cohen's f^2 under equal variances is
+## stated once in _effect_size_table.Rmd instead.
+ES_SYMBOL_HTML <- "&lambda;"
 
 ## The balanced homoscedastic baseline: p_j = 1/k, sigma_j = 1, c = 1.
 baseline_omega_sq <- function(shifts) {
