@@ -1654,7 +1654,7 @@ switched to.
 In column 5, the input with the highest skewness and excess kurtosis,
 the scaling separates the group medians by only 0.34 SD between the
 extreme groups, resulting in a small Kruskal–Wallis population effect
-size of \\\eta_H^2 \approx 0.02\\ (Eq. [(G.4)](#eq:eta-h-population));
+size of \\\eta_H^2 \approx 0.02\\ (Eq. [(G.6)](#eq:eta-h-population));
 `KW` still fails to reject in roughly a third of the replications at the
 largest group size simulated.
 
@@ -1700,14 +1700,13 @@ comparisons of at most four groups.
 
 In the two symmetric columns 1 and 2 both gated strategies stay within
 Bradley’s boundaries in the balanced design (panel B) and in the
-unbalanced positive design of panel C. The adverse pairing of panel D
-defeats them both, and for different reasons. At the larger group sizes
-the normality gate is overpowered and sends most replications to `KW`,
-whose own level is affected by unequal variances at unequal group sizes
-([Brunner et al. 2017](#ref-Brunner:2017)). At the smallest group sizes
-the variance gate is underpowered instead and returns nearly half the
-replications to `F`, whose rejection rate under a true null is inflated
-in this pairing.
+unbalanced positive design of panel C. In the negative pairing of panel
+D the normality gate is overpowered for larger group sizes and sends
+most replications to `KW`, whose own level is affected by unequal
+variances at unequal group sizes ([Brunner et al.
+2017](#ref-Brunner:2017)). At the smallest group sizes the variance gate
+is underpowered instead and sends replications to `F`, whose rejection
+rate under a true null is inflated in this pairing.
 
 Taken together, unequal variances push the routing out of the mean
 branch through the residual kurtosis they induce, so a mean comparison
@@ -1718,13 +1717,14 @@ under suspected heteroscedasticity is better requested with group_test =
 
 The power simulation uses the same five fixed input distributions and
 adds location shifts across the four groups in homo- and heteroscedastic
-designs. In samples of \\n \ge 50\\, the test with the higher population
-effect size — \\\omega^2\\ for `F` and `W`, \\\eta_H^2\\ for `KW`, both
-printed in the figures below — has the higher power in every simulated
-cell. The insets show the share sent to the rank branch: it stays at the
-nominal level only when the variances are equal and the input is exactly
-normal, and otherwise grows with the sample size, the skewness, the
-excess kurtosis and the variance heterogeneity, where introduced..
+designs. In samples of \\n \ge 50\\, the test with the larger of the two
+constants whose products with \\N\\ are the noncentralities —
+\\\lambda\\ for `F` and `W`, \\\eta_H^2\\ for `KW`, both printed in the
+figures below — has the higher power in every simulated cell. The insets
+show the share sent to the rank branch: it stays at the nominal level
+only when the variances are equal and the input is exactly normal, and
+otherwise grows with the sample size, the skewness, the excess kurtosis
+and the variance heterogeneity, where introduced..
 
 In the homoscedastic design (Figure [7.3](#fig:route1-power), panel B),
 balanced groups with equal SD are used: \\n_i=n\\, \\\mathrm{SD}\_i=1\\
@@ -1767,12 +1767,12 @@ larger SD. (D) input distributions, SD = (sqrt 5, 2, sqrt 2, 1). (E)
 unbalanced design, larger groups with smaller SD.
 
 In the heteroscedastic designs the routed procedure no longer matches
-the best fixed strategy in most settings: `KW` has a higher effect size
-than the parametric tests only in the heavy-tailed simulations (column
-2) of all designs and the skewed, unbalanced heteroscedastic simulations
-with negative pairing (columns 3-5 of panel E), while the routing sends
-in all cells a growing share to `KW` with increasing sample size,
-skewness and excess kurtosis.
+the best fixed strategy in most settings: `KW` has a higher \\\eta_H^2\\
+than the parametric \\\lambda\\ only in the heavy-tailed simulations
+(column 2) of all designs and the skewed, unbalanced heteroscedastic
+simulations with negative pairing (columns 3-5 of panel E), while the
+routing sends in all cells a growing share to `KW` with increasing
+sample size, skewness and excess kurtosis.
 
 ## 8 Discussion
 
@@ -2855,54 +2855,76 @@ All other variables used in the [effect-size
 table](#tab:effect-size-formulae) are defined in the corresponding
 “Analysis” section.
 
-## G Population effect sizes
+## G Population effect sizes for fixed group size ratios
 
-All quantities in this section are defined for a fixed set of group-size
-ratios \\q_i=n_i/N\\, \\i=1,\dots,k\\, held constant as \\N\\ grows.
-This is a restriction, not a convention: \\\omega^2\_{\text{unbal}}\\
-and \\\omega^2\_{\text{het}}\\ below depend on the fixed \\q_i\\, as
-does \\\eta_H^2\\, so none of them is comparable between designs whose
-groups stand in different size ratios. Within one such family each is a
-function of the distributions alone.
+In the simulation studies of Section [7](#sec:simulation-results)
+comparing the different Route 1 strategies, we keep the group-size
+ratios \\q_i=n_i/N\\, \\i=1,\dots,k\\, fixed as \\N\\ grows. All
+quantities below follow this restriction; \\\lambda\\ and \\\omega^2\\
+below depend on the fixed \\q_i\\, as does \\\eta_H^2\\, so none of them
+is comparable between designs whose groups stand in different size
+ratios. Within one fixed groups size vector \\(q_1,\dots,q_k)\\ each is
+a function of the distributions alone.
 
 ### G.1 Population effect sizes of parametric tests
 
-To quantify the different designs of the power simulations, we extend
-the effect size \\\widehat{\omega}^2\\ to the population level for the
-different designs.
+In every design \\\widehat{\omega}^2\\ and its Welch variant estimate
+the same population ratio,
 
-**balanced homoscedastic** In a balanced homoscedastic design,
-\\\widehat{\omega}^2\\ estimates the population parameter
-\\\begin{equation} \omega^2\_{\text{bal}}
-=\frac{\sigma^2\_{\text{between}}}{\sigma^2\_{\text{between}}+\sigma^2},
-\tag{G.1} \end{equation}\\ with
-\\\sigma^2\_{\text{between}}=\frac1k\sum\_{j=1}^k(\mu_j-\bar\mu)^2\\ and
-\\\sigma^2\\ the constant error variance of the general linear model
-(Eq. [(5.1)](#eq:glm)) ([Steiger 2004](#ref-Steiger:2004)).
+\\\begin{equation} \omega^2=\frac{\lambda}{1+\lambda}, \tag{G.1}
+\end{equation}\\
 
-**unbalanced homoscedastic** For unbalanced, homoscedastic designs, with
-\\p_j=n_j/N\\ the (fixed) relative size of group \\j\\ and
-\\\bar\mu_p=\sum\_{j=1}^k p_j\mu_j\\ the allocation-weighted grand mean,
-the same ratio defines \\\omega^2\_{\text{unbal}}\\, now with
-\\\begin{equation} \sigma^2\_{\text{between}}=\sum\_{j=1}^k
-p_j(\mu_j-\bar\mu_p)^2, \tag{G.2} \end{equation}\\ so that
-\\\omega^2\_{\text{unbal}}=\omega^2\_{\text{bal}}\\ when \\p_j=1/k\\
-([Carroll and Nordholm 1975](#ref-Carroll:1975)).
+built from ([Shieh 2012](#ref-Shieh:2012))
 
-**unbalanced heteroscedastic**
+\\\begin{equation} \lambda=\sum\_{i=1}^{k}
+q_i\left(\frac{\mu_i-\tilde\mu_w}{\sigma_i}\right)^{2}, \qquad
+\tilde\mu_w=\frac{\sum\_{i=1}^{k} w_i\mu_i}{\sum\_{i=1}^{k} w_i}, \qquad
+w_i=\frac{n_i}{\sigma_i^{2}}, \tag{G.2} \end{equation}\\
 
-For Welch’s ANOVA, allowing the group variances \\\sigma_j^2\\ to
-differ, \\\widehat\omega^2\\ (approx.) estimates the heteroscedastic
-extension of Eq. [(G.2)](#eq:omega-sq-population-unbalanced). With
-\\w_j=n_j/\sigma_j^2\\ and \\\tilde\mu_w=\sum\_{j=1}^k
-w_j\mu_j\big/\sum\_{j=1}^k w_j\\ the inverse-variance-weighted grand
-mean, \\\begin{equation}
-\omega^2\_{\text{het}}=\frac{\lambda}{1+\lambda},\qquad
-\lambda=\sum\_{j=1}^k
-p_j\left(\frac{\mu_j-\tilde\mu_w}{\sigma_j}\right)^2, \tag{G.3}
-\end{equation}\\ so that
-\\\omega^2\_{\text{het}}=\omega^2\_{\text{unbal}}\\ when
-\\\sigma_j^2=\sigma^2\\ for every \\j\\ ([Shieh 2012](#ref-Shieh:2012)).
+where \\\mu_i\\ and \\\sigma_i^2\\ are the mean and the variance of
+group \\i\\ and \\\tilde\mu_w\\ is the inverse-variance-weighted grand
+mean.
+
+Under the null \\F_W\\ follows an \\F\\ distribution. Under an
+alternative it follows a noncentral \\F\\, which carries one extra
+parameter \\\Lambda\\. It is zero under the null, and the power grows
+with it.
+
+Multiplying Eq. [(G.2)](#eq:lambda-population) by \\N\\ and using
+\\q_i=n_i/N\\ gives the numerator sum of \\F_W\\ in Eq.
+[(B.6)](#eq:welch-f) at the population values, which is that parameter
+([Shieh 2012](#ref-Shieh:2012)):
+
+\\\begin{equation} \Lambda=N\lambda=\sum\_{i=1}^{k}
+n_i(\mu_i-\tilde\mu_w)^{2}/\sigma_i^{2}. \tag{G.3} \end{equation}\\
+
+So \\\Lambda\\ depends on the total sample size, and \\\lambda\\ does
+not.
+
+Two reductions connect Eq. [(G.2)](#eq:lambda-population) to the
+variance proportions usually written for the analysis of variance. Let
+the group variances be equal to a common value, \\\begin{equation}
+\sigma^2\_{\text{within}}=\sigma_i^2,\qquad i=1,\dots,k .
+\end{equation}\\ That constant cancels from \\\tilde\mu_w\\, which
+becomes the allocation-weighted grand mean \\\bar\mu_q=\sum\_{i=1}^{k}
+q_i\mu_i\\, and it leaves the sum in Eq. [(G.2)](#eq:lambda-population),
+so that \\\begin{equation}
+\lambda=\frac{\sigma^2\_{\text{between},q}}{\sigma^2\_{\text{within}}},
+\qquad \sigma^2\_{\text{between},q}=\sum\_{i=1}^{k}
+q_i(\mu_i-\bar\mu_q)^{2}, \tag{G.4} \end{equation}\\ the
+allocation-weighted variance of the group means, and Eq.
+[(G.1)](#eq:omega-sq-population) becomes the familiar proportion
+\\\begin{equation} \omega^2=\frac{\sigma^2\_{\text{between},q}}
+{\sigma^2\_{\text{between},q}+\sigma^2\_{\text{within}}} \tag{G.5}
+\end{equation}\\ ([Carroll and Nordholm 1975](#ref-Carroll:1975)). If
+the group sizes are equal as well, \\q_i=1/k\\, then \\\bar\mu_q\\ is
+the unweighted grand mean \\\bar\mu\\, the numerator is the unweighted
+variance of the group means \\\frac1k\sum\_{i=1}^{k}(\mu_i-\bar\mu)^2\\,
+and \\\sigma^2\_{\text{within}}\\ is the error variance of the general
+linear model (Eq. [(5.1)](#eq:glm)) ([Steiger 2004](#ref-Steiger:2004)).
+Neither reduction is available when the \\\sigma_i^2\\ differ, and Eq.
+[(G.2)](#eq:lambda-population) then stands as written ([Shieh
+2012](#ref-Shieh:2012)).
 
 ### G.2 Population effect size of the rank-based test
 
@@ -2912,11 +2934,24 @@ converges to a function of the weighted relative effects \\p_i\\ of Eq.
 
 \\\begin{equation}
 \widehat\eta_H^2=\frac{H-k+1}{N-k}\\\xrightarrow{N\to\infty}\\
-\eta_H^2=12\sum\_{i=1}^{k} q_i\left(p_i-\frac12\right)^{2}. \tag{G.4}
+\eta_H^2=12\sum\_{i=1}^{k} q_i\left(p_i-\frac12\right)^{2}. \tag{G.6}
 \end{equation}\\
 
+Rearranging Eq. [(G.6)](#eq:eta-h-population) shows that \\\eta_H^2\\
+plays for \\H\\ the role that \\\lambda\\ plays for \\F_W\\,
+
+\\\begin{equation}
+\operatorname{E}\[H\]-(k-1)=(N-k)\operatorname{E}\\\left\[\widehat\eta_H^2\right\]
+=N\eta_H^2+o(N). \tag{G.7} \end{equation}\\
+
+Where the rank variances are homogeneous, so that \\H\\ is referred to
+\\\chi^2\_{k-1}\\, the two branches are carried on the same \\k-1\\
+degrees of freedom with noncentralities \\N\lambda\\ and \\N\eta_H^2\\,
+so the larger of \\\lambda\\ and \\\eta_H^2\\ marks the more powerful
+test at any common \\N\\.
+
 Unlike \\\omega^2\\, which sees the group distributions only through
-\\(\mu_j,\sigma_j^2)\\, Eq. [(G.4)](#eq:eta-h-population) depends on
+\\(\mu_i,\sigma_i^2)\\, Eq. [(G.6)](#eq:eta-h-population) depends on
 their whole shape through Eq. [(C.8)](#eq:weighted-relative-effect).
 
 ## H Supplementary material
