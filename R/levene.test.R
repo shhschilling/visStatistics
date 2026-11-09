@@ -1,11 +1,12 @@
-#' Mean-centred Levene Test for Homogeneity of Variance
+#' Median-centred Levene Test (Brown-Forsythe) for Homogeneity of Variance
 #'
-#' @description Performs Levene's original mean-centred test.
-#'  It tests the null hypothesis that all groups
+#' @description Performs the median-centred Levene test, also known as the
+#'  Brown-Forsythe test. It tests the null hypothesis that all groups
 #' have equal variances by testing whether the absolute deviations
-#'  from group means are equal across groups.
+#'  from group medians are equal across groups. This variant is more robust
+#'  to departures from normality than the mean-centred version.
 #'  The function reproduces the behaviour of
-#'  leveneTest(y, g, center = mean, ...) of the car package.
+#'  leveneTest(y, g, center = median, ...) of the car package.
 #'
 #' @param y A numeric response vector.
 #' @param g A grouping factor.
@@ -21,11 +22,11 @@
 #'
 #' @details
 #' For each observation \eqn{y_{ij}} in group \eqn{i}, compute the absolute
-#' deviation from the group mean:
+#' deviation from the group median:
 #'
-#' \deqn{z_{ij} = |y_{ij} - \bar{y}_i|}
+#' \deqn{z_{ij} = |y_{ij} - \tilde{y}_i|}
 #'
-#' where \eqn{\bar{y}_i} is the mean of group \eqn{i}.
+#' where \eqn{\tilde{y}_i} is the median of group \eqn{i}.
 #'
 #' The test statistic is the F-statistic from a one-way ANOVA on the \eqn{z_{ij}} values:
 #'
@@ -45,6 +46,10 @@
 #' an F-distribution: \eqn{F \sim F(k-1, N-k)}.
 #'
 #' @references
+#' Brown, M. B., & Forsythe, A. B. (1974). Robust tests for the equality of variances.
+#' \emph{Journal of the American Statistical Association}, 69(346), 364--367.
+#' doi:10.1080/01621459.1974.10482966.
+#'
 #' Gastwirth, J. L., Gel, Y. R., & Miao, W. (2009). The Impact of Levene's
 #' Test of Equality of Variances on Statistical Theory and Practice.
 #' \emph{Statistical Science}, 24(3), 343--360. doi:10.1214/09-STS301.
@@ -79,7 +84,7 @@ levene.test <- function(y, g, data = NULL) {
   # Levene test ------
 
   fit <- stats::aov(
-    I(abs(y - tapply(y, g, mean, na.rm = TRUE)[g])) ~ g
+    I(abs(y - tapply(y, g, median, na.rm = TRUE)[g])) ~ g
   )
   aov_summary <- summary(fit)[[1]]
 
@@ -93,8 +98,8 @@ levene.test <- function(y, g, data = NULL) {
       statistic = c(F = f_value),
       parameter = c(df1 = df1, df2 = df2),
       p.value = p_value,
-      method = "Mean-centred Levene Test",
-      data.name = "absolute deviations from group means"
+      method = "Median-centred Levene Test (Brown-Forsythe)",
+      data.name = "absolute deviations from group medians"
     ),
     class = "htest"
   )

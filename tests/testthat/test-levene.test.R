@@ -43,7 +43,7 @@ test_that("levene.test returns correct structure", {
   expect_named(result$parameter, c("df1", "df2"))
 
   # Check method string
-  expect_equal(result$method, "Mean-centred Levene Test")
+  expect_equal(result$method, "Median-centred Levene Test (Brown-Forsythe)")
 })
 
 test_that("levene.test calculates correct degrees of freedom", {
@@ -60,30 +60,32 @@ test_that("levene.test calculates correct degrees of freedom", {
   expect_equal(result2$parameter[["df2"]], 42) # N-k = 45-3 = 42
 })
 
-test_that("levene.test equals Fisher ANOVA on absolute model residuals", {
+test_that("levene.test equals Fisher ANOVA on absolute deviations from group medians", {
   g <- factor(c(rep("A", 4), rep("B", 5), rep("C", 6)))
   y <- c(
     5.1, 5.4, 4.9, 5.2,
     6.3, 6.8, 5.9, 6.6, 6.2,
     8.1, 7.4, 8.6, 7.9, 8.3, 7.7
   )
-  fit <- lm(y ~ g)
-  abs_residuals <- abs(residuals(fit))
-  fisher_on_abs_residuals <- summary(aov(abs_residuals ~ g))[[1]]
+
+  # Compute absolute deviations from group medians
+  group_medians <- tapply(y, g, median)
+  abs_dev_medians <- abs(y - group_medians[g])
+  fisher_on_abs_dev <- summary(aov(abs_dev_medians ~ g))[[1]]
 
   result <- levene.test(y, g)
 
   expect_equal(unname(result$statistic),
-    fisher_on_abs_residuals[["F value"]][1],
+    fisher_on_abs_dev[["F value"]][1],
     tolerance = 1e-12
   )
   expect_equal(unname(result$p.value),
-    fisher_on_abs_residuals[["Pr(>F)"]][1],
+    fisher_on_abs_dev[["Pr(>F)"]][1],
     tolerance = 1e-12
   )
   expect_equal(
     unname(result$parameter),
-    fisher_on_abs_residuals[["Df"]][1:2]
+    fisher_on_abs_dev[["Df"]][1:2]
   )
 })
 
@@ -196,19 +198,19 @@ test_that("levene.test numerical accuracy", {
   expect_true(is.numeric(result_identical$statistic))
 })
 
-# test_that("levene.test matches car::leveneTest when available", {
-#   # Double-check that car is available without triggering installation
-#   skip_if_not(requireNamespace("car", quietly = TRUE), "car package not available")
-#
-#   test_data <- create_test_data()
-#   our_result <- levene.test(test_data$equal_var$y, test_data$equal_var$g)
-#
-#   # Compare with car package result
-#   car_result <- car::leveneTest(test_data$equal_var$y, test_data$equal_var$g, center = mean)
-#
-#   # Test statistics should be very close (allowing for small numerical differences)
-#   expect_equal(our_result$statistic[["F"]], car_result$`F value`[1], tolerance = 1e-10)
-#   expect_equal(our_result$p.value, car_result$`Pr(>F)`[1], tolerance = 1e-10)
-#   expect_equal(our_result$parameter[["df1"]], car_result$Df[1])
-#   expect_equal(our_result$parameter[["df2"]], car_result$Df[2])
-# })
+test_that("levene.test matches car::leveneTest(center = 'median') when available", {
+  # Double-check that car is available without triggering installation
+  skip_if_not(requireNamespace("car", quietly = TRUE), "car package not available")
+
+  test_data <- create_test_data()
+  our_result <- levene.test(test_data$equal_var$y, test_data$equal_var$g)
+
+  # Compare with car package result using median centering
+  car_result <- car::leveneTest(test_data$equal_var$y, test_data$equal_var$g, center = "median")
+
+  # Test statistics should be very close (allowing for small numerical differences)
+  expect_equal(our_result$statistic[["F"]], car_result$`F value`[1], tolerance = 1e-10)
+  expect_equal(our_result$p.value, car_result$`Pr(>F)`[1], tolerance = 1e-10)
+  expect_equal(our_result$parameter[["df1"]], car_result$Df[1])
+  expect_equal(our_result$parameter[["df2"]], car_result$Df[2])
+})

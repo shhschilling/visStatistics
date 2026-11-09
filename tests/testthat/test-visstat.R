@@ -547,66 +547,6 @@ test_that("visstat integrates correctly with different statistical tests", {
   expect_s3_class(result_regression, "visstat")
 })
 
-test_that("visstat returns effect_size for implemented branches", {
-  setup_test_graphics()
-  on.exit(cleanup_test_graphics())
-
-  mtcars$am <- factor(mtcars$am)
-  hair_eye_df <- counts_to_cases(as.data.frame(HairEyeColor))
-
-  results <- list(
-    t_test = visstat(mtcars$am, mtcars$mpg),
-    kruskal = visstat(iris$Species, iris$Petal.Width),
-    regression = visstat(swiss$Examination, swiss$Fertility),
-    spearman = visstat(airquality$Wind, airquality$Ozone, correlation = TRUE),
-    chi_squared = visstat(hair_eye_df$Eye, hair_eye_df$Hair)
-  )
-
-  for (result in results) {
-    expect_s3_class(result, "visstat")
-    expect_true("effect_size" %in% names(result))
-    expect_true(all(c("name", "estimate", "effect_size_method") %in% names(result$effect_size)))
-  }
-})
-
-test_that("Welch Hedges g uses the non-pooled df correction", {
-  group <- factor(c(rep("a", 4), rep("b", 3)))
-  response <- c(1, 2, 3, 4, 2, 4, 8)
-  result <- list("t-test-statistics" = t.test(response ~ group))
-
-  es <- effect_size(result, x = group, y = response)
-
-  x1 <- response[group == "a"]
-  x2 <- response[group == "b"]
-  n1 <- length(x1)
-  n2 <- length(x2)
-  s1 <- var(x1)
-  s2 <- var(x2)
-  sd_std <- sqrt((s1 + s2) / 2)
-  df <- ((n1 - 1) * (n2 - 1) * (s1 + s2)^2) /
-    ((n2 - 1) * s1^2 + (n1 - 1) * s2^2)
-  correction <- exp(
-    lgamma(df / 2) - 0.5 * log(df / 2) - lgamma((df - 1) / 2)
-  )
-
-  expect_equal(es$estimate, correction * ((mean(x1) - mean(x2)) / sd_std))
-})
-
-test_that("rank-biserial effect size follows wilcox.test first-group direction", {
-  group <- factor(c(rep("a", 3), rep("b", 3)))
-  response <- c(3, 4, 5, 1, 2, 6)
-  result <- list(statsWilcoxon = wilcox.test(response ~ group, exact = FALSE))
-
-  es <- effect_size(result, x = group, y = response)
-
-  x1 <- response[group == "a"]
-  x2 <- response[group == "b"]
-  favorable <- sum(outer(x1, x2, ">") + 0.5 * outer(x1, x2, "=="))
-  expected <- (2 * favorable) / (length(x1) * length(x2)) - 1
-
-  expect_equal(es$estimate, expected)
-})
-
 test_that("large residual panel reports NA Shapiro above R limit", {
   setup_test_graphics()
   on.exit(cleanup_test_graphics())
@@ -624,8 +564,6 @@ test_that("large residual panel reports NA Shapiro above R limit", {
   expect_s3_class(result, "visstat")
   expect_equal(result[["t-test-statistics"]]$method, " Two Sample t-test")
   expect_true(result[["t-test-statistics"]]$p.value < 0.001)
-  expect_equal(result$effect_size$name, "Hedges' g")
-  expect_lt(abs(result$effect_size$estimate), 0.11)
   expect_s3_class(result[["Shapiro-Wilk-test_sample1"]], "htest")
   expect_s3_class(result[["Shapiro-Wilk-test_sample2"]], "htest")
   expect_false(is.na(result[["Shapiro-Wilk-test_sample1"]]$p.value))

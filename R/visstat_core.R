@@ -408,7 +408,6 @@ visstat_core <- function(dataframe,
       )
       vis_sample_fact <- list(
         error = "Insufficient data",
-        effect_size = effect_size_unavailable("Effect size unavailable for insufficient data."),
         input_summary = list(sample_name = name_of_sample, factor_name = name_of_factor)
       )
       attr(vis_sample_fact, "plot_paths") <- plot_paths
@@ -886,9 +885,6 @@ visstat_core <- function(dataframe,
   # At the very end:
   if (!exists("vis_sample_fact") || is.null(vis_sample_fact)) {
     vis_sample_fact <- list(error = "Analysis completed but no results were generated")
-  }
-  if (is.list(vis_sample_fact) && is.null(vis_sample_fact$effect_size)) {
-    vis_sample_fact$effect_size <- effect_size(vis_sample_fact, x = fact, y = samples)
   }
   if (isTRUE(correlation_ignored) && is.null(vis_sample_fact$error)) {
     selected_title <- selected_test_title(vis_sample_fact)
